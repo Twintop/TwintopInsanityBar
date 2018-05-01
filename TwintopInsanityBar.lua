@@ -2683,10 +2683,14 @@ local function EventRegistration()
 		
 		if settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected then
 			asTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) asTimerFrame:onUpdate(sinceLastUpdate); end);
+		else
+			asTimerFrame:SetScript("OnUpdate", nil);
 		end
 		
 		if settings.mindbender.useNotification.enabled and characterData.talents.mindbender.isSelected then
 			mindbenderAudioCueFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) mindbenderAudioCueFrame:onUpdate(sinceLastUpdate); end);
+		else
+			mindbenderAudioCueFrame:SetScript("OnUpdate", nil);
 		end
 		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate); end);
 		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT");
