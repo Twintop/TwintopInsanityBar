@@ -335,18 +335,113 @@ local function UpdateSettingsForNewVersion()
 	end
 end
 
+local function RepositionInsanityFrameThreshold()
+	insanityFrame.threshold:SetPoint("CENTER", insanityFrame, "LEFT", ((settings.bar.width-(settings.bar.border*2)) * (characterData.voidformThreshold / characterData.maxInsanity)), 0);
+end
+
+local function CheckCharacter()
+	characterData.guid = UnitGUID("player");
+	characterData.maxInsanity = UnitPowerMax("player", SPELL_POWER_INSANITY);
+	characterData.specGroup = GetActiveSpecGroup();
+	characterData.talents.fotm.isSelected = select(4, GetTalentInfo(1, 2, characterData.specGroup));
+	characterData.talents.lotv.isSelected = select(4, GetTalentInfo(7, 1, characterData.specGroup));
+	characterData.talents.as.isSelected = select(4, GetTalentInfo(5, 2, characterData.specGroup));
+	characterData.talents.mindbender.isSelected = select(4, GetTalentInfo(6, 3, characterData.specGroup));
+		
+	spells.s2m.name = select(2, GetTalentInfo(7, 3, characterData.specGroup));
+	spells.powerInfusion.name = select(2, GetTalentInfo(6, 1, characterData.specGroup));
+	spells.mindbender.name = select(2, GetTalentInfo(6, 3, characterData.specGroup));
+
+	insanityFrame:SetMinMaxValues(0, characterData.maxInsanity);
+	castingFrame:SetMinMaxValues(0, characterData.maxInsanity);	
+	passiveFrame:SetMinMaxValues(0, characterData.maxInsanity);	
+		
+	if characterData.talents.lotv.isSelected then
+		characterData.voidformThreshold = 65;
+	else
+		characterData.voidformThreshold = 100;
+	end
+	
+	if characterData.voidformThreshold < characterData.maxInsanity then
+		insanityFrame.threshold:Show();
+		RepositionInsanityFrameThreshold();
+	else
+		insanityFrame.threshold:Hide();
+	end
+	
+	local t20Head = 0;
+	if IsEquippedItem(147165) then
+		t20Head = 1;
+	end
+	
+	local t20Shoulder = 0;
+	if IsEquippedItem(147168) then
+		t20Shoulder = 1;
+	end
+	
+	local t20Back = 0;
+	if IsEquippedItem(147163) then
+		t20Back = 1;
+	end
+	
+	local t20Chest = 0;
+	if IsEquippedItem(147167) then
+		t20Chest = 1;
+	end
+	
+	local t20Hands = 0;
+	if IsEquippedItem(147164) then
+		t20Hands = 1;
+	end
+	
+	local t20Legs = 0;
+	if IsEquippedItem(147166) then
+		t20Legs = 1;
+	end
+	
+	characterData.items.t20Pieces = t20Head + t20Shoulder + t20Back + t20Chest + t20Hands + t20Legs;
+end
+
+local function EventRegistration()
+	if GetSpecialization() == 3 then
+		CheckCharacter();
+		
+		if settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected then
+			asTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) asTimerFrame:onUpdate(sinceLastUpdate); end);
+		else
+			asTimerFrame:SetScript("OnUpdate", nil);
+		end
+		
+		if settings.mindbender.useNotification.enabled and characterData.talents.mindbender.isSelected then
+			mindbenderAudioCueFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) mindbenderAudioCueFrame:onUpdate(sinceLastUpdate); end);
+		else
+			mindbenderAudioCueFrame:SetScript("OnUpdate", nil);
+		end
+		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate); end);
+		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT");
+		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED");
+		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED");
+		addonData.registered = true;
+	else
+		asTimerFrame:SetScript("OnUpdate", nil);
+		mindbenderAudioCueFrame:SetScript("OnUpdate", nil);
+		timerFrame:SetScript("OnUpdate", nil);			
+		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT");
+		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED");
+		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED");
+		addonData.registered = false;			
+		barContainerFrame:Hide();
+	end	
+end
+
 local function ShowInsanityBar()
 	if addonData.registered == false then
 		EventRegistration();
 	end
 
 	barContainerFrame:Show();	
-	insanityFrame:Show();
-	castingFrame:Show();
-	passiveFrame:Show();		
-	leftTextFrame.font:Show();
-	middleTextFrame.font:Show();
-	rightTextFrame.font:Show();
 end
 
 local function HideInsanityBar()
@@ -357,14 +452,8 @@ local function HideInsanityBar()
 			(not settings.displayBar.notZeroShow) or
 			(settings.displayBar.notZeroShow and snapshotData.insanity == 0))) then
 		barContainerFrame:Hide();	
-		insanityFrame:Hide();
-		castingFrame:Hide();
-		passiveFrame:Hide();		
-		leftTextFrame.font:Hide();
-		middleTextFrame.font:Hide();
-		rightTextFrame.font:Hide();
 	else
-		ShowInsanityBar();
+		barContainerFrame:Show();	
 	end
 end
 
@@ -672,10 +761,6 @@ local function BuildSlider(parent, title, minValue, maxValue, defaultValue, step
 	return f;
 end
 
-local function RepositionInsanityFrameThreshold()
-	insanityFrame.threshold:SetPoint("CENTER", insanityFrame, "LEFT", ((settings.bar.width-(settings.bar.border*2)) * (characterData.voidformThreshold / characterData.maxInsanity)), 0);
-end
-
 local function ConvertColorDecimalToHex(r, g, b, a)
 	local _r, _g, _b, _a;
 
@@ -875,7 +960,7 @@ local function ConstructOptionsPanel()
 	end);
 
 	title = "Bar Height";
-	controls.height = BuildSlider(parent, title, minHeight, maxHeight, settings.bar.height, 1, 0,
+	controls.height = BuildSlider(parent, title, settings.bar.border*4 + 1, maxHeight, settings.bar.height, 1, 0,
 									barWidth, barHeight, xCoord2, yCoord);
 	controls.height:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues();
@@ -2338,69 +2423,6 @@ local function ResetVoidformSnapshotData()
 	snapshotData.voidform.dispersion.startTime = nil;
 end
 
-local function CheckCharacter()
-	characterData.guid = UnitGUID("player");
-	characterData.maxInsanity = UnitPowerMax("player", SPELL_POWER_INSANITY);
-	characterData.specGroup = GetActiveSpecGroup();
-	characterData.talents.fotm.isSelected = select(4, GetTalentInfo(1, 2, characterData.specGroup));
-	characterData.talents.lotv.isSelected = select(4, GetTalentInfo(7, 1, characterData.specGroup));
-	characterData.talents.as.isSelected = select(4, GetTalentInfo(5, 2, characterData.specGroup));
-	characterData.talents.mindbender.isSelected = select(4, GetTalentInfo(6, 3, characterData.specGroup));
-		
-	spells.s2m.name = select(2, GetTalentInfo(7, 3, characterData.specGroup));
-	spells.powerInfusion.name = select(2, GetTalentInfo(6, 1, characterData.specGroup));
-	spells.mindbender.name = select(2, GetTalentInfo(6, 3, characterData.specGroup));
-
-	insanityFrame:SetMinMaxValues(0, characterData.maxInsanity);
-	castingFrame:SetMinMaxValues(0, characterData.maxInsanity);	
-	passiveFrame:SetMinMaxValues(0, characterData.maxInsanity);	
-		
-	if characterData.talents.lotv.isSelected then
-		characterData.voidformThreshold = 65;
-	else
-		characterData.voidformThreshold = 100;
-	end
-	
-	if characterData.voidformThreshold < characterData.maxInsanity then
-		insanityFrame.threshold:Show();
-		RepositionInsanityFrameThreshold();
-	else
-		insanityFrame.threshold:Hide();
-	end
-	
-	local t20Head = 0;
-	if IsEquippedItem(147165) then
-		t20Head = 1;
-	end
-	
-	local t20Shoulder = 0;
-	if IsEquippedItem(147168) then
-		t20Shoulder = 1;
-	end
-	
-	local t20Back = 0;
-	if IsEquippedItem(147163) then
-		t20Back = 1;
-	end
-	
-	local t20Chest = 0;
-	if IsEquippedItem(147167) then
-		t20Chest = 1;
-	end
-	
-	local t20Hands = 0;
-	if IsEquippedItem(147164) then
-		t20Hands = 1;
-	end
-	
-	local t20Legs = 0;
-	if IsEquippedItem(147166) then
-		t20Legs = 1;
-	end
-	
-	characterData.items.t20Pieces = t20Head + t20Shoulder + t20Back + t20Chest + t20Hands + t20Legs;
-end
-
 local function PrintVoidformSummary(isS2M)
 	local currentTime = GetTime();
 	print("--------------------------");
@@ -2677,40 +2699,6 @@ combatFrame:SetScript("OnEvent", function(self, event, ...)
 	end
 end);
 
-local function EventRegistration()
-	if GetSpecialization() == 3 then
-		CheckCharacter();
-		
-		if settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected then
-			asTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) asTimerFrame:onUpdate(sinceLastUpdate); end);
-		else
-			asTimerFrame:SetScript("OnUpdate", nil);
-		end
-		
-		if settings.mindbender.useNotification.enabled and characterData.talents.mindbender.isSelected then
-			mindbenderAudioCueFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) mindbenderAudioCueFrame:onUpdate(sinceLastUpdate); end);
-		else
-			mindbenderAudioCueFrame:SetScript("OnUpdate", nil);
-		end
-		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate); end);
-		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT");
-		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
-		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED");
-		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED");
-		addonData.registered = true;
-	else
-		asTimerFrame:SetScript("OnUpdate", nil);
-		mindbenderAudioCueFrame:SetScript("OnUpdate", nil);
-		timerFrame:SetScript("OnUpdate", nil);			
-		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT");
-		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
-		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED");
-		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED");
-		addonData.registered = false;
-	end	
-	HideInsanityBar();
-end
-
 insanityFrame:RegisterEvent("ADDON_LOADED");
 insanityFrame:RegisterEvent("PLAYER_TALENT_UPDATE");
 insanityFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
@@ -2740,7 +2728,8 @@ insanityFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 		end
 				
 		if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
-			EventRegistration();
+			EventRegistration();			
+			barContainerFrame:Hide();
 		end
 	end
 end);
