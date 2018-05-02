@@ -1,7 +1,7 @@
 ## Interface: 80000
 ## Title: Twintop's Insanity Bar
 ## Author: Twintop
-## Version: 8.0.1.0
+## Version: 8.0.1.1
 ## SavedVariables: TwintopInsanityBarSettings
 ## DefaultState: enabled
 ## Notes: Insanity Bar for Shadow Priests, based on my (Twintop's) previous Legion WeakAura set. 
