@@ -320,6 +320,7 @@ local function LoadDefaultSettings()
 			}
 		},
 		textures={
+			background="Interface\\Tooltips\\UI-Tooltip-Background",
 			border="Interface\\Tooltips\\UI-Tooltip-Border",
 			bar="Interface\\TargetingFrame\\UI-StatusBar"
 		}
@@ -496,7 +497,7 @@ end
 
 local function ConstructInsanityBar()
 	barContainerFrame:Show()
-	barContainerFrame:SetBackdrop({edgeFile = settings.textures.border, tile = true, tileSize=4, edgeSize=settings.bar.border*4})
+	barContainerFrame:SetBackdrop({ bgFile = settings.textures.background, edgeFile = settings.textures.border, tile = true, tileSize=8, edgeSize=8, insets = { left = 2, right = 2, top = 2, bottom = 2 }});
 	barContainerFrame:ClearAllPoints()
 	barContainerFrame:SetPoint("CENTER", UIParent)
 	barContainerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
