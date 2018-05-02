@@ -1961,8 +1961,9 @@ local function InsanityDrain(stacks)
 end
 
 local function RemainingTimeAndStackCount()
-    local currentTime = GetTime()
-    local _, _, _, _, _, snapshotData.voidform.duration, _, _, _, _, snapshotData.voidform.spellId = UnitBuff("player",GetSpellInfo(spells.voidform.id))
+	local currentTime = GetTime()
+	local _
+	_, _, _, _, _, snapshotData.voidform.duration, _, _, _, _, snapshotData.voidform.spellId = UnitBuff("player",GetSpellInfo(spells.voidform.id))
     	
     if snapshotData.voidform.spellId == nil then		
 		snapshotData.voidform.totalStacks = 0
