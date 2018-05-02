@@ -516,7 +516,7 @@ local function ShowInsanityBar()
 end
 
 local function HideInsanityBar()
-	affectingCombat = UnitAffectingCombat("player");
+	local affectingCombat = UnitAffectingCombat("player");
 
 	if (not affectingCombat) and (
 		(not settings.displayBar.alwaysShow) and (
@@ -873,7 +873,7 @@ local function ShowColorPicker(r, g, b, a, callback)
 end
 
 local function BuildColorPicker(parent, description, settingsEntry, sizeTotal, sizeFrame, posX, posY)
-	f = CreateFrame("Button", nil, parent);
+	local f = CreateFrame("Button", nil, parent);
 	f:SetSize(sizeFrame, sizeFrame);
 	f:SetPoint("TOPLEFT", posX, posY);
 	f:SetBackdrop({edgeFile = settings.textures.border, tile = true, tileSize=4, edgeSize=12});
@@ -2033,6 +2033,7 @@ end
 
 local function RemainingTimeAndStackCount()
     local currentTime = GetTime();
+    local _
 	_, _, _, _, snapshotData.voidform.duration, _, _, _, _, snapshotData.voidform.spellId = FindBuffById(spells.voidform.id);
     	
     if snapshotData.voidform.spellId == nil then		
@@ -2202,7 +2203,7 @@ local function BarTextRight()
 	local castingInsanityString = "0";
 	local returnString = "";
 	
-	passiveInsanityString = string.format("%.0f", passiveInsanity);
+	local passiveInsanityString = string.format("%.0f", passiveInsanity);
 	
     if characterData.talents.fotm.isSelected or math.floor(snapshotData.casting.insanityFinal) ~= snapshotData.casting.insanityFinal then        
         if (snapshotData.casting.insanityFinal > 0 and settings.displayText.right.castingInsanity) and (passiveInsanity > 0 and settings.displayText.right.passiveInsanity) then            
@@ -2266,7 +2267,7 @@ local function CastingSpell()
 			local spellName = select(1, currentSpell);
 			if spellName == spells.mindBlast.name then
 				local t20p2 = GetSpellInfo(247226);
-				t20p2Stacks = select(3, FindBuffById(247226));  
+				local t20p2Stacks = select(3, FindBuffById(247226));  
 				if t20p2Stacks == nil then
 					t20p2Stacks = 0;
 				end
@@ -2415,7 +2416,7 @@ local function UpdateSnapshot()
 	spells.s2m.isActive = select(10, FindBuffById(spells.s2m.id));
 	spells.s2m.isDebuffActive = select(10, FindDebuffById(spells.s2m.debuffId));
 	snapshotData.haste = UnitSpellHaste("player");
-	snapshotData.insanity = UnitPower("player", SPELL_POWER_INSANITY, forceUpdate);
+	snapshotData.insanity = UnitPower("player", SPELL_POWER_INSANITY);
 	LingeringInsanityValues();
 	UpdateMindbenderValues();
 end
@@ -2591,7 +2592,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	if event == "UNIT_POWER_FREQUENT" then	
 		local unit, unitPowerType = ...
 		if unit == "player" and unitPowerType == "INSANITY" then
-			snapshotData.insanity = UnitPower("player", SPELL_POWER_INSANITY, forceUpdate);
+			snapshotData.insanity = UnitPower("player", SPELL_POWER_INSANITY);
       
 			if snapshotData.voidform.totalStacks >= 100 then --When above 100 stacks there are no longer combat log events for Voidform stacks, need to do a manual check instead			
 				if (currentTime - snapshotData.voidform.previousStackTime) >= 1 then					
@@ -2820,7 +2821,7 @@ insanityFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 		if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
 			EventRegistration();		
 				
-			affectingCombat = UnitAffectingCombat("player");
+			local affectingCombat = UnitAffectingCombat("player");
 
 			if (not affectingCombat) and (
 				(not settings.displayBar.alwaysShow) and (
