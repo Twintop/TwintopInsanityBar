@@ -2821,7 +2821,7 @@ insanityFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 		if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
 			EventRegistration();		
 				
-			affectingCombat = UnitAffectingCombat("player");
+			local affectingCombat = UnitAffectingCombat("player");
 
 			if (not affectingCombat) and (
 				(not settings.displayBar.alwaysShow) and (
