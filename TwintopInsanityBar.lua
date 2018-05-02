@@ -516,7 +516,7 @@ local function ShowInsanityBar()
 end
 
 local function HideInsanityBar()
-	affectingCombat = UnitAffectingCombat("player");
+	local affectingCombat = UnitAffectingCombat("player");
 
 	if (not affectingCombat) and (
 		(not settings.displayBar.alwaysShow) and (
@@ -873,7 +873,7 @@ local function ShowColorPicker(r, g, b, a, callback)
 end
 
 local function BuildColorPicker(parent, description, settingsEntry, sizeTotal, sizeFrame, posX, posY)
-	f = CreateFrame("Button", nil, parent);
+	local f = CreateFrame("Button", nil, parent);
 	f:SetSize(sizeFrame, sizeFrame);
 	f:SetPoint("TOPLEFT", posX, posY);
 	f:SetBackdrop({edgeFile = settings.textures.border, tile = true, tileSize=4, edgeSize=12});
@@ -2033,6 +2033,7 @@ end
 
 local function RemainingTimeAndStackCount()
     local currentTime = GetTime();
+    local _
 	_, _, _, _, snapshotData.voidform.duration, _, _, _, _, snapshotData.voidform.spellId = FindBuffById(spells.voidform.id);
     	
     if snapshotData.voidform.spellId == nil then		
@@ -2202,7 +2203,7 @@ local function BarTextRight()
 	local castingInsanityString = "0";
 	local returnString = "";
 	
-	passiveInsanityString = string.format("%.0f", passiveInsanity);
+	local passiveInsanityString = string.format("%.0f", passiveInsanity);
 	
     if characterData.talents.fotm.isSelected or math.floor(snapshotData.casting.insanityFinal) ~= snapshotData.casting.insanityFinal then        
         if (snapshotData.casting.insanityFinal > 0 and settings.displayText.right.castingInsanity) and (passiveInsanity > 0 and settings.displayText.right.passiveInsanity) then            
@@ -2266,7 +2267,7 @@ local function CastingSpell()
 			local spellName = select(1, currentSpell);
 			if spellName == spells.mindBlast.name then
 				local t20p2 = GetSpellInfo(247226);
-				t20p2Stacks = select(3, FindBuffById(247226));  
+				local t20p2Stacks = select(3, FindBuffById(247226));  
 				if t20p2Stacks == nil then
 					t20p2Stacks = 0;
 				end
