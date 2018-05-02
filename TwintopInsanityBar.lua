@@ -32,7 +32,7 @@ local settings = nil;
 local characterData = {
 	guid = UnitGUID("player"),
 	maxInsanity = 100,
-	voidformThreshold = 100,
+	voidformThreshold = 90,
 	specGroup = GetActiveSpecGroup(),
 	talents = {
 		fotm = {
@@ -59,7 +59,8 @@ local spells = {
 		id = 194249
 	},
 	voidTorrent = {
-		id = 205065
+		--id = 205065
+		id = 263165
 	},
 	dispersion = {
 		id = 47585
@@ -67,14 +68,18 @@ local spells = {
 	s2m = {
 		name = select(2, GetTalentInfo(7, 3, characterData.specGroup)),
 		isActive = false,
+		isDebuffActive = false,
 		modifier = 2.0,
-		id = 212570
+		modifierDebuff = 0.0,
+		--id = 212570
+		id = 193223,
+		debuffId = 263406
 	},
-	powerInfusion = {
-		name = select(2, GetTalentInfo(6, 1, characterData.specGroup)),
-		isActive = false,
-		modifier = 1.25,
-		id = 10060
+	darkVoid = {
+		name = select(2, GetTalentInfo(3, 3, characterData.specGroup)),
+		insanity = 30,
+		id = 263346,
+		fotm = false
 	},
 	vampiricTouch = {
 		id = 34914,
@@ -85,13 +90,13 @@ local spells = {
 	mindBlast = {
 		id = 8092,
 		name = "",
-		insanity = 15,
+		insanity = 12,
 		fotm = true
 	},
 	shadowWordVoid = {
 		id = 205351,
 		name = "",
-		insanity = 25,
+		insanity = 15,
 		fotm = false
 	},
 	mindFlay = {
@@ -100,25 +105,40 @@ local spells = {
 		insanity = 3,
 		fotm = true
 	},
+	mindSear = {
+		id = 48045,
+		name = "",
+		insanity = 3 * 1.25, --Need to figure out a better value here.
+		fotm = false
+	},
+	shadowfiend = {
+		id = 34433,
+		name = "",
+		insanity = 3
+	},
 	mindbender = {
 		id = 34433,
-		name = select(2, GetTalentInfo(6, 3, characterData.specGroup)),
-		insanity = 8
+		name = select(2, GetTalentInfo(6, 2, characterData.specGroup)),
+		insanity = 6
 	},
 	lingeringInsanity = {
-		id = 197937
+		id = 197937,
+		name = ""
 	},
 	auspiciousSpirits = {
 		idSpawn = 147193,
 		idImpact = 148859,
-		insanity = 3
+		insanity = 2
 	}
 };
 
 spells.mindBlast.name = select(1, GetSpellInfo(spells.mindBlast.id));
 spells.mindFlay.name = select(1, GetSpellInfo(spells.mindFlay.id));
+spells.mindSear.name = select(1, GetSpellInfo(spells.mindSear.id));
+spells.shadowfiend.name = select(1, GetSpellInfo(spells.shadowfiend.id));
 spells.shadowWordVoid.name = select(1, GetSpellInfo(spells.shadowWordVoid.id));
 spells.vampiricTouch.name = select(1, GetSpellInfo(spells.vampiricTouch.id));
+spells.lingeringInsanity.name = select(1, GetSpellInfo(spells.lingeringInsanity.id));
 
 local snapshotData = {
 	insanity = 0,
@@ -184,6 +204,52 @@ local addonData = {
 	loaded = false,
 	registered = false
 };
+
+local function FindBuffByName(spellName)
+	for i = 1, 40 do
+		local unitSpellName = UnitBuff("player", i);
+		if not unitSpellName then
+			return;
+		elseif spellName == unitSpellName then
+			return UnitBuff("player", i);
+		end
+	end
+end
+
+local function FindBuffById(spellId)
+	for i = 1, 40 do
+		local unitSpellId = select(10, UnitBuff("player", i));
+		if not unitSpellId then
+			return;
+		elseif spellId == unitSpellId then
+			return UnitBuff("player", i);
+		end
+	end
+end
+
+local function FindDebuffByName(spellName)
+	for i = 1, 40 do
+		local unitSpellName = UnitDebuff("player", i);
+		if not unitSpellName then
+			return;
+		elseif spellName == unitSpellName then
+			return UnitDebuff("player", i);
+		end
+	end
+end
+
+local function FindDebuffById(spellId)
+	for i = 1, 40 do
+		local unitSpellId = select(10, UnitDebuff("player", i));
+		if not unitSpellId then
+			return;
+		elseif spellId == unitSpellId then
+			print("Found", spellId);
+			return UnitDebuff("player", i);
+		end
+	end
+end
+
 
 local function RoundTo(num, numDecimalPlaces)
 	return tonumber(string.format("%." .. (numDecimalPlaces or 0) .. "f", num))
@@ -255,7 +321,7 @@ local function LoadDefaultSettings()
 			useNotification = {
 				enabled=false,
 				useVoidformStacks=false, --If true, use VF stacks instead of Drain stacks
-				thresholdStacks=26
+				thresholdStacks=10
 			}
 		},
 		colors={
@@ -343,23 +409,23 @@ local function CheckCharacter()
 	characterData.guid = UnitGUID("player");
 	characterData.maxInsanity = UnitPowerMax("player", SPELL_POWER_INSANITY);
 	characterData.specGroup = GetActiveSpecGroup();
-	characterData.talents.fotm.isSelected = select(4, GetTalentInfo(1, 2, characterData.specGroup));
+	characterData.talents.fotm.isSelected = select(4, GetTalentInfo(1, 1, characterData.specGroup));
 	characterData.talents.lotv.isSelected = select(4, GetTalentInfo(7, 1, characterData.specGroup));
-	characterData.talents.as.isSelected = select(4, GetTalentInfo(5, 2, characterData.specGroup));
-	characterData.talents.mindbender.isSelected = select(4, GetTalentInfo(6, 3, characterData.specGroup));
+	characterData.talents.as.isSelected = select(4, GetTalentInfo(5, 1, characterData.specGroup));
+	characterData.talents.mindbender.isSelected = select(4, GetTalentInfo(6, 2, characterData.specGroup));
 		
 	spells.s2m.name = select(2, GetTalentInfo(7, 3, characterData.specGroup));
-	spells.powerInfusion.name = select(2, GetTalentInfo(6, 1, characterData.specGroup));
 	spells.mindbender.name = select(2, GetTalentInfo(6, 3, characterData.specGroup));
+	spells.darkVoid.name = select(2, GetTalentInfo(3, 3, characterData.specGroup));
 
 	insanityFrame:SetMinMaxValues(0, characterData.maxInsanity);
 	castingFrame:SetMinMaxValues(0, characterData.maxInsanity);	
 	passiveFrame:SetMinMaxValues(0, characterData.maxInsanity);	
 		
 	if characterData.talents.lotv.isSelected then
-		characterData.voidformThreshold = 65;
+		characterData.voidformThreshold = 60;
 	else
-		characterData.voidformThreshold = 100;
+		characterData.voidformThreshold = 90;
 	end
 	
 	if characterData.voidformThreshold < characterData.maxInsanity then
@@ -412,7 +478,7 @@ local function EventRegistration()
 			asTimerFrame:SetScript("OnUpdate", nil);
 		end
 		
-		if settings.mindbender.useNotification.enabled and characterData.talents.mindbender.isSelected then
+		if settings.mindbender.useNotification.enabled then
 			mindbenderAudioCueFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) mindbenderAudioCueFrame:onUpdate(sinceLastUpdate); end);
 		else
 			mindbenderAudioCueFrame:SetScript("OnUpdate", nil);
@@ -441,7 +507,12 @@ local function ShowInsanityBar()
 		EventRegistration();
 	end
 
-	barContainerFrame:Show();	
+	barContainerFrame:Show();
+	--insanityFrame:Hide();
+	--passiveFrame:Hide();
+	--leftTextFrame:Hide();
+	--middleTextFrame:Hide();
+	--rightTextFrame:Hide();	
 end
 
 local function HideInsanityBar()
@@ -1692,7 +1763,7 @@ local function ConstructOptionsPanel()
 	f = controls.checkBoxes.s2mDeath;
 	f:SetPoint("TOPLEFT", xCoord2, yCoord);
 	getglobal(f:GetName() .. 'Text'):SetText("Play Wilhelm Scream when S2M Ends");
-	f.tooltip = "When you die, horribly, after Surrender to Madness ends, play the infamous Wilhelm Scream to make you feel a bit better.";
+	f.tooltip = "When you (almost) die, horribly, after Surrender to Madness ends, play the infamous Wilhelm Scream to make you feel a bit better.";
 	f:SetChecked(settings.audio.s2mDeath.enabled);
 	f:SetScript("OnClick", function(self, ...)
 		settings.audio.s2mDeath.enabled = self:GetChecked();
@@ -1709,6 +1780,7 @@ local function ConstructOptionsPanel()
 		settings.showSummary = self:GetChecked();
 	end);
 
+	--[[
 	controls.checkBoxes.showS2MSummary = CreateFrame("CheckButton", "TIBCB3_4", parent, "ChatConfigCheckButtonTemplate");
 	f = controls.checkBoxes.showS2MSummary;
 	f:SetPoint("TOPLEFT", xCoord2, yCoord);
@@ -1718,9 +1790,10 @@ local function ConstructOptionsPanel()
 	f:SetScript("OnClick", function(self, ...)
 		settings.showS2MSummary = self:GetChecked();
 	end);
+	]]--
 
 	yCoord = yCoord - yOffset3;
-	controls.colors.passive = BuildColorPicker(parent, "Insanity from Auspicious Spirits and Mindbender swings", settings.colors.bar.passive, 250, 25, xCoord+xPadding*2, yCoord);
+	controls.colors.passive = BuildColorPicker(parent, "Insanity from Auspicious Spirits and Shadowfiend swings", settings.colors.bar.passive, 250, 25, xCoord+xPadding*2, yCoord);
 	f = controls.colors.passive;
 	f.recolorTexture = function(color)
 		local r, g, b, a;
@@ -1766,20 +1839,20 @@ local function ConstructOptionsPanel()
 	end);
 
 	yCoord = yCoord - yOffset2;
-	controls.textSection = BuildSectionHeader(parent, "Mindbender Tracking", xCoord+xPadding, yCoord);
+	controls.textSection = BuildSectionHeader(parent, "Shadowfiend (+ Mindbender) Tracking", xCoord+xPadding, yCoord);
 
 	yCoord = yCoord - yOffset2;	
 	controls.checkBoxes.mindbender = CreateFrame("CheckButton", "TIBCB3_6", parent, "ChatConfigCheckButtonTemplate");
 	f = controls.checkBoxes.mindbender;
 	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord);
-	getglobal(f:GetName() .. 'Text'):SetText("Track Mindbender Insanity Gain");
+	getglobal(f:GetName() .. 'Text'):SetText("Track Shadowfiend Insanity Gain");
 	f.tooltip = "Show the gain of Insanity over the next serveral swings, GCDs, or fixed length of time. Select which to track from the options below.";
 	f:SetChecked(settings.mindbender.enabled);
 	f:SetScript("OnClick", function(self, ...)
 		settings.mindbender.enabled = self:GetChecked();
 	end);
 
-	controls.colors.mindbenderThreshold = BuildColorPicker(parent, "Mindbender Insanity Gain Threshold Line", settings.colors.bar.passive, 250, 25, xCoord2, yCoord);
+	controls.colors.mindbenderThreshold = BuildColorPicker(parent, "Shadowfiend Insanity Gain Threshold Line", settings.colors.bar.passive, 250, 25, xCoord2, yCoord);
 	f = controls.colors.mindbenderThreshold;
 	f.recolorTexture = function(color)
 		local r, g, b, a;
@@ -1818,7 +1891,7 @@ local function ConstructOptionsPanel()
 		settings.mindbender.mode = "gcd";
 	end);
 
-	title = "Mindbender GCDs - 0.75sec Floor";
+	title = "Shadowfiend GCDs - 0.75sec Floor";
 	controls.mindbenderGCDs = BuildSlider(parent, title, 1, 10, settings.mindbender.gcdsMax, 1, 0,
 									barWidth, barHeight, xCoord2, yCoord);
 	controls.mindbenderGCDs:SetScript("OnValueChanged", function(self, value)
@@ -1840,7 +1913,7 @@ local function ConstructOptionsPanel()
 	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord);
 	getglobal(f:GetName() .. 'Text'):SetText("Insanity from Swings remaining");
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight);
-	f.tooltip = "Shows the amount of Insanity incoming over the up to next X melee swings from Mindbender. This is only different from the GCD option if you are above 200% haste (GCD cap).";
+	f.tooltip = "Shows the amount of Insanity incoming over the up to next X melee swings from Shadowfiend/Mindbender. This is only different from the GCD option if you are above 200% haste (GCD cap).";
 	if settings.mindbender.mode == "swing" then
 		f:SetChecked(true);
 	end
@@ -1851,7 +1924,7 @@ local function ConstructOptionsPanel()
 		settings.mindbender.mode = "swing";
 	end);
 
-	title = "Mindbender Swings - No Floor";
+	title = "Shadowfiend Swings - No Floor";
 	controls.mindbenderSwings = BuildSlider(parent, title, 1, 10, settings.mindbender.swingsMax, 1, 0,
 									barWidth, barHeight, xCoord2, yCoord);
 	controls.mindbenderSwings:SetScript("OnValueChanged", function(self, value)
@@ -1883,7 +1956,7 @@ local function ConstructOptionsPanel()
 		settings.mindbender.mode = "time";
 	end);
 
-	title = "Mindbender Time Remaining";
+	title = "Shadowfiend Time Remaining";
 	controls.mindbenderTime = BuildSlider(parent, title, 0, 15, settings.mindbender.timeMax, 0.25, 2,
 									barWidth, barHeight, xCoord2, yCoord);
 	controls.mindbenderTime:SetScript("OnValueChanged", function(self, value)
@@ -1904,8 +1977,8 @@ local function ConstructOptionsPanel()
 	controls.checkBoxes.mindbenderAudio = CreateFrame("CheckButton", "TIBCB3_10", parent, "ChatConfigCheckButtonTemplate");
 	f = controls.checkBoxes.mindbenderAudio;
 	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord);
-	getglobal(f:GetName() .. 'Text'):SetText("Play Audio Cue to use Mindbender");
-	f.tooltip = "Plays an audio cue when in Voidform, Mindbender is offcooldown, and the number of Drain Stacks is above a certain threshold.";
+	getglobal(f:GetName() .. 'Text'):SetText("Play Audio Cue to use Shadowfiend");
+	f.tooltip = "Plays an audio cue when in Voidform, Shadowfiend/Mindbender is offcooldown, and the number of Drain Stacks is above a certain threshold.";
 	f:SetChecked(settings.mindbender.useNotification.enabled);
 	f:SetScript("OnClick", function(self, ...)
 		settings.mindbender.useNotification.enabled = self:GetChecked();
@@ -1955,12 +2028,12 @@ local function InsanityDrain(stacks)
         end
     end    
     
-    return (6.0 + ((stacks - 1) * (2 / 3))) * pct;
+    return (6.0 + ((stacks - 1) * 0.92)) * pct;
 end
 
 local function RemainingTimeAndStackCount()
     local currentTime = GetTime();
-    _, _, _, _, _, snapshotData.voidform.duration, _, _, _, _, snapshotData.voidform.spellId = UnitBuff("player",GetSpellInfo(spells.voidform.id));
+	_, _, _, _, snapshotData.voidform.duration, _, _, _, _, snapshotData.voidform.spellId = FindBuffById(spells.voidform.id);
     	
     if snapshotData.voidform.spellId == nil then		
 		snapshotData.voidform.totalStacks = 0;
@@ -2024,12 +2097,13 @@ local function CalculateInsanityGain(insanity, fotm)
 		modifier = modifier * characterData.talents.fotm.modifier;
 	end
 	
-	if spells.powerInfusion.isActive then
-		modifier = modifier * spells.powerInfusion.modifier;
-	end
-	
+	--TODO: Add check for S2M debuff and make incoming insanity gain 0 while up
 	if spells.s2m.isActive then
 		modifier = modifier * spells.s2m.modifier;
+	end
+
+	if spells.s2m.isDebuffActive then
+		modifier = modifier * spells.s2m.modifierDebuff;
 	end
 	
 	return insanity * modifier;	
@@ -2125,16 +2199,12 @@ end
 
 local function BarTextRight()    
     local passiveInsanity = (CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.auspiciousSpirits.total) + snapshotData.mindbender.insanityFinal;
-	local passiveInsanityString = "0";
+	local castingInsanityString = "0";
 	local returnString = "";
 	
-	if spells.powerInfusion.isActive then
-		passiveInsanityString = string.format("%.2f", passiveInsanity);
-	else
-		passiveInsanityString = string.format("%.0f", passiveInsanity);
-	end
+	passiveInsanityString = string.format("%.0f", passiveInsanity);
 	
-    if characterData.talents.fotm.isSelected or spells.powerInfusion.isActive then        
+    if characterData.talents.fotm.isSelected or math.floor(snapshotData.casting.insanityFinal) ~= snapshotData.casting.insanityFinal then        
         if (snapshotData.casting.insanityFinal > 0 and settings.displayText.right.castingInsanity) and (passiveInsanity > 0 and settings.displayText.right.passiveInsanity) then            
             returnString = string.format("|c%s%.2f|r + |c%s%s|r", settings.colors.text.castingInsanity, snapshotData.casting.insanityFinal, settings.colors.text.passiveInsanity, passiveInsanityString);
         elseif (snapshotData.casting.insanityFinal > 0 and settings.displayText.right.castingInsanity) then
@@ -2183,6 +2253,11 @@ local function CastingSpell()
 				snapshotData.casting.startTime = currentTime;
 				snapshotData.casting.insanityRaw = spells.mindFlay.insanity;
 				UpdateCastingInsanityFinal(spells.mindFlay.fotm);
+			elseif spellName == spells.mindSear.name then --TODO: Try to figure out total targets being hit
+				snapshotData.casting.spellId = spells.mindSear.id;
+				snapshotData.casting.startTime = currentTime;
+				snapshotData.casting.insanityRaw = spells.mindSear.insanity;
+				UpdateCastingInsanityFinal(spells.mindSear.fotm);
 			else
 				ResetCastingSnapshotData();
 				return false;
@@ -2191,7 +2266,7 @@ local function CastingSpell()
 			local spellName = select(1, currentSpell);
 			if spellName == spells.mindBlast.name then
 				local t20p2 = GetSpellInfo(247226);
-				t20p2Stacks = select(4, UnitBuff("player", select(1, t20p2)));  
+				t20p2Stacks = select(3, FindBuffById(247226));  
 				if t20p2Stacks == nil then
 					t20p2Stacks = 0;
 				end
@@ -2210,6 +2285,11 @@ local function CastingSpell()
 				snapshotData.casting.insanityRaw = spells.vampiricTouch.insanity;
 				snapshotData.casting.spellId = spells.vampiricTouch.id;
 				UpdateCastingInsanityFinal(spells.vampiricTouch.fotm);
+			elseif spellName == spells.darkVoid.name then
+				snapshotData.casting.startTime = currentTime;
+				snapshotData.casting.insanityRaw = spells.darkVoid.insanity;
+				snapshotData.casting.spellId = spells.darkVoid.id;
+				UpdateCastingInsanityFinal(spells.darkVoid.fotm);
 			else
 				ResetCastingSnapshotData();
 				return false;				
@@ -2220,8 +2300,8 @@ local function CastingSpell()
 end
 
 local function LingeringInsanityValues()
-	local currentTime = GetTime();
-	local _, _, _, liCount, _, liDuration, _, _, _, _, liSpellId = UnitBuff("player",GetSpellInfo(spells.lingeringInsanity.id));
+	local currentTime = GetTime();	
+	local _, _, liCount, _, liDuration, _, _, _, _, liSpellId = FindBuffById(spells.lingeringInsanity.id);
 	
 	if liCount ~= nil and liCount > 0 then
 		if snapshotData.lingeringInsanity.spellId == nil then
@@ -2233,13 +2313,15 @@ local function LingeringInsanityValues()
 		if snapshotData.lingeringInsanity.stacksLast ~= liCount then
 			snapshotData.lingeringInsanity.stacksLast = liCount;
 			snapshotData.lingeringInsanity.lastTickTime = currentTime;
-
+			snapshotData.lingeringInsanity.timeLeftBase = snapshotData.lingeringInsanity.stacksLast;
+			--[[ Keeping this here in case they change how the stacks on LI work.
 			local timeLeftBase = snapshotData.lingeringInsanity.stacksLast / 2;
 			
 			if mod(snapshotData.lingeringInsanity.stacksLast, 2) == 1 then
 				timeLeftBase = timeLeftBase + 0.5;
 			end
 			snapshotData.lingeringInsanity.timeLeftBase = timeLeftBase;	
+			]]--
 		end
 	else
 		snapshotData.lingeringInsanity.stacksTotal = 0;
@@ -2255,13 +2337,13 @@ local function UpdateMindbenderValues()
     local currentTime = GetTime();
     local haveTotem, name, startTime, duration, icon = GetTotemInfo(1);
 	local timeRemaining = startTime+duration-currentTime;
-    if settings.mindbender.enabled and characterData.talents.mindbender.isSelected and haveTotem and timeRemaining > 0 then
+    if settings.mindbender.enabled and haveTotem and timeRemaining > 0 then
 		snapshotData.mindbender.isActive = true;
 		if settings.mindbender.enabled then
 			local swingSpeed = 1.5 / (1 + (snapshotData.haste/100));		
 			if swingSpeed > 1.5 then
 				swingSpeed = 1.5;
-			end        
+			end
 			
 			local timeToNextSwing = swingSpeed - (currentTime - snapshotData.mindbender.swingTime);
 			
@@ -2308,8 +2390,13 @@ local function UpdateMindbenderValues()
 					countValue = snapshotData.mindbender.remaining.gcds;
 				end
 			end
-			snapshotData.mindbender.insanityRaw = countValue * spells.mindbender.insanity;
-			snapshotData.mindbender.insanityFinal = CalculateInsanityGain(countValue * spells.mindbender.insanity, false);
+
+			if characterData.talents.mindbender.isSelected then
+				snapshotData.mindbender.insanityRaw = countValue * spells.mindbender.insanity;
+			else
+				snapshotData.mindbender.insanityRaw = countValue * spells.shadowfiend.insanity;
+			end
+			snapshotData.mindbender.insanityFinal = CalculateInsanityGain(snapshotData.mindbender.insanityRaw, false);
 		end
 	else
 		snapshotData.mindbender.onCooldown = not (GetSpellCooldown(spells.mindbender.id) == 0);
@@ -2325,8 +2412,8 @@ local function UpdateMindbenderValues()
 end
 
 local function UpdateSnapshot()
-	spells.powerInfusion.isActive = select(11, UnitBuff("player", spells.powerInfusion.name));
-	spells.s2m.isActive = select(11, UnitBuff("player", spells.s2m.name));
+	spells.s2m.isActive = select(10, FindBuffById(spells.s2m.id));
+	spells.s2m.isDebuffActive = select(10, FindDebuffById(spells.s2m.debuffId));
 	snapshotData.haste = UnitSpellHaste("player");
 	snapshotData.insanity = UnitPower("player", SPELL_POWER_INSANITY, forceUpdate);
 	LingeringInsanityValues();
@@ -2525,12 +2612,15 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		triggerUpdate = true;
 	end
 	
-	local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = ... --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+		local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo(); --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
+
 		local s2mDeath = false;
 		
 		if destGUID == characterData.guid then
-			if settings.mindbender.enabled and characterData.talents.mindbender.isSelected and type == "SPELL_ENERGIZE" and sourceName == spells.mindbender.name then            
+			if settings.mindbender.enabled and type == "SPELL_ENERGIZE" and
+				((characterData.talents.mindbender.isSelected and sourceName == spells.mindbender.name) or 
+				 (not characterData.talents.mindbender.isSelected and sourceName == spells.shadowfiend.name)) then 
 				snapshotData.mindbender.swingTime = currentTime;
 			elseif (type == "SPELL_INSTAKILL" or type == "UNIT_DIED" or type == "UNIT_DESTROYED") then
 				if snapshotData.voidform.s2m.active then -- Surrender to Madness ended
