@@ -335,6 +335,17 @@ local function UpdateSettingsForNewVersion()
 	end
 end
 
+local function MergeSettings(settings, user)
+	for k, v in pairs(user) do
+        if (type(v) == "table") and (type(settings[k] or false) == "table") then
+            MergeSettings(settings[k], user[k])
+        else
+            settings[k] = v
+        end
+    end
+    return settings
+end
+
 local function RepositionInsanityFrameThreshold()
 	insanityFrame.threshold:SetPoint("CENTER", insanityFrame, "LEFT", ((settings.bar.width-(settings.bar.border*2)) * (characterData.voidformThreshold / characterData.maxInsanity)), 0);
 end
@@ -2712,11 +2723,9 @@ insanityFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 		if event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar" then
 			if not addonData.loaded then
 				addonData.loaded = true
-				settings = TwintopInsanityBarSettings;
-				if settings == nil then
-					LoadDefaultSettings();
-				else
-					UpdateSettingsForNewVersion();
+				LoadDefaultSettings()
+				if TwintopInsanityBarSettings then
+					settings = MergeSettings(settings,TwintopInsanityBarSettings)
 				end
 				ConstructInsanityBar();
 				ConstructOptionsPanel();
