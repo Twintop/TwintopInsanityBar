@@ -2728,8 +2728,16 @@ insanityFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 		end
 				
 		if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
-			EventRegistration();			
-			barContainerFrame:Hide();
+			EventRegistration();		
+				
+			affectingCombat = UnitAffectingCombat("player");
+
+			if (not affectingCombat) and (
+				(not settings.displayBar.alwaysShow) and (
+					(not settings.displayBar.notZeroShow) or
+					(settings.displayBar.notZeroShow and snapshotData.insanity == 0))) then	
+				barContainerFrame:Hide();
+			end
 		end
 	end
 end);
