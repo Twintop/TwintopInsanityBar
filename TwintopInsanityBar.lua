@@ -2065,7 +2065,7 @@ local function BarTextLeft()
 	end
 
 	if snapshotData.voidform.totalStacks > 0 then
-		if returnString ~= "" and settings.displayText.left.voidformIncomingStacks or settings.displayText.left.voidformStacks then
+		if returnString ~= "" and (settings.displayText.left.voidformIncomingStacks or settings.displayText.left.voidformStacks) then
 			returnString = returnString .. " - "
 		end
 
