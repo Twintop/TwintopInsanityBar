@@ -2,6 +2,7 @@ local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local passiveFrame = CreateFrame("StatusBar", nil, barContainerFrame)
+local barBorderFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 
 local leftTextFrame = CreateFrame("Frame", nil, barContainerFrame)
 local middleTextFrame = CreateFrame("Frame", nil, barContainerFrame)
@@ -271,6 +272,7 @@ local function LoadDefaultSettings()
 			},
 			bar={
 				border="FF431863",
+				background="66000000",
 				base="FF763BAF",
 				enterVoidform="FF5C2F89",
 				--enterVoidformFlash="FFAA1863",
@@ -497,14 +499,18 @@ end
 
 local function ConstructInsanityBar()
 	barContainerFrame:Show()
-	barContainerFrame:SetBackdrop({ bgFile = settings.textures.background, edgeFile = settings.textures.border, tile = true, tileSize=8, edgeSize=8, insets = { left = 2, right = 2, top = 2, bottom = 2 }});
+	barContainerFrame:SetBackdrop({ bgFile = settings.textures.background,									
+									tile = true,
+									tileSize=8,
+									edgeSize=0,
+									insets = {0, 0, 0, 0}
+									})
 	barContainerFrame:ClearAllPoints()
 	barContainerFrame:SetPoint("CENTER", UIParent)
 	barContainerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
-	barContainerFrame:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
-	barContainerFrame:SetBackdropColor(0, 0, 0, 1)
-	barContainerFrame:SetWidth(settings.bar.width)
-	barContainerFrame:SetHeight(settings.bar.height)
+	barContainerFrame:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))
+	barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
+	barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
 	barContainerFrame:SetFrameStrata("BACKGROUND")
 	barContainerFrame:SetFrameLevel(0)
 	
@@ -533,12 +539,34 @@ local function ConstructInsanityBar()
 			self.isMoving = false
 		end
 	end)
-	
+
+	barBorderFrame:Show()
+	if settings.bar.border < 1 then
+		barBorderFrame:SetBackdrop({ })
+	else
+		barBorderFrame:SetBackdrop({ edgeFile = settings.textures.border,
+									tile = true,
+									tileSize=4,
+									edgeSize=settings.bar.border*4,								
+									insets = {0, 0, 0, 0}
+									})
+	end
+	barBorderFrame:ClearAllPoints()
+	barBorderFrame:SetPoint("CENTER", barContainerFrame)
+	barBorderFrame:SetPoint("CENTER", 0, 0)
+	barBorderFrame:SetBackdropColor(0, 0, 0, 0)
+	barBorderFrame:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
+	barBorderFrame:SetWidth(settings.bar.width)
+	barBorderFrame:SetHeight(settings.bar.height)
+	barBorderFrame:SetFrameStrata("BACKGROUND")
+	barBorderFrame:SetFrameLevel(129)
+
+
 	insanityFrame:Show()
 	insanityFrame:SetMinMaxValues(0, 100)
 	insanityFrame:SetHeight(settings.bar.height-(settings.bar.border*2))	
-	insanityFrame:SetPoint("LEFT", barContainerFrame, "LEFT", settings.bar.border, 0)
-	insanityFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", -settings.bar.border, 0)
+	insanityFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
+	insanityFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
 	insanityFrame:SetStatusBarTexture(settings.textures.bar)
 	insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
 	insanityFrame:SetFrameStrata("BACKGROUND")
@@ -550,14 +578,14 @@ local function ConstructInsanityBar()
 	insanityFrame.threshold.texture:SetAllPoints(insanityFrame.threshold)
 	insanityFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
 	insanityFrame.threshold:SetFrameStrata("BACKGROUND")
-	insanityFrame.threshold:SetFrameLevel(500)
+	insanityFrame.threshold:SetFrameLevel(129)
 	insanityFrame.threshold:Show()
 	
 	castingFrame:Show()
 	castingFrame:SetMinMaxValues(0, 100)
 	castingFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-	castingFrame:SetPoint("LEFT", barContainerFrame, "LEFT", settings.bar.border, 0)
-	castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", -settings.bar.border, 0)
+	castingFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
+	castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
 	castingFrame:SetStatusBarTexture(settings.textures.bar)
 	castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting))
 	castingFrame:SetFrameStrata("BACKGROUND")
@@ -566,8 +594,8 @@ local function ConstructInsanityBar()
 	passiveFrame:Show()
 	passiveFrame:SetMinMaxValues(0, 100)
 	passiveFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-	passiveFrame:SetPoint("LEFT", barContainerFrame, "LEFT", settings.bar.border, 0)
-	passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", -settings.bar.border, 0)
+	passiveFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
+	passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
 	passiveFrame:SetStatusBarTexture(settings.textures.bar)
 	passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive))
 	passiveFrame:SetFrameStrata("BACKGROUND")
@@ -579,15 +607,15 @@ local function ConstructInsanityBar()
 	passiveFrame.threshold.texture:SetAllPoints(passiveFrame.threshold)
 	passiveFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
 	passiveFrame.threshold:SetFrameStrata("BACKGROUND")
-	passiveFrame.threshold:SetFrameLevel(500)
+	passiveFrame.threshold:SetFrameLevel(129)
 	passiveFrame.threshold:Show()
 	
 	leftTextFrame:Show()
-	leftTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
+	leftTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2)-2)
 	leftTextFrame:SetHeight(settings.bar.height)
-	leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", settings.bar.border+2, 0)
+	leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 2, 0)
 	leftTextFrame:SetFrameStrata("BACKGROUND")
-	leftTextFrame:SetFrameLevel(200)
+	leftTextFrame:SetFrameLevel(128)
 	leftTextFrame.font:SetPoint("LEFT", 0, 0)
 	leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 	leftTextFrame.font:SetJustifyH("LEFT")
@@ -599,7 +627,7 @@ local function ConstructInsanityBar()
 	middleTextFrame:SetHeight(settings.bar.height)
 	middleTextFrame:SetPoint("CENTER", barContainerFrame, "CENTER", 0, 0)
 	middleTextFrame:SetFrameStrata("BACKGROUND")
-	middleTextFrame:SetFrameLevel(200)
+	middleTextFrame:SetFrameLevel(128)
 	middleTextFrame.font:SetPoint("CENTER", 0, 0)
 	middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 	middleTextFrame.font:SetJustifyH("CENTER")
@@ -609,9 +637,9 @@ local function ConstructInsanityBar()
 	rightTextFrame:Show()
 	rightTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
 	rightTextFrame:SetHeight(settings.bar.height)
-	rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", -settings.bar.border, 0)
+	rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
 	rightTextFrame:SetFrameStrata("BACKGROUND")
-	rightTextFrame:SetFrameLevel(200)
+	rightTextFrame:SetFrameLevel(128)
 	rightTextFrame.font:SetPoint("RIGHT", 0, 0)
 	rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 	rightTextFrame.font:SetJustifyH("RIGHT")
@@ -858,13 +886,15 @@ local function ConstructOptionsPanel()
 	local yOffset4 = 20
 
 	local maxWidth = math.floor(GetScreenWidth())
-	local minWidth = 120
+	local minWidth = math.max(math.ceil(settings.bar.border * 8), 120)
 	
 	local maxHeight = math.floor(GetScreenHeight())
-	local minHeight = 20
+	local minHeight = math.max(math.ceil(settings.bar.border * 8), 1)
 	local barWidth = 250
 	local barHeight = 20
 	local title = ""
+
+	local maxBorderHeight = math.min(math.floor(settings.bar.height/8), math.floor(settings.bar.width/8))
 
 	interfaceSettingsFrame = {}
 	interfaceSettingsFrame.panel = CreateFrame("Frame", "TwintopInsanityBarPanel", UIParent)
@@ -955,15 +985,19 @@ local function ConstructOptionsPanel()
 		end
 		self.EditBox:SetText(value)
 		settings.bar.width = value
-		barContainerFrame:SetWidth(value)
+		barContainerFrame:SetWidth(value-(settings.bar.border*2))
+		barBorderFrame:SetWidth(settings.bar.width)
 		insanityFrame:SetWidth(value-(settings.bar.border*2))
 		castingFrame:SetWidth(value-(settings.bar.border*2))
 		passiveFrame:SetWidth(value-(settings.bar.border*2))
 		RepositionInsanityFrameThreshold()
+		local maxBorderSize = math.min(math.floor(settings.bar.height/ 8), math.floor(settings.bar.width / 8))
+		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
+		controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 	end)
 
 	title = "Bar Height"
-	controls.height = BuildSlider(parent, title, settings.bar.border*4 + 1, maxHeight, settings.bar.height, 1, 0,
+	controls.height = BuildSlider(parent, title, minHeight, maxHeight, settings.bar.height, 1, 0,
 									barWidth, barHeight, xCoord2, yCoord)
 	controls.height:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -974,12 +1008,16 @@ local function ConstructOptionsPanel()
 		end		
 		self.EditBox:SetText(value)		
 		settings.bar.height = value
-		barContainerFrame:SetHeight(value)
+		barContainerFrame:SetHeight(value-(settings.bar.border*2))
+		barBorderFrame:SetHeight(settings.bar.height)
 		insanityFrame:SetHeight(value-(settings.bar.border*2))
 		insanityFrame.threshold:SetHeight(value-(settings.bar.border*2))
 		castingFrame:SetHeight(value-(settings.bar.border*2))
 		passiveFrame:SetHeight(value-(settings.bar.border*2))
 		passiveFrame.threshold:SetHeight(value-(settings.bar.border*2))
+		local maxBorderSize = math.min(math.floor(settings.bar.height/ 8), math.floor(settings.bar.width / 8))
+		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
+		controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 	end)
 
 	title = "Bar Horizontal Position"
@@ -1017,10 +1055,55 @@ local function ConstructOptionsPanel()
 		barContainerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
 	end)
 
-	yCoord = yCoord - yOffset3
+	title = "Bar Border Width"
+	yCoord = yCoord - yOffset1
+	controls.borderWidth = BuildSlider(parent, title, 0, maxBorderHeight, settings.bar.border, 1, 0,
+								  barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.borderWidth:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+		self.EditBox:SetText(value)		
+		settings.bar.border = value
+		barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
+		barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
+		barBorderFrame:SetWidth(settings.bar.width)
+		barBorderFrame:SetHeight(settings.bar.height)
+		if settings.bar.border < 1 then
+			barBorderFrame:SetBackdrop({ })
+		else
+			barBorderFrame:SetBackdrop({ edgeFile = settings.textures.border,
+										tile = true,
+										tileSize=4,
+										edgeSize=settings.bar.border*4,								
+										insets = {0, 0, 0, 0}
+										})
+		end
+		barBorderFrame:SetBackdropColor(0, 0, 0, 0)
+		barBorderFrame:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
+		insanityFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
+		insanityFrame.threshold:SetHeight(settings.bar.height-(settings.bar.border*2))
+		castingFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
+		passiveFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
+		passiveFrame.threshold:SetHeight(settings.bar.height-(settings.bar.border*2))
+		leftTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2)-2)
+		middleTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
+		rightTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
+
+		local minBarWidth = math.max(settings.bar.border * 8, 120)
+		local minBarHeight = math.max(settings.bar.border * 8, 1)
+		controls.height:SetMinMaxValues(minBarHeight, maxHeight)
+		controls.height.MinLabel:SetText(minBarHeight)
+		controls.width:SetMinMaxValues(minBarWidth, maxWidth)
+		controls.width.MinLabel:SetText(minBarWidth)
+	end)
+
 	controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TIBCB1_1", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.lockPosition
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	f:SetPoint("TOPLEFT", xCoord2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
 	f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved."
 	f:SetChecked(settings.bar.dragAndDrop)
@@ -1055,8 +1138,8 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	controls.colors.border = BuildColorPicker(parent, "Insanity Bar's border", settings.colors.bar.border, 225, 25, xCoord2, yCoord)
-	f = controls.colors.border
+	controls.colors.inVoidform = BuildColorPicker(parent, "Insanity while in Voidform", settings.colors.bar.inVoidform, 250, 25, xCoord2, yCoord)
+	f = controls.colors.inVoidform
 	f.recolorTexture = function(color)
 		local r, g, b, a
 		if color then
@@ -1065,13 +1148,13 @@ local function ConstructOptionsPanel()
 			r, g, b = ColorPickerFrame:GetColorRGB()
 			a = OpacitySliderFrame:GetValue()
 		end
-		controls.colors.border.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.bar.border = ConvertColorDecimalToHex(r, g, b, a)
-		barContainerFrame:SetBackdropBorderColor(r, g, b, a)
+
+		controls.colors.inVoidform.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.bar.inVoidform = ConvertColorDecimalToHex(r, g, b, a)
 	end
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.bar.border, true)
+			local r, g, b, a = GetRGBAFromString(settings.colors.bar.inVoidform, true)
 			ShowColorPicker(r, g, b, a, self.recolorTexture)
 		end
 	end)
@@ -1098,8 +1181,8 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	controls.colors.inVoidform = BuildColorPicker(parent, "Insanity while in Voidform", settings.colors.bar.inVoidform, 250, 25, xCoord2, yCoord)
-	f = controls.colors.inVoidform
+	controls.colors.border = BuildColorPicker(parent, "Insanity Bar's border", settings.colors.bar.border, 225, 25, xCoord2, yCoord)
+	f = controls.colors.border
 	f.recolorTexture = function(color)
 		local r, g, b, a
 		if color then
@@ -1108,13 +1191,13 @@ local function ConstructOptionsPanel()
 			r, g, b = ColorPickerFrame:GetColorRGB()
 			a = OpacitySliderFrame:GetValue()
 		end
-
-		controls.colors.inVoidform.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.bar.inVoidform = ConvertColorDecimalToHex(r, g, b, a)
+		controls.colors.border.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.bar.border = ConvertColorDecimalToHex(r, g, b, a)
+		barBorderFrame:SetBackdropBorderColor(r, g, b, a)
 	end
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.bar.inVoidform, true)
+			local r, g, b, a = GetRGBAFromString(settings.colors.bar.border, true)
 			ShowColorPicker(r, g, b, a, self.recolorTexture)
 		end
 	end)
@@ -1142,8 +1225,8 @@ local function ConstructOptionsPanel()
 		end
 	end)	
 		
-	controls.colors.inVoidform2GCD = BuildColorPicker(parent, "Insanity while you have between 1-2 GCDs left in Voidform", settings.colors.bar.inVoidform2GCD, 250, 25, xCoord2, yCoord)
-	f = controls.colors.inVoidform2GCD
+	controls.colors.background = BuildColorPicker(parent, "Unfilled bar background", settings.colors.bar.background, 250, 25, xCoord2, yCoord)
+	f = controls.colors.background
 	f.recolorTexture = function(color)
 		local r, g, b, a
 		if color then
@@ -1153,12 +1236,13 @@ local function ConstructOptionsPanel()
 			a = OpacitySliderFrame:GetValue()
 		end
 
-		controls.colors.inVoidform2GCD.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.bar.inVoidform2GCD = ConvertColorDecimalToHex(r, g, b, a)
+		controls.colors.background.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.bar.background = ConvertColorDecimalToHex(r, g, b, a)
+		barContainerFrame:SetBackdropColor(r, g, b, a)
 	end
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.bar.inVoidform2GCD, true)
+			local r, g, b, a = GetRGBAFromString(settings.colors.bar.background, true)
 			ShowColorPicker(r, g, b, a, self.recolorTexture)
 		end
 	end)
@@ -1183,10 +1267,10 @@ local function ConstructOptionsPanel()
 			local r, g, b, a = GetRGBAFromString(settings.colors.threshold.under, true)
 			ShowColorPicker(r, g, b, a, self.recolorTexture)
 		end
-	end)
-
-	controls.colors.inVoidform1GCD = BuildColorPicker(parent, "Insanity while you have less than 1 GCD left in Voidform", settings.colors.bar.inVoidform1GCD, 250, 25, xCoord2, yCoord)
-	f = controls.colors.inVoidform1GCD
+	end)	
+		
+	controls.colors.inVoidform2GCD = BuildColorPicker(parent, "Insanity while you have between 1-2 GCDs left in Voidform", settings.colors.bar.inVoidform2GCD, 250, 25, xCoord2, yCoord)
+	f = controls.colors.inVoidform2GCD
 	f.recolorTexture = function(color)
 		local r, g, b, a
 		if color then
@@ -1196,12 +1280,12 @@ local function ConstructOptionsPanel()
 			a = OpacitySliderFrame:GetValue()
 		end
 
-		controls.colors.inVoidform1GCD.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.bar.inVoidform1GCD = ConvertColorDecimalToHex(r, g, b, a)
+		controls.colors.inVoidform2GCD.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.bar.inVoidform2GCD = ConvertColorDecimalToHex(r, g, b, a)
 	end
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.bar.inVoidform1GCD, true)
+			local r, g, b, a = GetRGBAFromString(settings.colors.bar.inVoidform2GCD, true)
 			ShowColorPicker(r, g, b, a, self.recolorTexture)
 		end
 	end)
@@ -1224,6 +1308,27 @@ local function ConstructOptionsPanel()
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		if button == "LeftButton" then
 			local r, g, b, a = GetRGBAFromString(settings.colors.threshold.over, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	controls.colors.inVoidform1GCD = BuildColorPicker(parent, "Insanity while you have less than 1 GCD left in Voidform", settings.colors.bar.inVoidform1GCD, 250, 25, xCoord2, yCoord)
+	f = controls.colors.inVoidform1GCD
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+
+		controls.colors.inVoidform1GCD.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.bar.inVoidform1GCD = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.bar.inVoidform1GCD, true)
 			ShowColorPicker(r, g, b, a, self.recolorTexture)
 		end
 	end)
