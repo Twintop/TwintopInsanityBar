@@ -1,5 +1,5 @@
-local addonVersion = "7.3.5.12"
-local addonReleaseDate = "May 21, 2018"
+local addonVersion = "7.3.5.13"
+local addonReleaseDate = "May 22, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -644,7 +644,7 @@ local function ConstructInsanityBar()
 	
 	leftTextFrame:Show()
 	leftTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2)-2)
-	leftTextFrame:SetHeight(settings.bar.height)
+	leftTextFrame:SetHeight(settings.bar.height * 3.5)
 	leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 2, 0)
 	leftTextFrame:SetFrameStrata("BACKGROUND")
 	leftTextFrame:SetFrameLevel(128)
@@ -656,7 +656,7 @@ local function ConstructInsanityBar()
 	
 	middleTextFrame:Show()
 	middleTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
-	middleTextFrame:SetHeight(settings.bar.height)
+	middleTextFrame:SetHeight(settings.bar.height * 3.5)
 	middleTextFrame:SetPoint("CENTER", barContainerFrame, "CENTER", 0, 0)
 	middleTextFrame:SetFrameStrata("BACKGROUND")
 	middleTextFrame:SetFrameLevel(128)
@@ -668,7 +668,7 @@ local function ConstructInsanityBar()
 	
 	rightTextFrame:Show()
 	rightTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
-	rightTextFrame:SetHeight(settings.bar.height)
+	rightTextFrame:SetHeight(settings.bar.height * 3.5)
 	rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
 	rightTextFrame:SetFrameStrata("BACKGROUND")
 	rightTextFrame:SetFrameLevel(128)
@@ -1141,7 +1141,10 @@ local function ConstructOptionsPanel()
 		insanityFrame.threshold:SetHeight(value-(settings.bar.border*2))
 		castingFrame:SetHeight(value-(settings.bar.border*2))
 		passiveFrame:SetHeight(value-(settings.bar.border*2))
-		passiveFrame.threshold:SetHeight(value-(settings.bar.border*2))
+		passiveFrame.threshold:SetHeight(value-(settings.bar.border*2))		
+		leftTextFrame:SetHeight(settings.bar.height * 3.5)
+		middleTextFrame:SetHeight(settings.bar.height * 3.5)
+		rightTextFrame:SetHeight(settings.bar.height * 3.5)
 		local maxBorderSize = math.min(math.floor(settings.bar.height/ 8), math.floor(settings.bar.width / 8))
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -1219,6 +1222,9 @@ local function ConstructOptionsPanel()
 		leftTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2)-2)
 		middleTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
 		rightTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
+		leftTextFrame:SetHeight(settings.bar.height * 3.5)
+		middleTextFrame:SetHeight(settings.bar.height * 3.5)
+		rightTextFrame:SetHeight(settings.bar.height * 3.5)
 
 		local minBarWidth = math.max(settings.bar.border * 8, 120)
 		local minBarHeight = math.max(settings.bar.border * 8, 1)
@@ -2009,8 +2015,10 @@ local function ConstructOptionsPanel()
 
 	yCoord = yCoord - yOffset4
 	controls.labels.hasteVar = BuildDisplayTextHelpEntry(parent, "$haste", "Current Haste%", xCoord, yCoord, 85)
-	controls.labels.liTimeVar = BuildDisplayTextHelpEntry(parent, "$ttd", "Time To Die of current target", xCoord2, yCoord, 80)
+	controls.labels.ttdVar = BuildDisplayTextHelpEntry(parent, "$ttd", "Time To Die of current target", xCoord2, yCoord, 80)
 
+	yCoord = yCoord - yOffset4
+	controls.labels.newlineVar = BuildDisplayTextHelpEntry(parent, "|n", "Insert a Newline", xCoord, yCoord, 85)
 	---------------------------
 
 	yCoord = -5
@@ -2563,11 +2571,10 @@ local function BarText()
 	returnText[1].color = string.format("|c%s", settings.colors.text.middle)
 	returnText[2].color = string.format("|c%s", settings.colors.text.right)
 
-	--returnText[1].text = RemoveInvalidVariablesFromBarText(returnText[1].text)
 	for x = 0, 2 do
 		returnText[x].text = RemoveInvalidVariablesFromBarText(returnText[x].text)
-		--print(returnText[x].text, " ! ",  returnText[x].color)
 		returnText[x].text = returnText[x].color .. returnText[x].text
+		returnText[x].text = string.gsub(returnText[x].text, "||n", string.format("\n") .. returnText[x].color)
 		returnText[x].text = string.gsub(returnText[x].text, "$haste", hastePercent .. returnText[x].color)
 		returnText[x].text = string.gsub(returnText[x].text, "$vfIncoming", voidformStacksIncoming)
 		returnText[x].text = string.gsub(returnText[x].text, "$vfStacks", voidformStacks)
@@ -2580,7 +2587,6 @@ local function BarText()
 		returnText[x].text = string.gsub(returnText[x].text, "$casting", castingInsanity .. returnText[x].color)
 		returnText[x].text = string.gsub(returnText[x].text, "$passive", passiveInsanity .. returnText[x].color)
 		returnText[x].text = string.gsub(returnText[x].text, "$ttd", ttd .. returnText[x].color)
-		--print(returnText[x].text)
 	end
 
 	return returnText[0].text, returnText[1].text, returnText[2].text
