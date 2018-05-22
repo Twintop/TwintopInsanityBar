@@ -21,6 +21,7 @@ asTimerFrame.sinceLastUpdate = 0
 
 local timerFrame = CreateFrame("Frame")
 timerFrame.sinceLastUpdate = 0
+timerFrame.ttdSinceLastUpdate = 0
 
 local combatFrame = CreateFrame("Frame")
 
@@ -126,6 +127,12 @@ spells.vampiricTouch.name = select(1, GetSpellInfo(spells.vampiricTouch.id))
 local snapshotData = {
 	insanity = 0,
 	haste = 0,
+	target = {
+		guid = nil,
+		snapshot = {},
+		ttd = 0,
+		ttdIsActive = false
+	},
 	casting = {
 		spellId = nil,
 		startTime = nil,
@@ -188,6 +195,15 @@ local addonData = {
 	registered = false
 }
 
+local function TableLength(T)
+	local count = 0
+	local _
+	for _ in pairs(T) do
+		count = count + 1
+	end
+	return count
+end
+
 local function RoundTo(num, numDecimalPlaces)
 	return tonumber(string.format("%." .. (numDecimalPlaces or 0) .. "f", num))
 end
@@ -238,6 +254,10 @@ local function LoadDefaultSettings()
 		hastePrecision=2,
 		voidEruptionThreshold=true,
 		auspiciousSpiritsTracker=true,
+		ttd = {
+			refreshRate = 0.2,
+			maxEntries = 5
+		},
 		displayBar = {
 			alwaysShow=false,
 			notZeroShow=true
@@ -438,6 +458,19 @@ local function EventRegistration()
 		addonData.registered = false			
 		barContainerFrame:Hide()
 	end	
+end
+
+local function IsTtdActive()
+	if string.find(settings.displayText.left.outVoidformText, "$ttd") or
+		string.find(settings.displayText.left.inVoidformText, "$ttd") or
+		string.find(settings.displayText.middle.outVoidformText, "$ttd") or
+		string.find(settings.displayText.middle.inVoidformText, "$ttd") or
+		string.find(settings.displayText.right.outVoidformText, "$ttd") or
+		string.find(settings.displayText.right.inVoidformText, "$ttd") then
+		snapshotData.target.ttdIsActive = true
+	else
+		snapshotData.target.ttdIsActive = false
+	end
 end
 
 local function ShowInsanityBar()
@@ -1520,7 +1553,7 @@ local function ConstructOptionsPanel()
 	f.tooltip = "This will flash the bar when Void Eruption can be cast."
 	f:SetChecked(settings.voidEruptionThreshold)
 	f:SetScript("OnClick", function(self, ...)
-		settings.voidEruptionThreshold = self:GetChecked()
+		settings.colors.bar.flashEnabled = self:GetChecked()
 	end)
 
 	controls.checkBoxes.vfThresholdShow = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
@@ -1863,6 +1896,7 @@ local function ConstructOptionsPanel()
 	f = controls.textbox.voidformOutLeft
 	f:SetScript("OnTextChanged", function(self, input)
 		settings.displayText.left.outVoidformText = self:GetText()
+		IsTtdActive()
 	end)
 
 	controls.textbox.voidformInLeft = BuildTextBox(parent, settings.displayText.left.inVoidformText,
@@ -1870,6 +1904,7 @@ local function ConstructOptionsPanel()
 	f = controls.textbox.voidformInLeft
 	f:SetScript("OnTextChanged", function(self, input)
 		settings.displayText.left.inVoidformText = self:GetText()
+		IsTtdActive()
 	end)
 
 	yCoord = yCoord - yOffset2
@@ -1893,6 +1928,7 @@ local function ConstructOptionsPanel()
 	f = controls.textbox.voidformOutMiddle
 	f:SetScript("OnTextChanged", function(self, input)
 		settings.displayText.middle.outVoidformText = self:GetText()
+		IsTtdActive()
 	end)
 
 	controls.textbox.voidformInMiddle = BuildTextBox(parent, settings.displayText.middle.inVoidformText,
@@ -1900,6 +1936,7 @@ local function ConstructOptionsPanel()
 	f = controls.textbox.voidformInMiddle
 	f:SetScript("OnTextChanged", function(self, input)
 		settings.displayText.middle.inVoidformText = self:GetText()
+		IsTtdActive()
 	end)
 
 	yCoord = yCoord - yOffset2
@@ -1923,6 +1960,7 @@ local function ConstructOptionsPanel()
 	f = controls.textbox.voidformOutRight
 	f:SetScript("OnTextChanged", function(self, input)
 		settings.displayText.right.outVoidformText = self:GetText()
+		IsTtdActive()
 	end)
 
 	controls.textbox.voidformInRight = BuildTextBox(parent, settings.displayText.right.inVoidformText,
@@ -1930,6 +1968,7 @@ local function ConstructOptionsPanel()
 	f = controls.textbox.voidformInRight
 	f:SetScript("OnTextChanged", function(self, input)
 		settings.displayText.right.inVoidformText = self:GetText()
+		IsTtdActive()
 	end)
 
 	yCoord = yCoord - yOffset2
@@ -1970,6 +2009,7 @@ local function ConstructOptionsPanel()
 
 	yCoord = yCoord - yOffset4
 	controls.labels.hasteVar = BuildDisplayTextHelpEntry(parent, "$haste", "Current Haste%", xCoord, yCoord, 85)
+	controls.labels.liTimeVar = BuildDisplayTextHelpEntry(parent, "$ttd", "Time To Die of current target", xCoord2, yCoord, 80)
 
 	---------------------------
 
@@ -2399,7 +2439,11 @@ local function RemoveInvalidVariablesFromBarText(input)
 					elseif var == "$passive" then
 						if (CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.auspiciousSpirits.total) + snapshotData.mindbender.insanityFinal > 0 then
 							valid = true
-						end					
+						end
+					elseif var == "$ttd" then
+						if UnitGUID("target") ~= nil and snapshotData.target.ttd > 0 then
+							valid = true
+						end
 					else
 						valid = false					
 					end
@@ -2488,6 +2532,17 @@ local function BarText()
 		passiveInsanity = string.format("|c%s%.0f|r", settings.colors.text.passiveInsanity, _passiveInsanity)
 	end
 
+	----------
+
+	--$ttd
+	local ttd = ""
+	if snapshotData.target.ttdIsActive and snapshotData.target.ttd ~= 0 then
+		local ttdMinutes = math.floor(snapshotData.target.ttd / 60)
+		local ttdSeconds = snapshotData.target.ttd % 60
+		ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
+	else
+		ttd = "--"
+	end
 	----------------------------
 
 	local returnText = {}
@@ -2524,6 +2579,7 @@ local function BarText()
 		returnText[x].text = string.gsub(returnText[x].text, "$insanity", currentInsanity .. returnText[x].color)
 		returnText[x].text = string.gsub(returnText[x].text, "$casting", castingInsanity .. returnText[x].color)
 		returnText[x].text = string.gsub(returnText[x].text, "$passive", passiveInsanity .. returnText[x].color)
+		returnText[x].text = string.gsub(returnText[x].text, "$ttd", ttd .. returnText[x].color)
 		--print(returnText[x].text)
 	end
 
@@ -2766,6 +2822,8 @@ local function UpdateInsanityBar()
 				if settings.colors.bar.flashEnabled then
 					PulseFrame(barContainerFrame)
 				--insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.enterVoidformFlash, true))
+				else
+					barContainerFrame:SetAlpha(1.0)
 				end
 			else
 				insanityFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
@@ -2842,10 +2900,69 @@ end
 
 function timerFrame:onUpdate(sinceLastUpdate)
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
+	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 0.05 then -- in seconds
 		UpdateInsanityBar()
 		self.sinceLastUpdate = 0
 	end
+
+	if snapshotData.target.ttdIsActive and self.ttdSinceLastUpdate >= settings.ttd.refreshRate then -- in seconds
+		local currentTime = GetTime()
+		if snapshotData.target.guid ~= UnitGUID("target") then
+			snapshotData.target.guid = UnitGUID("target")
+			snapshotData.target.snapshot = {}
+			snapshotData.target.ttd = 0
+		end
+		
+		local isDead = UnitIsDeadOrGhost("target")
+		local currentHealth = UnitHealth("target")
+		local maxHealth = UnitHealthMax("target")
+		local healthDelta = 0
+		local timeDelta = 0
+		local dps = 0
+		local ttd = 0
+
+		local count = TableLength(snapshotData.target.snapshot)
+		if count > 0 and snapshotData.target.snapshot[1] ~= nil then
+			healthDelta = math.max(snapshotData.target.snapshot[1].health - currentHealth, 0)
+			timeDelta = math.max(currentTime - snapshotData.target.snapshot[1].time, 0)
+		end
+
+		if isDead or currentHealth <= 0 or maxHealth <= 0 then
+			dps = 0
+			ttd = 0
+		else
+			if count == 0 or snapshotData.target.snapshot[1] == nil or
+				snapshotData.target.snapshot[1].health == currentHealth then
+				dps = 0
+			elseif healthDelta == 0 or timeDelta == 0 then
+				dps = snapshotData.target.snapshot[1].dps
+			else
+				dps = healthDelta / timeDelta
+			end
+
+			if dps == nil or dps == 0 then
+				ttd = 0
+			else
+				ttd = currentHealth / dps
+			end
+		end
+
+		if count >= settings.ttd.maxEntries then
+			table.remove(snapshotData.target.snapshot, 1)
+		end
+
+		table.insert(snapshotData.target.snapshot, {
+			health=currentHealth,
+			time=currentTime,
+			dps=dps
+		})
+
+		snapshotData.target.ttd = ttd
+
+		self.ttdSinceLastUpdate = 0
+	end
+
 end
 
 function mindbenderAudioCueFrame:onUpdate(sinceLastUpdate)
@@ -3089,6 +3206,7 @@ insanityFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				if TwintopInsanityBarSettings then
 					settings = MergeSettings(settings,TwintopInsanityBarSettings)
 				end
+				IsTtdActive()
 				ConstructInsanityBar()
 				ConstructOptionsPanel()
 
