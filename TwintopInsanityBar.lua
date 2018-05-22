@@ -2226,9 +2226,9 @@ local function RemainingTimeAndStackCount()
 	local currentTime = GetTime()
 	local _
 	_, _, _, _, _, snapshotData.voidform.duration, _, _, _, _, snapshotData.voidform.spellId = UnitBuff("player",GetSpellInfo(spells.voidform.id))
-	--print(UnitBuff("player",GetSpellInfo(spells.voidform.id)))
     	
     if snapshotData.voidform.spellId == nil then		
+		--[[ Commented out to try and fix Issue #12 -- https://github.com/Twintop/TwintopInsanityBar/issues/12
 		snapshotData.voidform.totalStacks = 0
 		snapshotData.voidform.drainStacks = 0
 		snapshotData.voidform.additionalStacks = 0
@@ -2242,6 +2242,7 @@ local function RemainingTimeAndStackCount()
 		snapshotData.voidform.voidTorrent.startTime = nil
 		snapshotData.voidform.dispersion.stacks = 0
 		snapshotData.voidform.dispersion.startTime = nil
+		]]
     else
 		local down, up, lagHome, lagWorld = GetNetStats()
 		local TimeDiff = currentTime - snapshotData.voidform.previousStackTime        
@@ -3062,6 +3063,9 @@ insanityFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				end
 				ConstructInsanityBar()
 				ConstructOptionsPanel()
+
+				SLASH_TWINTOP1 = "/twintop"
+				SLASH_TWINTOP2 = "/tib"
 			end			
 		end	
 
@@ -3168,8 +3172,6 @@ local function ParseCmdString(msg)
 	end
 end
 
-SLASH_TWINTOP1 = "/twintop"
-SLASH_TWINTOP2 = "/tib"
 function SlashCmdList.TWINTOP(msg)
 	local cmd, subcmd = ParseCmdString(msg);
 	if cmd == "reset" then
