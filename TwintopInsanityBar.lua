@@ -235,6 +235,7 @@ local function LoadDefaultSettings()
 		showS2MSummary=true,
 		hasteApproachingThreshold=135,
 		hasteThreshold=140,
+		hastePrecision=2,
 		voidEruptionThreshold=true,
 		auspiciousSpiritsTracker=true,
 		displayBar = {
@@ -1045,8 +1046,13 @@ local function ConstructOptionsPanel()
 	interfaceSettingsFrame.barLayoutPanel.parent = parent.name
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.barLayoutPanel)
 	
+	interfaceSettingsFrame.barFontPanel = CreateFrame("Frame", "TwintopInsanityBar_BarFontPanel", parent)
+	interfaceSettingsFrame.barFontPanel.name = "Bar Font and Colors"
+	interfaceSettingsFrame.barFontPanel.parent = parent.name
+	InterfaceOptions_AddCategory(interfaceSettingsFrame.barFontPanel)
+	
 	interfaceSettingsFrame.barTextPanel = CreateFrame("Frame", "TwintopInsanityBar_BarTextPanel", parent)
-	interfaceSettingsFrame.barTextPanel.name = "Bar Text and Colors"
+	interfaceSettingsFrame.barTextPanel.name = "Bar Text Display"
 	interfaceSettingsFrame.barTextPanel.parent = parent.name
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.barTextPanel)
 	
@@ -1530,7 +1536,7 @@ local function ConstructOptionsPanel()
 	------------------------------------------------
 
 	yCoord = -5
-	parent = interfaceSettingsFrame.barTextPanel
+	parent = interfaceSettingsFrame.barFontPanel
 
 	controls.textDisplaySection = BuildSectionHeader(parent, "Font Size and Colors", xCoord+xPadding, yCoord)
 
@@ -1781,7 +1787,28 @@ local function ConstructOptionsPanel()
 		settings.hasteThreshold = value
 	end)
 
-	yCoord = yCoord - yOffset3	
+	yCoord = yCoord - yOffset1	
+	title = "Haste Decimals to Show"
+	controls.hastePrecision = BuildSlider(parent, title, 0, 10, settings.hastePrecision, 1, 0,
+									barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+
+		value = RoundTo(value, 0)
+		self.EditBox:SetText(value)		
+		settings.hastePrecision = value
+	end)
+
+	------------------------------------------------
+
+	yCoord = -5
+	parent = interfaceSettingsFrame.barTextPanel
+
 	controls.textCustomSection = BuildSectionHeader(parent, "Bar Display Text Customization", xCoord+xPadding, yCoord)
 
 	yCoord = yCoord - yOffset2
@@ -2404,6 +2431,7 @@ end
 local function BarText()
 	--$haste
 	local _hasteColor = settings.colors.text.left
+	local _hasteValue = RoundTo(snapshotData.haste, settings.hastePrecision)
     
     if snapshotData.voidform.totalStacks ~= nil and snapshotData.voidform.totalStacks > 0 then        
         if settings.hasteThreshold <= snapshotData.haste then
@@ -2415,7 +2443,7 @@ local function BarText()
         end
     end
 
-	local hastePercent = string.format("|c%s%.2f%%|c%s", _hasteColor, snapshotData.haste, settings.colors.text.left)
+	local hastePercent = string.format("|c%s%s%%|c%s", _hasteColor, _hasteValue, settings.colors.text.left)
 	--$vfStacks
 	local voidformStacks = string.format("%.0f", snapshotData.voidform.totalStacks)
 	--$vfIncoming
@@ -3178,6 +3206,8 @@ function SlashCmdList.TWINTOP(msg)
 		StaticPopup_Show("TwintopInsanityBar_Reset")
 	elseif cmd == "layout" then
 		InterfaceOptionsFrame_OpenToCategory(interfaceSettingsFrame.barLayoutPanel)
+	elseif cmd == "font" then
+		InterfaceOptionsFrame_OpenToCategory(interfaceSettingsFrame.barFontPanel)
 	elseif cmd == "text" then
 		InterfaceOptionsFrame_OpenToCategory(interfaceSettingsFrame.barTextPanel)
 	elseif cmd == "optional" then
