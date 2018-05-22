@@ -256,7 +256,7 @@ local function LoadDefaultSettings()
 		auspiciousSpiritsTracker=true,
 		ttd = {
 			refreshRate = 0.2,
-			maxEntries = 5
+			maxEntries = 15
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -2932,11 +2932,11 @@ function timerFrame:onUpdate(sinceLastUpdate)
 			dps = 0
 			ttd = 0
 		else
-			if count == 0 or snapshotData.target.snapshot[1] == nil or
-				snapshotData.target.snapshot[1].health == currentHealth then
+			if count == 0 or snapshotData.target.snapshot[count] == nil or
+				(snapshotData.target.snapshot[1].health == currentHealth and count == settings.ttd.maxEntries) then
 				dps = 0
 			elseif healthDelta == 0 or timeDelta == 0 then
-				dps = snapshotData.target.snapshot[1].dps
+				dps = snapshotData.target.snapshot[count].dps
 			else
 				dps = healthDelta / timeDelta
 			end
