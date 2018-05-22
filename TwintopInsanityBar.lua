@@ -1,5 +1,5 @@
-local addonVersion = "7.3.5.10"
-local addonReleaseDate = "May 20, 2018"
+local addonVersion = "7.3.5.11"
+local addonReleaseDate = "May 21, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -2226,6 +2226,7 @@ local function RemainingTimeAndStackCount()
 	local currentTime = GetTime()
 	local _
 	_, _, _, _, _, snapshotData.voidform.duration, _, _, _, _, snapshotData.voidform.spellId = UnitBuff("player",GetSpellInfo(spells.voidform.id))
+	--print(UnitBuff("player",GetSpellInfo(spells.voidform.id)))
     	
     if snapshotData.voidform.spellId == nil then		
 		snapshotData.voidform.totalStacks = 0
@@ -2839,7 +2840,8 @@ end
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local currentTime = GetTime()
 	local triggerUpdate = false
-	
+	local _
+
 	if event == "UNIT_POWER_FREQUENT" then	
 		local unit, unitPowerType = ...
 		if unit == "player" and unitPowerType == "INSANITY" then
@@ -2880,11 +2882,14 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		
 		if sourceGUID == characterData.guid then  
             if spellId == spells.voidform.id then
-                if type == "SPELL_AURA_APPLIED" then -- Entered Voidform                    
+				if type == "SPELL_AURA_APPLIED" then -- Entered Voidform
+					local startingStacks = 1
+					_, _, _, startingStacks = UnitBuff("player",GetSpellInfo(spells.voidform.id))
+
 					snapshotData.voidform.previousStackTime = currentTime
                     snapshotData.voidform.drainStacks = 1
                     snapshotData.voidform.startTime = currentTime
-                    snapshotData.voidform.totalStacks = 1
+                    snapshotData.voidform.totalStacks = startingStacks
                     snapshotData.voidform.voidTorrent.startTime = nil
                     snapshotData.voidform.voidTorrent.stacks = 0
                     snapshotData.voidform.dispersion.startTime = nil
