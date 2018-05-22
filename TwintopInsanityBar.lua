@@ -1,4 +1,4 @@
-local addonVersion = "7.3.5.11"
+local addonVersion = "7.3.5.12"
 local addonReleaseDate = "May 21, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
