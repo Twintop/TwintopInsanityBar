@@ -33,6 +33,36 @@ local interfaceSettingsFrame = nil
 
 local settings = nil
 
+Global_TwintopInsanityBar = {
+	ttd = 0,
+	voidform = {
+		stacks = 0,
+		incomingStacks = 0,
+		drainStacks = 0,
+		drain = 0,
+		drainTime = 0
+	},
+	lingeringInsanity = {
+		timeLeft = 0,
+		stacks = 0
+	},
+	insanity = {
+		insanity = 0,
+		casting = 0,
+		passive = 0
+	},
+	auspiciousSpirits = {
+		count = 0,
+		insanity = 0
+	},
+	mindbender = {
+		insanity = 0,
+		gcds = 0,
+		swings = 0,
+		time = 0
+	}
+}
+
 local characterData = {
 	guid = UnitGUID("player"),
 	maxInsanity = 100,
@@ -316,7 +346,10 @@ local function LoadDefaultSettings()
 			}
 		},
 		displayText={
-			fontSize=18,
+			fontSizeLeft=18,
+			fontSizeMiddle=18,
+			fontSizeRight=18,
+			fontSizeLock=true,
 			fontFace="Fonts\\FRIZQT__.TTF",
 			left={
 				outVoidformText="$haste%",
@@ -651,7 +684,7 @@ local function ConstructInsanityBar()
 	leftTextFrame.font:SetPoint("LEFT", 0, 0)
 	leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 	leftTextFrame.font:SetJustifyH("LEFT")
-	leftTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSize, "OUTLINE")
+	leftTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeLeft, "OUTLINE")
 	leftTextFrame.font:Show()
 	
 	middleTextFrame:Show()
@@ -663,7 +696,7 @@ local function ConstructInsanityBar()
 	middleTextFrame.font:SetPoint("CENTER", 0, 0)
 	middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 	middleTextFrame.font:SetJustifyH("CENTER")
-	middleTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSize, "OUTLINE")
+	middleTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeMiddle, "OUTLINE")
 	middleTextFrame.font:Show()
 	
 	rightTextFrame:Show()
@@ -675,7 +708,7 @@ local function ConstructInsanityBar()
 	rightTextFrame.font:SetPoint("RIGHT", 0, 0)
 	rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 	rightTextFrame.font:SetJustifyH("RIGHT")
-	rightTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSize, "OUTLINE")
+	rightTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeRight, "OUTLINE")
 	rightTextFrame.font:Show()
 end
 
@@ -1579,11 +1612,11 @@ local function ConstructOptionsPanel()
 
 	controls.textDisplaySection = BuildSectionHeader(parent, "Font Size and Colors", xCoord+xPadding, yCoord)
 
-	title = "Bar Font Size"
+	title = "Left Bar Text Font Size"
 	yCoord = yCoord - yOffset3
-	controls.fontSize = BuildSlider(parent, title, 6, 72, settings.displayText.fontSize, 1, 0,
+	controls.fontSizeLeft = BuildSlider(parent, title, 6, 72, settings.displayText.fontSizeLeft, 1, 0,
 								  barWidth, barHeight, xCoord+xPadding2, yCoord)
-	controls.fontSize:SetScript("OnValueChanged", function(self, value)
+	controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
 		if value > max then
 			value = max
@@ -1591,13 +1624,30 @@ local function ConstructOptionsPanel()
 			value = min
 		end
 		self.EditBox:SetText(value)		
-		settings.displayText.fontSize = value
-		leftTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSize, "OUTLINE")
-		middleTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSize, "OUTLINE")
-		rightTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSize, "OUTLINE")
+		settings.displayText.fontSizeLeft = value
+		leftTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeLeft, "OUTLINE")
+		if settings.displayText.fontSizeLock then
+			controls.fontSizeMiddle:SetValue(value)
+			controls.fontSizeRight:SetValue(value)
+		end
 	end)
 	
-	controls.colors.leftText = BuildColorPicker(parent, "Left Text", settings.colors.text.left, 250, 25, xCoord2, yCoord)	f = controls.colors.leftText
+	controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TIBCB2_F1", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.fontSizeLock
+	f:SetPoint("TOPLEFT", xCoord2+10, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
+	f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
+	f:SetChecked(settings.voidEruptionThreshold)
+	f:SetScript("OnClick", function(self, ...)
+		settings.displayText.fontSizeLock = self:GetChecked()
+		if settings.displayText.fontSizeLock then
+			controls.fontSizeMiddle:SetValue(settings.displayText.fontSizeLeft)
+			controls.fontSizeRight:SetValue(settings.displayText.fontSizeLeft)
+		end
+	end)
+
+	controls.colors.leftText = BuildColorPicker(parent, "Left Text", settings.colors.text.left,
+													250, 25, xCoord2, yCoord-30)	f = controls.colors.leftText
 	f.recolorTexture = function(color)
 		local r, g, b, a
 		if color then
@@ -1618,32 +1668,9 @@ local function ConstructOptionsPanel()
 			ShowColorPicker(r, g, b, a, self.recolorTexture)
 		end
 	end)
-	
-	yCoord = yCoord - yOffset3	
-	controls.colors.currentInsanityText = BuildColorPicker(parent, "Current Insanity", settings.colors.text.currentInsanity, 250, 25, xCoord+xPadding*2, yCoord)
-	f = controls.colors.currentInsanityText
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		--Text doesn't care about Alpha, but the color picker does!
-		a = 1.0
 
-		controls.colors.currentInsanityText.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.text.currentInsanity = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.text.currentInsanity, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	controls.colors.middleText = BuildColorPicker(parent, "Middle Text", settings.colors.text.middle, 225, 25, xCoord2, yCoord)
+	controls.colors.middleText = BuildColorPicker(parent, "Middle Text", settings.colors.text.middle,
+													225, 25, xCoord2, yCoord-70)
 	f = controls.colors.middleText
 	f.recolorTexture = function(color)
 		local r, g, b, a
@@ -1667,32 +1694,8 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	yCoord = yCoord - yOffset2	
-	controls.colors.castingInsanityText = BuildColorPicker(parent, "Insanity from hardcasting spells", settings.colors.text.castingInsanity, 250, 25, xCoord+xPadding*2, yCoord)
-	f = controls.colors.castingInsanityText
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		--Text doesn't care about Alpha, but the color picker does!
-		a = 1.0
-
-		controls.colors.castingInsanityText.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.text.castingInsanity = ConvertColorDecimalToHex(r, g, b, a)
-		barContainerFrame:SetBackdropBorderColor(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.text.currentInsanity, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	controls.colors.rightText = BuildColorPicker(parent, "Right Text", settings.colors.text.right, 225, 25, xCoord2, yCoord)
+	controls.colors.rightText = BuildColorPicker(parent, "Right Text", settings.colors.text.right,
+													225, 25, xCoord2, yCoord-110)
 	f = controls.colors.rightText
 	f.recolorTexture = function(color)
 		local r, g, b, a
@@ -1716,6 +1719,94 @@ local function ConstructOptionsPanel()
 		end
 	end)
 	
+	title = "Middle Bar Text Font Size"
+	yCoord = yCoord - yOffset1
+	controls.fontSizeMiddle = BuildSlider(parent, title, 6, 72, settings.displayText.fontSizeMiddle, 1, 0,
+								  barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+		self.EditBox:SetText(value)		
+		settings.displayText.fontSizeMiddle = value
+		middleTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeMiddle, "OUTLINE")
+		if settings.displayText.fontSizeLock then
+			controls.fontSizeLeft:SetValue(value)
+			controls.fontSizeRight:SetValue(value)
+		end
+	end)
+	
+	title = "Right Bar Text Font Size"
+	yCoord = yCoord - yOffset1
+	controls.fontSizeRight = BuildSlider(parent, title, 6, 72, settings.displayText.fontSizeRight, 1, 0,
+								  barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+		self.EditBox:SetText(value)		
+		settings.displayText.fontSizeRight = value
+		rightTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeRight, "OUTLINE")
+		if settings.displayText.fontSizeLock then
+			controls.fontSizeLeft:SetValue(value)
+			controls.fontSizeMiddle:SetValue(value)
+		end
+	end)
+
+	yCoord = yCoord - yOffset1	
+	controls.colors.currentInsanityText = BuildColorPicker(parent, "Current Insanity", settings.colors.text.currentInsanity, 250, 25, xCoord+xPadding*2, yCoord)
+	f = controls.colors.currentInsanityText
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		--Text doesn't care about Alpha, but the color picker does!
+		a = 1.0
+
+		controls.colors.currentInsanityText.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.text.currentInsanity = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.text.currentInsanity, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	controls.colors.castingInsanityText = BuildColorPicker(parent, "Insanity from hardcasting spells", settings.colors.text.castingInsanity, 250, 25, xCoord2, yCoord)
+	f = controls.colors.castingInsanityText
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		--Text doesn't care about Alpha, but the color picker does!
+		a = 1.0
+
+		controls.colors.castingInsanityText.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.text.castingInsanity = ConvertColorDecimalToHex(r, g, b, a)
+		barContainerFrame:SetBackdropBorderColor(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.text.currentInsanity, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
 	yCoord = yCoord - yOffset1	
 	title = "Low to Medium Haste% Threshold in Voidform"
 	controls.hasteApproachingThreshold = BuildSlider(parent, title, 0, 500, settings.hasteApproachingThreshold, 0.25, 2,
@@ -1995,30 +2086,43 @@ local function ConstructOptionsPanel()
 
 	yCoord = yCoord - yOffset4
 	controls.labels.vfStacksVar = BuildDisplayTextHelpEntry(parent, "$vfStacks", "Current Voidform Stack Count", xCoord, yCoord, 85)
-	controls.labels.insanityVar = BuildDisplayTextHelpEntry(parent, "$insanity", "Current Insanity", xCoord2, yCoord, 80)
+	controls.labels.insanityVar = BuildDisplayTextHelpEntry(parent, "$insanity", "Current Insanity", xCoord2-70, yCoord, 130)
 
 	yCoord = yCoord - yOffset4
 	controls.labels.vfStacksIncomingVar = BuildDisplayTextHelpEntry(parent, "$vfIncoming", "Incoming Voidform Stacks", xCoord, yCoord, 85)
-	controls.labels.castingVar = BuildDisplayTextHelpEntry(parent, "$casting", "Insanity from Hardcasting Spells", xCoord2, yCoord, 80)
+	controls.labels.castingVar = BuildDisplayTextHelpEntry(parent, "$casting", "Insanity from Hardcasting Spells", xCoord2-70, yCoord, 130)
 
 	yCoord = yCoord - yOffset4
 	controls.labels.vfDrainStacksVar = BuildDisplayTextHelpEntry(parent, "$vfDrainStacks", "Current Voidform Drain Stacks Count", xCoord, yCoord, 85)
-	controls.labels.passiveVar = BuildDisplayTextHelpEntry(parent, "$passive", "Insanity from Passive Sources", xCoord2, yCoord, 80)
+	controls.labels.passiveVar = BuildDisplayTextHelpEntry(parent, "$passive", "Insanity from Passive Sources", xCoord2-70, yCoord, 130)
 
 	yCoord = yCoord - yOffset4
 	controls.labels.vfDrainVar = BuildDisplayTextHelpEntry(parent, "$vfDrain", "Insanity drained per second", xCoord, yCoord, 85)
-	controls.labels.liStacksVar = BuildDisplayTextHelpEntry(parent, "$liStacks", "Lingering Insanity Stacks", xCoord2, yCoord, 80)
+	controls.labels.asInsanityVar = BuildDisplayTextHelpEntry(parent, "$asInsanity", "Insanity from Auspicious Spirits", xCoord2-70, yCoord, 130)
 
 	yCoord = yCoord - yOffset4
 	controls.labels.vfTimeVar = BuildDisplayTextHelpEntry(parent, "$vfTime", "Time until Voidform will end", xCoord, yCoord, 85)
-	controls.labels.liTimeVar = BuildDisplayTextHelpEntry(parent, "$liTime", "Lingering Insanity time remaining", xCoord2, yCoord, 80)
+	controls.labels.asCountVar = BuildDisplayTextHelpEntry(parent, "$asCount", "Number of Auspicious Spirits in Flight", xCoord2-70, yCoord, 130)
+	
+	yCoord = yCoord - yOffset4
+	controls.labels.mbGcdsVar = BuildDisplayTextHelpEntry(parent, "$mbGcds", "Number of GCDs left on Mindbender", xCoord, yCoord, 85)
+	controls.labels.mbInsanityVar = BuildDisplayTextHelpEntry(parent, "$mbInsanity", "Insanity from Mindbender (per settings)", xCoord2-70, yCoord, 130)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.mbTimeVar = BuildDisplayTextHelpEntry(parent, "$mbTime", "Time left on Mindbender", xCoord, yCoord, 85)
+	controls.labels.mbSwingsVar = BuildDisplayTextHelpEntry(parent, "$mbSwings", "Number of Swings left on Mindbender", xCoord2-70, yCoord, 130)
+	
+	yCoord = yCoord - yOffset4
+	controls.labels.liStacksVar = BuildDisplayTextHelpEntry(parent, "$liStacks", "Lingering Insanity Stacks", xCoord, yCoord, 85)
+	controls.labels.liTimeVar = BuildDisplayTextHelpEntry(parent, "$liTime", "Lingering Insanity time remaining", xCoord2-70, yCoord, 130)
 
 	yCoord = yCoord - yOffset4
 	controls.labels.hasteVar = BuildDisplayTextHelpEntry(parent, "$haste", "Current Haste%", xCoord, yCoord, 85)
-	controls.labels.ttdVar = BuildDisplayTextHelpEntry(parent, "$ttd", "Time To Die of current target", xCoord2, yCoord, 80)
+	controls.labels.ttdVar = BuildDisplayTextHelpEntry(parent, "$ttd", "Time To Die of current target", xCoord2-70, yCoord, 130)
 
 	yCoord = yCoord - yOffset4
-	controls.labels.newlineVar = BuildDisplayTextHelpEntry(parent, "|n", "Insert a Newline", xCoord, yCoord, 85)
+	controls.labels.gcdVar = BuildDisplayTextHelpEntry(parent, "$gcd", "Current GCD, in seconds", xCoord, yCoord, 85)
+	controls.labels.newlineVar = BuildDisplayTextHelpEntry(parent, "||n", "Insert a Newline", xCoord2-70, yCoord, 130)
 	---------------------------
 
 	yCoord = -5
@@ -2410,6 +2514,8 @@ local function RemoveInvalidVariablesFromBarText(input)
 					
 					if var == "$haste" then
 						valid = true
+					elseif var == "$gcd" then
+						valid = true
 					elseif var == "$vfIncoming" then
 						if snapshotData.voidform.additionalStacks ~= nil and snapshotData.voidform.additionalStacks > 0 then
 							valid = true
@@ -2446,6 +2552,30 @@ local function RemoveInvalidVariablesFromBarText(input)
 						end
 					elseif var == "$passive" then
 						if (CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.auspiciousSpirits.total) + snapshotData.mindbender.insanityFinal > 0 then
+							valid = true
+						end
+					elseif var == "$mbInsanity" then						
+						if snapshotData.mindbender.insanityFinal > 0 then
+							valid = true
+						end
+					elseif var == "$mbGcds" then
+						if snapshotData.mindbender.remaining.gcds > 0 then
+							valid = true
+						end
+					elseif var == "$mbSwings" then
+						if snapshotData.mindbender.remaining.swings > 0 then
+							valid = true
+						end
+					elseif var == "$mbTime" then
+						if snapshotData.mindbender.remaining.time > 0 then
+							valid = true
+						end
+					elseif var == "$asCount" then
+						if snapshotData.auspiciousSpirits.total > 0 then
+							valid = true
+						end
+					elseif var == "$asInsanity" then
+						if snapshotData.auspiciousSpirits.total > 0 then
 							valid = true
 						end
 					elseif var == "$ttd" then
@@ -2495,7 +2625,16 @@ local function BarText()
         end
     end
 
-	local hastePercent = string.format("|c%s%s%%|c%s", _hasteColor, _hasteValue, settings.colors.text.left)
+	--$gcd
+	local _gcd = 1.5 / (1 + (snapshotData.haste/100))
+	if _gcd > 1.5 then
+		_gcd = 1.5
+	elseif _gcd < 0.75 then
+		_gcd = 0.75
+	end
+	local gcd = string.format("%.2f", _gcd)
+
+	local hastePercent = string.format("|c%s%." .. settings.hastePrecision .. "f%%|c%s", _hasteColor, snapshotData.haste, settings.colors.text.left)
 	--$vfStacks
 	local voidformStacks = string.format("%.0f", snapshotData.voidform.totalStacks)
 	--$vfIncoming
@@ -2530,10 +2669,27 @@ local function BarText()
 	if snapshotData.casting.insanityFinal > 0 and (characterData.talents.fotm.isSelected or spells.powerInfusion.isActive) then        
 		castingInsanity = string.format("|c%s%.2f|r", settings.colors.text.castingInsanity, snapshotData.casting.insanityFinal)
 	end
+	--$mbInsanity
+	local mbInsanity = string.format("%.0f", snapshotData.mindbender.insanityFinal)
+	--$mbGcds
+	local mbGcds = string.format("%.0f", snapshotData.mindbender.remaining.gcds)
+	--$mbSwings
+	local mbSwings = string.format("%.0f", snapshotData.mindbender.remaining.swings)
+	--$mbTime
+	local mbTime = string.format("%.1f", snapshotData.mindbender.remaining.time)
+	--$asCount
+	local asCount = string.format("%.0f", snapshotData.auspiciousSpirits.total)
+	--$asInsanity
+	local _asInsanity = CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.auspiciousSpirits.total
+	local asInsanity
+	if spells.powerInfusion.isActive then
+		asInsanity = string.format("%.1f", _asInsanity)
+	else
+		asInsanity = string.format("%.0f", _asInsanity)
+	end
 	--$passive
-	local _passiveInsanity = (CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.auspiciousSpirits.total) + snapshotData.mindbender.insanityFinal
-	local passiveInsanity = ""
-	
+	local _passiveInsanity = _asInsanity + snapshotData.mindbender.insanityFinal
+	local passiveInsanity = ""	
 	if spells.powerInfusion.isActive then
 		passiveInsanity = string.format("|c%s%.0f|r", settings.colors.text.passiveInsanity, _passiveInsanity)
 	else
@@ -2576,6 +2732,7 @@ local function BarText()
 		returnText[x].text = returnText[x].color .. returnText[x].text
 		returnText[x].text = string.gsub(returnText[x].text, "||n", string.format("\n") .. returnText[x].color)
 		returnText[x].text = string.gsub(returnText[x].text, "$haste", hastePercent .. returnText[x].color)
+		returnText[x].text = string.gsub(returnText[x].text, "$gcd", gcd)
 		returnText[x].text = string.gsub(returnText[x].text, "$vfIncoming", voidformStacksIncoming)
 		returnText[x].text = string.gsub(returnText[x].text, "$vfStacks", voidformStacks)
 		returnText[x].text = string.gsub(returnText[x].text, "$liStacks", lingeringInsanityStacks)
@@ -2585,9 +2742,45 @@ local function BarText()
 		returnText[x].text = string.gsub(returnText[x].text, "$vfTime", voidformDrainTime)
 		returnText[x].text = string.gsub(returnText[x].text, "$insanity", currentInsanity .. returnText[x].color)
 		returnText[x].text = string.gsub(returnText[x].text, "$casting", castingInsanity .. returnText[x].color)
-		returnText[x].text = string.gsub(returnText[x].text, "$passive", passiveInsanity .. returnText[x].color)
+		returnText[x].text = string.gsub(returnText[x].text, "$passive", passiveInsanity .. returnText[x].color)		
+		returnText[x].text = string.gsub(returnText[x].text, "$mbInsanity", mbInsanity)
+		returnText[x].text = string.gsub(returnText[x].text, "$mbGcds", mbGcds)
+		returnText[x].text = string.gsub(returnText[x].text, "$mbSwings", mbSwings)
+		returnText[x].text = string.gsub(returnText[x].text, "$mbTime", mbTime)
+		returnText[x].text = string.gsub(returnText[x].text, "$asCount", asCount)
+		returnText[x].text = string.gsub(returnText[x].text, "$asInsanity", asInsanity)
 		returnText[x].text = string.gsub(returnText[x].text, "$ttd", ttd .. returnText[x].color)
 	end
+
+	Global_TwintopInsanityBar = {
+		ttd = ttd or "--",
+		voidform = {
+			stacks = snapshotData.voidform.totalStacks or 0,
+			incomingStacks = snapshotData.voidform.additionalStacks or 0,
+			drainStacks = snapshotData.voidform.drainStacks or 0,
+			drain = snapshotData.voidform.currentDrainRate or 0,
+			drainTime = snapshotData.voidform.remainingTime or 0
+		},
+		lingeringInsanity = {
+			timeLeft = _lingeringInsanityTimeleft,
+			stacks = snapshotData.lingeringInsanity.stacksLast or 0,
+		},
+		insanity = {
+			insanity = snapshotData.insanity or 0,
+			casting = snapshotData.casting.insanityFinal or 0,
+			passive = _passiveInsanity
+		},
+		auspiciousSpirits = {
+			count = snapshotData.auspiciousSpirits.total or 0,
+			insanity = _asInsanity
+		},
+		mindbender = {
+			insanity = snapshotData.mindbender.insanityFinal or 0,
+			gcds = snapshotData.mindbender.remaining.gcds or 0,
+			swings = snapshotData.mindbender.remaining.swings or 0,
+			time = snapshotData.mindbender.remaining.time or 0
+		}
+	}
 
 	return returnText[0].text, returnText[1].text, returnText[2].text
 end
