@@ -1,5 +1,5 @@
-local addonVersion = "7.3.5.13"
-local addonReleaseDate = "May 22, 2018"
+local addonVersion = "7.3.5.14"
+local addonReleaseDate = "May 23, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -1637,7 +1637,7 @@ local function ConstructOptionsPanel()
 	f:SetPoint("TOPLEFT", xCoord2+10, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 	f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
-	f:SetChecked(settings.voidEruptionThreshold)
+	f:SetChecked(settings.displayText.fontSizeLock)
 	f:SetScript("OnClick", function(self, ...)
 		settings.displayText.fontSizeLock = self:GetChecked()
 		if settings.displayText.fontSizeLock then
