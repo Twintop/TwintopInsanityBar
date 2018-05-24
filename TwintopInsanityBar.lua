@@ -1,3 +1,5 @@
+local addonVersion = "8.0.1.4"
+local addonReleaseDate = "May 23, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -19,6 +21,7 @@ asTimerFrame.sinceLastUpdate = 0
 
 local timerFrame = CreateFrame("Frame")
 timerFrame.sinceLastUpdate = 0
+timerFrame.ttdSinceLastUpdate = 0
 
 local combatFrame = CreateFrame("Frame")
 
@@ -29,6 +32,36 @@ mindbenderAudioCueFrame.sinceLastUpdate = 0
 local interfaceSettingsFrame = nil
 
 local settings = nil
+
+Global_TwintopInsanityBar = {
+	ttd = 0,
+	voidform = {
+		stacks = 0,
+		incomingStacks = 0,
+		drainStacks = 0,
+		drain = 0,
+		drainTime = 0
+	},
+	lingeringInsanity = {
+		timeLeft = 0,
+		stacks = 0
+	},
+	insanity = {
+		insanity = 0,
+		casting = 0,
+		passive = 0
+	},
+	auspiciousSpirits = {
+		count = 0,
+		insanity = 0
+	},
+	mindbender = {
+		insanity = 0,
+		gcds = 0,
+		swings = 0,
+		time = 0
+	}
+}
 
 local characterData = {
 	guid = UnitGUID("player"),
@@ -144,6 +177,12 @@ spells.lingeringInsanity.name = select(1, GetSpellInfo(spells.lingeringInsanity.
 local snapshotData = {
 	insanity = 0,
 	haste = 0,
+	target = {
+		guid = nil,
+		snapshot = {},
+		ttd = 0,
+		ttdIsActive = false
+	},
 	casting = {
 		spellId = nil,
 		startTime = nil,
@@ -205,6 +244,15 @@ local addonData = {
 	loaded = false,
 	registered = false
 }
+
+local function TableLength(T)
+	local count = 0
+	local _
+	for _ in pairs(T) do
+		count = count + 1
+	end
+	return count
+end
 
 local function FindBuffByName(spellName)
 	for i = 1, 40 do
@@ -294,13 +342,17 @@ end
 
 local function LoadDefaultSettings()
 	settings = {
-		version=1,
 		showSummary=false,
 		showS2MSummary=true,
 		hasteApproachingThreshold=135,
 		hasteThreshold=140,
+		hastePrecision=2,
 		voidEruptionThreshold=true,
 		auspiciousSpiritsTracker=true,
+		ttd = {
+			refreshRate = 0.2,
+			maxEntries = 15
+		},
 		displayBar = {
 			alwaysShow=false,
 			notZeroShow=true
@@ -332,6 +384,7 @@ local function LoadDefaultSettings()
 				passiveInsanity="FFDF00FF",		
 				left="FFFFFFFF",
 				middle="FFFFFFFF",
+				right="FFFFFFFF",
 				hasteBelow="FFFFFFFF",
 				hasteApproaching="FFFFFF00",
 				hasteAbove="FF00FF00"
@@ -358,24 +411,22 @@ local function LoadDefaultSettings()
 			}
 		},
 		displayText={
-			fontSize=18,
+			fontSizeLeft=18,
+			fontSizeMiddle=18,
+			fontSizeRight=18,
+			fontSizeLock=true,
 			fontFace="Fonts\\FRIZQT__.TTF",
 			left={
-				lingeringInsanityStacks=false,
-				voidformStacks=true,
-				voidformIncomingStacks=true,
-				showHaste=true
+				outVoidformText="$haste%",
+				inVoidformText="$haste% - $vfStacks (+$vfIncoming) VF",
 			},
 			middle={
-				lingeringInsanityStacks=true,
-				lingeringInsanityTime=true,
-				voidformTime=true,
-				voidformDrain=true
+				outVoidformText="{$liStacks}[$liStacks LI - $liTime sec]",
+				inVoidformText="$vfTime sec - $vfDrain/sec ",
 			},
 			right={
-				castingInsanity=true,
-				passiveInsanity=true,
-				currentInsanity=true
+				outVoidformText="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
+				inVoidformText="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
 			}
 		},
 		audio={
@@ -505,6 +556,19 @@ local function EventRegistration()
 		addonData.registered = false			
 		barContainerFrame:Hide()
 	end	
+end
+
+local function IsTtdActive()
+	if string.find(settings.displayText.left.outVoidformText, "$ttd") or
+		string.find(settings.displayText.left.inVoidformText, "$ttd") or
+		string.find(settings.displayText.middle.outVoidformText, "$ttd") or
+		string.find(settings.displayText.middle.inVoidformText, "$ttd") or
+		string.find(settings.displayText.right.outVoidformText, "$ttd") or
+		string.find(settings.displayText.right.inVoidformText, "$ttd") then
+		snapshotData.target.ttdIsActive = true
+	else
+		snapshotData.target.ttdIsActive = false
+	end
 end
 
 local function ShowInsanityBar()
@@ -676,39 +740,39 @@ local function ConstructInsanityBar()
 	passiveFrame.threshold:Show()
 	
 	leftTextFrame:Show()
-	leftTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
-	leftTextFrame:SetHeight(settings.bar.height)
-	leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", settings.bar.border+2, 0)
+	leftTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2)-2)
+	leftTextFrame:SetHeight(settings.bar.height * 3.5)
+	leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 2, 0)
 	leftTextFrame:SetFrameStrata("BACKGROUND")
-	leftTextFrame:SetFrameLevel(200)
+	leftTextFrame:SetFrameLevel(128)
 	leftTextFrame.font:SetPoint("LEFT", 0, 0)
 	leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 	leftTextFrame.font:SetJustifyH("LEFT")
-	leftTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSize, "OUTLINE")
+	leftTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeLeft, "OUTLINE")
 	leftTextFrame.font:Show()
 	
 	middleTextFrame:Show()
 	middleTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
-	middleTextFrame:SetHeight(settings.bar.height)
+	middleTextFrame:SetHeight(settings.bar.height * 3.5)
 	middleTextFrame:SetPoint("CENTER", barContainerFrame, "CENTER", 0, 0)
 	middleTextFrame:SetFrameStrata("BACKGROUND")
 	middleTextFrame:SetFrameLevel(128)
 	middleTextFrame.font:SetPoint("CENTER", 0, 0)
 	middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 	middleTextFrame.font:SetJustifyH("CENTER")
-	middleTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSize, "OUTLINE")
+	middleTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeMiddle, "OUTLINE")
 	middleTextFrame.font:Show()
 	
 	rightTextFrame:Show()
 	rightTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
-	rightTextFrame:SetHeight(settings.bar.height)
-	rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", -settings.bar.border, 0)
+	rightTextFrame:SetHeight(settings.bar.height * 3.5)
+	rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
 	rightTextFrame:SetFrameStrata("BACKGROUND")
 	rightTextFrame:SetFrameLevel(128)
 	rightTextFrame.font:SetPoint("RIGHT", 0, 0)
 	rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 	rightTextFrame.font:SetJustifyH("RIGHT")
-	rightTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSize, "OUTLINE")
+	rightTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeRight, "OUTLINE")
 	rightTextFrame.font:Show()
 end
 
@@ -857,6 +921,42 @@ local function BuildSlider(parent, title, minValue, maxValue, defaultValue, step
 	return f
 end
 
+local function BuildTextBox(parent, text, maxLetters, width, height, xPos, yPos)
+	local f = CreateFrame("EditBox", nil, parent)
+	f:SetPoint("TOPLEFT", xPos, yPos)
+	f:SetAutoFocus(false)
+	f:SetMaxLetters(maxLetters)
+    f:SetJustifyH("Left")
+    f:SetFontObject(GameFontHighlight)
+    f:SetSize(width, height)
+    f:SetTextInsets(4, 4, 0, 0)
+    f:SetBackdrop({
+        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        tile = true,
+        edgeSize = 1,
+        tileSize = 5
+    })
+    f:SetBackdropColor(0, 0, 0, 1)
+    f:SetBackdropBorderColor(0.2, 0.2, 0.2, 1.0)
+    f:SetScript("OnEnter", function(self)
+        self:SetBackdropBorderColor(0.4, 0.4, 0.4, 1.0)
+    end)
+    f:SetScript("OnLeave", function(self)
+        self:SetBackdropBorderColor(0.2, 0.2, 0.2, 1.0)
+    end)
+    f:SetScript("OnEscapePressed", function(self)
+        self:ClearFocus()
+    end)
+    f:SetScript("OnEnterPressed", function(self)
+        self:ClearFocus()
+    end)
+	f:SetText(text)
+	f:SetCursorPosition(0)
+
+	return f
+end
+
 local function ConvertColorDecimalToHex(r, g, b, a)
 	local _r, _g, _b, _a
 
@@ -935,6 +1035,39 @@ local function BuildSectionHeader(parent, title, posX, posY)
 	return f
 end
 
+local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset)
+	local f = CreateFrame("Frame", nil, parent)
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", parent)
+	f:SetPoint("TOPLEFT", posX, posY)
+	f:SetWidth(offset)
+	f:SetHeight(20)
+	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font:SetFontObject(GameFontNormalSmall)
+	f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetSize(0, 14)
+	f.font:SetJustifyH("RIGHT")
+	f.font:SetSize(offset, 20)
+	f.font:SetText(var)
+
+	f.description = CreateFrame("Frame", nil, parent)
+	local fd = f.description
+	fd:ClearAllPoints()
+	fd:SetPoint("TOPLEFT", parent)
+	fd:SetPoint("TOPLEFT", posX+offset+10, posY)
+	fd:SetWidth(200)
+	fd:SetHeight(20)
+	fd.font = fd:CreateFontString(nil, "BACKGROUND")
+	fd.font:SetFontObject(GameFontHighlightSmall)
+	fd.font:SetPoint("LEFT", fd, "LEFT")
+    fd.font:SetSize(0, 14)
+	fd.font:SetJustifyH("LEFT")
+	fd.font:SetSize(200, 20)
+	fd.font:SetText(desc)
+
+	return f
+end
+
 local function ConstructOptionsPanel()
 	local xPadding = 10
 	local xPadding2 = 30
@@ -968,6 +1101,8 @@ local function ConstructOptionsPanel()
 	
 	local controls = {}
 	controls.colors = {}
+	controls.labels = {}
+	controls.textbox = {}
 	controls.checkBoxes = {}
 	local f = nil
 
@@ -975,18 +1110,25 @@ local function ConstructOptionsPanel()
 	controls.barPositionSection = BuildSectionHeader(parent, "Twintop's Insanity Bar", xCoord+xPadding, yCoord)
 
 	StaticPopupDialogs["TwintopInsanityBar_Reset"] = {
-			text = "Do you want to reset Twintop's Insanity Bar back to it's default configuration? This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
-			OnAccept = function()
-				LoadDefaultSettings()
-				ReloadUI()			
-			end,
-			timeout = 0,
-			whileDead = true,
-			hideOnEscape = true,
-			preferredIndex = 3
-		}
+		text = "Do you want to reset Twintop's Insanity Bar back to it's default configuration? This will cause your UI to be reloaded!",
+		button1 = "Yes",
+		button2 = "No",
+		OnAccept = function()
+			LoadDefaultSettings()
+			ReloadUI()			
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+
+	yCoord = yCoord - yOffset3
+	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Author:", "Twintop <Astral> - Turalyon-US", xCoord+xPadding*2, yCoord, 75)
+	yCoord = yCoord - yOffset4
+	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Version:", addonVersion, xCoord+xPadding*2, yCoord, 75)
+	yCoord = yCoord - yOffset4
+	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Released:", addonReleaseDate, xCoord+xPadding*2, yCoord, 75)
 
 	yCoord = yCoord - yOffset3
 	controls.resetButton = CreateFrame("Button", "TwintopInsanityBar_ResetButton", parent)
@@ -1022,8 +1164,13 @@ local function ConstructOptionsPanel()
 	interfaceSettingsFrame.barLayoutPanel.parent = parent.name
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.barLayoutPanel)
 	
+	interfaceSettingsFrame.barFontPanel = CreateFrame("Frame", "TwintopInsanityBar_BarFontPanel", parent)
+	interfaceSettingsFrame.barFontPanel.name = "Bar Font and Colors"
+	interfaceSettingsFrame.barFontPanel.parent = parent.name
+	InterfaceOptions_AddCategory(interfaceSettingsFrame.barFontPanel)
+	
 	interfaceSettingsFrame.barTextPanel = CreateFrame("Frame", "TwintopInsanityBar_BarTextPanel", parent)
-	interfaceSettingsFrame.barTextPanel.name = "Bar Text and Colors"
+	interfaceSettingsFrame.barTextPanel.name = "Bar Text Display"
 	interfaceSettingsFrame.barTextPanel.parent = parent.name
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.barTextPanel)
 	
@@ -1079,7 +1226,10 @@ local function ConstructOptionsPanel()
 		insanityFrame.threshold:SetHeight(value-(settings.bar.border*2))
 		castingFrame:SetHeight(value-(settings.bar.border*2))
 		passiveFrame:SetHeight(value-(settings.bar.border*2))
-		passiveFrame.threshold:SetHeight(value-(settings.bar.border*2))
+		passiveFrame.threshold:SetHeight(value-(settings.bar.border*2))		
+		leftTextFrame:SetHeight(settings.bar.height * 3.5)
+		middleTextFrame:SetHeight(settings.bar.height * 3.5)
+		rightTextFrame:SetHeight(settings.bar.height * 3.5)
 		local maxBorderSize = math.min(math.floor(settings.bar.height/ 8), math.floor(settings.bar.width / 8))
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -1157,6 +1307,9 @@ local function ConstructOptionsPanel()
 		leftTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2)-2)
 		middleTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
 		rightTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
+		leftTextFrame:SetHeight(settings.bar.height * 3.5)
+		middleTextFrame:SetHeight(settings.bar.height * 3.5)
+		rightTextFrame:SetHeight(settings.bar.height * 3.5)
 
 		local minBarWidth = math.max(settings.bar.border * 8, 120)
 		local minBarHeight = math.max(settings.bar.border * 8, 1)
@@ -1500,23 +1653,25 @@ local function ConstructOptionsPanel()
 	f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
 	getglobal(f:GetName() .. 'Text'):SetText("Show Void Eruption Threshold Line")
 	f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Void Eruption."
-	f:SetChecked(settings.voidEruptionThreshold)
+	f:SetChecked(settings.colors.bar.flashEnabled)
 	f:SetScript("OnClick", function(self, ...)
-		settings.voidEruptionThreshold = self:GetChecked()
+		settings.colors.bar.flashEnabled = self:GetChecked()
 	end)
+
+	
 
 	------------------------------------------------
 
 	yCoord = -5
-	parent = interfaceSettingsFrame.barTextPanel
+	parent = interfaceSettingsFrame.barFontPanel
 
-	controls.textDisplaySection = BuildSectionHeader(parent, "Text Display", xCoord+xPadding, yCoord)
+	controls.textDisplaySection = BuildSectionHeader(parent, "Font Size and Colors", xCoord+xPadding, yCoord)
 
-	title = "Bar Font Size"
+	title = "Left Bar Text Font Size"
 	yCoord = yCoord - yOffset3
-	controls.fontSize = BuildSlider(parent, title, 6, 72, settings.displayText.fontSize, 1, 0,
+	controls.fontSizeLeft = BuildSlider(parent, title, 6, 72, settings.displayText.fontSizeLeft, 1, 0,
 								  barWidth, barHeight, xCoord+xPadding2, yCoord)
-	controls.fontSize:SetScript("OnValueChanged", function(self, value)
+	controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
 		if value > max then
 			value = max
@@ -1524,120 +1679,142 @@ local function ConstructOptionsPanel()
 			value = min
 		end
 		self.EditBox:SetText(value)		
-		settings.displayText.fontSize = value
-		leftTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSize, "OUTLINE")
-		middleTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSize, "OUTLINE")
-		rightTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSize, "OUTLINE")
-	end)
-
-	controls.checkBoxes.textMiddleLIS = CreateFrame("CheckButton", "TIBCB2_M1", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.textMiddleLIS
-	f:SetPoint("TOPLEFT", xCoord2, yCoord+5)
-	getglobal(f:GetName() .. 'Text'):SetText("Middle: Show Lingering Insanity Stacks")
-	f.tooltip = "Show Lingering Insanity stacks remaining in middle of the bar when not in Voidform."
-	f:SetChecked(settings.displayText.middle.lingeringInsanityStacks)
-	f:SetScript("OnClick", function(self, ...)
-		settings.displayText.middle.lingeringInsanityStacks = self:GetChecked()
-	end)
-
-	controls.checkBoxes.textMiddleLIT = CreateFrame("CheckButton", "TIBCB2_M2", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.textMiddleLIT
-	f:SetPoint("TOPLEFT", xCoord2, yCoord-15)
-	getglobal(f:GetName() .. 'Text'):SetText("Middle: Show Lingering Insanity Time")
-	f.tooltip = "Show Lingering Insanity effective duration remaining in middle of the bar when not in Voidform."
-	f:SetChecked(settings.displayText.middle.lingeringInsanityTime)
-	f:SetScript("OnClick", function(self, ...)
-		settings.displayText.middle.lingeringInsanityTime = self:GetChecked()
-	end)
-
-	yCoord = yCoord - yOffset3 + 5
-	controls.checkBoxes.textLeftHaste = CreateFrame("CheckButton", "TIBCB2_L1", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.textLeftHaste
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Left: Show Haste Percentage")
-	f.tooltip = "Show the current Haste Percentage on the far left of the bar."
-	f:SetChecked(settings.displayText.left.showHaste)
-	f:SetScript("OnClick", function(self, ...)
-		settings.displayText.left.showHaste = self:GetChecked()
-	end)
-
-	controls.checkBoxes.textMiddleVD = CreateFrame("CheckButton", "TIBCB2_M3", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.textMiddleVD
-	f:SetPoint("TOPLEFT", xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Middle: Show Current Voidform Drain")
-	f.tooltip = "Show the current Insanity drain based on Insanity Drain Stacks, in Insanity/sec."
-	f:SetChecked(settings.displayText.middle.voidformDrain)
-	f:SetScript("OnClick", function(self, ...)
-		settings.displayText.middle.voidformDrain = self:GetChecked()
+		settings.displayText.fontSizeLeft = value
+		leftTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeLeft, "OUTLINE")
+		if settings.displayText.fontSizeLock then
+			controls.fontSizeMiddle:SetValue(value)
+			controls.fontSizeRight:SetValue(value)
+		end
 	end)
 	
-	yCoord = yCoord - yOffset4
-	controls.checkBoxes.textLeftVF = CreateFrame("CheckButton", "TIBCB2_L2", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.textLeftVF
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Left: Show Voidform Stacks")
-	f.tooltip = "Show the number of stacks of Voidform."
-	f:SetChecked(settings.displayText.left.voidformStacks)
+	controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TIBCB2_F1", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.fontSizeLock
+	f:SetPoint("TOPLEFT", xCoord2+10, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
+	f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
+	f:SetChecked(settings.displayText.fontSizeLock)
 	f:SetScript("OnClick", function(self, ...)
-		settings.displayText.left.voidformStacks = self:GetChecked()
+		settings.displayText.fontSizeLock = self:GetChecked()
+		if settings.displayText.fontSizeLock then
+			controls.fontSizeMiddle:SetValue(settings.displayText.fontSizeLeft)
+			controls.fontSizeRight:SetValue(settings.displayText.fontSizeLeft)
+		end
 	end)
 
-	controls.checkBoxes.textMiddleVTR = CreateFrame("CheckButton", "TIBCB2_M4", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.textMiddleVTR
-	f:SetPoint("TOPLEFT", xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Middle: Show Voidform Time")
-	f.tooltip = "Show the amount of time, in seconds, that your current Voidform is expected to last based on current Insanity levels."
-	f:SetChecked(settings.displayText.middle.voidformTime)
-	f:SetScript("OnClick", function(self, ...)
-		settings.displayText.middle.voidformTime = self:GetChecked()
+	controls.colors.leftText = BuildColorPicker(parent, "Left Text", settings.colors.text.left,
+													250, 25, xCoord2, yCoord-30)	f = controls.colors.leftText
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		--Text doesn't care about Alpha, but the color picker does!
+		a = 1.0
+
+		controls.colors.leftText.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.text.left = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.text.left, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
 	end)
 
-	yCoord = yCoord - yOffset4
-	controls.checkBoxes.textLeftIVF = CreateFrame("CheckButton", "TIBCB2_L3", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.textLeftIVF
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Left: Show Incoming Voidform Stacks")
-	f.tooltip = "Show the number of incoming stacks of Voidform based on the expected remaining duration of Voidform."
-	f:SetChecked(settings.displayText.left.voidformIncomingStacks)
-	f:SetScript("OnClick", function(self, ...)
-		settings.displayText.left.voidformIncomingStacks = self:GetChecked()
+	controls.colors.middleText = BuildColorPicker(parent, "Middle Text", settings.colors.text.middle,
+													225, 25, xCoord2, yCoord-70)
+	f = controls.colors.middleText
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		--Text doesn't care about Alpha, but the color picker does!
+		a = 1.0
+
+		controls.colors.middleText.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.text.middle = ConvertColorDecimalToHex(r, g, b, a)
+		barContainerFrame:SetBackdropBorderColor(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.text.middle, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
 	end)
 
-	controls.checkBoxes.textRightCaI = CreateFrame("CheckButton", "TIBCB2_R1", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.textRightCaI
-	f:SetPoint("TOPLEFT", xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Right: Show Casting Insanity Value")
-	f.tooltip = "Show the amount of incoming Insanity from hardcasted spells."
-	f:SetChecked(settings.displayText.right.castingInsanity)
-	f:SetScript("OnClick", function(self, ...)
-		settings.displayText.right.castingInsanity = self:GetChecked()
-	end)
+	controls.colors.rightText = BuildColorPicker(parent, "Right Text", settings.colors.text.right,
+													225, 25, xCoord2, yCoord-110)
+	f = controls.colors.rightText
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		--Text doesn't care about Alpha, but the color picker does!
+		a = 1.0
 
-	yCoord = yCoord - yOffset4
-	controls.checkBoxes.textLeftLI = CreateFrame("CheckButton", "TIBCB2_L4", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.textLeftLI
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Left: Show Lingering Insanity Stacks")
-	f.tooltip = "Show Lingering Insanity stacks on left side of bar next to Haste% when not in Voidform. Old style (pre 7.1.5) display."
-	f:SetChecked(settings.displayText.left.lingeringInsanityStacks)
-	f:SetScript("OnClick", function(self, ...)
-		settings.displayText.left.lingeringInsanityStacks = self:GetChecked()
-	end)
-
-	controls.checkBoxes.textRightCuI = CreateFrame("CheckButton", "TIBCB2_R2", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.textRightCuI
-	f:SetPoint("TOPLEFT", xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Right: Show Current Insanity Value")
-	f.tooltip = "Show the current amount of Insanity."
-	f:SetChecked(settings.displayText.right.currentInsanity)
-	f:SetScript("OnClick", function(self, ...)
-		settings.displayText.right.currentInsanity = self:GetChecked()
+		controls.colors.rightText.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.text.right = ConvertColorDecimalToHex(r, g, b, a)
+		barContainerFrame:SetBackdropBorderColor(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.text.right, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
 	end)
 	
-	yCoord = yCoord - yOffset2	
-	controls.textColorsSection = BuildSectionHeader(parent, "Text Colors", xCoord+xPadding, yCoord)
+	title = "Middle Bar Text Font Size"
+	yCoord = yCoord - yOffset1
+	controls.fontSizeMiddle = BuildSlider(parent, title, 6, 72, settings.displayText.fontSizeMiddle, 1, 0,
+								  barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+		self.EditBox:SetText(value)		
+		settings.displayText.fontSizeMiddle = value
+		middleTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeMiddle, "OUTLINE")
+		if settings.displayText.fontSizeLock then
+			controls.fontSizeLeft:SetValue(value)
+			controls.fontSizeRight:SetValue(value)
+		end
+	end)
 	
-	yCoord = yCoord - yOffset2	
+	title = "Right Bar Text Font Size"
+	yCoord = yCoord - yOffset1
+	controls.fontSizeRight = BuildSlider(parent, title, 6, 72, settings.displayText.fontSizeRight, 1, 0,
+								  barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+		self.EditBox:SetText(value)		
+		settings.displayText.fontSizeRight = value
+		rightTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeRight, "OUTLINE")
+		if settings.displayText.fontSizeLock then
+			controls.fontSizeLeft:SetValue(value)
+			controls.fontSizeMiddle:SetValue(value)
+		end
+	end)
+
+	yCoord = yCoord - yOffset1	
 	controls.colors.currentInsanityText = BuildColorPicker(parent, "Current Insanity", settings.colors.text.currentInsanity, 250, 25, xCoord+xPadding*2, yCoord)
 	f = controls.colors.currentInsanityText
 	f.recolorTexture = function(color)
@@ -1660,32 +1837,8 @@ local function ConstructOptionsPanel()
 			ShowColorPicker(r, g, b, a, self.recolorTexture)
 		end
 	end)
-	
-	controls.colors.leftText = BuildColorPicker(parent, "Left Text (Except Haste% in Voidform)", settings.colors.text.left, 250, 25, xCoord2, yCoord)
-	f = controls.colors.leftText
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		--Text doesn't care about Alpha, but the color picker does!
-		a = 1.0
 
-		controls.colors.leftText.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.text.left = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.text.left, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	yCoord = yCoord - yOffset2	
-	controls.colors.castingInsanityText = BuildColorPicker(parent, "Insanity from hardcasting spells", settings.colors.text.castingInsanity, 250, 25, xCoord+xPadding*2, yCoord)
+	controls.colors.castingInsanityText = BuildColorPicker(parent, "Insanity from hardcasting spells", settings.colors.text.castingInsanity, 250, 25, xCoord2, yCoord)
 	f = controls.colors.castingInsanityText
 	f.recolorTexture = function(color)
 		local r, g, b, a
@@ -1709,30 +1862,6 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	controls.colors.middleText = BuildColorPicker(parent, "Middle Text", settings.colors.text.middle, 225, 25, xCoord2, yCoord)
-	f = controls.colors.middleText
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		--Text doesn't care about Alpha, but the color picker does!
-		a = 1.0
-
-		controls.colors.middleText.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.text.middle = ConvertColorDecimalToHex(r, g, b, a)
-		barContainerFrame:SetBackdropBorderColor(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.text.middle, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-	
 	yCoord = yCoord - yOffset1	
 	title = "Low to Medium Haste% Threshold in Voidform"
 	controls.hasteApproachingThreshold = BuildSlider(parent, title, 0, 500, settings.hasteApproachingThreshold, 0.25, 2,
@@ -1843,6 +1972,212 @@ local function ConstructOptionsPanel()
 		settings.hasteThreshold = value
 	end)
 
+	yCoord = yCoord - yOffset1	
+	title = "Haste Decimals to Show"
+	controls.hastePrecision = BuildSlider(parent, title, 0, 10, settings.hastePrecision, 1, 0,
+									barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+
+		value = RoundTo(value, 0)
+		self.EditBox:SetText(value)		
+		settings.hastePrecision = value
+	end)
+
+	------------------------------------------------
+
+	yCoord = -5
+	parent = interfaceSettingsFrame.barTextPanel
+
+	controls.textCustomSection = BuildSectionHeader(parent, "Bar Display Text Customization", xCoord+xPadding, yCoord)
+
+	yCoord = yCoord - yOffset2
+	controls.labels.outVoidform = CreateFrame("Frame", nil, parent)
+	f = controls.labels.outVoidform
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", parent)
+	f:SetPoint("TOPLEFT", xCoord+xPadding2+100, yCoord)
+	f:SetWidth(225)
+	f:SetHeight(20)
+	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font:SetFontObject(GameFontNormal)
+	f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetSize(0, 14)
+	f.font:SetJustifyH("CENTER")
+	f.font:SetSize(225, 20)
+	f.font:SetText("Out of Voidform")
+
+	controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
+	f = controls.labels.inVoidform
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", parent)
+	f:SetPoint("TOPLEFT", xCoord2+25, yCoord)
+	f:SetWidth(200)
+	f:SetHeight(20)
+	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font:SetFontObject(GameFontNormal)
+	f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetSize(0, 14)
+	f.font:SetJustifyH("CENTER")
+	f.font:SetSize(225, 20)
+	f.font:SetText("In Voidform")
+
+	yCoord = yCoord - yOffset4
+	controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
+	f = controls.labels.inVoidform
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", parent)
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	f:SetWidth(90)
+	f:SetHeight(20)
+	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font:SetFontObject(GameFontNormal)
+	f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetSize(0, 14)
+	f.font:SetJustifyH("RIGHT")
+	f.font:SetSize(90, 20)
+	f.font:SetText("Left Text")
+
+	controls.textbox.voidformOutLeft = BuildTextBox(parent, settings.displayText.left.outVoidformText,
+													500, 225, 24, xCoord+xPadding*2+100, yCoord)
+	f = controls.textbox.voidformOutLeft
+	f:SetScript("OnTextChanged", function(self, input)
+		settings.displayText.left.outVoidformText = self:GetText()
+		IsTtdActive()
+	end)
+
+	controls.textbox.voidformInLeft = BuildTextBox(parent, settings.displayText.left.inVoidformText,
+													500, 225, 24, xCoord2+25, yCoord)
+	f = controls.textbox.voidformInLeft
+	f:SetScript("OnTextChanged", function(self, input)
+		settings.displayText.left.inVoidformText = self:GetText()
+		IsTtdActive()
+	end)
+
+	yCoord = yCoord - yOffset2
+	controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
+	f = controls.labels.inVoidform
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", parent)
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	f:SetWidth(90)
+	f:SetHeight(20)
+	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font:SetFontObject(GameFontNormal)
+	f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetSize(0, 14)
+	f.font:SetJustifyH("RIGHT")
+	f.font:SetSize(90, 20)
+	f.font:SetText("Middle Text")
+
+	controls.textbox.voidformOutMiddle = BuildTextBox(parent, settings.displayText.middle.outVoidformText,
+													500, 225, 24, xCoord+xPadding*2+100, yCoord)
+	f = controls.textbox.voidformOutMiddle
+	f:SetScript("OnTextChanged", function(self, input)
+		settings.displayText.middle.outVoidformText = self:GetText()
+		IsTtdActive()
+	end)
+
+	controls.textbox.voidformInMiddle = BuildTextBox(parent, settings.displayText.middle.inVoidformText,
+													500, 225, 24, xCoord2+25, yCoord)
+	f = controls.textbox.voidformInMiddle
+	f:SetScript("OnTextChanged", function(self, input)
+		settings.displayText.middle.inVoidformText = self:GetText()
+		IsTtdActive()
+	end)
+
+	yCoord = yCoord - yOffset2
+	controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
+	f = controls.labels.inVoidform
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", parent)
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	f:SetWidth(90)
+	f:SetHeight(20)
+	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font:SetFontObject(GameFontNormal)
+	f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetSize(0, 14)
+	f.font:SetJustifyH("RIGHT")
+	f.font:SetSize(90, 20)
+	f.font:SetText("Right Text")
+
+	controls.textbox.voidformOutRight = BuildTextBox(parent, settings.displayText.right.outVoidformText,
+													500, 225, 24, xCoord+xPadding*2+100, yCoord)
+	f = controls.textbox.voidformOutRight
+	f:SetScript("OnTextChanged", function(self, input)
+		settings.displayText.right.outVoidformText = self:GetText()
+		IsTtdActive()
+	end)
+
+	controls.textbox.voidformInRight = BuildTextBox(parent, settings.displayText.right.inVoidformText,
+													500, 225, 24, xCoord2+25, yCoord)
+	f = controls.textbox.voidformInRight
+	f:SetScript("OnTextChanged", function(self, input)
+		settings.displayText.right.inVoidformText = self:GetText()
+		IsTtdActive()
+	end)
+
+	yCoord = yCoord - yOffset2
+	controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
+	f = controls.labels.instructionsVar
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", parent)
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	f:SetWidth(600)
+	f:SetHeight(20)
+	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font:SetFontObject(GameFontHighlight)
+	f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetSize(0, 14)
+	f.font:SetJustifyH("LEFT")
+	f.font:SetSize(600, 20)
+	f.font:SetText("For conditional display (only if $VARIABLE is active/non-zero): {$VARIABLE}[WHAT TO DISPLAY]")
+
+	yCoord = yCoord - yOffset4
+	controls.labels.vfStacksVar = BuildDisplayTextHelpEntry(parent, "$vfStacks", "Current Voidform Stack Count", xCoord, yCoord, 85)
+	controls.labels.insanityVar = BuildDisplayTextHelpEntry(parent, "$insanity", "Current Insanity", xCoord2-70, yCoord, 130)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.vfStacksIncomingVar = BuildDisplayTextHelpEntry(parent, "$vfIncoming", "Incoming Voidform Stacks", xCoord, yCoord, 85)
+	controls.labels.castingVar = BuildDisplayTextHelpEntry(parent, "$casting", "Insanity from Hardcasting Spells", xCoord2-70, yCoord, 130)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.vfDrainStacksVar = BuildDisplayTextHelpEntry(parent, "$vfDrainStacks", "Current Voidform Drain Stacks Count", xCoord, yCoord, 85)
+	controls.labels.passiveVar = BuildDisplayTextHelpEntry(parent, "$passive", "Insanity from Passive Sources", xCoord2-70, yCoord, 130)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.vfDrainVar = BuildDisplayTextHelpEntry(parent, "$vfDrain", "Insanity drained per second", xCoord, yCoord, 85)
+	controls.labels.asInsanityVar = BuildDisplayTextHelpEntry(parent, "$asInsanity", "Insanity from Auspicious Spirits", xCoord2-70, yCoord, 130)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.vfTimeVar = BuildDisplayTextHelpEntry(parent, "$vfTime", "Time until Voidform will end", xCoord, yCoord, 85)
+	controls.labels.asCountVar = BuildDisplayTextHelpEntry(parent, "$asCount", "Number of Auspicious Spirits in Flight", xCoord2-70, yCoord, 130)
+	
+	yCoord = yCoord - yOffset4
+	controls.labels.mbGcdsVar = BuildDisplayTextHelpEntry(parent, "$mbGcds", "Number of GCDs left on Mindbender", xCoord, yCoord, 85)
+	controls.labels.mbInsanityVar = BuildDisplayTextHelpEntry(parent, "$mbInsanity", "Insanity from Mindbender (per settings)", xCoord2-70, yCoord, 130)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.mbTimeVar = BuildDisplayTextHelpEntry(parent, "$mbTime", "Time left on Mindbender", xCoord, yCoord, 85)
+	controls.labels.mbSwingsVar = BuildDisplayTextHelpEntry(parent, "$mbSwings", "Number of Swings left on Mindbender", xCoord2-70, yCoord, 130)
+	
+	yCoord = yCoord - yOffset4
+	controls.labels.liStacksVar = BuildDisplayTextHelpEntry(parent, "$liStacks", "Lingering Insanity Stacks", xCoord, yCoord, 85)
+	controls.labels.liTimeVar = BuildDisplayTextHelpEntry(parent, "$liTime", "Lingering Insanity time remaining", xCoord2-70, yCoord, 130)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.hasteVar = BuildDisplayTextHelpEntry(parent, "$haste", "Current Haste%", xCoord, yCoord, 85)
+	controls.labels.ttdVar = BuildDisplayTextHelpEntry(parent, "$ttd", "Time To Die of current target", xCoord2-70, yCoord, 130)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.gcdVar = BuildDisplayTextHelpEntry(parent, "$gcd", "Current GCD, in seconds", xCoord, yCoord, 85)
+	controls.labels.newlineVar = BuildDisplayTextHelpEntry(parent, "||n", "Insert a Newline", xCoord2-70, yCoord, 130)
 	---------------------------
 
 	yCoord = -5
@@ -2139,6 +2474,7 @@ local function RemainingTimeAndStackCount()
 	_, _, _, _, snapshotData.voidform.duration, _, _, _, _, snapshotData.voidform.spellId = FindBuffById(spells.voidform.id)
     	
     if snapshotData.voidform.spellId == nil then		
+		--[[ Commented out to try and fix Issue #12 -- https://github.com/Twintop/TwintopInsanityBar/issues/12
 		snapshotData.voidform.totalStacks = 0
 		snapshotData.voidform.drainStacks = 0
 		snapshotData.voidform.additionalStacks = 0
@@ -2152,6 +2488,7 @@ local function RemainingTimeAndStackCount()
 		snapshotData.voidform.voidTorrent.startTime = nil
 		snapshotData.voidform.dispersion.stacks = 0
 		snapshotData.voidform.dispersion.startTime = nil
+		]]
     else
 		local down, up, lagHome, lagWorld = GetNetStats()
 		local TimeDiff = currentTime - snapshotData.voidform.previousStackTime        
@@ -2220,119 +2557,292 @@ local function ResetCastingSnapshotData()
 	snapshotData.casting.insanityFinal = 0
 end
 
-local function BarTextLeft()    
-    local returnString = ""
-    local hasteColor = settings.colors.text.left
+local function RemoveInvalidVariablesFromBarText(input)
+	--1         11                       36
+	--a         b                        c
+	--{$liStacks}[$liStacks - $liTime sec]	
+	local returnText = ""
+	local p = 0
+	while p < string.len(input) do
+		local a, b, c, a1, b1, c1
+		a, a1 = string.find(input, "{", p)
+		if a ~= nil then
+			b, b1 = string.find(input, "}", a)
+
+			if b ~= nil and string.sub(input, b+1, b+1) == "[" then
+				c, c1 = string.find(input, "]", b+1)
+
+				if c ~= nil then
+					if p ~= a then
+						returnText = returnText .. string.sub(input, p, a-1)
+					end
+					
+					local valid = false
+					local var = string.sub(input, a+1, b-1)
+					
+					if var == "$haste" then
+						valid = true
+					elseif var == "$gcd" then
+						valid = true
+					elseif var == "$vfIncoming" then
+						if snapshotData.voidform.additionalStacks ~= nil and snapshotData.voidform.additionalStacks > 0 then
+							valid = true
+						end
+					elseif var == "$vfStacks" then
+						if snapshotData.voidform.totalStacks ~= nil and snapshotData.voidform.totalStacks > 0 then
+							valid = true
+						end
+					elseif var == "$liStacks" then
+						if snapshotData.lingeringInsanity.stacksLast ~= nil and snapshotData.lingeringInsanity.stacksLast > 0 then
+							valid = true
+						end
+					elseif var == "$liTime" then
+						if snapshotData.lingeringInsanity.timeLeftBase ~= nil and snapshotData.lingeringInsanity.lastTickTime ~= nil then
+							valid = true
+						end
+					elseif var == "$vfDrainStacks" then
+						if snapshotData.voidform.drainStacks ~= nil and snapshotData.voidform.drainStacks > 0 then
+							valid = true
+						end						
+					elseif var == "$vfDrain" then
+						if snapshotData.voidform.currentDrainRate ~= nil and snapshotData.voidform.currentDrainRate > 0 then
+							valid = true
+						end
+					elseif var == "$vfTime" then
+						if snapshotData.voidform.remainingTime ~= nil and snapshotData.voidform.remainingTime > 0 then
+							valid = true
+						end
+					elseif var == "$insanity" then
+						valid = true
+					elseif var == "$casting" then
+						if snapshotData.casting.insanityFinal ~= nil and snapshotData.casting.insanityFinal > 0 then
+							valid = true
+						end
+					elseif var == "$passive" then
+						if (CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.auspiciousSpirits.total) + snapshotData.mindbender.insanityFinal > 0 then
+							valid = true
+						end
+					elseif var == "$mbInsanity" then						
+						if snapshotData.mindbender.insanityFinal > 0 then
+							valid = true
+						end
+					elseif var == "$mbGcds" then
+						if snapshotData.mindbender.remaining.gcds > 0 then
+							valid = true
+						end
+					elseif var == "$mbSwings" then
+						if snapshotData.mindbender.remaining.swings > 0 then
+							valid = true
+						end
+					elseif var == "$mbTime" then
+						if snapshotData.mindbender.remaining.time > 0 then
+							valid = true
+						end
+					elseif var == "$asCount" then
+						if snapshotData.auspiciousSpirits.total > 0 then
+							valid = true
+						end
+					elseif var == "$asInsanity" then
+						if snapshotData.auspiciousSpirits.total > 0 then
+							valid = true
+						end
+					elseif var == "$ttd" then
+						if UnitGUID("target") ~= nil and snapshotData.target.ttd > 0 then
+							valid = true
+						end
+					else
+						valid = false					
+					end
+
+					if valid == true then
+						returnText = returnText .. string.sub(input, b+2, c-1)
+					end					
+					p = c+1
+				else
+					returnText = returnText .. string.sub(input, p)
+					p = string.len(input)
+				end
+			else
+				if b ~= nil then
+					p = b + 1
+				else					
+					returnText = returnText .. string.sub(input, p)
+					p = string.len(input)
+				end
+			end
+		else
+			returnText = returnText .. string.sub(input, p)
+			p = string.len(input)
+		end
+	end
+	return returnText
+end
+
+local function BarText()
+	--$haste
+	local _hasteColor = settings.colors.text.left
+	local _hasteValue = RoundTo(snapshotData.haste, settings.hastePrecision)
     
     if snapshotData.voidform.totalStacks ~= nil and snapshotData.voidform.totalStacks > 0 then        
         if settings.hasteThreshold <= snapshotData.haste then
-            hasteColor = settings.colors.text.hasteAbove    
+            _hasteColor = settings.colors.text.hasteAbove    
         elseif settings.hasteApproachingThreshold <= snapshotData.haste then
-            hasteColor = settings.colors.text.hasteApproaching    
+            _hasteColor = settings.colors.text.hasteApproaching    
         else
-            hasteColor = settings.colors.text.hasteBelow
+            _hasteColor = settings.colors.text.hasteBelow
         end
     end
-	
-	if settings.displayText.left.showHaste then
-		returnString = string.format("|c%s%.2f%%|c%s", hasteColor, snapshotData.haste, settings.colors.text.left)
-	end
 
+	--$gcd
+	local _gcd = 1.5 / (1 + (snapshotData.haste/100))
+	if _gcd > 1.5 then
+		_gcd = 1.5
+	elseif _gcd < 0.75 then
+		_gcd = 0.75
+	end
+	local gcd = string.format("%.2f", _gcd)
+
+	local hastePercent = string.format("|c%s%." .. settings.hastePrecision .. "f%%|c%s", _hasteColor, snapshotData.haste, settings.colors.text.left)
+	--$vfStacks
+	local voidformStacks = string.format("%.0f", snapshotData.voidform.totalStacks)
+	--$vfIncoming
+	local voidformStacksIncoming = string.format("%.0f", snapshotData.voidform.additionalStacks)
+	
+	----------
+	
+	--$liStacks
+	local lingeringInsanityStacks = string.format("%.0f", snapshotData.lingeringInsanity.stacksLast)
+	--$liTime
+	local _lingeringInsanityTimeleft = 0
+	if snapshotData.lingeringInsanity.timeLeftBase ~= nil and snapshotData.lingeringInsanity.lastTickTime ~= nil then
+		_lingeringInsanityTimeleft = snapshotData.lingeringInsanity.timeLeftBase - (GetTime() - snapshotData.lingeringInsanity.lastTickTime)
+	end
+	local lingeringInsanityTime = string.format("%.1f", _lingeringInsanityTimeleft)
+
+	----------
+
+	--$vfDrainStacks
+	local voidformDrainStacks = string.format("%.0f", snapshotData.voidform.drainStacks)
+	--$vfDrain
+	local voidformDrainAmount = string.format("%.1f", snapshotData.voidform.currentDrainRate)
+	--$vfTime
+	local voidformDrainTime = string.format("%.1f", snapshotData.voidform.remainingTime)
+	
+	----------
+
+	--$insanity
+	local currentInsanity = string.format("|c%s%.0f%%|r", settings.colors.text.currentInsanity, snapshotData.insanity)
+	--$casting
+	local castingInsanity = string.format("|c%s%.0f|r", settings.colors.text.castingInsanity, snapshotData.casting.insanityFinal)
+	if snapshotData.casting.insanityFinal > 0 and characterData.talents.fotm.isSelected then        
+		castingInsanity = string.format("|c%s%.2f|r", settings.colors.text.castingInsanity, snapshotData.casting.insanityFinal)
+	end
+	--$mbInsanity
+	local mbInsanity = string.format("%.0f", snapshotData.mindbender.insanityFinal)
+	--$mbGcds
+	local mbGcds = string.format("%.0f", snapshotData.mindbender.remaining.gcds)
+	--$mbSwings
+	local mbSwings = string.format("%.0f", snapshotData.mindbender.remaining.swings)
+	--$mbTime
+	local mbTime = string.format("%.1f", snapshotData.mindbender.remaining.time)
+	--$asCount
+	local asCount = string.format("%.0f", snapshotData.auspiciousSpirits.total)
+	--$asInsanity
+	local _asInsanity = CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.auspiciousSpirits.total
+	local asInsanity
+	asInsanity = string.format("%.0f", _asInsanity)
+	--$passive
+	local _passiveInsanity = _asInsanity + snapshotData.mindbender.insanityFinal
+	local passiveInsanity
+	passiveInsanity = string.format("|c%s%.0f|r", settings.colors.text.passiveInsanity, _passiveInsanity)
+
+	----------
+
+	--$ttd
+	local ttd = ""
+	if snapshotData.target.ttdIsActive and snapshotData.target.ttd ~= 0 then
+		local ttdMinutes = math.floor(snapshotData.target.ttd / 60)
+		local ttdSeconds = snapshotData.target.ttd % 60
+		ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
+	else
+		ttd = "--"
+	end
+	----------------------------
+
+	local returnText = {}
+	returnText[0] = {}
+	returnText[1] = {}
+	returnText[2] = {}
 	if snapshotData.voidform.totalStacks > 0 then
-		if returnString ~= "" and (settings.displayText.left.voidformIncomingStacks or settings.displayText.left.voidformStacks) then
-			returnString = returnString .. " - "
-		end
-
-		if settings.displayText.left.voidformStacks then
-			returnString = returnString .. string.format("%.0f ", snapshotData.voidform.totalStacks)
-		end
-		
-		if settings.displayText.left.voidformIncomingStacks then
-			returnString = returnString .. string.format("(+%.0f) ", snapshotData.voidform.additionalStacks)                
-		end
-
-		if settings.displayText.left.voidformIncomingStacks or settings.displayText.left.voidformStacks then
-			returnString = returnString .. string.format("VF")
-		end
-	else            
-		if settings.displayText.left.lingeringInsanityStacks and snapshotData.lingeringInsanity.stacksLast ~= nil and snapshotData.lingeringInsanity.stacksLast > 0 then
-			if returnString ~= "" then
-				returnString = returnString .. " - "
-			end
-
-			returnString = returnString .. string.format("%.0f LI", snapshotData.lingeringInsanity.stacksLast)                
-		end
-	end
-    return returnString
-end
-
-local function BarTextMiddle()    
-    local returnString =  string.format("|c%s", settings.colors.text.middle)
-    
-	if snapshotData.voidform.currentDrainRate == 0 then
-		if (settings.displayText.middle.lingeringInsanityStacks or settings.displayText.middle.lingeringInsanityTime) and snapshotData.lingeringInsanity.stacksLast ~= nil and snapshotData.lingeringInsanity.stacksLast > 0 then
-			if settings.displayText.middle.lingeringInsanityStacks then
-				returnString = returnString .. string.format("%.0f LI", snapshotData.lingeringInsanity.stacksLast)
-			end
-			
-			if settings.displayText.middle.lingeringInsanityStacks and settings.displayText.middle.lingeringInsanityTime then
-				returnString = returnString .. string.format(" - ")    
-			end
-			
-			if settings.displayText.middle.lingeringInsanityTime then                    
-				local timeleft = snapshotData.lingeringInsanity.timeLeftBase - (GetTime() - snapshotData.lingeringInsanity.lastTickTime)                    
-				returnString = returnString .. string.format("%.1f sec", timeleft)                    
-			end                
-		end
-	else            
-		if settings.displayText.middle.voidformTime then
-			returnString = returnString .. string.format("%.1f sec", snapshotData.voidform.remainingTime)
-		end 
-		
-		if settings.displayText.middle.voidformTime and settings.displayText.middle.voidformDrain then
-			returnString = returnString .. string.format(" - ")
-		end
-		
-		if settings.displayText.middle.voidformDrain then                
-			returnString = returnString .. string.format("%.1f/sec", snapshotData.voidform.currentDrainRate)
-		end
-	end    
-    return returnString
-end
-
-local function BarTextRight()    
-    local passiveInsanity = (CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.auspiciousSpirits.total) + snapshotData.mindbender.insanityFinal
-	local castingInsanityString = "0"
-	local returnString = ""
-	
-	local passiveInsanityString = string.format("%.0f", passiveInsanity)
-	
-    if characterData.talents.fotm.isSelected or math.floor(snapshotData.casting.insanityFinal) ~= snapshotData.casting.insanityFinal then        
-        if (snapshotData.casting.insanityFinal > 0 and settings.displayText.right.castingInsanity) and (passiveInsanity > 0 and settings.displayText.right.passiveInsanity) then            
-            returnString = string.format("|c%s%.2f|r + |c%s%s|r", settings.colors.text.castingInsanity, snapshotData.casting.insanityFinal, settings.colors.text.passiveInsanity, passiveInsanityString)
-        elseif (snapshotData.casting.insanityFinal > 0 and settings.displayText.right.castingInsanity) then
-            returnString = string.format("|c%s%.2f|r", settings.colors.text.castingInsanity, snapshotData.casting.insanityFinal)
-        elseif (passiveInsanity > 0 and settings.displayText.right.passiveInsanity) then
-            returnString = string.format("|c%s%s|r ", settings.colors.text.passiveInsanity, passiveInsanityString)
-        end        
-    else
-        if (snapshotData.casting.insanityFinal > 0 and settings.displayText.right.castingInsanity) and (passiveInsanity > 0 and settings.displayText.right.passiveInsanity) then
-            returnString = string.format("|c%s%.0f|r + |c%s%.0f|r", settings.colors.text.castingInsanity, snapshotData.casting.insanityFinal, settings.colors.text.passiveInsanity, passiveInsanityString)
-        elseif (snapshotData.casting.insanityFinal > 0 and settings.displayText.right.castingInsanity) then
-            returnString = string.format("|c%s%.0f|r", settings.colors.text.castingInsanity, snapshotData.casting.insanityFinal)
-        elseif (passiveInsanity > 0 and settings.displayText.right.passiveInsanity) then
-            returnString = string.format("|c%s%.0f|r", settings.colors.text.passiveInsanity, passiveInsanityString)
-        end        
-	end
-	
-	if settings.displayText.right.currentInsanity then
-		if returnString ~= "" then
-			returnString = returnString .. " + "
-		end
-		returnString = returnString .. string.format("|c%s%.0f%%|r", settings.colors.text.currentInsanity, snapshotData.insanity)        
+		returnText[0].text = settings.displayText.left.inVoidformText
+		returnText[1].text = settings.displayText.middle.inVoidformText
+		returnText[2].text = settings.displayText.right.inVoidformText
+	else
+		returnText[0].text = settings.displayText.left.outVoidformText
+		returnText[1].text = settings.displayText.middle.outVoidformText
+		returnText[2].text = settings.displayText.right.outVoidformText
 	end
 
-	return returnString
+	returnText[0].color = string.format("|c%s", settings.colors.text.left)
+	returnText[1].color = string.format("|c%s", settings.colors.text.middle)
+	returnText[2].color = string.format("|c%s", settings.colors.text.right)
+
+	for x = 0, 2 do
+		returnText[x].text = RemoveInvalidVariablesFromBarText(returnText[x].text)
+		returnText[x].text = returnText[x].color .. returnText[x].text
+		returnText[x].text = string.gsub(returnText[x].text, "||n", string.format("\n") .. returnText[x].color)
+		returnText[x].text = string.gsub(returnText[x].text, "$haste", hastePercent .. returnText[x].color)
+		returnText[x].text = string.gsub(returnText[x].text, "$gcd", gcd)
+		returnText[x].text = string.gsub(returnText[x].text, "$vfIncoming", voidformStacksIncoming)
+		returnText[x].text = string.gsub(returnText[x].text, "$vfStacks", voidformStacks)
+		returnText[x].text = string.gsub(returnText[x].text, "$liStacks", lingeringInsanityStacks)
+		returnText[x].text = string.gsub(returnText[x].text, "$liTime", lingeringInsanityTime)
+		returnText[x].text = string.gsub(returnText[x].text, "$vfDrainStacks", voidformDrainStacks)
+		returnText[x].text = string.gsub(returnText[x].text, "$vfDrain", voidformDrainAmount)
+		returnText[x].text = string.gsub(returnText[x].text, "$vfTime", voidformDrainTime)
+		returnText[x].text = string.gsub(returnText[x].text, "$insanity", currentInsanity .. returnText[x].color)
+		returnText[x].text = string.gsub(returnText[x].text, "$casting", castingInsanity .. returnText[x].color)
+		returnText[x].text = string.gsub(returnText[x].text, "$passive", passiveInsanity .. returnText[x].color)		
+		returnText[x].text = string.gsub(returnText[x].text, "$mbInsanity", mbInsanity)
+		returnText[x].text = string.gsub(returnText[x].text, "$mbGcds", mbGcds)
+		returnText[x].text = string.gsub(returnText[x].text, "$mbSwings", mbSwings)
+		returnText[x].text = string.gsub(returnText[x].text, "$mbTime", mbTime)
+		returnText[x].text = string.gsub(returnText[x].text, "$asCount", asCount)
+		returnText[x].text = string.gsub(returnText[x].text, "$asInsanity", asInsanity)
+		returnText[x].text = string.gsub(returnText[x].text, "$ttd", ttd .. returnText[x].color)
+	end
+
+	Global_TwintopInsanityBar = {
+		ttd = ttd or "--",
+		voidform = {
+			stacks = snapshotData.voidform.totalStacks or 0,
+			incomingStacks = snapshotData.voidform.additionalStacks or 0,
+			drainStacks = snapshotData.voidform.drainStacks or 0,
+			drain = snapshotData.voidform.currentDrainRate or 0,
+			drainTime = snapshotData.voidform.remainingTime or 0
+		},
+		lingeringInsanity = {
+			timeLeft = _lingeringInsanityTimeleft,
+			stacks = snapshotData.lingeringInsanity.stacksLast or 0,
+		},
+		insanity = {
+			insanity = snapshotData.insanity or 0,
+			casting = snapshotData.casting.insanityFinal or 0,
+			passive = _passiveInsanity
+		},
+		auspiciousSpirits = {
+			count = snapshotData.auspiciousSpirits.total or 0,
+			insanity = _asInsanity
+		},
+		mindbender = {
+			insanity = snapshotData.mindbender.insanityFinal or 0,
+			gcds = snapshotData.mindbender.remaining.gcds or 0,
+			swings = snapshotData.mindbender.remaining.swings or 0,
+			time = snapshotData.mindbender.remaining.time or 0
+		}
+	}
+
+	return returnText[0].text, returnText[1].text, returnText[2].text
 end
 
 local function UpdateCastingInsanityFinal(fotm)	
@@ -2558,10 +3068,11 @@ local function UpdateInsanityBar()
 			passiveFrame.threshold.texture:Hide()
 			passiveFrame:SetValue(snapshotData.insanity + snapshotData.casting.insanityFinal)
 		end
-			
-		leftTextFrame.font:SetText(BarTextLeft())
-		middleTextFrame.font:SetText(BarTextMiddle())
-		rightTextFrame.font:SetText(BarTextRight())
+
+		local leftText, middleText, rightText = BarText()
+		leftTextFrame.font:SetText(leftText)
+		middleTextFrame.font:SetText(middleText)
+		rightTextFrame.font:SetText(rightText)
 		
 		if snapshotData.voidform.totalStacks > 0 then
 			barContainerFrame:SetAlpha(1.0)
@@ -2587,6 +3098,8 @@ local function UpdateInsanityBar()
 				if settings.colors.bar.flashEnabled then
 					PulseFrame(barContainerFrame)
 				--insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.enterVoidformFlash, true))
+				else
+					barContainerFrame:SetAlpha(1.0)
 				end
 			else
 				insanityFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
@@ -2663,9 +3176,67 @@ end
 
 function timerFrame:onUpdate(sinceLastUpdate)
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
+	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 0.05 then -- in seconds
 		UpdateInsanityBar()
 		self.sinceLastUpdate = 0
+	end
+
+	if snapshotData.target.ttdIsActive and self.ttdSinceLastUpdate >= settings.ttd.refreshRate then -- in seconds
+		local currentTime = GetTime()
+		if snapshotData.target.guid ~= UnitGUID("target") then
+			snapshotData.target.guid = UnitGUID("target")
+			snapshotData.target.snapshot = {}
+			snapshotData.target.ttd = 0
+		end
+		
+		local isDead = UnitIsDeadOrGhost("target")
+		local currentHealth = UnitHealth("target")
+		local maxHealth = UnitHealthMax("target")
+		local healthDelta = 0
+		local timeDelta = 0
+		local dps = 0
+		local ttd = 0
+
+		local count = TableLength(snapshotData.target.snapshot)
+		if count > 0 and snapshotData.target.snapshot[1] ~= nil then
+			healthDelta = math.max(snapshotData.target.snapshot[1].health - currentHealth, 0)
+			timeDelta = math.max(currentTime - snapshotData.target.snapshot[1].time, 0)
+		end
+
+		if isDead or currentHealth <= 0 or maxHealth <= 0 then
+			dps = 0
+			ttd = 0
+		else
+			if count == 0 or snapshotData.target.snapshot[count] == nil or
+				(snapshotData.target.snapshot[1].health == currentHealth and count == settings.ttd.maxEntries) then
+				dps = 0
+			elseif healthDelta == 0 or timeDelta == 0 then
+				dps = snapshotData.target.snapshot[count].dps
+			else
+				dps = healthDelta / timeDelta
+			end
+
+			if dps == nil or dps == 0 then
+				ttd = 0
+			else
+				ttd = currentHealth / dps
+			end
+		end
+
+		if count >= settings.ttd.maxEntries then
+			table.remove(snapshotData.target.snapshot, 1)
+		end
+
+		table.insert(snapshotData.target.snapshot, {
+			health=currentHealth,
+			time=currentTime,
+			dps=dps
+		})
+
+		snapshotData.target.ttd = ttd
+
+		self.ttdSinceLastUpdate = 0
 	end
 end
 
@@ -2911,6 +3482,9 @@ insanityFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				end
 				ConstructInsanityBar()
 				ConstructOptionsPanel()
+
+				SLASH_TWINTOP1 = "/twintop"
+				SLASH_TWINTOP2 = "/tib"
 			end			
 		end	
 
@@ -3017,13 +3591,14 @@ local function ParseCmdString(msg)
 	end
 end
 
-SLASH_TWINTOP1 = "/twintop"
 function SlashCmdList.TWINTOP(msg)
 	local cmd, subcmd = ParseCmdString(msg);
 	if cmd == "reset" then
 		StaticPopup_Show("TwintopInsanityBar_Reset")
 	elseif cmd == "layout" then
 		InterfaceOptionsFrame_OpenToCategory(interfaceSettingsFrame.barLayoutPanel)
+	elseif cmd == "font" then
+		InterfaceOptionsFrame_OpenToCategory(interfaceSettingsFrame.barFontPanel)
 	elseif cmd == "text" then
 		InterfaceOptionsFrame_OpenToCategory(interfaceSettingsFrame.barTextPanel)
 	elseif cmd == "optional" then
