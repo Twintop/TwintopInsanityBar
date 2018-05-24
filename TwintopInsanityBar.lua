@@ -1,5 +1,5 @@
-local addonVersion = "7.3.5.14"
-local addonReleaseDate = "May 23, 2018"
+local addonVersion = "7.3.5.15"
+local addonReleaseDate = "May 24, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -276,7 +276,6 @@ end
 
 local function LoadDefaultSettings()
 	settings = {
-		version=1,
 		showSummary=false,
 		showS2MSummary=true,
 		hasteApproachingThreshold=135,
@@ -2683,7 +2682,7 @@ local function BarText()
 	local _asInsanity = CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.auspiciousSpirits.total
 	local asInsanity
 	if spells.powerInfusion.isActive then
-		asInsanity = string.format("%.1f", _asInsanity)
+		asInsanity = string.format("%.2f", _asInsanity)
 	else
 		asInsanity = string.format("%.0f", _asInsanity)
 	end
@@ -2691,7 +2690,7 @@ local function BarText()
 	local _passiveInsanity = _asInsanity + snapshotData.mindbender.insanityFinal
 	local passiveInsanity = ""	
 	if spells.powerInfusion.isActive then
-		passiveInsanity = string.format("|c%s%.0f|r", settings.colors.text.passiveInsanity, _passiveInsanity)
+		passiveInsanity = string.format("|c%s%.2f|r", settings.colors.text.passiveInsanity, _passiveInsanity)
 	else
 		passiveInsanity = string.format("|c%s%.0f|r", settings.colors.text.passiveInsanity, _passiveInsanity)
 	end
@@ -3161,7 +3160,6 @@ function timerFrame:onUpdate(sinceLastUpdate)
 
 		self.ttdSinceLastUpdate = 0
 	end
-
 end
 
 function mindbenderAudioCueFrame:onUpdate(sinceLastUpdate)
