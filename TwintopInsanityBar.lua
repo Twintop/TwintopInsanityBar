@@ -1,5 +1,5 @@
 local addonVersion = "7.3.5.15"
-local addonReleaseDate = "May 24, 2018"
+local addonReleaseDate = "May 29, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -16,8 +16,8 @@ leftTextFrame.font = leftTextFrame:CreateFontString(nil, "BACKGROUND")
 middleTextFrame.font = middleTextFrame:CreateFontString(nil, "BACKGROUND")
 rightTextFrame.font = rightTextFrame:CreateFontString(nil, "BACKGROUND")
 
-local asTimerFrame = CreateFrame("Frame")
-asTimerFrame.sinceLastUpdate = 0
+local targetsTimerFrame = CreateFrame("Frame")
+targetsTimerFrame.sinceLastUpdate = 0
 
 local timerFrame = CreateFrame("Frame")
 timerFrame.sinceLastUpdate = 0
@@ -157,12 +157,6 @@ spells.vampiricTouch.name = select(1, GetSpellInfo(spells.vampiricTouch.id))
 local snapshotData = {
 	insanity = 0,
 	haste = 0,
-	target = {
-		guid = nil,
-		snapshot = {},
-		ttd = 0,
-		ttdIsActive = false
-	},
 	casting = {
 		spellId = nil,
 		startTime = nil,
@@ -193,10 +187,11 @@ local snapshotData = {
 			active = false
 		}
 	},
-	auspiciousSpirits = {
-		tracker = {},
-		units = 0,
-		total = 0
+	targetData = {
+		ttdIsActive = false,
+		currentTargetGuid = nil,
+		auspiciousSpirits = 0,
+		targets = {}
 	},
 	mindbender = {
 		isActive = false,
@@ -236,6 +231,20 @@ end
 
 local function RoundTo(num, numDecimalPlaces)
 	return tonumber(string.format("%." .. (numDecimalPlaces or 0) .. "f", num))
+end
+
+local function IsNumeric( data )
+    if type(data) == "number" then
+        return true
+    elseif type(data) ~= "string" then
+        return false
+    end
+    data = strtrim(data)
+    local x, y = string.find(data, "[%d+][%.?][%d*]")
+    if x and x == 1 and y == strlen(data) then
+        return true
+    end
+    return false
 end
 
 local function GetRGBAFromString(s, normalize)
@@ -284,8 +293,8 @@ local function LoadDefaultSettings()
 		voidEruptionThreshold=true,
 		auspiciousSpiritsTracker=true,
 		ttd = {
-			refreshRate = 0.2,
-			maxEntries = 15
+			sampleRate = 0.2,
+			numEntries = 50
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -462,10 +471,10 @@ local function EventRegistration()
 	if GetSpecialization() == 3 then
 		CheckCharacter()
 		
-		if settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected then
-			asTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) asTimerFrame:onUpdate(sinceLastUpdate) end)
+		if (settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected) or IsTtdActive() then
+			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 		else
-			asTimerFrame:SetScript("OnUpdate", nil)
+			targetsTimerFrame:SetScript("OnUpdate", nil)
 		end
 		
 		if settings.mindbender.useNotification.enabled and characterData.talents.mindbender.isSelected then
@@ -480,7 +489,7 @@ local function EventRegistration()
 		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 		addonData.registered = true
 	else
-		asTimerFrame:SetScript("OnUpdate", nil)
+		targetsTimerFrame:SetScript("OnUpdate", nil)
 		mindbenderAudioCueFrame:SetScript("OnUpdate", nil)
 		timerFrame:SetScript("OnUpdate", nil)			
 		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
@@ -499,9 +508,41 @@ local function IsTtdActive()
 		string.find(settings.displayText.middle.inVoidformText, "$ttd") or
 		string.find(settings.displayText.right.outVoidformText, "$ttd") or
 		string.find(settings.displayText.right.inVoidformText, "$ttd") then
-		snapshotData.target.ttdIsActive = true
+		snapshotData.targetData.ttdIsActive = true
 	else
-		snapshotData.target.ttdIsActive = false
+		snapshotData.targetData.ttdIsActive = false
+	end
+end
+
+local function CheckTargetExists(guid)
+	if guid == nil or (not snapshotData.targetData.targets[guid] or snapshotData.targetData.targets[guid] == nil) then
+		return false
+	end
+	return true
+end
+
+local function InitializeTarget(guid)
+	if guid ~= nil and not CheckTargetExists(guid) then
+		snapshotData.targetData.targets[guid] = {}
+		snapshotData.targetData.targets[guid].auspiciousSpirits = 0
+		snapshotData.targetData.targets[guid].lastUpdate = 0		
+		snapshotData.targetData.targets[guid].snapshot = {}
+		snapshotData.targetData.targets[guid].ttd = 0
+	end	
+end
+
+local function RemoveTarget(guid)
+	if guid ~= nil and CheckTargetExists(guid) then
+		snapshotData.targetData.targets[guid] = nil
+	end
+end
+
+local function TargetsCleanup()
+	local currentTime = GetTime()
+	for tguid,count in pairs(snapshotData.targetData.targets) do
+		if (currentTime - snapshotData.targetData.targets[tguid].lastUpdate) > 10 then
+			RemoveTarget(tguid)
+		end
 	end
 end
 
@@ -712,7 +753,9 @@ local function ConstructInsanityBar()
 end
 
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
-local function BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
+local function BuildSlider(parent, title, minValue, maxValue,
+							defaultValue, stepValue, numDecimalPlaces,
+							sizeX, sizeY, posX, posY)
 	local f = CreateFrame("Slider", nil, parent)
 	f.EditBox = CreateFrame("EditBox", nil, f)
 	f:SetPoint("TOPLEFT", posX, posY)
@@ -1025,7 +1068,7 @@ local function ConstructOptionsPanel()
 	local xOffset1 = 50
 	local xOffset2 = 275
 	
-	local yOffset1 = 65
+	local yOffset1 = 60
 	local yOffset2 = 30
 	local yOffset3 = 40
 	local yOffset4 = 20
@@ -1125,6 +1168,11 @@ local function ConstructOptionsPanel()
 	interfaceSettingsFrame.optionalFeaturesPanel.name = "Optional Features"
 	interfaceSettingsFrame.optionalFeaturesPanel.parent = parent.name
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.optionalFeaturesPanel)
+	
+	interfaceSettingsFrame.advancedConfigurationPanel = CreateFrame("Frame", "TwintopInsanityBar_AdvancedConfigurationPanel", parent)
+	interfaceSettingsFrame.advancedConfigurationPanel.name = "Advanced Configuration"
+	interfaceSettingsFrame.advancedConfigurationPanel.parent = parent.name
+	InterfaceOptions_AddCategory(interfaceSettingsFrame.advancedConfigurationPanel)
 
 	
 	yCoord = -5
@@ -1611,8 +1659,8 @@ local function ConstructOptionsPanel()
 
 	controls.textDisplaySection = BuildSectionHeader(parent, "Font Size and Colors", xCoord+xPadding, yCoord)
 
-	title = "Left Bar Text Font Size"
 	yCoord = yCoord - yOffset3
+	title = "Left Bar Text Font Size"
 	controls.fontSizeLeft = BuildSlider(parent, title, 6, 72, settings.displayText.fontSizeLeft, 1, 0,
 								  barWidth, barHeight, xCoord+xPadding2, yCoord)
 	controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
@@ -1633,7 +1681,7 @@ local function ConstructOptionsPanel()
 	
 	controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TIBCB2_F1", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.fontSizeLock
-	f:SetPoint("TOPLEFT", xCoord2+10, yCoord)
+	f:SetPoint("TOPLEFT", xCoord2, yCoord+10)
 	getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 	f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
 	f:SetChecked(settings.displayText.fontSizeLock)
@@ -1646,7 +1694,7 @@ local function ConstructOptionsPanel()
 	end)
 
 	controls.colors.leftText = BuildColorPicker(parent, "Left Text", settings.colors.text.left,
-													250, 25, xCoord2, yCoord-30)	f = controls.colors.leftText
+													250, 25, xCoord2, yCoord-20)	f = controls.colors.leftText
 	f.recolorTexture = function(color)
 		local r, g, b, a
 		if color then
@@ -1669,7 +1717,7 @@ local function ConstructOptionsPanel()
 	end)
 
 	controls.colors.middleText = BuildColorPicker(parent, "Middle Text", settings.colors.text.middle,
-													225, 25, xCoord2, yCoord-70)
+													225, 25, xCoord2, yCoord-60)
 	f = controls.colors.middleText
 	f.recolorTexture = function(color)
 		local r, g, b, a
@@ -1694,7 +1742,7 @@ local function ConstructOptionsPanel()
 	end)
 
 	controls.colors.rightText = BuildColorPicker(parent, "Right Text", settings.colors.text.right,
-													225, 25, xCoord2, yCoord-110)
+													225, 25, xCoord2, yCoord-100)
 	f = controls.colors.rightText
 	f.recolorTexture = function(color)
 		local r, g, b, a
@@ -2197,14 +2245,11 @@ local function ConstructOptionsPanel()
 	f:SetScript("OnClick", function(self, ...)
 		settings.auspiciousSpiritsTracker = self:GetChecked()
 		
-		if settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected and GetSpecialization() == 3 then
-			asTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) asTimerFrame:onUpdate(sinceLastUpdate) end)
+		if ((settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected) or IsTtdActive()) and GetSpecialization() == 3 then
+			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 		else
-			asTimerFrame:SetScript("OnUpdate", nil)
+			targetsTimerFrame:SetScript("OnUpdate", nil)
 		end	
-		snapshotData.auspiciousSpirits.total = 0
-		snapshotData.auspiciousSpirits.units = 0
-		snapshotData.auspiciousSpirits.tracker = {}
 	end)
 
 	yCoord = yCoord - yOffset2
@@ -2383,7 +2428,49 @@ local function ConstructOptionsPanel()
 		settings.mindbender.useNotification.thresholdStacks = value
 	end)
 
-	interfaceSettingsFrame.controls = controls
+	--interfaceSettingsFrame.controls = controls
+
+	------------------------------------------------
+
+	yCoord = -5
+	parent = interfaceSettingsFrame.advancedConfigurationPanel
+
+	controls.textSection = BuildSectionHeader(parent, "Time To Die", xCoord+xPadding, yCoord)
+
+	yCoord = yCoord - yOffset1
+
+	title = "Sampling Rate (seconds)"
+	controls.ttdSamplingRate = BuildSlider(parent, title, 0.05, 2, settings.ttd.sampleRate, 0.05, 2,
+									barWidth, barHeight, xCoord+xPadding*2, yCoord)
+	controls.ttdSamplingRate:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		else
+			value = RoundTo(value, 2)
+		end
+
+		self.EditBox:SetText(value)		
+		settings.ttd.sampleRate = value
+	end)
+
+	title = "Sample Size"
+	controls.ttdSampleSize = BuildSlider(parent, title, 1, 1000, settings.ttd.numEntries, 1, 0,
+									barWidth, barHeight, xCoord2, yCoord)
+	controls.ttdSampleSize:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+
+		self.EditBox:SetText(value)		
+		settings.ttd.numEntries = value
+	end)
+	
 	
 end
 
@@ -2550,7 +2637,7 @@ local function RemoveInvalidVariablesFromBarText(input)
 							valid = true
 						end
 					elseif var == "$passive" then
-						if (CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.auspiciousSpirits.total) + snapshotData.mindbender.insanityFinal > 0 then
+						if (CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.targetData.auspiciousSpirits) + snapshotData.mindbender.insanityFinal > 0 then
 							valid = true
 						end
 					elseif var == "$mbInsanity" then						
@@ -2570,15 +2657,15 @@ local function RemoveInvalidVariablesFromBarText(input)
 							valid = true
 						end
 					elseif var == "$asCount" then
-						if snapshotData.auspiciousSpirits.total > 0 then
+						if snapshotData.targetData.auspiciousSpirits > 0 then
 							valid = true
 						end
 					elseif var == "$asInsanity" then
-						if snapshotData.auspiciousSpirits.total > 0 then
+						if snapshotData.targetData.auspiciousSpirits > 0 then
 							valid = true
 						end
 					elseif var == "$ttd" then
-						if UnitGUID("target") ~= nil and snapshotData.target.ttd > 0 then
+						if snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid] ~= nil and snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].ttd > 0 then
 							valid = true
 						end
 					else
@@ -2677,9 +2764,9 @@ local function BarText()
 	--$mbTime
 	local mbTime = string.format("%.1f", snapshotData.mindbender.remaining.time)
 	--$asCount
-	local asCount = string.format("%.0f", snapshotData.auspiciousSpirits.total)
+	local asCount = string.format("%.0f", snapshotData.targetData.auspiciousSpirits)
 	--$asInsanity
-	local _asInsanity = CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.auspiciousSpirits.total
+	local _asInsanity = CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.targetData.auspiciousSpirits
 	local asInsanity
 	if spells.powerInfusion.isActive then
 		asInsanity = string.format("%.2f", _asInsanity)
@@ -2699,9 +2786,9 @@ local function BarText()
 
 	--$ttd
 	local ttd = ""
-	if snapshotData.target.ttdIsActive and snapshotData.target.ttd ~= 0 then
-		local ttdMinutes = math.floor(snapshotData.target.ttd / 60)
-		local ttdSeconds = snapshotData.target.ttd % 60
+	if snapshotData.targetData.ttdIsActive and snapshotData.targetData.currentTargetGuid ~= nil and snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid] ~= nil and snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].ttd ~= 0 then
+		local ttdMinutes = math.floor(snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].ttd / 60)
+		local ttdSeconds = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].ttd % 60
 		ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
 	else
 		ttd = "--"
@@ -2770,7 +2857,7 @@ local function BarText()
 			passive = _passiveInsanity
 		},
 		auspiciousSpirits = {
-			count = snapshotData.auspiciousSpirits.total or 0,
+			count = snapshotData.targetData.auspiciousSpirits or 0,
 			insanity = _asInsanity
 		},
 		mindbender = {
@@ -2979,7 +3066,7 @@ local function UpdateInsanityBar()
 		end
 		
 		if characterData.talents.as.isSelected or snapshotData.mindbender.insanityFinal > 0 then
-			passiveFrame:SetValue(snapshotData.insanity + snapshotData.casting.insanityFinal + ((CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.auspiciousSpirits.total) + snapshotData.mindbender.insanityFinal))
+			passiveFrame:SetValue(snapshotData.insanity + snapshotData.casting.insanityFinal + ((CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.targetData.auspiciousSpirits) + snapshotData.mindbender.insanityFinal))
 			if snapshotData.mindbender.insanityFinal > 0 and (castingFrame:GetValue() + snapshotData.mindbender.insanityFinal) < characterData.maxInsanity then
 				passiveFrame.threshold:SetPoint("CENTER", passiveFrame, "LEFT", ((settings.bar.width-(settings.bar.border*2)) * ((castingFrame:GetValue() + snapshotData.mindbender.insanityFinal) / characterData.maxInsanity)), 0)
 				passiveFrame.threshold.texture:Show()
@@ -3075,24 +3162,25 @@ end
 
 local function AuspiciousSpiritsCleanup(guid)
 	if guid ~= nil and settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected then
-		if snapshotData.auspiciousSpirits.tracker[guid] then
-			snapshotData.auspiciousSpirits.total = snapshotData.auspiciousSpirits.total - snapshotData.auspiciousSpirits.tracker[guid].count
-			
-			if snapshotData.auspiciousSpirits.total < 0 then
-				snapshotData.auspiciousSpirits.total = 0
-			end
-			snapshotData.auspiciousSpirits.tracker[guid] = nil
-			
-			snapshotData.auspiciousSpirits.units = snapshotData.auspiciousSpirits.units - 1
-			
-			if snapshotData.auspiciousSpirits.units < 0 then
-				snapshotData.auspiciousSpirits.units = 0
-			end
+		if snapshotData.targetData.targets[guid] then
+			snapshotData.targetData.auspiciousSpirits = snapshotData.targetData.auspiciousSpirits - snapshotData.targetData.targets[guid].auspiciousSpirits
+			snapshotData.targetData.targets[guid].auspiciousSpirits = 0
 		end
 	else
-		snapshotData.auspiciousSpirits.total = 0
-		snapshotData.auspiciousSpirits.units = 0
-		snapshotData.auspiciousSpirits.tracker = {}
+		local currentTime = GetTime()
+		local newTotal = 0
+		for tguid,count in pairs(snapshotData.targetData.targets) do
+			if (currentTime - snapshotData.targetData.targets[tguid].lastUpdate) > 10 then
+				snapshotData.targetData.targets[tguid].auspiciousSpirits = 0
+			else
+				newTotal = newTotal + snapshotData.targetData.targets[tguid].auspiciousSpirits
+			end
+		end
+		snapshotData.targetData.auspiciousSpirits = newTotal
+	end	
+
+	if snapshotData.targetData.auspiciousSpirits < 0 then
+		snapshotData.targetData.auspiciousSpirits = 0
 	end
 end 
 
@@ -3104,60 +3192,69 @@ function timerFrame:onUpdate(sinceLastUpdate)
 		self.sinceLastUpdate = 0
 	end
 
-	if snapshotData.target.ttdIsActive and self.ttdSinceLastUpdate >= settings.ttd.refreshRate then -- in seconds
+	if snapshotData.targetData.ttdIsActive and self.ttdSinceLastUpdate >= settings.ttd.sampleRate then -- in seconds
 		local currentTime = GetTime()
-		if snapshotData.target.guid ~= UnitGUID("target") then
-			snapshotData.target.guid = UnitGUID("target")
-			snapshotData.target.snapshot = {}
-			snapshotData.target.ttd = 0
-		end
-		
-		local isDead = UnitIsDeadOrGhost("target")
-		local currentHealth = UnitHealth("target")
-		local maxHealth = UnitHealthMax("target")
-		local healthDelta = 0
-		local timeDelta = 0
-		local dps = 0
-		local ttd = 0
-
-		local count = TableLength(snapshotData.target.snapshot)
-		if count > 0 and snapshotData.target.snapshot[1] ~= nil then
-			healthDelta = math.max(snapshotData.target.snapshot[1].health - currentHealth, 0)
-			timeDelta = math.max(currentTime - snapshotData.target.snapshot[1].time, 0)
+		local guid = UnitGUID("target")
+		if snapshotData.targetData.currentTargetGuid ~= guid then
+			snapshotData.targetData.currentTargetGuid = guid
 		end
 
-		if isDead or currentHealth <= 0 or maxHealth <= 0 then
-			dps = 0
-			ttd = 0
-		else
-			if count == 0 or snapshotData.target.snapshot[count] == nil or
-				(snapshotData.target.snapshot[1].health == currentHealth and count == settings.ttd.maxEntries) then
-				dps = 0
-			elseif healthDelta == 0 or timeDelta == 0 then
-				dps = snapshotData.target.snapshot[count].dps
-			else
-				dps = healthDelta / timeDelta
+		if guid ~= nil then
+			InitializeTarget(guid)
+			
+			local isDead = UnitIsDeadOrGhost("target")
+			local currentHealth = UnitHealth("target")
+			local maxHealth = UnitHealthMax("target")
+			local healthDelta = 0
+			local timeDelta = 0
+			local dps = 0
+			local ttd = 0
+			--local cleanupTime = currentTime - (settings.ttd.numEntries * settings.ttd.sampleRate)
+
+			local count = TableLength(snapshotData.targetData.targets[guid].snapshot)
+			if count > 0 and snapshotData.targetData.targets[guid].snapshot[1] ~= nil then
+				healthDelta = math.max(snapshotData.targetData.targets[guid].snapshot[1].health - currentHealth, 0)
+				timeDelta = math.max(currentTime - snapshotData.targetData.targets[guid].snapshot[1].time, 0)
 			end
 
-			if dps == nil or dps == 0 then
+			if isDead then
+				RemoveTarget(guid)
+			elseif currentHealth <= 0 or maxHealth <= 0 then
+				dps = 0
 				ttd = 0
 			else
-				ttd = currentHealth / dps
+				if count == 0 or snapshotData.targetData.targets[guid].snapshot[count] == nil or
+					(snapshotData.targetData.targets[guid].snapshot[1].health == currentHealth and count == settings.ttd.numEntries) then
+					dps = 0
+				elseif healthDelta == 0 or timeDelta == 0 then
+					dps = snapshotData.targetData.targets[guid].snapshot[count].dps
+				else
+					dps = healthDelta / timeDelta
+				end
+
+				if dps == nil or dps == 0 then
+					ttd = 0
+				else
+					ttd = currentHealth / dps
+				end
+			end
+
+			if not isDead then
+				snapshotData.targetData.targets[guid].lastUpdate = currentTime
+
+				if count >= settings.ttd.numEntries then
+					table.remove(snapshotData.targetData.targets[guid].snapshot, 1)
+				end
+
+				table.insert(snapshotData.targetData.targets[guid].snapshot, {
+					health=currentHealth,
+					time=currentTime,
+					dps=dps
+				})
+
+				snapshotData.targetData.targets[guid].ttd = ttd
 			end
 		end
-
-		if count >= settings.ttd.maxEntries then
-			table.remove(snapshotData.target.snapshot, 1)
-		end
-
-		table.insert(snapshotData.target.snapshot, {
-			health=currentHealth,
-			time=currentTime,
-			dps=dps
-		})
-
-		snapshotData.target.ttd = ttd
-
 		self.ttdSinceLastUpdate = 0
 	end
 end
@@ -3287,25 +3384,16 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					s2mDeath = true
                 end
 			elseif settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected and spellId == spells.auspiciousSpirits.idSpawn and type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
-				if not snapshotData.auspiciousSpirits.tracker[destGUID] or snapshotData.auspiciousSpirits.tracker[destGUID] == nil then
-					snapshotData.auspiciousSpirits.tracker[destGUID] = {}
-					snapshotData.auspiciousSpirits.tracker[destGUID].count = 0
-					snapshotData.auspiciousSpirits.units = snapshotData.auspiciousSpirits.units + 1
-				end
-            
-				snapshotData.auspiciousSpirits.total = snapshotData.auspiciousSpirits.total + 1
-				snapshotData.auspiciousSpirits.tracker[destGUID].count = snapshotData.auspiciousSpirits.tracker[destGUID].count + 1
-				snapshotData.auspiciousSpirits.tracker[destGUID].lastUpdate = currentTime
+				InitializeTarget(destGUID)
+				snapshotData.targetData.targets[destGUID].auspiciousSpirits = snapshotData.targetData.targets[destGUID].auspiciousSpirits + 1
+				snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+				snapshotData.targetData.auspiciousSpirits = snapshotData.targetData.auspiciousSpirits + 1
 				triggerUpdate = true
 			elseif settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected and spellId == spells.auspiciousSpirits.idImpact and (type == "SPELL_DAMAGE" or type == "SPELL_MISSED" or type == "SPELL_ABSORBED") then --Auspicious Spirit Hit
-				snapshotData.auspiciousSpirits.total = snapshotData.auspiciousSpirits.total - 1
-				if snapshotData.auspiciousSpirits.tracker[destGUID] and snapshotData.auspiciousSpirits.tracker[destGUID].count > 0 then   
-					snapshotData.auspiciousSpirits.tracker[destGUID].count = snapshotData.auspiciousSpirits.tracker[destGUID].count - 1
-					snapshotData.auspiciousSpirits.tracker[destGUID].lastUpdate = currentTime
-                
-					if snapshotData.auspiciousSpirits.tracker[destGUID].count <= 0 then
-						AuspiciousSpiritsCleanup(destGUID)
-					end
+				if CheckTargetExists(destGUID) then
+					snapshotData.targetData.targets[destGUID].auspiciousSpirits = snapshotData.targetData.targets[destGUID].auspiciousSpirits - 1
+					snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+					snapshotData.targetData.auspiciousSpirits = snapshotData.targetData.auspiciousSpirits - 1
 				end
 				triggerUpdate = true
 			elseif type == "SPELL_CAST_FAILED" and spellId ~= spells.dispersion.id then
@@ -3317,12 +3405,16 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			end
 		end
 		
-		if settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected then
+		if (settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected) or settings.ttd.IsTtdActive then
 			if destGUID ~= characterData.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				AuspiciousSpiritsCleanup(destGUID)
+				if (settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected) then
+					AuspiciousSpiritsCleanup(destGUID)
+				end
+				RemoveTarget(guid)
 				triggerUpdate = true
 			end
 			
+			--[[
 			if UnitIsDeadOrGhost("player") or not UnitAffectingCombat("player") or event == "PLAYER_REGEN_ENABLED" then -- We died, or, exited combat, go ahead and purge the list
 				for guid,count in pairs(snapshotData.auspiciousSpirits.tracker) do 
 					AuspiciousSpiritsCleanup(guid)
@@ -3333,6 +3425,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				snapshotData.auspiciousSpirits.total = 0
 				triggerUpdate = true
 			end
+			]]
 		end
 		
 		if s2mDeath then
@@ -3357,22 +3450,12 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	end
 end)
 
-function asTimerFrame:onUpdate(sinceLastUpdate)
+function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	local currentTime = GetTime()
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 1 then -- in seconds
-		local newUnits = 0
-		local newTotal = 0
-		for guid,count in pairs(snapshotData.auspiciousSpirits.tracker) do
-			if (currentTime - snapshotData.auspiciousSpirits.tracker[guid].lastUpdate) > 10 then
-				AuspiciousSpiritsCleanup(guid)
-			else
-				newUnits = newUnits + 1
-				newTotal = newTotal + snapshotData.auspiciousSpirits.tracker[guid].count
-			end
-		end
-		snapshotData.auspiciousSpirits.units = newUnits
-		snapshotData.auspiciousSpirits.total = newTotal
+		TargetsCleanup()
+		AuspiciousSpiritsCleanup()
 		UpdateInsanityBar()
 		self.sinceLastUpdate = 0
 	end
@@ -3527,7 +3610,16 @@ function SlashCmdList.TWINTOP(msg)
 		InterfaceOptionsFrame_OpenToCategory(interfaceSettingsFrame.barTextPanel)
 	elseif cmd == "optional" then
 		InterfaceOptionsFrame_OpenToCategory(interfaceSettingsFrame.optionalFeaturesPanel)
-	else
+	elseif cmd == "advanced" then
+		InterfaceOptionsFrame_OpenToCategory(interfaceSettingsFrame.advancedConfigurationPanel)
+	elseif cmd == "set" then
+		cmd, subcmd = ParseCmdString(subcmd)
+
+		if cmd == "numEntries" and subcmd ~= nil then
+			local num = RoundTo(subcmd, 0)
+			settings.ttd.numEntries = num
+		end
+ 	else
 		InterfaceOptionsFrame_OpenToCategory(interfaceSettingsFrame.panel)
 	end
 end
