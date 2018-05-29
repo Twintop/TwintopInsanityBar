@@ -1,4 +1,4 @@
-local addonVersion = "7.3.5.15"
+local addonVersion = "7.3.5.16"
 local addonReleaseDate = "May 29, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -467,6 +467,19 @@ local function CheckCharacter()
 	characterData.items.t20Pieces = t20Head + t20Shoulder + t20Back + t20Chest + t20Hands + t20Legs
 end
 
+local function IsTtdActive()
+	if string.find(settings.displayText.left.outVoidformText, "$ttd") or
+		string.find(settings.displayText.left.inVoidformText, "$ttd") or
+		string.find(settings.displayText.middle.outVoidformText, "$ttd") or
+		string.find(settings.displayText.middle.inVoidformText, "$ttd") or
+		string.find(settings.displayText.right.outVoidformText, "$ttd") or
+		string.find(settings.displayText.right.inVoidformText, "$ttd") then
+		snapshotData.targetData.ttdIsActive = true
+	else
+		snapshotData.targetData.ttdIsActive = false
+	end
+end
+
 local function EventRegistration()
 	if GetSpecialization() == 3 then
 		CheckCharacter()
@@ -499,19 +512,6 @@ local function EventRegistration()
 		addonData.registered = false			
 		barContainerFrame:Hide()
 	end	
-end
-
-local function IsTtdActive()
-	if string.find(settings.displayText.left.outVoidformText, "$ttd") or
-		string.find(settings.displayText.left.inVoidformText, "$ttd") or
-		string.find(settings.displayText.middle.outVoidformText, "$ttd") or
-		string.find(settings.displayText.middle.inVoidformText, "$ttd") or
-		string.find(settings.displayText.right.outVoidformText, "$ttd") or
-		string.find(settings.displayText.right.inVoidformText, "$ttd") then
-		snapshotData.targetData.ttdIsActive = true
-	else
-		snapshotData.targetData.ttdIsActive = false
-	end
 end
 
 local function CheckTargetExists(guid)
