@@ -1,5 +1,5 @@
-local addonVersion = "7.3.5.16"
-local addonReleaseDate = "May 29, 2018"
+local addonVersion = "7.3.5.17"
+local addonReleaseDate = "May 30, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -55,6 +55,10 @@ Global_TwintopInsanityBar = {
 		count = 0,
 		insanity = 0
 	},
+	dots = {
+		swpCount = 0,
+		vtCount = 0
+	},
 	mindbender = {
 		insanity = 0,
 		gcds = 0,
@@ -90,69 +94,118 @@ local characterData = {
 
 local spells = {
 	voidform = {
-		id = 194249
+		id = 194249,
+		name = "",
+		icon = ""
 	},
 	voidTorrent = {
-		id = 205065
+		id = 205065,
+		name = "",
+		icon = ""
 	},
 	dispersion = {
-		id = 47585
+		id = 47585,
+		name = "",
+		icon = ""
 	},
 	s2m = {
-		name = select(2, GetTalentInfo(7, 3, characterData.specGroup)),
+		name = "",
 		isActive = false,
 		modifier = 2.0,
-		id = 212570
+		id = 212570,
+		icon = ""
 	},
 	powerInfusion = {
-		name = select(2, GetTalentInfo(6, 1, characterData.specGroup)),
+		name = "",
 		isActive = false,
 		modifier = 1.25,
-		id = 10060
+		id = 10060,
+		icon = ""
+	},
+	shadowWordPain = {
+		id = 589,
+		icon = "",
+		name = "",
+		insanity = 4,
+		fotm = false
 	},
 	vampiricTouch = {
 		id = 34914,
+		icon = "",
 		name = "",
 		insanity = 6,
 		fotm = false
 	},
 	mindBlast = {
 		id = 8092,
+		icon = "",
 		name = "",
 		insanity = 15,
 		fotm = true
 	},
 	shadowWordVoid = {
 		id = 205351,
+		icon = "",
 		name = "",
 		insanity = 25,
 		fotm = false
 	},
 	mindFlay = {
 		id = 15407,
+		icon = "",
 		name = "",
 		insanity = 3,
 		fotm = true
 	},
 	mindbender = {
 		id = 34433,
-		name = select(2, GetTalentInfo(6, 3, characterData.specGroup)),
+		icon = "",
+		name = "",
 		insanity = 8
 	},
 	lingeringInsanity = {
-		id = 197937
+		id = 197937,
+		name = "",
+		icon = ""
 	},
 	auspiciousSpirits = {
+		id = 155271,
+		name = "",
+		icon = "",
 		idSpawn = 147193,
 		idImpact = 148859,
 		insanity = 3
+	},
+	shadowyApparition = {
+		id = 78203,
+		name = "",
+		icon = ""		
 	}
 }
 
-spells.mindBlast.name = select(1, GetSpellInfo(spells.mindBlast.id))
-spells.mindFlay.name = select(1, GetSpellInfo(spells.mindFlay.id))
-spells.shadowWordVoid.name = select(1, GetSpellInfo(spells.shadowWordVoid.id))
-spells.vampiricTouch.name = select(1, GetSpellInfo(spells.vampiricTouch.id))
+local function TableLength(T)
+	local count = 0
+	local _
+	for _ in pairs(T) do
+		count = count + 1
+	end
+	return count
+end
+
+local function FillSpellData()
+	spells.mindbender.name = select(2, GetTalentInfo(6, 3, characterData.specGroup))
+	spells.powerInfusion.name = select(2, GetTalentInfo(6, 1, characterData.specGroup))
+	spells.s2m.name = select(2, GetTalentInfo(7, 3, characterData.specGroup))
+
+	for k, v in pairs(spells) do
+		if spells[k] ~= nil and spells[k]["id"] ~= nil then
+			local _, name, icon
+			name, _, icon = GetSpellInfo(spells[k]["id"])
+			spells[k]["icon"] = string.format("|T%s:0|t", icon)
+			spells[k]["name"] = name
+		end
+	end
+end
 
 local snapshotData = {
 	insanity = 0,
@@ -162,7 +215,8 @@ local snapshotData = {
 		startTime = nil,
 		endTime = nil,
 		insanityRaw = 0,
-		insanityFinal = 0
+		insanityFinal = 0,
+		icon
 	},
 	voidform = {
 		totalStacks = 0,
@@ -191,6 +245,8 @@ local snapshotData = {
 		ttdIsActive = false,
 		currentTargetGuid = nil,
 		auspiciousSpirits = 0,
+		shadowWordPain = 0,
+		vampiricTouch = 0,
 		targets = {}
 	},
 	mindbender = {
@@ -219,15 +275,6 @@ local addonData = {
 	loaded = false,
 	registered = false
 }
-
-local function TableLength(T)
-	local count = 0
-	local _
-	for _ in pairs(T) do
-		count = count + 1
-	end
-	return count
-end
 
 local function RoundTo(num, numDecimalPlaces)
 	return tonumber(string.format("%." .. (numDecimalPlaces or 0) .. "f", num))
@@ -413,9 +460,7 @@ local function CheckCharacter()
 	characterData.talents.as.isSelected = select(4, GetTalentInfo(5, 2, characterData.specGroup))
 	characterData.talents.mindbender.isSelected = select(4, GetTalentInfo(6, 3, characterData.specGroup))
 		
-	spells.s2m.name = select(2, GetTalentInfo(7, 3, characterData.specGroup))
-	spells.powerInfusion.name = select(2, GetTalentInfo(6, 1, characterData.specGroup))
-	spells.mindbender.name = select(2, GetTalentInfo(6, 3, characterData.specGroup))
+	FillSpellData()
 
 	insanityFrame:SetMinMaxValues(0, characterData.maxInsanity)
 	castingFrame:SetMinMaxValues(0, characterData.maxInsanity)	
@@ -528,6 +573,8 @@ local function InitializeTarget(guid)
 		snapshotData.targetData.targets[guid].lastUpdate = 0		
 		snapshotData.targetData.targets[guid].snapshot = {}
 		snapshotData.targetData.targets[guid].ttd = 0
+		snapshotData.targetData.targets[guid].shadowWordPain = false
+		snapshotData.targetData.targets[guid].vampiricTouch = false
 	end	
 end
 
@@ -537,11 +584,43 @@ local function RemoveTarget(guid)
 	end
 end
 
-local function TargetsCleanup()
+local function RefreshTargetTracking()
 	local currentTime = GetTime()
+	local swpTotal = 0
+	local vtTotal = 0
+	local asTotal = 0
 	for tguid,count in pairs(snapshotData.targetData.targets) do
 		if (currentTime - snapshotData.targetData.targets[tguid].lastUpdate) > 10 then
-			RemoveTarget(tguid)
+			snapshotData.targetData.targets[tguid].auspiciousSpirits = 0
+			snapshotData.targetData.targets[tguid].shadowWordPain = false
+			snapshotData.targetData.targets[tguid].vampiricTouch = false
+		else
+			asTotal = asTotal + snapshotData.targetData.targets[tguid].auspiciousSpirits
+			if snapshotData.targetData.targets[tguid].shadowWordPain == true then
+				swpTotal = swpTotal + 1
+			end
+			if snapshotData.targetData.targets[tguid].vampiricTouch == true then
+				vtTotal = vtTotal + 1
+			end
+		end
+	end
+	snapshotData.targetData.auspiciousSpirits = asTotal		
+	if snapshotData.targetData.auspiciousSpirits < 0 then
+		snapshotData.targetData.auspiciousSpirits = 0
+	end
+	snapshotData.targetData.shadowWordPain = swpTotal		
+	snapshotData.targetData.vampiricTouch = vtTotal		
+end
+
+local function TargetsCleanup(clearAll)
+	if clearAll == true then
+		snapshotData.targetData.targets = {}
+	else
+		local currentTime = GetTime()
+		for tguid,count in pairs(snapshotData.targetData.targets) do
+			if (currentTime - snapshotData.targetData.targets[tguid].lastUpdate) > 20 then
+				RemoveTarget(tguid)
+			end
 		end
 	end
 end
@@ -1025,7 +1104,7 @@ local function BuildSectionHeader(parent, title, posX, posY)
 	return f
 end
 
-local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset)
+local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, width)
 	local f = CreateFrame("Frame", nil, parent)
 	f:ClearAllPoints()
 	f:SetPoint("TOPLEFT", parent)
@@ -1045,14 +1124,14 @@ local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset)
 	fd:ClearAllPoints()
 	fd:SetPoint("TOPLEFT", parent)
 	fd:SetPoint("TOPLEFT", posX+offset+10, posY)
-	fd:SetWidth(200)
+	fd:SetWidth(width)
 	fd:SetHeight(20)
 	fd.font = fd:CreateFontString(nil, "BACKGROUND")
 	fd.font:SetFontObject(GameFontHighlightSmall)
 	fd.font:SetPoint("LEFT", fd, "LEFT")
     fd.font:SetSize(0, 14)
 	fd.font:SetJustifyH("LEFT")
-	fd.font:SetSize(200, 20)
+	fd.font:SetSize(width, 20)
 	fd.font:SetText(desc)
 
 	return f
@@ -1114,11 +1193,11 @@ local function ConstructOptionsPanel()
 	}
 
 	yCoord = yCoord - yOffset3
-	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Author:", "Twintop <Astral> - Turalyon-US", xCoord+xPadding*2, yCoord, 75)
+	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Author:", "Twintop <Astral> - Turalyon-US", xCoord+xPadding*2, yCoord, 75, 200)
 	yCoord = yCoord - yOffset4
-	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Version:", addonVersion, xCoord+xPadding*2, yCoord, 75)
+	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Version:", addonVersion, xCoord+xPadding*2, yCoord, 75, 200)
 	yCoord = yCoord - yOffset4
-	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Released:", addonReleaseDate, xCoord+xPadding*2, yCoord, 75)
+	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Released:", addonReleaseDate, xCoord+xPadding*2, yCoord, 75, 200)
 
 	yCoord = yCoord - yOffset3
 	controls.resetButton = CreateFrame("Button", "TwintopInsanityBar_ResetButton", parent)
@@ -2132,44 +2211,85 @@ local function ConstructOptionsPanel()
 	f.font:SetText("For conditional display (only if $VARIABLE is active/non-zero): {$VARIABLE}[WHAT TO DISPLAY]")
 
 	yCoord = yCoord - yOffset4
-	controls.labels.vfStacksVar = BuildDisplayTextHelpEntry(parent, "$vfStacks", "Current Voidform Stack Count", xCoord, yCoord, 85)
-	controls.labels.insanityVar = BuildDisplayTextHelpEntry(parent, "$insanity", "Current Insanity", xCoord2-70, yCoord, 130)
+	controls.labels.vfStacksVar = BuildDisplayTextHelpEntry(parent, "$vfStacks", "Current Voidform Stack Count", xCoord, yCoord, 85, 200)
+	controls.labels.insanityVar = BuildDisplayTextHelpEntry(parent, "$insanity", "Current Insanity", xCoord2-70, yCoord, 130, 200)
 
 	yCoord = yCoord - yOffset4
-	controls.labels.vfStacksIncomingVar = BuildDisplayTextHelpEntry(parent, "$vfIncoming", "Incoming Voidform Stacks", xCoord, yCoord, 85)
-	controls.labels.castingVar = BuildDisplayTextHelpEntry(parent, "$casting", "Insanity from Hardcasting Spells", xCoord2-70, yCoord, 130)
+	controls.labels.vfStacksIncomingVar = BuildDisplayTextHelpEntry(parent, "$vfIncoming", "Incoming Voidform Stacks", xCoord, yCoord, 85, 200)
+	controls.labels.castingVar = BuildDisplayTextHelpEntry(parent, "$casting", "Insanity from Hardcasting Spells", xCoord2-70, yCoord, 130, 200)
 
 	yCoord = yCoord - yOffset4
-	controls.labels.vfDrainStacksVar = BuildDisplayTextHelpEntry(parent, "$vfDrainStacks", "Current Voidform Drain Stacks Count", xCoord, yCoord, 85)
-	controls.labels.passiveVar = BuildDisplayTextHelpEntry(parent, "$passive", "Insanity from Passive Sources", xCoord2-70, yCoord, 130)
+	controls.labels.vfDrainStacksVar = BuildDisplayTextHelpEntry(parent, "$vfDrainStacks", "Current Voidform Drain Stacks Count", xCoord, yCoord, 85, 200)
+	controls.labels.passiveVar = BuildDisplayTextHelpEntry(parent, "$passive", "Insanity from Passive Sources", xCoord2-70, yCoord, 130, 200)
 
 	yCoord = yCoord - yOffset4
-	controls.labels.vfDrainVar = BuildDisplayTextHelpEntry(parent, "$vfDrain", "Insanity drained per second", xCoord, yCoord, 85)
-	controls.labels.asInsanityVar = BuildDisplayTextHelpEntry(parent, "$asInsanity", "Insanity from Auspicious Spirits", xCoord2-70, yCoord, 130)
+	controls.labels.vfDrainVar = BuildDisplayTextHelpEntry(parent, "$vfDrain", "Insanity drained per second", xCoord, yCoord, 85, 200)
+	controls.labels.asInsanityVar = BuildDisplayTextHelpEntry(parent, "$asInsanity", "Insanity from Auspicious Spirits", xCoord2-70, yCoord, 130, 200)
 
 	yCoord = yCoord - yOffset4
-	controls.labels.vfTimeVar = BuildDisplayTextHelpEntry(parent, "$vfTime", "Time until Voidform will end", xCoord, yCoord, 85)
-	controls.labels.asCountVar = BuildDisplayTextHelpEntry(parent, "$asCount", "Number of Auspicious Spirits in Flight", xCoord2-70, yCoord, 130)
+	controls.labels.vfTimeVar = BuildDisplayTextHelpEntry(parent, "$vfTime", "Time until Voidform will end", xCoord, yCoord, 85, 200)
+	controls.labels.asCountVar = BuildDisplayTextHelpEntry(parent, "$asCount", "Number of Auspicious Spirits in Flight", xCoord2-70, yCoord, 130, 200)
 	
 	yCoord = yCoord - yOffset4
-	controls.labels.mbGcdsVar = BuildDisplayTextHelpEntry(parent, "$mbGcds", "Number of GCDs left on Mindbender", xCoord, yCoord, 85)
-	controls.labels.mbInsanityVar = BuildDisplayTextHelpEntry(parent, "$mbInsanity", "Insanity from Mindbender (per settings)", xCoord2-70, yCoord, 130)
+	controls.labels.mbGcdsVar = BuildDisplayTextHelpEntry(parent, "$mbGcds", "Number of GCDs left on Mindbender", xCoord, yCoord, 85, 200)
+	controls.labels.mbInsanityVar = BuildDisplayTextHelpEntry(parent, "$mbInsanity", "Insanity from Mindbender (per settings)", xCoord2-70, yCoord, 130, 200)
 
 	yCoord = yCoord - yOffset4
-	controls.labels.mbTimeVar = BuildDisplayTextHelpEntry(parent, "$mbTime", "Time left on Mindbender", xCoord, yCoord, 85)
-	controls.labels.mbSwingsVar = BuildDisplayTextHelpEntry(parent, "$mbSwings", "Number of Swings left on Mindbender", xCoord2-70, yCoord, 130)
+	controls.labels.mbTimeVar = BuildDisplayTextHelpEntry(parent, "$mbTime", "Time left on Mindbender", xCoord, yCoord, 85, 200)
+	controls.labels.mbSwingsVar = BuildDisplayTextHelpEntry(parent, "$mbSwings", "Number of Swings left on Mindbender", xCoord2-70, yCoord, 130, 200)
 	
 	yCoord = yCoord - yOffset4
-	controls.labels.liStacksVar = BuildDisplayTextHelpEntry(parent, "$liStacks", "Lingering Insanity Stacks", xCoord, yCoord, 85)
-	controls.labels.liTimeVar = BuildDisplayTextHelpEntry(parent, "$liTime", "Lingering Insanity time remaining", xCoord2-70, yCoord, 130)
+	controls.labels.liStacksVar = BuildDisplayTextHelpEntry(parent, "$liStacks", "Lingering Insanity Stacks", xCoord, yCoord, 85, 200)
+	controls.labels.liTimeVar = BuildDisplayTextHelpEntry(parent, "$liTime", "Lingering Insanity time remaining", xCoord2-70, yCoord, 130, 200)
 
 	yCoord = yCoord - yOffset4
-	controls.labels.hasteVar = BuildDisplayTextHelpEntry(parent, "$haste", "Current Haste%", xCoord, yCoord, 85)
-	controls.labels.ttdVar = BuildDisplayTextHelpEntry(parent, "$ttd", "Time To Die of current target", xCoord2-70, yCoord, 130)
+	controls.labels.swpCountVar = BuildDisplayTextHelpEntry(parent, "$swpCount", "Total number of SWPs on Targets", xCoord, yCoord, 85, 200)
+	controls.labels.vtCountVar = BuildDisplayTextHelpEntry(parent, "$vtCount", "Total number of SWPs on Targets", xCoord2-70, yCoord, 130, 200)
 
 	yCoord = yCoord - yOffset4
-	controls.labels.gcdVar = BuildDisplayTextHelpEntry(parent, "$gcd", "Current GCD, in seconds", xCoord, yCoord, 85)
-	controls.labels.newlineVar = BuildDisplayTextHelpEntry(parent, "||n", "Insert a Newline", xCoord2-70, yCoord, 130)
+	controls.labels.hasteVar = BuildDisplayTextHelpEntry(parent, "$haste", "Current Haste%", xCoord, yCoord, 85, 200)
+	controls.labels.ttdVar = BuildDisplayTextHelpEntry(parent, "$ttd", "Time To Die of current target", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.gcdVar = BuildDisplayTextHelpEntry(parent, "$gcd", "Current GCD, in seconds", xCoord, yCoord, 85, 200)
+	controls.labels.newlineVar = BuildDisplayTextHelpEntry(parent, "||n", "Insert a Newline", xCoord2-70, yCoord, 130, 200)
+	-----	
+	yCoord = yCoord - yOffset2
+	controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
+	f = controls.labels.instructions2Var
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", parent)
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	f:SetWidth(600)
+	f:SetHeight(20)
+	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font:SetFontObject(GameFontHighlight)
+	f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetSize(0, 14)
+	f.font:SetJustifyH("LEFT")
+	f.font:SetSize(600, 20)
+	f.font:SetText("For icons use #ICONVARIABLENAME")
+
+	yCoord = yCoord - yOffset4
+	controls.labels.swpIconVar = BuildDisplayTextHelpEntry(parent, "#casting", "The icon of the Insanity Generating Spell you are currently hardcasting", xCoord, yCoord, 85, 500)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.swpIconVar = BuildDisplayTextHelpEntry(parent, "#swp", spells.shadowWordPain.icon .. " Shadow Word: Pain", xCoord, yCoord, 85, 200)
+	controls.labels.vtIconVar = BuildDisplayTextHelpEntry(parent, "#vt", spells.vampiricTouch.icon .. " Vampiric Touch", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.asIconVar = BuildDisplayTextHelpEntry(parent, "#as", spells.auspiciousSpirits.icon .. " Auspicious Spirits", xCoord, yCoord, 85, 200)
+	controls.labels.saIconVar = BuildDisplayTextHelpEntry(parent, "#sa", spells.shadowyApparition.icon .. " Shadowy Apparition", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.vfIconVar = BuildDisplayTextHelpEntry(parent, "#vf", spells.voidform.icon .. " Voidform", xCoord, yCoord, 85, 200)
+	controls.labels.vtIconVar = BuildDisplayTextHelpEntry(parent, "#li", spells.lingeringInsanity.icon .. " Lingering Insanity", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.mfIconVar = BuildDisplayTextHelpEntry(parent, "#mb", spells.mindBlast.icon .. " Mind Blast", xCoord, yCoord, 85, 200)
+	controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#mf", spells.mindFlay.icon .. " Mind Flay", xCoord2-70, yCoord, 130, 200)
+
+
 	---------------------------
 
 	yCoord = -5
@@ -2471,7 +2591,7 @@ local function ConstructOptionsPanel()
 		settings.ttd.numEntries = value
 	end)
 	
-	
+	interfaceSettingsFrame.controls = controls
 end
 
 local function InsanityDrain(stacks)
@@ -2484,7 +2604,7 @@ local function InsanityDrain(stacks)
         end
     end    
     
-    return (6.0 + ((stacks - 1) * (2 / 3))) * pct
+    return (6.0 + (((stacks - 1) * (2 / 3)) * pct))
 end
 
 local function RemainingTimeAndStackCount()
@@ -2573,6 +2693,7 @@ local function ResetCastingSnapshotData()
 	snapshotData.casting.endTime = nil
 	snapshotData.casting.insanityRaw = 0
 	snapshotData.casting.insanityFinal = 0
+	snapshotData.casting.icon = nil
 end
 
 local function RemoveInvalidVariablesFromBarText(input)
@@ -2664,6 +2785,14 @@ local function RemoveInvalidVariablesFromBarText(input)
 						if snapshotData.targetData.auspiciousSpirits > 0 then
 							valid = true
 						end
+					elseif var == "$swpCount" then
+						if snapshotData.targetData.shadowWordPain > 0 then
+							valid = true
+						end
+					elseif var == "$vtCount" then
+						if snapshotData.targetData.vampiricTouch > 0 then
+							valid = true
+						end
 					elseif var == "$ttd" then
 						if snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid] ~= nil and snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].ttd > 0 then
 							valid = true
@@ -2697,6 +2826,7 @@ local function RemoveInvalidVariablesFromBarText(input)
 end
 
 local function BarText()
+	local _
 	--$haste
 	local _hasteColor = settings.colors.text.left
 	local _hasteValue = RoundTo(snapshotData.haste, settings.hastePrecision)
@@ -2781,6 +2911,10 @@ local function BarText()
 	else
 		passiveInsanity = string.format("|c%s%.0f|r", settings.colors.text.passiveInsanity, _passiveInsanity)
 	end
+	--$swpCount
+	local shadowWordPainCount = snapshotData.targetData.shadowWordPain or 0
+	--$vtCount
+	local vampiricTouchCount = snapshotData.targetData.vampiricTouch or 0
 
 	----------
 
@@ -2793,6 +2927,9 @@ local function BarText()
 	else
 		ttd = "--"
 	end
+
+	--#castingIcon
+	local castingIcon = snapshotData.casting.icon or ""
 	----------------------------
 
 	local returnText = {}
@@ -2814,11 +2951,37 @@ local function BarText()
 	returnText[2].color = string.format("|c%s", settings.colors.text.right)
 
 	for x = 0, 2 do
+		--Prep
 		returnText[x].text = RemoveInvalidVariablesFromBarText(returnText[x].text)
 		returnText[x].text = returnText[x].color .. returnText[x].text
 		returnText[x].text = string.gsub(returnText[x].text, "||n", string.format("\n") .. returnText[x].color)
+
+		-- Icons
+		returnText[x].text = string.gsub(returnText[x].text, "#casting", castingIcon)		
+		returnText[x].text = string.gsub(returnText[x].text, "#as", spells.auspiciousSpirits.icon)		
+		returnText[x].text = string.gsub(returnText[x].text, "#auspiciousSpirits", spells.auspiciousSpirits.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#sa", spells.shadowyApparition.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#shadowyApparition", spells.shadowyApparition.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#mb", spells.mindBlast.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#mindBlast", spells.mindBlast.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#mf", spells.mindFlay.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#mindFlay", spells.mindFlay.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#mindbender", spells.mindbender.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#shadowfiend", spells.mindbender.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#vf", spells.voidform.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#voidform", spells.voidform.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#li", spells.lingeringInsanity.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#lingeringInsanity", spells.lingeringInsanity.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#vt", spells.vampiricTouch.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#vampiricTouch", spells.vampiricTouch.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#swp", spells.shadowWordPain.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#shadowWordPain", spells.shadowWordPain.icon)
+
+		-- Values
 		returnText[x].text = string.gsub(returnText[x].text, "$haste", hastePercent .. returnText[x].color)
 		returnText[x].text = string.gsub(returnText[x].text, "$gcd", gcd)
+		returnText[x].text = string.gsub(returnText[x].text, "$swpCount", shadowWordPainCount)
+		returnText[x].text = string.gsub(returnText[x].text, "$vtCount", vampiricTouchCount)
 		returnText[x].text = string.gsub(returnText[x].text, "$vfIncoming", voidformStacksIncoming)
 		returnText[x].text = string.gsub(returnText[x].text, "$vfStacks", voidformStacks)
 		returnText[x].text = string.gsub(returnText[x].text, "$liStacks", lingeringInsanityStacks)
@@ -2860,6 +3023,10 @@ local function BarText()
 			count = snapshotData.targetData.auspiciousSpirits or 0,
 			insanity = _asInsanity
 		},
+		dots = {
+			swpCount = shadowWordPainCount or 0,
+			vtCount = vampiricTouchCount or 0
+		},
 		mindbender = {
 			insanity = snapshotData.mindbender.insanityFinal or 0,
 			gcds = snapshotData.mindbender.remaining.gcds or 0,
@@ -2891,12 +3058,13 @@ local function CastingSpell()
 				snapshotData.casting.spellId = spells.mindFlay.id
 				snapshotData.casting.startTime = currentTime
 				snapshotData.casting.insanityRaw = spells.mindFlay.insanity
+				snapshotData.casting.icon = spells.mindFlay.icon
 				UpdateCastingInsanityFinal(spells.mindFlay.fotm)
 			else
 				ResetCastingSnapshotData()
 				return false
 			end
-		else	
+		else
 			local spellName = select(1, currentSpell)
 			if spellName == spells.mindBlast.name then
 				local t20p2 = GetSpellInfo(247226)
@@ -2908,16 +3076,19 @@ local function CastingSpell()
 				snapshotData.casting.startTime = currentTime
 				snapshotData.casting.insanityRaw = spells.mindBlast.insanity + t20p2Stacks
 				snapshotData.casting.spellId = spells.mindBlast.id
+				snapshotData.casting.icon = spells.mindBlast.icon
 				UpdateCastingInsanityFinal(spells.mindBlast.fotm)
 			elseif spellName == spells.shadowWordVoid.name then
 				snapshotData.casting.startTime = currentTime
 				snapshotData.casting.insanityRaw = spells.shadowWordVoid.insanity
 				snapshotData.casting.spellId = spells.shadowWordVoid.id
+				snapshotData.casting.icon = spells.shadowWordVoid.icon
 				UpdateCastingInsanityFinal(spells.shadowWordVoid.fotm)
 			elseif spellName == spells.vampiricTouch.name then
 				snapshotData.casting.startTime = currentTime
 				snapshotData.casting.insanityRaw = spells.vampiricTouch.insanity
 				snapshotData.casting.spellId = spells.vampiricTouch.id
+				snapshotData.casting.icon = spells.vampiricTouch.icon
 				UpdateCastingInsanityFinal(spells.vampiricTouch.fotm)
 			else
 				ResetCastingSnapshotData()
@@ -3048,9 +3219,8 @@ local function UpdateInsanityBar()
 		return
 	end	
 
+	UpdateSnapshot() --Do this outside of the if block so external WAs/addons have accurate info
 	if barContainerFrame:IsShown() then
-		UpdateSnapshot()
-
 		if snapshotData.insanity == 0 then
 			HideInsanityBar()
 		end
@@ -3159,30 +3329,6 @@ local function PrintVoidformSummary(isS2M)
 	print(string.format("Final Drain: %.0f stacks %.1f / sec", snapshotData.voidform.drainStacks, InsanityDrain(snapshotData.voidform.drainStacks)))
 	print("--------------------------")
 end
-
-local function AuspiciousSpiritsCleanup(guid)
-	if guid ~= nil and settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected then
-		if snapshotData.targetData.targets[guid] then
-			snapshotData.targetData.auspiciousSpirits = snapshotData.targetData.auspiciousSpirits - snapshotData.targetData.targets[guid].auspiciousSpirits
-			snapshotData.targetData.targets[guid].auspiciousSpirits = 0
-		end
-	else
-		local currentTime = GetTime()
-		local newTotal = 0
-		for tguid,count in pairs(snapshotData.targetData.targets) do
-			if (currentTime - snapshotData.targetData.targets[tguid].lastUpdate) > 10 then
-				snapshotData.targetData.targets[tguid].auspiciousSpirits = 0
-			else
-				newTotal = newTotal + snapshotData.targetData.targets[tguid].auspiciousSpirits
-			end
-		end
-		snapshotData.targetData.auspiciousSpirits = newTotal
-	end	
-
-	if snapshotData.targetData.auspiciousSpirits < 0 then
-		snapshotData.targetData.auspiciousSpirits = 0
-	end
-end 
 
 function timerFrame:onUpdate(sinceLastUpdate)
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
@@ -3382,7 +3528,29 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					triggerUpdate = true
                 elseif type == "SPELL_AURA_REMOVED" and snapshotData.voidform.s2m.active then -- Gain Surrender to Madness 
 					s2mDeath = true
-                end
+				end
+			elseif spellId == spells.shadowWordPain.id then
+				InitializeTarget(destGUID)
+				snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+				if type == "SPELL_AURA_APPLIED" then -- SWP Applied to Target
+					snapshotData.targetData.targets[destGUID].shadowWordPain = true
+					snapshotData.targetData.shadowWordPain = snapshotData.targetData.shadowWordPain + 1
+				elseif type == "SPELL_AURA_REMOVED" then
+					snapshotData.targetData.targets[destGUID].shadowWordPain = false
+					snapshotData.targetData.shadowWordPain = snapshotData.targetData.shadowWordPain - 1
+				--elseif type == "SPELL_PERIODIC_DAMAGE" then
+				end
+			elseif spellId == spells.vampiricTouch.id then
+				InitializeTarget(destGUID)
+				snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+				if type == "SPELL_AURA_APPLIED" then -- SWP Applied to Target
+					snapshotData.targetData.targets[destGUID].vampiricTouch = true
+					snapshotData.targetData.vampiricTouch = snapshotData.targetData.vampiricTouch + 1
+				elseif type == "SPELL_AURA_REMOVED" then				
+					snapshotData.targetData.targets[destGUID].vampiricTouch = false
+					snapshotData.targetData.vampiricTouch = snapshotData.targetData.vampiricTouch - 1
+				--elseif type == "SPELL_PERIODIC_DAMAGE" then
+				end
 			elseif settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected and spellId == spells.auspiciousSpirits.idSpawn and type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
 				InitializeTarget(destGUID)
 				snapshotData.targetData.targets[destGUID].auspiciousSpirits = snapshotData.targetData.targets[destGUID].auspiciousSpirits + 1
@@ -3405,27 +3573,16 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			end
 		end
 		
-		if (settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected) or settings.ttd.IsTtdActive then
-			if destGUID ~= characterData.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				if (settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected) then
-					AuspiciousSpiritsCleanup(destGUID)
-				end
-				RemoveTarget(guid)
-				triggerUpdate = true
-			end
+		if destGUID ~= characterData.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
+			RemoveTarget(guid)
+			RefreshTargetTracking()
+			triggerUpdate = true
+		end
 			
-			--[[
-			if UnitIsDeadOrGhost("player") or not UnitAffectingCombat("player") or event == "PLAYER_REGEN_ENABLED" then -- We died, or, exited combat, go ahead and purge the list
-				for guid,count in pairs(snapshotData.auspiciousSpirits.tracker) do 
-					AuspiciousSpiritsCleanup(guid)
-				end
-				
-				snapshotData.auspiciousSpirits.tracker = {}
-				snapshotData.auspiciousSpirits.units = 0
-				snapshotData.auspiciousSpirits.total = 0
-				triggerUpdate = true
-			end
-			]]
+		if UnitIsDeadOrGhost("player") then -- We died/are dead go ahead and purge the list
+		--if UnitIsDeadOrGhost("player") or not UnitAffectingCombat("player") or event == "PLAYER_REGEN_ENABLED" then -- We died, or, exited combat, go ahead and purge the list
+			TargetsCleanup(true)
+			triggerUpdate = true
 		end
 		
 		if s2mDeath then
@@ -3455,7 +3612,7 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 1 then -- in seconds
 		TargetsCleanup()
-		AuspiciousSpiritsCleanup()
+		RefreshTargetTracking()
 		UpdateInsanityBar()
 		self.sinceLastUpdate = 0
 	end
@@ -3487,6 +3644,7 @@ insanityFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					settings = MergeSettings(settings,TwintopInsanityBarSettings)
 				end
 				IsTtdActive()
+				FillSpellData()
 				ConstructInsanityBar()
 				ConstructOptionsPanel()
 
@@ -3619,6 +3777,8 @@ function SlashCmdList.TWINTOP(msg)
 			local num = RoundTo(subcmd, 0)
 			settings.ttd.numEntries = num
 		end
+	elseif cmd == "fill" then
+		FillSpellData()
  	else
 		InterfaceOptionsFrame_OpenToCategory(interfaceSettingsFrame.panel)
 	end
