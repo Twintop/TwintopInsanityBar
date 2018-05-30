@@ -1,4 +1,4 @@
-local addonVersion = "7.3.5.17"
+local addonVersion = "7.3.5.18"
 local addonReleaseDate = "May 30, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -2491,7 +2491,7 @@ local function ConstructOptionsPanel()
 	end)
 
 	title = "Mindbender Time Remaining"
-	controls.mindbenderTime = BuildSlider(parent, title, 0, 15, settings.mindbender.timeMax, 0.25, 2,
+	controls.mindbenderTime = BuildSlider(parent, title, 0, 24, settings.mindbender.timeMax, 0.25, 2,
 									barWidth, barHeight, xCoord2, yCoord)
 	controls.mindbenderTime:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -3176,8 +3176,8 @@ local function UpdateMindbenderValues()
 					countValue = snapshotData.mindbender.remaining.swings
 				end
 			elseif settings.mindbender.mode == "time" then
-				if snapshotData.mindbender.remaining.time > settings.mindbender.time then
-					countValue = math.ceil((settings.mindbender.time - timeToNextSwing) / swingSpeed)                
+				if snapshotData.mindbender.remaining.time > settings.mindbender.timeMax then
+					countValue = math.ceil((settings.mindbender.timeMax - timeToNextSwing) / swingSpeed)                
 				else
 					countValue = math.ceil((snapshotData.mindbender.remaining.time - timeToNextSwing) / swingSpeed)
 				end
