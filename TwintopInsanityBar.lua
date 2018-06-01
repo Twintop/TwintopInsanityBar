@@ -1,5 +1,5 @@
-local addonVersion = "7.3.5.18"
-local addonReleaseDate = "May 30, 2018"
+local addonVersion = "7.3.5.19"
+local addonReleaseDate = "June 01, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -112,7 +112,7 @@ local spells = {
 		name = "",
 		isActive = false,
 		modifier = 2.0,
-		id = 212570,
+		id = 193223,
 		icon = ""
 	},
 	powerInfusion = {
@@ -3220,6 +3220,7 @@ local function UpdateInsanityBar()
 	end	
 
 	UpdateSnapshot() --Do this outside of the if block so external WAs/addons have accurate info
+	local leftText, middleText, rightText = BarText()
 	if barContainerFrame:IsShown() then
 		if snapshotData.insanity == 0 then
 			HideInsanityBar()
@@ -3248,7 +3249,6 @@ local function UpdateInsanityBar()
 			passiveFrame:SetValue(snapshotData.insanity + snapshotData.casting.insanityFinal)
 		end
 
-		local leftText, middleText, rightText = BarText()
 		leftTextFrame.font:SetText(leftText)
 		middleTextFrame.font:SetText(middleText)
 		rightTextFrame.font:SetText(rightText)
