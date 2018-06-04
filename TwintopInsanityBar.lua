@@ -1,5 +1,5 @@
-local addonVersion = "7.3.5.19"
-local addonReleaseDate = "June 01, 2018"
+local addonVersion = "7.3.5.20"
+local addonReleaseDate = "June 04, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -273,8 +273,13 @@ local snapshotData = {
 
 local addonData = {
 	loaded = false,
-	registered = false
+	registered = false,
+	libs = {}
 }
+
+addonData.libs.SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
+addonData.libs.SharedMedia:Register("sound", "Wilhelm Scream", "Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg")
+addonData.libs.SharedMedia:Register("sound", "Boxing Arena Gong", "Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg")
 
 local function RoundTo(num, numDecimalPlaces)
 	return tonumber(string.format("%." .. (numDecimalPlaces or 0) .. "f", num))
@@ -405,33 +410,52 @@ local function LoadDefaultSettings()
 			fontSizeMiddle=18,
 			fontSizeRight=18,
 			fontSizeLock=true,
-			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceLock=true,
 			left={
 				outVoidformText="$haste%",
 				inVoidformText="$haste% - $vfStacks (+$vfIncoming) VF",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
 			},
 			middle={
 				outVoidformText="{$liStacks}[$liStacks LI - $liTime sec]",
 				inVoidformText="$vfTime sec - $vfDrain/sec ",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
 			},
 			right={
 				outVoidformText="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
 				inVoidformText="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
 			}
 		},
 		audio={
 			s2mDeath={
 				enabled=true,
-				sound="Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg"
+				sound="Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg",
+				soundName="Wilhelm Scream"
 			},
 			mindbender={
-				sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg"
+				sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
+				soundName="Boxing Arena Gong"
 			}
 		},
 		textures={
 			background="Interface\\Tooltips\\UI-Tooltip-Background",
+			backgroundName="Blizzard Tooltip",
 			border="Interface\\Tooltips\\UI-Tooltip-Border",
-			bar="Interface\\TargetingFrame\\UI-StatusBar"
+			borderName="Blizzard Tooltip",
+			insanityBar="Interface\\TargetingFrame\\UI-StatusBar",
+			insanityBarName="Blizzard",
+			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
+			passiveBarName="Blizzard",
+			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
+			castingBarName="Blizzard",
+			textureLock=true
 		}
 	}
 end
@@ -685,7 +709,7 @@ local function ConstructInsanityBar()
 	barContainerFrame:Show()
 	barContainerFrame:SetBackdrop({ bgFile = settings.textures.background,									
 									tile = true,
-									tileSize=8,
+									tileSize=settings.bar.width-(settings.bar.border*2),
 									edgeSize=0,
 									insets = {0, 0, 0, 0}
 									})
@@ -751,7 +775,7 @@ local function ConstructInsanityBar()
 	insanityFrame:SetHeight(settings.bar.height-(settings.bar.border*2))	
 	insanityFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
 	insanityFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-	insanityFrame:SetStatusBarTexture(settings.textures.bar)
+	insanityFrame:SetStatusBarTexture(settings.textures.insanityBar)
 	insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
 	insanityFrame:SetFrameStrata("BACKGROUND")
 	insanityFrame:SetFrameLevel(100)
@@ -770,7 +794,7 @@ local function ConstructInsanityBar()
 	castingFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
 	castingFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
 	castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-	castingFrame:SetStatusBarTexture(settings.textures.bar)
+	castingFrame:SetStatusBarTexture(settings.textures.castingBar)
 	castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting))
 	castingFrame:SetFrameStrata("BACKGROUND")
 	castingFrame:SetFrameLevel(90)
@@ -780,7 +804,7 @@ local function ConstructInsanityBar()
 	passiveFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
 	passiveFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
 	passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-	passiveFrame:SetStatusBarTexture(settings.textures.bar)
+	passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
 	passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive))
 	passiveFrame:SetFrameStrata("BACKGROUND")
 	passiveFrame:SetFrameLevel(80)
@@ -803,7 +827,7 @@ local function ConstructInsanityBar()
 	leftTextFrame.font:SetPoint("LEFT", 0, 0)
 	leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 	leftTextFrame.font:SetJustifyH("LEFT")
-	leftTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeLeft, "OUTLINE")
+	leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
 	leftTextFrame.font:Show()
 	
 	middleTextFrame:Show()
@@ -815,7 +839,7 @@ local function ConstructInsanityBar()
 	middleTextFrame.font:SetPoint("CENTER", 0, 0)
 	middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 	middleTextFrame.font:SetJustifyH("CENTER")
-	middleTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeMiddle, "OUTLINE")
+	middleTextFrame.font:SetFont(settings.displayText.middle.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
 	middleTextFrame.font:Show()
 	
 	rightTextFrame:Show()
@@ -827,7 +851,7 @@ local function ConstructInsanityBar()
 	rightTextFrame.font:SetPoint("RIGHT", 0, 0)
 	rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 	rightTextFrame.font:SetJustifyH("RIGHT")
-	rightTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeRight, "OUTLINE")
+	rightTextFrame.font:SetFont(settings.displayText.right.fontFace, settings.displayText.right.fontSize, "OUTLINE")
 	rightTextFrame.font:Show()
 end
 
@@ -1137,1463 +1161,6 @@ local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, 
 	return f
 end
 
-local function ConstructOptionsPanel()
-	local xPadding = 10
-	local xPadding2 = 30
-	local xMax = 550
-	local xCoord = 0
-	local xCoord2 = 325
-	local yCoord = -5
-	local xOffset1 = 50
-	local xOffset2 = 275
-	
-	local yOffset1 = 60
-	local yOffset2 = 30
-	local yOffset3 = 40
-	local yOffset4 = 20
-
-	local maxWidth = math.floor(GetScreenWidth())
-	local minWidth = math.max(math.ceil(settings.bar.border * 8), 120)
-	
-	local maxHeight = math.floor(GetScreenHeight())
-	local minHeight = math.max(math.ceil(settings.bar.border * 8), 1)
-	local barWidth = 250
-	local barHeight = 20
-	local title = ""
-
-	local maxBorderHeight = math.min(math.floor(settings.bar.height/8), math.floor(settings.bar.width/8))
-
-	interfaceSettingsFrame = {}
-	interfaceSettingsFrame.panel = CreateFrame("Frame", "TwintopInsanityBarPanel", UIParent)
-	interfaceSettingsFrame.panel.name = "Twintop's Insanity Bar"
-	local parent = interfaceSettingsFrame.panel
-	
-	local controls = {}
-	controls.colors = {}
-	controls.checkBoxes = {}
-	controls.labels = {}
-	controls.textbox = {}
-	local f = nil
-
-	yCoord = -5	
-	controls.barPositionSection = BuildSectionHeader(parent, "Twintop's Insanity Bar", xCoord+xPadding, yCoord)
-
-	StaticPopupDialogs["TwintopInsanityBar_Reset"] = {
-		text = "Do you want to reset Twintop's Insanity Bar back to it's default configuration? This will cause your UI to be reloaded!",
-		button1 = "Yes",
-		button2 = "No",
-		OnAccept = function()
-			LoadDefaultSettings()
-			ReloadUI()			
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
-
-	yCoord = yCoord - yOffset3
-	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Author:", "Twintop <Astral> - Turalyon-US", xCoord+xPadding*2, yCoord, 75, 200)
-	yCoord = yCoord - yOffset4
-	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Version:", addonVersion, xCoord+xPadding*2, yCoord, 75, 200)
-	yCoord = yCoord - yOffset4
-	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Released:", addonReleaseDate, xCoord+xPadding*2, yCoord, 75, 200)
-
-	yCoord = yCoord - yOffset3
-	controls.resetButton = CreateFrame("Button", "TwintopInsanityBar_ResetButton", parent)
-	f = controls.resetButton
-	f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2, yCoord)
-	f:SetWidth(150)
-	f:SetHeight(30)
-	f:SetText("Reset to Defaults")
-	f:SetNormalFontObject("GameFontNormal")
-	f.ntex = f:CreateTexture()
-	f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-	f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-	f.ntex:SetAllPoints()	
-	f:SetNormalTexture(f.ntex)
-	f.htex = f:CreateTexture()
-	f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-	f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-	f.htex:SetAllPoints()
-	f:SetHighlightTexture(f.htex)	
-	f.ptex = f:CreateTexture()
-	f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-	f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-	f.ptex:SetAllPoints()
-	f:SetPushedTexture(f.ptex)
-	f:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopInsanityBar_Reset")
-	end)
-
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.panel)
-	
-	interfaceSettingsFrame.barLayoutPanel = CreateFrame("Frame", "TwintopInsanityBar_BarLayoutPanel", parent)
-	interfaceSettingsFrame.barLayoutPanel.name = "Bar Layout and Colors"
-	interfaceSettingsFrame.barLayoutPanel.parent = parent.name
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.barLayoutPanel)
-	
-	interfaceSettingsFrame.barFontPanel = CreateFrame("Frame", "TwintopInsanityBar_BarFontPanel", parent)
-	interfaceSettingsFrame.barFontPanel.name = "Bar Font and Colors"
-	interfaceSettingsFrame.barFontPanel.parent = parent.name
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.barFontPanel)
-	
-	interfaceSettingsFrame.barTextPanel = CreateFrame("Frame", "TwintopInsanityBar_BarTextPanel", parent)
-	interfaceSettingsFrame.barTextPanel.name = "Bar Text Display"
-	interfaceSettingsFrame.barTextPanel.parent = parent.name
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.barTextPanel)
-	
-	interfaceSettingsFrame.optionalFeaturesPanel = CreateFrame("Frame", "TwintopInsanityBar_OptionalFeaturesPanel", parent)
-	interfaceSettingsFrame.optionalFeaturesPanel.name = "Optional Features"
-	interfaceSettingsFrame.optionalFeaturesPanel.parent = parent.name
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.optionalFeaturesPanel)
-	
-	interfaceSettingsFrame.advancedConfigurationPanel = CreateFrame("Frame", "TwintopInsanityBar_AdvancedConfigurationPanel", parent)
-	interfaceSettingsFrame.advancedConfigurationPanel.name = "Advanced Configuration"
-	interfaceSettingsFrame.advancedConfigurationPanel.parent = parent.name
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.advancedConfigurationPanel)
-
-	
-	yCoord = -5
-	parent = interfaceSettingsFrame.barLayoutPanel
-	controls.barPositionSection = BuildSectionHeader(parent, "Bar Position and Size", xCoord+xPadding, yCoord)
-	
-	yCoord = yCoord - yOffset3
-	title = "Bar Width"
-	controls.width = BuildSlider(parent, title, minWidth, maxWidth, settings.bar.width, 1, 0,
-								 barWidth, barHeight, xCoord+xPadding2, yCoord)
-	controls.width:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-		self.EditBox:SetText(value)
-		settings.bar.width = value
-		barContainerFrame:SetWidth(value-(settings.bar.border*2))
-		barBorderFrame:SetWidth(settings.bar.width)
-		insanityFrame:SetWidth(value-(settings.bar.border*2))
-		castingFrame:SetWidth(value-(settings.bar.border*2))
-		passiveFrame:SetWidth(value-(settings.bar.border*2))
-		RepositionInsanityFrameThreshold()
-		local maxBorderSize = math.min(math.floor(settings.bar.height/ 8), math.floor(settings.bar.width / 8))
-		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
-		controls.borderWidth.MaxLabel:SetText(maxBorderSize)
-	end)
-
-	title = "Bar Height"
-	controls.height = BuildSlider(parent, title, minHeight, maxHeight, settings.bar.height, 1, 0,
-									barWidth, barHeight, xCoord2, yCoord)
-	controls.height:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end		
-		self.EditBox:SetText(value)		
-		settings.bar.height = value
-		barContainerFrame:SetHeight(value-(settings.bar.border*2))
-		barBorderFrame:SetHeight(settings.bar.height)
-		insanityFrame:SetHeight(value-(settings.bar.border*2))
-		insanityFrame.threshold:SetHeight(value-(settings.bar.border*2))
-		castingFrame:SetHeight(value-(settings.bar.border*2))
-		passiveFrame:SetHeight(value-(settings.bar.border*2))
-		passiveFrame.threshold:SetHeight(value-(settings.bar.border*2))		
-		leftTextFrame:SetHeight(settings.bar.height * 3.5)
-		middleTextFrame:SetHeight(settings.bar.height * 3.5)
-		rightTextFrame:SetHeight(settings.bar.height * 3.5)
-		local maxBorderSize = math.min(math.floor(settings.bar.height/ 8), math.floor(settings.bar.width / 8))
-		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
-		controls.borderWidth.MaxLabel:SetText(maxBorderSize)
-	end)
-
-	title = "Bar Horizontal Position"
-	yCoord = yCoord - yOffset1
-	controls.horizontal = BuildSlider(parent, title, math.ceil(-maxWidth/2), math.floor(maxWidth/2), settings.bar.xPos, 1, 0,
-								  barWidth, barHeight, xCoord+xPadding2, yCoord)
-	controls.horizontal:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-		self.EditBox:SetText(value)		
-		settings.bar.xPos = value
-		barContainerFrame:ClearAllPoints()
-		barContainerFrame:SetPoint("CENTER", UIParent)
-		barContainerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
-	end)
-
-	title = "Bar Vertical Position"
-	controls.vertical = BuildSlider(parent, title, math.ceil(-maxHeight/2), math.ceil(maxHeight/2), settings.bar.yPos, 1, 0,
-								  barWidth, barHeight, xCoord2, yCoord)
-	controls.vertical:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-		self.EditBox:SetText(value)
-		settings.bar.yPos = value
-		barContainerFrame:ClearAllPoints()
-		barContainerFrame:SetPoint("CENTER", UIParent)
-		barContainerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
-	end)
-
-	title = "Bar Border Width"
-	yCoord = yCoord - yOffset1
-	controls.borderWidth = BuildSlider(parent, title, 0, maxBorderHeight, settings.bar.border, 1, 0,
-								  barWidth, barHeight, xCoord+xPadding2, yCoord)
-	controls.borderWidth:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-		self.EditBox:SetText(value)		
-		settings.bar.border = value
-		barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
-		barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-		barBorderFrame:SetWidth(settings.bar.width)
-		barBorderFrame:SetHeight(settings.bar.height)
-		if settings.bar.border < 1 then
-			barBorderFrame:SetBackdrop({ })
-		else
-			barBorderFrame:SetBackdrop({ edgeFile = settings.textures.border,
-										tile = true,
-										tileSize=4,
-										edgeSize=settings.bar.border*4,								
-										insets = {0, 0, 0, 0}
-										})
-		end
-		barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-		barBorderFrame:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
-		insanityFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-		insanityFrame.threshold:SetHeight(settings.bar.height-(settings.bar.border*2))
-		castingFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-		passiveFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-		passiveFrame.threshold:SetHeight(settings.bar.height-(settings.bar.border*2))
-		leftTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2)-2)
-		middleTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
-		rightTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
-		leftTextFrame:SetHeight(settings.bar.height * 3.5)
-		middleTextFrame:SetHeight(settings.bar.height * 3.5)
-		rightTextFrame:SetHeight(settings.bar.height * 3.5)
-
-		local minBarWidth = math.max(settings.bar.border * 8, 120)
-		local minBarHeight = math.max(settings.bar.border * 8, 1)
-		controls.height:SetMinMaxValues(minBarHeight, maxHeight)
-		controls.height.MinLabel:SetText(minBarHeight)
-		controls.width:SetMinMaxValues(minBarWidth, maxWidth)
-		controls.width.MinLabel:SetText(minBarWidth)
-	end)
-
-	controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TIBCB1_1", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.lockPosition
-	f:SetPoint("TOPLEFT", xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
-	f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved."
-	f:SetChecked(settings.bar.dragAndDrop)
-	f:SetScript("OnClick", function(self, ...)
-		settings.bar.dragAndDrop = self:GetChecked()
-		barContainerFrame:SetMovable(settings.bar.dragAndDrop)
-		barContainerFrame:EnableMouse(settings.bar.dragAndDrop)
-	end)
-
-	yCoord = yCoord - yOffset3
-	controls.barColorsSection = BuildSectionHeader(parent, "Bar Colors", xCoord+xPadding, yCoord)
-
-	yCoord = yCoord - yOffset2
-	controls.colors.base = BuildColorPicker(parent, "Insanity while not in Voidform", settings.colors.bar.base, 250, 25, xCoord+xPadding*2, yCoord)
-	f = controls.colors.base
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-
-		controls.colors.base.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.bar.base = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.bar.base, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	controls.colors.inVoidform = BuildColorPicker(parent, "Insanity while in Voidform", settings.colors.bar.inVoidform, 250, 25, xCoord2, yCoord)
-	f = controls.colors.inVoidform
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-
-		controls.colors.inVoidform.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.bar.inVoidform = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.bar.inVoidform, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	yCoord = yCoord - yOffset2
-	controls.colors.enterVoidform = BuildColorPicker(parent, "Insanity when you can cast Void Eruption", settings.colors.bar.enterVoidform, 250, 25, xCoord+xPadding*2, yCoord)
-	f = controls.colors.enterVoidform
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-
-		controls.colors.enterVoidform.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.bar.enterVoidform = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.bar.enterVoidform, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	controls.colors.border = BuildColorPicker(parent, "Insanity Bar's border", settings.colors.bar.border, 225, 25, xCoord2, yCoord)
-	f = controls.colors.border
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		controls.colors.border.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.bar.border = ConvertColorDecimalToHex(r, g, b, a)
-		barBorderFrame:SetBackdropBorderColor(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.bar.border, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	yCoord = yCoord - yOffset2
-	controls.colors.casting = BuildColorPicker(parent, "Insanity from hardcasting spells", settings.colors.bar.casting, 250, 25, xCoord+xPadding*2, yCoord)
-	f = controls.colors.casting
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-
-		controls.colors.casting.Texture:SetColorTexture(r, g, b, a)
-		castingFrame:SetStatusBarColor(r, g, b, a)
-		settings.colors.bar.casting = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.bar.casting, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)	
-		
-	controls.colors.background = BuildColorPicker(parent, "Unfilled bar background", settings.colors.bar.background, 250, 25, xCoord2, yCoord)
-	f = controls.colors.background
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-
-		controls.colors.background.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.bar.background = ConvertColorDecimalToHex(r, g, b, a)
-		barContainerFrame:SetBackdropColor(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.bar.background, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	yCoord = yCoord - yOffset2
-	controls.colors.thresholdUnder = BuildColorPicker(parent, "Under min. req. Insanity to cast Void Eruption Threshold Line", settings.colors.threshold.under, 260, 25, xCoord+xPadding*2, yCoord)
-	f = controls.colors.thresholdUnder
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-
-		controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.threshold.under = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.threshold.under, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)	
-		
-	controls.colors.inVoidform2GCD = BuildColorPicker(parent, "Insanity while you have between 1-2 GCDs left in Voidform", settings.colors.bar.inVoidform2GCD, 250, 25, xCoord2, yCoord)
-	f = controls.colors.inVoidform2GCD
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-
-		controls.colors.inVoidform2GCD.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.bar.inVoidform2GCD = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.bar.inVoidform2GCD, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	yCoord = yCoord - yOffset2
-	controls.colors.thresholdOver = BuildColorPicker(parent, "Over min. req. Insanity to cast Void Eruption Threshold Line", settings.colors.threshold.over, 250, 25, xCoord+xPadding*2, yCoord)
-	f = controls.colors.thresholdOver
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-
-		controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.threshold.over = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.threshold.over, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	controls.colors.inVoidform1GCD = BuildColorPicker(parent, "Insanity while you have less than 1 GCD left in Voidform", settings.colors.bar.inVoidform1GCD, 250, 25, xCoord2, yCoord)
-	f = controls.colors.inVoidform1GCD
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-
-		controls.colors.inVoidform1GCD.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.bar.inVoidform1GCD = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.bar.inVoidform1GCD, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-	
-	yCoord = yCoord - yOffset3
-	controls.barDisplaySection = BuildSectionHeader(parent, "Bar Display", xCoord+xPadding, yCoord)
-
-	yCoord = yCoord - yOffset3
-
-	title = "Void Eruption Flash Alpha"
-	controls.flashAlpha = BuildSlider(parent, title, 0, 1, settings.colors.bar.flashAlpha, 0.01, 2,
-								 barWidth, barHeight, xCoord+xPadding2, yCoord)
-	controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end	
-
-		value = RoundTo(value, 2)
-		self.EditBox:SetText(value)
-		settings.colors.bar.flashAlpha = value
-	end)
-
-	title = "Void Eruption Flash Period (sec)"
-	controls.flashPeriod = BuildSlider(parent, title, 0, 2, settings.colors.bar.flashPeriod, 0.05, 2,
-									barWidth, barHeight, xCoord2, yCoord)
-	controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-
-		value = RoundTo(value, 2)
-		self.EditBox:SetText(value)		
-		settings.colors.bar.flashPeriod = value
-	end)
-
-	yCoord = yCoord - yOffset3
-	controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TIBRB1_2", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.alwaysShow
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Always show Insanity Bar")
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f.tooltip = "This will make the Insanity Bar always visible on your UI, even when out of combat."
-	f:SetChecked(settings.displayBar.alwaysShow)
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.alwaysShow:SetChecked(true)
-		controls.checkBoxes.notZeroShow:SetChecked(false)
-		controls.checkBoxes.combatShow:SetChecked(false)
-		settings.displayBar.alwaysShow = true
-		settings.displayBar.notZeroShow = false
-		HideInsanityBar()
-	end)
-
-	controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TIBRB1_3", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.notZeroShow
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-15)
-	getglobal(f:GetName() .. 'Text'):SetText("Show Insanity Bar when Insanity > 0")
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f.tooltip = "This will make the Insanity Bar show out of combat only if Insanity > 0, hidden otherwise when out of combat."
-	f:SetChecked(settings.displayBar.notZeroShow)
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.alwaysShow:SetChecked(false)
-		controls.checkBoxes.notZeroShow:SetChecked(true)
-		controls.checkBoxes.combatShow:SetChecked(false)
-		settings.displayBar.alwaysShow = false
-		settings.displayBar.notZeroShow = true
-		HideInsanityBar()
-	end)
-
-	controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TIBRB1_4", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.combatShow
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-30)
-	getglobal(f:GetName() .. 'Text'):SetText("Only show Insanity Bar in combat")
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f.tooltip = "This will make the Insanity Bar only be visible on your UI when in combat."
-	f:SetChecked((not settings.displayBar.alwaysShow) and (not settings.displayBar.notZeroShow))
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.alwaysShow:SetChecked(false)
-		controls.checkBoxes.notZeroShow:SetChecked(false)
-		controls.checkBoxes.combatShow:SetChecked(true)
-		settings.displayBar.alwaysShow = false
-		settings.displayBar.notZeroShow = false
-		HideInsanityBar()
-	end)
-
-	controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TIBCB1_5", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.flashEnabled
-	f:SetPoint("TOPLEFT", xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Void Eruption Usable")
-	f.tooltip = "This will flash the bar when Void Eruption can be cast."
-	f:SetChecked(settings.voidEruptionThreshold)
-	f:SetScript("OnClick", function(self, ...)
-		settings.colors.bar.flashEnabled = self:GetChecked()
-	end)
-
-	controls.checkBoxes.vfThresholdShow = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.vfThresholdShow
-	f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
-	getglobal(f:GetName() .. 'Text'):SetText("Show Void Eruption Threshold Line")
-	f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Void Eruption."
-	f:SetChecked(settings.voidEruptionThreshold)
-	f:SetScript("OnClick", function(self, ...)
-		settings.voidEruptionThreshold = self:GetChecked()
-	end)
-
-	------------------------------------------------
-
-	yCoord = -5
-	parent = interfaceSettingsFrame.barFontPanel
-
-	controls.textDisplaySection = BuildSectionHeader(parent, "Font Size and Colors", xCoord+xPadding, yCoord)
-
-	yCoord = yCoord - yOffset3
-	title = "Left Bar Text Font Size"
-	controls.fontSizeLeft = BuildSlider(parent, title, 6, 72, settings.displayText.fontSizeLeft, 1, 0,
-								  barWidth, barHeight, xCoord+xPadding2, yCoord)
-	controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-		self.EditBox:SetText(value)		
-		settings.displayText.fontSizeLeft = value
-		leftTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeLeft, "OUTLINE")
-		if settings.displayText.fontSizeLock then
-			controls.fontSizeMiddle:SetValue(value)
-			controls.fontSizeRight:SetValue(value)
-		end
-	end)
-	
-	controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TIBCB2_F1", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.fontSizeLock
-	f:SetPoint("TOPLEFT", xCoord2, yCoord+10)
-	getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
-	f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
-	f:SetChecked(settings.displayText.fontSizeLock)
-	f:SetScript("OnClick", function(self, ...)
-		settings.displayText.fontSizeLock = self:GetChecked()
-		if settings.displayText.fontSizeLock then
-			controls.fontSizeMiddle:SetValue(settings.displayText.fontSizeLeft)
-			controls.fontSizeRight:SetValue(settings.displayText.fontSizeLeft)
-		end
-	end)
-
-	controls.colors.leftText = BuildColorPicker(parent, "Left Text", settings.colors.text.left,
-													250, 25, xCoord2, yCoord-20)	f = controls.colors.leftText
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		--Text doesn't care about Alpha, but the color picker does!
-		a = 1.0
-
-		controls.colors.leftText.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.text.left = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.text.left, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	controls.colors.middleText = BuildColorPicker(parent, "Middle Text", settings.colors.text.middle,
-													225, 25, xCoord2, yCoord-60)
-	f = controls.colors.middleText
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		--Text doesn't care about Alpha, but the color picker does!
-		a = 1.0
-
-		controls.colors.middleText.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.text.middle = ConvertColorDecimalToHex(r, g, b, a)
-		barContainerFrame:SetBackdropBorderColor(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.text.middle, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	controls.colors.rightText = BuildColorPicker(parent, "Right Text", settings.colors.text.right,
-													225, 25, xCoord2, yCoord-100)
-	f = controls.colors.rightText
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		--Text doesn't care about Alpha, but the color picker does!
-		a = 1.0
-
-		controls.colors.rightText.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.text.right = ConvertColorDecimalToHex(r, g, b, a)
-		barContainerFrame:SetBackdropBorderColor(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.text.right, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-	
-	title = "Middle Bar Text Font Size"
-	yCoord = yCoord - yOffset1
-	controls.fontSizeMiddle = BuildSlider(parent, title, 6, 72, settings.displayText.fontSizeMiddle, 1, 0,
-								  barWidth, barHeight, xCoord+xPadding2, yCoord)
-	controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-		self.EditBox:SetText(value)		
-		settings.displayText.fontSizeMiddle = value
-		middleTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeMiddle, "OUTLINE")
-		if settings.displayText.fontSizeLock then
-			controls.fontSizeLeft:SetValue(value)
-			controls.fontSizeRight:SetValue(value)
-		end
-	end)
-	
-	title = "Right Bar Text Font Size"
-	yCoord = yCoord - yOffset1
-	controls.fontSizeRight = BuildSlider(parent, title, 6, 72, settings.displayText.fontSizeRight, 1, 0,
-								  barWidth, barHeight, xCoord+xPadding2, yCoord)
-	controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-		self.EditBox:SetText(value)		
-		settings.displayText.fontSizeRight = value
-		rightTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.fontSizeRight, "OUTLINE")
-		if settings.displayText.fontSizeLock then
-			controls.fontSizeLeft:SetValue(value)
-			controls.fontSizeMiddle:SetValue(value)
-		end
-	end)
-
-	yCoord = yCoord - yOffset1	
-	controls.colors.currentInsanityText = BuildColorPicker(parent, "Current Insanity", settings.colors.text.currentInsanity, 250, 25, xCoord+xPadding*2, yCoord)
-	f = controls.colors.currentInsanityText
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		--Text doesn't care about Alpha, but the color picker does!
-		a = 1.0
-
-		controls.colors.currentInsanityText.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.text.currentInsanity = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.text.currentInsanity, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	controls.colors.castingInsanityText = BuildColorPicker(parent, "Insanity from hardcasting spells", settings.colors.text.castingInsanity, 250, 25, xCoord2, yCoord)
-	f = controls.colors.castingInsanityText
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		--Text doesn't care about Alpha, but the color picker does!
-		a = 1.0
-
-		controls.colors.castingInsanityText.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.text.castingInsanity = ConvertColorDecimalToHex(r, g, b, a)
-		barContainerFrame:SetBackdropBorderColor(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.text.currentInsanity, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	yCoord = yCoord - yOffset1	
-	title = "Low to Medium Haste% Threshold in Voidform"
-	controls.hasteApproachingThreshold = BuildSlider(parent, title, 0, 500, settings.hasteApproachingThreshold, 0.25, 2,
-									barWidth, barHeight, xCoord+xPadding2, yCoord)
-	controls.hasteApproachingThreshold:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		elseif value > settings.hasteThreshold then
-			value = settings.hasteThreshold
-		end
-
-		value = RoundTo(value, 2)
-		self.EditBox:SetText(value)		
-		settings.hasteApproachingThreshold = value
-	end)
-
-	controls.colors.hasteBelow = BuildColorPicker(parent, "Low Haste% in Voidform", settings.colors.text.hasteBelow,
-												250, 25, xCoord2, yCoord+10)
-	f = controls.colors.hasteBelow
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		--Text doesn't care about Alpha, but the color picker does!
-		a = 1.0
-
-		controls.colors.hasteBelow.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.text.hasteBelow = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.text.hasteBelow, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	controls.colors.hasteApproaching = BuildColorPicker(parent, "Medium Haste% in Voidform", settings.colors.text.hasteApproaching,
-												250, 25, xCoord2, yCoord-30)
-	f = controls.colors.hasteApproaching
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		--Text doesn't care about Alpha, but the color picker does!
-		a = 1.0
-
-		controls.colors.hasteApproaching.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.text.hasteApproaching = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.text.hasteApproaching, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	controls.colors.hasteAbove = BuildColorPicker(parent, "High Haste% in Voidform", settings.colors.text.hasteAbove,
-												250, 25, xCoord2, yCoord-70)
-	f = controls.colors.hasteAbove
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		--Text doesn't care about Alpha, but the color picker does!
-		a = 1.0
-
-		controls.colors.hasteAbove.Texture:SetColorTexture(r, g, b, a)
-		settings.colors.text.hasteAbove = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.text.hasteAbove, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	yCoord = yCoord - yOffset1	
-	title = "Medium to High Haste% Threshold in Voidform"
-	controls.hasteThreshold = BuildSlider(parent, title, 0, 500, settings.hasteThreshold, 0.25, 2,
-									barWidth, barHeight, xCoord+xPadding2, yCoord)
-	controls.hasteThreshold:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		elseif value < settings.hasteApproachingThreshold then
-			value = settings.hasteApproachingThreshold
-		end
-
-		value = RoundTo(value, 2)
-		self.EditBox:SetText(value)		
-		settings.hasteThreshold = value
-	end)
-
-	yCoord = yCoord - yOffset1	
-	title = "Haste Decimals to Show"
-	controls.hastePrecision = BuildSlider(parent, title, 0, 10, settings.hastePrecision, 1, 0,
-									barWidth, barHeight, xCoord+xPadding2, yCoord)
-	controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-
-		value = RoundTo(value, 0)
-		self.EditBox:SetText(value)		
-		settings.hastePrecision = value
-	end)
-
-	------------------------------------------------
-
-	yCoord = -5
-	parent = interfaceSettingsFrame.barTextPanel
-
-	controls.textCustomSection = BuildSectionHeader(parent, "Bar Display Text Customization", xCoord+xPadding, yCoord)
-
-	yCoord = yCoord - yOffset2
-	controls.labels.outVoidform = CreateFrame("Frame", nil, parent)
-	f = controls.labels.outVoidform
-	f:ClearAllPoints()
-	f:SetPoint("TOPLEFT", parent)
-	f:SetPoint("TOPLEFT", xCoord+xPadding2+100, yCoord)
-	f:SetWidth(225)
-	f:SetHeight(20)
-	f.font = f:CreateFontString(nil, "BACKGROUND")
-	f.font:SetFontObject(GameFontNormal)
-	f.font:SetPoint("LEFT", f, "LEFT")
-    f.font:SetSize(0, 14)
-	f.font:SetJustifyH("CENTER")
-	f.font:SetSize(225, 20)
-	f.font:SetText("Out of Voidform")
-
-	controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
-	f = controls.labels.inVoidform
-	f:ClearAllPoints()
-	f:SetPoint("TOPLEFT", parent)
-	f:SetPoint("TOPLEFT", xCoord2+25, yCoord)
-	f:SetWidth(200)
-	f:SetHeight(20)
-	f.font = f:CreateFontString(nil, "BACKGROUND")
-	f.font:SetFontObject(GameFontNormal)
-	f.font:SetPoint("LEFT", f, "LEFT")
-    f.font:SetSize(0, 14)
-	f.font:SetJustifyH("CENTER")
-	f.font:SetSize(225, 20)
-	f.font:SetText("In Voidform")
-
-	yCoord = yCoord - yOffset4
-	controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
-	f = controls.labels.inVoidform
-	f:ClearAllPoints()
-	f:SetPoint("TOPLEFT", parent)
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	f:SetWidth(90)
-	f:SetHeight(20)
-	f.font = f:CreateFontString(nil, "BACKGROUND")
-	f.font:SetFontObject(GameFontNormal)
-	f.font:SetPoint("LEFT", f, "LEFT")
-    f.font:SetSize(0, 14)
-	f.font:SetJustifyH("RIGHT")
-	f.font:SetSize(90, 20)
-	f.font:SetText("Left Text")
-
-	controls.textbox.voidformOutLeft = BuildTextBox(parent, settings.displayText.left.outVoidformText,
-													500, 225, 24, xCoord+xPadding*2+100, yCoord)
-	f = controls.textbox.voidformOutLeft
-	f:SetScript("OnTextChanged", function(self, input)
-		settings.displayText.left.outVoidformText = self:GetText()
-		IsTtdActive()
-	end)
-
-	controls.textbox.voidformInLeft = BuildTextBox(parent, settings.displayText.left.inVoidformText,
-													500, 225, 24, xCoord2+25, yCoord)
-	f = controls.textbox.voidformInLeft
-	f:SetScript("OnTextChanged", function(self, input)
-		settings.displayText.left.inVoidformText = self:GetText()
-		IsTtdActive()
-	end)
-
-	yCoord = yCoord - yOffset2
-	controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
-	f = controls.labels.inVoidform
-	f:ClearAllPoints()
-	f:SetPoint("TOPLEFT", parent)
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	f:SetWidth(90)
-	f:SetHeight(20)
-	f.font = f:CreateFontString(nil, "BACKGROUND")
-	f.font:SetFontObject(GameFontNormal)
-	f.font:SetPoint("LEFT", f, "LEFT")
-    f.font:SetSize(0, 14)
-	f.font:SetJustifyH("RIGHT")
-	f.font:SetSize(90, 20)
-	f.font:SetText("Middle Text")
-
-	controls.textbox.voidformOutMiddle = BuildTextBox(parent, settings.displayText.middle.outVoidformText,
-													500, 225, 24, xCoord+xPadding*2+100, yCoord)
-	f = controls.textbox.voidformOutMiddle
-	f:SetScript("OnTextChanged", function(self, input)
-		settings.displayText.middle.outVoidformText = self:GetText()
-		IsTtdActive()
-	end)
-
-	controls.textbox.voidformInMiddle = BuildTextBox(parent, settings.displayText.middle.inVoidformText,
-													500, 225, 24, xCoord2+25, yCoord)
-	f = controls.textbox.voidformInMiddle
-	f:SetScript("OnTextChanged", function(self, input)
-		settings.displayText.middle.inVoidformText = self:GetText()
-		IsTtdActive()
-	end)
-
-	yCoord = yCoord - yOffset2
-	controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
-	f = controls.labels.inVoidform
-	f:ClearAllPoints()
-	f:SetPoint("TOPLEFT", parent)
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	f:SetWidth(90)
-	f:SetHeight(20)
-	f.font = f:CreateFontString(nil, "BACKGROUND")
-	f.font:SetFontObject(GameFontNormal)
-	f.font:SetPoint("LEFT", f, "LEFT")
-    f.font:SetSize(0, 14)
-	f.font:SetJustifyH("RIGHT")
-	f.font:SetSize(90, 20)
-	f.font:SetText("Right Text")
-
-	controls.textbox.voidformOutRight = BuildTextBox(parent, settings.displayText.right.outVoidformText,
-													500, 225, 24, xCoord+xPadding*2+100, yCoord)
-	f = controls.textbox.voidformOutRight
-	f:SetScript("OnTextChanged", function(self, input)
-		settings.displayText.right.outVoidformText = self:GetText()
-		IsTtdActive()
-	end)
-
-	controls.textbox.voidformInRight = BuildTextBox(parent, settings.displayText.right.inVoidformText,
-													500, 225, 24, xCoord2+25, yCoord)
-	f = controls.textbox.voidformInRight
-	f:SetScript("OnTextChanged", function(self, input)
-		settings.displayText.right.inVoidformText = self:GetText()
-		IsTtdActive()
-	end)
-
-	yCoord = yCoord - yOffset2
-	controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
-	f = controls.labels.instructionsVar
-	f:ClearAllPoints()
-	f:SetPoint("TOPLEFT", parent)
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	f:SetWidth(600)
-	f:SetHeight(20)
-	f.font = f:CreateFontString(nil, "BACKGROUND")
-	f.font:SetFontObject(GameFontHighlight)
-	f.font:SetPoint("LEFT", f, "LEFT")
-    f.font:SetSize(0, 14)
-	f.font:SetJustifyH("LEFT")
-	f.font:SetSize(600, 20)
-	f.font:SetText("For conditional display (only if $VARIABLE is active/non-zero): {$VARIABLE}[WHAT TO DISPLAY]")
-
-	yCoord = yCoord - yOffset4
-	controls.labels.vfStacksVar = BuildDisplayTextHelpEntry(parent, "$vfStacks", "Current Voidform Stack Count", xCoord, yCoord, 85, 200)
-	controls.labels.insanityVar = BuildDisplayTextHelpEntry(parent, "$insanity", "Current Insanity", xCoord2-70, yCoord, 130, 200)
-
-	yCoord = yCoord - yOffset4
-	controls.labels.vfStacksIncomingVar = BuildDisplayTextHelpEntry(parent, "$vfIncoming", "Incoming Voidform Stacks", xCoord, yCoord, 85, 200)
-	controls.labels.castingVar = BuildDisplayTextHelpEntry(parent, "$casting", "Insanity from Hardcasting Spells", xCoord2-70, yCoord, 130, 200)
-
-	yCoord = yCoord - yOffset4
-	controls.labels.vfDrainStacksVar = BuildDisplayTextHelpEntry(parent, "$vfDrainStacks", "Current Voidform Drain Stacks Count", xCoord, yCoord, 85, 200)
-	controls.labels.passiveVar = BuildDisplayTextHelpEntry(parent, "$passive", "Insanity from Passive Sources", xCoord2-70, yCoord, 130, 200)
-
-	yCoord = yCoord - yOffset4
-	controls.labels.vfDrainVar = BuildDisplayTextHelpEntry(parent, "$vfDrain", "Insanity drained per second", xCoord, yCoord, 85, 200)
-	controls.labels.asInsanityVar = BuildDisplayTextHelpEntry(parent, "$asInsanity", "Insanity from Auspicious Spirits", xCoord2-70, yCoord, 130, 200)
-
-	yCoord = yCoord - yOffset4
-	controls.labels.vfTimeVar = BuildDisplayTextHelpEntry(parent, "$vfTime", "Time until Voidform will end", xCoord, yCoord, 85, 200)
-	controls.labels.asCountVar = BuildDisplayTextHelpEntry(parent, "$asCount", "Number of Auspicious Spirits in Flight", xCoord2-70, yCoord, 130, 200)
-	
-	yCoord = yCoord - yOffset4
-	controls.labels.mbGcdsVar = BuildDisplayTextHelpEntry(parent, "$mbGcds", "Number of GCDs left on Mindbender", xCoord, yCoord, 85, 200)
-	controls.labels.mbInsanityVar = BuildDisplayTextHelpEntry(parent, "$mbInsanity", "Insanity from Mindbender (per settings)", xCoord2-70, yCoord, 130, 200)
-
-	yCoord = yCoord - yOffset4
-	controls.labels.mbTimeVar = BuildDisplayTextHelpEntry(parent, "$mbTime", "Time left on Mindbender", xCoord, yCoord, 85, 200)
-	controls.labels.mbSwingsVar = BuildDisplayTextHelpEntry(parent, "$mbSwings", "Number of Swings left on Mindbender", xCoord2-70, yCoord, 130, 200)
-	
-	yCoord = yCoord - yOffset4
-	controls.labels.liStacksVar = BuildDisplayTextHelpEntry(parent, "$liStacks", "Lingering Insanity Stacks", xCoord, yCoord, 85, 200)
-	controls.labels.liTimeVar = BuildDisplayTextHelpEntry(parent, "$liTime", "Lingering Insanity time remaining", xCoord2-70, yCoord, 130, 200)
-
-	yCoord = yCoord - yOffset4
-	controls.labels.swpCountVar = BuildDisplayTextHelpEntry(parent, "$swpCount", "Total number of SWPs on Targets", xCoord, yCoord, 85, 200)
-	controls.labels.vtCountVar = BuildDisplayTextHelpEntry(parent, "$vtCount", "Total number of SWPs on Targets", xCoord2-70, yCoord, 130, 200)
-
-	yCoord = yCoord - yOffset4
-	controls.labels.hasteVar = BuildDisplayTextHelpEntry(parent, "$haste", "Current Haste%", xCoord, yCoord, 85, 200)
-	controls.labels.ttdVar = BuildDisplayTextHelpEntry(parent, "$ttd", "Time To Die of current target", xCoord2-70, yCoord, 130, 200)
-
-	yCoord = yCoord - yOffset4
-	controls.labels.gcdVar = BuildDisplayTextHelpEntry(parent, "$gcd", "Current GCD, in seconds", xCoord, yCoord, 85, 200)
-	controls.labels.newlineVar = BuildDisplayTextHelpEntry(parent, "||n", "Insert a Newline", xCoord2-70, yCoord, 130, 200)
-	-----	
-	yCoord = yCoord - yOffset2
-	controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
-	f = controls.labels.instructions2Var
-	f:ClearAllPoints()
-	f:SetPoint("TOPLEFT", parent)
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	f:SetWidth(600)
-	f:SetHeight(20)
-	f.font = f:CreateFontString(nil, "BACKGROUND")
-	f.font:SetFontObject(GameFontHighlight)
-	f.font:SetPoint("LEFT", f, "LEFT")
-    f.font:SetSize(0, 14)
-	f.font:SetJustifyH("LEFT")
-	f.font:SetSize(600, 20)
-	f.font:SetText("For icons use #ICONVARIABLENAME")
-
-	yCoord = yCoord - yOffset4
-	controls.labels.swpIconVar = BuildDisplayTextHelpEntry(parent, "#casting", "The icon of the Insanity Generating Spell you are currently hardcasting", xCoord, yCoord, 85, 500)
-
-	yCoord = yCoord - yOffset4
-	controls.labels.swpIconVar = BuildDisplayTextHelpEntry(parent, "#swp", spells.shadowWordPain.icon .. " Shadow Word: Pain", xCoord, yCoord, 85, 200)
-	controls.labels.vtIconVar = BuildDisplayTextHelpEntry(parent, "#vt", spells.vampiricTouch.icon .. " Vampiric Touch", xCoord2-70, yCoord, 130, 200)
-
-	yCoord = yCoord - yOffset4
-	controls.labels.asIconVar = BuildDisplayTextHelpEntry(parent, "#as", spells.auspiciousSpirits.icon .. " Auspicious Spirits", xCoord, yCoord, 85, 200)
-	controls.labels.saIconVar = BuildDisplayTextHelpEntry(parent, "#sa", spells.shadowyApparition.icon .. " Shadowy Apparition", xCoord2-70, yCoord, 130, 200)
-
-	yCoord = yCoord - yOffset4
-	controls.labels.vfIconVar = BuildDisplayTextHelpEntry(parent, "#vf", spells.voidform.icon .. " Voidform", xCoord, yCoord, 85, 200)
-	controls.labels.vtIconVar = BuildDisplayTextHelpEntry(parent, "#li", spells.lingeringInsanity.icon .. " Lingering Insanity", xCoord2-70, yCoord, 130, 200)
-
-	yCoord = yCoord - yOffset4
-	controls.labels.mfIconVar = BuildDisplayTextHelpEntry(parent, "#mb", spells.mindBlast.icon .. " Mind Blast", xCoord, yCoord, 85, 200)
-	controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#mf", spells.mindFlay.icon .. " Mind Flay", xCoord2-70, yCoord, 130, 200)
-
-
-	---------------------------
-
-	yCoord = -5
-	parent = interfaceSettingsFrame.optionalFeaturesPanel
-
-	controls.textSection = BuildSectionHeader(parent, "Passive Options", xCoord+xPadding, yCoord)
-
-	yCoord = yCoord - yOffset2
-	controls.checkBoxes.showS2MSummary = CreateFrame("CheckButton", "TIBCB3_4", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showS2MSummary
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Show Surrender to Madness Summary")
-	f.tooltip = "Shows a summary in chat of your last Surrender to Madness, including total duration of S2M, total duration of Voidform, total stacks, final drain rate, and stacks gained while channeling Void Torrent."
-	f:SetChecked(settings.showS2MSummary)
-	f:SetScript("OnClick", function(self, ...)
-		settings.showS2MSummary = self:GetChecked()
-	end)
-
-	controls.checkBoxes.s2mDeath = CreateFrame("CheckButton", "TIBCB3_2", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.s2mDeath
-	f:SetPoint("TOPLEFT", xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Play Wilhelm Scream when S2M Ends")
-	f.tooltip = "When you die, horribly, after Surrender to Madness ends, play the infamous Wilhelm Scream to make you feel a bit better."
-	f:SetChecked(settings.audio.s2mDeath.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		settings.audio.s2mDeath.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - yOffset4
-	controls.checkBoxes.showSummary = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showSummary
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Show Voidform Summary")
-	f.tooltip = "Shows a summary in chat of your last Voidform including total duration, total stacks, final drain rate, and stacks gained while channeling Void Torrent."
-	f:SetChecked(settings.showSummary)
-	f:SetScript("OnClick", function(self, ...)
-		settings.showSummary = self:GetChecked()
-	end)
-
-	yCoord = yCoord - yOffset3
-	controls.colors.passive = BuildColorPicker(parent, "Insanity from Auspicious Spirits and Mindbender swings", settings.colors.bar.passive, 250, 25, xCoord+xPadding*2, yCoord)
-	f = controls.colors.passive
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		
-		controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
-		passiveFrame:SetStatusBarColor(r, g, b, a)
-		settings.colors.bar.passive = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.bar.passive, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	yCoord = yCoord - yOffset2
-	controls.textSection = BuildSectionHeader(parent, "Auspicious Spirits Tracking", xCoord+xPadding, yCoord)
-
-	yCoord = yCoord - yOffset2
-	controls.checkBoxes.as = CreateFrame("CheckButton", "TIBCB3_5", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.as
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Track Auspicious Spirits")
-	f.tooltip = "Track Shadowy Apparitions in flight that will generate Insanity upon reaching their target with the Auspicious Spirits talent."
-	f:SetChecked(settings.auspiciousSpiritsTracker)
-	f:SetScript("OnClick", function(self, ...)
-		settings.auspiciousSpiritsTracker = self:GetChecked()
-		
-		if ((settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected) or IsTtdActive()) and GetSpecialization() == 3 then
-			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-		else
-			targetsTimerFrame:SetScript("OnUpdate", nil)
-		end	
-	end)
-
-	yCoord = yCoord - yOffset2
-	controls.textSection = BuildSectionHeader(parent, "Mindbender Tracking", xCoord+xPadding, yCoord)
-
-	yCoord = yCoord - yOffset2	
-	controls.checkBoxes.mindbender = CreateFrame("CheckButton", "TIBCB3_6", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.mindbender
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Track Mindbender Insanity Gain")
-	f.tooltip = "Show the gain of Insanity over the next serveral swings, GCDs, or fixed length of time. Select which to track from the options below."
-	f:SetChecked(settings.mindbender.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		settings.mindbender.enabled = self:GetChecked()
-	end)
-
-	controls.colors.mindbenderThreshold = BuildColorPicker(parent, "Mindbender Insanity Gain Threshold Line", settings.colors.bar.passive, 250, 25, xCoord2, yCoord)
-	f = controls.colors.mindbenderThreshold
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		
-		controls.colors.mindbenderThreshold.Texture:SetColorTexture(r, g, b, a)
-		passiveFrame:SetStatusBarColor(r, g, b, a)
-		settings.colors.threshold.mindbender = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.threshold.mindbender, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	yCoord = yCoord - yOffset1	
-	controls.checkBoxes.mindbenderModeGCDs = CreateFrame("CheckButton", "TIBRB3_7", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.mindbenderModeGCDs
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Insanity from GCDs remaining")
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f.tooltip = "Shows the amount of Insanity incoming over the up to next X GCDs, based on player's current GCD."
-	if settings.mindbender.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.mindbenderModeGCDs:SetChecked(true)
-		controls.checkBoxes.mindbenderModeSwings:SetChecked(false)
-		controls.checkBoxes.mindbenderModeTime:SetChecked(false)
-		settings.mindbender.mode = "gcd"
-	end)
-
-	title = "Mindbender GCDs - 0.75sec Floor"
-	controls.mindbenderGCDs = BuildSlider(parent, title, 1, 10, settings.mindbender.gcdsMax, 1, 0,
-									barWidth, barHeight, xCoord2, yCoord)
-	controls.mindbenderGCDs:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-
-		self.EditBox:SetText(value)		
-		settings.mindbender.gcdsMax = value
-	end)
-
-
-	yCoord = yCoord - yOffset1	
-	controls.checkBoxes.mindbenderModeSwings = CreateFrame("CheckButton", "TIBRB3_8", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.mindbenderModeSwings
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Insanity from Swings remaining")
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f.tooltip = "Shows the amount of Insanity incoming over the up to next X melee swings from Mindbender. This is only different from the GCD option if you are above 200% haste (GCD cap)."
-	if settings.mindbender.mode == "swing" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.mindbenderModeGCDs:SetChecked(false)
-		controls.checkBoxes.mindbenderModeSwings:SetChecked(true)
-		controls.checkBoxes.mindbenderModeTime:SetChecked(false)
-		settings.mindbender.mode = "swing"
-	end)
-
-	title = "Mindbender Swings - No Floor"
-	controls.mindbenderSwings = BuildSlider(parent, title, 1, 10, settings.mindbender.swingsMax, 1, 0,
-									barWidth, barHeight, xCoord2, yCoord)
-	controls.mindbenderSwings:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-
-		self.EditBox:SetText(value)		
-		settings.mindbender.swingsMax = value
-	end)
-
-	yCoord = yCoord - yOffset1	
-	controls.checkBoxes.mindbenderModeTime = CreateFrame("CheckButton", "TIBRB3_9", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.mindbenderModeTime
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Insanity from Time remaining")
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f.tooltip = "Shows the amount of Insanity incoming over the up to next X seconds."
-	if settings.mindbender.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.mindbenderModeGCDs:SetChecked(false)
-		controls.checkBoxes.mindbenderModeSwings:SetChecked(false)
-		controls.checkBoxes.mindbenderModeTime:SetChecked(true)
-		settings.mindbender.mode = "time"
-	end)
-
-	title = "Mindbender Time Remaining"
-	controls.mindbenderTime = BuildSlider(parent, title, 0, 24, settings.mindbender.timeMax, 0.25, 2,
-									barWidth, barHeight, xCoord2, yCoord)
-	controls.mindbenderTime:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-
-		value = RoundTo(value, 2)
-		self.EditBox:SetText(value)		
-		settings.mindbender.timeMax = value
-	end)
-
-	yCoord = yCoord - yOffset1	
-	yCoord = yCoord - yOffset2	
-	controls.checkBoxes.mindbenderAudio = CreateFrame("CheckButton", "TIBCB3_10", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.mindbenderAudio
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Play Audio Cue to use Mindbender")
-	f.tooltip = "Plays an audio cue when in Voidform, Mindbender is offcooldown, and the number of Drain Stacks is above a certain threshold."
-	f:SetChecked(settings.mindbender.useNotification.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		settings.mindbender.useNotification.enabled = self:GetChecked()
-		if settings.mindbender.useNotification.enabled then
-			mindbenderAudioCueFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) mindbenderAudioCueFrame:onUpdate(sinceLastUpdate) end)
-		else
-			mindbenderAudioCueFrame:SetScript("OnUpdate", nil)
-		end
-	end)
-
-	controls.checkBoxes.mindbenderAudioStacks = CreateFrame("CheckButton", "TIBCB3_11", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.mindbenderAudioStacks
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-20)
-	getglobal(f:GetName() .. 'Text'):SetText("Use Voidform Stacks instead of Drain Stacks")
-	f.tooltip = "Uses the current Voidform Stacks instead of computed Drain Stacks for the audio cue."
-	f:SetChecked(settings.mindbender.useNotification.useVoidformStacks)
-	f:SetScript("OnClick", function(self, ...)
-		settings.mindbender.useNotification.useVoidformStacks = self:GetChecked()
-	end)
-
-	title = "Stacks to Trigger Audio Cue"
-	controls.mindbenderStacks = BuildSlider(parent, title, 1, 100, settings.mindbender.useNotification.thresholdStacks, 1, 0,
-									barWidth, barHeight, xCoord2, yCoord)
-	controls.mindbenderStacks:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-
-		self.EditBox:SetText(value)		
-		settings.mindbender.useNotification.thresholdStacks = value
-	end)
-
-	--interfaceSettingsFrame.controls = controls
-
-	------------------------------------------------
-
-	yCoord = -5
-	parent = interfaceSettingsFrame.advancedConfigurationPanel
-
-	controls.textSection = BuildSectionHeader(parent, "Time To Die", xCoord+xPadding, yCoord)
-
-	yCoord = yCoord - yOffset1
-
-	title = "Sampling Rate (seconds)"
-	controls.ttdSamplingRate = BuildSlider(parent, title, 0.05, 2, settings.ttd.sampleRate, 0.05, 2,
-									barWidth, barHeight, xCoord+xPadding*2, yCoord)
-	controls.ttdSamplingRate:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		else
-			value = RoundTo(value, 2)
-		end
-
-		self.EditBox:SetText(value)		
-		settings.ttd.sampleRate = value
-	end)
-
-	title = "Sample Size"
-	controls.ttdSampleSize = BuildSlider(parent, title, 1, 1000, settings.ttd.numEntries, 1, 0,
-									barWidth, barHeight, xCoord2, yCoord)
-	controls.ttdSampleSize:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-
-		self.EditBox:SetText(value)		
-		settings.ttd.numEntries = value
-	end)
-	
-	interfaceSettingsFrame.controls = controls
-end
-
 local function InsanityDrain(stacks)
     local pct = 1.00
     if characterData.items.t20Pieces >= 4 then
@@ -2852,7 +1419,7 @@ local function BarText()
 
 	local hastePercent = string.format("|c%s%." .. settings.hastePrecision .. "f%%|c%s", _hasteColor, snapshotData.haste, settings.colors.text.left)
 	--$vfStacks
-	local voidformStacks = string.format("%.0f", snapshotData.voidform.totalStacks)
+	local voidformStacks = string.format("%.0f", math.min(snapshotData.voidform.totalStacks, 100))
 	--$vfIncoming
 	local voidformStacksIncoming = string.format("%.0f", snapshotData.voidform.additionalStacks)
 	
@@ -3289,6 +1856,2126 @@ local function UpdateInsanityBar()
 	end
 end
 
+local function ConstructOptionsPanel()
+	local xPadding = 10
+	local xPadding2 = 30
+	local xMax = 550
+	local xCoord = 0
+	local xCoord2 = 325
+	local yCoord = -5
+	local xOffset1 = 50
+	local xOffset2 = 275
+	
+	local yOffset1 = 55
+	local yOffset2 = 30
+	local yOffset3 = 40
+	local yOffset4 = 20
+
+	local maxWidth = math.floor(GetScreenWidth())
+	local minWidth = math.max(math.ceil(settings.bar.border * 8), 120)
+	
+	local maxHeight = math.floor(GetScreenHeight())
+	local minHeight = math.max(math.ceil(settings.bar.border * 8), 1)
+	local barWidth = 250
+	local barHeight = 20
+	local title = ""
+
+	local maxBorderHeight = math.min(math.floor(settings.bar.height/8), math.floor(settings.bar.width/8))
+
+	interfaceSettingsFrame = {}
+	interfaceSettingsFrame.panel = CreateFrame("Frame", "TwintopInsanityBarPanel", UIParent)
+	interfaceSettingsFrame.panel.name = "Twintop's Insanity Bar"
+	local parent = interfaceSettingsFrame.panel
+	
+	local controls = {}
+	controls.colors = {}
+	controls.checkBoxes = {}
+	controls.labels = {}
+	controls.textbox = {}
+	controls.dropDown = {}
+	local f = nil
+
+	yCoord = -5	
+	controls.barPositionSection = BuildSectionHeader(parent, "Twintop's Insanity Bar", xCoord+xPadding, yCoord)
+
+	StaticPopupDialogs["TwintopInsanityBar_Reset"] = {
+		text = "Do you want to reset Twintop's Insanity Bar back to it's default configuration? This will cause your UI to be reloaded!",
+		button1 = "Yes",
+		button2 = "No",
+		OnAccept = function()
+			LoadDefaultSettings()
+			ReloadUI()			
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+
+	yCoord = yCoord - yOffset3
+	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Author:", "Twintop <Astral> - Turalyon-US", xCoord+xPadding*2, yCoord, 75, 200)
+	yCoord = yCoord - yOffset4
+	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Version:", addonVersion, xCoord+xPadding*2, yCoord, 75, 200)
+	yCoord = yCoord - yOffset4
+	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Released:", addonReleaseDate, xCoord+xPadding*2, yCoord, 75, 200)
+
+	yCoord = yCoord - yOffset3
+	controls.resetButton = CreateFrame("Button", "TwintopInsanityBar_ResetButton", parent)
+	f = controls.resetButton
+	f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2, yCoord)
+	f:SetWidth(150)
+	f:SetHeight(30)
+	f:SetText("Reset to Defaults")
+	f:SetNormalFontObject("GameFontNormal")
+	f.ntex = f:CreateTexture()
+	f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
+	f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
+	f.ntex:SetAllPoints()	
+	f:SetNormalTexture(f.ntex)
+	f.htex = f:CreateTexture()
+	f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
+	f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
+	f.htex:SetAllPoints()
+	f:SetHighlightTexture(f.htex)	
+	f.ptex = f:CreateTexture()
+	f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
+	f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
+	f.ptex:SetAllPoints()
+	f:SetPushedTexture(f.ptex)
+	f:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopInsanityBar_Reset")
+	end)
+
+	InterfaceOptions_AddCategory(interfaceSettingsFrame.panel)
+	
+	interfaceSettingsFrame.barLayoutPanel = CreateFrame("Frame", "TwintopInsanityBar_BarLayoutPanel", parent)
+	interfaceSettingsFrame.barLayoutPanel.name = "Bar Layout and Colors"
+	interfaceSettingsFrame.barLayoutPanel.parent = parent.name
+	InterfaceOptions_AddCategory(interfaceSettingsFrame.barLayoutPanel)
+	
+	interfaceSettingsFrame.barFontPanel = CreateFrame("Frame", "TwintopInsanityBar_BarFontPanel", parent)
+	interfaceSettingsFrame.barFontPanel.name = "Bar Fonts"
+	interfaceSettingsFrame.barFontPanel.parent = parent.name
+	InterfaceOptions_AddCategory(interfaceSettingsFrame.barFontPanel)
+	
+	interfaceSettingsFrame.barColorPanel = CreateFrame("Frame", "TwintopInsanityBar_barColorPanel", parent)
+	interfaceSettingsFrame.barColorPanel.name = "Bar Colors"
+	interfaceSettingsFrame.barColorPanel.parent = parent.name
+	InterfaceOptions_AddCategory(interfaceSettingsFrame.barColorPanel)
+	
+	interfaceSettingsFrame.barTextPanel = CreateFrame("Frame", "TwintopInsanityBar_BarTextPanel", parent)
+	interfaceSettingsFrame.barTextPanel.name = "Bar Text Display"
+	interfaceSettingsFrame.barTextPanel.parent = parent.name
+	InterfaceOptions_AddCategory(interfaceSettingsFrame.barTextPanel)
+	
+	interfaceSettingsFrame.optionalFeaturesPanel = CreateFrame("Frame", "TwintopInsanityBar_OptionalFeaturesPanel", parent)
+	interfaceSettingsFrame.optionalFeaturesPanel.name = "Optional Features"
+	interfaceSettingsFrame.optionalFeaturesPanel.parent = parent.name
+	InterfaceOptions_AddCategory(interfaceSettingsFrame.optionalFeaturesPanel)
+	
+	interfaceSettingsFrame.advancedConfigurationPanel = CreateFrame("Frame", "TwintopInsanityBar_AdvancedConfigurationPanel", parent)
+	interfaceSettingsFrame.advancedConfigurationPanel.name = "Advanced Configuration"
+	interfaceSettingsFrame.advancedConfigurationPanel.parent = parent.name
+	InterfaceOptions_AddCategory(interfaceSettingsFrame.advancedConfigurationPanel)
+
+	
+	yCoord = -5
+	parent = interfaceSettingsFrame.barLayoutPanel
+	controls.barPositionSection = BuildSectionHeader(parent, "Bar Position and Size", xCoord+xPadding, yCoord)
+	
+	yCoord = yCoord - yOffset3
+	title = "Bar Width"
+	controls.width = BuildSlider(parent, title, minWidth, maxWidth, settings.bar.width, 1, 0,
+								 barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.width:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+		self.EditBox:SetText(value)
+		settings.bar.width = value
+		barContainerFrame:SetWidth(value-(settings.bar.border*2))
+		barBorderFrame:SetWidth(settings.bar.width)
+		insanityFrame:SetWidth(value-(settings.bar.border*2))
+		castingFrame:SetWidth(value-(settings.bar.border*2))
+		passiveFrame:SetWidth(value-(settings.bar.border*2))
+		RepositionInsanityFrameThreshold()
+		local maxBorderSize = math.min(math.floor(settings.bar.height/ 8), math.floor(settings.bar.width / 8))
+		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
+		controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+	end)
+
+	title = "Bar Height"
+	controls.height = BuildSlider(parent, title, minHeight, maxHeight, settings.bar.height, 1, 0,
+									barWidth, barHeight, xCoord2, yCoord)
+	controls.height:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end		
+		self.EditBox:SetText(value)		
+		settings.bar.height = value
+		barContainerFrame:SetHeight(value-(settings.bar.border*2))
+		barBorderFrame:SetHeight(settings.bar.height)
+		insanityFrame:SetHeight(value-(settings.bar.border*2))
+		insanityFrame.threshold:SetHeight(value-(settings.bar.border*2))
+		castingFrame:SetHeight(value-(settings.bar.border*2))
+		passiveFrame:SetHeight(value-(settings.bar.border*2))
+		passiveFrame.threshold:SetHeight(value-(settings.bar.border*2))		
+		leftTextFrame:SetHeight(settings.bar.height * 3.5)
+		middleTextFrame:SetHeight(settings.bar.height * 3.5)
+		rightTextFrame:SetHeight(settings.bar.height * 3.5)
+		local maxBorderSize = math.min(math.floor(settings.bar.height/ 8), math.floor(settings.bar.width / 8))
+		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
+		controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+	end)
+
+	title = "Bar Horizontal Position"
+	yCoord = yCoord - yOffset1
+	controls.horizontal = BuildSlider(parent, title, math.ceil(-maxWidth/2), math.floor(maxWidth/2), settings.bar.xPos, 1, 0,
+								  barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.horizontal:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+		self.EditBox:SetText(value)		
+		settings.bar.xPos = value
+		barContainerFrame:ClearAllPoints()
+		barContainerFrame:SetPoint("CENTER", UIParent)
+		barContainerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+	end)
+
+	title = "Bar Vertical Position"
+	controls.vertical = BuildSlider(parent, title, math.ceil(-maxHeight/2), math.ceil(maxHeight/2), settings.bar.yPos, 1, 0,
+								  barWidth, barHeight, xCoord2, yCoord)
+	controls.vertical:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+		self.EditBox:SetText(value)
+		settings.bar.yPos = value
+		barContainerFrame:ClearAllPoints()
+		barContainerFrame:SetPoint("CENTER", UIParent)
+		barContainerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+	end)
+
+	title = "Bar Border Width"
+	yCoord = yCoord - yOffset1
+	controls.borderWidth = BuildSlider(parent, title, 0, maxBorderHeight, settings.bar.border, 1, 0,
+								  barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.borderWidth:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+		self.EditBox:SetText(value)		
+		settings.bar.border = value
+		barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
+		barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
+		barBorderFrame:SetWidth(settings.bar.width)
+		barBorderFrame:SetHeight(settings.bar.height)
+		if settings.bar.border < 1 then
+			barBorderFrame:SetBackdrop({ })
+		else
+			barBorderFrame:SetBackdrop({ edgeFile = settings.textures.border,
+										tile = true,
+										tileSize=4,
+										edgeSize=settings.bar.border*4,								
+										insets = {0, 0, 0, 0}
+										})
+		end
+		barBorderFrame:SetBackdropColor(0, 0, 0, 0)
+		barBorderFrame:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
+		insanityFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
+		insanityFrame.threshold:SetHeight(settings.bar.height-(settings.bar.border*2))
+		castingFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
+		passiveFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
+		passiveFrame.threshold:SetHeight(settings.bar.height-(settings.bar.border*2))
+		leftTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2)-2)
+		middleTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
+		rightTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
+		leftTextFrame:SetHeight(settings.bar.height * 3.5)
+		middleTextFrame:SetHeight(settings.bar.height * 3.5)
+		rightTextFrame:SetHeight(settings.bar.height * 3.5)
+
+		local minBarWidth = math.max(settings.bar.border * 8, 120)
+		local minBarHeight = math.max(settings.bar.border * 8, 1)
+		controls.height:SetMinMaxValues(minBarHeight, maxHeight)
+		controls.height.MinLabel:SetText(minBarHeight)
+		controls.width:SetMinMaxValues(minBarWidth, maxWidth)
+		controls.width.MinLabel:SetText(minBarWidth)
+	end)
+
+	controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TIBCB1_1", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.lockPosition
+	f:SetPoint("TOPLEFT", xCoord2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
+	f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved."
+	f:SetChecked(settings.bar.dragAndDrop)
+	f:SetScript("OnClick", function(self, ...)
+		settings.bar.dragAndDrop = self:GetChecked()
+		barContainerFrame:SetMovable(settings.bar.dragAndDrop)
+		barContainerFrame:EnableMouse(settings.bar.dragAndDrop)
+	end)
+
+	yCoord = yCoord - yOffset3
+	controls.textBarTexturesSection = BuildSectionHeader(parent, "Bar Textures", xCoord+xPadding, yCoord)
+	yCoord = yCoord - yOffset2
+	
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.insanityBarTexture = CreateFrame("FRAME", "TIBInsanityBarTexture", parent, "UIDropDownMenuTemplate")
+	controls.dropDown.insanityBarTexture.label = BuildSectionHeader(parent, "Main Bar Texture", xCoord+xPadding, yCoord)
+	controls.dropDown.insanityBarTexture.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.insanityBarTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset2)
+	UIDropDownMenu_SetWidth(controls.dropDown.insanityBarTexture, 250)
+	UIDropDownMenu_SetText(controls.dropDown.insanityBarTexture, settings.textures.insanityBarName)
+	UIDropDownMenu_JustifyText(controls.dropDown.insanityBarTexture, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	UIDropDownMenu_Initialize(controls.dropDown.insanityBarTexture, function(self, level, menuList)
+		local entries = 25
+		local info = UIDropDownMenu_CreateInfo()
+		local textures = addonData.libs.SharedMedia:HashTable("statusbar")
+		local texturesList = addonData.libs.SharedMedia:List("statusbar")
+		if (level or 1) == 1 or menuList == nil then
+			local menus = math.ceil(TableLength(textures) / entries)
+			for i=0, menus-1 do
+				info.hasArrow = true
+				info.notCheckable = true
+				info.text = "Status Bar Textures " .. i+1
+				info.menuList = i
+				UIDropDownMenu_AddButton(info)
+			end
+		else
+			local start = entries * menuList
+
+			for k, v in pairs(texturesList) do
+				if k > start and k <= start + entries then
+					info.text = v
+					info.value = textures[v]
+					info.checked = textures[v] == settings.textures.insanityBar
+					info.func = self.SetValue			
+					info.arg1 = textures[v]
+					info.arg2 = v
+					info.icon = textures[v]
+					UIDropDownMenu_AddButton(info, level)
+				end
+			end
+		end
+	end)
+
+	-- Implement the function to change the favoriteNumber
+	function controls.dropDown.insanityBarTexture:SetValue(newValue, newName)
+		settings.textures.insanityBar = newValue
+		settings.textures.insanityBarName = newName
+		insanityFrame:SetStatusBarTexture(settings.textures.insanityBar)
+		UIDropDownMenu_SetText(controls.dropDown.insanityBarTexture, newName)
+		if settings.textures.textureLock then
+			settings.textures.castingBar = newValue
+			settings.textures.castingBarName = newName
+			castingFrame:SetStatusBarTexture(settings.textures.castingBar)
+			UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
+			settings.textures.passiveBar = newValue
+			settings.textures.passiveBarName = newName
+			passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
+			UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
+		end
+		CloseDropDownMenus()
+	end
+		
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TIBCastBarTexture", parent, "UIDropDownMenuTemplate")
+	controls.dropDown.castingBarTexture.label = BuildSectionHeader(parent, "Casting Bar Texture", xCoord2-20, yCoord)
+	controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2-30, yCoord-yOffset2)
+	UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, 250)
+	UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, settings.textures.castingBarName)
+	UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	UIDropDownMenu_Initialize(controls.dropDown.castingBarTexture, function(self, level, menuList)
+		local entries = 25
+		local info = UIDropDownMenu_CreateInfo()
+		local textures = addonData.libs.SharedMedia:HashTable("statusbar")
+		local texturesList = addonData.libs.SharedMedia:List("statusbar")
+		if (level or 1) == 1 or menuList == nil then
+			local menus = math.ceil(TableLength(textures) / entries)
+			for i=0, menus-1 do
+				info.hasArrow = true
+				info.notCheckable = true
+				info.text = "Status Bar Textures " .. i+1
+				info.menuList = i
+				UIDropDownMenu_AddButton(info)
+			end
+		else
+			local start = entries * menuList
+
+			for k, v in pairs(texturesList) do
+				if k > start and k <= start + entries then
+					info.text = v
+					info.value = textures[v]
+					info.checked = textures[v] == settings.textures.castingBar
+					info.func = self.SetValue			
+					info.arg1 = textures[v]
+					info.arg2 = v
+					info.icon = textures[v]
+					UIDropDownMenu_AddButton(info, level)
+				end
+			end
+		end
+	end)
+
+	-- Implement the function to change the favoriteNumber
+	function controls.dropDown.castingBarTexture:SetValue(newValue, newName)
+		settings.textures.castingBar = newValue
+		settings.textures.castingBarName = newName
+		castingFrame:SetStatusBarTexture(settings.textures.castingBar)
+		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
+		if settings.textures.textureLock then
+			settings.textures.insanityBar = newValue
+			settings.textures.insanityBarName = newName
+			insnaityFrame:SetStatusBarTexture(settings.textures.insanityBar)
+			UIDropDownMenu_SetText(controls.dropDown.insanityBarTexture, newName)
+			settings.textures.passiveBar = newValue
+			settings.textures.passiveBarName = newName
+			passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
+			UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
+		end
+		CloseDropDownMenus()
+	end
+
+	yCoord = yCoord - yOffset1
+		
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TIBPassiveBarTexture", parent, "UIDropDownMenuTemplate")
+	controls.dropDown.passiveBarTexture.label = BuildSectionHeader(parent, "Passive Bar Texture", xCoord+xPadding, yCoord)
+	controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset2)
+	UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, 250)
+	UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, settings.textures.passiveBarName)
+	UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	UIDropDownMenu_Initialize(controls.dropDown.passiveBarTexture, function(self, level, menuList)
+		local entries = 25
+		local info = UIDropDownMenu_CreateInfo()
+		local textures = addonData.libs.SharedMedia:HashTable("statusbar")
+		local texturesList = addonData.libs.SharedMedia:List("statusbar")
+		if (level or 1) == 1 or menuList == nil then
+			local menus = math.ceil(TableLength(textures) / entries)
+			for i=0, menus-1 do
+				info.hasArrow = true
+				info.notCheckable = true
+				info.text = "Status Bar Textures " .. i+1
+				info.menuList = i
+				UIDropDownMenu_AddButton(info)
+			end
+		else
+			local start = entries * menuList
+
+			for k, v in pairs(texturesList) do
+				if k > start and k <= start + entries then
+					info.text = v
+					info.value = textures[v]
+					info.checked = textures[v] == settings.textures.passiveBar
+					info.func = self.SetValue			
+					info.arg1 = textures[v]
+					info.arg2 = v
+					info.icon = textures[v]
+					UIDropDownMenu_AddButton(info, level)
+				end
+			end
+		end
+	end)
+
+	-- Implement the function to change the favoriteNumber
+	function controls.dropDown.passiveBarTexture:SetValue(newValue, newName)
+		settings.textures.passiveBar = newValue
+		settings.textures.passiveBarName = newName
+		passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
+		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
+		if settings.textures.textureLock then
+			settings.textures.insanityBar = newValue
+			settings.textures.insanityBarName = newName
+			insanityFrame:SetStatusBarTexture(settings.textures.insanityBar)
+			UIDropDownMenu_SetText(controls.dropDown.insanityBarTexture, newName)
+			settings.textures.castingBar = newValue
+			settings.textures.castingBarName = newName
+			castingFrame:SetStatusBarTexture(settings.textures.castingBar)
+			UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
+		end
+		CloseDropDownMenus()
+	end	
+	
+	controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TIBCB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.textureLock
+	f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+	getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
+	f.tooltip = "This will lock the texture for each part of the bar to be the same."
+	f:SetChecked(settings.textures.textureLock)
+	f:SetScript("OnClick", function(self, ...)
+		settings.textures.textureLock = self:GetChecked()
+		if settings.textures.textureLock then
+			settings.textures.passiveBar = settings.textures.insanityBar
+			settings.textures.passiveBarName = settings.textures.insanityBarName
+			passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
+			UIDropDownMenu_SetText(controls.dropDown.insanityBarTexture, settings.textures.passiveBarName)
+			settings.textures.castingBar = settings.textures.insanityBar
+			settings.textures.castingBarName = settings.textures.insanityBarName
+			castingFrame:SetStatusBarTexture(settings.textures.castingBar)
+			UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, settings.textures.castingBarName)
+		end
+	end)
+
+
+	yCoord = yCoord - yOffset1
+	
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.borderTexture = CreateFrame("FRAME", "TIBBorderTexture", parent, "UIDropDownMenuTemplate")
+	controls.dropDown.borderTexture.label = BuildSectionHeader(parent, "Border Texture", xCoord+xPadding, yCoord)
+	controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset2)
+	UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, 250)
+	UIDropDownMenu_SetText(controls.dropDown.borderTexture, settings.textures.borderName)
+	UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	UIDropDownMenu_Initialize(controls.dropDown.borderTexture, function(self, level, menuList)
+		local entries = 25
+		local info = UIDropDownMenu_CreateInfo()
+		local textures = addonData.libs.SharedMedia:HashTable("border")
+		local texturesList = addonData.libs.SharedMedia:List("border")
+		if (level or 1) == 1 or menuList == nil then
+			local menus = math.ceil(TableLength(textures) / entries)
+			for i=0, menus-1 do
+				info.hasArrow = true
+				info.notCheckable = true
+				info.text = "Border Textures " .. i+1
+				info.menuList = i
+				UIDropDownMenu_AddButton(info)
+			end
+		else
+			local start = entries * menuList
+
+			for k, v in pairs(texturesList) do
+				if k > start and k <= start + entries then
+					info.text = v
+					info.value = textures[v]
+					info.checked = textures[v] == settings.textures.border
+					info.func = self.SetValue			
+					info.arg1 = textures[v]
+					info.arg2 = v
+					info.icon = textures[v]
+					UIDropDownMenu_AddButton(info, level)
+				end
+			end
+		end
+	end)
+
+	-- Implement the function to change the favoriteNumber
+	function controls.dropDown.borderTexture:SetValue(newValue, newName)
+		settings.textures.border = newValue
+		settings.textures.borderName = newName
+		if settings.bar.border < 1 then
+			barBorderFrame:SetBackdrop({ })
+		else
+			barBorderFrame:SetBackdrop({ edgeFile = settings.textures.border,
+										tile = true,
+										tileSize=4,
+										edgeSize=settings.bar.border*4,								
+										insets = {0, 0, 0, 0}
+										})
+		end
+		barBorderFrame:SetBackdropColor(0, 0, 0, 0)
+		barBorderFrame:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
+		UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
+		CloseDropDownMenus()
+	end
+	
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TIBBackgroundTexture", parent, "UIDropDownMenuTemplate")
+	controls.dropDown.backgroundTexture.label = BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2-20, yCoord)
+	controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2-30, yCoord-yOffset2)
+	UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, 250)
+	UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, settings.textures.backgroundName)
+	UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	UIDropDownMenu_Initialize(controls.dropDown.backgroundTexture, function(self, level, menuList)
+		local entries = 25
+		local info = UIDropDownMenu_CreateInfo()
+		local textures = addonData.libs.SharedMedia:HashTable("background")
+		local texturesList = addonData.libs.SharedMedia:List("background")
+		if (level or 1) == 1 or menuList == nil then
+			local menus = math.ceil(TableLength(textures) / entries)
+			for i=0, menus-1 do
+				info.hasArrow = true
+				info.notCheckable = true
+				info.text = "Background Textures " .. i+1
+				info.menuList = i
+				UIDropDownMenu_AddButton(info)
+			end
+		else
+			local start = entries * menuList
+
+			for k, v in pairs(texturesList) do
+				if k > start and k <= start + entries then
+					info.text = v
+					info.value = textures[v]
+					info.checked = textures[v] == settings.textures.background
+					info.func = self.SetValue			
+					info.arg1 = textures[v]
+					info.arg2 = v
+					info.icon = textures[v]
+					UIDropDownMenu_AddButton(info, level)
+				end
+			end
+		end
+	end)
+
+	-- Implement the function to change the favoriteNumber
+	function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
+		settings.textures.background = newValue
+		settings.textures.backgroundName = newName
+		barContainerFrame:SetBackdrop({ bgFile = settings.textures.background,									
+										tile = true,
+										tileSize=settings.bar.width-(settings.bar.border*2),
+										edgeSize=0,
+										insets = {0, 0, 0, 0}
+										})
+		barContainerFrame:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))
+		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, newName)
+		CloseDropDownMenus()
+	end
+
+
+
+	yCoord = yCoord - yOffset2 - yOffset3
+	controls.barDisplaySection = BuildSectionHeader(parent, "Bar Display", xCoord+xPadding, yCoord)
+
+	yCoord = yCoord - yOffset3
+
+	title = "Void Eruption Flash Alpha"
+	controls.flashAlpha = BuildSlider(parent, title, 0, 1, settings.colors.bar.flashAlpha, 0.01, 2,
+								 barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end	
+
+		value = RoundTo(value, 2)
+		self.EditBox:SetText(value)
+		settings.colors.bar.flashAlpha = value
+	end)
+
+	title = "Void Eruption Flash Period (sec)"
+	controls.flashPeriod = BuildSlider(parent, title, 0, 2, settings.colors.bar.flashPeriod, 0.05, 2,
+									barWidth, barHeight, xCoord2, yCoord)
+	controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+
+		value = RoundTo(value, 2)
+		self.EditBox:SetText(value)		
+		settings.colors.bar.flashPeriod = value
+	end)
+
+	yCoord = yCoord - yOffset3
+	controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TIBRB1_2", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.alwaysShow
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Always show Insanity Bar")
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	f.tooltip = "This will make the Insanity Bar always visible on your UI, even when out of combat."
+	f:SetChecked(settings.displayBar.alwaysShow)
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.alwaysShow:SetChecked(true)
+		controls.checkBoxes.notZeroShow:SetChecked(false)
+		controls.checkBoxes.combatShow:SetChecked(false)
+		settings.displayBar.alwaysShow = true
+		settings.displayBar.notZeroShow = false
+		HideInsanityBar()
+	end)
+
+	controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TIBRB1_3", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.notZeroShow
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-15)
+	getglobal(f:GetName() .. 'Text'):SetText("Show Insanity Bar when Insanity > 0")
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	f.tooltip = "This will make the Insanity Bar show out of combat only if Insanity > 0, hidden otherwise when out of combat."
+	f:SetChecked(settings.displayBar.notZeroShow)
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.alwaysShow:SetChecked(false)
+		controls.checkBoxes.notZeroShow:SetChecked(true)
+		controls.checkBoxes.combatShow:SetChecked(false)
+		settings.displayBar.alwaysShow = false
+		settings.displayBar.notZeroShow = true
+		HideInsanityBar()
+	end)
+
+	controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TIBRB1_4", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.combatShow
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-30)
+	getglobal(f:GetName() .. 'Text'):SetText("Only show Insanity Bar in combat")
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	f.tooltip = "This will make the Insanity Bar only be visible on your UI when in combat."
+	f:SetChecked((not settings.displayBar.alwaysShow) and (not settings.displayBar.notZeroShow))
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.alwaysShow:SetChecked(false)
+		controls.checkBoxes.notZeroShow:SetChecked(false)
+		controls.checkBoxes.combatShow:SetChecked(true)
+		settings.displayBar.alwaysShow = false
+		settings.displayBar.notZeroShow = false
+		HideInsanityBar()
+	end)
+
+	controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TIBCB1_5", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.flashEnabled
+	f:SetPoint("TOPLEFT", xCoord2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Void Eruption Usable")
+	f.tooltip = "This will flash the bar when Void Eruption can be cast."
+	f:SetChecked(settings.voidEruptionThreshold)
+	f:SetScript("OnClick", function(self, ...)
+		settings.colors.bar.flashEnabled = self:GetChecked()
+	end)
+
+	controls.checkBoxes.vfThresholdShow = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.vfThresholdShow
+	f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+	getglobal(f:GetName() .. 'Text'):SetText("Show Void Eruption Threshold Line")
+	f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Void Eruption."
+	f:SetChecked(settings.voidEruptionThreshold)
+	f:SetScript("OnClick", function(self, ...)
+		settings.voidEruptionThreshold = self:GetChecked()
+	end)
+
+	------------------------------------------------
+
+	yCoord = -5
+	parent = interfaceSettingsFrame.barColorPanel
+
+	yCoord = yCoord - yOffset3
+	controls.barColorsSection = BuildSectionHeader(parent, "Bar Colors", xCoord+xPadding, yCoord)
+
+	yCoord = yCoord - yOffset2
+	controls.colors.base = BuildColorPicker(parent, "Insanity while not in Voidform", settings.colors.bar.base, 250, 25, xCoord+xPadding*2, yCoord)
+	f = controls.colors.base
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+
+		controls.colors.base.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.bar.base = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.bar.base, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	controls.colors.inVoidform = BuildColorPicker(parent, "Insanity while in Voidform", settings.colors.bar.inVoidform, 250, 25, xCoord2, yCoord)
+	f = controls.colors.inVoidform
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+
+		controls.colors.inVoidform.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.bar.inVoidform = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.bar.inVoidform, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	yCoord = yCoord - yOffset2
+	controls.colors.enterVoidform = BuildColorPicker(parent, "Insanity when you can cast Void Eruption", settings.colors.bar.enterVoidform, 250, 25, xCoord+xPadding*2, yCoord)
+	f = controls.colors.enterVoidform
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+
+		controls.colors.enterVoidform.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.bar.enterVoidform = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.bar.enterVoidform, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	controls.colors.border = BuildColorPicker(parent, "Insanity Bar's border", settings.colors.bar.border, 225, 25, xCoord2, yCoord)
+	f = controls.colors.border
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		controls.colors.border.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.bar.border = ConvertColorDecimalToHex(r, g, b, a)
+		barBorderFrame:SetBackdropBorderColor(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.bar.border, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	yCoord = yCoord - yOffset2
+	controls.colors.casting = BuildColorPicker(parent, "Insanity from hardcasting spells", settings.colors.bar.casting, 250, 25, xCoord+xPadding*2, yCoord)
+	f = controls.colors.casting
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+
+		controls.colors.casting.Texture:SetColorTexture(r, g, b, a)
+		castingFrame:SetStatusBarColor(r, g, b, a)
+		settings.colors.bar.casting = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.bar.casting, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)	
+		
+	controls.colors.background = BuildColorPicker(parent, "Unfilled bar background", settings.colors.bar.background, 250, 25, xCoord2, yCoord)
+	f = controls.colors.background
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+
+		controls.colors.background.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.bar.background = ConvertColorDecimalToHex(r, g, b, a)
+		barContainerFrame:SetBackdropColor(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.bar.background, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	yCoord = yCoord - yOffset2
+	controls.colors.thresholdUnder = BuildColorPicker(parent, "Under min. req. Insanity to cast Void Eruption Threshold Line", settings.colors.threshold.under, 260, 25, xCoord+xPadding*2, yCoord)
+	f = controls.colors.thresholdUnder
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+
+		controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.threshold.under = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.threshold.under, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)	
+		
+	controls.colors.inVoidform2GCD = BuildColorPicker(parent, "Insanity while you have between 1-2 GCDs left in Voidform", settings.colors.bar.inVoidform2GCD, 250, 25, xCoord2, yCoord)
+	f = controls.colors.inVoidform2GCD
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+
+		controls.colors.inVoidform2GCD.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.bar.inVoidform2GCD = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.bar.inVoidform2GCD, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	yCoord = yCoord - yOffset2
+	controls.colors.thresholdOver = BuildColorPicker(parent, "Over min. req. Insanity to cast Void Eruption Threshold Line", settings.colors.threshold.over, 250, 25, xCoord+xPadding*2, yCoord)
+	f = controls.colors.thresholdOver
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+
+		controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.threshold.over = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.threshold.over, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	controls.colors.inVoidform1GCD = BuildColorPicker(parent, "Insanity while you have less than 1 GCD left in Voidform", settings.colors.bar.inVoidform1GCD, 250, 25, xCoord2, yCoord)
+	f = controls.colors.inVoidform1GCD
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+
+		controls.colors.inVoidform1GCD.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.bar.inVoidform1GCD = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.bar.inVoidform1GCD, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	-------------------------------------------------
+
+	yCoord = -5
+	parent = interfaceSettingsFrame.barFontPanel
+
+	controls.textDisplaySection = BuildSectionHeader(parent, "Font Face", xCoord+xPadding, yCoord)
+
+	yCoord = yCoord - yOffset2
+	
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.fontLeft = CreateFrame("FRAME", "TIBFontLeft", parent, "UIDropDownMenuTemplate")
+	controls.dropDown.fontLeft.label = BuildSectionHeader(parent, "Left Bar Font Face", xCoord+xPadding, yCoord)
+	controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset2)
+	UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, 250)
+	UIDropDownMenu_SetText(controls.dropDown.fontLeft, settings.displayText.left.fontFaceName)
+	UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	UIDropDownMenu_Initialize(controls.dropDown.fontLeft, function(self, level, menuList)
+		local entries = 25
+		local info = UIDropDownMenu_CreateInfo()
+		local fonts = addonData.libs.SharedMedia:HashTable("font")
+		local fontsList = addonData.libs.SharedMedia:List("font")
+		if (level or 1) == 1 or menuList == nil then
+			local menus = math.ceil(TableLength(fonts) / entries)
+			for i=0, menus-1 do
+				info.hasArrow = true
+				info.notCheckable = true
+				info.text = "Fonts " .. i+1
+				info.menuList = i
+				UIDropDownMenu_AddButton(info)
+			end
+		else
+			local start = entries * menuList
+
+			for k, v in pairs(fontsList) do
+				if k > start and k <= start + entries then
+					info.text = v
+					info.value = fonts[v]
+					info.checked = fonts[v] == settings.displayText.left.fontFace
+					info.func = self.SetValue			
+					info.arg1 = fonts[v]
+					info.arg2 = v
+					info.fontObject = CreateFont(v)
+					info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
+					UIDropDownMenu_AddButton(info, level)
+				end
+			end
+		end
+	end)
+
+	-- Implement the function to change the favoriteNumber
+	function controls.dropDown.fontLeft:SetValue(newValue, newName)
+		settings.displayText.left.fontFace = newValue
+		settings.displayText.left.fontFaceName = newName
+		leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
+		UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
+		if settings.displayText.fontFaceLock then
+			settings.displayText.middle.fontFace = newValue
+			settings.displayText.middle.fontFaceName = newName
+			middleTextFrame.font:SetFont(settings.displayText.middle.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
+			UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
+			settings.displayText.right.fontFace = newValue
+			settings.displayText.right.fontFaceName = newName
+			rightTextFrame.font:SetFont(settings.displayText.right.fontFace, settings.displayText.right.fontSize, "OUTLINE")
+			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
+		end
+		CloseDropDownMenus()
+	end
+		
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.fontMiddle = CreateFrame("FRAME", "TIBfFontMiddle", parent, "UIDropDownMenuTemplate")
+	controls.dropDown.fontMiddle.label = BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2-20, yCoord)
+	controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2-30, yCoord-yOffset2)
+	UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, 250)
+	UIDropDownMenu_SetText(controls.dropDown.fontMiddle, settings.displayText.middle.fontFaceName)
+	UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	UIDropDownMenu_Initialize(controls.dropDown.fontMiddle, function(self, level, menuList)
+		local entries = 25
+		local info = UIDropDownMenu_CreateInfo()
+		local fonts = addonData.libs.SharedMedia:HashTable("font")
+		local fontsList = addonData.libs.SharedMedia:List("font")
+		if (level or 1) == 1 or menuList == nil then
+			local menus = math.ceil(TableLength(fonts) / entries)
+			for i=0, menus-1 do
+				info.hasArrow = true
+				info.notCheckable = true
+				info.text = "Fonts " .. i+1
+				info.menuList = i
+				UIDropDownMenu_AddButton(info)
+			end
+		else
+			local start = entries * menuList
+
+			for k, v in pairs(fontsList) do
+				if k > start and k <= start + entries then
+					info.text = v
+					info.value = fonts[v]
+					info.checked = fonts[v] == settings.displayText.middle.fontFace
+					info.func = self.SetValue			
+					info.arg1 = fonts[v]
+					info.arg2 = v
+					info.fontObject = CreateFont(v)
+					info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
+					UIDropDownMenu_AddButton(info, level)
+				end
+			end
+		end
+	end)
+
+	-- Implement the function to change the favoriteNumber
+	function controls.dropDown.fontMiddle:SetValue(newValue, newName)
+		settings.displayText.middle.fontFace = newValue
+		settings.displayText.middle.fontFaceName = newName
+		middleTextFrame.font:SetFont(settings.displayText.middle.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
+		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
+		if settings.displayText.fontFaceLock then
+			settings.displayText.left.fontFace = newValue
+			settings.displayText.left.fontFaceName = newName
+			leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
+			UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)			
+			settings.displayText.right.fontFace = newValue
+			settings.displayText.right.fontFaceName = newName
+			rightTextFrame.font:SetFont(settings.displayText.right.fontFace, settings.displayText.right.fontSize, "OUTLINE")
+			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
+		end
+		CloseDropDownMenus()
+	end
+
+	yCoord = yCoord - yOffset3 - yOffset4
+		
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.fontRight = CreateFrame("FRAME", "TIBFontRight", parent, "UIDropDownMenuTemplate")
+	controls.dropDown.fontRight.label = BuildSectionHeader(parent, "Right Bar Font Face", xCoord+xPadding, yCoord)
+	controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset2)
+	UIDropDownMenu_SetWidth(controls.dropDown.fontRight, 250)
+	UIDropDownMenu_SetText(controls.dropDown.fontRight, settings.displayText.right.fontFaceName)
+	UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	UIDropDownMenu_Initialize(controls.dropDown.fontRight, function(self, level, menuList)
+		local entries = 25
+		local info = UIDropDownMenu_CreateInfo()
+		local fonts = addonData.libs.SharedMedia:HashTable("font")
+		local fontsList = addonData.libs.SharedMedia:List("font")
+		if (level or 1) == 1 or menuList == nil then
+			local menus = math.ceil(TableLength(fonts) / entries)
+			for i=0, menus-1 do
+				info.hasArrow = true
+				info.notCheckable = true
+				info.text = "Fonts " .. i+1
+				info.menuList = i
+				UIDropDownMenu_AddButton(info)
+			end
+		else
+			local start = entries * menuList
+
+			for k, v in pairs(fontsList) do
+				if k > start and k <= start + entries then
+					info.text = v
+					info.value = fonts[v]
+					info.checked = fonts[v] == settings.displayText.right.fontFace
+					info.func = self.SetValue			
+					info.arg1 = fonts[v]
+					info.arg2 = v
+					info.fontObject = CreateFont(v)
+					info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
+					UIDropDownMenu_AddButton(info, level)
+				end
+			end
+		end
+	end)
+
+	-- Implement the function to change the favoriteNumber
+	function controls.dropDown.fontRight:SetValue(newValue, newName)		
+		settings.displayText.right.fontFace = newValue
+		settings.displayText.right.fontFaceName = newName
+		rightTextFrame.font:SetFont(settings.displayText.right.fontFace, settings.displayText.right.fontSize, "OUTLINE")
+		UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
+		if settings.displayText.fontFaceLock then
+			settings.displayText.left.fontFace = newValue
+			settings.displayText.left.fontFaceName = newName
+			leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
+			UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
+			settings.displayText.middle.fontFace = newValue
+			settings.displayText.middle.fontFaceName = newName
+			middleTextFrame.font:SetFont(settings.displayText.middle.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
+			UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
+		end
+		CloseDropDownMenus()
+	end
+	
+	controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TIBCB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.fontFaceLock
+	f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+	getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
+	f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
+	f:SetChecked(settings.displayText.fontFaceLock)
+	f:SetScript("OnClick", function(self, ...)
+		settings.displayText.fontFaceLock = self:GetChecked()
+		if settings.displayText.fontFaceLock then
+			settings.displayText.middle.fontFace = settings.displayText.left.fontFace
+			settings.displayText.middle.fontFaceName = settings.displayText.left.fontFaceName
+			middleTextFrame.font:SetFont(settings.displayText.middle.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
+			UIDropDownMenu_SetText(controls.dropDown.fontMiddle, settings.displayText.middle.fontFaceName)
+			settings.displayText.right.fontFace = settings.displayText.left.fontFace
+			settings.displayText.right.fontFaceName = settings.displayText.left.fontFaceName
+			rightTextFrame.font:SetFont(settings.displayText.right.fontFace, settings.displayText.right.fontSize, "OUTLINE")
+			UIDropDownMenu_SetText(controls.dropDown.fontRight, settings.displayText.right.fontFaceName)
+		end
+	end)
+
+
+	yCoord = yCoord - yOffset3 - yOffset4
+
+	controls.textDisplaySection = BuildSectionHeader(parent, "Font Size and Colors", xCoord+xPadding, yCoord)
+
+	yCoord = yCoord - yOffset3
+	title = "Left Bar Text Font Size"
+	controls.fontSizeLeft = BuildSlider(parent, title, 6, 72, settings.displayText.left.fontSize, 1, 0,
+								  barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+		self.EditBox:SetText(value)		
+		settings.displayText.fontSizeLeft = value
+		settings.displayText.left.fontSize = value
+		leftTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.left.fontSize, "OUTLINE")
+		if settings.displayText.fontSizeLock then
+			controls.fontSizeMiddle:SetValue(value)
+			controls.fontSizeRight:SetValue(value)
+		end
+	end)
+	
+	controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TIBCB2_F1", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.fontSizeLock
+	f:SetPoint("TOPLEFT", xCoord2, yCoord+10)
+	getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
+	f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
+	f:SetChecked(settings.displayText.fontSizeLock)
+	f:SetScript("OnClick", function(self, ...)
+		settings.displayText.fontSizeLock = self:GetChecked()
+		if settings.displayText.fontSizeLock then
+			controls.fontSizeMiddle:SetValue(settings.displayText.left.fontSize)
+			controls.fontSizeRight:SetValue(settings.displayText.left.fontSize)
+		end
+	end)
+
+	controls.colors.leftText = BuildColorPicker(parent, "Left Text", settings.colors.text.left,
+													250, 25, xCoord2, yCoord-20)
+	f = controls.colors.leftText
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		--Text doesn't care about Alpha, but the color picker does!
+		a = 1.0
+
+		controls.colors.leftText.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.text.left = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.text.left, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	controls.colors.middleText = BuildColorPicker(parent, "Middle Text", settings.colors.text.middle,
+													225, 25, xCoord2, yCoord-60)
+	f = controls.colors.middleText
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		--Text doesn't care about Alpha, but the color picker does!
+		a = 1.0
+
+		controls.colors.middleText.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.text.middle = ConvertColorDecimalToHex(r, g, b, a)
+		barContainerFrame:SetBackdropBorderColor(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.text.middle, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	controls.colors.rightText = BuildColorPicker(parent, "Right Text", settings.colors.text.right,
+													225, 25, xCoord2, yCoord-100)
+	f = controls.colors.rightText
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		--Text doesn't care about Alpha, but the color picker does!
+		a = 1.0
+
+		controls.colors.rightText.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.text.right = ConvertColorDecimalToHex(r, g, b, a)
+		barContainerFrame:SetBackdropBorderColor(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.text.right, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+	
+	title = "Middle Bar Text Font Size"
+	yCoord = yCoord - yOffset1
+	controls.fontSizeMiddle = BuildSlider(parent, title, 6, 72, settings.displayText.middle.fontSize, 1, 0,
+								  barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+		self.EditBox:SetText(value)		
+		settings.displayText.fontSizeMiddle = value
+		settings.displayText.middle.fontSize = value
+		middleTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
+		if settings.displayText.fontSizeLock then
+			controls.fontSizeLeft:SetValue(value)
+			controls.fontSizeRight:SetValue(value)
+		end
+	end)
+	
+	title = "Right Bar Text Font Size"
+	yCoord = yCoord - yOffset1
+	controls.fontSizeRight = BuildSlider(parent, title, 6, 72, settings.displayText.right.fontSize, 1, 0,
+								  barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+		self.EditBox:SetText(value)		
+		settings.displayText.fontSizeRight = value
+		settings.displayText.right.fontSize = value
+		rightTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.right.fontSize, "OUTLINE")
+		if settings.displayText.fontSizeLock then
+			controls.fontSizeLeft:SetValue(value)
+			controls.fontSizeMiddle:SetValue(value)
+		end
+	end)
+
+	yCoord = yCoord - yOffset1	
+	controls.colors.currentInsanityText = BuildColorPicker(parent, "Current Insanity", settings.colors.text.currentInsanity, 250, 25, xCoord+xPadding*2, yCoord)
+	f = controls.colors.currentInsanityText
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		--Text doesn't care about Alpha, but the color picker does!
+		a = 1.0
+
+		controls.colors.currentInsanityText.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.text.currentInsanity = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.text.currentInsanity, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	controls.colors.castingInsanityText = BuildColorPicker(parent, "Insanity from hardcasting spells", settings.colors.text.castingInsanity, 250, 25, xCoord2, yCoord)
+	f = controls.colors.castingInsanityText
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		--Text doesn't care about Alpha, but the color picker does!
+		a = 1.0
+
+		controls.colors.castingInsanityText.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.text.castingInsanity = ConvertColorDecimalToHex(r, g, b, a)
+		barContainerFrame:SetBackdropBorderColor(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.text.currentInsanity, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	yCoord = yCoord - yOffset1	
+	title = "Low to Medium Haste% Threshold in Voidform"
+	controls.hasteApproachingThreshold = BuildSlider(parent, title, 0, 500, settings.hasteApproachingThreshold, 0.25, 2,
+									barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.hasteApproachingThreshold:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		elseif value > settings.hasteThreshold then
+			value = settings.hasteThreshold
+		end
+
+		value = RoundTo(value, 2)
+		self.EditBox:SetText(value)		
+		settings.hasteApproachingThreshold = value
+	end)
+
+	controls.colors.hasteBelow = BuildColorPicker(parent, "Low Haste% in Voidform", settings.colors.text.hasteBelow,
+												250, 25, xCoord2, yCoord+10)
+	f = controls.colors.hasteBelow
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		--Text doesn't care about Alpha, but the color picker does!
+		a = 1.0
+
+		controls.colors.hasteBelow.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.text.hasteBelow = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.text.hasteBelow, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	controls.colors.hasteApproaching = BuildColorPicker(parent, "Medium Haste% in Voidform", settings.colors.text.hasteApproaching,
+												250, 25, xCoord2, yCoord-30)
+	f = controls.colors.hasteApproaching
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		--Text doesn't care about Alpha, but the color picker does!
+		a = 1.0
+
+		controls.colors.hasteApproaching.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.text.hasteApproaching = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.text.hasteApproaching, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	controls.colors.hasteAbove = BuildColorPicker(parent, "High Haste% in Voidform", settings.colors.text.hasteAbove,
+												250, 25, xCoord2, yCoord-70)
+	f = controls.colors.hasteAbove
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		--Text doesn't care about Alpha, but the color picker does!
+		a = 1.0
+
+		controls.colors.hasteAbove.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.text.hasteAbove = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.text.hasteAbove, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	yCoord = yCoord - yOffset1	
+	title = "Medium to High Haste% Threshold in Voidform"
+	controls.hasteThreshold = BuildSlider(parent, title, 0, 500, settings.hasteThreshold, 0.25, 2,
+									barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.hasteThreshold:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		elseif value < settings.hasteApproachingThreshold then
+			value = settings.hasteApproachingThreshold
+		end
+
+		value = RoundTo(value, 2)
+		self.EditBox:SetText(value)		
+		settings.hasteThreshold = value
+	end)
+
+	yCoord = yCoord - yOffset1	
+	title = "Haste Decimals to Show"
+	controls.hastePrecision = BuildSlider(parent, title, 0, 10, settings.hastePrecision, 1, 0,
+									barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+
+		value = RoundTo(value, 0)
+		self.EditBox:SetText(value)		
+		settings.hastePrecision = value
+	end)
+
+	------------------------------------------------
+
+	yCoord = -5
+	parent = interfaceSettingsFrame.barTextPanel
+
+	controls.textCustomSection = BuildSectionHeader(parent, "Bar Display Text Customization", xCoord+xPadding, yCoord)
+
+	yCoord = yCoord - yOffset2
+	controls.labels.outVoidform = CreateFrame("Frame", nil, parent)
+	f = controls.labels.outVoidform
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", parent)
+	f:SetPoint("TOPLEFT", xCoord+xPadding2+100, yCoord)
+	f:SetWidth(225)
+	f:SetHeight(20)
+	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font:SetFontObject(GameFontNormal)
+	f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetSize(0, 14)
+	f.font:SetJustifyH("CENTER")
+	f.font:SetSize(225, 20)
+	f.font:SetText("Out of Voidform")
+
+	controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
+	f = controls.labels.inVoidform
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", parent)
+	f:SetPoint("TOPLEFT", xCoord2+25, yCoord)
+	f:SetWidth(200)
+	f:SetHeight(20)
+	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font:SetFontObject(GameFontNormal)
+	f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetSize(0, 14)
+	f.font:SetJustifyH("CENTER")
+	f.font:SetSize(225, 20)
+	f.font:SetText("In Voidform")
+
+	yCoord = yCoord - yOffset4
+	controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
+	f = controls.labels.inVoidform
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", parent)
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	f:SetWidth(90)
+	f:SetHeight(20)
+	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font:SetFontObject(GameFontNormal)
+	f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetSize(0, 14)
+	f.font:SetJustifyH("RIGHT")
+	f.font:SetSize(90, 20)
+	f.font:SetText("Left Text")
+
+	controls.textbox.voidformOutLeft = BuildTextBox(parent, settings.displayText.left.outVoidformText,
+													500, 225, 24, xCoord+xPadding*2+100, yCoord)
+	f = controls.textbox.voidformOutLeft
+	f:SetScript("OnTextChanged", function(self, input)
+		settings.displayText.left.outVoidformText = self:GetText()
+		IsTtdActive()
+	end)
+
+	controls.textbox.voidformInLeft = BuildTextBox(parent, settings.displayText.left.inVoidformText,
+													500, 225, 24, xCoord2+25, yCoord)
+	f = controls.textbox.voidformInLeft
+	f:SetScript("OnTextChanged", function(self, input)
+		settings.displayText.left.inVoidformText = self:GetText()
+		IsTtdActive()
+	end)
+
+	yCoord = yCoord - yOffset2
+	controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
+	f = controls.labels.inVoidform
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", parent)
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	f:SetWidth(90)
+	f:SetHeight(20)
+	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font:SetFontObject(GameFontNormal)
+	f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetSize(0, 14)
+	f.font:SetJustifyH("RIGHT")
+	f.font:SetSize(90, 20)
+	f.font:SetText("Middle Text")
+
+	controls.textbox.voidformOutMiddle = BuildTextBox(parent, settings.displayText.middle.outVoidformText,
+													500, 225, 24, xCoord+xPadding*2+100, yCoord)
+	f = controls.textbox.voidformOutMiddle
+	f:SetScript("OnTextChanged", function(self, input)
+		settings.displayText.middle.outVoidformText = self:GetText()
+		IsTtdActive()
+	end)
+
+	controls.textbox.voidformInMiddle = BuildTextBox(parent, settings.displayText.middle.inVoidformText,
+													500, 225, 24, xCoord2+25, yCoord)
+	f = controls.textbox.voidformInMiddle
+	f:SetScript("OnTextChanged", function(self, input)
+		settings.displayText.middle.inVoidformText = self:GetText()
+		IsTtdActive()
+	end)
+
+	yCoord = yCoord - yOffset2
+	controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
+	f = controls.labels.inVoidform
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", parent)
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	f:SetWidth(90)
+	f:SetHeight(20)
+	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font:SetFontObject(GameFontNormal)
+	f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetSize(0, 14)
+	f.font:SetJustifyH("RIGHT")
+	f.font:SetSize(90, 20)
+	f.font:SetText("Right Text")
+
+	controls.textbox.voidformOutRight = BuildTextBox(parent, settings.displayText.right.outVoidformText,
+													500, 225, 24, xCoord+xPadding*2+100, yCoord)
+	f = controls.textbox.voidformOutRight
+	f:SetScript("OnTextChanged", function(self, input)
+		settings.displayText.right.outVoidformText = self:GetText()
+		IsTtdActive()
+	end)
+
+	controls.textbox.voidformInRight = BuildTextBox(parent, settings.displayText.right.inVoidformText,
+													500, 225, 24, xCoord2+25, yCoord)
+	f = controls.textbox.voidformInRight
+	f:SetScript("OnTextChanged", function(self, input)
+		settings.displayText.right.inVoidformText = self:GetText()
+		IsTtdActive()
+	end)
+
+	yCoord = yCoord - yOffset2
+	controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
+	f = controls.labels.instructionsVar
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", parent)
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	f:SetWidth(600)
+	f:SetHeight(20)
+	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font:SetFontObject(GameFontHighlight)
+	f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetSize(0, 14)
+	f.font:SetJustifyH("LEFT")
+	f.font:SetSize(600, 20)
+	f.font:SetText("For conditional display (only if $VARIABLE is active/non-zero): {$VARIABLE}[WHAT TO DISPLAY]")
+
+	yCoord = yCoord - yOffset4
+	controls.labels.vfStacksVar = BuildDisplayTextHelpEntry(parent, "$vfStacks", "Current Voidform Stack Count", xCoord, yCoord, 85, 200)
+	controls.labels.insanityVar = BuildDisplayTextHelpEntry(parent, "$insanity", "Current Insanity", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.vfStacksIncomingVar = BuildDisplayTextHelpEntry(parent, "$vfIncoming", "Incoming Voidform Stacks", xCoord, yCoord, 85, 200)
+	controls.labels.castingVar = BuildDisplayTextHelpEntry(parent, "$casting", "Insanity from Hardcasting Spells", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.vfDrainStacksVar = BuildDisplayTextHelpEntry(parent, "$vfDrainStacks", "Current Voidform Drain Stacks Count", xCoord, yCoord, 85, 200)
+	controls.labels.passiveVar = BuildDisplayTextHelpEntry(parent, "$passive", "Insanity from Passive Sources", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.vfDrainVar = BuildDisplayTextHelpEntry(parent, "$vfDrain", "Insanity drained per second", xCoord, yCoord, 85, 200)
+	controls.labels.asInsanityVar = BuildDisplayTextHelpEntry(parent, "$asInsanity", "Insanity from Auspicious Spirits", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.vfTimeVar = BuildDisplayTextHelpEntry(parent, "$vfTime", "Time until Voidform will end", xCoord, yCoord, 85, 200)
+	controls.labels.asCountVar = BuildDisplayTextHelpEntry(parent, "$asCount", "Number of Auspicious Spirits in Flight", xCoord2-70, yCoord, 130, 200)
+	
+	yCoord = yCoord - yOffset4
+	controls.labels.mbGcdsVar = BuildDisplayTextHelpEntry(parent, "$mbGcds", "Number of GCDs left on Mindbender", xCoord, yCoord, 85, 200)
+	controls.labels.mbInsanityVar = BuildDisplayTextHelpEntry(parent, "$mbInsanity", "Insanity from Mindbender (per settings)", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.mbTimeVar = BuildDisplayTextHelpEntry(parent, "$mbTime", "Time left on Mindbender", xCoord, yCoord, 85, 200)
+	controls.labels.mbSwingsVar = BuildDisplayTextHelpEntry(parent, "$mbSwings", "Number of Swings left on Mindbender", xCoord2-70, yCoord, 130, 200)
+	
+	yCoord = yCoord - yOffset4
+	controls.labels.liStacksVar = BuildDisplayTextHelpEntry(parent, "$liStacks", "Lingering Insanity Stacks", xCoord, yCoord, 85, 200)
+	controls.labels.liTimeVar = BuildDisplayTextHelpEntry(parent, "$liTime", "Lingering Insanity time remaining", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.swpCountVar = BuildDisplayTextHelpEntry(parent, "$swpCount", "Total number of SWPs on Targets", xCoord, yCoord, 85, 200)
+	controls.labels.vtCountVar = BuildDisplayTextHelpEntry(parent, "$vtCount", "Total number of VTs on Targets", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.hasteVar = BuildDisplayTextHelpEntry(parent, "$haste", "Current Haste%", xCoord, yCoord, 85, 200)
+	controls.labels.ttdVar = BuildDisplayTextHelpEntry(parent, "$ttd", "Time To Die of current target", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.gcdVar = BuildDisplayTextHelpEntry(parent, "$gcd", "Current GCD, in seconds", xCoord, yCoord, 85, 200)
+	controls.labels.newlineVar = BuildDisplayTextHelpEntry(parent, "||n", "Insert a Newline", xCoord2-70, yCoord, 130, 200)
+	-----	
+	yCoord = yCoord - yOffset2
+	controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
+	f = controls.labels.instructions2Var
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", parent)
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	f:SetWidth(600)
+	f:SetHeight(20)
+	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font:SetFontObject(GameFontHighlight)
+	f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetSize(0, 14)
+	f.font:SetJustifyH("LEFT")
+	f.font:SetSize(600, 20)
+	f.font:SetText("For icons use #ICONVARIABLENAME")
+
+	yCoord = yCoord - yOffset4
+	controls.labels.swpIconVar = BuildDisplayTextHelpEntry(parent, "#casting", "The icon of the Insanity Generating Spell you are currently hardcasting", xCoord, yCoord, 85, 500)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.swpIconVar = BuildDisplayTextHelpEntry(parent, "#swp", spells.shadowWordPain.icon .. " Shadow Word: Pain", xCoord, yCoord, 85, 200)
+	controls.labels.vtIconVar = BuildDisplayTextHelpEntry(parent, "#vt", spells.vampiricTouch.icon .. " Vampiric Touch", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.asIconVar = BuildDisplayTextHelpEntry(parent, "#as", spells.auspiciousSpirits.icon .. " Auspicious Spirits", xCoord, yCoord, 85, 200)
+	controls.labels.saIconVar = BuildDisplayTextHelpEntry(parent, "#sa", spells.shadowyApparition.icon .. " Shadowy Apparition", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.vfIconVar = BuildDisplayTextHelpEntry(parent, "#vf", spells.voidform.icon .. " Voidform", xCoord, yCoord, 85, 200)
+	controls.labels.vtIconVar = BuildDisplayTextHelpEntry(parent, "#li", spells.lingeringInsanity.icon .. " Lingering Insanity", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset4
+	controls.labels.mfIconVar = BuildDisplayTextHelpEntry(parent, "#mb", spells.mindBlast.icon .. " Mind Blast", xCoord, yCoord, 85, 200)
+	controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#mf", spells.mindFlay.icon .. " Mind Flay", xCoord2-70, yCoord, 130, 200)
+
+
+	---------------------------
+
+	yCoord = -5
+	parent = interfaceSettingsFrame.optionalFeaturesPanel
+
+	controls.textSection = BuildSectionHeader(parent, "Passive Options", xCoord+xPadding, yCoord)
+
+	yCoord = yCoord - yOffset2
+	controls.checkBoxes.showS2MSummary = CreateFrame("CheckButton", "TIBCB3_4", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.showS2MSummary
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Show Surrender to Madness Summary")
+	f.tooltip = "Shows a summary in chat of your last Surrender to Madness, including total duration of S2M, total duration of Voidform, total stacks, final drain rate, and stacks gained while channeling Void Torrent."
+	f:SetChecked(settings.showS2MSummary)
+	f:SetScript("OnClick", function(self, ...)
+		settings.showS2MSummary = self:GetChecked()
+	end)
+
+	controls.checkBoxes.s2mDeath = CreateFrame("CheckButton", "TIBCB3_2", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.s2mDeath
+	f:SetPoint("TOPLEFT", xCoord2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Play sound when S2M Ends")
+	f.tooltip = "When you die, horribly, after Surrender to Madness ends, play a sound (defaults to the infamous Wilhelm Scream) to make you feel a bit better."
+	f:SetChecked(settings.audio.s2mDeath.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		settings.audio.s2mDeath.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - yOffset4
+	controls.checkBoxes.showSummary = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.showSummary
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Show Voidform Summary")
+	f.tooltip = "Shows a summary in chat of your last Voidform including total duration, total stacks, final drain rate, and stacks gained while channeling Void Torrent."
+	f:SetChecked(settings.showSummary)
+	f:SetScript("OnClick", function(self, ...)
+		settings.showSummary = self:GetChecked()
+	end)
+
+	yCoord = yCoord - yOffset3
+	controls.colors.passive = BuildColorPicker(parent, "Insanity from Auspicious Spirits and Mindbender swings", settings.colors.bar.passive, 250, 25, xCoord+xPadding*2, yCoord)
+	f = controls.colors.passive
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		
+		controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
+		passiveFrame:SetStatusBarColor(r, g, b, a)
+		settings.colors.bar.passive = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.bar.passive, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+	
+		
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.s2mAudio = CreateFrame("FRAME", "TIBS2MDeathAudio", parent, "UIDropDownMenuTemplate")
+	controls.dropDown.s2mAudio.label = BuildSectionHeader(parent, "Surrender to Madness Ending Audio", xCoord2-20, yCoord+20)
+	controls.dropDown.s2mAudio.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.s2mAudio:SetPoint("TOPLEFT", xCoord2-30, yCoord-yOffset2+20)
+	UIDropDownMenu_SetWidth(controls.dropDown.s2mAudio, 250)
+	UIDropDownMenu_SetText(controls.dropDown.s2mAudio, settings.audio.s2mDeath.soundName)
+	UIDropDownMenu_JustifyText(controls.dropDown.s2mAudio, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	UIDropDownMenu_Initialize(controls.dropDown.s2mAudio, function(self, level, menuList)
+		local entries = 25
+		local info = UIDropDownMenu_CreateInfo()
+		local sounds = addonData.libs.SharedMedia:HashTable("sound")
+		local soundsList = addonData.libs.SharedMedia:List("sound")
+		if (level or 1) == 1 or menuList == nil then
+			local menus = math.ceil(TableLength(sounds) / entries)
+			for i=0, menus-1 do
+				info.hasArrow = true
+				info.notCheckable = true
+				info.text = "Sounds " .. i+1
+				info.menuList = i
+				UIDropDownMenu_AddButton(info)
+			end
+		else
+			local start = entries * menuList
+
+			for k, v in pairs(soundsList) do
+				if k > start and k <= start + entries then
+					info.text = v
+					info.value = sounds[v]
+					info.checked = sounds[v] == settings.audio.s2mDeath.sound
+					info.func = self.SetValue			
+					info.arg1 = sounds[v]
+					info.arg2 = v
+					UIDropDownMenu_AddButton(info, level)
+				end
+			end
+		end
+	end)
+
+	-- Implement the function to change the favoriteNumber
+	function controls.dropDown.s2mAudio:SetValue(newValue, newName)
+		settings.audio.s2mDeath.sound = newValue
+		settings.audio.s2mDeath.soundName = newName
+		UIDropDownMenu_SetText(controls.dropDown.s2mAudio, newName)
+		CloseDropDownMenus()
+		PlaySoundFile(settings.audio.s2mDeath.sound, "Master")
+	end
+
+	yCoord = yCoord - yOffset2
+	controls.textSection = BuildSectionHeader(parent, "Auspicious Spirits Tracking", xCoord+xPadding, yCoord)
+
+	yCoord = yCoord - yOffset2
+	controls.checkBoxes.as = CreateFrame("CheckButton", "TIBCB3_5", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.as
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Track Auspicious Spirits")
+	f.tooltip = "Track Shadowy Apparitions in flight that will generate Insanity upon reaching their target with the Auspicious Spirits talent."
+	f:SetChecked(settings.auspiciousSpiritsTracker)
+	f:SetScript("OnClick", function(self, ...)
+		settings.auspiciousSpiritsTracker = self:GetChecked()
+		
+		if ((settings.auspiciousSpiritsTracker and characterData.talents.as.isSelected) or IsTtdActive()) and GetSpecialization() == 3 then
+			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
+		else
+			targetsTimerFrame:SetScript("OnUpdate", nil)
+		end	
+	end)
+
+	yCoord = yCoord - yOffset2
+	controls.textSection = BuildSectionHeader(parent, "Mindbender Tracking", xCoord+xPadding, yCoord)
+
+	yCoord = yCoord - yOffset2	
+	controls.checkBoxes.mindbender = CreateFrame("CheckButton", "TIBCB3_6", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.mindbender
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Track Mindbender Insanity Gain")
+	f.tooltip = "Show the gain of Insanity over the next serveral swings, GCDs, or fixed length of time. Select which to track from the options below."
+	f:SetChecked(settings.mindbender.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		settings.mindbender.enabled = self:GetChecked()
+	end)
+
+	controls.colors.mindbenderThreshold = BuildColorPicker(parent, "Mindbender Insanity Gain Threshold Line", settings.colors.bar.passive, 250, 25, xCoord2, yCoord)
+	f = controls.colors.mindbenderThreshold
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		
+		controls.colors.mindbenderThreshold.Texture:SetColorTexture(r, g, b, a)
+		passiveFrame:SetStatusBarColor(r, g, b, a)
+		settings.colors.threshold.mindbender = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.threshold.mindbender, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	yCoord = yCoord - yOffset1	
+	controls.checkBoxes.mindbenderModeGCDs = CreateFrame("CheckButton", "TIBRB3_7", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.mindbenderModeGCDs
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Insanity from GCDs remaining")
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	f.tooltip = "Shows the amount of Insanity incoming over the up to next X GCDs, based on player's current GCD."
+	if settings.mindbender.mode == "gcd" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.mindbenderModeGCDs:SetChecked(true)
+		controls.checkBoxes.mindbenderModeSwings:SetChecked(false)
+		controls.checkBoxes.mindbenderModeTime:SetChecked(false)
+		settings.mindbender.mode = "gcd"
+	end)
+
+	title = "Mindbender GCDs - 0.75sec Floor"
+	controls.mindbenderGCDs = BuildSlider(parent, title, 1, 10, settings.mindbender.gcdsMax, 1, 0,
+									barWidth, barHeight, xCoord2, yCoord)
+	controls.mindbenderGCDs:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+
+		self.EditBox:SetText(value)		
+		settings.mindbender.gcdsMax = value
+	end)
+
+
+	yCoord = yCoord - yOffset1	
+	controls.checkBoxes.mindbenderModeSwings = CreateFrame("CheckButton", "TIBRB3_8", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.mindbenderModeSwings
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Insanity from Swings remaining")
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	f.tooltip = "Shows the amount of Insanity incoming over the up to next X melee swings from Mindbender. This is only different from the GCD option if you are above 200% haste (GCD cap)."
+	if settings.mindbender.mode == "swing" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.mindbenderModeGCDs:SetChecked(false)
+		controls.checkBoxes.mindbenderModeSwings:SetChecked(true)
+		controls.checkBoxes.mindbenderModeTime:SetChecked(false)
+		settings.mindbender.mode = "swing"
+	end)
+
+	title = "Mindbender Swings - No Floor"
+	controls.mindbenderSwings = BuildSlider(parent, title, 1, 10, settings.mindbender.swingsMax, 1, 0,
+									barWidth, barHeight, xCoord2, yCoord)
+	controls.mindbenderSwings:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+
+		self.EditBox:SetText(value)		
+		settings.mindbender.swingsMax = value
+	end)
+
+	yCoord = yCoord - yOffset1	
+	controls.checkBoxes.mindbenderModeTime = CreateFrame("CheckButton", "TIBRB3_9", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.mindbenderModeTime
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Insanity from Time remaining")
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	f.tooltip = "Shows the amount of Insanity incoming over the up to next X seconds."
+	if settings.mindbender.mode == "time" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.mindbenderModeGCDs:SetChecked(false)
+		controls.checkBoxes.mindbenderModeSwings:SetChecked(false)
+		controls.checkBoxes.mindbenderModeTime:SetChecked(true)
+		settings.mindbender.mode = "time"
+	end)
+
+	title = "Mindbender Time Remaining"
+	controls.mindbenderTime = BuildSlider(parent, title, 0, 24, settings.mindbender.timeMax, 0.25, 2,
+									barWidth, barHeight, xCoord2, yCoord)
+	controls.mindbenderTime:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+
+		value = RoundTo(value, 2)
+		self.EditBox:SetText(value)		
+		settings.mindbender.timeMax = value
+	end)
+
+	yCoord = yCoord - yOffset1	
+	controls.checkBoxes.mindbenderAudio = CreateFrame("CheckButton", "TIBCB3_10", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.mindbenderAudio
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Play Audio Cue to use Mindbender")
+	f.tooltip = "Plays an audio cue when in Voidform, Mindbender is offcooldown, and the number of Drain Stacks is above a certain threshold."
+	f:SetChecked(settings.mindbender.useNotification.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		settings.mindbender.useNotification.enabled = self:GetChecked()
+		if settings.mindbender.useNotification.enabled then
+			mindbenderAudioCueFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) mindbenderAudioCueFrame:onUpdate(sinceLastUpdate) end)
+		else
+			mindbenderAudioCueFrame:SetScript("OnUpdate", nil)
+		end
+	end)
+
+	controls.checkBoxes.mindbenderAudioStacks = CreateFrame("CheckButton", "TIBCB3_11", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.mindbenderAudioStacks
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-20)
+	getglobal(f:GetName() .. 'Text'):SetText("Use Voidform Stacks instead of Drain Stacks")
+	f.tooltip = "Uses the current Voidform Stacks instead of computed Drain Stacks for the audio cue."
+	f:SetChecked(settings.mindbender.useNotification.useVoidformStacks)
+	f:SetScript("OnClick", function(self, ...)
+		settings.mindbender.useNotification.useVoidformStacks = self:GetChecked()
+	end)
+
+	title = "Stacks to Trigger Audio Cue"
+	controls.mindbenderStacks = BuildSlider(parent, title, 1, 100, settings.mindbender.useNotification.thresholdStacks, 1, 0,
+									barWidth, barHeight, xCoord2, yCoord)
+	controls.mindbenderStacks:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+
+		self.EditBox:SetText(value)		
+		settings.mindbender.useNotification.thresholdStacks = value
+	end)
+
+			
+	yCoord = yCoord - yOffset3
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.mindbenderAudio = CreateFrame("FRAME", "TIBMindbenderAudio", parent, "UIDropDownMenuTemplate")
+	controls.dropDown.mindbenderAudio.label = BuildSectionHeader(parent, "Mindbender Ready Audio", xCoord+xPadding, yCoord)
+	controls.dropDown.mindbenderAudio.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.mindbenderAudio:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset2)
+	UIDropDownMenu_SetWidth(controls.dropDown.mindbenderAudio, 250)
+	UIDropDownMenu_SetText(controls.dropDown.mindbenderAudio, settings.audio.mindbender.soundName)
+	UIDropDownMenu_JustifyText(controls.dropDown.mindbenderAudio, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	UIDropDownMenu_Initialize(controls.dropDown.mindbenderAudio, function(self, level, menuList)
+		local entries = 25
+		local info = UIDropDownMenu_CreateInfo()
+		local sounds = addonData.libs.SharedMedia:HashTable("sound")
+		local soundsList = addonData.libs.SharedMedia:List("sound")
+		if (level or 1) == 1 or menuList == nil then
+			local menus = math.ceil(TableLength(sounds) / entries)
+			for i=0, menus-1 do
+				info.hasArrow = true
+				info.notCheckable = true
+				info.text = "Sounds " .. i+1
+				info.menuList = i
+				UIDropDownMenu_AddButton(info)
+			end
+		else
+			local start = entries * menuList
+
+			for k, v in pairs(soundsList) do
+				if k > start and k <= start + entries then
+					info.text = v
+					info.value = sounds[v]
+					info.checked = sounds[v] == settings.audio.mindbender.sound
+					info.func = self.SetValue			
+					info.arg1 = sounds[v]
+					info.arg2 = v
+					UIDropDownMenu_AddButton(info, level)
+				end
+			end
+		end
+	end)
+
+	-- Implement the function to change the favoriteNumber
+	function controls.dropDown.mindbenderAudio:SetValue(newValue, newName)
+		settings.audio.mindbender.sound = newValue
+		settings.audio.mindbender.soundName = newName
+		UIDropDownMenu_SetText(controls.dropDown.mindbenderAudio, newName)
+		CloseDropDownMenus()
+		PlaySoundFile(settings.audio.mindbender.sound, "Master")
+	end
+
+	------------------------------------------------
+
+	yCoord = -5
+	parent = interfaceSettingsFrame.advancedConfigurationPanel
+
+	controls.textSection = BuildSectionHeader(parent, "Time To Die", xCoord+xPadding, yCoord)
+
+	yCoord = yCoord - yOffset1
+
+	title = "Sampling Rate (seconds)"
+	controls.ttdSamplingRate = BuildSlider(parent, title, 0.05, 2, settings.ttd.sampleRate, 0.05, 2,
+									barWidth, barHeight, xCoord+xPadding*2, yCoord)
+	controls.ttdSamplingRate:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		else
+			value = RoundTo(value, 2)
+		end
+
+		self.EditBox:SetText(value)		
+		settings.ttd.sampleRate = value
+	end)
+
+	title = "Sample Size"
+	controls.ttdSampleSize = BuildSlider(parent, title, 1, 1000, settings.ttd.numEntries, 1, 0,
+									barWidth, barHeight, xCoord2, yCoord)
+	controls.ttdSampleSize:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+
+		self.EditBox:SetText(value)		
+		settings.ttd.numEntries = value
+	end)	
+	
+	interfaceSettingsFrame.controls = controls
+end
+
 local function ResetVoidformSnapshotData()
 	snapshotData.voidform.totalStacks = 0
 	snapshotData.voidform.drainStacks = 0
@@ -3643,6 +4330,11 @@ insanityFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				if TwintopInsanityBarSettings then
 					settings = MergeSettings(settings,TwintopInsanityBarSettings)
 				end
+				--Temporary fix for font settings placement until BfA
+				settings.displayText.left.fontSize = settings.displayText.fontSizeLeft
+				settings.displayText.middle.fontSize = settings.displayText.fontSizeMiddle
+				settings.displayText.right.fontSize = settings.displayText.fontSizeRight
+				--
 				IsTtdActive()
 				FillSpellData()
 				ConstructInsanityBar()
@@ -3766,6 +4458,8 @@ function SlashCmdList.TWINTOP(msg)
 		InterfaceOptionsFrame_OpenToCategory(interfaceSettingsFrame.barFontPanel)
 	elseif cmd == "text" then
 		InterfaceOptionsFrame_OpenToCategory(interfaceSettingsFrame.barTextPanel)
+	elseif cmd == "color" then
+		InterfaceOptionsFrame_OpenToCategory(interfaceSettingsFrame.barColorPanel)
 	elseif cmd == "optional" then
 		InterfaceOptionsFrame_OpenToCategory(interfaceSettingsFrame.optionalFeaturesPanel)
 	elseif cmd == "advanced" then
