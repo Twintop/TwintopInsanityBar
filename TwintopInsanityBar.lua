@@ -216,7 +216,7 @@ local snapshotData = {
 		endTime = nil,
 		insanityRaw = 0,
 		insanityFinal = 0,
-		icon
+		icon = nil
 	},
 	voidform = {
 		totalStacks = 0,
@@ -2246,7 +2246,7 @@ local function ConstructOptionsPanel()
 		if settings.textures.textureLock then
 			settings.textures.insanityBar = newValue
 			settings.textures.insanityBarName = newName
-			insnaityFrame:SetStatusBarTexture(settings.textures.insanityBar)
+			insanityFrame:SetStatusBarTexture(settings.textures.insanityBar)
 			UIDropDownMenu_SetText(controls.dropDown.insanityBarTexture, newName)
 			settings.textures.passiveBar = newValue
 			settings.textures.passiveBarName = newName
@@ -4261,7 +4261,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		end
 		
 		if destGUID ~= characterData.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-			RemoveTarget(guid)
+			RemoveTarget(destGUID)
 			RefreshTargetTracking()
 			triggerUpdate = true
 		end
