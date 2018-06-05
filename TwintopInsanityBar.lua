@@ -1,4 +1,4 @@
-local addonVersion = "7.3.5.23"
+local addonVersion = "7.3.5.24"
 local addonReleaseDate = "June 04, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -3023,7 +3023,7 @@ local function ConstructOptionsPanel()
 		self.EditBox:SetText(value)		
 		settings.displayText.fontSizeLeft = value
 		settings.displayText.left.fontSize = value
-		leftTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.left.fontSize, "OUTLINE")
+		leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
 		if settings.displayText.fontSizeLock then
 			controls.fontSizeMiddle:SetValue(value)
 			controls.fontSizeRight:SetValue(value)
@@ -3132,7 +3132,7 @@ local function ConstructOptionsPanel()
 		self.EditBox:SetText(value)		
 		settings.displayText.fontSizeMiddle = value
 		settings.displayText.middle.fontSize = value
-		middleTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
+		middleTextFrame.font:SetFont(settings.displayText.middle.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
 		if settings.displayText.fontSizeLock then
 			controls.fontSizeLeft:SetValue(value)
 			controls.fontSizeRight:SetValue(value)
@@ -3153,7 +3153,7 @@ local function ConstructOptionsPanel()
 		self.EditBox:SetText(value)		
 		settings.displayText.fontSizeRight = value
 		settings.displayText.right.fontSize = value
-		rightTextFrame.font:SetFont(settings.displayText.fontFace, settings.displayText.right.fontSize, "OUTLINE")
+		rightTextFrame.font:SetFont(settings.displayText.right.fontFace, settings.displayText.right.fontSize, "OUTLINE")
 		if settings.displayText.fontSizeLock then
 			controls.fontSizeLeft:SetValue(value)
 			controls.fontSizeMiddle:SetValue(value)
