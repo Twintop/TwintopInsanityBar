@@ -360,6 +360,7 @@ local function LoadDefaultSettings()
 			border=2,
 			dragAndDrop=false
 		},
+		thresholdWidth = 2,
 		mindbender={
 			mode="gcd",
 			swingsMax=4,
@@ -780,7 +781,7 @@ local function ConstructInsanityBar()
 	insanityFrame:SetFrameStrata("BACKGROUND")
 	insanityFrame:SetFrameLevel(125)
 	
-	insanityFrame.threshold:SetWidth(2)
+	insanityFrame.threshold:SetWidth(settings.thresholdWidth)
 	insanityFrame.threshold:SetHeight(settings.bar.height)
 	insanityFrame.threshold.texture = insanityFrame.threshold:CreateTexture(nil, "BACKGROUND")
 	insanityFrame.threshold.texture:SetAllPoints(insanityFrame.threshold)
@@ -809,7 +810,7 @@ local function ConstructInsanityBar()
 	passiveFrame:SetFrameStrata("BACKGROUND")
 	passiveFrame:SetFrameLevel(80)
 	
-	passiveFrame.threshold:SetWidth(2)
+	passiveFrame.threshold:SetWidth(settings.thresholdWidth)
 	passiveFrame.threshold:SetHeight(settings.bar.height)
 	passiveFrame.threshold.texture = passiveFrame.threshold:CreateTexture(nil, "BACKGROUND")
 	passiveFrame.threshold.texture:SetAllPoints(passiveFrame.threshold)
@@ -2106,9 +2107,27 @@ local function ConstructOptionsPanel()
 		controls.width.MinLabel:SetText(minBarWidth)
 	end)
 
+	title = "Threshold Line Width"
+	controls.thresholdWidth = BuildSlider(parent, title, 1, 10, settings.thresholdWidth, 1, 0,
+								  barWidth, barHeight, xCoord2, yCoord)
+	controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+		self.EditBox:SetText(value)
+		settings.thresholdWidth = value
+		insanityFrame.threshold:SetWidth(settings.thresholdWidth)
+		passiveFrame.threshold:SetWidth(settings.thresholdWidth)
+	end)
+
+	yCoord = yCoord - yOffset3
+
 	controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TIBCB1_1", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.lockPosition
-	f:SetPoint("TOPLEFT", xCoord2, yCoord)
+	f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
 	f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved."
 	f:SetChecked(settings.bar.dragAndDrop)
@@ -2118,7 +2137,7 @@ local function ConstructOptionsPanel()
 		barContainerFrame:EnableMouse(settings.bar.dragAndDrop)
 	end)
 
-	yCoord = yCoord - yOffset3
+	yCoord = yCoord - yOffset2
 	controls.textBarTexturesSection = BuildSectionHeader(parent, "Bar Textures", xCoord+xPadding, yCoord)
 	yCoord = yCoord - yOffset2
 	
