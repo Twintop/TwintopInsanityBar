@@ -1,4 +1,4 @@
-local addonVersion = "7.3.5.22"
+local addonVersion = "7.3.5.23"
 local addonReleaseDate = "June 04, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -278,8 +278,8 @@ local addonData = {
 }
 
 addonData.libs.SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
-addonData.libs.SharedMedia:Register("sound", "Wilhelm Scream", "Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg")
-addonData.libs.SharedMedia:Register("sound", "Boxing Arena Gong", "Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg")
+addonData.libs.SharedMedia:Register("sound", "Wilhelm Scream (TIB)", "Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg")
+addonData.libs.SharedMedia:Register("sound", "Boxing Arena Gong (TIB)", "Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg")
 
 local function RoundTo(num, numDecimalPlaces)
 	return tonumber(string.format("%." .. (numDecimalPlaces or 0) .. "f", num))
@@ -357,7 +357,7 @@ local function LoadDefaultSettings()
 			height=34,
 			xPos=0,
 			yPos=-200,
-			border=4,
+			border=2,
 			dragAndDrop=false
 		},
 		mindbender={
@@ -437,18 +437,18 @@ local function LoadDefaultSettings()
 			s2mDeath={
 				enabled=true,
 				sound="Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg",
-				soundName="Wilhelm Scream"
+				soundName="Wilhelm Scream (TIB)"
 			},
 			mindbender={
 				sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
-				soundName="Boxing Arena Gong"
+				soundName="Boxing Arena Gong (TIB)"
 			}
 		},
 		textures={
 			background="Interface\\Tooltips\\UI-Tooltip-Background",
 			backgroundName="Blizzard Tooltip",
-			border="Interface\\Tooltips\\UI-Tooltip-Border",
-			borderName="Blizzard Tooltip",
+			border="Interface\\Buttons\\WHITE8X8",
+			borderName="1 Pixel",
 			insanityBar="Interface\\TargetingFrame\\UI-StatusBar",
 			insanityBarName="Blizzard",
 			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
@@ -472,7 +472,7 @@ local function MergeSettings(settings, user)
 end
 
 local function RepositionInsanityFrameThreshold()
-	insanityFrame.threshold:SetPoint("CENTER", insanityFrame, "LEFT", ((settings.bar.width-(settings.bar.border*2)) * (characterData.voidformThreshold / characterData.maxInsanity)), 0)
+	insanityFrame.threshold:SetPoint("CENTER", insanityFrame, "LEFT", ((settings.bar.width) * (characterData.voidformThreshold / characterData.maxInsanity)), 0)
 end
 
 local function CheckCharacter()
@@ -709,7 +709,7 @@ local function ConstructInsanityBar()
 	barContainerFrame:Show()
 	barContainerFrame:SetBackdrop({ bgFile = settings.textures.background,									
 									tile = true,
-									tileSize=settings.bar.width-(settings.bar.border*2),
+									tileSize=settings.bar.width,
 									edgeSize=0,
 									insets = {0, 0, 0, 0}
 									})
@@ -717,8 +717,8 @@ local function ConstructInsanityBar()
 	barContainerFrame:SetPoint("CENTER", UIParent)
 	barContainerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
 	barContainerFrame:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))
-	barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
-	barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
+	barContainerFrame:SetWidth(settings.bar.width)
+	barContainerFrame:SetHeight(settings.bar.height)
 	barContainerFrame:SetFrameStrata("BACKGROUND")
 	barContainerFrame:SetFrameLevel(0)
 	
@@ -755,7 +755,7 @@ local function ConstructInsanityBar()
 		barBorderFrame:SetBackdrop({ edgeFile = settings.textures.border,
 									tile = true,
 									tileSize=4,
-									edgeSize=settings.bar.border*4,								
+									edgeSize=settings.bar.border,
 									insets = {0, 0, 0, 0}
 									})
 	end
@@ -767,31 +767,31 @@ local function ConstructInsanityBar()
 	barBorderFrame:SetWidth(settings.bar.width)
 	barBorderFrame:SetHeight(settings.bar.height)
 	barBorderFrame:SetFrameStrata("BACKGROUND")
-	barBorderFrame:SetFrameLevel(129)
+	barBorderFrame:SetFrameLevel(126)
 
 
 	insanityFrame:Show()
 	insanityFrame:SetMinMaxValues(0, 100)
-	insanityFrame:SetHeight(settings.bar.height-(settings.bar.border*2))	
+	insanityFrame:SetHeight(settings.bar.height)	
 	insanityFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
 	insanityFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
 	insanityFrame:SetStatusBarTexture(settings.textures.insanityBar)
 	insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
 	insanityFrame:SetFrameStrata("BACKGROUND")
-	insanityFrame:SetFrameLevel(100)
+	insanityFrame:SetFrameLevel(125)
 	
 	insanityFrame.threshold:SetWidth(2)
-	insanityFrame.threshold:SetHeight(settings.bar.height-(settings.bar.border*2))
+	insanityFrame.threshold:SetHeight(settings.bar.height)
 	insanityFrame.threshold.texture = insanityFrame.threshold:CreateTexture(nil, "BACKGROUND")
 	insanityFrame.threshold.texture:SetAllPoints(insanityFrame.threshold)
 	insanityFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
 	insanityFrame.threshold:SetFrameStrata("BACKGROUND")
-	insanityFrame.threshold:SetFrameLevel(129)
+	insanityFrame.threshold:SetFrameLevel(128)
 	insanityFrame.threshold:Show()
 	
 	castingFrame:Show()
 	castingFrame:SetMinMaxValues(0, 100)
-	castingFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
+	castingFrame:SetHeight(settings.bar.height)
 	castingFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
 	castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
 	castingFrame:SetStatusBarTexture(settings.textures.castingBar)
@@ -801,7 +801,7 @@ local function ConstructInsanityBar()
 	
 	passiveFrame:Show()
 	passiveFrame:SetMinMaxValues(0, 100)
-	passiveFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
+	passiveFrame:SetHeight(settings.bar.height)
 	passiveFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
 	passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
 	passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
@@ -810,20 +810,20 @@ local function ConstructInsanityBar()
 	passiveFrame:SetFrameLevel(80)
 	
 	passiveFrame.threshold:SetWidth(2)
-	passiveFrame.threshold:SetHeight(settings.bar.height-(settings.bar.border*2))
+	passiveFrame.threshold:SetHeight(settings.bar.height)
 	passiveFrame.threshold.texture = passiveFrame.threshold:CreateTexture(nil, "BACKGROUND")
 	passiveFrame.threshold.texture:SetAllPoints(passiveFrame.threshold)
 	passiveFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
 	passiveFrame.threshold:SetFrameStrata("BACKGROUND")
-	passiveFrame.threshold:SetFrameLevel(129)
+	passiveFrame.threshold:SetFrameLevel(127)
 	passiveFrame.threshold:Show()
 	
 	leftTextFrame:Show()
-	leftTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2)-2)
+	leftTextFrame:SetWidth(settings.bar.width)
 	leftTextFrame:SetHeight(settings.bar.height * 3.5)
 	leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 2, 0)
 	leftTextFrame:SetFrameStrata("BACKGROUND")
-	leftTextFrame:SetFrameLevel(128)
+	leftTextFrame:SetFrameLevel(129)
 	leftTextFrame.font:SetPoint("LEFT", 0, 0)
 	leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 	leftTextFrame.font:SetJustifyH("LEFT")
@@ -831,11 +831,11 @@ local function ConstructInsanityBar()
 	leftTextFrame.font:Show()
 	
 	middleTextFrame:Show()
-	middleTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
+	middleTextFrame:SetWidth(settings.bar.width)
 	middleTextFrame:SetHeight(settings.bar.height * 3.5)
 	middleTextFrame:SetPoint("CENTER", barContainerFrame, "CENTER", 0, 0)
 	middleTextFrame:SetFrameStrata("BACKGROUND")
-	middleTextFrame:SetFrameLevel(128)
+	middleTextFrame:SetFrameLevel(129)
 	middleTextFrame.font:SetPoint("CENTER", 0, 0)
 	middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 	middleTextFrame.font:SetJustifyH("CENTER")
@@ -843,11 +843,11 @@ local function ConstructInsanityBar()
 	middleTextFrame.font:Show()
 	
 	rightTextFrame:Show()
-	rightTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
+	rightTextFrame:SetWidth(settings.bar.width)
 	rightTextFrame:SetHeight(settings.bar.height * 3.5)
 	rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
 	rightTextFrame:SetFrameStrata("BACKGROUND")
-	rightTextFrame:SetFrameLevel(128)
+	rightTextFrame:SetFrameLevel(129)
 	rightTextFrame.font:SetPoint("RIGHT", 0, 0)
 	rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 	rightTextFrame.font:SetJustifyH("RIGHT")
@@ -1094,7 +1094,7 @@ local function BuildColorPicker(parent, description, settingsEntry, sizeTotal, s
 	local f = CreateFrame("Button", nil, parent)
 	f:SetSize(sizeFrame, sizeFrame)
 	f:SetPoint("TOPLEFT", posX, posY)
-	f:SetBackdrop({edgeFile = settings.textures.border, tile = true, tileSize=4, edgeSize=12})
+	f:SetBackdrop({edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize=4, edgeSize=12})
 	f.Texture = f:CreateTexture(nil, "BACKGROUND")
 	f.Texture:ClearAllPoints()
 	f.Texture:SetPoint("TOPLEFT", 4, -4)
@@ -1806,7 +1806,7 @@ local function UpdateInsanityBar()
 		if characterData.talents.as.isSelected or snapshotData.mindbender.insanityFinal > 0 then
 			passiveFrame:SetValue(snapshotData.insanity + snapshotData.casting.insanityFinal + ((CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.targetData.auspiciousSpirits) + snapshotData.mindbender.insanityFinal))
 			if snapshotData.mindbender.insanityFinal > 0 and (castingFrame:GetValue() + snapshotData.mindbender.insanityFinal) < characterData.maxInsanity then
-				passiveFrame.threshold:SetPoint("CENTER", passiveFrame, "LEFT", ((settings.bar.width-(settings.bar.border*2)) * ((castingFrame:GetValue() + snapshotData.mindbender.insanityFinal) / characterData.maxInsanity)), 0)
+				passiveFrame.threshold:SetPoint("CENTER", passiveFrame, "LEFT", ((settings.bar.width) * ((castingFrame:GetValue() + snapshotData.mindbender.insanityFinal) / characterData.maxInsanity)), 0)
 				passiveFrame.threshold.texture:Show()
 			else
 				passiveFrame.threshold.texture:Hide()
@@ -1872,15 +1872,16 @@ local function ConstructOptionsPanel()
 	local yOffset4 = 20
 
 	local maxWidth = math.floor(GetScreenWidth())
-	local minWidth = math.max(math.ceil(settings.bar.border * 8), 120)
+	local minWidth = math.max(math.ceil(settings.bar.border*2), 120)
 	
 	local maxHeight = math.floor(GetScreenHeight())
-	local minHeight = math.max(math.ceil(settings.bar.border * 8), 1)
+	local minHeight = math.max(math.ceil(settings.bar.border*2), 1)
 	local barWidth = 250
 	local barHeight = 20
 	local title = ""
 
-	local maxBorderHeight = math.min(math.floor(settings.bar.height/8), math.floor(settings.bar.width/8))
+	--local maxBorderHeight = math.min(math.floor(settings.bar.height/8), math.floor(settings.bar.width/8))
+	local maxBorderHeight = math.min(math.floor(settings.bar.height/2), math.floor(settings.bar.width/2))
 
 	interfaceSettingsFrame = {}
 	interfaceSettingsFrame.panel = CreateFrame("Frame", "TwintopInsanityBarPanel", UIParent)
@@ -1996,13 +1997,13 @@ local function ConstructOptionsPanel()
 		end
 		self.EditBox:SetText(value)
 		settings.bar.width = value
-		barContainerFrame:SetWidth(value-(settings.bar.border*2))
+		barContainerFrame:SetWidth(value)
 		barBorderFrame:SetWidth(settings.bar.width)
-		insanityFrame:SetWidth(value-(settings.bar.border*2))
-		castingFrame:SetWidth(value-(settings.bar.border*2))
-		passiveFrame:SetWidth(value-(settings.bar.border*2))
+		insanityFrame:SetWidth(value)
+		castingFrame:SetWidth(value)
+		passiveFrame:SetWidth(value)
 		RepositionInsanityFrameThreshold()
-		local maxBorderSize = math.min(math.floor(settings.bar.height/ 8), math.floor(settings.bar.width / 8))
+		local maxBorderSize = math.min(math.floor(settings.bar.height/2), math.floor(settings.bar.width/2))
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 	end)
@@ -2019,17 +2020,17 @@ local function ConstructOptionsPanel()
 		end		
 		self.EditBox:SetText(value)		
 		settings.bar.height = value
-		barContainerFrame:SetHeight(value-(settings.bar.border*2))
+		barContainerFrame:SetHeight(value)
 		barBorderFrame:SetHeight(settings.bar.height)
-		insanityFrame:SetHeight(value-(settings.bar.border*2))
-		insanityFrame.threshold:SetHeight(value-(settings.bar.border*2))
-		castingFrame:SetHeight(value-(settings.bar.border*2))
-		passiveFrame:SetHeight(value-(settings.bar.border*2))
-		passiveFrame.threshold:SetHeight(value-(settings.bar.border*2))		
+		insanityFrame:SetHeight(value)
+		insanityFrame.threshold:SetHeight(value)
+		castingFrame:SetHeight(value)
+		passiveFrame:SetHeight(value)
+		passiveFrame.threshold:SetHeight(value)		
 		leftTextFrame:SetHeight(settings.bar.height * 3.5)
 		middleTextFrame:SetHeight(settings.bar.height * 3.5)
 		rightTextFrame:SetHeight(settings.bar.height * 3.5)
-		local maxBorderSize = math.min(math.floor(settings.bar.height/ 8), math.floor(settings.bar.width / 8))
+		local maxBorderSize = math.min(math.floor(settings.bar.height/2), math.floor(settings.bar.width/2))
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 	end)
@@ -2082,8 +2083,6 @@ local function ConstructOptionsPanel()
 		end
 		self.EditBox:SetText(value)		
 		settings.bar.border = value
-		barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
-		barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
 		barBorderFrame:SetWidth(settings.bar.width)
 		barBorderFrame:SetHeight(settings.bar.height)
 		if settings.bar.border < 1 then
@@ -2092,26 +2091,15 @@ local function ConstructOptionsPanel()
 			barBorderFrame:SetBackdrop({ edgeFile = settings.textures.border,
 										tile = true,
 										tileSize=4,
-										edgeSize=settings.bar.border*4,								
+										edgeSize=settings.bar.border,							
 										insets = {0, 0, 0, 0}
 										})
 		end
 		barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 		barBorderFrame:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
-		insanityFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-		insanityFrame.threshold:SetHeight(settings.bar.height-(settings.bar.border*2))
-		castingFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-		passiveFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-		passiveFrame.threshold:SetHeight(settings.bar.height-(settings.bar.border*2))
-		leftTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2)-2)
-		middleTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
-		rightTextFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
-		leftTextFrame:SetHeight(settings.bar.height * 3.5)
-		middleTextFrame:SetHeight(settings.bar.height * 3.5)
-		rightTextFrame:SetHeight(settings.bar.height * 3.5)
 
-		local minBarWidth = math.max(settings.bar.border * 8, 120)
-		local minBarHeight = math.max(settings.bar.border * 8, 1)
+		local minBarWidth = math.max(settings.bar.border*2, 120)
+		local minBarHeight = math.max(settings.bar.border*2, 1)
 		controls.height:SetMinMaxValues(minBarHeight, maxHeight)
 		controls.height.MinLabel:SetText(minBarHeight)
 		controls.width:SetMinMaxValues(minBarWidth, maxWidth)
@@ -2391,10 +2379,15 @@ local function ConstructOptionsPanel()
 		if settings.bar.border < 1 then
 			barBorderFrame:SetBackdrop({ })
 		else
+			if newValue == "Interface\\Tooltips\\UI-Tooltip-Border" then
+				settings.bar.borderFactor = 4
+			else
+				settings.bar.borderFactor = 1
+			end
 			barBorderFrame:SetBackdrop({ edgeFile = settings.textures.border,
 										tile = true,
 										tileSize=4,
-										edgeSize=settings.bar.border*4,								
+										edgeSize=settings.bar.border,							
 										insets = {0, 0, 0, 0}
 										})
 		end
@@ -2452,7 +2445,7 @@ local function ConstructOptionsPanel()
 		settings.textures.backgroundName = newName
 		barContainerFrame:SetBackdrop({ bgFile = settings.textures.background,									
 										tile = true,
-										tileSize=settings.bar.width-(settings.bar.border*2),
+										tileSize=settings.bar.width,
 										edgeSize=0,
 										insets = {0, 0, 0, 0}
 										})
