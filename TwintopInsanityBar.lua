@@ -1,5 +1,5 @@
-local addonVersion = "7.3.5.24"
-local addonReleaseDate = "June 04, 2018"
+local addonVersion = "7.3.5.25"
+local addonReleaseDate = "June 18, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -343,6 +343,7 @@ local function LoadDefaultSettings()
 		hasteThreshold=140,
 		hastePrecision=2,
 		voidEruptionThreshold=true,
+		thresholdWidth=2,
 		auspiciousSpiritsTracker=true,
 		ttd = {
 			sampleRate = 0.2,
@@ -360,7 +361,6 @@ local function LoadDefaultSettings()
 			border=2,
 			dragAndDrop=false
 		},
-		thresholdWidth = 2,
 		mindbender={
 			mode="gcd",
 			swingsMax=4,
@@ -4110,10 +4110,10 @@ function mindbenderAudioCueFrame:onUpdate(sinceLastUpdate)
 	if self.sinceLastUpdate >= 0.05 then -- in seconds	
 		if self.sinceLastPlay >= 0.75 and not snapshotData.mindbender.isActive then -- in seconds
 			if settings.mindbender.useNotification.useVoidformStacks == true and not snapshotData.mindbender.onCooldown and snapshotData.voidform.totalStacks >= settings.mindbender.useNotification.thresholdStacks then
-				PlaySoundFile(settings.audio.mindbender.sound, "Master", false)
+				PlaySoundFile(settings.audio.mindbender.sound, "Master")
 				self.sinceLastPlay = 0
 			elseif settings.mindbender.useNotification.useVoidformStacks == false and not snapshotData.mindbender.onCooldown and snapshotData.voidform.drainStacks >= settings.mindbender.useNotification.thresholdStacks then
-				PlaySoundFile(settings.audio.mindbender.sound, "Master", false)
+				PlaySoundFile(settings.audio.mindbender.sound, "Master")
 				self.sinceLastPlay = 0
 			end
 		end
