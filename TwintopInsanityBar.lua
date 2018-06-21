@@ -3367,7 +3367,7 @@ local function InsanityDrain(stacks)
         end
     end    
     
-    return (6.0 + (((stacks - 1) * 0.92)) * pct)
+    return (6.0 + (((stacks - 1) * 0.8)) * pct)
 end
 
 local function RemainingTimeAndStackCount()
@@ -4431,6 +4431,7 @@ insanityFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 
 				SLASH_TWINTOP1 = "/twintop"
 				SLASH_TWINTOP2 = "/tib"
+				SLASH_TWINTOP3 = "/tit"
 			end			
 		end	
 
