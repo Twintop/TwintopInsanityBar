@@ -1,5 +1,5 @@
-local addonVersion = "8.0.1.7"
-local addonReleaseDate = "June 20, 2018"
+local addonVersion = "8.0.1.8"
+local addonReleaseDate = "July 17, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -1489,9 +1489,9 @@ local function ConstructOptionsPanel()
 
 
 
-	yCoord = yCoord - yOffset3
+	yCoord = yCoord - yOffset4
 	controls.textBarTexturesSection = BuildSectionHeader(parent, "Bar Textures", xCoord+xPadding, yCoord)
-	yCoord = yCoord - yOffset2
+	yCoord = yCoord - yOffset4
 	
 	-- Create the dropdown, and configure its appearance
 	controls.dropDown.insanityBarTexture = CreateFrame("FRAME", "TIBInsanityBarTexture", parent, "UIDropDownMenuTemplate")
