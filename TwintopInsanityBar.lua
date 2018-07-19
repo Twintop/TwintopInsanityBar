@@ -1,5 +1,5 @@
-local addonVersion = "8.0.1.8"
-local addonReleaseDate = "July 17, 2018"
+local addonVersion = "8.0.1.9"
+local addonReleaseDate = "July 18, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -3926,7 +3926,7 @@ local function UpdateMindbenderValues()
 			elseif timeToNextSwing > 1.5 then
 				timeToNextSwing = 1.5
 			end        
-			
+
 			snapshotData.mindbender.remaining.time = timeRemaining
 			snapshotData.mindbender.remaining.swings = math.ceil((timeRemaining - timeToNextSwing) / swingSpeed)
 			
@@ -3944,7 +3944,7 @@ local function UpdateMindbenderValues()
 			snapshotData.mindbender.swingTime = currentTime
 			
 			local countValue = 0
-			
+
 			if settings.mindbender.mode == "swing" then
 				if snapshotData.mindbender.remaining.swings > settings.mindbender.swingsMax then
 					countValue = settings.mindbender.swingsMax
@@ -3952,8 +3952,8 @@ local function UpdateMindbenderValues()
 					countValue = snapshotData.mindbender.remaining.swings
 				end
 			elseif settings.mindbender.mode == "time" then
-				if snapshotData.mindbender.remaining.time > settings.mindbender.time then
-					countValue = math.ceil((settings.mindbender.time - timeToNextSwing) / swingSpeed)                
+				if snapshotData.mindbender.remaining.time > settings.mindbender.timeMax then
+					countValue = math.ceil((settings.mindbender.timeMax - timeToNextSwing) / swingSpeed)                
 				else
 					countValue = math.ceil((snapshotData.mindbender.remaining.time - timeToNextSwing) / swingSpeed)
 				end
