@@ -1919,9 +1919,9 @@ local function ConstructOptionsPanel()
 	f:SetPoint("TOPLEFT", xCoord2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Void Eruption Usable")
 	f.tooltip = "This will flash the bar when Void Eruption can be cast."
-	f:SetChecked(settings.voidEruptionThreshold)
+	f:SetChecked(settings.colors.bar.flashEnabled)
 	f:SetScript("OnClick", function(self, ...)
-		settings.voidEruptionThreshold = self:GetChecked()
+		settings.colors.bar.flashEnabled = self:GetChecked()
 	end)
 
 	controls.checkBoxes.vfThresholdShow = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
@@ -1929,9 +1929,9 @@ local function ConstructOptionsPanel()
 	f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
 	getglobal(f:GetName() .. 'Text'):SetText("Show Void Eruption Threshold Line")
 	f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Void Eruption."
-	f:SetChecked(settings.colors.bar.flashEnabled)
+	f:SetChecked(settings.voidEruptionThreshold)
 	f:SetScript("OnClick", function(self, ...)
-		settings.colors.bar.flashEnabled = self:GetChecked()
+		settings.voidEruptionThreshold = self:GetChecked()
 	end)
 
 	------------------------------------------------
