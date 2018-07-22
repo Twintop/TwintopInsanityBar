@@ -399,6 +399,7 @@ end
 local function LoadDefaultSettings()
 	settings = {
 		showSummary=false,
+		simpleSummary=false,
 		showS2MSummary=true,
 		hasteApproachingThreshold=135,
 		hasteThreshold=140,
@@ -2975,8 +2976,26 @@ local function ConstructOptionsPanel()
 	f:SetChecked(settings.showSummary)
 	f:SetScript("OnClick", function(self, ...)
 		settings.showSummary = self:GetChecked()
+		if settings.showSummary == false then	-- Toggle checkbox for simpleSummary
+			controls.checkBoxes.simpleSummary:Hide()
+		else
+			controls.checkBoxes.simpleSummary:Show()
+		end
 	end)
 
+	controls.checkBoxes.simpleSummary = CreateFrame("CheckButton", "TIBCB3_4", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.simpleSummary
+	f:SetPoint("TOPLEFT", xCoord2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Show stacks only")
+	f.tooltip = "Simplifies the voidform summary to only display total stacks. (Full summary still shown for s2m)"
+	if settings.showSummary == false then	-- Hide on initial load if showSummary is off
+		f:Hide()
+	end
+	f:SetChecked(settings.simpleSummary)
+	f:SetScript("OnClick", function(self, ...)
+		settings.simpleSummary = self:GetChecked()
+	end)
+	
 	--[[
 	controls.checkBoxes.showS2MSummary = CreateFrame("CheckButton", "TIBCB3_4", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showS2MSummary
@@ -4089,27 +4108,35 @@ end
 
 local function PrintVoidformSummary(isS2M)
 	local currentTime = GetTime()
-	print("--------------------------")
-	if isS2M then
-		print("Surrender to Madness Info:")
+	if settings.simpleSummary and isS2M == false then
+		if snapshotData.voidform.totalStacks > 100 then
+			print(string.format("Voidform Stacks: 100 (+%.0f)", (snapshotData.voidform.totalStacks-100)))
+		else
+			print(string.format("Voidform Stacks: %.0f", snapshotData.voidform.totalStacks))
+		end
+	else
 		print("--------------------------")
-		print(string.format("S2M Duration: %.2f seconds", (currentTime-snapshotData.voidform.s2m.startTime)))
-	else
-		print("Voidform Info:")
-		print("--------------------------")	
-	end
-	print(string.format("Voidform Duration: %.2f seconds", (currentTime-snapshotData.voidform.startTime)))
+		if isS2M then
+			print("Surrender to Madness Info:")
+			print("--------------------------")
+			print(string.format("S2M Duration: %.2f seconds", (currentTime-snapshotData.voidform.s2m.startTime)))
+		else
+			print("Voidform Info:")
+			print("--------------------------")	
+		end
+		print(string.format("Voidform Duration: %.2f seconds", (currentTime-snapshotData.voidform.startTime)))
 
-	if snapshotData.voidform.totalStacks > 100 then
-		print(string.format("Voidform Stacks: 100 (+%.0f)", (snapshotData.voidform.totalStacks-100)))
-	else
-		print(string.format("Voidform Stacks: %.0f", snapshotData.voidform.totalStacks))
-	end
+		if snapshotData.voidform.totalStacks > 100 then
+			print(string.format("Voidform Stacks: 100 (+%.0f)", (snapshotData.voidform.totalStacks-100)))
+		else
+			print(string.format("Voidform Stacks: %.0f", snapshotData.voidform.totalStacks))
+		end
 
-	print(string.format("Dispersion Stacks: %.0f", snapshotData.voidform.dispersion.stacks))
-	print(string.format("Void Torrent Stacks: %.0f", snapshotData.voidform.voidTorrent.stacks))
-	print(string.format("Final Drain: %.0f stacks %.1f / sec", snapshotData.voidform.drainStacks, InsanityDrain(snapshotData.voidform.drainStacks)))
-	print("--------------------------")
+		print(string.format("Dispersion Stacks: %.0f", snapshotData.voidform.dispersion.stacks))
+		print(string.format("Void Torrent Stacks: %.0f", snapshotData.voidform.voidTorrent.stacks))
+		print(string.format("Final Drain: %.0f stacks %.1f / sec", snapshotData.voidform.drainStacks, InsanityDrain(snapshotData.voidform.drainStacks)))
+		print("--------------------------")
+	end
 end
 
 function timerFrame:onUpdate(sinceLastUpdate)
