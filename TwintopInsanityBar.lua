@@ -1,5 +1,5 @@
-local addonVersion = "8.0.1.10"
-local addonReleaseDate = "July 24, 2018"
+local addonVersion = "8.0.1.11"
+local addonReleaseDate = "August 7, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -193,6 +193,12 @@ local spells = {
 		insanity = 2,
 		name = "",
 		icon = ""
+	},
+	shadowCrash = {
+		id = 205385,
+		name = "",
+		icon = "",
+		insanity = 20
 	},
 	shadowyApparition = {
 		id = 78203,
@@ -1116,24 +1122,36 @@ local function ConvertColorDecimalToHex(r, g, b, a)
 		_r = "00"
 	else
 		_r = string.format("%x", math.ceil(r * 255))
+		if string.len(_r) == 1 then
+			_r = _r .. _r
+		end
 	end
 
 	if g == 0 or g == nil then
 		_g = "00"
 	else
 		_g = string.format("%x", math.ceil(g * 255))
+		if string.len(_g) == 1 then
+			_g = _g .. _g
+		end
 	end
 	
 	if b == 0 or b == nil then
 		_b = "00"
 	else
 		_b = string.format("%x", math.ceil(b * 255))
+		if string.len(_b) == 1 then
+			_b = _b .. _b
+		end
 	end
 
 	if a == 0 or a == nil then
 		_a = "00"
 	else
 		_a = string.format("%x", math.ceil(a * 255))
+		if string.len(_a) == 1 then
+			_a = _a .. _a
+		end
 	end
 
 	return _a .. _r .. _g .. _b
@@ -1313,7 +1331,7 @@ local function ConstructOptionsPanel()
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.panel)
 	
 	interfaceSettingsFrame.barLayoutPanel = CreateFrame("Frame", "TwintopInsanityBar_BarLayoutPanel", parent)
-	interfaceSettingsFrame.barLayoutPanel.name = "Bar Layout and Colors"
+	interfaceSettingsFrame.barLayoutPanel.name = "Bar Layout and Textures"
 	interfaceSettingsFrame.barLayoutPanel.parent = parent.name
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.barLayoutPanel)
 	
@@ -1456,7 +1474,7 @@ local function ConstructOptionsPanel()
 			barBorderFrame:SetBackdrop({ edgeFile = settings.textures.border,
 										tile = true,
 										tileSize=4,
-										edgeSize=settings.bar.border*4,								
+										edgeSize=settings.bar.border,								
 										insets = {0, 0, 0, 0}
 										})
 		end
@@ -4029,7 +4047,8 @@ local function UpdateInsanityBar()
 	end	
 
 	UpdateSnapshot()
-	local leftText, middleText, rightText = BarText()
+	HideInsanityBar()
+	local leftText, middleText, rightText = BarText()	
 	if barContainerFrame:IsShown() then
 
 		if snapshotData.insanity == 0 then
@@ -4380,6 +4399,9 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
 					snapshotData.targetData.auspiciousSpirits = snapshotData.targetData.auspiciousSpirits - 1
 				end
+				triggerUpdate = true
+			elseif type == "SPELL_ENERGIZE" and spellId == spells.shadowCrash.id then
+				print("Shadow Crash", type)
 				triggerUpdate = true
 			elseif type == "SPELL_CAST_FAILED" and spellId ~= spells.dispersion.id then
 				local gcd = GetCurrentGCDTime()
