@@ -1,5 +1,5 @@
-local addonVersion = "8.0.1.11"
-local addonReleaseDate = "August 7, 2018"
+local addonVersion = "8.0.1.12"
+local addonReleaseDate = "August 8, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -4401,7 +4401,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				end
 				triggerUpdate = true
 			elseif type == "SPELL_ENERGIZE" and spellId == spells.shadowCrash.id then
-				print("Shadow Crash", type)
 				triggerUpdate = true
 			elseif type == "SPELL_CAST_FAILED" and spellId ~= spells.dispersion.id then
 				local gcd = GetCurrentGCDTime()
