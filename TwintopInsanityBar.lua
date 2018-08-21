@@ -1,5 +1,5 @@
-local addonVersion = "8.0.1.12"
-local addonReleaseDate = "August 8, 2018"
+local addonVersion = "8.0.1.13"
+local addonReleaseDate = "August 21, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -22,6 +22,7 @@ targetsTimerFrame.sinceLastUpdate = 0
 local timerFrame = CreateFrame("Frame")
 timerFrame.sinceLastUpdate = 0
 timerFrame.ttdSinceLastUpdate = 0
+timerFrame.characterCheckSinceLastUpdate = 0
 
 local combatFrame = CreateFrame("Frame")
 
@@ -414,6 +415,7 @@ local function LoadDefaultSettings()
 		voidEruptionThreshold=true,
 		thresholdWidth=2,
 		auspiciousSpiritsTracker=true,
+		dataRefreshRate = 5.0,
 		ttd = {
 			sampleRate = 0.2,
 			numEntries = 50
@@ -3398,6 +3400,28 @@ local function ConstructOptionsPanel()
 		self.EditBox:SetText(value)		
 		settings.ttd.numEntries = value
 	end)
+
+	yCoord = yCoord - yOffset40
+	controls.textSection = BuildSectionHeader(parent, "Character Data Refresh Rate", xCoord+xPadding, yCoord)
+
+	yCoord = yCoord - yOffset60
+
+	title = "Refresh Rate (seconds)"
+	controls.ttdSamplingRate = BuildSlider(parent, title, 0.05, 60, settings.dataRefreshRate, 0.05, 2,
+									barWidth, barHeight, xCoord+xPadding*2, yCoord)
+	controls.ttdSamplingRate:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		else
+			value = RoundTo(value, 2)
+		end
+
+		self.EditBox:SetText(value)		
+		settings.dataRefreshRate = value
+	end)
 	
 	interfaceSettingsFrame.controls = controls
 	
@@ -4170,9 +4194,15 @@ end
 function timerFrame:onUpdate(sinceLastUpdate)
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate
+	self.characterCheckSinceLastUpdate = self.characterCheckSinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 0.05 then -- in seconds
 		UpdateInsanityBar()
 		self.sinceLastUpdate = 0
+	end
+
+	if self.characterCheckSinceLastUpdate >= settings.dataRefreshRate then -- in seconds
+		CheckCharacter()
+		self.characterCheckSinceLastUpdate = 0
 	end
 
 	if snapshotData.targetData.ttdIsActive and self.ttdSinceLastUpdate >= settings.ttd.sampleRate then -- in seconds
@@ -4474,8 +4504,6 @@ insanityFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 insanityFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 	local _, _, classIndex = UnitClass("player")
 	if classIndex == 5 then
-		local checkSpec = false
-
 		if event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar" then
 			if not addonData.loaded then
 				addonData.loaded = true
@@ -4499,7 +4527,7 @@ insanityFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 		end
 				
 		if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
-			EventRegistration()		
+			EventRegistration()
 				
 			local affectingCombat = UnitAffectingCombat("player")
 
