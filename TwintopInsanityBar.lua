@@ -1,5 +1,5 @@
-local addonVersion = "8.0.1.13"
-local addonReleaseDate = "August 21, 2018"
+local addonVersion = "8.0.1.14"
+local addonReleaseDate = "October 24, 2018"
 local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -4064,6 +4064,9 @@ local function UpdateSnapshot()
 	UpdateMindbenderValues()
 end
 
+--HACK to fix FPS
+local textRateLimit = 0
+
 local function UpdateInsanityBar()
 	if GetSpecialization() ~= 3 then
 		HideInsanityBar()
@@ -4072,7 +4075,19 @@ local function UpdateInsanityBar()
 
 	UpdateSnapshot()
 	HideInsanityBar()
-	local leftText, middleText, rightText = BarText()	
+	local currentTime = GetTime()
+
+	--HACK to fix FPS
+	local leftText, middleText, rightText = "","",""
+
+	if textRateLimit+0.1 < currentTime then
+		leftText, middleText, rightText = BarText()	
+		leftTextFrame.font:SetText(leftText)
+		middleTextFrame.font:SetText(middleText)
+		rightTextFrame.font:SetText(rightText)
+		textRateLimit = currentTime
+	end
+
 	if barContainerFrame:IsShown() then
 
 		if snapshotData.insanity == 0 then
@@ -4101,10 +4116,6 @@ local function UpdateInsanityBar()
 			passiveFrame.threshold.texture:Hide()
 			passiveFrame:SetValue(snapshotData.insanity + snapshotData.casting.insanityFinal)
 		end
-
-		leftTextFrame.font:SetText(leftText)
-		middleTextFrame.font:SetText(middleText)
-		rightTextFrame.font:SetText(rightText)
 		
 		if snapshotData.voidform.totalStacks > 0 then
 			barContainerFrame:SetAlpha(1.0)
@@ -4409,7 +4420,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			elseif spellId == spells.vampiricTouch.id then
 				InitializeTarget(destGUID)
 				snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-				if type == "SPELL_AURA_APPLIED" then -- SWP Applied to Target
+				if type == "SPELL_AURA_APPLIED" then -- VT Applied to Target
 					snapshotData.targetData.targets[destGUID].vampiricTouch = true
 					snapshotData.targetData.vampiricTouch = snapshotData.targetData.vampiricTouch + 1
 				elseif type == "SPELL_AURA_REMOVED" then				
