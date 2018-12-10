@@ -1303,6 +1303,7 @@ local function ConstructOptionsPanel()
 	local yOffset400 = 30
 	local yOffset40 = 40
 	local yOffset20 = 20
+	local yOffset15 = 15
 
 	local maxWidth = math.floor(GetScreenWidth())
 	local minWidth = math.max(math.ceil(settings.bar.border * 8), 120)
@@ -1498,7 +1499,7 @@ local function ConstructOptionsPanel()
 	
 	yCoord = yCoord - yOffset40
 	title = "Bar Width"
-	controls.width = BuildSlider(parent, title, minWidth, maxWidth, settings.bar.width, 1, 0,
+	controls.width = BuildSlider(parent, title, minWidth, maxWidth, settings.bar.width, 1, 2,
 								 barWidth, barHeight, xCoord+xPadding2, yCoord)
 	controls.width:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -1521,7 +1522,7 @@ local function ConstructOptionsPanel()
 	end)
 
 	title = "Bar Height"
-	controls.height = BuildSlider(parent, title, minHeight, maxHeight, settings.bar.height, 1, 0,
+	controls.height = BuildSlider(parent, title, minHeight, maxHeight, settings.bar.height, 1, 2,
 									barWidth, barHeight, xCoord2, yCoord)
 	controls.height:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -1549,7 +1550,7 @@ local function ConstructOptionsPanel()
 
 	title = "Bar Horizontal Position"
 	yCoord = yCoord - yOffset60
-	controls.horizontal = BuildSlider(parent, title, math.ceil(-maxWidth/2), math.floor(maxWidth/2), settings.bar.xPos, 1, 0,
+	controls.horizontal = BuildSlider(parent, title, math.ceil(-maxWidth/2), math.floor(maxWidth/2), settings.bar.xPos, 1, 2,
 								  barWidth, barHeight, xCoord+xPadding2, yCoord)
 	controls.horizontal:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -1566,7 +1567,7 @@ local function ConstructOptionsPanel()
 	end)
 
 	title = "Bar Vertical Position"
-	controls.vertical = BuildSlider(parent, title, math.ceil(-maxHeight/2), math.ceil(maxHeight/2), settings.bar.yPos, 1, 0,
+	controls.vertical = BuildSlider(parent, title, math.ceil(-maxHeight/2), math.ceil(maxHeight/2), settings.bar.yPos, 1, 2,
 								  barWidth, barHeight, xCoord2, yCoord)
 	controls.vertical:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -1584,7 +1585,7 @@ local function ConstructOptionsPanel()
 
 	title = "Bar Border Width"
 	yCoord = yCoord - yOffset60
-	controls.borderWidth = BuildSlider(parent, title, 0, maxBorderHeight, settings.bar.border, 1, 0,
+	controls.borderWidth = BuildSlider(parent, title, 0, maxBorderHeight, settings.bar.border, 1, 2,
 								  barWidth, barHeight, xCoord+xPadding2, yCoord)
 	controls.borderWidth:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -1621,7 +1622,7 @@ local function ConstructOptionsPanel()
 	end)
 
 	title = "Threshold Line Width"
-	controls.thresholdWidth = BuildSlider(parent, title, 1, 10, settings.thresholdWidth, 1, 0,
+	controls.thresholdWidth = BuildSlider(parent, title, 1, 10, settings.thresholdWidth, 1, 2,
 								  barWidth, barHeight, xCoord2, yCoord)
 	controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -3013,49 +3014,58 @@ local function ConstructOptionsPanel()
 	f.font:SetSize(600, 20)
 	f.font:SetText("For conditional display (only if $VARIABLE is active/non-zero): {$VARIABLE}[WHAT TO DISPLAY]")
 
-	yCoord = yCoord - yOffset20
+	yCoord = yCoord - yOffset15
 	controls.labels.vfStacksVar = BuildDisplayTextHelpEntry(parent, "$vfStacks", "Current Voidform Stack Count", xCoord, yCoord, 85, 200)
-	controls.labels.insanityVar = BuildDisplayTextHelpEntry(parent, "$insanity", "Current Insanity", xCoord2-70, yCoord, 130, 200)
+	controls.labels.insanityVar = BuildDisplayTextHelpEntry(parent, "$insanity", "Current Insanity", xCoord2-70, yCoord, 130, 225)
 
-	yCoord = yCoord - yOffset20
+	yCoord = yCoord - yOffset15
 	controls.labels.vfStacksIncomingVar = BuildDisplayTextHelpEntry(parent, "$vfIncoming", "Incoming Voidform Stacks", xCoord, yCoord, 85, 200)
-	controls.labels.castingVar = BuildDisplayTextHelpEntry(parent, "$casting", "Insanity from Hardcasting Spells", xCoord2-70, yCoord, 130, 200)
+	controls.labels.insanityTotalVar = BuildDisplayTextHelpEntry(parent, "$insanityTotal", "Current + Passive + Casting Insanity Total", xCoord2-70, yCoord, 130, 225)
 
-	yCoord = yCoord - yOffset20
+
+	yCoord = yCoord - yOffset15
 	controls.labels.vfDrainStacksVar = BuildDisplayTextHelpEntry(parent, "$vfDrainStacks", "Current Voidform Drain Stacks Count", xCoord, yCoord, 85, 200)
-	controls.labels.passiveVar = BuildDisplayTextHelpEntry(parent, "$passive", "Insanity from Passive Sources", xCoord2-70, yCoord, 130, 200)
+	controls.labels.castingVar = BuildDisplayTextHelpEntry(parent, "$casting", "Insanity from Hardcasting Spells", xCoord2-70, yCoord, 130, 225)
 
-	yCoord = yCoord - yOffset20
+
+	yCoord = yCoord - yOffset15
 	controls.labels.vfDrainVar = BuildDisplayTextHelpEntry(parent, "$vfDrain", "Insanity drained per second", xCoord, yCoord, 85, 200)
-	controls.labels.asInsanityVar = BuildDisplayTextHelpEntry(parent, "$asInsanity", "Insanity from Auspicious Spirits", xCoord2-70, yCoord, 130, 200)
+	controls.labels.insanityPlusCastingVar = BuildDisplayTextHelpEntry(parent, "$insanityPlusCasting", "Current + Casting Insanity Total", xCoord2-70, yCoord, 130, 225)
 
-	yCoord = yCoord - yOffset20
+	yCoord = yCoord - yOffset15
 	controls.labels.vfTimeVar = BuildDisplayTextHelpEntry(parent, "$vfTime", "Time until Voidform will end", xCoord, yCoord, 85, 200)
-	controls.labels.asCountVar = BuildDisplayTextHelpEntry(parent, "$asCount", "Number of Auspicious Spirits in Flight", xCoord2-70, yCoord, 130, 200)
-	
-	yCoord = yCoord - yOffset20
-	controls.labels.mbGcdsVar = BuildDisplayTextHelpEntry(parent, "$mbGcds", "Number of GCDs left on Mindbender", xCoord, yCoord, 85, 200)
-	controls.labels.mbInsanityVar = BuildDisplayTextHelpEntry(parent, "$mbInsanity", "Insanity from Mindbender (per settings)", xCoord2-70, yCoord, 130, 200)
+	controls.labels.insanityPlusPassiveVar = BuildDisplayTextHelpEntry(parent, "$insanityPlusPassive", "Current + Passive Insanity Total", xCoord2-70, yCoord, 130, 225)
 
-	yCoord = yCoord - yOffset20
-	controls.labels.mbTimeVar = BuildDisplayTextHelpEntry(parent, "$mbTime", "Time left on Mindbender", xCoord, yCoord, 85, 200)
-	controls.labels.mbSwingsVar = BuildDisplayTextHelpEntry(parent, "$mbSwings", "Number of Swings left on Mindbender", xCoord2-70, yCoord, 130, 200)
-	
-	yCoord = yCoord - yOffset20
-	controls.labels.liStacksVar = BuildDisplayTextHelpEntry(parent, "$liStacks", "Lingering Insanity Stacks", xCoord, yCoord, 85, 200)
-	controls.labels.liTimeVar = BuildDisplayTextHelpEntry(parent, "$liTime", "Lingering Insanity time remaining", xCoord2-70, yCoord, 130, 200)
-
-	yCoord = yCoord - yOffset20
+	yCoord = yCoord - yOffset15
 	controls.labels.critVar = BuildDisplayTextHelpEntry(parent, "$crit", "Current Crit%", xCoord, yCoord, 85, 200)
-	controls.labels.masteryVar = BuildDisplayTextHelpEntry(parent, "$mastery", "Current Mastery%", xCoord2-70, yCoord, 130, 200)
-
-	yCoord = yCoord - yOffset20
+	controls.labels.passiveVar = BuildDisplayTextHelpEntry(parent, "$passive", "Insanity from Passive Sources", xCoord2-70, yCoord, 130, 225)
+	
+	yCoord = yCoord - yOffset15
+	controls.labels.masteryVar = BuildDisplayTextHelpEntry(parent, "$mastery", "Current Mastery%", xCoord, yCoord, 85, 200)
+	controls.labels.asInsanityVar = BuildDisplayTextHelpEntry(parent, "$asInsanity", "Insanity from Auspicious Spirits", xCoord2-70, yCoord, 130, 225)
+	
+	yCoord = yCoord - yOffset15
 	controls.labels.hasteVar = BuildDisplayTextHelpEntry(parent, "$haste", "Current Haste%", xCoord, yCoord, 85, 200)
-	controls.labels.ttdVar = BuildDisplayTextHelpEntry(parent, "$ttd", "Time To Die of current target", xCoord2-70, yCoord, 130, 200)
+	controls.labels.asCountVar = BuildDisplayTextHelpEntry(parent, "$asCount", "Number of Auspicious Spirits in Flight", xCoord2-70, yCoord, 130, 225)
 
-	yCoord = yCoord - yOffset20
+	yCoord = yCoord - yOffset15
 	controls.labels.gcdVar = BuildDisplayTextHelpEntry(parent, "$gcd", "Current GCD, in seconds", xCoord, yCoord, 85, 200)
-	controls.labels.newlineVar = BuildDisplayTextHelpEntry(parent, "||n", "Insert a Newline", xCoord2-70, yCoord, 130, 200)
+	controls.labels.ttdVar = BuildDisplayTextHelpEntry(parent, "$ttd", "Time To Die of current target", xCoord2-70, yCoord, 130, 225)
+
+	yCoord = yCoord - yOffset15
+	controls.labels.mbGcdsVar = BuildDisplayTextHelpEntry(parent, "$mbGcds", "Number of GCDs left on Mindbender", xCoord, yCoord, 85, 200)
+	controls.labels.mbInsanityVar = BuildDisplayTextHelpEntry(parent, "$mbInsanity", "Insanity from Mindbender (per settings)", xCoord2-70, yCoord, 130, 225)
+
+	yCoord = yCoord - yOffset15
+	controls.labels.mbTimeVar = BuildDisplayTextHelpEntry(parent, "$mbTime", "Time left on Mindbender", xCoord, yCoord, 85, 200)
+	controls.labels.mbSwingsVar = BuildDisplayTextHelpEntry(parent, "$mbSwings", "Number of Swings left on Mindbender", xCoord2-70, yCoord, 130, 225)
+	
+	yCoord = yCoord - yOffset15
+	controls.labels.liStacksVar = BuildDisplayTextHelpEntry(parent, "$liStacks", "Lingering Insanity Stacks", xCoord, yCoord, 85, 200)
+	controls.labels.liTimeVar = BuildDisplayTextHelpEntry(parent, "$liTime", "Lingering Insanity time remaining", xCoord2-70, yCoord, 130, 225)
+
+	yCoord = yCoord - yOffset15
+	controls.labels.newlineVar = BuildDisplayTextHelpEntry(parent, "||n", "Insert a Newline", xCoord, yCoord, 85, 200)
 	-----	
 	yCoord = yCoord - yOffset400
 	controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
@@ -3073,36 +3083,36 @@ local function ConstructOptionsPanel()
 	f.font:SetSize(600, 20)
 	f.font:SetText("For icons use #ICONVARIABLENAME")
 
-	yCoord = yCoord - yOffset20
+	yCoord = yCoord - yOffset15
 	controls.labels.swpIconVar = BuildDisplayTextHelpEntry(parent, "#casting", "The icon of the Insanity Generating Spell you are currently hardcasting", xCoord, yCoord, 85, 500)
 
-	yCoord = yCoord - yOffset20
+	yCoord = yCoord - yOffset15
 	controls.labels.swpIconVar = BuildDisplayTextHelpEntry(parent, "#swp", spells.shadowWordPain.icon .. " Shadow Word: Pain", xCoord, yCoord, 85, 200)
-	controls.labels.vtIconVar = BuildDisplayTextHelpEntry(parent, "#vt", spells.vampiricTouch.icon .. " Vampiric Touch", xCoord2-70, yCoord, 130, 200)
+	controls.labels.vtIconVar = BuildDisplayTextHelpEntry(parent, "#vt", spells.vampiricTouch.icon .. " Vampiric Touch", xCoord2-70, yCoord, 130, 225)
 
-	yCoord = yCoord - yOffset20
+	yCoord = yCoord - yOffset15
 	controls.labels.asIconVar = BuildDisplayTextHelpEntry(parent, "#as", spells.auspiciousSpirits.icon .. " Auspicious Spirits", xCoord, yCoord, 85, 200)
-	controls.labels.saIconVar = BuildDisplayTextHelpEntry(parent, "#sa", spells.shadowyApparition.icon .. " Shadowy Apparition", xCoord2-70, yCoord, 130, 200)
+	controls.labels.saIconVar = BuildDisplayTextHelpEntry(parent, "#sa", spells.shadowyApparition.icon .. " Shadowy Apparition", xCoord2-70, yCoord, 130, 225)
 
-	yCoord = yCoord - yOffset20
+	yCoord = yCoord - yOffset15
 	controls.labels.vfIconVar = BuildDisplayTextHelpEntry(parent, "#vf", spells.voidform.icon .. " Voidform", xCoord, yCoord, 85, 200)
-	controls.labels.vtIconVar = BuildDisplayTextHelpEntry(parent, "#li", spells.lingeringInsanity.icon .. " Lingering Insanity", xCoord2-70, yCoord, 130, 200)
+	controls.labels.vtIconVar = BuildDisplayTextHelpEntry(parent, "#li", spells.lingeringInsanity.icon .. " Lingering Insanity", xCoord2-70, yCoord, 130, 225)
 
-	yCoord = yCoord - yOffset20
+	yCoord = yCoord - yOffset15
 	controls.labels.mfIconVar = BuildDisplayTextHelpEntry(parent, "#mb", spells.mindBlast.icon .. " Mind Blast", xCoord, yCoord, 85, 200)
-	controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#mf", spells.mindFlay.icon .. " Mind Flay", xCoord2-70, yCoord, 130, 200)
+	controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#mf", spells.mindFlay.icon .. " Mind Flay", xCoord2-70, yCoord, 130, 225)
 
-	yCoord = yCoord - yOffset20
+	yCoord = yCoord - yOffset15
 	controls.labels.mfIconVar = BuildDisplayTextHelpEntry(parent, "#svw", spells.shadowWordVoid.icon .. " Shadow Word: Void", xCoord, yCoord, 85, 200)
-	controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#ms", spells.mindSear.icon .. " Mind Sear", xCoord2-70, yCoord, 130, 200)
+	controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#ms", spells.mindSear.icon .. " Mind Sear", xCoord2-70, yCoord, 130, 225)
 
-	yCoord = yCoord - yOffset20
+	yCoord = yCoord - yOffset15
 	controls.labels.mfIconVar = BuildDisplayTextHelpEntry(parent, "#dv", spells.darkVoid.icon .. " Dark Void", xCoord, yCoord, 85, 200)
-	controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#voit", spells.mindSear.icon .. " Void Torrent", xCoord2-70, yCoord, 130, 200)
+	controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#voit", spells.voidTorrent.icon .. " Void Torrent", xCoord2-70, yCoord, 130, 225)
 
-	yCoord = yCoord - yOffset20
-	controls.labels.mfIconVar = BuildDisplayTextHelpEntry(parent, "#md", spells.darkVoid.icon .. " Mass Dispel", xCoord, yCoord, 85, 200)
-	--controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#mf", spells.mindFlay.icon .. " Mind Flay", xCoord2-70, yCoord, 130, 200)
+	yCoord = yCoord - yOffset15
+	controls.labels.mfIconVar = BuildDisplayTextHelpEntry(parent, "#md", spells.massDispel.icon .. " Mass Dispel", xCoord, yCoord, 85, 200)
+	--controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#mf", spells.mindFlay.icon .. " Mind Flay", xCoord2-70, yCoord, 130, 225)
 	---------------------------
 
 	yCoord = -5
@@ -3720,6 +3730,12 @@ local function RemoveInvalidVariablesFromBarText(input)
 						end
 					elseif var == "$insanity" then
 						valid = true
+					elseif var == "$insanityTotal" then
+						valid = true
+					elseif var == "$insanityPlusCasting" then
+						valid = true
+					elseif var == "$insanityPlusPassive" then
+						valid = true
 					elseif var == "$casting" then
 						if snapshotData.casting.insanityRaw ~= nil and snapshotData.casting.insanityRaw > 0 then
 							valid = true
@@ -3870,12 +3886,19 @@ local function BarText()
 	local asCount = string.format("%.0f", snapshotData.targetData.auspiciousSpirits)
 	--$asInsanity
 	local _asInsanity = CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.targetData.auspiciousSpirits
-	local asInsanity
-	asInsanity = string.format("%.0f", _asInsanity)
+	local asInsanity = string.format("%.0f", _asInsanity)
 	--$passive
 	local _passiveInsanity = _asInsanity + snapshotData.mindbender.insanityFinal
-	local passiveInsanity
-	passiveInsanity = string.format("|c%s%.0f|r", settings.colors.text.passiveInsanity, _passiveInsanity)
+	local passiveInsanity = string.format("|c%s%.0f|r", settings.colors.text.passiveInsanity, _passiveInsanity)
+	--$insanityTotal
+	local _insanityTotal = math.min(_passiveInsanity + snapshotData.casting.insanityFinal + snapshotData.insanity, characterData.maxInsanity)
+	local insanityTotal = string.format("|c%s%.0f%%|r", settings.colors.text.currentInsanity, _insanityTotal)
+	--$insanityPlusCasting
+	local _insanityPlusCasting = math.min(snapshotData.casting.insanityFinal + snapshotData.insanity, characterData.maxInsanity)
+	local insanityPlusCasting = string.format("|c%s%.0f%%|r", settings.colors.text.currentInsanity, _insanityPlusCasting)
+	--$insanityPlusPassive
+	local _insanityPlusPassive = math.min(_passiveInsanity + snapshotData.insanity, characterData.maxInsanity)
+	local insanityPlusPassive = string.format("|c%s%.0f%%|r", settings.colors.text.currentInsanity, _insanityPlusPassive)
 
 	----------
 	--$swpCount
@@ -3964,6 +3987,9 @@ local function BarText()
 		returnText[x].text = string.gsub(returnText[x].text, "$vfDrainStacks", voidformDrainStacks)
 		returnText[x].text = string.gsub(returnText[x].text, "$vfDrain", voidformDrainAmount)
 		returnText[x].text = string.gsub(returnText[x].text, "$vfTime", voidformDrainTime)
+		returnText[x].text = string.gsub(returnText[x].text, "$insanityPlusCasting", insanityPlusCasting .. returnText[x].color)
+		returnText[x].text = string.gsub(returnText[x].text, "$insanityPlusPassive", insanityPlusPassive .. returnText[x].color)
+		returnText[x].text = string.gsub(returnText[x].text, "$insanityTotal", insanityTotal .. returnText[x].color)
 		returnText[x].text = string.gsub(returnText[x].text, "$insanity", currentInsanity .. returnText[x].color)
 		returnText[x].text = string.gsub(returnText[x].text, "$casting", castingInsanity .. returnText[x].color)
 		returnText[x].text = string.gsub(returnText[x].text, "$passive", passiveInsanity .. returnText[x].color)		
@@ -4221,22 +4247,12 @@ local function UpdateSnapshot()
 	UpdateMindbenderValues()
 end
 
---HACK to fix FPS
---local textRateLimit = 0
-
 local function UpdateInsanityBar()
-	local currentTime = GetTime()
-
-	--HACK to fix FPS
-	--local leftText, middleText, rightText = "","",""
-
-	--if textRateLimit+0.1 < currentTime then
-		leftText, middleText, rightText = BarText()	
-		leftTextFrame.font:SetText(leftText)
-		middleTextFrame.font:SetText(middleText)
-		rightTextFrame.font:SetText(rightText)
-	--	textRateLimit = currentTime
-	--end
+	UpdateSnapshot()
+	leftText, middleText, rightText = BarText()	
+	leftTextFrame.font:SetText(leftText)
+	middleTextFrame.font:SetText(middleText)
+	rightTextFrame.font:SetText(rightText)
 
 	if barContainerFrame:IsShown() then
 
@@ -4303,9 +4319,9 @@ local function UpdateInsanityBar()
 	end
 end
 
-
 --HACK to fix FPS
 local updateRateLimit = 0
+
 local function TriggerInsanityBarUpdates()
 	if GetSpecialization() ~= 3 then
 		HideInsanityBar()
@@ -4313,9 +4329,6 @@ local function TriggerInsanityBarUpdates()
 	end	
 
 	local currentTime = GetTime()
-
-	UpdateSnapshot()
-	HideInsanityBar()
 	
 	if updateRateLimit + 0.05 < currentTime then
 		updateRateLimit = currentTime
