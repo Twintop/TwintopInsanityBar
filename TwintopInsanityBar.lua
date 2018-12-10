@@ -1,6 +1,6 @@
-local addonVersion = "8.0.1.15"
-local addonReleaseDate = "November 11, 2018"
-local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent)
+local addonVersion = "8.1.0.0"
+local addonReleaseDate = "December 11, 2018"
+local barContainerFrame = CreateFrame("Frame", nil, UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local passiveFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -103,7 +103,9 @@ local spells = {
 		--id = 205065
 		id = 263165,
 		name = "",
-		icon = ""
+		icon = "",
+		insanity = 6,
+		fotm = false
 	},
 	dispersion = {
 		id = 47585,
@@ -167,7 +169,7 @@ local spells = {
 		id = 48045,
 		name = "",
 		icon = "",
-		insanity = 3 * 1.25, --Need to figure out a better value here.
+		insanity = (5 / 4) * 1.25, --Need to figure out a better value here.
 		fotm = false
 	},
 	shadowfiend = {
@@ -205,6 +207,13 @@ local spells = {
 		id = 78203,
 		name = "",
 		icon = ""		
+	},
+	massDispel = {
+		id = 32375,
+		name = "",
+		icon = "",
+		insanity = 6,
+		fotm = false
 	}
 }
 
@@ -235,6 +244,8 @@ end
 local snapshotData = {
 	insanity = 0,
 	haste = 0,
+	crit = 0,
+	mastery = 0,
 	casting = {
 		spellId = nil,
 		startTime = nil,
@@ -403,6 +414,66 @@ local function GetCurrentGCDTime()
 	return gcd
 end
 
+local function LoadDefaultBarTextSimpleSettings()
+	local textSettings = {
+		fontSizeLock=true,
+		fontFaceLock=true,
+		left={
+			outVoidformText="$haste%",
+			inVoidformText="$haste% - $vfStacks (+$vfIncoming) VF",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontSize=18
+		},
+		middle={
+			outVoidformText="{$liStacks}[$liStacks LI - $liTime sec]",
+			inVoidformText="$vfTime sec - $vfDrain/sec ",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontSize=18
+		},
+		right={
+			outVoidformText="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
+			inVoidformText="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontSize=18
+		}
+	}
+
+	return textSettings
+end
+
+local function LoadDefaultBarTextAdvancedSettings()
+	local textSettings = {		
+		fontSizeLock = false,
+		fontFaceLock = true,
+		left = {
+			outVoidformText = "#swp $swpCount   $haste% ($gcd)||n#vt $vtCount   {$ttd}[TTD: $ttd]",
+			inVoidformText = "#swp $swpCount   $haste% ($gcd)||n#vt $vtCount   {$ttd}[TTD: $ttd]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontSize = 13
+		},
+		middle = {
+			outVoidformText = "{$liStacks}[$liTime #li $liStacks]",
+			inVoidformText = "#vf $vfStacks (+$vfIncoming) #vf||n$vfTime ($vfDrain/s)",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontSize = 13
+		},
+		right = {
+			outVoidformText = "{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]$insanity ",
+			inVoidformText = "{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]$insanity ",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",			
+			fontSize = 22
+		}
+	}
+
+	return textSettings
+end
+
 local function LoadDefaultSettings()
 	settings = {
 		summary = {
@@ -477,31 +548,7 @@ local function LoadDefaultSettings()
 				mindbender="FFFF11FF"
 			}
 		},
-		displayText={
-			fontSizeLock=true,
-			fontFaceLock=true,
-			left={
-				outVoidformText="$haste%",
-				inVoidformText="$haste% - $vfStacks (+$vfIncoming) VF",
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
-				fontSize=18
-			},
-			middle={
-				outVoidformText="{$liStacks}[$liStacks LI - $liTime sec]",
-				inVoidformText="$vfTime sec - $vfDrain/sec ",
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
-				fontSize=18
-			},
-			right={
-				outVoidformText="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
-				inVoidformText="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
-				fontSize=18
-			}
-		},
+		displayText={},
 		audio={
 			s2mDeath={
 				enabled=true,
@@ -527,6 +574,8 @@ local function LoadDefaultSettings()
 			textureLock=true
 		}
 	}
+
+	settings.displayText = LoadDefaultBarTextSimpleSettings()
 end
 
 local function MergeSettings(settings, user)
@@ -793,6 +842,9 @@ local function ConstructInsanityBar()
 	barContainerFrame:SetHeight(settings.bar.height)
 	barContainerFrame:SetFrameStrata("BACKGROUND")
 	barContainerFrame:SetFrameLevel(0)
+	
+	barContainerFrame:SetMovable(settings.bar.dragAndDrop)
+	barContainerFrame:EnableMouse(settings.bar.dragAndDrop)
 
 	barContainerFrame:SetScript("OnMouseDown", function(self, button)
 		if button == "LeftButton" and not self.isMoving and settings.bar.dragAndDrop then
@@ -808,9 +860,6 @@ local function ConstructInsanityBar()
 			self.isMoving = false
 		end
 	end)
-	
-	barContainerFrame:SetMovable(settings.bar.dragAndDrop)
-	barContainerFrame:EnableMouse(settings.bar.dragAndDrop)
 
 	barContainerFrame:SetScript("OnHide", function(self)
 		if self.isMoving then
@@ -840,6 +889,7 @@ local function ConstructInsanityBar()
 	barBorderFrame:SetHeight(settings.bar.height)
 	barBorderFrame:SetFrameStrata("BACKGROUND")
 	barBorderFrame:SetFrameLevel(126)
+	barBorderFrame:EnableMouse(false)
 
 
 	insanityFrame:Show()
@@ -851,6 +901,7 @@ local function ConstructInsanityBar()
 	insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
 	insanityFrame:SetFrameStrata("BACKGROUND")
 	insanityFrame:SetFrameLevel(125)
+	insanityFrame:EnableMouse(false)
 	
 	insanityFrame.threshold:SetWidth(settings.thresholdWidth)
 	insanityFrame.threshold:SetHeight(settings.bar.height)
@@ -860,6 +911,7 @@ local function ConstructInsanityBar()
 	insanityFrame.threshold:SetFrameStrata("BACKGROUND")
 	insanityFrame.threshold:SetFrameLevel(128)
 	insanityFrame.threshold:Show()
+	insanityFrame.threshold:EnableMouse(false)
 	
 	castingFrame:Show()
 	castingFrame:SetMinMaxValues(0, 100)
@@ -870,6 +922,7 @@ local function ConstructInsanityBar()
 	castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting))
 	castingFrame:SetFrameStrata("BACKGROUND")
 	castingFrame:SetFrameLevel(90)
+	castingFrame:EnableMouse(false)
 	
 	passiveFrame:Show()
 	passiveFrame:SetMinMaxValues(0, 100)
@@ -880,6 +933,7 @@ local function ConstructInsanityBar()
 	passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive))
 	passiveFrame:SetFrameStrata("BACKGROUND")
 	passiveFrame:SetFrameLevel(80)
+	passiveFrame:EnableMouse(false)
 	
 	passiveFrame.threshold:SetWidth(settings.thresholdWidth)
 	passiveFrame.threshold:SetHeight(settings.bar.height)
@@ -889,6 +943,7 @@ local function ConstructInsanityBar()
 	passiveFrame.threshold:SetFrameStrata("BACKGROUND")
 	passiveFrame.threshold:SetFrameLevel(127)
 	passiveFrame.threshold:Show()
+	passiveFrame.threshold:EnableMouse(false)
 	
 	leftTextFrame:Show()
 	leftTextFrame:SetWidth(settings.bar.width)
@@ -901,6 +956,7 @@ local function ConstructInsanityBar()
 	leftTextFrame.font:SetJustifyH("LEFT")
 	leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
 	leftTextFrame.font:Show()
+	leftTextFrame:EnableMouse(false)
 	
 	middleTextFrame:Show()
 	middleTextFrame:SetWidth(settings.bar.width)
@@ -913,6 +969,7 @@ local function ConstructInsanityBar()
 	middleTextFrame.font:SetJustifyH("CENTER")
 	middleTextFrame.font:SetFont(settings.displayText.middle.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
 	middleTextFrame.font:Show()
+	middleTextFrame:EnableMouse(false)
 	
 	rightTextFrame:Show()
 	rightTextFrame:SetWidth(settings.bar.width)
@@ -925,6 +982,7 @@ local function ConstructInsanityBar()
 	rightTextFrame.font:SetJustifyH("RIGHT")
 	rightTextFrame.font:SetFont(settings.displayText.right.fontFace, settings.displayText.right.fontSize, "OUTLINE")
 	rightTextFrame.font:Show()
+	rightTextFrame:EnableMouse(false)
 end
 
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
@@ -1286,6 +1344,32 @@ local function ConstructOptionsPanel()
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
+	StaticPopupDialogs["TwintopInsanityBar_ResetBarTextSimple"] = {
+		text = "Do you want to reset Twintop's Insanity Bar's text (including font size, font style, and text information) back to it's default (simple) configuration? This will cause your UI to be reloaded!",
+		button1 = "Yes",
+		button2 = "No",
+		OnAccept = function()
+			settings.displayText = LoadDefaultBarTextSimpleSettings()
+			ReloadUI()			
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopInsanityBar_ResetBarTextAdvanced"] = {
+		text = "Do you want to reset Twintop's Insanity Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? This will cause your UI to be reloaded!",
+		button1 = "Yes",
+		button2 = "No",
+		OnAccept = function()
+			settings.displayText = LoadDefaultBarTextAdvancedSettings()
+			ReloadUI()			
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
 
 	yCoord = yCoord - yOffset40
 	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Author:", "Twintop <Astral> - Turalyon-US", xCoord+xPadding*2, yCoord, 75, 200)
@@ -1320,6 +1404,60 @@ local function ConstructOptionsPanel()
 	f:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopInsanityBar_Reset")
 	end)
+
+	yCoord = yCoord - yOffset40
+	controls.resetButton = CreateFrame("Button", "TwintopInsanityBar_ResetBarTextSimpleButton", parent)
+	f = controls.resetButton
+	f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2, yCoord)
+	f:SetWidth(250)
+	f:SetHeight(30)
+	f:SetText("Reset Bar Text (Simple)")
+	f:SetNormalFontObject("GameFontNormal")
+	f.ntex = f:CreateTexture()
+	f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
+	f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
+	f.ntex:SetAllPoints()	
+	f:SetNormalTexture(f.ntex)
+	f.htex = f:CreateTexture()
+	f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
+	f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
+	f.htex:SetAllPoints()
+	f:SetHighlightTexture(f.htex)	
+	f.ptex = f:CreateTexture()
+	f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
+	f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
+	f.ptex:SetAllPoints()
+	f:SetPushedTexture(f.ptex)
+	f:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopInsanityBar_ResetBarTextSimple")
+	end)
+
+	controls.resetButton = CreateFrame("Button", "TwintopInsanityBar_ResetBarTextAdvancedButton", parent)
+	f = controls.resetButton
+	f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2+275, yCoord)
+	f:SetWidth(250)
+	f:SetHeight(30)
+	f:SetText("Reset Bar Text (Advanced)")
+	f:SetNormalFontObject("GameFontNormal")
+	f.ntex = f:CreateTexture()
+	f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
+	f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
+	f.ntex:SetAllPoints()	
+	f:SetNormalTexture(f.ntex)
+	f.htex = f:CreateTexture()
+	f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
+	f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
+	f.htex:SetAllPoints()
+	f:SetHighlightTexture(f.htex)	
+	f.ptex = f:CreateTexture()
+	f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
+	f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
+	f.ptex:SetAllPoints()
+	f:SetPushedTexture(f.ptex)
+	f:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopInsanityBar_ResetBarTextAdvanced")
+	end)
+
 
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.panel)
 	
@@ -2709,7 +2847,7 @@ local function ConstructOptionsPanel()
 	end)
 
 	yCoord = yCoord - yOffset60	
-	title = "Haste Decimals to Show"
+	title = "Haste / Crit / Mastery Decimals to Show"
 	controls.hastePrecision = BuildSlider(parent, title, 0, 10, settings.hastePrecision, 1, 0,
 									barWidth, barHeight, xCoord+xPadding2, yCoord)
 	controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
@@ -2908,6 +3046,10 @@ local function ConstructOptionsPanel()
 	controls.labels.liTimeVar = BuildDisplayTextHelpEntry(parent, "$liTime", "Lingering Insanity time remaining", xCoord2-70, yCoord, 130, 200)
 
 	yCoord = yCoord - yOffset20
+	controls.labels.critVar = BuildDisplayTextHelpEntry(parent, "$crit", "Current Crit%", xCoord, yCoord, 85, 200)
+	controls.labels.masteryVar = BuildDisplayTextHelpEntry(parent, "$mastery", "Current Mastery%", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset20
 	controls.labels.hasteVar = BuildDisplayTextHelpEntry(parent, "$haste", "Current Haste%", xCoord, yCoord, 85, 200)
 	controls.labels.ttdVar = BuildDisplayTextHelpEntry(parent, "$ttd", "Time To Die of current target", xCoord2-70, yCoord, 130, 200)
 
@@ -2956,6 +3098,10 @@ local function ConstructOptionsPanel()
 
 	yCoord = yCoord - yOffset20
 	controls.labels.mfIconVar = BuildDisplayTextHelpEntry(parent, "#dv", spells.darkVoid.icon .. " Dark Void", xCoord, yCoord, 85, 200)
+	controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#voit", spells.mindSear.icon .. " Void Torrent", xCoord2-70, yCoord, 130, 200)
+
+	yCoord = yCoord - yOffset20
+	controls.labels.mfIconVar = BuildDisplayTextHelpEntry(parent, "#md", spells.darkVoid.icon .. " Mass Dispel", xCoord, yCoord, 85, 200)
 	--controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#mf", spells.mindFlay.icon .. " Mind Flay", xCoord2-70, yCoord, 130, 200)
 	---------------------------
 
@@ -2965,14 +3111,14 @@ local function ConstructOptionsPanel()
 	controls.textSection = BuildSectionHeader(parent, "Passive Options", xCoord+xPadding, yCoord)
 
 	yCoord = yCoord - yOffset400
-	controls.checkBoxes.textRightPI = CreateFrame("CheckButton", "TIBCB3_1", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.textRightPI
+	controls.checkBoxes.s2mDeath = CreateFrame("CheckButton", "TIBCB3_2", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.s2mDeath
 	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Right Text: Show Passive Insanity Value")
-	f.tooltip = "Show the amount of incoming Insanity from Auspicious Spirits and Mindbender."
-	f:SetChecked(settings.displayText.right.passiveInsanity)
+	getglobal(f:GetName() .. 'Text'):SetText("Play Wilhelm Scream when S2M Ends")
+	f.tooltip = "When you (almost) die, horribly, after Surrender to Madness ends, play the infamous Wilhelm Scream to make you feel a bit better."
+	f:SetChecked(settings.audio.s2mDeath.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		settings.displayText.right.passiveInsanity = self:GetChecked()
+		settings.audio.s2mDeath.enabled = self:GetChecked()
 	end)
 
 	--TODO: Move this setting, and "Report Voidform Stacks Only", to "Advanced Configuration"
@@ -2992,15 +3138,6 @@ local function ConstructOptionsPanel()
 	end)
 
 	yCoord = yCoord - yOffset20
-	controls.checkBoxes.s2mDeath = CreateFrame("CheckButton", "TIBCB3_2", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.s2mDeath
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Play Wilhelm Scream when S2M Ends")
-	f.tooltip = "When you (almost) die, horribly, after Surrender to Madness ends, play the infamous Wilhelm Scream to make you feel a bit better."
-	f:SetChecked(settings.audio.s2mDeath.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		settings.audio.s2mDeath.enabled = self:GetChecked()
-	end)
 
 	--TODO: Move this setting, and "Show Voidform Summary", to "Advanced Configuration"
 	controls.checkBoxes.simpleSummary = CreateFrame("CheckButton", "TIBCB3_4", parent, "ChatConfigCheckButtonTemplate")
@@ -3428,7 +3565,7 @@ local function InsanityDrain(stacks)
         end
     end    
     
-    return (6.0 + (((stacks - 1) * 0.8)) * pct)
+    return (6.0 + (((stacks - 1) * 0.68)) * pct)
 end
 
 local function RemainingTimeAndStackCount()
@@ -3545,7 +3682,11 @@ local function RemoveInvalidVariablesFromBarText(input)
 					local valid = false
 					local var = string.sub(input, a+1, b-1)
 					
-					if var == "$haste" then
+					if var == "$crit" then
+						valid = true
+					elseif var == "$mastery" then
+						valid = true
+					elseif var == "$haste" then
 						valid = true
 					elseif var == "$gcd" then
 						valid = true
@@ -3652,6 +3793,13 @@ local function RemoveInvalidVariablesFromBarText(input)
 end
 
 local function BarText()
+	--$crit
+	local critPercent = string.format("%." .. settings.hastePrecision .. "f", RoundTo(snapshotData.crit, settings.hastePrecision))
+
+	--$mastery
+	local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", RoundTo(snapshotData.mastery, settings.hastePrecision))
+
+	
 	--$haste
 	local _hasteColor = settings.colors.text.left
 	local _hasteValue = RoundTo(snapshotData.haste, settings.hastePrecision)
@@ -3802,6 +3950,8 @@ local function BarText()
 
 		-- Values
 		returnText[x].text = string.gsub(returnText[x].text, "$haste", hastePercent .. returnText[x].color)
+		returnText[x].text = string.gsub(returnText[x].text, "$crit", critPercent .. returnText[x].color)		
+		returnText[x].text = string.gsub(returnText[x].text, "$mastery", masteryPercent .. returnText[x].color)
 		returnText[x].text = string.gsub(returnText[x].text, "$gcd", gcd)
 		returnText[x].text = string.gsub(returnText[x].text, "$swpCount", shadowWordPainCount)
 		returnText[x].text = string.gsub(returnText[x].text, "$vtCount", vampiricTouchCount)
@@ -3889,6 +4039,12 @@ local function CastingSpell()
 				snapshotData.casting.insanityRaw = spells.mindSear.insanity
 				snapshotData.casting.icon = spells.mindSear.icon
 				UpdateCastingInsanityFinal(spells.mindSear.fotm)
+			elseif spellName == spells.voidTorrent.name then
+				snapshotData.casting.spellId = spells.voidTorrent.id
+				snapshotData.casting.startTime = currentTime
+				snapshotData.casting.insanityRaw = spells.voidTorrent.insanity
+				snapshotData.casting.icon = spells.voidTorrent.icon
+				UpdateCastingInsanityFinal(spells.voidTorrent.fotm)
 			else
 				ResetCastingSnapshotData()
 				return false
@@ -3925,6 +4081,12 @@ local function CastingSpell()
 				snapshotData.casting.spellId = spells.darkVoid.id
 				snapshotData.casting.icon = spells.darkVoid.icon
 				UpdateCastingInsanityFinal(spells.darkVoid.fotm)
+			elseif spellName == spells.massDispel.name then
+				snapshotData.casting.startTime = currentTime
+				snapshotData.casting.insanityRaw = spells.massDispel.insanity
+				snapshotData.casting.spellId = spells.massDispel.id
+				snapshotData.casting.icon = spells.massDispel.icon
+				UpdateCastingInsanityFinal(spells.massDispel.fotm)
 			else
 				ResetCastingSnapshotData()
 				return false				
@@ -3948,7 +4110,7 @@ local function LingeringInsanityValues()
 		if snapshotData.lingeringInsanity.stacksLast ~= liCount then
 			snapshotData.lingeringInsanity.stacksLast = liCount
 			snapshotData.lingeringInsanity.lastTickTime = currentTime
-			snapshotData.lingeringInsanity.timeLeftBase = snapshotData.lingeringInsanity.stacksLast
+			snapshotData.lingeringInsanity.timeLeftBase = snapshotData.lingeringInsanity.stacksLast * 3
 			--[[ Keeping this here in case they change how the stacks on LI work.
 			local timeLeftBase = snapshotData.lingeringInsanity.stacksLast / 2
 			
@@ -4050,6 +4212,8 @@ local function UpdateSnapshot()
 	spells.s2m.isActive = select(10, FindBuffById(spells.s2m.id))
 	spells.s2m.isDebuffActive = select(10, FindDebuffById(spells.s2m.debuffId))
 	snapshotData.haste = UnitSpellHaste("player")
+	snapshotData.crit = GetCritChance("player")
+	snapshotData.mastery = GetMastery("player")
 	snapshotData.insanity = UnitPower("player", SPELL_POWER_INSANITY)
 	LingeringInsanityValues()
 	UpdateMindbenderValues()
