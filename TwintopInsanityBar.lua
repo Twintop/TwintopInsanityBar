@@ -3947,6 +3947,8 @@ local function BarText()
 		returnText[x].text = string.gsub(returnText[x].text, "#shadowWordPain", spells.shadowWordPain.icon)
 		returnText[x].text = string.gsub(returnText[x].text, "#dv", spells.darkVoid.icon)
 		returnText[x].text = string.gsub(returnText[x].text, "#darkVoid", spells.darkVoid.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#md", spells.massDispel.icon)
+		returnText[x].text = string.gsub(returnText[x].text, "#massDispel", spells.massDispel.icon)
 
 		-- Values
 		returnText[x].text = string.gsub(returnText[x].text, "$haste", hastePercent .. returnText[x].color)
@@ -4220,28 +4222,21 @@ local function UpdateSnapshot()
 end
 
 --HACK to fix FPS
-local textRateLimit = 0
+--local textRateLimit = 0
 
 local function UpdateInsanityBar()
-	if GetSpecialization() ~= 3 then
-		HideInsanityBar()
-		return
-	end	
-
-	UpdateSnapshot()
-	HideInsanityBar()
 	local currentTime = GetTime()
 
 	--HACK to fix FPS
-	local leftText, middleText, rightText = "","",""
+	--local leftText, middleText, rightText = "","",""
 
-	if textRateLimit+0.1 < currentTime then
+	--if textRateLimit+0.1 < currentTime then
 		leftText, middleText, rightText = BarText()	
 		leftTextFrame.font:SetText(leftText)
 		middleTextFrame.font:SetText(middleText)
 		rightTextFrame.font:SetText(rightText)
-		textRateLimit = currentTime
-	end
+	--	textRateLimit = currentTime
+	--end
 
 	if barContainerFrame:IsShown() then
 
@@ -4308,6 +4303,26 @@ local function UpdateInsanityBar()
 	end
 end
 
+
+--HACK to fix FPS
+local updateRateLimit = 0
+local function TriggerInsanityBarUpdates()
+	if GetSpecialization() ~= 3 then
+		HideInsanityBar()
+		return
+	end	
+
+	local currentTime = GetTime()
+
+	UpdateSnapshot()
+	HideInsanityBar()
+	
+	if updateRateLimit + 0.05 < currentTime then
+		updateRateLimit = currentTime
+		UpdateInsanityBar()
+	end
+end
+
 local function ResetVoidformSnapshotData()
 	snapshotData.voidform.totalStacks = 0
 	snapshotData.voidform.drainStacks = 0
@@ -4362,7 +4377,7 @@ function timerFrame:onUpdate(sinceLastUpdate)
 	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate
 	self.characterCheckSinceLastUpdate = self.characterCheckSinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 0.05 then -- in seconds
-		UpdateInsanityBar()
+		TriggerInsanityBarUpdates()
 		self.sinceLastUpdate = 0
 	end
 
@@ -4639,7 +4654,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	end
 				
 	if triggerUpdate then
-		UpdateInsanityBar()
+		TriggerInsanityBarUpdates()
 	end
 end)
 
@@ -4649,7 +4664,7 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	if self.sinceLastUpdate >= 1 then -- in seconds
 		TargetsCleanup()
 		RefreshTargetTracking()
-		UpdateInsanityBar()
+		TriggerInsanityBarUpdates()
 		self.sinceLastUpdate = 0
 	end
 end
