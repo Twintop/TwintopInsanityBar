@@ -1,6 +1,6 @@
 local addonVersion = "8.1.0.0"
 local addonReleaseDate = "December 11, 2018"
-local barContainerFrame = CreateFrame("Frame", nil, UIParent)
+local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local passiveFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -842,16 +842,16 @@ local function ConstructInsanityBar()
 	barContainerFrame:SetHeight(settings.bar.height)
 	barContainerFrame:SetFrameStrata("BACKGROUND")
 	barContainerFrame:SetFrameLevel(0)
-	
-	barContainerFrame:SetMovable(settings.bar.dragAndDrop)
-	barContainerFrame:EnableMouse(settings.bar.dragAndDrop)
 
 	barContainerFrame:SetScript("OnMouseDown", function(self, button)
 		if button == "LeftButton" and not self.isMoving and settings.bar.dragAndDrop then
 			self:StartMoving()
 			self.isMoving = true
 		end
-	end)
+	end)	
+	
+	barContainerFrame:SetMovable(settings.bar.dragAndDrop)
+	barContainerFrame:EnableMouse(settings.bar.dragAndDrop)
 
 	barContainerFrame:SetScript("OnMouseUp", function(self, button)
 		if button == "LeftButton" and self.isMoving and settings.bar.dragAndDrop then
@@ -889,7 +889,6 @@ local function ConstructInsanityBar()
 	barBorderFrame:SetHeight(settings.bar.height)
 	barBorderFrame:SetFrameStrata("BACKGROUND")
 	barBorderFrame:SetFrameLevel(126)
-	barBorderFrame:EnableMouse(false)
 
 
 	insanityFrame:Show()
@@ -901,7 +900,6 @@ local function ConstructInsanityBar()
 	insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
 	insanityFrame:SetFrameStrata("BACKGROUND")
 	insanityFrame:SetFrameLevel(125)
-	insanityFrame:EnableMouse(false)
 	
 	insanityFrame.threshold:SetWidth(settings.thresholdWidth)
 	insanityFrame.threshold:SetHeight(settings.bar.height)
@@ -911,7 +909,6 @@ local function ConstructInsanityBar()
 	insanityFrame.threshold:SetFrameStrata("BACKGROUND")
 	insanityFrame.threshold:SetFrameLevel(128)
 	insanityFrame.threshold:Show()
-	insanityFrame.threshold:EnableMouse(false)
 	
 	castingFrame:Show()
 	castingFrame:SetMinMaxValues(0, 100)
@@ -922,7 +919,6 @@ local function ConstructInsanityBar()
 	castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting))
 	castingFrame:SetFrameStrata("BACKGROUND")
 	castingFrame:SetFrameLevel(90)
-	castingFrame:EnableMouse(false)
 	
 	passiveFrame:Show()
 	passiveFrame:SetMinMaxValues(0, 100)
@@ -933,7 +929,6 @@ local function ConstructInsanityBar()
 	passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive))
 	passiveFrame:SetFrameStrata("BACKGROUND")
 	passiveFrame:SetFrameLevel(80)
-	passiveFrame:EnableMouse(false)
 	
 	passiveFrame.threshold:SetWidth(settings.thresholdWidth)
 	passiveFrame.threshold:SetHeight(settings.bar.height)
@@ -943,7 +938,6 @@ local function ConstructInsanityBar()
 	passiveFrame.threshold:SetFrameStrata("BACKGROUND")
 	passiveFrame.threshold:SetFrameLevel(127)
 	passiveFrame.threshold:Show()
-	passiveFrame.threshold:EnableMouse(false)
 	
 	leftTextFrame:Show()
 	leftTextFrame:SetWidth(settings.bar.width)
@@ -956,7 +950,6 @@ local function ConstructInsanityBar()
 	leftTextFrame.font:SetJustifyH("LEFT")
 	leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
 	leftTextFrame.font:Show()
-	leftTextFrame:EnableMouse(false)
 	
 	middleTextFrame:Show()
 	middleTextFrame:SetWidth(settings.bar.width)
@@ -969,7 +962,6 @@ local function ConstructInsanityBar()
 	middleTextFrame.font:SetJustifyH("CENTER")
 	middleTextFrame.font:SetFont(settings.displayText.middle.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
 	middleTextFrame.font:Show()
-	middleTextFrame:EnableMouse(false)
 	
 	rightTextFrame:Show()
 	rightTextFrame:SetWidth(settings.bar.width)
@@ -982,7 +974,6 @@ local function ConstructInsanityBar()
 	rightTextFrame.font:SetJustifyH("RIGHT")
 	rightTextFrame.font:SetFont(settings.displayText.right.fontFace, settings.displayText.right.fontSize, "OUTLINE")
 	rightTextFrame.font:Show()
-	rightTextFrame:EnableMouse(false)
 end
 
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
