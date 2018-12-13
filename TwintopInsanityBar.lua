@@ -1,5 +1,5 @@
-local addonVersion = "8.1.0.0"
-local addonReleaseDate = "December 11, 2018"
+local addonVersion = "8.1.0.1"
+local addonReleaseDate = "December 13, 2018"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -849,9 +849,6 @@ local function ConstructInsanityBar()
 			self.isMoving = true
 		end
 	end)	
-	
-	barContainerFrame:SetMovable(settings.bar.dragAndDrop)
-	barContainerFrame:EnableMouse(settings.bar.dragAndDrop)
 
 	barContainerFrame:SetScript("OnMouseUp", function(self, button)
 		if button == "LeftButton" and self.isMoving and settings.bar.dragAndDrop then
@@ -860,6 +857,9 @@ local function ConstructInsanityBar()
 			self.isMoving = false
 		end
 	end)
+	
+	barContainerFrame:SetMovable(settings.bar.dragAndDrop)
+	barContainerFrame:EnableMouse(settings.bar.dragAndDrop)
 
 	barContainerFrame:SetScript("OnHide", function(self)
 		if self.isMoving then
