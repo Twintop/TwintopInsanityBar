@@ -1,5 +1,5 @@
-local addonVersion = "8.1.0.1"
-local addonReleaseDate = "December 13, 2018"
+local addonVersion = "8.1.5.0"
+local addonReleaseDate = "May 10, 2019"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -15,6 +15,8 @@ passiveFrame.threshold = CreateFrame("Frame", nil, passiveFrame)
 leftTextFrame.font = leftTextFrame:CreateFontString(nil, "BACKGROUND")
 middleTextFrame.font = middleTextFrame:CreateFontString(nil, "BACKGROUND")
 rightTextFrame.font = rightTextFrame:CreateFontString(nil, "BACKGROUND")
+
+local barTextCache = {}
 
 local targetsTimerFrame = CreateFrame("Frame")
 targetsTimerFrame.sinceLastUpdate = 0
@@ -219,9 +221,11 @@ local spells = {
 
 local function TableLength(T)
 	local count = 0
-	local _
-	for _ in pairs(T) do
-		count = count + 1
+	if T ~= nil then
+		local _
+		for _ in pairs(T) do
+			count = count + 1
+		end
 	end
 	return count
 end
@@ -781,10 +785,13 @@ end
 local function HideInsanityBar()
 	local affectingCombat = UnitAffectingCombat("player")
 
-	if (not affectingCombat) and (
-		(not settings.displayBar.alwaysShow) and (
-			(not settings.displayBar.notZeroShow) or
-			(settings.displayBar.notZeroShow and snapshotData.insanity == 0))) then
+	if (not affectingCombat) and
+		(not UnitInVehicle("player")) and (
+			(not settings.displayBar.alwaysShow) and (
+				(not settings.displayBar.notZeroShow) or
+				(settings.displayBar.notZeroShow and snapshotData.insanity == 0)
+			)
+		 ) then
 		barContainerFrame:Hide()	
 	else
 		barContainerFrame:Show()	
@@ -2914,6 +2921,7 @@ local function ConstructOptionsPanel()
 	f = controls.textbox.voidformOutLeft
 	f:SetScript("OnTextChanged", function(self, input)
 		settings.displayText.left.outVoidformText = self:GetText()
+		barTextCache = {}
 		IsTtdActive()
 	end)
 
@@ -2922,6 +2930,7 @@ local function ConstructOptionsPanel()
 	f = controls.textbox.voidformInLeft
 	f:SetScript("OnTextChanged", function(self, input)
 		settings.displayText.left.inVoidformText = self:GetText()
+		barTextCache = {}
 		IsTtdActive()
 	end)
 
@@ -2946,6 +2955,7 @@ local function ConstructOptionsPanel()
 	f = controls.textbox.voidformOutMiddle
 	f:SetScript("OnTextChanged", function(self, input)
 		settings.displayText.middle.outVoidformText = self:GetText()
+		barTextCache = {}
 		IsTtdActive()
 	end)
 
@@ -2954,6 +2964,7 @@ local function ConstructOptionsPanel()
 	f = controls.textbox.voidformInMiddle
 	f:SetScript("OnTextChanged", function(self, input)
 		settings.displayText.middle.inVoidformText = self:GetText()
+		barTextCache = {}
 		IsTtdActive()
 	end)
 
@@ -2978,6 +2989,7 @@ local function ConstructOptionsPanel()
 	f = controls.textbox.voidformOutRight
 	f:SetScript("OnTextChanged", function(self, input)
 		settings.displayText.right.outVoidformText = self:GetText()
+		barTextCache = {}
 		IsTtdActive()
 	end)
 
@@ -2986,6 +2998,7 @@ local function ConstructOptionsPanel()
 	f = controls.textbox.voidformInRight
 	f:SetScript("OnTextChanged", function(self, input)
 		settings.displayText.right.inVoidformText = self:GetText()
+		barTextCache = {}
 		IsTtdActive()
 	end)
 
@@ -3799,6 +3812,194 @@ local function RemoveInvalidVariablesFromBarText(input)
 	return returnText
 end
 
+local barTextVariables = {
+	icons = {
+		{ variable = "#as", value = spells.auspiciousSpirits.icon },
+		{ variable = "#auspiciousSpirits", value = spells.auspiciousSpirits.icon },
+		{ variable = "#sa", value = spells.shadowyApparition.icon },
+		{ variable = "#shadowyApparition", value = spells.shadowyApparition.icon },
+		{ variable = "#mb", value = spells.mindBlast.icon },
+		{ variable = "#mindBlast", value = spells.mindBlast.icon },
+		{ variable = "#mf", value = spells.mindFlay.icon },
+		{ variable = "#mindFlay", value = spells.mindFlay.icon },
+		{ variable = "#ms", value = spells.mindSear.icon },
+		{ variable = "#mindSear", value = spells.mindSear.icon },
+		{ variable = "#mindbender", value = spells.mindbender.icon },
+		{ variable = "#shadowfiend", value = spells.mindbender.icon },
+		{ variable = "#vf", value = spells.voidform.icon },
+		{ variable = "#voidform", value = spells.voidform.icon },
+		{ variable = "#lingeringInsanity", value = spells.lingeringInsanity.icon },
+		{ variable = "#li", value = spells.lingeringInsanity.icon },
+		{ variable = "#vt", value = spells.vampiricTouch.icon },
+		{ variable = "#vampiricTouch", value = spells.vampiricTouch.icon },
+		{ variable = "#swp", value = spells.shadowWordPain.icon },
+		{ variable = "#shadowWordPain", value = spells.shadowWordPain.icon },
+		{ variable = "#dv", value = spells.darkVoid.icon },
+		{ variable = "#darkVoid", value = spells.darkVoid.icon },
+		{ variable = "#md", value = spells.massDispel.icon },
+		{ variable = "#massDispel", value = spells.massDispel.icon },	 
+		{ variable = "#casting", value = Global_TwintopInsanityBar.castingIcon }
+	},
+	values = {
+		{ variable = "$haste", value = "", color = false },
+		{ variable = "$crit", value = "", color = false },
+		{ variable = "$mastery", value = "", color = false },
+		{ variable = "$gcd", value = "", color = false },
+		{ variable = "$swpCount", value = "", color = false },
+		{ variable = "$vtCount", value = "", color = false },
+		{ variable = "$vfIncoming", value = "", color = false },
+		{ variable = "$vfStacks", value = "", color = false },
+		{ variable = "$liStacks", value = "", color = false },
+		{ variable = "$liTime", value = "", color = false },
+		{ variable = "$vfDrainStacks", value = "", color = false },
+		{ variable = "$vfDrain", value = "", color = false },
+		{ variable = "$vfTime", value = "", color = false },
+		{ variable = "$insanityPlusCasting", value = "", color = false },
+		{ variable = "$insanityPlusPassive", value = "", color = false },
+		{ variable = "$insanityTotal", value = "", color = false },   
+		{ variable = "$insanity", value = "", color = false },
+		{ variable = "$casting", value = "", color = false },
+		{ variable = "$passive", value = "", color = false },
+		{ variable = "$mbInsanity", value = "", color = false },
+		{ variable = "$mbGcds", value = "", color = false },
+		{ variable = "$mbSwings", value = "", color = false },
+		{ variable = "$mbTime", value = "", color = false },
+		{ variable = "$asCount", value = "", color = false },
+		{ variable = "$asInsanity", value = "", color = false },
+		{ variable = "$ttd", value = "", color = false }
+	},
+	pipe = {
+		{ variable = "||n", value = "" }
+	},
+	percent = {
+		{ variable = "%%", value = "" }
+	}
+}
+
+local function AddToBarTextCache(input)
+	local iconEntries = TableLength(barTextVariables.icons)		
+	local valueEntries = TableLength(barTextVariables.values)
+	local returnText = ""
+	local returnVariables = {}
+	local p = 0
+	local infinity = 0
+	while p < string.len(input) do
+		local a, b, c, a1, b1, c1
+		local match = false
+		a, a1 = string.find(input, "#", p)
+		b, b1 = string.find(input, "%$", p)
+		c, c1 = string.find(input, "|", p)
+		d, d1 = string.find(input, "%%", p)
+		if a ~= nil and (b == nil or a < b) and (c == nil or a < c) and (d == nil or a < d) then
+			for x = 1, iconEntries do
+				local len = string.len(barTextVariables.icons[x].variable)
+				z, z1 = string.find(input, barTextVariables.icons[x].variable, a-1)
+				if z ~= nil and z == a then
+					match = true
+					if p ~= a then
+						returnText = returnText .. string.sub(input, p, a-1)
+					end
+
+					if barTextVariables.icons[x].value ~= nil then					
+						returnText = returnText .. "%s"
+						table.insert(returnVariables, barTextVariables.icons[x].variable)
+					end
+
+					p = z1 + 1
+					break
+				end
+			end
+		elseif b ~= nil and (c == nil or b < c) and (d == nil or b < d) then
+			for x = 1, valueEntries do
+				local len = string.len(barTextVariables.values[x].variable)
+				z, z1 = string.find(input, barTextVariables.values[x].variable, b-1)
+				if z ~= nil and z == b then
+					match = true
+					if p ~= b then
+						returnText = returnText .. string.sub(input, p, b-1)
+					end
+
+					returnText = returnText .. "%s"
+					table.insert(returnVariables, barTextVariables.values[x].variable)
+
+					if barTextVariables.values[x].color == true then
+						returnText = returnText .. "%s"
+						table.insert(returnVariables, "color")
+					end
+					
+					p = z1 + 1
+					break
+				end
+			end
+		elseif c ~= nil and (d == nil or c < d) then
+			for x = 1, valueEntries do
+				local len = string.len(barTextVariables.pipe[x].variable)
+				z, z1 = string.find(input, barTextVariables.pipe[x].variable, c-1)
+				if z ~= nil and z == c then
+					match = true
+					if p ~= c then
+						returnText = returnText .. string.sub(input, p, c-1)
+					end
+
+					returnText = returnText .. "%s"
+					table.insert(returnVariables, barTextVariables.pipe[x].variable)
+					
+					p = z1 + 1
+					break
+				end
+			end
+		elseif d ~= nil then
+			for x = 1, valueEntries do
+				local len = string.len(barTextVariables.percent[x].variable)
+				z, z1 = string.find(input, barTextVariables.percent[x].variable, d-1)
+				if z ~= nil and z == d then
+					match = true
+					if p ~= d then
+						returnText = returnText .. string.sub(input, p, d-1)
+					end
+
+					returnText = returnText .. "%s"
+					table.insert(returnVariables, barTextVariables.percent[x].variable)
+					
+					p = z1 + 1
+					break
+				end
+			end
+		else
+			returnText = returnText .. string.sub(input, p+1, -1)
+			p = string.len(input)
+			match = true
+		end
+
+		if match == false then
+			returnText = returnText .. string.sub(input, p+1, p+1)
+			p = p + 1
+		end
+	end
+	
+	local barTextCacheEntry = {}
+	barTextCacheEntry.cleanedText = input
+	barTextCacheEntry.stringFormat = returnText
+	barTextCacheEntry.variables = returnVariables
+
+	table.insert(barTextCache, barTextCacheEntry)	
+	return barTextCacheEntry
+end
+
+local function GetFromBarTextCache(barText)
+	local entries = TableLength(barTextCache)
+	
+	if entries > 0 then
+		for x = 1, entries do
+			if barTextCache[x].cleanedText == barText then
+				return barTextCache[x]
+			end
+		end	
+	end
+
+	return AddToBarTextCache(barText)
+end
+
 local function BarText()
 	--$crit
 	local critPercent = string.format("%." .. settings.hastePrecision .. "f", RoundTo(snapshotData.crit, settings.hastePrecision))
@@ -3830,7 +4031,7 @@ local function BarText()
 	end
 	local gcd = string.format("%.2f", _gcd)
 
-	local hastePercent = string.format("|c%s%." .. settings.hastePrecision .. "f%%|c%s", _hasteColor, snapshotData.haste, settings.colors.text.left)
+	local hastePercent = string.format("|c%s%." .. settings.hastePrecision .. "f|c%s", _hasteColor, snapshotData.haste, settings.colors.text.left)
 	--$vfStacks
 	local voidformStacks = string.format("%.0f", math.min(snapshotData.voidform.totalStacks, 100))
 	--$vfIncoming
@@ -3859,7 +4060,7 @@ local function BarText()
 	----------
 
 	--$insanity
-	local currentInsanity = string.format("|c%s%.0f%%|r", settings.colors.text.currentInsanity, snapshotData.insanity)
+	local currentInsanity = string.format("|c%s%.0f|r", settings.colors.text.currentInsanity, snapshotData.insanity)
 	--$casting
 	local castingInsanity = string.format("|c%s%.0f|r", settings.colors.text.castingInsanity, snapshotData.casting.insanityFinal)
 	if snapshotData.casting.insanityFinal > 0 and characterData.talents.fotm.isSelected then        
@@ -3913,86 +4114,6 @@ local function BarText()
 	local castingIcon = snapshotData.casting.icon or ""
 	----------------------------
 
-	local returnText = {}
-	returnText[0] = {}
-	returnText[1] = {}
-	returnText[2] = {}
-	if snapshotData.voidform.totalStacks > 0 then
-		returnText[0].text = settings.displayText.left.inVoidformText
-		returnText[1].text = settings.displayText.middle.inVoidformText
-		returnText[2].text = settings.displayText.right.inVoidformText
-	else
-		returnText[0].text = settings.displayText.left.outVoidformText
-		returnText[1].text = settings.displayText.middle.outVoidformText
-		returnText[2].text = settings.displayText.right.outVoidformText
-	end
-
-	returnText[0].color = string.format("|c%s", settings.colors.text.left)
-	returnText[1].color = string.format("|c%s", settings.colors.text.middle)
-	returnText[2].color = string.format("|c%s", settings.colors.text.right)
-
-	for x = 0, 2 do
-		-- Prep
-		returnText[x].text = RemoveInvalidVariablesFromBarText(returnText[x].text)
-		returnText[x].text = returnText[x].color .. returnText[x].text
-		returnText[x].text = string.gsub(returnText[x].text, "||n", string.format("\n") .. returnText[x].color)
-
-		-- Icons
-		returnText[x].text = string.gsub(returnText[x].text, "#casting", castingIcon)		
-		returnText[x].text = string.gsub(returnText[x].text, "#as", spells.auspiciousSpirits.icon)		
-		returnText[x].text = string.gsub(returnText[x].text, "#auspiciousSpirits", spells.auspiciousSpirits.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#sa", spells.shadowyApparition.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#shadowyApparition", spells.shadowyApparition.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#mb", spells.mindBlast.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#mindBlast", spells.mindBlast.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#mf", spells.mindFlay.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#mindFlay", spells.mindFlay.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#ms", spells.mindSear.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#mindSear", spells.mindSear.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#mindbender", spells.mindbender.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#shadowfiend", spells.mindbender.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#vf", spells.voidform.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#voidform", spells.voidform.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#li", spells.lingeringInsanity.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#lingeringInsanity", spells.lingeringInsanity.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#vt", spells.vampiricTouch.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#vampiricTouch", spells.vampiricTouch.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#swp", spells.shadowWordPain.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#shadowWordPain", spells.shadowWordPain.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#dv", spells.darkVoid.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#darkVoid", spells.darkVoid.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#md", spells.massDispel.icon)
-		returnText[x].text = string.gsub(returnText[x].text, "#massDispel", spells.massDispel.icon)
-
-		-- Values
-		returnText[x].text = string.gsub(returnText[x].text, "$haste", hastePercent .. returnText[x].color)
-		returnText[x].text = string.gsub(returnText[x].text, "$crit", critPercent .. returnText[x].color)		
-		returnText[x].text = string.gsub(returnText[x].text, "$mastery", masteryPercent .. returnText[x].color)
-		returnText[x].text = string.gsub(returnText[x].text, "$gcd", gcd)
-		returnText[x].text = string.gsub(returnText[x].text, "$swpCount", shadowWordPainCount)
-		returnText[x].text = string.gsub(returnText[x].text, "$vtCount", vampiricTouchCount)
-		returnText[x].text = string.gsub(returnText[x].text, "$vfIncoming", voidformStacksIncoming)
-		returnText[x].text = string.gsub(returnText[x].text, "$vfStacks", voidformStacks)
-		returnText[x].text = string.gsub(returnText[x].text, "$liStacks", lingeringInsanityStacks)
-		returnText[x].text = string.gsub(returnText[x].text, "$liTime", lingeringInsanityTime)
-		returnText[x].text = string.gsub(returnText[x].text, "$vfDrainStacks", voidformDrainStacks)
-		returnText[x].text = string.gsub(returnText[x].text, "$vfDrain", voidformDrainAmount)
-		returnText[x].text = string.gsub(returnText[x].text, "$vfTime", voidformDrainTime)
-		returnText[x].text = string.gsub(returnText[x].text, "$insanityPlusCasting", insanityPlusCasting .. returnText[x].color)
-		returnText[x].text = string.gsub(returnText[x].text, "$insanityPlusPassive", insanityPlusPassive .. returnText[x].color)
-		returnText[x].text = string.gsub(returnText[x].text, "$insanityTotal", insanityTotal .. returnText[x].color)
-		returnText[x].text = string.gsub(returnText[x].text, "$insanity", currentInsanity .. returnText[x].color)
-		returnText[x].text = string.gsub(returnText[x].text, "$casting", castingInsanity .. returnText[x].color)
-		returnText[x].text = string.gsub(returnText[x].text, "$passive", passiveInsanity .. returnText[x].color)		
-		returnText[x].text = string.gsub(returnText[x].text, "$mbInsanity", mbInsanity)
-		returnText[x].text = string.gsub(returnText[x].text, "$mbGcds", mbGcds)
-		returnText[x].text = string.gsub(returnText[x].text, "$mbSwings", mbSwings)
-		returnText[x].text = string.gsub(returnText[x].text, "$mbTime", mbTime)
-		returnText[x].text = string.gsub(returnText[x].text, "$asCount", asCount)
-		returnText[x].text = string.gsub(returnText[x].text, "$asInsanity", asInsanity)
-		returnText[x].text = string.gsub(returnText[x].text, "$ttd", ttd .. returnText[x].color)
-	end
-
 	Global_TwintopInsanityBar = {
 		ttd = ttd or "--",
 		voidform = {
@@ -4026,6 +4147,101 @@ local function BarText()
 			time = snapshotData.mindbender.remaining.time or 0
 		}
 	}
+
+	local lookup = {}
+	lookup["#as"] = spells.auspiciousSpirits.icon
+	lookup["#auspiciousSpirits"] = spells.auspiciousSpirits.icon
+	lookup["#sa"] = spells.shadowyApparition.icon
+	lookup["#shadowyApparition"] = spells.shadowyApparition.icon
+	lookup["#mb"] = spells.mindBlast.icon
+	lookup["#mindBlast"] = spells.mindBlast.icon
+	lookup["#mf"] = spells.mindFlay.icon
+	lookup["#mindFlay"] = spells.mindFlay.icon
+	lookup["#ms"] = spells.mindSear.icon
+	lookup["#mindSear"] = spells.mindSear.icon
+	lookup["#mindbender"] = spells.mindbender.icon
+	lookup["#shadowfiend"] = spells.mindbender.icon
+	lookup["#vf"] = spells.voidform.icon
+	lookup["#voidform"] = spells.voidform.icon
+	lookup["#lingeringInsanity"] = spells.lingeringInsanity.icon
+	lookup["#li"] = spells.lingeringInsanity.icon
+	lookup["#vt"] = spells.vampiricTouch.icon
+	lookup["#vampiricTouch"] = spells.vampiricTouch.icon
+	lookup["#swp"] = spells.shadowWordPain.icon
+	lookup["#shadowWordPain"] = spells.shadowWordPain.icon
+	lookup["#dv"] = spells.darkVoid.icon
+	lookup["#darkVoid"] = spells.darkVoid.icon
+	lookup["#md"] = spells.massDispel.icon
+	lookup["#massDispel"] = spells.massDispel.icon
+	lookup["#casting"] = Global_TwintopInsanityBar.castingIcon
+	lookup["$haste"] = hastePercent
+	lookup["$crit"] = critPercent
+	lookup["$mastery"] = masteryPercent
+	lookup["$gcd"] = gcd
+	lookup["$swpCount"] = shadowWordPainCount
+	lookup["$vtCount"] = vampiricTouchCount
+	lookup["$vfIncoming"] = voidformStacksIncoming
+	lookup["$vfStacks"] = voidformStacks
+	lookup["$liStacks"] = lingeringInsanityStacks
+	lookup["$liTime"] = lingeringInsanityTime
+	lookup["$vfDrainStacks"] = voidformDrainStacks
+	lookup["$vfDrain"] = voidformDrainAmount
+	lookup["$vfTime"] = voidformDrainTime
+	lookup["$insanityPlusCasting"] = insanityPlusCasting
+	lookup["$insanityPlusPassive"] = insanityPlusPassive
+	lookup["$insanityTotal"] = insanityTotal
+	lookup["$insanity"] = currentInsanity
+	lookup["$casting"] = castingInsanity
+	lookup["$passive"] = passiveInsanity
+	lookup["$mbInsanity"] = mbInsanity 
+	lookup["$mbGcds"] = mbGcds
+	lookup["$mbSwings"] = mbSwings
+	lookup["$mbTime"] = mbTime
+	lookup["$asCount"] = asCount
+	lookup["$asInsanity"] = asInsanity
+	lookup["$ttd"] = ttd
+	lookup["||n"] = string.format("\n")
+	lookup["%%"] = "%"
+
+	local returnText = {}
+	returnText[0] = {}
+	returnText[1] = {}
+	returnText[2] = {}
+	if snapshotData.voidform.totalStacks > 0 then
+		returnText[0].text = settings.displayText.left.inVoidformText
+		returnText[1].text = settings.displayText.middle.inVoidformText
+		returnText[2].text = settings.displayText.right.inVoidformText
+	else
+		returnText[0].text = settings.displayText.left.outVoidformText
+		returnText[1].text = settings.displayText.middle.outVoidformText
+		returnText[2].text = settings.displayText.right.outVoidformText
+	end
+
+	returnText[0].color = string.format("|c%s", settings.colors.text.left)
+	returnText[1].color = string.format("|c%s", settings.colors.text.middle)
+	returnText[2].color = string.format("|c%s", settings.colors.text.right)
+
+	for x = 0, 2 do
+		lookup["color"] = returnText[x].color
+		returnText[x].text = RemoveInvalidVariablesFromBarText(returnText[x].text)
+		
+		local cache = GetFromBarTextCache(returnText[x].text)
+		local mapping = {}
+		local cachedTextVariableLength = TableLength(cache.variables)
+		
+		for x = 1, cachedTextVariableLength do
+			table.insert(mapping, lookup[cache.variables[x]])
+		end
+
+		if TableLength(mapping) > 0 then
+			returnText[x].text = string.format(cache.stringFormat, unpack(mapping))
+		elseif string.len(cache.stringFormat) > 0 then
+			returnText[x].text = cache.stringFormat
+		else
+			returnText[x].text = ""
+		end
+		returnText[x].text = string.format("%s%s", returnText[x].color, returnText[x].text)	
+	end
 
 	return returnText[0].text, returnText[1].text, returnText[2].text
 end
@@ -4232,21 +4448,33 @@ local function UpdateSnapshot()
 	spells.s2m.isDebuffActive = select(10, FindDebuffById(spells.s2m.debuffId))
 	snapshotData.haste = UnitSpellHaste("player")
 	snapshotData.crit = GetCritChance("player")
-	snapshotData.mastery = GetMastery("player")
+	snapshotData.mastery = GetMasteryEffect("player")
 	snapshotData.insanity = UnitPower("player", SPELL_POWER_INSANITY)
 	LingeringInsanityValues()
 	UpdateMindbenderValues()
 end
 
+local function TryUpdateText(frame, text)	
+	frame.font:SetText(text)
+end
+
 local function UpdateInsanityBar()
 	UpdateSnapshot()
-	leftText, middleText, rightText = BarText()	
-	leftTextFrame.font:SetText(leftText)
-	middleTextFrame.font:SetText(middleText)
-	rightTextFrame.font:SetText(rightText)
+	leftText, middleText, rightText = BarText()	 
+	
+	if not pcall(TryUpdateText, leftTextFrame, leftText) then
+		leftTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.left.fontSize, "OUTLINE")
+	end
+
+	if not pcall(TryUpdateText, middleTextFrame, middleText) then
+		middleTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.middle.fontSize, "OUTLINE")
+	end
+
+	if not pcall(TryUpdateText, rightTextFrame, rightText) then
+		rightTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.right.fontSize, "OUTLINE")
+	end
 
 	if barContainerFrame:IsShown() then
-
 		if snapshotData.insanity == 0 then
 			HideInsanityBar()
 		end
