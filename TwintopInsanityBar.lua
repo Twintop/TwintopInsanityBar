@@ -3927,7 +3927,6 @@ local function AddToBarTextCache(input)
 					end
 					
 					p = z1 + 1
-					print(barTextVariables.values[x].variable, string.sub(input, p, p))
 					break
 				end
 			end
@@ -3949,7 +3948,6 @@ local function AddToBarTextCache(input)
 				end
 			end
 		elseif d ~= nil then
-			print("found percent")
 			for x = 1, valueEntries do
 				local len = string.len(barTextVariables.percent[x].variable)
 				z, z1 = string.find(input, barTextVariables.percent[x].variable, d-1)
