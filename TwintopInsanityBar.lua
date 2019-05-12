@@ -1,5 +1,5 @@
-local addonVersion = "8.1.5.0"
-local addonReleaseDate = "May 10, 2019"
+local addonVersion = "8.1.5.1"
+local addonReleaseDate = "May 12, 2019"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -3814,65 +3814,65 @@ end
 
 local barTextVariables = {
 	icons = {
-		{ variable = "#as", value = spells.auspiciousSpirits.icon },
-		{ variable = "#auspiciousSpirits", value = spells.auspiciousSpirits.icon },
-		{ variable = "#sa", value = spells.shadowyApparition.icon },
-		{ variable = "#shadowyApparition", value = spells.shadowyApparition.icon },
-		{ variable = "#mb", value = spells.mindBlast.icon },
-		{ variable = "#mindBlast", value = spells.mindBlast.icon },
-		{ variable = "#mf", value = spells.mindFlay.icon },
-		{ variable = "#mindFlay", value = spells.mindFlay.icon },
-		{ variable = "#ms", value = spells.mindSear.icon },
-		{ variable = "#mindSear", value = spells.mindSear.icon },
-		{ variable = "#mindbender", value = spells.mindbender.icon },
-		{ variable = "#shadowfiend", value = spells.mindbender.icon },
-		{ variable = "#vf", value = spells.voidform.icon },
-		{ variable = "#voidform", value = spells.voidform.icon },
-		{ variable = "#lingeringInsanity", value = spells.lingeringInsanity.icon },
-		{ variable = "#li", value = spells.lingeringInsanity.icon },
-		{ variable = "#vt", value = spells.vampiricTouch.icon },
-		{ variable = "#vampiricTouch", value = spells.vampiricTouch.icon },
-		{ variable = "#swp", value = spells.shadowWordPain.icon },
-		{ variable = "#shadowWordPain", value = spells.shadowWordPain.icon },
-		{ variable = "#dv", value = spells.darkVoid.icon },
-		{ variable = "#darkVoid", value = spells.darkVoid.icon },
-		{ variable = "#md", value = spells.massDispel.icon },
-		{ variable = "#massDispel", value = spells.massDispel.icon },	 
-		{ variable = "#casting", value = Global_TwintopInsanityBar.castingIcon }
+		{ variable = "#as" },
+		{ variable = "#auspiciousSpirits" },
+		{ variable = "#sa" },
+		{ variable = "#shadowyApparition" },
+		{ variable = "#mb" },
+		{ variable = "#mindBlast" },
+		{ variable = "#mf" },
+		{ variable = "#mindFlay" },
+		{ variable = "#ms" },
+		{ variable = "#mindSear" },
+		{ variable = "#mindbender" },
+		{ variable = "#shadowfiend" },
+		{ variable = "#vf" },
+		{ variable = "#voidform" },
+		{ variable = "#lingeringInsanity" },
+		{ variable = "#li" },
+		{ variable = "#vt" },
+		{ variable = "#vampiricTouch" },
+		{ variable = "#swp" },
+		{ variable = "#shadowWordPain" },
+		{ variable = "#dv" },
+		{ variable = "#darkVoid" },
+		{ variable = "#md" },
+		{ variable = "#massDispel" },
+		{ variable = "#casting" }
 	},
 	values = {
-		{ variable = "$haste", value = "", color = false },
-		{ variable = "$crit", value = "", color = false },
-		{ variable = "$mastery", value = "", color = false },
-		{ variable = "$gcd", value = "", color = false },
-		{ variable = "$swpCount", value = "", color = false },
-		{ variable = "$vtCount", value = "", color = false },
-		{ variable = "$vfIncoming", value = "", color = false },
-		{ variable = "$vfStacks", value = "", color = false },
-		{ variable = "$liStacks", value = "", color = false },
-		{ variable = "$liTime", value = "", color = false },
-		{ variable = "$vfDrainStacks", value = "", color = false },
-		{ variable = "$vfDrain", value = "", color = false },
-		{ variable = "$vfTime", value = "", color = false },
-		{ variable = "$insanityPlusCasting", value = "", color = false },
-		{ variable = "$insanityPlusPassive", value = "", color = false },
-		{ variable = "$insanityTotal", value = "", color = false },   
-		{ variable = "$insanity", value = "", color = false },
-		{ variable = "$casting", value = "", color = false },
-		{ variable = "$passive", value = "", color = false },
-		{ variable = "$mbInsanity", value = "", color = false },
-		{ variable = "$mbGcds", value = "", color = false },
-		{ variable = "$mbSwings", value = "", color = false },
-		{ variable = "$mbTime", value = "", color = false },
-		{ variable = "$asCount", value = "", color = false },
-		{ variable = "$asInsanity", value = "", color = false },
-		{ variable = "$ttd", value = "", color = false }
+		{ variable = "$haste", color = false },
+		{ variable = "$crit", color = false },
+		{ variable = "$mastery", color = false },
+		{ variable = "$gcd", color = false },
+		{ variable = "$swpCount", color = false },
+		{ variable = "$vtCount", color = false },
+		{ variable = "$vfIncoming", color = false },
+		{ variable = "$vfStacks", color = false },
+		{ variable = "$liStacks", color = false },
+		{ variable = "$liTime", color = false },
+		{ variable = "$vfDrainStacks", color = false },
+		{ variable = "$vfDrain", color = false },
+		{ variable = "$vfTime", color = false },
+		{ variable = "$insanityPlusCasting", color = false },
+		{ variable = "$insanityPlusPassive", color = false },
+		{ variable = "$insanityTotal", color = false },   
+		{ variable = "$insanity", color = false },
+		{ variable = "$casting", color = false },
+		{ variable = "$passive", color = false },
+		{ variable = "$mbInsanity", color = false },
+		{ variable = "$mbGcds", color = false },
+		{ variable = "$mbSwings", color = false },
+		{ variable = "$mbTime", color = false },
+		{ variable = "$asCount", color = false },
+		{ variable = "$asInsanity", color = false },
+		{ variable = "$ttd", color = false }
 	},
 	pipe = {
-		{ variable = "||n", value = "" }
+		{ variable = "||n" }
 	},
 	percent = {
-		{ variable = "%%", value = "" }
+		{ variable = "%%" }
 	}
 }
 
@@ -3883,7 +3883,8 @@ local function AddToBarTextCache(input)
 	local returnVariables = {}
 	local p = 0
 	local infinity = 0
-	while p < string.len(input) do
+	while p <= string.len(input) and infinity < 20 do
+		infinity = infinity + 1
 		local a, b, c, a1, b1, c1
 		local match = false
 		a, a1 = string.find(input, "#", p)
@@ -3900,10 +3901,8 @@ local function AddToBarTextCache(input)
 						returnText = returnText .. string.sub(input, p, a-1)
 					end
 
-					if barTextVariables.icons[x].value ~= nil then					
-						returnText = returnText .. "%s"
-						table.insert(returnVariables, barTextVariables.icons[x].variable)
-					end
+					returnText = returnText .. "%s"
+					table.insert(returnVariables, barTextVariables.icons[x].variable)
 
 					p = z1 + 1
 					break
@@ -3928,6 +3927,7 @@ local function AddToBarTextCache(input)
 					end
 					
 					p = z1 + 1
+					print(barTextVariables.values[x].variable, string.sub(input, p, p))
 					break
 				end
 			end
@@ -3949,6 +3949,7 @@ local function AddToBarTextCache(input)
 				end
 			end
 		elseif d ~= nil then
+			print("found percent")
 			for x = 1, valueEntries do
 				local len = string.len(barTextVariables.percent[x].variable)
 				z, z1 = string.find(input, barTextVariables.percent[x].variable, d-1)
@@ -3966,8 +3967,8 @@ local function AddToBarTextCache(input)
 				end
 			end
 		else
-			returnText = returnText .. string.sub(input, p+1, -1)
-			p = string.len(input)
+			returnText = returnText .. string.sub(input, p, -1)
+			p = string.len(input) + 1
 			match = true
 		end
 
@@ -4173,7 +4174,7 @@ local function BarText()
 	lookup["#darkVoid"] = spells.darkVoid.icon
 	lookup["#md"] = spells.massDispel.icon
 	lookup["#massDispel"] = spells.massDispel.icon
-	lookup["#casting"] = Global_TwintopInsanityBar.castingIcon
+	lookup["#casting"] = castingIcon
 	lookup["$haste"] = hastePercent
 	lookup["$crit"] = critPercent
 	lookup["$mastery"] = masteryPercent
@@ -4229,8 +4230,10 @@ local function BarText()
 		local mapping = {}
 		local cachedTextVariableLength = TableLength(cache.variables)
 		
-		for x = 1, cachedTextVariableLength do
-			table.insert(mapping, lookup[cache.variables[x]])
+		if cachedTextVariableLength > 0 then
+			for y = 1, cachedTextVariableLength do		
+				table.insert(mapping, lookup[cache.variables[y]])
+			end
 		end
 
 		if TableLength(mapping) > 0 then
@@ -4460,7 +4463,7 @@ end
 
 local function UpdateInsanityBar()
 	UpdateSnapshot()
-	leftText, middleText, rightText = BarText()	 
+	leftText, middleText, rightText = BarText()
 	
 	if not pcall(TryUpdateText, leftTextFrame, leftText) then
 		leftTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.left.fontSize, "OUTLINE")
