@@ -1,5 +1,5 @@
-local addonVersion = "8.1.5.1"
-local addonReleaseDate = "May 12, 2019"
+local addonVersion = "8.1.5.2"
+local addonReleaseDate = "May 14, 2019"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -3869,7 +3869,9 @@ local barTextVariables = {
 		{ variable = "$ttd", color = false }
 	},
 	pipe = {
-		{ variable = "||n" }
+		{ variable = "||n" },
+		{ variable = "||c" },
+		{ variable = "||r" }
 	},
 	percent = {
 		{ variable = "%%" }
@@ -3878,7 +3880,9 @@ local barTextVariables = {
 
 local function AddToBarTextCache(input)
 	local iconEntries = TableLength(barTextVariables.icons)		
-	local valueEntries = TableLength(barTextVariables.values)
+	local valueEntries = TableLength(barTextVariables.values)	
+	local pipeEntries = TableLength(barTextVariables.pipe)	
+	local percentEntries = TableLength(barTextVariables.percent)
 	local returnText = ""
 	local returnVariables = {}
 	local p = 0
@@ -3931,7 +3935,7 @@ local function AddToBarTextCache(input)
 				end
 			end
 		elseif c ~= nil and (d == nil or c < d) then
-			for x = 1, valueEntries do
+			for x = 1, pipeEntries do
 				local len = string.len(barTextVariables.pipe[x].variable)
 				z, z1 = string.find(input, barTextVariables.pipe[x].variable, c-1)
 				if z ~= nil and z == c then
@@ -3942,13 +3946,11 @@ local function AddToBarTextCache(input)
 
 					returnText = returnText .. "%s"
 					table.insert(returnVariables, barTextVariables.pipe[x].variable)
-					
 					p = z1 + 1
-					break
 				end
 			end
 		elseif d ~= nil then
-			for x = 1, valueEntries do
+			for x = 1, percentEntries do
 				local len = string.len(barTextVariables.percent[x].variable)
 				z, z1 = string.find(input, barTextVariables.percent[x].variable, d-1)
 				if z ~= nil and z == d then
@@ -4055,7 +4057,7 @@ local function BarText()
 	local voidformDrainAmount = string.format("%.1f", snapshotData.voidform.currentDrainRate)
 	--$vfTime
 	local voidformDrainTime = string.format("%.1f", snapshotData.voidform.remainingTime)
-	
+
 	----------
 
 	--$insanity
@@ -4200,6 +4202,8 @@ local function BarText()
 	lookup["$asInsanity"] = asInsanity
 	lookup["$ttd"] = ttd
 	lookup["||n"] = string.format("\n")
+	lookup["||c"] = string.format("%s", "|c")
+	lookup["||r"] = string.format("%s", "|r")
 	lookup["%%"] = "%"
 
 	local returnText = {}
@@ -4229,12 +4233,18 @@ local function BarText()
 		local cachedTextVariableLength = TableLength(cache.variables)
 		
 		if cachedTextVariableLength > 0 then
-			for y = 1, cachedTextVariableLength do		
+			for y = 1, cachedTextVariableLength do	
+				if x == 1 then
+					--print(cache.variables[y], lookup[cache.variables[y]])
+				end	
 				table.insert(mapping, lookup[cache.variables[y]])
 			end
 		end
 
-		if TableLength(mapping) > 0 then
+		if TableLength(mapping) > 0 then			
+			if x == 1 then
+				--print(cache.stringFormat)
+			end
 			returnText[x].text = string.format(cache.stringFormat, unpack(mapping))
 		elseif string.len(cache.stringFormat) > 0 then
 			returnText[x].text = cache.stringFormat
