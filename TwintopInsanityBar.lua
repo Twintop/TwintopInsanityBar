@@ -4233,18 +4233,12 @@ local function BarText()
 		local cachedTextVariableLength = TableLength(cache.variables)
 		
 		if cachedTextVariableLength > 0 then
-			for y = 1, cachedTextVariableLength do	
-				if x == 1 then
-					--print(cache.variables[y], lookup[cache.variables[y]])
-				end	
+			for y = 1, cachedTextVariableLength do
 				table.insert(mapping, lookup[cache.variables[y]])
 			end
 		end
 
-		if TableLength(mapping) > 0 then			
-			if x == 1 then
-				--print(cache.stringFormat)
-			end
+		if TableLength(mapping) > 0 then	
 			returnText[x].text = string.format(cache.stringFormat, unpack(mapping))
 		elseif string.len(cache.stringFormat) > 0 then
 			returnText[x].text = cache.stringFormat
