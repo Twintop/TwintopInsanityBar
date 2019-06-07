@@ -4864,7 +4864,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					ResetCastingSnapshotData()
 					triggerUpdate = true
 				end
-			elseif spellId = spells.memoryOfLucidDreams.id then
+			elseif spellId == spells.memoryOfLucidDreams.id then
 				if type == "SPELL_AURA_APPLIED" then -- Gained buff
 					spells.memoryOfLucidDreams.isActive = true
 				elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
