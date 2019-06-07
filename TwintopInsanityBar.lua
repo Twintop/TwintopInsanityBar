@@ -1,5 +1,5 @@
-local addonVersion = "8.1.5.2"
-local addonReleaseDate = "May 14, 2019"
+local addonVersion = "8.2.0.0"
+local addonReleaseDate = "June 07, 2019"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -216,6 +216,12 @@ local spells = {
 		icon = "",
 		insanity = 6,
 		fotm = false
+	},
+	memoryOfLucidDreams = {
+		id = 299374,
+		name = "",
+		isActive = false,
+		modifier = 2.0
 	}
 }
 
@@ -3651,12 +3657,14 @@ local function CalculateInsanityGain(insanity, fotm)
 		modifier = modifier * characterData.talents.fotm.modifier
 	end
 	
-	if spells.s2m.isActive then
-		modifier = modifier * spells.s2m.modifier
-	elseif spells.s2m.isDebuffActive then
-		modified = 0
+	if spells.memoryOfLucidDreams.isActive then
+		modifier = modifier * spells.memoryOfLucidDreams.modifier
 	end
 
+	if spells.s2m.isActive then
+		modifier = modifier * spells.s2m.modifier
+	end
+	
 	if spells.s2m.isDebuffActive then
 		modifier = modifier * spells.s2m.modifierDebuff
 	end
@@ -4856,6 +4864,12 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					ResetCastingSnapshotData()
 					triggerUpdate = true
 				end
+			elseif spellId = spells.memoryOfLucidDreams.id then
+				if type == "SPELL_AURA_APPLIED" then -- Gained buff
+					spells.memoryOfLucidDreams.isActive = true
+				elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+					spells.memoryOfLucidDreams.isActive = false                   
+                end
 			end
 		end
 		
