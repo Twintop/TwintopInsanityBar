@@ -1,4 +1,4 @@
-local addonVersion = "8.2.0.0"
+local addonVersion = "8.2.0.1"
 local addonReleaseDate = "June 25, 2019"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
@@ -326,7 +326,21 @@ addonData.libs.SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 addonData.libs.SharedMedia:Register("sound", "Wilhelm Scream (TIB)", "Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg")
 addonData.libs.SharedMedia:Register("sound", "Boxing Arena Gong (TIB)", "Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg")
 
-local function IsNumeric( data )
+local sanityCheckValues = {
+	barMaxWidth = 0,
+	barMinWidth = 0,
+	barMaxHeight = 0,
+	barMinHeight = 0
+}
+
+local function UpdateSanityCheckValues()
+	sanityCheckValues.barMaxWidth = math.floor(GetScreenWidth())
+	sanityCheckValues.barMinWidth = math.max(math.ceil(settings.bar.border * 8), 120)	
+	sanityCheckValues.barMaxHeight = math.floor(GetScreenHeight())
+	sanityCheckValues.barMinHeight = math.max(math.ceil(settings.bar.border * 8), 1)
+end
+
+local function IsNumeric(data)
     if type(data) == "number" then
         return true
     elseif type(data) ~= "string" then
@@ -395,10 +409,10 @@ local function GetRGBAFromString(s, normalize)
     local _b = 0
     
     if not (s == nil) then        
-        _a = tonumber(string.sub(s, 1, 2), 16)
-        _r = tonumber(string.sub(s, 3, 4), 16)
-        _g = tonumber(string.sub(s, 5, 6), 16)
-        _b = tonumber(string.sub(s, 7, 8), 16)        
+        _a = min(255, tonumber(string.sub(s, 1, 2), 16))
+        _r = min(255, tonumber(string.sub(s, 3, 4), 16))
+        _g = min(255, tonumber(string.sub(s, 5, 6), 16))
+        _b = min(255, tonumber(string.sub(s, 7, 8), 16))
     end
     
 	if normalize then
@@ -804,39 +818,56 @@ local function HideInsanityBar()
 	end
 end
 
+local function UpdateBarPosition(xOfs, yOfs)
+	if IsNumeric(xOfs) and IsNumeric(yOfs) then
+		if xOfs < math.ceil(-sanityCheckValues.barMaxWidth/2) then
+			xOfs = math.ceil(-sanityCheckValues.barMaxWidth/2)
+		elseif xOfs > math.floor(sanityCheckValues.barMaxWidth/2) then
+			xOfs = math.floor(sanityCheckValues.barMaxWidth/2)
+		end
+
+		if yOfs < math.ceil(-sanityCheckValues.barMaxHeight/2) then
+			yOfs = math.ceil(-sanityCheckValues.barMaxHeight/2)
+		elseif yOfs > math.floor(sanityCheckValues.barMaxHeight/2) then
+			yOfs = math.floor(sanityCheckValues.barMaxHeight/2)
+		end
+
+
+		interfaceSettingsFrame.controls.horizontal:SetValue(xOfs)
+		interfaceSettingsFrame.controls.horizontal.EditBox:SetText(RoundTo(xOfs, 0))
+		interfaceSettingsFrame.controls.vertical:SetValue(yOfs)
+		interfaceSettingsFrame.controls.vertical.EditBox:SetText(RoundTo(yOfs, 0))	
+	end
+end
+
 local function CaptureBarPosition()
 	local point, relativeTo, relativePoint, xOfs, yOfs = barContainerFrame:GetPoint()
-	local maxWidth = math.floor(GetScreenWidth())
-	local maxHeight = math.floor(GetScreenHeight())
 
 	if relativePoint == "CENTER" then
 		--No action needed.
 	elseif relativePoint == "TOP" then
-		yOfs = ((maxHeight/2) + yOfs - (settings.bar.height/2))
+		yOfs = ((sanityCheckValues.barMaxHeight/2) + yOfs - (settings.bar.height/2))
 	elseif relativePoint == "TOPRIGHT" then
-		xOfs = ((maxWidth/2) + xOfs - (settings.bar.width/2))
-		yOfs = ((maxHeight/2) + yOfs - (settings.bar.height/2))
+		xOfs = ((sanityCheckValues.barMaxWidth/2) + xOfs - (settings.bar.width/2))
+		yOfs = ((sanityCheckValues.barMaxHeight/2) + yOfs - (settings.bar.height/2))
 	elseif relativePoint == "RIGHT" then
-		xOfs = ((maxWidth/2) + xOfs - (settings.bar.width/2))
+		xOfs = ((sanityCheckValues.barMaxWidth/2) + xOfs - (settings.bar.width/2))
 	elseif relativePoint == "BOTTOMRIGHT" then
-		xOfs = ((maxWidth/2) + xOfs - (settings.bar.width/2))
-		yOfs = -((maxHeight/2) - yOfs - (settings.bar.height/2))
+		xOfs = ((sanityCheckValues.barMaxWidth/2) + xOfs - (settings.bar.width/2))
+		yOfs = -((sanityCheckValues.barMaxHeight/2) - yOfs - (settings.bar.height/2))
 	elseif relativePoint == "BOTTOM" then
-		yOfs = -((maxHeight/2) - yOfs - (settings.bar.height/2))
+		yOfs = -((sanityCheckValues.barMaxHeight/2) - yOfs - (settings.bar.height/2))
 	elseif relativePoint == "BOTTOMLEFT" then
-		xOfs = -((maxWidth/2) - xOfs - (settings.bar.width/2))
-		yOfs = -((maxHeight/2) - yOfs - (settings.bar.height/2))
+		xOfs = -((sanityCheckValues.barMaxWidth/2) - xOfs - (settings.bar.width/2))
+		yOfs = -((sanityCheckValues.barMaxHeight/2) - yOfs - (settings.bar.height/2))
 	elseif relativePoint == "LEFT" then				
-		xOfs = -((maxWidth/2) - xOfs - (settings.bar.width/2))
+		xOfs = -((sanityCheckValues.barMaxWidth/2) - xOfs - (settings.bar.width/2))
 	elseif relativePoint == "TOPLEFT" then
-		xOfs = -((maxWidth/2) - xOfs - (settings.bar.width/2))
-		yOfs = ((maxHeight/2) + yOfs - (settings.bar.height/2))
+		xOfs = -((sanityCheckValues.barMaxWidth/2) - xOfs - (settings.bar.width/2))
+		yOfs = ((sanityCheckValues.barMaxHeight/2) + yOfs - (settings.bar.height/2))
 	end
-				
-	interfaceSettingsFrame.controls.horizontal:SetValue(xOfs)
-	interfaceSettingsFrame.controls.horizontal.EditBox:SetText(RoundTo(xOfs, 0))
-	interfaceSettingsFrame.controls.vertical:SetValue(yOfs)
-	interfaceSettingsFrame.controls.vertical.EditBox:SetText(RoundTo(yOfs, 0))	
+
+	UpdateBarPosition(xOfs, yOfs)
 end
 
 local function ConstructInsanityBar()
@@ -1204,7 +1235,7 @@ local function ConvertColorDecimalToHex(r, g, b, a)
 		_a = "00"
 	else
 		_a = string.format("%x", math.ceil(a * 255))
-		if string.len(_a) == 1 then
+		if string.len(_a) == 1 then	
 			_a = _a .. _a
 		end
 	end
@@ -1308,12 +1339,6 @@ local function ConstructOptionsPanel()
 	local yOffset40 = 40
 	local yOffset20 = 20
 	local yOffset15 = 15
-
-	local maxWidth = math.floor(GetScreenWidth())
-	local minWidth = math.max(math.ceil(settings.bar.border * 8), 120)
-	
-	local maxHeight = math.floor(GetScreenHeight())
-	local minHeight = math.max(math.ceil(settings.bar.border * 8), 1)
 	local barWidth = 250
 	local barHeight = 20
 	local title = ""
@@ -1503,7 +1528,7 @@ local function ConstructOptionsPanel()
 	
 	yCoord = yCoord - yOffset40
 	title = "Bar Width"
-	controls.width = BuildSlider(parent, title, minWidth, maxWidth, settings.bar.width, 1, 2,
+	controls.width = BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, settings.bar.width, 1, 2,
 								 barWidth, barHeight, xCoord+xPadding2, yCoord)
 	controls.width:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -1526,7 +1551,7 @@ local function ConstructOptionsPanel()
 	end)
 
 	title = "Bar Height"
-	controls.height = BuildSlider(parent, title, minHeight, maxHeight, settings.bar.height, 1, 2,
+	controls.height = BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, settings.bar.height, 1, 2,
 									barWidth, barHeight, xCoord2, yCoord)
 	controls.height:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -1554,7 +1579,7 @@ local function ConstructOptionsPanel()
 
 	title = "Bar Horizontal Position"
 	yCoord = yCoord - yOffset60
-	controls.horizontal = BuildSlider(parent, title, math.ceil(-maxWidth/2), math.floor(maxWidth/2), settings.bar.xPos, 1, 2,
+	controls.horizontal = BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), settings.bar.xPos, 1, 2,
 								  barWidth, barHeight, xCoord+xPadding2, yCoord)
 	controls.horizontal:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -1571,7 +1596,7 @@ local function ConstructOptionsPanel()
 	end)
 
 	title = "Bar Vertical Position"
-	controls.vertical = BuildSlider(parent, title, math.ceil(-maxHeight/2), math.ceil(maxHeight/2), settings.bar.yPos, 1, 2,
+	controls.vertical = BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), settings.bar.yPos, 1, 2,
 								  barWidth, barHeight, xCoord2, yCoord)
 	controls.vertical:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -1619,9 +1644,9 @@ local function ConstructOptionsPanel()
 
 		local minBarWidth = math.max(settings.bar.border*2, 120)
 		local minBarHeight = math.max(settings.bar.border*2, 1)
-		controls.height:SetMinMaxValues(minBarHeight, maxHeight)
+		controls.height:SetMinMaxValues(minBarHeight, sanityCheckValues.barMaxHeight)
 		controls.height.MinLabel:SetText(minBarHeight)
-		controls.width:SetMinMaxValues(minBarWidth, maxWidth)
+		controls.width:SetMinMaxValues(minBarWidth, sanityCheckValues.barMaxWidth)
 		controls.width.MinLabel:SetText(minBarWidth)
 	end)
 
@@ -2179,6 +2204,7 @@ local function ConstructOptionsPanel()
 			r, g, b = ColorPickerFrame:GetColorRGB()
 			a = OpacitySliderFrame:GetValue()
 		end
+
 		controls.colors.border.Texture:SetColorTexture(r, g, b, a)
 		settings.colors.bar.border = ConvertColorDecimalToHex(r, g, b, a)
 		barBorderFrame:SetBackdropBorderColor(r, g, b, a)
@@ -2203,8 +2229,8 @@ local function ConstructOptionsPanel()
 		end
 
 		controls.colors.casting.Texture:SetColorTexture(r, g, b, a)
-		castingFrame:SetStatusBarColor(r, g, b, a)
 		settings.colors.bar.casting = ConvertColorDecimalToHex(r, g, b, a)
+		castingFrame:SetStatusBarColor(r, g, b, a)
 	end
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		if button == "LeftButton" then
@@ -4943,6 +4969,7 @@ insanityFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				if TwintopInsanityBarSettings then
 					settings = MergeSettings(settings,TwintopInsanityBarSettings)
 				end
+				UpdateSanityCheckValues()
 				IsTtdActive()
 				FillSpellData()
 				ConstructInsanityBar()
@@ -5082,6 +5109,9 @@ function SlashCmdList.TWINTOP(msg)
 		end
 	elseif cmd == "fill" then
 		FillSpellData()
+	elseif cmd == "move" then
+		local x, y = ParseCmdString(subcmd)
+		UpdateBarPosition(tonumber(x), tonumber(y))
  	else
 		InterfaceOptionsFrame_OpenToCategory(interfaceSettingsFrame.panel)
 	end
