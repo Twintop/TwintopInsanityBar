@@ -132,6 +132,11 @@ local spells = {
 		name = "",
 		icon = ""
 	},
+	darkAscension = {
+		id = 280711,
+		name = "",
+		icon = ""
+	},
 	shadowWordPain = {
 		id = 589,
 		icon = "",
@@ -284,7 +289,8 @@ local snapshotData = {
 		s2m = {
 			startTime = nil,
 			active = false
-		}
+		},
+		playedCue = false
 	},
 	targetData = {
 		ttdIsActive = false,
@@ -578,6 +584,11 @@ local function LoadDefaultSettings()
 				enabled=true,
 				sound="Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg",
 				soundName="Wilhelm Scream (TIB)"
+			},
+			vfReady={
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
+				soundName="Boxing Arena Gong (TIB)"
 			},
 			mindbender={
 				sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
@@ -1343,10 +1354,12 @@ local function ConstructOptionsPanel()
 	local xOffset2 = 275
 	
 	local yOffset60 = 60
-	local yOffset400 = 30
+	local yOffset30 = 30
 	local yOffset40 = 40
+	local yOffset30 = 30
 	local yOffset20 = 20
 	local yOffset15 = 15
+	local yOffset10 = 10
 	local barWidth = 250
 	local barHeight = 20
 	local title = ""
@@ -1698,7 +1711,7 @@ local function ConstructOptionsPanel()
 	controls.dropDown.insanityBarTexture = CreateFrame("FRAME", "TIBInsanityBarTexture", parent, "UIDropDownMenuTemplate")
 	controls.dropDown.insanityBarTexture.label = BuildSectionHeader(parent, "Main Bar Texture", xCoord+xPadding, yCoord)
 	controls.dropDown.insanityBarTexture.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.insanityBarTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset400)
+	controls.dropDown.insanityBarTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset30)
 	UIDropDownMenu_SetWidth(controls.dropDown.insanityBarTexture, 250)
 	UIDropDownMenu_SetText(controls.dropDown.insanityBarTexture, settings.textures.insanityBarName)
 	UIDropDownMenu_JustifyText(controls.dropDown.insanityBarTexture, "LEFT")
@@ -1759,7 +1772,7 @@ local function ConstructOptionsPanel()
 	controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TIBCastBarTexture", parent, "UIDropDownMenuTemplate")
 	controls.dropDown.castingBarTexture.label = BuildSectionHeader(parent, "Casting Bar Texture", xCoord2-20, yCoord)
 	controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2-30, yCoord-yOffset400)
+	controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2-30, yCoord-yOffset30)
 	UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, 250)
 	UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, settings.textures.castingBarName)
 	UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
@@ -1822,7 +1835,7 @@ local function ConstructOptionsPanel()
 	controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TIBPassiveBarTexture", parent, "UIDropDownMenuTemplate")
 	controls.dropDown.passiveBarTexture.label = BuildSectionHeader(parent, "Passive Bar Texture", xCoord+xPadding, yCoord)
 	controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset400)
+	controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset30)
 	UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, 250)
 	UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, settings.textures.passiveBarName)
 	UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
@@ -1906,7 +1919,7 @@ local function ConstructOptionsPanel()
 	controls.dropDown.borderTexture = CreateFrame("FRAME", "TIBBorderTexture", parent, "UIDropDownMenuTemplate")
 	controls.dropDown.borderTexture.label = BuildSectionHeader(parent, "Border Texture", xCoord+xPadding, yCoord)
 	controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset400)
+	controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset30)
 	UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, 250)
 	UIDropDownMenu_SetText(controls.dropDown.borderTexture, settings.textures.borderName)
 	UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
@@ -1968,7 +1981,7 @@ local function ConstructOptionsPanel()
 	controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TIBBackgroundTexture", parent, "UIDropDownMenuTemplate")
 	controls.dropDown.backgroundTexture.label = BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2-20, yCoord)
 	controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2-30, yCoord-yOffset400)
+	controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2-30, yCoord-yOffset30)
 	UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, 250)
 	UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, settings.textures.backgroundName)
 	UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
@@ -2113,7 +2126,7 @@ local function ConstructOptionsPanel()
 	controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TIBCB1_5", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.flashEnabled
 	f:SetPoint("TOPLEFT", xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Void Eruption Usable")
+	getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Void Eruption is Usable")
 	f.tooltip = "This will flash the bar when Void Eruption can be cast."
 	f:SetChecked(settings.colors.bar.flashEnabled)
 	f:SetScript("OnClick", function(self, ...)
@@ -2137,7 +2150,7 @@ local function ConstructOptionsPanel()
 
 	controls.barColorsSection = BuildSectionHeader(parent, "Bar Colors", xCoord+xPadding, yCoord)
 
-	yCoord = yCoord - yOffset400
+	yCoord = yCoord - yOffset30
 	controls.colors.base = BuildColorPicker(parent, "Insanity while not in Voidform", settings.colors.bar.base, 250, 25, xCoord+xPadding*2, yCoord)
 	f = controls.colors.base
 	f.recolorTexture = function(color)
@@ -2180,7 +2193,7 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	yCoord = yCoord - yOffset400
+	yCoord = yCoord - yOffset30
 	controls.colors.enterVoidform = BuildColorPicker(parent, "Insanity when you can cast Void Eruption", settings.colors.bar.enterVoidform, 250, 25, xCoord+xPadding*2, yCoord)
 	f = controls.colors.enterVoidform
 	f.recolorTexture = function(color)
@@ -2224,7 +2237,7 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	yCoord = yCoord - yOffset400
+	yCoord = yCoord - yOffset30
 	controls.colors.casting = BuildColorPicker(parent, "Insanity from hardcasting spells", settings.colors.bar.casting, 250, 25, xCoord+xPadding*2, yCoord)
 	f = controls.colors.casting
 	f.recolorTexture = function(color)
@@ -2269,7 +2282,7 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	yCoord = yCoord - yOffset400
+	yCoord = yCoord - yOffset30
 	controls.colors.thresholdUnder = BuildColorPicker(parent, "Under min. req. Insanity to cast Void Eruption Threshold Line", settings.colors.threshold.under, 260, 25, xCoord+xPadding*2, yCoord)
 	f = controls.colors.thresholdUnder
 	f.recolorTexture = function(color)
@@ -2312,7 +2325,7 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	yCoord = yCoord - yOffset400
+	yCoord = yCoord - yOffset30
 	controls.colors.thresholdOver = BuildColorPicker(parent, "Over min. req. Insanity to cast Void Eruption Threshold Line", settings.colors.threshold.over, 250, 25, xCoord+xPadding*2, yCoord)
 	f = controls.colors.thresholdOver
 	f.recolorTexture = function(color)
@@ -2364,13 +2377,13 @@ local function ConstructOptionsPanel()
 
 	controls.textDisplaySection = BuildSectionHeader(parent, "Font Face", xCoord+xPadding, yCoord)
 
-	yCoord = yCoord - yOffset400
+	yCoord = yCoord - yOffset30
 	
 	-- Create the dropdown, and configure its appearance
 	controls.dropDown.fontLeft = CreateFrame("FRAME", "TIBFontLeft", parent, "UIDropDownMenuTemplate")
 	controls.dropDown.fontLeft.label = BuildSectionHeader(parent, "Left Bar Font Face", xCoord+xPadding, yCoord)
 	controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset400)
+	controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset30)
 	UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, 250)
 	UIDropDownMenu_SetText(controls.dropDown.fontLeft, settings.displayText.left.fontFaceName)
 	UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
@@ -2432,7 +2445,7 @@ local function ConstructOptionsPanel()
 	controls.dropDown.fontMiddle = CreateFrame("FRAME", "TIBfFontMiddle", parent, "UIDropDownMenuTemplate")
 	controls.dropDown.fontMiddle.label = BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2-20, yCoord)
 	controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2-30, yCoord-yOffset400)
+	controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2-30, yCoord-yOffset30)
 	UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, 250)
 	UIDropDownMenu_SetText(controls.dropDown.fontMiddle, settings.displayText.middle.fontFaceName)
 	UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
@@ -2496,7 +2509,7 @@ local function ConstructOptionsPanel()
 	controls.dropDown.fontRight = CreateFrame("FRAME", "TIBFontRight", parent, "UIDropDownMenuTemplate")
 	controls.dropDown.fontRight.label = BuildSectionHeader(parent, "Right Bar Font Face", xCoord+xPadding, yCoord)
 	controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset400)
+	controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset30)
 	UIDropDownMenu_SetWidth(controls.dropDown.fontRight, 250)
 	UIDropDownMenu_SetText(controls.dropDown.fontRight, settings.displayText.right.fontFaceName)
 	UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
@@ -2909,7 +2922,7 @@ local function ConstructOptionsPanel()
 
 	controls.textCustomSection = BuildSectionHeader(parent, "Bar Display Text Customization", xCoord+xPadding, yCoord)
 
-	yCoord = yCoord - yOffset400
+	yCoord = yCoord - yOffset30
 	controls.labels.outVoidform = CreateFrame("Frame", nil, parent)
 	f = controls.labels.outVoidform
 	f:ClearAllPoints()
@@ -2974,7 +2987,7 @@ local function ConstructOptionsPanel()
 		IsTtdActive()
 	end)
 
-	yCoord = yCoord - yOffset400
+	yCoord = yCoord - yOffset30
 	controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
 	f = controls.labels.inVoidform
 	f:ClearAllPoints()
@@ -3008,7 +3021,7 @@ local function ConstructOptionsPanel()
 		IsTtdActive()
 	end)
 
-	yCoord = yCoord - yOffset400
+	yCoord = yCoord - yOffset30
 	controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
 	f = controls.labels.inVoidform
 	f:ClearAllPoints()
@@ -3042,7 +3055,7 @@ local function ConstructOptionsPanel()
 		IsTtdActive()
 	end)
 
-	yCoord = yCoord - yOffset400
+	yCoord = yCoord - yOffset30
 	controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
 	f = controls.labels.instructionsVar
 	f:ClearAllPoints()
@@ -3111,7 +3124,7 @@ local function ConstructOptionsPanel()
 	yCoord = yCoord - yOffset15
 	controls.labels.newlineVar = BuildDisplayTextHelpEntry(parent, "||n", "Insert a Newline", xCoord, yCoord, 85, 200)
 	-----	
-	yCoord = yCoord - yOffset400
+	yCoord = yCoord - yOffset30
 	controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
 	f = controls.labels.instructions2Var
 	f:ClearAllPoints()
@@ -3164,89 +3177,22 @@ local function ConstructOptionsPanel()
 
 	controls.textSection = BuildSectionHeader(parent, "Passive Options", xCoord+xPadding, yCoord)
 
-	yCoord = yCoord - yOffset400
+	yCoord = yCoord - yOffset30
 	controls.checkBoxes.s2mDeath = CreateFrame("CheckButton", "TIBCB3_2", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.s2mDeath
 	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Play Wilhelm Scream when S2M Ends")
-	f.tooltip = "When you (almost) die, horribly, after Surrender to Madness ends, play the infamous Wilhelm Scream to make you feel a bit better."
+	getglobal(f:GetName() .. 'Text'):SetText("Play Audio When S2M Ends")
+	f.tooltip = "When you (almost) die, horribly, after Surrender to Madness ends, play the infamous Wilhelm Scream (or another sound) to make you feel a bit better."
 	f:SetChecked(settings.audio.s2mDeath.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		settings.audio.s2mDeath.enabled = self:GetChecked()
-	end)
-
-	--TODO: Move this setting, and "Report Voidform Stacks Only", to "Advanced Configuration"
-	controls.checkBoxes.showSummary = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showSummary
-	f:SetPoint("TOPLEFT", xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Show Voidform Summary")
-	f.tooltip = "Shows a summary in chat of your last Voidform including total duration, total stacks, final drain rate, and stacks gained while channeling Void Torrent."
-	f:SetChecked(settings.summary.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		settings.summary.enabled = self:GetChecked()
-		if settings.summary.enabled == false then	-- Toggle checkbox for simpleSummary
-			controls.checkBoxes.simpleSummary:Hide()
-		else
-			controls.checkBoxes.simpleSummary:Show()
-		end
-	end)
-
-	yCoord = yCoord - yOffset20
-
-	--TODO: Move this setting, and "Show Voidform Summary", to "Advanced Configuration"
-	controls.checkBoxes.simpleSummary = CreateFrame("CheckButton", "TIBCB3_4", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.simpleSummary
-	f:SetPoint("TOPLEFT", xCoord2+10, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Report Voidform Stacks Only")
-	f.tooltip = "Simplifies the Voidform summary to only display total stacks."
-	if settings.summary.enabled == false then	-- Hide on initial load if showSummary is off
-		f:Hide()
-	end
-	f:SetChecked(settings.summary.simple)
-	f:SetScript("OnClick", function(self, ...)
-		settings.summary.simple = self:GetChecked()
-	end)
-	
-	--[[
-	controls.checkBoxes.showS2MSummary = CreateFrame("CheckButton", "TIBCB3_4", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showS2MSummary
-	f:SetPoint("TOPLEFT", xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Show Surrender to Madness Summary")
-	f.tooltip = "Shows a summary in chat of your last Surrender to Madness, including total duration of S2M, total duration of Voidform, total stacks, final drain rate, and stacks gained while channeling Void Torrent."
-	f:SetChecked(settings.showS2MSummary)
-	f:SetScript("OnClick", function(self, ...)
-		settings.showS2MSummary = self:GetChecked()
-	end)
-	]]--
-
-	yCoord = yCoord - yOffset40
-	controls.colors.passive = BuildColorPicker(parent, "Insanity from Auspicious Spirits and Shadowfiend swings", settings.colors.bar.passive, 250, 25, xCoord+xPadding*2, yCoord)
-	f = controls.colors.passive
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		
-		controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
-		passiveFrame:SetStatusBarColor(r, g, b, a)
-		settings.colors.bar.passive = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.bar.passive, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
+	end)	
 		
 	-- Create the dropdown, and configure its appearance
 	controls.dropDown.s2mAudio = CreateFrame("FRAME", "TIBS2MDeathAudio", parent, "UIDropDownMenuTemplate")
-	controls.dropDown.s2mAudio.label = BuildSectionHeader(parent, "Surrender to Madness Ending Audio", xCoord2-20, yCoord+20)
-	controls.dropDown.s2mAudio.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.s2mAudio:SetPoint("TOPLEFT", xCoord2-30, yCoord-yOffset400+20)
+	--controls.dropDown.s2mAudio.label = BuildSectionHeader(parent, "Surrender to Madness Ending Audio", xCoord+xPadding, yCoord+20)
+	--controls.dropDown.s2mAudio.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.s2mAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-yOffset30+10)
 	UIDropDownMenu_SetWidth(controls.dropDown.s2mAudio, 250)
 	UIDropDownMenu_SetText(controls.dropDown.s2mAudio, settings.audio.s2mDeath.soundName)
 	UIDropDownMenu_JustifyText(controls.dropDown.s2mAudio, "LEFT")
@@ -3292,11 +3238,139 @@ local function ConstructOptionsPanel()
 		PlaySoundFile(settings.audio.s2mDeath.sound, settings.audio.channel.channel)
 	end
 
-	yCoord = yCoord - yOffset400
+
+	controls.checkBoxes.vfReady = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.vfReady
+	f:SetPoint("TOPLEFT", xCoord2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Play Audio Cue When Void Eruption is Usable")
+	f.tooltip = "Play an audio cue when Void Eruption can be cast."
+	f:SetChecked(settings.audio.vfReady.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		settings.audio.vfReady.enabled = self:GetChecked()
+	end)	
+		
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.vfReadyAudio = CreateFrame("FRAME", "TIBVFReadyAudio", parent, "UIDropDownMenuTemplate")
+	--controls.dropDown.s2mAudio.label = BuildSectionHeader(parent, "Surrender to Madness Ending Audio", xCoord+xPadding, yCoord+20)
+	--controls.dropDown.s2mAudio.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.vfReadyAudio:SetPoint("TOPLEFT", xCoord2, yCoord-yOffset30+10)
+	UIDropDownMenu_SetWidth(controls.dropDown.vfReadyAudio, 250)
+	UIDropDownMenu_SetText(controls.dropDown.vfReadyAudio, settings.audio.vfReady.soundName)
+	UIDropDownMenu_JustifyText(controls.dropDown.vfReadyAudio, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	UIDropDownMenu_Initialize(controls.dropDown.vfReadyAudio, function(self, level, menuList)
+		local entries = 25
+		local info = UIDropDownMenu_CreateInfo()
+		local sounds = addonData.libs.SharedMedia:HashTable("sound")
+		local soundsList = addonData.libs.SharedMedia:List("sound")
+		if (level or 1) == 1 or menuList == nil then
+			local menus = math.ceil(TableLength(sounds) / entries)
+			for i=0, menus-1 do
+				info.hasArrow = true
+				info.notCheckable = true
+				info.text = "Sounds " .. i+1
+				info.menuList = i
+				UIDropDownMenu_AddButton(info)
+			end
+		else
+			local start = entries * menuList
+
+			for k, v in pairs(soundsList) do
+				if k > start and k <= start + entries then
+					info.text = v
+					info.value = sounds[v]
+					info.checked = sounds[v] == settings.audio.vfReady.sound
+					info.func = self.SetValue			
+					info.arg1 = sounds[v]
+					info.arg2 = v
+					UIDropDownMenu_AddButton(info, level)
+				end
+			end
+		end
+	end)
+
+	-- Implement the function to change the audio
+	function controls.dropDown.vfReadyAudio:SetValue(newValue, newName)
+		settings.audio.vfReady.sound = newValue
+		settings.audio.vfReady.soundName = newName
+		UIDropDownMenu_SetText(controls.dropDown.vfReadyAudio, newName)
+		CloseDropDownMenus()
+		PlaySoundFile(settings.audio.vfReady.sound, settings.audio.channel.channel)
+	end
+
+	--[[
+	controls.checkBoxes.showS2MSummary = CreateFrame("CheckButton", "TIBCB3_4", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.showS2MSummary
+	f:SetPoint("TOPLEFT", xCoord2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Show Surrender to Madness Summary")
+	f.tooltip = "Shows a summary in chat of your last Surrender to Madness, including total duration of S2M, total duration of Voidform, total stacks, final drain rate, and stacks gained while channeling Void Torrent."
+	f:SetChecked(settings.showS2MSummary)
+	f:SetScript("OnClick", function(self, ...)
+		settings.showS2MSummary = self:GetChecked()
+	end)
+	]]--
+
+	yCoord = yCoord - yOffset60
+	controls.colors.passive = BuildColorPicker(parent, "Insanity from Auspicious Spirits and Shadowfiend swings", settings.colors.bar.passive, 250, 25, xCoord+xPadding*2, yCoord)
+	f = controls.colors.passive
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		
+		controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
+		passiveFrame:SetStatusBarColor(r, g, b, a)
+		settings.colors.bar.passive = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.bar.passive, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	--TODO: Move this setting, and "Report Voidform Stacks Only", to "Advanced Configuration"
+	controls.checkBoxes.showSummary = CreateFrame("CheckButton", "TIBCB3_4", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.showSummary
+	f:SetPoint("TOPLEFT", xCoord2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Show Voidform Summary")
+	f.tooltip = "Shows a summary in chat of your last Voidform including total duration, total stacks, final drain rate, and stacks gained while channeling Void Torrent."
+	f:SetChecked(settings.summary.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		settings.summary.enabled = self:GetChecked()
+		if settings.summary.enabled == false then	-- Toggle checkbox for simpleSummary
+			controls.checkBoxes.simpleSummary:Hide()
+		else
+			controls.checkBoxes.simpleSummary:Show()
+		end
+	end)
+
+	yCoord = yCoord - yOffset20
+
+	--TODO: Move this setting, and "Show Voidform Summary", to "Advanced Configuration"
+	controls.checkBoxes.simpleSummary = CreateFrame("CheckButton", "TIBCB3_5", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.simpleSummary
+	f:SetPoint("TOPLEFT", xCoord2+10, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Report Voidform Stacks Only")
+	f.tooltip = "Simplifies the Voidform summary to only display total stacks."
+	if settings.summary.enabled == false then	-- Hide on initial load if showSummary is off
+		f:Hide()
+	end
+	f:SetChecked(settings.summary.simple)
+	f:SetScript("OnClick", function(self, ...)
+		settings.summary.simple = self:GetChecked()
+	end)
+
+	yCoord = yCoord - yOffset10
 	controls.textSection = BuildSectionHeader(parent, "Auspicious Spirits Tracking", xCoord+xPadding, yCoord)
 
-	yCoord = yCoord - yOffset400
-	controls.checkBoxes.as = CreateFrame("CheckButton", "TIBCB3_5", parent, "ChatConfigCheckButtonTemplate")
+	yCoord = yCoord - yOffset30
+	controls.checkBoxes.as = CreateFrame("CheckButton", "TIBCB3_6", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.as
 	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Track Auspicious Spirits")
@@ -3315,11 +3389,11 @@ local function ConstructOptionsPanel()
 		snapshotData.auspiciousSpirits.tracker = {}
 	end)
 
-	yCoord = yCoord - yOffset400
+	yCoord = yCoord - yOffset30
 	controls.textSection = BuildSectionHeader(parent, "Shadowfiend (+ Mindbender) Tracking", xCoord+xPadding, yCoord)
 
-	yCoord = yCoord - yOffset400	
-	controls.checkBoxes.mindbender = CreateFrame("CheckButton", "TIBCB3_6", parent, "ChatConfigCheckButtonTemplate")
+	yCoord = yCoord - yOffset30	
+	controls.checkBoxes.mindbender = CreateFrame("CheckButton", "TIBCB3_7", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.mindbender
 	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Track Shadowfiend Insanity Gain")
@@ -3352,7 +3426,7 @@ local function ConstructOptionsPanel()
 	end)
 
 	yCoord = yCoord - yOffset60	
-	controls.checkBoxes.mindbenderModeGCDs = CreateFrame("CheckButton", "TIBRB3_7", parent, "UIRadioButtonTemplate")
+	controls.checkBoxes.mindbenderModeGCDs = CreateFrame("CheckButton", "TIBRB3_8", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.mindbenderModeGCDs
 	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Insanity from GCDs remaining")
@@ -3385,7 +3459,7 @@ local function ConstructOptionsPanel()
 
 
 	yCoord = yCoord - yOffset60	
-	controls.checkBoxes.mindbenderModeSwings = CreateFrame("CheckButton", "TIBRB3_8", parent, "UIRadioButtonTemplate")
+	controls.checkBoxes.mindbenderModeSwings = CreateFrame("CheckButton", "TIBRB3_9", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.mindbenderModeSwings
 	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Insanity from Swings remaining")
@@ -3417,7 +3491,7 @@ local function ConstructOptionsPanel()
 	end)
 
 	yCoord = yCoord - yOffset60	
-	controls.checkBoxes.mindbenderModeTime = CreateFrame("CheckButton", "TIBRB3_9", parent, "UIRadioButtonTemplate")
+	controls.checkBoxes.mindbenderModeTime = CreateFrame("CheckButton", "TIBRB3_10", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.mindbenderModeTime
 	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Insanity from Time remaining")
@@ -3450,7 +3524,7 @@ local function ConstructOptionsPanel()
 	end)
 
 	yCoord = yCoord - yOffset60	
-	controls.checkBoxes.mindbenderAudio = CreateFrame("CheckButton", "TIBCB3_10", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.mindbenderAudio = CreateFrame("CheckButton", "TIBCB3_11", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.mindbenderAudio
 	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Play Audio Cue to use Shadowfiend")
@@ -3465,7 +3539,7 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	controls.checkBoxes.mindbenderAudioStacks = CreateFrame("CheckButton", "TIBCB3_11", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.mindbenderAudioStacks = CreateFrame("CheckButton", "TIBCB3_12", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.mindbenderAudioStacks
 	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-20)
 	getglobal(f:GetName() .. 'Text'):SetText("Use Voidform Stacks instead of Drain Stacks")
@@ -3496,7 +3570,7 @@ local function ConstructOptionsPanel()
 	controls.dropDown.mindbenderAudio = CreateFrame("FRAME", "TIBMindbenderAudio", parent, "UIDropDownMenuTemplate")
 	controls.dropDown.mindbenderAudio.label = BuildSectionHeader(parent, "Mindbender Ready Audio", xCoord+xPadding, yCoord)
 	controls.dropDown.mindbenderAudio.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.mindbenderAudio:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset400)
+	controls.dropDown.mindbenderAudio:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset30)
 	UIDropDownMenu_SetWidth(controls.dropDown.mindbenderAudio, 250)
 	UIDropDownMenu_SetText(controls.dropDown.mindbenderAudio, settings.audio.mindbender.soundName)
 	UIDropDownMenu_JustifyText(controls.dropDown.mindbenderAudio, "LEFT")
@@ -3608,13 +3682,13 @@ local function ConstructOptionsPanel()
 	yCoord = yCoord - yOffset40
 	controls.textSection = BuildSectionHeader(parent, "Frame Strata", xCoord+xPadding, yCoord)
 
-	yCoord = yCoord - yOffset15 - yOffset15
+	yCoord = yCoord - yOffset30
 	
 	-- Create the dropdown, and configure its appearance
 	controls.dropDown.strata = CreateFrame("FRAME", "TIBFrameStrata", parent, "UIDropDownMenuTemplate")
 	controls.dropDown.strata.label = BuildSectionHeader(parent, "Frame Strata Level To Draw Bar On", xCoord+xPadding, yCoord)
 	controls.dropDown.strata.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.strata:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset400)
+	controls.dropDown.strata:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset30)
 	UIDropDownMenu_SetWidth(controls.dropDown.strata, 250)
 	UIDropDownMenu_SetText(controls.dropDown.strata, settings.strata.name)
 	UIDropDownMenu_JustifyText(controls.dropDown.strata, "LEFT")
@@ -3665,16 +3739,16 @@ local function ConstructOptionsPanel()
 
 
 	
-	yCoord = yCoord - yOffset40 - yOffset20
+	yCoord = yCoord - yOffset60
 	controls.textSection = BuildSectionHeader(parent, "Audio Channel", xCoord+xPadding, yCoord)
 
-	yCoord = yCoord - yOffset15 - yOffset15
+	yCoord = yCoord - yOffset30
 	
 	-- Create the dropdown, and configure its appearance
 	controls.dropDown.audioChannel = CreateFrame("FRAME", "TIBFrameAudioChannel", parent, "UIDropDownMenuTemplate")
 	controls.dropDown.audioChannel.label = BuildSectionHeader(parent, "Audio Channel To Use", xCoord+xPadding, yCoord)
 	controls.dropDown.audioChannel.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.audioChannel:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset400)
+	controls.dropDown.audioChannel:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset30)
 	UIDropDownMenu_SetWidth(controls.dropDown.audioChannel, 250)
 	UIDropDownMenu_SetText(controls.dropDown.audioChannel, settings.audio.channel.name)
 	UIDropDownMenu_JustifyText(controls.dropDown.audioChannel, "LEFT")
@@ -4683,10 +4757,16 @@ local function UpdateInsanityBar()
 				else
 					barContainerFrame:SetAlpha(1.0)
 				end
+
+				if settings.audio.vfReady.enabled and snapshotData.voidform.playedCue == false then
+					snapshotData.voidform.playedCue = true
+					PlaySoundFile(settings.audio.vfReady.sound, settings.audio.channel.channel)
+				end
 			else
 				insanityFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
 				insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base, true))
 				barContainerFrame:SetAlpha(1.0)
+				snapshotData.voidform.playedCue = false
 			end
 		end
 	end
@@ -4903,7 +4983,9 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		end
 		
 		if sourceGUID == characterData.guid then  
-            if spellId == spells.voidform.id then
+			if spellId == spells.darkAscension.id then				
+				snapshotData.voidform.playedCue = true
+			elseif spellId == spells.voidform.id then
                 if type == "SPELL_AURA_APPLIED" then -- Entered Voidform                    
 					snapshotData.voidform.previousStackTime = currentTime
                     snapshotData.voidform.drainStacks = 1
