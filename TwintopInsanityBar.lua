@@ -1728,7 +1728,7 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	-- Implement the function to change the favoriteNumber
+	-- Implement the function to change the texture
 	function controls.dropDown.insanityBarTexture:SetValue(newValue, newName)
 		settings.textures.insanityBar = newValue
 		settings.textures.insanityBarName = newName
@@ -1789,7 +1789,7 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	-- Implement the function to change the favoriteNumber
+	-- Implement the function to change the texture
 	function controls.dropDown.castingBarTexture:SetValue(newValue, newName)
 		settings.textures.castingBar = newValue
 		settings.textures.castingBarName = newName
@@ -1852,7 +1852,7 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	-- Implement the function to change the favoriteNumber
+	-- Implement the function to change the texture
 	function controls.dropDown.passiveBarTexture:SetValue(newValue, newName)
 		settings.textures.passiveBar = newValue
 		settings.textures.passiveBarName = newName
@@ -1936,7 +1936,7 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	-- Implement the function to change the favoriteNumber
+	-- Implement the function to change the texture
 	function controls.dropDown.borderTexture:SetValue(newValue, newName)
 		settings.textures.border = newValue
 		settings.textures.borderName = newName
@@ -1998,7 +1998,7 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	-- Implement the function to change the favoriteNumber
+	-- Implement the function to change the texture
 	function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
 		settings.textures.background = newValue
 		settings.textures.backgroundName = newName
@@ -3120,7 +3120,7 @@ local function ConstructOptionsPanel()
 	f.font:SetText("For icons use #ICONVARIABLENAME")
 
 	yCoord = yCoord - yOffset15
-	controls.labels.swpIconVar = BuildDisplayTextHelpEntry(parent, "#casting", "The icon of the Insanity Generating Spell you are currently hardcasting", xCoord, yCoord, 85, 500)
+	controls.labels.castingIconVar = BuildDisplayTextHelpEntry(parent, "#casting", "The icon of the Insanity Generating Spell you are currently hardcasting", xCoord, yCoord, 85, 500)
 
 	yCoord = yCoord - yOffset15
 	controls.labels.swpIconVar = BuildDisplayTextHelpEntry(parent, "#swp", spells.shadowWordPain.icon .. " Shadow Word: Pain", xCoord, yCoord, 85, 200)
@@ -3132,22 +3132,22 @@ local function ConstructOptionsPanel()
 
 	yCoord = yCoord - yOffset15
 	controls.labels.vfIconVar = BuildDisplayTextHelpEntry(parent, "#vf", spells.voidform.icon .. " Voidform", xCoord, yCoord, 85, 200)
-	controls.labels.vtIconVar = BuildDisplayTextHelpEntry(parent, "#li", spells.lingeringInsanity.icon .. " Lingering Insanity", xCoord2-70, yCoord, 130, 225)
+	controls.labels.liIconVar = BuildDisplayTextHelpEntry(parent, "#li", spells.lingeringInsanity.icon .. " Lingering Insanity", xCoord2-70, yCoord, 130, 225)
 
 	yCoord = yCoord - yOffset15
-	controls.labels.mfIconVar = BuildDisplayTextHelpEntry(parent, "#mb", spells.mindBlast.icon .. " Mind Blast", xCoord, yCoord, 85, 200)
-	controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#mf", spells.mindFlay.icon .. " Mind Flay", xCoord2-70, yCoord, 130, 225)
+	controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#mb", spells.mindBlast.icon .. " Mind Blast", xCoord, yCoord, 85, 200)
+	controls.labels.mfIconVar = BuildDisplayTextHelpEntry(parent, "#mf", spells.mindFlay.icon .. " Mind Flay", xCoord2-70, yCoord, 130, 225)
 
 	yCoord = yCoord - yOffset15
-	controls.labels.mfIconVar = BuildDisplayTextHelpEntry(parent, "#svw", spells.shadowWordVoid.icon .. " Shadow Word: Void", xCoord, yCoord, 85, 200)
-	controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#ms", spells.mindSear.icon .. " Mind Sear", xCoord2-70, yCoord, 130, 225)
+	controls.labels.swvIconVar = BuildDisplayTextHelpEntry(parent, "#svw", spells.shadowWordVoid.icon .. " Shadow Word: Void", xCoord, yCoord, 85, 200)
+	controls.labels.msIconVar = BuildDisplayTextHelpEntry(parent, "#ms", spells.mindSear.icon .. " Mind Sear", xCoord2-70, yCoord, 130, 225)
 
 	yCoord = yCoord - yOffset15
-	controls.labels.mfIconVar = BuildDisplayTextHelpEntry(parent, "#dv", spells.darkVoid.icon .. " Dark Void", xCoord, yCoord, 85, 200)
-	controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#voit", spells.voidTorrent.icon .. " Void Torrent", xCoord2-70, yCoord, 130, 225)
+	controls.labels.dvIconVar = BuildDisplayTextHelpEntry(parent, "#dv", spells.darkVoid.icon .. " Dark Void", xCoord, yCoord, 85, 200)
+	controls.labels.voitIconVar = BuildDisplayTextHelpEntry(parent, "#voit", spells.voidTorrent.icon .. " Void Torrent", xCoord2-70, yCoord, 130, 225)
 
 	yCoord = yCoord - yOffset15
-	controls.labels.mfIconVar = BuildDisplayTextHelpEntry(parent, "#md", spells.massDispel.icon .. " Mass Dispel", xCoord, yCoord, 85, 200)
+	controls.labels.mdIconVar = BuildDisplayTextHelpEntry(parent, "#md", spells.massDispel.icon .. " Mass Dispel", xCoord, yCoord, 85, 200)
 	--controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#mf", spells.mindFlay.icon .. " Mind Flay", xCoord2-70, yCoord, 130, 225)
 	---------------------------
 
