@@ -596,6 +596,10 @@ local function LoadDefaultSettings()
 			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
 			castingBarName="Blizzard",
 			textureLock=true
+		},
+		strata={
+			level="BACKGROUND",
+			name="Background"
 		}
 	}
 
@@ -884,7 +888,7 @@ local function ConstructInsanityBar()
 	barContainerFrame:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))
 	barContainerFrame:SetWidth(settings.bar.width)
 	barContainerFrame:SetHeight(settings.bar.height)
-	barContainerFrame:SetFrameStrata("BACKGROUND")
+	barContainerFrame:SetFrameStrata(settings.strata.level)
 	barContainerFrame:SetFrameLevel(0)
 
 	barContainerFrame:SetScript("OnMouseDown", function(self, button)
@@ -931,7 +935,7 @@ local function ConstructInsanityBar()
 	barBorderFrame:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
 	barBorderFrame:SetWidth(settings.bar.width)
 	barBorderFrame:SetHeight(settings.bar.height)
-	barBorderFrame:SetFrameStrata("BACKGROUND")
+	--barBorderFrame:SetFrameStrata(settings.strata.level)
 	barBorderFrame:SetFrameLevel(126)
 
 
@@ -942,15 +946,15 @@ local function ConstructInsanityBar()
 	insanityFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
 	insanityFrame:SetStatusBarTexture(settings.textures.insanityBar)
 	insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
-	insanityFrame:SetFrameStrata("BACKGROUND")
+	--insanityFrame:SetFrameStrata(ettings.strata.level)
 	insanityFrame:SetFrameLevel(125)
 	
 	insanityFrame.threshold:SetWidth(settings.thresholdWidth)
 	insanityFrame.threshold:SetHeight(settings.bar.height)
-	insanityFrame.threshold.texture = insanityFrame.threshold:CreateTexture(nil, "BACKGROUND")
+	insanityFrame.threshold.texture = insanityFrame.threshold:CreateTexture(nil, settings.strata.level)
 	insanityFrame.threshold.texture:SetAllPoints(insanityFrame.threshold)
 	insanityFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
-	insanityFrame.threshold:SetFrameStrata("BACKGROUND")
+	--insanityFrame.threshold:SetFrameStrata(settings.strata.level)
 	insanityFrame.threshold:SetFrameLevel(128)
 	insanityFrame.threshold:Show()
 	
@@ -961,7 +965,7 @@ local function ConstructInsanityBar()
 	castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
 	castingFrame:SetStatusBarTexture(settings.textures.castingBar)
 	castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting))
-	castingFrame:SetFrameStrata("BACKGROUND")
+	--castingFrame:SetFrameStrata(settings.strata.level)
 	castingFrame:SetFrameLevel(90)
 	
 	passiveFrame:Show()
@@ -971,15 +975,15 @@ local function ConstructInsanityBar()
 	passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
 	passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
 	passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive))
-	passiveFrame:SetFrameStrata("BACKGROUND")
+	--passiveFrame:SetFrameStrata(settings.strata.level)
 	passiveFrame:SetFrameLevel(80)
 	
 	passiveFrame.threshold:SetWidth(settings.thresholdWidth)
 	passiveFrame.threshold:SetHeight(settings.bar.height)
-	passiveFrame.threshold.texture = passiveFrame.threshold:CreateTexture(nil, "BACKGROUND")
+	passiveFrame.threshold.texture = passiveFrame.threshold:CreateTexture(nil, settings.strata.level)
 	passiveFrame.threshold.texture:SetAllPoints(passiveFrame.threshold)
 	passiveFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
-	passiveFrame.threshold:SetFrameStrata("BACKGROUND")
+	--passiveFrame.threshold:SetFrameStrata(settings.strata.level)
 	passiveFrame.threshold:SetFrameLevel(127)
 	passiveFrame.threshold:Show()
 	
@@ -987,7 +991,7 @@ local function ConstructInsanityBar()
 	leftTextFrame:SetWidth(settings.bar.width)
 	leftTextFrame:SetHeight(settings.bar.height * 3.5)
 	leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 2, 0)
-	leftTextFrame:SetFrameStrata("BACKGROUND")
+	--leftTextFrame:SetFrameStrata(settings.strata.level)
 	leftTextFrame:SetFrameLevel(129)
 	leftTextFrame.font:SetPoint("LEFT", 0, 0)
 	leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
@@ -999,7 +1003,7 @@ local function ConstructInsanityBar()
 	middleTextFrame:SetWidth(settings.bar.width)
 	middleTextFrame:SetHeight(settings.bar.height * 3.5)
 	middleTextFrame:SetPoint("CENTER", barContainerFrame, "CENTER", 0, 0)
-	middleTextFrame:SetFrameStrata("BACKGROUND")
+	--middleTextFrame:SetFrameStrata(settings.strata.level)
 	middleTextFrame:SetFrameLevel(129)
 	middleTextFrame.font:SetPoint("CENTER", 0, 0)
 	middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
@@ -1011,7 +1015,7 @@ local function ConstructInsanityBar()
 	rightTextFrame:SetWidth(settings.bar.width)
 	rightTextFrame:SetHeight(settings.bar.height * 3.5)
 	rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-	rightTextFrame:SetFrameStrata("BACKGROUND")
+	--rightTextFrame:SetFrameStrata(settings.strata.level)
 	rightTextFrame:SetFrameLevel(129)
 	rightTextFrame.font:SetPoint("RIGHT", 0, 0)
 	rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
@@ -1258,13 +1262,13 @@ local function BuildColorPicker(parent, description, settingsEntry, sizeTotal, s
 	f:SetSize(sizeFrame, sizeFrame)
 	f:SetPoint("TOPLEFT", posX, posY)
 	f:SetBackdrop({edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize=4, edgeSize=12})
-	f.Texture = f:CreateTexture(nil, "BACKGROUND")
+	f.Texture = f:CreateTexture(nil, settings.strata.level)
 	f.Texture:ClearAllPoints()
 	f.Texture:SetPoint("TOPLEFT", 4, -4)
 	f.Texture:SetPoint("BOTTOMRIGHT", -4, 4)
 	f.Texture:SetColorTexture(GetRGBAFromString(settingsEntry, true))
     f:EnableMouse(true)
-	f.Font = f:CreateFontString(nil, "BACKGROUND")
+	f.Font = f:CreateFontString(nil, settings.strata.level)
 	f.Font:SetPoint("LEFT", f, "RIGHT", 10, 0)
 	f.Font:SetFontObject(GameFontHighlight)
 	f.Font:SetText(description)
@@ -1281,7 +1285,7 @@ local function BuildSectionHeader(parent, title, posX, posY)
 	f:SetPoint("TOPLEFT", posX, posY)
 	f:SetWidth(500)
 	f:SetHeight(30)
-	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font = f:CreateFontString(nil, settings.strata.level)
 	f.font:SetFontObject(GameFontNormalLarge)
 	f.font:SetPoint("LEFT", f, "LEFT")
     f.font:SetSize(0, 14)
@@ -1298,7 +1302,7 @@ local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, 
 	f:SetPoint("TOPLEFT", posX, posY)
 	f:SetWidth(offset)
 	f:SetHeight(20)
-	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font = f:CreateFontString(nil, settings.strata.level)
 	f.font:SetFontObject(GameFontNormalSmall)
 	f.font:SetPoint("LEFT", f, "LEFT")
     f.font:SetSize(0, 14)
@@ -1313,7 +1317,7 @@ local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, 
 	fd:SetPoint("TOPLEFT", posX+offset+10, posY)
 	fd:SetWidth(width)
 	fd:SetHeight(20)
-	fd.font = fd:CreateFontString(nil, "BACKGROUND")
+	fd.font = fd:CreateFontString(nil, settings.strata.level)
 	fd.font:SetFontObject(GameFontHighlightSmall)
 	fd.font:SetPoint("LEFT", fd, "LEFT")
     fd.font:SetSize(0, 14)
@@ -3275,7 +3279,7 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	-- Implement the function to change the favoriteNumber
+	-- Implement the function to change the audio
 	function controls.dropDown.s2mAudio:SetValue(newValue, newName)
 		settings.audio.s2mDeath.sound = newValue
 		settings.audio.s2mDeath.soundName = newName
@@ -3525,7 +3529,7 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	-- Implement the function to change the favoriteNumber
+	-- Implement the function to change the audio
 	function controls.dropDown.mindbenderAudio:SetValue(newValue, newName)
 		settings.audio.mindbender.sound = newValue
 		settings.audio.mindbender.soundName = newName
@@ -3597,6 +3601,67 @@ local function ConstructOptionsPanel()
 		settings.dataRefreshRate = value
 	end)
 	
+	yCoord = yCoord - yOffset40
+	controls.textSection = BuildSectionHeader(parent, "Frame Strata", xCoord+xPadding, yCoord)
+
+	yCoord = yCoord - yOffset40
+	
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.strata = CreateFrame("FRAME", "TIBFrameStrata", parent, "UIDropDownMenuTemplate")
+	controls.dropDown.strata.label = BuildSectionHeader(parent, "Frame Strata Level", xCoord+xPadding, yCoord)
+	controls.dropDown.strata.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.strata:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset400)
+	UIDropDownMenu_SetWidth(controls.dropDown.strata, 250)
+	UIDropDownMenu_SetText(controls.dropDown.strata, settings.strata.name)
+	UIDropDownMenu_JustifyText(controls.dropDown.strata, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	UIDropDownMenu_Initialize(controls.dropDown.strata, function(self, level, menuList)
+		local entries = 25
+		local info = UIDropDownMenu_CreateInfo()
+		local strata = {}
+		strata["Background"] = "BACKGROUND"
+		strata["Low"] = "LOW"
+		strata["Medium"] = "MEDIUM"
+		strata["High"] = "HIGH"
+		strata["Dialog"] = "DIALOG"
+		strata["Fullscreen"] = "FULLSCREEN"
+		strata["Fullscreen Dialog"] = "FULLSCREEN_DIALOG"		
+		strata["Tooltip"] = "TOOLTIP"
+		local strataList = {
+			"Background",
+			"Low",
+			"Medium",
+			"High",
+			"Dialog",
+			"Fullscreen",
+			"Fullscreen Dialog",
+			"Tooltip"
+		}
+
+		for k, v in pairs(strataList) do
+			info.text = v
+			info.value = strata[v]
+			info.checked = strata[v] == settings.strata.level
+			info.func = self.SetValue			
+			info.arg1 = strata[v]
+			info.arg2 = v
+			UIDropDownMenu_AddButton(info, level)
+		end
+	end)
+
+	-- Implement the function to change the texture
+	function controls.dropDown.strata:SetValue(newValue, newName)
+		settings.strata.level = newValue
+		settings.strata.name = newName
+		barContainerFrame:SetFrameStrata(settings.strata.level)
+		UIDropDownMenu_SetText(controls.dropDown.strata, newName)
+		CloseDropDownMenus()
+	end
+
+
+	-------------------
+
 	interfaceSettingsFrame.controls = controls
 	
 end
