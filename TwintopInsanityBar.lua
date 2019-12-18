@@ -582,6 +582,10 @@ local function LoadDefaultSettings()
 			mindbender={
 				sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 				soundName="Boxing Arena Gong (TIB)"
+			},
+			channel={
+				name="Master",
+				channel="Master"
 			}
 		},
 		textures={
@@ -3285,7 +3289,7 @@ local function ConstructOptionsPanel()
 		settings.audio.s2mDeath.soundName = newName
 		UIDropDownMenu_SetText(controls.dropDown.s2mAudio, newName)
 		CloseDropDownMenus()
-		PlaySoundFile(settings.audio.s2mDeath.sound, "Master")
+		PlaySoundFile(settings.audio.s2mDeath.sound, settings.audio.channel.channel)
 	end
 
 	yCoord = yCoord - yOffset400
@@ -3535,7 +3539,7 @@ local function ConstructOptionsPanel()
 		settings.audio.mindbender.soundName = newName
 		UIDropDownMenu_SetText(controls.dropDown.mindbenderAudio, newName)
 		CloseDropDownMenus()
-		PlaySoundFile(settings.audio.mindbender.sound, "Master")
+		PlaySoundFile(settings.audio.mindbender.sound, settings.audio.channel.channel)
 	end
 
 	------------------------------------------------
@@ -3604,11 +3608,11 @@ local function ConstructOptionsPanel()
 	yCoord = yCoord - yOffset40
 	controls.textSection = BuildSectionHeader(parent, "Frame Strata", xCoord+xPadding, yCoord)
 
-	yCoord = yCoord - yOffset40
+	yCoord = yCoord - yOffset15 - yOffset15
 	
 	-- Create the dropdown, and configure its appearance
 	controls.dropDown.strata = CreateFrame("FRAME", "TIBFrameStrata", parent, "UIDropDownMenuTemplate")
-	controls.dropDown.strata.label = BuildSectionHeader(parent, "Frame Strata Level", xCoord+xPadding, yCoord)
+	controls.dropDown.strata.label = BuildSectionHeader(parent, "Frame Strata Level To Draw Bar On", xCoord+xPadding, yCoord)
 	controls.dropDown.strata.label.font:SetFontObject(GameFontNormal)
 	controls.dropDown.strata:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset400)
 	UIDropDownMenu_SetWidth(controls.dropDown.strata, 250)
@@ -3656,6 +3660,52 @@ local function ConstructOptionsPanel()
 		settings.strata.name = newName
 		barContainerFrame:SetFrameStrata(settings.strata.level)
 		UIDropDownMenu_SetText(controls.dropDown.strata, newName)
+		CloseDropDownMenus()
+	end
+
+
+	
+	yCoord = yCoord - yOffset40 - yOffset20
+	controls.textSection = BuildSectionHeader(parent, "Audio Channel", xCoord+xPadding, yCoord)
+
+	yCoord = yCoord - yOffset15 - yOffset15
+	
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.audioChannel = CreateFrame("FRAME", "TIBFrameAudioChannel", parent, "UIDropDownMenuTemplate")
+	controls.dropDown.audioChannel.label = BuildSectionHeader(parent, "Audio Channel To Use", xCoord+xPadding, yCoord)
+	controls.dropDown.audioChannel.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.audioChannel:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-yOffset400)
+	UIDropDownMenu_SetWidth(controls.dropDown.audioChannel, 250)
+	UIDropDownMenu_SetText(controls.dropDown.audioChannel, settings.audio.channel.name)
+	UIDropDownMenu_JustifyText(controls.dropDown.audioChannel, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	UIDropDownMenu_Initialize(controls.dropDown.audioChannel, function(self, level, menuList)
+		local entries = 25
+		local info = UIDropDownMenu_CreateInfo()
+		local channel = {}
+		channel["Master"] = "Master"
+		channel["SFX"] = "SFX"
+		channel["Music"] = "Music"
+		channel["Ambience"] = "Ambience"
+		channel["Dialog"] = "Dialog"
+
+		for k, v in pairs(channel) do
+			info.text = v
+			info.value = channel[v]
+			info.checked = channel[v] == settings.audio.channel.channel
+			info.func = self.SetValue			
+			info.arg1 = channel[v]
+			info.arg2 = v
+			UIDropDownMenu_AddButton(info, level)
+		end
+	end)
+
+	-- Implement the function to change the texture
+	function controls.dropDown.audioChannel:SetValue(newValue, newName)
+		settings.audio.channel.channel = newValue
+		settings.audio.channel.name = newName
+		UIDropDownMenu_SetText(controls.dropDown.audioChannel, newName)
 		CloseDropDownMenus()
 	end
 
@@ -4795,10 +4845,10 @@ function mindbenderAudioCueFrame:onUpdate(sinceLastUpdate)
 	if self.sinceLastUpdate >= 0.05 then -- in seconds	
 		if self.sinceLastPlay >= 0.75 and not snapshotData.mindbender.isActive then -- in seconds
 			if settings.mindbender.useNotification.useVoidformStacks == true and not snapshotData.mindbender.onCooldown and snapshotData.voidform.totalStacks >= settings.mindbender.useNotification.thresholdStacks then
-				PlaySoundFile(settings.audio.mindbender.sound, "Master", false)
+				PlaySoundFile(settings.audio.mindbender.sound, settings.audio.channel.channel, false)
 				self.sinceLastPlay = 0
 			elseif settings.mindbender.useNotification.useVoidformStacks == false and not snapshotData.mindbender.onCooldown and snapshotData.voidform.drainStacks >= settings.mindbender.useNotification.thresholdStacks then
-				PlaySoundFile(settings.audio.mindbender.sound, "Master", false)
+				PlaySoundFile(settings.audio.mindbender.sound, settings.audio.channel.channel, false)
 				self.sinceLastPlay = 0
 			end
 		end
@@ -4978,7 +5028,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		
 		if s2mDeath then
 			if settings.audio.s2mDeath.enabled then
-				PlaySoundFile(settings.audio.s2mDeath.sound, "Master")
+				PlaySoundFile(settings.audio.s2mDeath.sound, settings.audio.channel.channel)
 			end
 			
 			--[[
