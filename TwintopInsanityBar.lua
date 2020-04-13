@@ -1,5 +1,5 @@
-local addonVersion = "8.2.5.0"
-local addonReleaseDate = "December 18, 2019"
+local addonVersion = "9.0.0.0"
+local addonReleaseDate = "April 13, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent)
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
