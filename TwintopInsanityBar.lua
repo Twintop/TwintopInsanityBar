@@ -76,9 +76,6 @@ local characterData = {
 			isSelected = false,
 			modifier = 1.2
 		},
-		lotv = {
-			isSelected = false
-		},
 		as = {
 			isSelected = false
 		},
@@ -629,7 +626,6 @@ local function CheckCharacter()
 	characterData.maxInsanity = UnitPowerMax("player", SPELL_POWER_INSANITY)
 	characterData.specGroup = GetActiveSpecGroup()
 	characterData.talents.fotm.isSelected = select(4, GetTalentInfo(1, 1, characterData.specGroup))
-	characterData.talents.lotv.isSelected = select(4, GetTalentInfo(7, 1, characterData.specGroup))
 	characterData.talents.as.isSelected = select(4, GetTalentInfo(5, 1, characterData.specGroup))
 	characterData.talents.mindbender.isSelected = select(4, GetTalentInfo(6, 2, characterData.specGroup))
 		
@@ -639,11 +635,7 @@ local function CheckCharacter()
 	castingFrame:SetMinMaxValues(0, characterData.maxInsanity)	
 	passiveFrame:SetMinMaxValues(0, characterData.maxInsanity)	
 		
-	if characterData.talents.lotv.isSelected then
-		characterData.voidformThreshold = 60
-	else
-		characterData.voidformThreshold = 90
-	end
+	characterData.voidformThreshold = 90
 	
 	if characterData.voidformThreshold < characterData.maxInsanity then
 		insanityFrame.threshold:Show()
