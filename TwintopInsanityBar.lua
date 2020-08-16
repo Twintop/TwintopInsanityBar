@@ -1,10 +1,10 @@
-local addonVersion = "9.0.0.0"
-local addonReleaseDate = "August 12, 2020"
-local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent)
-local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame)
-local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame)
-local passiveFrame = CreateFrame("StatusBar", nil, barContainerFrame)
-local barBorderFrame = CreateFrame("StatusBar", nil, barContainerFrame)
+local addonVersion = "9.0.1.0"
+local addonReleaseDate = "August 16, 2020"
+local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
+local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
+local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
+local passiveFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
+local barBorderFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
 
 local leftTextFrame = CreateFrame("Frame", nil, barContainerFrame)
 local middleTextFrame = CreateFrame("Frame", nil, barContainerFrame)
@@ -136,14 +136,14 @@ local spells = {
 		id = 8092,
 		name = "",
 		icon = "",
-		insanity = 0,
+		insanity = 8,
 		fotm = true
 	},
 	devouringPlague = {
 		id = 335467,
 		name = "",
 		icon = "",
-		insanity = 8,
+		insanity = 0,
 		fotm = true
 	},
 	mindFlay = {
@@ -868,18 +868,19 @@ end
 
 local function ConstructInsanityBar()
 	barContainerFrame:Show()
-	--barContainerFrame:SetBackdrop({ bgFile = settings.textures.background,									
-	--								tile = true,
-	--								tileSize=settings.bar.width,
-	--								edgeSize=0,
-	--								insets = {0, 0, 0, 0}
-	--								})
+	barContainerFrame:SetBackdrop({
+		bgFile = settings.textures.background,
+		tile = true,
+		tileSize = settings.bar.width,
+		edgeSize = 1,
+		insets = {0, 0, 0, 0}
+	})
 	barContainerFrame:ClearAllPoints()
 	barContainerFrame:SetPoint("CENTER", UIParent)
 	barContainerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
-	--barContainerFrame:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))
-	barContainerFrame:SetWidth(settings.bar.width)
-	barContainerFrame:SetHeight(settings.bar.height)
+	barContainerFrame:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))
+	barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
+	barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
 	barContainerFrame:SetFrameStrata(settings.strata.level)
 	barContainerFrame:SetFrameLevel(0)
 
@@ -909,27 +910,38 @@ local function ConstructInsanityBar()
 		end
 	end)
 
-	barBorderFrame:Show()
 	if settings.bar.border < 1 then
-	--	barBorderFrame:SetBackdrop({ })
+		barBorderFrame:Show()
+		barBorderFrame.backdropInfo = {
+			edgeFile = settings.textures.border,
+			tile = true,
+			tileSize=4,
+			edgeSize = 1,
+			insets = {0, 0, 0, 0}
+		}
+		barBorderFrame:ApplyBackdrop()
+		barBorderFrame:Hide()
 	else
-	--	barBorderFrame:SetBackdrop({ edgeFile = settings.textures.border,
-	--								tile = true,
-	--								tileSize=4,
-	--								edgeSize=settings.bar.border,
-	--								insets = {0, 0, 0, 0}
-	--								})
+		barBorderFrame:Show()
+		barBorderFrame.backdropInfo = {
+			edgeFile = settings.textures.border,
+			tile = true,
+			tileSize = 4,
+			edgeSize = settings.bar.border,
+			insets = {0, 0, 0, 0}
+		}
+		barBorderFrame:ApplyBackdrop()
 	end
+
 	barBorderFrame:ClearAllPoints()
 	barBorderFrame:SetPoint("CENTER", barContainerFrame)
 	barBorderFrame:SetPoint("CENTER", 0, 0)
-	--barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-	--barBorderFrame:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
+	barBorderFrame:SetBackdropColor(0, 0, 0, 0)
+	barBorderFrame:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
 	barBorderFrame:SetWidth(settings.bar.width)
 	barBorderFrame:SetHeight(settings.bar.height)
-	--barBorderFrame:SetFrameStrata(settings.strata.level)
+	barBorderFrame:SetFrameStrata(settings.strata.level)
 	barBorderFrame:SetFrameLevel(126)
-
 
 	insanityFrame:Show()
 	insanityFrame:SetMinMaxValues(0, 100)
@@ -938,7 +950,7 @@ local function ConstructInsanityBar()
 	insanityFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
 	insanityFrame:SetStatusBarTexture(settings.textures.insanityBar)
 	insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
-	--insanityFrame:SetFrameStrata(ettings.strata.level)
+	insanityFrame:SetFrameStrata(settings.strata.level)
 	insanityFrame:SetFrameLevel(125)
 	
 	insanityFrame.threshold:SetWidth(settings.thresholdWidth)
@@ -946,7 +958,7 @@ local function ConstructInsanityBar()
 	insanityFrame.threshold.texture = insanityFrame.threshold:CreateTexture(nil, settings.strata.level)
 	insanityFrame.threshold.texture:SetAllPoints(insanityFrame.threshold)
 	insanityFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
-	--insanityFrame.threshold:SetFrameStrata(settings.strata.level)
+	insanityFrame.threshold:SetFrameStrata(settings.strata.level)
 	insanityFrame.threshold:SetFrameLevel(128)
 	insanityFrame.threshold:Show()
 	
@@ -957,7 +969,7 @@ local function ConstructInsanityBar()
 	castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
 	castingFrame:SetStatusBarTexture(settings.textures.castingBar)
 	castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting))
-	--castingFrame:SetFrameStrata(settings.strata.level)
+	castingFrame:SetFrameStrata(settings.strata.level)
 	castingFrame:SetFrameLevel(90)
 	
 	passiveFrame:Show()
@@ -967,7 +979,7 @@ local function ConstructInsanityBar()
 	passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
 	passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
 	passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive))
-	--passiveFrame:SetFrameStrata(settings.strata.level)
+	passiveFrame:SetFrameStrata(settings.strata.level)
 	passiveFrame:SetFrameLevel(80)
 	
 	passiveFrame.threshold:SetWidth(settings.thresholdWidth)
@@ -975,7 +987,7 @@ local function ConstructInsanityBar()
 	passiveFrame.threshold.texture = passiveFrame.threshold:CreateTexture(nil, settings.strata.level)
 	passiveFrame.threshold.texture:SetAllPoints(passiveFrame.threshold)
 	passiveFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
-	--passiveFrame.threshold:SetFrameStrata(settings.strata.level)
+	passiveFrame.threshold:SetFrameStrata(settings.strata.level)
 	passiveFrame.threshold:SetFrameLevel(127)
 	passiveFrame.threshold:Show()
 	
@@ -983,7 +995,7 @@ local function ConstructInsanityBar()
 	leftTextFrame:SetWidth(settings.bar.width)
 	leftTextFrame:SetHeight(settings.bar.height * 3.5)
 	leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 2, 0)
-	--leftTextFrame:SetFrameStrata(settings.strata.level)
+	leftTextFrame:SetFrameStrata(settings.strata.level)
 	leftTextFrame:SetFrameLevel(129)
 	leftTextFrame.font:SetPoint("LEFT", 0, 0)
 	leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
@@ -995,7 +1007,7 @@ local function ConstructInsanityBar()
 	middleTextFrame:SetWidth(settings.bar.width)
 	middleTextFrame:SetHeight(settings.bar.height * 3.5)
 	middleTextFrame:SetPoint("CENTER", barContainerFrame, "CENTER", 0, 0)
-	--middleTextFrame:SetFrameStrata(settings.strata.level)
+	middleTextFrame:SetFrameStrata(settings.strata.level)
 	middleTextFrame:SetFrameLevel(129)
 	middleTextFrame.font:SetPoint("CENTER", 0, 0)
 	middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
@@ -1007,7 +1019,7 @@ local function ConstructInsanityBar()
 	rightTextFrame:SetWidth(settings.bar.width)
 	rightTextFrame:SetHeight(settings.bar.height * 3.5)
 	rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-	--rightTextFrame:SetFrameStrata(settings.strata.level)
+	rightTextFrame:SetFrameStrata(settings.strata.level)
 	rightTextFrame:SetFrameLevel(129)
 	rightTextFrame.font:SetPoint("RIGHT", 0, 0)
 	rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
@@ -1018,8 +1030,8 @@ end
 
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
 local function BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
-	local f = CreateFrame("Slider", nil, parent)
-	f.EditBox = CreateFrame("EditBox", nil, f)
+	local f = CreateFrame("Slider", nil, parent, "BackdropTemplate")
+	f.EditBox = CreateFrame("EditBox", nil, f, "BackdropTemplate")
 	f:SetPoint("TOPLEFT", posX, posY)
 	f:SetMinMaxValues(minValue, maxValue)
 	f:SetValueStep(stepValue)
@@ -1027,31 +1039,31 @@ local function BuildSlider(parent, title, minValue, maxValue, defaultValue, step
     f:EnableMouseWheel(true)
 	f:SetObeyStepOnDrag(true)
     f:SetOrientation("Horizontal")
-    --f:SetBackdrop({
-    --    bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
-    --    edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
-    --    tile = true,
-    --    edgeSize = 8,
-    --    tileSize = 8,
-    --    insets = {left = 3, right = 3, top = 6, bottom = 6}
-    --})
-    --f:SetBackdropBorderColor(0.7, 0.7, 0.7, 1.0)
-    -- f:SetScript("OnEnter", function(self)
-    --     self:SetBackdropBorderColor(1, 1, 1, 1)
-    -- end)
-	-- f:SetScript("OnLeave", function(self)
-    --     self:SetBackdropBorderColor(0.7, 0.7, 0.7, 1.0)
-    -- end)
-    -- f:SetScript("OnMouseWheel", function(self, delta)
-    --     if delta > 0 then
-    --         self:SetValue(self:GetValue() + self:GetValueStep())
-    --     else
-    --         self:SetValue(self:GetValue() - self:GetValueStep())
-    --     end
-    -- end)
-    -- f:SetScript("OnValueChanged", function(self, value)
-	-- 	self.EditBox:SetText(value)
-	-- end)	
+    f:SetBackdrop({
+       bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
+       edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
+       tile = true,
+       edgeSize = 8,
+       tileSize = 8,
+       insets = {left = 3, right = 3, top = 6, bottom = 6}
+	})
+    f:SetBackdropBorderColor(0.7, 0.7, 0.7, 1.0)
+    f:SetScript("OnEnter", function(self)
+        self:SetBackdropBorderColor(1, 1, 1, 1)
+    end)
+	f:SetScript("OnLeave", function(self)
+        self:SetBackdropBorderColor(0.7, 0.7, 0.7, 1.0)
+    end)
+    f:SetScript("OnMouseWheel", function(self, delta)
+        if delta > 0 then
+            self:SetValue(self:GetValue() + self:GetValueStep())
+        else
+            self:SetValue(self:GetValue() - self:GetValueStep())
+        end
+    end)
+    f:SetScript("OnValueChanged", function(self, value)
+		self.EditBox:SetText(value)
+	end)	
     f.MinLabel = f:CreateFontString(nil, "Overlay")
     f.MinLabel:SetFontObject(GameFontHighlightSmall)
     f.MinLabel:SetSize(0, 14)
@@ -1084,21 +1096,21 @@ local function BuildSlider(parent, title, minValue, maxValue, defaultValue, step
     eb:SetSize(50, 14)
     eb:SetPoint("Top", f, "Bottom", 0, -1)
     eb:SetTextInsets(4, 4, 0, 0)
-    -- eb:SetBackdrop({
-    --     bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-    --     edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
-    --     tile = true,
-    --     edgeSize = 1,
-    --     tileSize = 5
-    -- })
-    -- eb:SetBackdropColor(0, 0, 0, 1)
-    -- eb:SetBackdropBorderColor(0.2, 0.2, 0.2, 1.0)
-    -- eb:SetScript("OnEnter", function(self)
-    --     self:SetBackdropBorderColor(0.4, 0.4, 0.4, 1.0)
-    -- end)
-    -- eb:SetScript("OnLeave", function(self)
-    --     self:SetBackdropBorderColor(0.2, 0.2, 0.2, 1.0)
-    -- end)
+    eb:SetBackdrop({
+        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        tile = true,
+        edgeSize = 1,
+        tileSize = 5
+	})
+    eb:SetBackdropColor(0, 0, 0, 1)
+    eb:SetBackdropBorderColor(0.2, 0.2, 0.2, 1.0)
+    eb:SetScript("OnEnter", function(self)
+        self:SetBackdropBorderColor(0.4, 0.4, 0.4, 1.0)
+    end)
+    eb:SetScript("OnLeave", function(self)
+        self:SetBackdropBorderColor(0.2, 0.2, 0.2, 1.0)
+    end)
     eb:SetScript("OnMouseWheel", function(self, delta)
         if delta > 0 then
             f:SetValue(f:GetValue() + f:GetValueStep())
@@ -1162,7 +1174,7 @@ local function BuildSlider(parent, title, minValue, maxValue, defaultValue, step
 end
 
 local function BuildTextBox(parent, text, maxLetters, width, height, xPos, yPos)
-	local f = CreateFrame("EditBox", nil, parent)
+	local f = CreateFrame("EditBox", nil, parent, "BackdropTemplate")
 	f:SetPoint("TOPLEFT", xPos, yPos)
 	f:SetAutoFocus(false)
 	f:SetMaxLetters(maxLetters)
@@ -1170,21 +1182,21 @@ local function BuildTextBox(parent, text, maxLetters, width, height, xPos, yPos)
     f:SetFontObject(GameFontHighlight)
     f:SetSize(width, height)
     f:SetTextInsets(4, 4, 0, 0)
-    -- f:SetBackdrop({
-    --     bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-    --     edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
-    --     tile = true,
-    --     edgeSize = 1,
-    --     tileSize = 5
-    -- })
-    -- f:SetBackdropColor(0, 0, 0, 1)
-    -- f:SetBackdropBorderColor(0.2, 0.2, 0.2, 1.0)
-    -- f:SetScript("OnEnter", function(self)
-    --     self:SetBackdropBorderColor(0.4, 0.4, 0.4, 1.0)
-    -- end)
-    -- f:SetScript("OnLeave", function(self)
-    --     self:SetBackdropBorderColor(0.2, 0.2, 0.2, 1.0)
-    -- end)
+    f:SetBackdrop({
+        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        tile = true,
+        edgeSize = 1,
+        tileSize = 5
+	})
+    f:SetBackdropColor(0, 0, 0, 1)
+    f:SetBackdropBorderColor(0.2, 0.2, 0.2, 1.0)
+    f:SetScript("OnEnter", function(self)
+        self:SetBackdropBorderColor(0.4, 0.4, 0.4, 1.0)
+    end)
+    f:SetScript("OnLeave", function(self)
+        self:SetBackdropBorderColor(0.2, 0.2, 0.2, 1.0)
+    end)
     f:SetScript("OnEscapePressed", function(self)
         self:ClearFocus()
     end)
@@ -1250,10 +1262,15 @@ local function ShowColorPicker(r, g, b, a, callback)
 end
 
 local function BuildColorPicker(parent, description, settingsEntry, sizeTotal, sizeFrame, posX, posY)
-	local f = CreateFrame("Button", nil, parent)
+	local f = CreateFrame("Button", nil, parent, "BackdropTemplate")
 	f:SetSize(sizeFrame, sizeFrame)
 	f:SetPoint("TOPLEFT", posX, posY)
-	-- f:SetBackdrop({edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize=4, edgeSize=12})
+	f:SetBackdrop({
+		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", 
+		tile = true, 
+		tileSize=4, 
+		edgeSize=12
+	})
 	f.Texture = f:CreateTexture(nil, settings.strata.level)
 	f.Texture:ClearAllPoints()
 	f.Texture:SetPoint("TOPLEFT", 4, -4)
@@ -1543,7 +1560,7 @@ local function ConstructOptionsPanel()
 		castingFrame:SetWidth(value-(settings.bar.border*2))
 		passiveFrame:SetWidth(value-(settings.bar.border*2))
 		RepositionInsanityFrameThreshold()
-		local maxBorderSize = math.min(math.floor(settings.bar.height/ 8), math.floor(settings.bar.width / 8))
+		local maxBorderSize = math.min(math.floor(settings.bar.height / 8), math.floor(settings.bar.width / 8))
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 	end)
@@ -1570,7 +1587,7 @@ local function ConstructOptionsPanel()
 		leftTextFrame:SetHeight(settings.bar.height * 3.5)
 		middleTextFrame:SetHeight(settings.bar.height * 3.5)
 		rightTextFrame:SetHeight(settings.bar.height * 3.5)
-		local maxBorderSize = math.min(math.floor(settings.bar.height/ 8), math.floor(settings.bar.width / 8))
+		local maxBorderSize = math.min(math.floor(settings.bar.height / 8), math.floor(settings.bar.width / 8))
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 	end)
@@ -1628,14 +1645,23 @@ local function ConstructOptionsPanel()
 		barBorderFrame:SetWidth(settings.bar.width)
 		barBorderFrame:SetHeight(settings.bar.height)
 		if settings.bar.border < 1 then
-			barBorderFrame:SetBackdrop({ })
+			barBorderFrame:SetBackdrop({
+				edgeFile = settings.textures.border,
+				tile = true,
+				tileSize = 4,
+				edgeSize = 1,
+				insets = {0, 0, 0, 0}
+			})
+			barBorderFrame:Hide()
 		else
-			barBorderFrame:SetBackdrop({ edgeFile = settings.textures.border,
-										tile = true,
-										tileSize=4,
-										edgeSize=settings.bar.border,								
-										insets = {0, 0, 0, 0}
-										})
+			barBorderFrame:SetBackdrop({ 
+				edgeFile = settings.textures.border,
+				tile = true,
+				tileSize=4,
+				edgeSize=settings.bar.border,								
+				insets = {0, 0, 0, 0}
+			})
+			barBorderFrame:Show()
 		end
 		barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 		barBorderFrame:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
@@ -2000,12 +2026,13 @@ local function ConstructOptionsPanel()
 	function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
 		settings.textures.background = newValue
 		settings.textures.backgroundName = newName
-		barContainerFrame:SetBackdrop({ bgFile = settings.textures.background,									
-										tile = true,
-										tileSize=settings.bar.width,
-										edgeSize=0,
-										insets = {0, 0, 0, 0}
-										})
+		barContainerFrame:SetBackdrop({ 
+			bgFile = settings.textures.background,		
+			tile = true,
+			tileSize = settings.bar.width,
+			edgeSize = 1,
+			insets = {0, 0, 0, 0}
+		})
 		barContainerFrame:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))
 		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, newName)
 		CloseDropDownMenus()
@@ -2643,7 +2670,7 @@ local function ConstructOptionsPanel()
 
 		controls.colors.middleText.Texture:SetColorTexture(r, g, b, a)
 		settings.colors.text.middle = ConvertColorDecimalToHex(r, g, b, a)
-		barContainerFrame:SetBackdropBorderColor(r, g, b, a)
+		--barContainerFrame:SetBackdropBorderColor(r, g, b, a)
 	end
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		if button == "LeftButton" then
@@ -2668,7 +2695,7 @@ local function ConstructOptionsPanel()
 
 		controls.colors.rightText.Texture:SetColorTexture(r, g, b, a)
 		settings.colors.text.right = ConvertColorDecimalToHex(r, g, b, a)
-		barContainerFrame:SetBackdropBorderColor(r, g, b, a)
+		--barContainerFrame:SetBackdropBorderColor(r, g, b, a)
 	end
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		if button == "LeftButton" then
@@ -2756,7 +2783,7 @@ local function ConstructOptionsPanel()
 
 		controls.colors.castingInsanityText.Texture:SetColorTexture(r, g, b, a)
 		settings.colors.text.castingInsanity = ConvertColorDecimalToHex(r, g, b, a)
-		barContainerFrame:SetBackdropBorderColor(r, g, b, a)
+		--barContainerFrame:SetBackdropBorderColor(r, g, b, a)
 	end
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		if button == "LeftButton" then
