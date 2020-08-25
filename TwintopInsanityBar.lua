@@ -1,5 +1,5 @@
-local addonVersion = "9.0.1.0"
-local addonReleaseDate = "August 16, 2020"
+local addonVersion = "9.0.1.1"
+local addonReleaseDate = "August 26, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -1337,6 +1337,15 @@ local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, 
 	return f
 end
 
+local function CreateScrollFrameContainer(name, parent)
+	local sf = CreateFrame("ScrollFrame", name, parent, "UIPanelScrollFrameTemplate")
+	sf.scrollChild = CreateFrame("Frame")
+	sf.scrollChild:SetWidth(350)
+	sf.scrollChild:SetHeight(450)
+	sf:SetScrollChild(sf.scrollChild)
+	return sf
+end
+
 local function ConstructOptionsPanel()
 	local xPadding = 10
 	local xPadding2 = 30
@@ -1506,39 +1515,39 @@ local function ConstructOptionsPanel()
 
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.panel)
 	
-	interfaceSettingsFrame.barLayoutPanel = CreateFrame("Frame", "TwintopInsanityBar_BarLayoutPanel", parent)
+	interfaceSettingsFrame.barLayoutPanel = CreateScrollFrameContainer("TwintopInsanityBar_BarLayoutPanel", parent)
 	interfaceSettingsFrame.barLayoutPanel.name = "Bar Layout and Textures"
 	interfaceSettingsFrame.barLayoutPanel.parent = parent.name
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.barLayoutPanel)
 	
-	interfaceSettingsFrame.barFontPanel = CreateFrame("Frame", "TwintopInsanityBar_BarFontPanel", parent)
+	interfaceSettingsFrame.barFontPanel = CreateScrollFrameContainer("TwintopInsanityBar_BarFontPanel", parent)
 	interfaceSettingsFrame.barFontPanel.name = "Bar Fonts"
 	interfaceSettingsFrame.barFontPanel.parent = parent.name
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.barFontPanel)
 	
-	interfaceSettingsFrame.barColorPanel = CreateFrame("Frame", "TwintopInsanityBar_barColorPanel", parent)
+	interfaceSettingsFrame.barColorPanel = CreateScrollFrameContainer("TwintopInsanityBar_barColorPanel", parent)
 	interfaceSettingsFrame.barColorPanel.name = "Bar Colors"
 	interfaceSettingsFrame.barColorPanel.parent = parent.name
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.barColorPanel)
 	
-	interfaceSettingsFrame.barTextPanel = CreateFrame("Frame", "TwintopInsanityBar_BarTextPanel", parent)
+	interfaceSettingsFrame.barTextPanel = CreateScrollFrameContainer("TwintopInsanityBar_BarTextPanel", parent)
 	interfaceSettingsFrame.barTextPanel.name = "Bar Text Display"
 	interfaceSettingsFrame.barTextPanel.parent = parent.name
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.barTextPanel)
 	
-	interfaceSettingsFrame.optionalFeaturesPanel = CreateFrame("Frame", "TwintopInsanityBar_OptionalFeaturesPanel", parent)
+	interfaceSettingsFrame.optionalFeaturesPanel = CreateScrollFrameContainer("TwintopInsanityBar_OptionalFeaturesPanel", parent)
 	interfaceSettingsFrame.optionalFeaturesPanel.name = "Optional Features"
 	interfaceSettingsFrame.optionalFeaturesPanel.parent = parent.name
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.optionalFeaturesPanel)
 	
-	interfaceSettingsFrame.advancedConfigurationPanel = CreateFrame("Frame", "TwintopInsanityBar_AdvancedConfigurationPanel", parent)
+	interfaceSettingsFrame.advancedConfigurationPanel = CreateScrollFrameContainer("TwintopInsanityBar_AdvancedConfigurationPanel", parent)
 	interfaceSettingsFrame.advancedConfigurationPanel.name = "Advanced Configuration"
 	interfaceSettingsFrame.advancedConfigurationPanel.parent = parent.name
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.advancedConfigurationPanel)
 
 	
 	yCoord = -5
-	parent = interfaceSettingsFrame.barLayoutPanel
+	parent = interfaceSettingsFrame.barLayoutPanel.scrollChild
 	controls.barPositionSection = BuildSectionHeader(parent, "Bar Position and Size", xCoord+xPadding, yCoord)
 	
 	yCoord = yCoord - yOffset40
@@ -2150,7 +2159,7 @@ local function ConstructOptionsPanel()
 	------------------------------------------------
 
 	yCoord = -5
-	parent = interfaceSettingsFrame.barColorPanel
+	parent = interfaceSettingsFrame.barColorPanel.scrollChild
 
 	controls.barColorsSection = BuildSectionHeader(parent, "Bar Colors", xCoord+xPadding, yCoord)
 
@@ -2377,7 +2386,7 @@ local function ConstructOptionsPanel()
 
 
 	yCoord = -5
-	parent = interfaceSettingsFrame.barFontPanel
+	parent = interfaceSettingsFrame.barFontPanel.scrollChild
 
 	controls.textDisplaySection = BuildSectionHeader(parent, "Font Face", xCoord+xPadding, yCoord)
 
@@ -2922,7 +2931,7 @@ local function ConstructOptionsPanel()
 	------------------------------------------------
 
 	yCoord = -5
-	parent = interfaceSettingsFrame.barTextPanel
+	parent = interfaceSettingsFrame.barTextPanel.scrollChild
 
 	controls.textCustomSection = BuildSectionHeader(parent, "Bar Display Text Customization", xCoord+xPadding, yCoord)
 
@@ -3170,7 +3179,7 @@ local function ConstructOptionsPanel()
 	---------------------------
 
 	yCoord = -5
-	parent = interfaceSettingsFrame.optionalFeaturesPanel
+	parent = interfaceSettingsFrame.optionalFeaturesPanel.scrollChild
 
 	controls.textSection = BuildSectionHeader(parent, "Passive Options", xCoord+xPadding, yCoord)
 
@@ -3616,7 +3625,7 @@ local function ConstructOptionsPanel()
 	------------------------------------------------
 
 	yCoord = -5
-	parent = interfaceSettingsFrame.advancedConfigurationPanel
+	parent = interfaceSettingsFrame.advancedConfigurationPanel.scrollChild
 
 	controls.textSection = BuildSectionHeader(parent, "Time To Die", xCoord+xPadding, yCoord)
 
