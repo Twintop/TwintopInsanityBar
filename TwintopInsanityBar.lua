@@ -1,5 +1,5 @@
 local addonVersion = "9.0.1.1"
-local addonReleaseDate = "August 26, 2020"
+local addonReleaseDate = "August 27, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -69,7 +69,7 @@ Global_TwintopInsanityBar = {
 local characterData = {
 	guid = UnitGUID("player"),
 	maxInsanity = 100,
-	voidformThreshold = 90,
+	devouringPlagueThreshold = 50,
 	specGroup = GetActiveSpecGroup(),
 	talents = {
 		fotm = {
@@ -495,7 +495,7 @@ local function LoadDefaultSettings()
 		hasteApproachingThreshold=135,
 		hasteThreshold=140,
 		hastePrecision=2,
-		voidEruptionThreshold=true,
+		devouringPlagueThreshold=true,
 		thresholdWidth=2,
 		auspiciousSpiritsTracker=true,
 		dataRefreshRate = 5.0,
@@ -618,7 +618,95 @@ local function RepositionInsanityFrameThreshold()
 	insanityFrame.threshold:SetPoint("CENTER",
 									 insanityFrame,
 									 "LEFT",
-									 math.ceil((settings.bar.width - (settings.bar.border * 2)) * (characterData.voidformThreshold / characterData.maxInsanity) + math.ceil(settings.thresholdWidth / 2)), 0)
+									 math.ceil((settings.bar.width - (settings.bar.border * 2)) * (characterData.devouringPlagueThreshold / characterData.maxInsanity) + math.ceil(settings.thresholdWidth / 2)), 0)
+end
+
+
+local barTextVariables = {}
+
+local function FillBarTextVariables()
+	barTextVariables = {		
+		icons = {
+			{ variable = "#casting", icon = "", description = "The icon of the Insanity Generating Spell you are currently hardcasting", printInSettings = true },
+
+			{ variable = "#vf", icon = spells.voidform.icon, description = "Voidform", printInSettings = true },
+			{ variable = "#voidform", icon = spells.voidform.icon, description = "Voidform", printInSettings = false },
+
+			{ variable = "#mb", icon = spells.mindBlast.icon, description = "Mind Blast", printInSettings = true },
+			{ variable = "#mindBlast", icon = spells.mindBlast.icon, description = "Mind Blast", printInSettings = false },
+			{ variable = "#mf", icon = spells.mindFlay.icon, description = "Mind Flay", printInSettings = true },
+			{ variable = "#mindFlay", icon = spells.mindFlay.icon, description = "Mind Flay", printInSettings = false },
+			{ variable = "#ms", icon = spells.mindSear.icon, description = "Mind Sear", printInSettings = true },
+			{ variable = "#mindSear", icon = spells.mindSear.icon, description = "Mind Sear", printInSettings = false },
+			{ variable = "#voit", icon = spells.voidTorrent.icon, description = "Void Torrent", printInSettings = true },
+			{ variable = "#voidTorrent", icon = spells.voidTorrent.icon, description = "Void Torrent", printInSettings = false },
+			{ variable = "#dam", icon = spells.deathAndMadness.icon, description = "Death and Madness", printInSettings = true },
+			{ variable = "#deathAndMadness", icon = spells.deathAndMadness.icon, description = "Death and Madness", printInSettings = false },
+
+			{ variable = "#swp", icon = spells.shadowWordPain.icon, description = "Shadow Word: Pain", printInSettings = true },
+			{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = "Shadow Word: Pain", printInSettings = false },
+			{ variable = "#vt", icon = spells.vampiricTouch.icon, description = "Vampiric Touch", printInSettings = true },
+			{ variable = "#vampiricTouch", icon = spells.vampiricTouch.icon, description = "Vampiric Touch", printInSettings = false },
+			{ variable = "#dp", icon = spells.devouringPlague.icon, description = "Devouring Plague", printInSettings = true },
+			{ variable = "#devouringPlague", icon = spells.devouringPlague.icon, description = "Devouring Plague", printInSettings = false },
+
+			{ variable = "#as", icon = spells.auspiciousSpirits.icon, description = "Auspicious Spirits", printInSettings = true },
+			{ variable = "#auspiciousSpirits", icon = spells.auspiciousSpirits.icon, description = "Auspicious Spirits", printInSettings = false },
+			{ variable = "#sa", icon = spells.shadowyApparition.icon, description = "Shadowy Apparition", printInSettings = true },
+			{ variable = "#shadowyApparition", icon = spells.shadowyApparition.icon, description = "Shadowy Apparition", printInSettings = false },
+
+			{ variable = "#mindbender", icon = spells.mindbender.icon, description = "Mindbender/Shadowfiend", printInSettings = false },
+			{ variable = "#shadowfiend", icon = spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = false },
+			{ variable = "#sf", icon = spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = true },
+
+			{ variable = "#md", icon = spells.massDispel.icon, description = "Mass Dispel", printInSettings = true },
+			{ variable = "#massDispel", icon = spells.massDispel.icon, description = "Mass Dispel", printInSettings = false }
+		},
+		values = {
+			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
+			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
+			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
+			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
+
+			{ variable = "$insanity", description = "Current Insanity", printInSettings = true, color = false },
+			{ variable = "$casting", description = "Insanity from Hardcasting Spells", printInSettings = true, color = false },
+			{ variable = "$passive", description = "Insanity from Passive Sources", printInSettings = true, color = false },
+			{ variable = "$insanityPlusCasting", description = "Current + Casting Insanity Total", printInSettings = true, color = false },
+			{ variable = "$insanityPlusPassive", description = "Current + Passive Insanity Total", printInSettings = true, color = false },
+			{ variable = "$insanityTotal", description = "Current + Passive + Casting Insanity Total", printInSettings = true, color = false },   
+
+			{ variable = "$damInsanity", description = "Insanity from Death and Insanity", printInSettings = true, color = false },
+			{ variable = "$damTicks", description = "Number of ticks left on Death and Insanity", printInSettings = true, color = false },
+
+			{ variable = "$mbInsanity", description = "Insanity from Mindbender/Shadowfiend (per settings)", printInSettings = true, color = false },
+			{ variable = "$mbGcds", description = "Number of GCDs left on Mindbender/Shadowfiend", printInSettings = true, color = false },
+			{ variable = "$mbSwings", description = "Number of Swings left on Mindbender/Shadowfiend", printInSettings = true, color = false },
+			{ variable = "$mbTime", description = "Time left on Mindbender/Shadowfiend", printInSettings = true, color = false },
+
+			{ variable = "$asInsanity", description = "Insanity from Auspicious Spirits", printInSettings = true, color = false },
+			{ variable = "$asCount", description = "Number of Auspicious Spirits in Flight", printInSettings = true, color = false },
+
+			{ variable = "$swpCount", description = "Number of Shadow Word: Pains active on targets", printInSettings = true, color = false },
+			{ variable = "$vtCount", description = "Number of Vampiric Touches active on targets", printInSettings = true, color = false },
+			{ variable = "$dpCount", description = "Number of Devouring Plagues active on targets", printInSettings = true, color = false },
+
+			{ variable = "$vfIncoming", description = "Incoming Voidform Stacks", printInSettings = true, color = false },
+			{ variable = "$vfStacks", description = "Current Voidform Stack Count", printInSettings = true, color = false },
+			{ variable = "$vfDrainStacks", description = "Current Voidform Drain Stacks Count", printInSettings = true, color = false },
+			{ variable = "$vfDrain", description = "Insanity drained per second", printInSettings = true, color = false },
+			{ variable = "$vfTime", description = "Time until Voidform will end", printInSettings = true, color = false },
+
+			{ variable = "$ttd", description = "Time To Die of current target", printInSettings = true, color = false }
+		},
+		pipe = {
+			{ variable = "||n", description = "Insert a Newline", printInSettings = true },
+			{ variable = "||c", description = "", printInSettings = false },
+			{ variable = "||r", description = "", printInSettings = false },
+		},
+		percent = {
+			{ variable = "%%" }
+		}
+	}
 end
 
 local function CheckCharacter()
@@ -630,14 +718,15 @@ local function CheckCharacter()
 	characterData.talents.mindbender.isSelected = select(4, GetTalentInfo(6, 2, characterData.specGroup))
 		
 	FillSpellData()
+	FillBarTextVariables()
 
 	insanityFrame:SetMinMaxValues(0, characterData.maxInsanity)
 	castingFrame:SetMinMaxValues(0, characterData.maxInsanity)	
 	passiveFrame:SetMinMaxValues(0, characterData.maxInsanity)	
 		
-	characterData.voidformThreshold = 90
+	characterData.devouringPlagueThreshold = 50
 	
-	if characterData.voidformThreshold < characterData.maxInsanity then
+	if characterData.devouringPlagueThreshold < characterData.maxInsanity then
 		insanityFrame.threshold:Show()
 		RepositionInsanityFrameThreshold()
 	else
@@ -1340,8 +1429,8 @@ end
 local function CreateScrollFrameContainer(name, parent)
 	local sf = CreateFrame("ScrollFrame", name, parent, "UIPanelScrollFrameTemplate")
 	sf.scrollChild = CreateFrame("Frame")
-	sf.scrollChild:SetWidth(350)
-	sf.scrollChild:SetHeight(450)
+	sf.scrollChild:SetWidth(620)
+	sf.scrollChild:SetHeight(565)
 	sf:SetScrollChild(sf.scrollChild)
 	return sf
 end
@@ -1360,6 +1449,7 @@ local function ConstructOptionsPanel()
 	local yOffset30 = 30
 	local yOffset40 = 40
 	local yOffset30 = 30
+	local yOffset25 = 25
 	local yOffset20 = 20
 	local yOffset15 = 15
 	local yOffset10 = 10
@@ -2149,11 +2239,11 @@ local function ConstructOptionsPanel()
 	controls.checkBoxes.vfThresholdShow = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.vfThresholdShow
 	f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
-	getglobal(f:GetName() .. 'Text'):SetText("Show Void Eruption Threshold Line")
-	f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Void Eruption."
-	f:SetChecked(settings.voidEruptionThreshold)
+	getglobal(f:GetName() .. 'Text'):SetText("Show Devouring Plague Threshold Line")
+	f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Devouring Plague."
+	f:SetChecked(settings.devouringPlagueThreshold)
 	f:SetScript("OnClick", function(self, ...)
-		settings.voidEruptionThreshold = self:GetChecked()
+		settings.devouringPlagueThreshold = self:GetChecked()
 	end)
 
 	------------------------------------------------
@@ -3084,55 +3174,6 @@ local function ConstructOptionsPanel()
 	f.font:SetSize(600, 20)
 	f.font:SetText("For conditional display (only if $VARIABLE is active/non-zero): {$VARIABLE}[WHAT TO DISPLAY]")
 
-	yCoord = yCoord - yOffset15
-	controls.labels.vfStacksVar = BuildDisplayTextHelpEntry(parent, "$vfStacks", "Current Voidform Stack Count", xCoord, yCoord, 85, 200)
-	controls.labels.insanityVar = BuildDisplayTextHelpEntry(parent, "$insanity", "Current Insanity", xCoord2-70, yCoord, 130, 225)
-
-	yCoord = yCoord - yOffset15
-	controls.labels.vfStacksIncomingVar = BuildDisplayTextHelpEntry(parent, "$vfIncoming", "Incoming Voidform Stacks", xCoord, yCoord, 85, 200)
-	controls.labels.insanityTotalVar = BuildDisplayTextHelpEntry(parent, "$insanityTotal", "Current + Passive + Casting Insanity Total", xCoord2-70, yCoord, 130, 225)
-
-
-	yCoord = yCoord - yOffset15
-	controls.labels.vfDrainStacksVar = BuildDisplayTextHelpEntry(parent, "$vfDrainStacks", "Current Voidform Drain Stacks Count", xCoord, yCoord, 85, 200)
-	controls.labels.castingVar = BuildDisplayTextHelpEntry(parent, "$casting", "Insanity from Hardcasting Spells", xCoord2-70, yCoord, 130, 225)
-
-
-	yCoord = yCoord - yOffset15
-	controls.labels.vfDrainVar = BuildDisplayTextHelpEntry(parent, "$vfDrain", "Insanity drained per second", xCoord, yCoord, 85, 200)
-	controls.labels.insanityPlusCastingVar = BuildDisplayTextHelpEntry(parent, "$insanityPlusCasting", "Current + Casting Insanity Total", xCoord2-70, yCoord, 130, 225)
-
-	yCoord = yCoord - yOffset15
-	controls.labels.vfTimeVar = BuildDisplayTextHelpEntry(parent, "$vfTime", "Time until Voidform will end", xCoord, yCoord, 85, 200)
-	controls.labels.insanityPlusPassiveVar = BuildDisplayTextHelpEntry(parent, "$insanityPlusPassive", "Current + Passive Insanity Total", xCoord2-70, yCoord, 130, 225)
-
-	yCoord = yCoord - yOffset15
-	controls.labels.critVar = BuildDisplayTextHelpEntry(parent, "$crit", "Current Crit%", xCoord, yCoord, 85, 200)
-	controls.labels.passiveVar = BuildDisplayTextHelpEntry(parent, "$passive", "Insanity from Passive Sources", xCoord2-70, yCoord, 130, 225)
-	
-	yCoord = yCoord - yOffset15
-	controls.labels.masteryVar = BuildDisplayTextHelpEntry(parent, "$mastery", "Current Mastery%", xCoord, yCoord, 85, 200)
-	controls.labels.asInsanityVar = BuildDisplayTextHelpEntry(parent, "$asInsanity", "Insanity from Auspicious Spirits", xCoord2-70, yCoord, 130, 225)
-	
-	yCoord = yCoord - yOffset15
-	controls.labels.hasteVar = BuildDisplayTextHelpEntry(parent, "$haste", "Current Haste%", xCoord, yCoord, 85, 200)
-	controls.labels.asCountVar = BuildDisplayTextHelpEntry(parent, "$asCount", "Number of Auspicious Spirits in Flight", xCoord2-70, yCoord, 130, 225)
-
-	yCoord = yCoord - yOffset15
-	controls.labels.gcdVar = BuildDisplayTextHelpEntry(parent, "$gcd", "Current GCD, in seconds", xCoord, yCoord, 85, 200)
-	controls.labels.ttdVar = BuildDisplayTextHelpEntry(parent, "$ttd", "Time To Die of current target", xCoord2-70, yCoord, 130, 225)
-
-	yCoord = yCoord - yOffset15
-	controls.labels.mbGcdsVar = BuildDisplayTextHelpEntry(parent, "$mbGcds", "Number of GCDs left on Mindbender", xCoord, yCoord, 85, 200)
-	controls.labels.mbInsanityVar = BuildDisplayTextHelpEntry(parent, "$mbInsanity", "Insanity from Mindbender (per settings)", xCoord2-70, yCoord, 130, 225)
-
-	yCoord = yCoord - yOffset15
-	controls.labels.mbTimeVar = BuildDisplayTextHelpEntry(parent, "$mbTime", "Time left on Mindbender", xCoord, yCoord, 85, 200)
-	controls.labels.mbSwingsVar = BuildDisplayTextHelpEntry(parent, "$mbSwings", "Number of Swings left on Mindbender", xCoord2-70, yCoord, 130, 225)
-
-	yCoord = yCoord - yOffset15
-	controls.labels.newlineVar = BuildDisplayTextHelpEntry(parent, "||n", "Insert a Newline", xCoord, yCoord, 85, 200)
-	-----	
 	yCoord = yCoord - yOffset30
 	controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
 	f = controls.labels.instructions2Var
@@ -3149,34 +3190,49 @@ local function ConstructOptionsPanel()
 	f.font:SetSize(600, 20)
 	f.font:SetText("For icons use #ICONVARIABLENAME")
 
-	yCoord = yCoord - yOffset15
-	controls.labels.castingIconVar = BuildDisplayTextHelpEntry(parent, "#casting", "The icon of the Insanity Generating Spell you are currently hardcasting", xCoord, yCoord, 85, 500)
+	--interfaceSettingsFrame.barTextPanel.variableFrame = CreateScrollFrameContainer("TIB_VariablesFrame", interfaceSettingsFrame.barTextPanel)
+	--interfaceSettingsFrame.barTextPanel.variableFrame:ClearAllPoints()
+	--interfaceSettingsFrame.barTextPanel.variableFrame:SetPoint("TOPLEFT", xCoord, yCoord - yOffset15)
+	--parent = interfaceSettingsFrame.barTextPanel.variableFrame.scrollChild
+	
+	yCoord = yCoord - yOffset25
+	local yCoordTop = yCoord
+	local entries1 = TableLength(barTextVariables.values)
+	for i=1, entries1 do
+		if barTextVariables.values[i].printInSettings == true then
+			BuildDisplayTextHelpEntry(parent, barTextVariables.values[i].variable, barTextVariables.values[i].description, xCoord, yCoord, 115, 200)
+			yCoord = yCoord - yOffset25
+		end
+	end
 
-	yCoord = yCoord - yOffset15
-	controls.labels.swpIconVar = BuildDisplayTextHelpEntry(parent, "#swp", spells.shadowWordPain.icon .. " Shadow Word: Pain", xCoord, yCoord, 85, 200)
-	controls.labels.vtIconVar = BuildDisplayTextHelpEntry(parent, "#vt", spells.vampiricTouch.icon .. " Vampiric Touch", xCoord2-70, yCoord, 130, 225)
+	local entries2 = TableLength(barTextVariables.pipe)
+	for i=1, entries2 do
+		if barTextVariables.pipe[i].printInSettings == true then
+			BuildDisplayTextHelpEntry(parent, barTextVariables.pipe[i].variable, barTextVariables.pipe[i].description, xCoord, yCoord, 115, 200)
+			yCoord = yCoord - yOffset25
+		end
+	end
 
-	yCoord = yCoord - yOffset15
-	controls.labels.asIconVar = BuildDisplayTextHelpEntry(parent, "#as", spells.auspiciousSpirits.icon .. " Auspicious Spirits", xCoord, yCoord, 85, 200)
-	controls.labels.saIconVar = BuildDisplayTextHelpEntry(parent, "#sa", spells.shadowyApparition.icon .. " Shadowy Apparition", xCoord2-70, yCoord, 130, 225)
+	-----	
+	
 
-	yCoord = yCoord - yOffset15
-	controls.labels.vfIconVar = BuildDisplayTextHelpEntry(parent, "#vf", spells.voidform.icon .. " Voidform", xCoord, yCoord, 85, 200)
+	yCoord = yCoordTop
 
-	yCoord = yCoord - yOffset15
-	controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#mb", spells.mindBlast.icon .. " Mind Blast", xCoord, yCoord, 85, 200)
-	controls.labels.mfIconVar = BuildDisplayTextHelpEntry(parent, "#mf", spells.mindFlay.icon .. " Mind Flay", xCoord2-70, yCoord, 130, 225)
+	--controls.labels.castingIconVar = BuildDisplayTextHelpEntry(parent, "#casting", "The icon of the Insanity Generating Spell you are currently hardcasting", xCoord, yCoord, 85, 500)
+	--yCoord = yCoord - yOffset15
 
-	yCoord = yCoord - yOffset15
-	controls.labels.msIconVar = BuildDisplayTextHelpEntry(parent, "#ms", spells.mindSear.icon .. " Mind Sear", xCoord2-70, yCoord, 130, 225)
-
-	yCoord = yCoord - yOffset15
-	controls.labels.voitIconVar = BuildDisplayTextHelpEntry(parent, "#voit", spells.voidTorrent.icon .. " Void Torrent", xCoord2-70, yCoord, 130, 225)
-
-	yCoord = yCoord - yOffset15
-	controls.labels.mdIconVar = BuildDisplayTextHelpEntry(parent, "#md", spells.massDispel.icon .. " Mass Dispel", xCoord, yCoord, 85, 200)
-	--controls.labels.mbIconVar = BuildDisplayTextHelpEntry(parent, "#mf", spells.mindFlay.icon .. " Mind Flay", xCoord2-70, yCoord, 130, 225)
-	---------------------------
+	local entries3 = TableLength(barTextVariables.icons)
+	for i=1, entries3 do
+		if barTextVariables.icons[i].printInSettings == true then
+			local text = ""
+			if barTextVariables.icons[i].icon ~= "" then
+				text = barTextVariables.icons[i].icon .. " "
+			end
+			BuildDisplayTextHelpEntry(parent, barTextVariables.icons[i].variable, text .. barTextVariables.icons[i].description, xCoord+115+200+25, yCoord, 50, 200)
+			yCoord = yCoord - yOffset25
+		end
+	end
+---------------------------
 
 	yCoord = -5
 	parent = interfaceSettingsFrame.optionalFeaturesPanel.scrollChild
@@ -4041,73 +4097,6 @@ local function RemoveInvalidVariablesFromBarText(input)
 	return returnText
 end
 
-local barTextVariables = {
-	icons = {
-		{ variable = "#as" },
-		{ variable = "#auspiciousSpirits" },
-		{ variable = "#sa" },
-		{ variable = "#shadowyApparition" },
-		{ variable = "#mb" },
-		{ variable = "#mindBlast" },
-		{ variable = "#mf" },
-		{ variable = "#mindFlay" },
-		{ variable = "#ms" },
-		{ variable = "#mindSear" },
-		{ variable = "#mindbender" },
-		{ variable = "#shadowfiend" },
-		{ variable = "#vf" },
-		{ variable = "#voidform" },
-		{ variable = "#vt" },
-		{ variable = "#vampiricTouch" },
-		{ variable = "#swp" },
-		{ variable = "#shadowWordPain" },
-		{ variable = "#dp" },
-		{ variable = "#devouringPlague" },
-		{ variable = "#md" },
-		{ variable = "#massDispel" },
-		{ variable = "#casting" },
-		{ variable = "#dam" },
-		{ variable = "#deathAndMadness" }
-	},
-	values = {
-		{ variable = "$haste", color = false },
-		{ variable = "$crit", color = false },
-		{ variable = "$mastery", color = false },
-		{ variable = "$gcd", color = false },
-		{ variable = "$swpCount", color = false },
-		{ variable = "$vtCount", color = false },
-		{ variable = "$dpCount", color = false },
-		{ variable = "$vfIncoming", color = false },
-		{ variable = "$vfStacks", color = false },
-		{ variable = "$vfDrainStacks", color = false },
-		{ variable = "$vfDrain", color = false },
-		{ variable = "$vfTime", color = false },
-		{ variable = "$insanityPlusCasting", color = false },
-		{ variable = "$insanityPlusPassive", color = false },
-		{ variable = "$insanityTotal", color = false },   
-		{ variable = "$insanity", color = false },
-		{ variable = "$casting", color = false },
-		{ variable = "$passive", color = false },
-		{ variable = "$mbInsanity", color = false },
-		{ variable = "$mbGcds", color = false },
-		{ variable = "$mbSwings", color = false },
-		{ variable = "$mbTime", color = false },
-		{ variable = "$damInsanity", color = false },
-		{ variable = "$damTicks", color = false },
-		{ variable = "$asCount", color = false },
-		{ variable = "$asInsanity", color = false },
-		{ variable = "$ttd", color = false }
-	},
-	pipe = {
-		{ variable = "||n" },
-		{ variable = "||c" },
-		{ variable = "||r" }
-	},
-	percent = {
-		{ variable = "%%" }
-	}
-}
-
 local function AddToBarTextCache(input)
 	local iconEntries = TableLength(barTextVariables.icons)		
 	local valueEntries = TableLength(barTextVariables.values)	
@@ -4380,7 +4369,8 @@ local function BarText()
 	lookup["#ms"] = spells.mindSear.icon
 	lookup["#mindSear"] = spells.mindSear.icon
 	lookup["#mindbender"] = spells.mindbender.icon
-	lookup["#shadowfiend"] = spells.mindbender.icon
+	lookup["#shadowfiend"] = spells.shadowfiend.icon
+	lookup["#sf"] = spells.shadowfiend.icon
 	lookup["#vf"] = spells.voidform.icon
 	lookup["#voidform"] = spells.voidform.icon
 	lookup["#vt"] = spells.vampiricTouch.icon
@@ -4708,13 +4698,13 @@ local function UpdateInsanityBar()
 				insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.inVoidform, true))	
 			end
 		else
-			if characterData.voidformThreshold < characterData.maxInsanity and settings.voidEruptionThreshold then
+			if characterData.devouringPlagueThreshold < characterData.maxInsanity and settings.devouringPlagueThreshold then
 				insanityFrame.threshold:Show()
 			else
 				insanityFrame.threshold:Hide()
 			end
 
-			if snapshotData.insanity >= characterData.voidformThreshold then
+			if snapshotData.insanity >= characterData.devouringPlagueThreshold then
 				insanityFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.over, true))
 				insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.enterVoidform, true))
 				if settings.colors.bar.flashEnabled then
@@ -5152,8 +5142,9 @@ insanityFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					settings = MergeSettings(settings,TwintopInsanityBarSettings)
 				end
 				UpdateSanityCheckValues()
-				IsTtdActive()
+				IsTtdActive()		
 				FillSpellData()
+				FillBarTextVariables()
 				ConstructInsanityBar()
 				ConstructOptionsPanel()
 
@@ -5289,8 +5280,9 @@ function SlashCmdList.TWINTOP(msg)
 			local num = RoundTo(subcmd, 0)
 			settings.ttd.numEntries = num
 		end
-	elseif cmd == "fill" then
+	elseif cmd == "fill" then				
 		FillSpellData()
+		FillBarTextVariables()
 	elseif cmd == "move" then
 		local x, y = ParseCmdString(subcmd)
 		UpdateBarPosition(tonumber(x), tonumber(y))
