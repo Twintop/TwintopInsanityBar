@@ -1,5 +1,5 @@
-local addonVersion = "9.0.1.2"
-local addonReleaseDate = "September 2, 2020"
+local addonVersion = "9.0.1.3"
+local addonReleaseDate = "September 3, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -472,7 +472,7 @@ local function LoadDefaultBarTextSimpleSettings()
 		},
 		middle={
 			outVoidformText="",
-			inVoidformText="{$vfStacks}[$vfTime sec - $vfDrain/sec]",
+			inVoidformText="$vfTime sec{$vfStacks}[ - $vfDrain/sec]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontSize=18
@@ -494,15 +494,15 @@ local function LoadDefaultBarTextAdvancedSettings()
 		fontSizeLock = false,
 		fontFaceLock = true,
 		left = {
-			outVoidformText = "#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount]{!$cttvEquipped}[       ]   {$ttd}[TTD: $ttd]",
-			inVoidformText = "#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount]{!$cttvEquipped}[       ]   {$ttd}[TTD: $ttd]",
+			outVoidformText = "#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][       ]   {$ttd}[TTD: $ttd]",
+			inVoidformText = "#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][       ]   {$ttd}[TTD: $ttd]",
 			fontFace = "Fonts\\FRIZQT__.TTF",
 			fontFaceName = "Friz Quadrata TT",
 			fontSize = 13
 		},
 		middle = {
 			outVoidformText = "",
-			inVoidformText = "{$vfStacks}[#vf $vfStacks (+$vfIncoming) #vf|n]#vf $vfTime{$vfStacks}[ ($vfDrain/s)] #vf",
+			inVoidformText = "{$vfStacks}[#vf $vfStacks (+$vfIncoming) #vf||n$vfTime ($vfDrain/s)][#vf $vfTime #vf]",
 			fontFace = "Fonts\\FRIZQT__.TTF",
 			fontFaceName = "Friz Quadrata TT",
 			fontSize = 13
@@ -813,22 +813,24 @@ local function CheckCharacter()
 	local handsItemLink = GetInventoryItemLink("player", 10)
 
 	local callToTheVoid = false
-	local wristParts = { strsplit(":", wristItemLink) }
-	-- Note for Future Twintop:
-	--  1  = Item Name
-	--  2  = Item Id
-	-- 14  = # of Bonuses
-	-- 15+ = Bonuses
-	if tonumber(wristParts[2]) == 173249 and tonumber(wristParts[14]) > 0 then
-		for x = 1, tonumber(wristParts[14]) do
-			if tonumber(wristParts[14+x]) == spells.eternalCallToTheVoid.idLegendaryBonus then
-				callToTheVoid = true
-				break
-			end			
+	if wristItemLink ~= nil then
+		local wristParts = { strsplit(":", wristItemLink) }
+		-- Note for Future Twintop:
+		--  1  = Item Name
+		--  2  = Item Id
+		-- 14  = # of Bonuses
+		-- 15+ = Bonuses
+		if tonumber(wristParts[2]) == 173249 and tonumber(wristParts[14]) > 0 then
+			for x = 1, tonumber(wristParts[14]) do
+				if tonumber(wristParts[14+x]) == spells.eternalCallToTheVoid.idLegendaryBonus then
+					callToTheVoid = true
+					break
+				end			
+			end
 		end
 	end
 	
-	if callToTheVoid == false then
+	if callToTheVoid == false and handsItemLink ~= nil then
 		local handsParts = { strsplit(":", handsItemLink) }
 		if tonumber(handsParts[2]) == 173244 and handsParts[14] > 0 then
 			for x = 1, tonumber(handsParts[14]) do
@@ -3277,8 +3279,8 @@ local function ConstructOptionsPanel()
 	f.font:SetJustifyH("LEFT")
 	f.font:SetSize(600, 20)
 	f.font:SetText("For conditional display (only if $VARIABLE is active/non-zero): {$VARIABLE}[WHAT TO DISPLAY]")
-	
-	yCoord = yCoord - yOffset30
+		
+	yCoord = yCoord - yOffset25
 	controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
 	f = controls.labels.instructionsVar
 	f:ClearAllPoints()
@@ -3294,7 +3296,23 @@ local function ConstructOptionsPanel()
 	f.font:SetSize(600, 20)
 	f.font:SetText("Limited Boolean NOT logic for conditional display is supported via {!$VARIABLE}")
 
-	yCoord = yCoord - yOffset30
+	yCoord = yCoord - yOffset25
+	controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
+	f = controls.labels.instructionsVar
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", parent)
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	f:SetWidth(600)
+	f:SetHeight(20)
+	f.font = f:CreateFontString(nil, "BACKGROUND")
+	f.font:SetFontObject(GameFontHighlight)
+	f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetSize(0, 14)
+	f.font:SetJustifyH("LEFT")
+	f.font:SetSize(600, 20)
+	f.font:SetText("IF/ELSE is supported via {$VARIABLE}[TRUE output][FALSE output] and includes NOT support")
+
+	yCoord = yCoord - yOffset25
 	controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
 	f = controls.labels.instructions2Var
 	f:ClearAllPoints()
@@ -3494,7 +3512,7 @@ local function ConstructOptionsPanel()
 	]]--
 
 	yCoord = yCoord - yOffset60
-	controls.colors.passive = BuildColorPicker(parent, "Insanity from Auspicious Spirits and Shadowfiend swings", settings.colors.bar.passive, 250, 25, xCoord+xPadding*2, yCoord)
+	controls.colors.passive = BuildColorPicker(parent, "Insanity from Auspicious Spirits, Shadowfiend swings, Death and Madness ticks, and Lash of Insanity ticks", settings.colors.bar.passive, 250, 25, xCoord+xPadding*2, yCoord)
 	f = controls.colors.passive
 	f.recolorTexture = function(color)
 		local r, g, b, a
@@ -3578,7 +3596,7 @@ local function ConstructOptionsPanel()
 	controls.checkBoxes.as = CreateFrame("CheckButton", "TIBCB3_6a", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.as
 	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Track Auspicious Spirits")
+	getglobal(f:GetName() .. 'Text'):SetText("Track Eternal Call to the Void")
 	f.tooltip = "Track Insanity generated from Lash of Insanity via Void Tendril spawns / Eternal Call of the Void procs."
 	f:SetChecked(settings.voidTendrilTracker)
 	f:SetScript("OnClick", function(self, ...)
@@ -4092,13 +4110,14 @@ local function ResetCastingSnapshotData()
 end
 
 local function RemoveInvalidVariablesFromBarText(input)
-	--1         11                       36
-	--a         b                        c
-	--{$liStacks}[$liStacks - $liTime sec]
+	--1         11                       36     43
+	--v         v                        v      v
+	--a         b                        c      d
+	--{$liStacks}[$liStacks - $liTime sec][No LI]
 	local returnText = ""
 	local p = 0
 	while p < string.len(input) do
-		local a, b, c, a1, b1, c1
+		local a, b, c, d, a1, b1, c1, d1
 		a, a1 = string.find(input, "{", p)
 		if a ~= nil then
 			b, b1 = string.find(input, "}", a)
@@ -4107,6 +4126,14 @@ local function RemoveInvalidVariablesFromBarText(input)
 				c, c1 = string.find(input, "]", b+1)
 
 				if c ~= nil then
+					local hasOr = false
+					if string.sub(input, c+1, c+1) == "[" then
+						d, d1 = string.find(input, "]", c+1)
+						if d ~= nil then
+							hasOr = true
+						end
+					end
+
 					if p ~= a then
 						returnText = returnText .. string.sub(input, p, a-1)
 					end
@@ -4233,10 +4260,17 @@ local function RemoveInvalidVariablesFromBarText(input)
 						valid = not valid
 					end					
 
-					if valid == true then
+					if valid == true then						
 						returnText = returnText .. string.sub(input, b+2, c-1)
-					end					
-					p = c+1
+					elseif hasOr == true then
+						returnText = returnText .. string.sub(input, c+2, d-1)
+					end	
+					
+					if hasOr == true then
+						p = d+1
+					else						
+						p = c+1
+					end
 				else
 					returnText = returnText .. string.sub(input, p)
 					p = string.len(input)
@@ -5155,12 +5189,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				((characterData.talents.mindbender.isSelected and sourceName == spells.mindbender.name) or 
 				 (not characterData.talents.mindbender.isSelected and sourceName == spells.shadowfiend.name)) then 
 				snapshotData.mindbender.swingTime = currentTime
-			elseif settings.voidTendrilTracker and spellId == spells.eternalCallToTheVoid.id and type == "SPELL_SUMMON" then			
-				InitializeVoidTendril(destGUID)
-				snapshotData.eternalCallToTheVoid.numberActive = snapshotData.eternalCallToTheVoid.numberActive + 1
-				snapshotData.eternalCallToTheVoid.maxTicksRemaining = snapshotData.eternalCallToTheVoid.maxTicksRemaining + spells.lashOfInsanity.ticks
-				snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].startTime = currentTime
-				snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].tickTime = currentTime
 			elseif (type == "SPELL_INSTAKILL" or type == "UNIT_DIED" or type == "UNIT_DESTROYED") then
 				if snapshotData.voidform.s2m.active then -- Surrender to Madness ended
 					s2mDeath = true
@@ -5305,8 +5333,14 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				if type == "SPELL_AURA_APPLIED" then -- Gained buff
 					spells.memoryOfLucidDreams.isActive = true
 				elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-					spells.memoryOfLucidDreams.isActive = false                   
-                end
+					spells.memoryOfLucidDreams.isActive = false
+				end			
+			elseif type == "SPELL_SUMMON" and settings.voidTendrilTracker and spellId == spells.eternalCallToTheVoid.id then
+				InitializeVoidTendril(destGUID)
+				snapshotData.eternalCallToTheVoid.numberActive = snapshotData.eternalCallToTheVoid.numberActive + 1
+				snapshotData.eternalCallToTheVoid.maxTicksRemaining = snapshotData.eternalCallToTheVoid.maxTicksRemaining + spells.lashOfInsanity.ticks
+				snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].startTime = currentTime
+				snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].tickTime = currentTime
 			end
 		elseif settings.voidTendrilTracker and spellId == spells.eternalCallToTheVoid.idTick and CheckVoidTendrilExists(sourceGUID) then
 			snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].tickTime = currentTime
