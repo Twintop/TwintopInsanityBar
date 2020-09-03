@@ -1,4 +1,4 @@
-local addonVersion = "9.0.1.3"
+local addonVersion = "9.0.1.4"
 local addonReleaseDate = "September 3, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -216,7 +216,7 @@ local spells = {
 		fotm = false
 	},
 	memoryOfLucidDreams = {
-		id = 299374,
+		id = 298357,
 		name = "",
 		isActive = false,
 		modifier = 2.0
