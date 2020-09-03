@@ -87,7 +87,6 @@ local characterData = {
 		}
 	},
 	items = {
-		t20Pieces = 0,
 		callToTheVoid = false
 	}
 }
@@ -776,38 +775,6 @@ local function CheckCharacter()
 	else
 		insanityFrame.threshold:Hide()
 	end
-	
-	local t20Head = 0
-	if IsEquippedItem(147165) then
-		t20Head = 1
-	end
-	
-	local t20Shoulder = 0
-	if IsEquippedItem(147168) then
-		t20Shoulder = 1
-	end
-	
-	local t20Back = 0
-	if IsEquippedItem(147163) then
-		t20Back = 1
-	end
-	
-	local t20Chest = 0
-	if IsEquippedItem(147167) then
-		t20Chest = 1
-	end
-	
-	local t20Hands = 0
-	if IsEquippedItem(147164) then
-		t20Hands = 1
-	end
-	
-	local t20Legs = 0
-	if IsEquippedItem(147166) then
-		t20Legs = 1
-	end
-	
-	characterData.items.t20Pieces = t20Head + t20Shoulder + t20Back + t20Chest + t20Hands + t20Legs
 
 	local wristItemLink = GetInventoryItemLink("player", 9)
 	local handsItemLink = GetInventoryItemLink("player", 10)
@@ -4011,14 +3978,6 @@ end
 
 local function InsanityDrain(stacks)
     local pct = 1.00
-    if characterData.items.t20Pieces >= 4 then
-        if snapshotData.voidform.s2m.active then
-            pct = 0.95
-        else
-            pct = 0.90
-        end
-    end    
-    
     return (6.0 + (((stacks - 1) * 0.68)) * pct)
 end
 
@@ -4722,14 +4681,8 @@ local function CastingSpell()
 		else	
 			local spellName = select(1, currentSpell)
 			if spellName == spells.mindBlast.name then
-				local t20p2 = GetSpellInfo(247226)
-				local t20p2Stacks = select(3, FindBuffById(247226))  
-				if t20p2Stacks == nil then
-					t20p2Stacks = 0
-				end
-				
 				snapshotData.casting.startTime = currentTime
-				snapshotData.casting.insanityRaw = spells.mindBlast.insanity + t20p2Stacks
+				snapshotData.casting.insanityRaw = spells.mindBlast.insanity
 				snapshotData.casting.spellId = spells.mindBlast.id
 				snapshotData.casting.icon = spells.mindBlast.icon
 				UpdateCastingInsanityFinal(spells.mindBlast.fotm)
