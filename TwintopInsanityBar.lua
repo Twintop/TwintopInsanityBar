@@ -1,5 +1,5 @@
-local addonVersion = "9.0.1.4"
-local addonReleaseDate = "September 3, 2020"
+local addonVersion = "9.0.1.5"
+local addonReleaseDate = "September 9, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -799,7 +799,7 @@ local function CheckCharacter()
 	
 	if callToTheVoid == false and handsItemLink ~= nil then
 		local handsParts = { strsplit(":", handsItemLink) }
-		if tonumber(handsParts[2]) == 173244 and handsParts[14] > 0 then
+		if tonumber(handsParts[2]) == 173244 and tonumber(handsParts[14]) > 0 then
 			for x = 1, tonumber(handsParts[14]) do
 				if tonumber(handsParts[14+x]) == spells.eternalCallToTheVoid.idLegendaryBonus then
 					callToTheVoid = true
