@@ -1,5 +1,5 @@
-local addonVersion = "9.0.1.5"
-local addonReleaseDate = "September 9, 2020"
+local addonVersion = "9.0.1.6"
+local addonReleaseDate = "September 17, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -104,11 +104,6 @@ local spells = {
 		icon = "",
 		insanity = 10,
 		fotm = false
-	},
-	dispersion = {
-		id = 47585,
-		name = "",
-		icon = ""
 	},
 	s2m = {
 		isActive = false,
@@ -287,10 +282,6 @@ local snapshotData = {
 		previousStackTime = 0,
 		remainingTime = 0,
 		voidTorrent = {
-			stacks = 0,
-			startTime = nil
-		},
-		dispersion = {
 			stacks = 0,
 			startTime = nil
 		},
@@ -4968,8 +4959,6 @@ local function ResetVoidformSnapshotData()
 	snapshotData.voidform.remainingTime = 0
 	snapshotData.voidform.voidTorrent.stacks = 0
 	snapshotData.voidform.voidTorrent.startTime = nil
-	snapshotData.voidform.dispersion.stacks = 0
-	snapshotData.voidform.dispersion.startTime = nil
 end
 
 local function PrintVoidformSummary(isS2M)
@@ -4998,7 +4987,6 @@ local function PrintVoidformSummary(isS2M)
 			print(string.format("Voidform Stacks: %.0f", snapshotData.voidform.totalStacks))
 		end
 
-		--print(string.format("Dispersion Stacks: %.0f", snapshotData.voidform.dispersion.stacks))
 		print(string.format("Void Torrent Stacks: %.0f", snapshotData.voidform.voidTorrent.stacks))
 		print(string.format("Final Drain: %.0f stacks %.1f / sec", snapshotData.voidform.drainStacks, InsanityDrain(snapshotData.voidform.drainStacks)))
 		print("--------------------------")
@@ -5118,13 +5106,11 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					snapshotData.voidform.previousStackTime = currentTime
 					snapshotData.voidform.totalStacks = snapshotData.voidform.totalStacks + 1
 										
-					if snapshotData.voidform.voidTorrent.startTime == nil and snapshotData.voidform.dispersion.startTime == nil then						
+					if snapshotData.voidform.voidTorrent.startTime == nil then						
 						snapshotData.voidform.drainStacks = snapshotData.voidform.drainStacks + 1						
 					elseif snapshotData.voidform.voidTorrent.startTime ~= nil then						
-						snapshotData.voidform.voidTorrent.stacks = snapshotData.voidform.voidTorrent.stacks + 1						
-					else						
-						snapshotData.voidform.dispersion.stacks = snapshotData.voidform.dispersion.stacks + 1						
-					end                
+						snapshotData.voidform.voidTorrent.stacks = snapshotData.voidform.voidTorrent.stacks + 1
+					end               
 				end				
 			end
 		end
@@ -5158,20 +5144,16 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
                     snapshotData.voidform.totalStacks = 1
                     snapshotData.voidform.voidTorrent.startTime = nil
                     snapshotData.voidform.voidTorrent.stacks = 0
-                    snapshotData.voidform.dispersion.startTime = nil
-                    snapshotData.voidform.dispersion.stacks = 0
 					
 					triggerUpdate = true
                 elseif type == "SPELL_AURA_APPLIED_DOSE" then -- New Voidform Stack   
                     snapshotData.voidform.previousStackTime = currentTime
                     snapshotData.voidform.totalStacks = snapshotData.voidform.totalStacks + 1
                     
-                    if snapshotData.voidform.voidTorrent.startTime == nil and snapshotData.voidform.dispersion.startTime == nil then
+                    if snapshotData.voidform.voidTorrent.startTime == nil then
                         snapshotData.voidform.drainStacks = snapshotData.voidform.drainStacks + 1                        
                     elseif snapshotData.voidform.voidTorrent.startTime ~= nil then                        
-                        snapshotData.voidform.voidTorrent.stacks = snapshotData.voidform.voidTorrent.stacks + 1                        
-                    else                        
-                        snapshotData.voidform.dispersion.stacks = snapshotData.voidform.dispersion.stacks + 1                        
+                        snapshotData.voidform.voidTorrent.stacks = snapshotData.voidform.voidTorrent.stacks + 1                   
                     end
 					
 					triggerUpdate = true
@@ -5188,14 +5170,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
                     snapshotData.voidform.voidTorrent.startTime = currentTime                    
                 elseif type == "SPELL_AURA_REMOVED" and snapshotData.voidform.voidTorrent.startTime ~= nil then -- Stopped channeling Void Torrent                    
                     snapshotData.voidform.voidTorrent.startTime = nil                    
-                end
-					
-				triggerUpdate = true
-            elseif spellId == spells.dispersion.id then                
-                if type == "SPELL_AURA_APPLIED" then -- Started channeling Dispersion                    
-                    snapshotData.voidform.dispersion.startTime = currentTime                    
-                elseif type == "SPELL_AURA_REMOVED" and snapshotData.voidform.dispersion.startTime ~= nil then -- Stopped channeling Dispersion                    
-                    snapshotData.voidform.dispersion.startTime = nil                    
                 end
 					
 				triggerUpdate = true
@@ -5276,12 +5250,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				triggerUpdate = true
 			elseif type == "SPELL_ENERGIZE" and spellId == spells.shadowCrash.id then
 				triggerUpdate = true
-			elseif type == "SPELL_CAST_FAILED" and spellId ~= spells.dispersion.id then
-				local gcd = GetCurrentGCDTime()
-				if snapshotData.casting.startTime == nil or currentTime > (snapshotData.casting.startTime+gcd) then
-					ResetCastingSnapshotData()
-					triggerUpdate = true
-				end
 			elseif spellId == spells.memoryOfLucidDreams.id then
 				if type == "SPELL_AURA_APPLIED" then -- Gained buff
 					spells.memoryOfLucidDreams.isActive = true
