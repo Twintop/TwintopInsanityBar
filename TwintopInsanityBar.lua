@@ -1,4 +1,4 @@
-local addonVersion = "9.0.1.6"
+local addonVersion = "9.0.2.0"
 local addonReleaseDate = "September 17, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -1580,7 +1580,7 @@ local function ConstructOptionsPanel()
 	}
 
 	yCoord = yCoord - yOffset40
-	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Author:", "Twintop <Astral> - Turalyon-US", xCoord+xPadding*2, yCoord, 75, 200)
+	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Author:", "Twintop - Frostmourne-US/OCE", xCoord+xPadding*2, yCoord, 75, 200)
 	yCoord = yCoord - yOffset20
 	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Version:", addonVersion, xCoord+xPadding*2, yCoord, 75, 200)
 	yCoord = yCoord - yOffset20
