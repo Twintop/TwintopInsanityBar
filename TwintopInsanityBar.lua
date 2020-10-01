@@ -1,5 +1,5 @@
-local addonVersion = "9.0.2.0"
-local addonReleaseDate = "September 17, 2020"
+local addonVersion = "9.0.2.1"
+local addonReleaseDate = "October 01, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -28,9 +28,11 @@ timerFrame.characterCheckSinceLastUpdate = 0
 
 local combatFrame = CreateFrame("Frame")
 
+--[[
 local mindbenderAudioCueFrame = CreateFrame("Frame")
 mindbenderAudioCueFrame.sinceLastPlay = 0
 mindbenderAudioCueFrame.sinceLastUpdate = 0
+]]--
 
 local interfaceSettingsFrame = nil
 
@@ -39,11 +41,6 @@ local settings = nil
 Global_TwintopInsanityBar = {
 	ttd = 0,
 	voidform = {
-		stacks = 0,
-		incomingStacks = 0,
-		drainStacks = 0,
-		drain = 0,
-		drainTime = 0
 	},
 	insanity = {
 		insanity = 0,
@@ -82,7 +79,7 @@ local characterData = {
 		mindbender = {
 			isSelected = false
 		},
-		lotv = {
+		hungeringVoid = {
 			isSelected = false
 		}
 	},
@@ -92,6 +89,11 @@ local characterData = {
 }
 
 local spells = {
+	voidBolt = {
+		id = 205448,
+		name = "",
+		icon = ""
+	},
 	voidform = {
 		id = 194249,
 		name = "",
@@ -272,19 +274,12 @@ local snapshotData = {
 		insanityFinal = 0
 	},
 	voidform = {
-		totalStacks = 0,
-		drainStacks = 0,
-		additionalStacks = 0,
-		currentDrainRate = 0,
-		duration = 0,
 		spellId = nil,
-		startTime = 0,
-		previousStackTime = 0,
 		remainingTime = 0,
-		voidTorrent = {
-			stacks = 0,
-			startTime = nil
-		},
+		remainingHvTime = 0,
+		additionalVbCasts = 0,
+		remainingHvAvgTime = 0,
+		additionalVbAvgCasts = 0,
 		s2m = {
 			startTime = nil,
 			active = false
@@ -437,12 +432,16 @@ local function PulseFrame(frame)
 	frame:SetAlpha(((1.0 - settings.colors.bar.flashAlpha) * math.abs(math.sin(2 * (GetTime()/settings.colors.bar.flashPeriod)))) + settings.colors.bar.flashAlpha)
 end
 
-local function GetCurrentGCDTime()
+local function GetCurrentGCDTime(floor)	
+	if floor == nil then
+		floor = false
+	end
+
 	local haste = UnitSpellHaste("player") / 100
 	
 	local gcd = 1.5 / (1 + haste)
 	
-	if gcd < 0.75 then		
+	if not floor and gcd < 0.75 then
 		gcd = 0.75		
 	end
 	
@@ -455,14 +454,14 @@ local function LoadDefaultBarTextSimpleSettings()
 		fontFaceLock=true,
 		left={
 			outVoidformText="$haste%",
-			inVoidformText="$haste% {$vfStacks}[- $vfStacks (+$vfIncoming) VF]",
+			inVoidformText="$haste%",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontSize=18
 		},
 		middle={
 			outVoidformText="",
-			inVoidformText="$vfTime sec{$vfStacks}[ - $vfDrain/sec]",
+			inVoidformText="{$hvTime}[$hvTime sec. (+$vbCasts)][$vfTime]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontSize=18
@@ -492,14 +491,14 @@ local function LoadDefaultBarTextAdvancedSettings()
 		},
 		middle = {
 			outVoidformText = "",
-			inVoidformText = "{$vfStacks}[#vf $vfStacks (+$vfIncoming) #vf||n$vfTime ($vfDrain/s)][#vf $vfTime #vf]",
+			inVoidformText = "{$hvAvgTime}[$hvAvgTime (+$vbAvgCasts)][$vfTime]",
 			fontFace = "Fonts\\FRIZQT__.TTF",
 			fontFaceName = "Friz Quadrata TT",
 			fontSize = 13
 		},
 		right = {
-			outVoidformText = "{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$damInsanity}[#dam$damInsanity+]$insanity  ",
-			inVoidformText = "{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$damInsanity}[#dam$damInsanity+]$insanity  ",
+			outVoidformText = "{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$damInsanity}[#dam$damInsanity+]$insanity",
+			inVoidformText = "{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$damInsanity}[#dam$damInsanity+]$insanity",
 			fontFace = "Fonts\\FRIZQT__.TTF",
 			fontFaceName = "Friz Quadrata TT",			
 			fontSize = 22
@@ -547,7 +546,6 @@ local function LoadDefaultSettings()
 			enabled=true,
 			useNotification = {
 				enabled=false,
-				useVoidformStacks=false, --If true, use VF stacks instead of Drain stacks
 				thresholdStacks=10
 			}
 		},
@@ -568,7 +566,6 @@ local function LoadDefaultSettings()
 				background="66000000",
 				base="FF763BAF",
 				enterVoidform="FF5C2F89",
-				--enterVoidformFlash="FFAA1863",
 				inVoidform="FF431863",
 				inVoidform2GCD="FFFFFF00",
 				inVoidform1GCD="FFFF0000",
@@ -591,7 +588,7 @@ local function LoadDefaultSettings()
 				sound="Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg",
 				soundName="Wilhelm Scream (TIB)"
 			},
-			vfReady={
+			dpReady={
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 				soundName="Boxing Arena Gong (TIB)"
@@ -655,6 +652,8 @@ local function FillBarTextVariables()
 
 			{ variable = "#vf", icon = spells.voidform.icon, description = "Voidform", printInSettings = true },
 			{ variable = "#voidform", icon = spells.voidform.icon, description = "Voidform", printInSettings = false },
+			{ variable = "#vb", icon = spells.voidBolt.icon, description = "Void Bolt", printInSettings = true },
+			{ variable = "#voidBolt", icon = spells.voidBolt.icon, description = "Void Bolt", printInSettings = false },
 
 			{ variable = "#mb", icon = spells.mindBlast.icon, description = "Mind Blast", printInSettings = true },
 			{ variable = "#mindBlast", icon = spells.mindBlast.icon, description = "Mind Blast", printInSettings = false },
@@ -723,11 +722,11 @@ local function FillBarTextVariables()
 			{ variable = "$vtCount", description = "Number of Vampiric Touches active on targets", printInSettings = true, color = false },
 			{ variable = "$dpCount", description = "Number of Devouring Plagues active on targets", printInSettings = true, color = false },
 
-			{ variable = "$vfIncoming", description = "Incoming Voidform Stacks", printInSettings = true, color = false },
-			{ variable = "$vfStacks", description = "Current Voidform Stack Count", printInSettings = true, color = false },
-			{ variable = "$vfDrainStacks", description = "Current Voidform Drain Stacks Count", printInSettings = true, color = false },
-			{ variable = "$vfDrain", description = "Insanity drained per second", printInSettings = true, color = false },
-			{ variable = "$vfTime", description = "Time until Voidform will end", printInSettings = true, color = false },
+			{ variable = "$vfTime", description = "Duration of Voidform", printInSettings = true, color = false },
+			{ variable = "$hvTime", description = "Duration of Voidform w/max Void Bolt casts in Hungering Void", printInSettings = true, color = false },
+			{ variable = "$vbCasts", description = "Max Void Bolt casts remaining in Hungering Void", printInSettings = true, color = false },
+			{ variable = "$hvAvgTime", description = "Duration of Voidform w/max Void Bolt casts in Hungering Void, includes crits", printInSettings = true, color = false },
+			{ variable = "$vbAvgCasts", description = "Max Void Bolt casts remaining in Hungering Void, includes crits", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target", printInSettings = true, color = false }
 		},
@@ -749,7 +748,7 @@ local function CheckCharacter()
 	characterData.talents.fotm.isSelected = select(4, GetTalentInfo(1, 1, characterData.specGroup))
 	characterData.talents.as.isSelected = select(4, GetTalentInfo(5, 1, characterData.specGroup))
 	characterData.talents.mindbender.isSelected = select(4, GetTalentInfo(6, 2, characterData.specGroup))	
-	characterData.talents.lotv.isSelected = select(4, GetTalentInfo(7, 2, characterData.specGroup))
+	characterData.talents.hungeringVoid.isSelected = select(4, GetTalentInfo(7, 2, characterData.specGroup))
 		
 	FillSpellData()
 	FillBarTextVariables()
@@ -825,11 +824,13 @@ local function EventRegistration()
 			targetsTimerFrame:SetScript("OnUpdate", nil)
 		end
 		
+		--[[
 		if settings.mindbender.useNotification.enabled then
 			mindbenderAudioCueFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) mindbenderAudioCueFrame:onUpdate(sinceLastUpdate) end)
 		else
 			mindbenderAudioCueFrame:SetScript("OnUpdate", nil)
 		end
+		]]--
 		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
 		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -838,7 +839,7 @@ local function EventRegistration()
 		addonData.registered = true
 	else
 		targetsTimerFrame:SetScript("OnUpdate", nil)
-		mindbenderAudioCueFrame:SetScript("OnUpdate", nil)
+		--mindbenderAudioCueFrame:SetScript("OnUpdate", nil)
 		timerFrame:SetScript("OnUpdate", nil)			
 		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -3397,27 +3398,27 @@ local function ConstructOptionsPanel()
 	end
 
 
-	controls.checkBoxes.vfReady = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.vfReady
+	controls.checkBoxes.dpReady = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dpReady
 	f:SetPoint("TOPLEFT", xCoord2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Play Audio Cue When Devouring Plague is Usable")
 	f.tooltip = "Play an audio cue when Devouring Plague can be cast."
-	f:SetChecked(settings.audio.vfReady.enabled)
+	f:SetChecked(settings.audio.dpReady.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		settings.audio.vfReady.enabled = self:GetChecked()
+		settings.audio.dpReady.enabled = self:GetChecked()
 	end)	
 		
 	-- Create the dropdown, and configure its appearance
-	controls.dropDown.vfReadyAudio = CreateFrame("FRAME", "TIBVFReadyAudio", parent, "UIDropDownMenuTemplate")
+	controls.dropDown.dpReadyAudio = CreateFrame("FRAME", "TIBdpReadyAudio", parent, "UIDropDownMenuTemplate")
 	--controls.dropDown.s2mAudio.label = BuildSectionHeader(parent, "Surrender to Madness Ending Audio", xCoord+xPadding, yCoord+20)
 	--controls.dropDown.s2mAudio.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.vfReadyAudio:SetPoint("TOPLEFT", xCoord2, yCoord-yOffset30+10)
-	UIDropDownMenu_SetWidth(controls.dropDown.vfReadyAudio, 250)
-	UIDropDownMenu_SetText(controls.dropDown.vfReadyAudio, settings.audio.vfReady.soundName)
-	UIDropDownMenu_JustifyText(controls.dropDown.vfReadyAudio, "LEFT")
+	controls.dropDown.dpReadyAudio:SetPoint("TOPLEFT", xCoord2, yCoord-yOffset30+10)
+	UIDropDownMenu_SetWidth(controls.dropDown.dpReadyAudio, 250)
+	UIDropDownMenu_SetText(controls.dropDown.dpReadyAudio, settings.audio.dpReady.soundName)
+	UIDropDownMenu_JustifyText(controls.dropDown.dpReadyAudio, "LEFT")
 
 	-- Create and bind the initialization function to the dropdown menu
-	UIDropDownMenu_Initialize(controls.dropDown.vfReadyAudio, function(self, level, menuList)
+	UIDropDownMenu_Initialize(controls.dropDown.dpReadyAudio, function(self, level, menuList)
 		local entries = 25
 		local info = UIDropDownMenu_CreateInfo()
 		local sounds = addonData.libs.SharedMedia:HashTable("sound")
@@ -3438,7 +3439,7 @@ local function ConstructOptionsPanel()
 				if k > start and k <= start + entries then
 					info.text = v
 					info.value = sounds[v]
-					info.checked = sounds[v] == settings.audio.vfReady.sound
+					info.checked = sounds[v] == settings.audio.dpReady.sound
 					info.func = self.SetValue			
 					info.arg1 = sounds[v]
 					info.arg2 = v
@@ -3449,25 +3450,13 @@ local function ConstructOptionsPanel()
 	end)
 
 	-- Implement the function to change the audio
-	function controls.dropDown.vfReadyAudio:SetValue(newValue, newName)
-		settings.audio.vfReady.sound = newValue
-		settings.audio.vfReady.soundName = newName
-		UIDropDownMenu_SetText(controls.dropDown.vfReadyAudio, newName)
+	function controls.dropDown.dpReadyAudio:SetValue(newValue, newName)
+		settings.audio.dpReady.sound = newValue
+		settings.audio.dpReady.soundName = newName
+		UIDropDownMenu_SetText(controls.dropDown.dpReadyAudio, newName)
 		CloseDropDownMenus()
-		PlaySoundFile(settings.audio.vfReady.sound, settings.audio.channel.channel)
+		PlaySoundFile(settings.audio.dpReady.sound, settings.audio.channel.channel)
 	end
-
-	--[[
-	controls.checkBoxes.showS2MSummary = CreateFrame("CheckButton", "TIBCB3_4", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showS2MSummary
-	f:SetPoint("TOPLEFT", xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Show Surrender to Madness Summary")
-	f.tooltip = "Shows a summary in chat of your last Surrender to Madness, including total duration of S2M, total duration of Voidform, total stacks, final drain rate, and stacks gained while channeling Void Torrent."
-	f:SetChecked(settings.showS2MSummary)
-	f:SetScript("OnClick", function(self, ...)
-		settings.showS2MSummary = self:GetChecked()
-	end)
-	]]--
 
 	yCoord = yCoord - yOffset60
 	controls.colors.passive = BuildColorPicker(parent, "Insanity from Auspicious Spirits, Shadowfiend swings, Death and Madness ticks, and Lash of Insanity ticks", settings.colors.bar.passive, 250, 25, xCoord+xPadding*2, yCoord)
@@ -3490,38 +3479,6 @@ local function ConstructOptionsPanel()
 			local r, g, b, a = GetRGBAFromString(settings.colors.bar.passive, true)
 			ShowColorPicker(r, g, b, a, self.recolorTexture)
 		end
-	end)
-
-	--TODO: Move this setting, and "Report Voidform Stacks Only", to "Advanced Configuration"
-	controls.checkBoxes.showSummary = CreateFrame("CheckButton", "TIBCB3_4", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showSummary
-	f:SetPoint("TOPLEFT", xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Show Voidform Summary")
-	f.tooltip = "Shows a summary in chat of your last Voidform including total duration, total stacks, final drain rate, and stacks gained while channeling Void Torrent."
-	f:SetChecked(settings.summary.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		settings.summary.enabled = self:GetChecked()
-		if settings.summary.enabled == false then	-- Toggle checkbox for simpleSummary
-			controls.checkBoxes.simpleSummary:Hide()
-		else
-			controls.checkBoxes.simpleSummary:Show()
-		end
-	end)
-
-	yCoord = yCoord - yOffset20
-
-	--TODO: Move this setting, and "Show Voidform Summary", to "Advanced Configuration"
-	controls.checkBoxes.simpleSummary = CreateFrame("CheckButton", "TIBCB3_5", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.simpleSummary
-	f:SetPoint("TOPLEFT", xCoord2+10, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Report Voidform Stacks Only")
-	f.tooltip = "Simplifies the Voidform summary to only display total stacks."
-	if settings.summary.enabled == false then	-- Hide on initial load if showSummary is off
-		f:Hide()
-	end
-	f:SetChecked(settings.summary.simple)
-	f:SetScript("OnClick", function(self, ...)
-		settings.summary.simple = self:GetChecked()
 	end)
 
 	yCoord = yCoord - yOffset10
@@ -3700,6 +3657,7 @@ local function ConstructOptionsPanel()
 		settings.mindbender.timeMax = value
 	end)
 
+	--[[
 	yCoord = yCoord - yOffset60	
 	controls.checkBoxes.mindbenderAudio = CreateFrame("CheckButton", "TIBCB3_11", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.mindbenderAudio
@@ -3714,34 +3672,8 @@ local function ConstructOptionsPanel()
 		else
 			mindbenderAudioCueFrame:SetScript("OnUpdate", nil)
 		end
-	end)
-
-	controls.checkBoxes.mindbenderAudioStacks = CreateFrame("CheckButton", "TIBCB3_12", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.mindbenderAudioStacks
-	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-20)
-	getglobal(f:GetName() .. 'Text'):SetText("Use Voidform Stacks instead of Drain Stacks")
-	f.tooltip = "Uses the current Voidform Stacks instead of computed Drain Stacks for the audio cue."
-	f:SetChecked(settings.mindbender.useNotification.useVoidformStacks)
-	f:SetScript("OnClick", function(self, ...)
-		settings.mindbender.useNotification.useVoidformStacks = self:GetChecked()
-	end)
-
-	title = "Stacks to Trigger Audio Cue"
-	controls.mindbenderStacks = BuildSlider(parent, title, 1, 100, settings.mindbender.useNotification.thresholdStacks, 1, 0,
-									barWidth, barHeight, xCoord2, yCoord)
-	controls.mindbenderStacks:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-
-		self.EditBox:SetText(value)		
-		settings.mindbender.useNotification.thresholdStacks = value
-	end)
-
-			
+	end)	
+	
 	yCoord = yCoord - yOffset40
 	-- Create the dropdown, and configure its appearance
 	controls.dropDown.mindbenderAudio = CreateFrame("FRAME", "TIBMindbenderAudio", parent, "UIDropDownMenuTemplate")
@@ -3792,6 +3724,7 @@ local function ConstructOptionsPanel()
 		CloseDropDownMenus()
 		PlaySoundFile(settings.audio.mindbender.sound, settings.audio.channel.channel)
 	end
+	]]--
 
 	------------------------------------------------
 
@@ -3967,64 +3900,80 @@ local function ConstructOptionsPanel()
 	
 end
 
-local function InsanityDrain(stacks)
-    local pct = 1.00
-    return (6.0 + (((stacks - 1) * 0.68)) * pct)
-end
-
 local function RemainingTimeAndStackCount()
     local currentTime = GetTime()
 	local _
 	local expirationTime
 	_, _, _, _, snapshotData.voidform.duration, expirationTime, _, _, _, snapshotData.voidform.spellId = FindBuffById(spells.voidform.id)
-    	
-    if snapshotData.voidform.spellId == nil then		
 
+    if snapshotData.voidform.spellId == nil then		
+		snapshotData.voidform.remainingTime = 0
+		snapshotData.voidform.remainingHvTime = 0	
+		snapshotData.voidform.additionalVbCasts = 0
 	else
-		if characterData.talents.lotv.isSelected == true then
+		local remainingTime = (expirationTime - currentTime) or 0
+
+		if characterData.talents.hungeringVoid.isSelected == true then
 			local down, up, lagHome, lagWorld = GetNetStats()
-			local TimeDiff = currentTime - snapshotData.voidform.previousStackTime        
-			local remainingInsanity = tonumber(snapshotData.insanity)
-			
-			local remainingTime = 0
-			local moreStacks = 0
 			local latency = lagWorld / 1000
-			local workingStack = snapshotData.voidform.drainStacks
-			local startingStack = workingStack
-			
-			while (remainingInsanity > 0)
+			local vbStart, vbDuration, _, _ = GetSpellCooldown(spells.voidBolt.id);
+			local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(spells.voidBolt.id)
+			local vbCooldown = (vbBaseCooldown / (((snapshotData.haste / 100) + 1) * 1000)) + latency
+
+			local remainingTimeTmp = remainingTime
+			local remainingTimeTotal = remainingTime
+			local remainingTimeTmpAverage = remainingTime
+			local remainingTimeTotalAverage = remainingTime
+			local moreCasts = 0
+			local moreCastsAverage = 0
+			local critValue = (1.0 + (snapshotData.crit / 100))
+
+			if critValue > 2 then
+				critValue = 2
+			end
+
+			if vbDuration > 0 then
+				local vbRemaining = vbStart + vbDuration - currentTime
+				if remainingTimeTmp > (vbRemaining + latency) then
+					moreCasts = moreCasts + 1
+					remainingTimeTmp = remainingTimeTmp + 1.0 - (vbRemaining + latency)
+					remainingTimeTotal = remainingTimeTotal + 1.0
+
+					moreCastsAverage = moreCastsAverage + 1
+					remainingTimeTmpAverage = remainingTimeTmpAverage + critValue - (vbRemaining + latency)
+					remainingTimeTotalAverage = remainingTimeTotalAverage + critValue
+				end
+			end
+
+			while (remainingTimeTmpAverage >= vbCooldown or remainingTimeTmp >= vbCooldown)
 			do
-				moreStacks = moreStacks+1
-				local drain = InsanityDrain(workingStack)
-				local stackTime = 1.0
-				
-				if workingStack == startingStack then					
-					stackTime = 1.0 - TimeDiff + latency					
+				if remainingTimeTmp >= vbCooldown then
+					local additionalCasts = RoundTo(remainingTimeTmp / vbCooldown, 0)
+					moreCasts = moreCasts + additionalCasts
+					remainingTimeTmp = remainingTimeTmp + additionalCasts - (additionalCasts * vbCooldown)
+					remainingTimeTotal = remainingTimeTotal + additionalCasts
 				end
 				
-				if (stackTime > 0) then                    
-					if (drain * stackTime) >= remainingInsanity then                       
-						stackTime = remainingInsanity / drain
-						remainingInsanity = 0
-					else
-						remainingInsanity = remainingInsanity - (drain * stackTime)
-					end
-					
-					remainingTime = remainingTime + stackTime
-				end               
-				
-				workingStack = workingStack + 1
+				if remainingTimeTmpAverage >= vbCooldown then
+					local additionalCastsAverage = RoundTo(remainingTimeTmpAverage / vbCooldown, 0)
+					moreCastsAverage = moreCastsAverage + additionalCastsAverage
+					remainingTimeTmpAverage = remainingTimeTmpAverage + (critValue * additionalCastsAverage) - (additionalCastsAverage * vbCooldown)
+					remainingTimeTotalAverage = remainingTimeTotalAverage + (critValue * additionalCastsAverage)
+				end
 			end
 			
-			snapshotData.voidform.remainingTime = remainingTime
-			snapshotData.voidform.currentDrainRate = InsanityDrain(snapshotData.voidform.drainStacks)
-			snapshotData.voidform.additionalStacks = moreStacks
+			snapshotData.voidform.remainingTime = remainingTime or 0
+			snapshotData.voidform.remainingHvTime = remainingTimeTotal	
+			snapshotData.voidform.additionalVbCasts = moreCasts
+			snapshotData.voidform.remainingHvAvgTime = remainingTimeTotalAverage
+			snapshotData.voidform.additionalVbAvgCasts = moreCastsAverage
 		else
-			local currentTime = GetTime()
-			snapshotData.voidform.remainingTime = expirationTime - currentTime
-			snapshotData.voidform.currentDrainRate = 0
-			snapshotData.voidform.additionalStacks = 0
-		end
+			snapshotData.voidform.remainingTime = remainingTime or 0
+			snapshotData.voidform.remainingHvTime = 0	
+			snapshotData.voidform.additionalVbCasts = 0
+			snapshotData.voidform.remainingHvAvgTime = 0	
+			snapshotData.voidform.additionalVbAvgCasts = 0
+		end		
     end  
 end
 
@@ -4106,24 +4055,24 @@ local function RemoveInvalidVariablesFromBarText(input)
 						valid = true
 					elseif var == "$gcd" then
 						valid = true
-					elseif var == "$vfIncoming" then
-						if characterData.talents.lotv.isSelected == true and snapshotData.voidform.additionalStacks ~= nil and snapshotData.voidform.additionalStacks > 0 then
-							valid = true
-						end
-					elseif characterData.talents.lotv.isSelected == true and var == "$vfStacks" then
-						if snapshotData.voidform.totalStacks ~= nil and snapshotData.voidform.totalStacks > 0 then
-							valid = true
-						end
-					elseif characterData.talents.lotv.isSelected == true and var == "$vfDrainStacks" then
-						if snapshotData.voidform.drainStacks ~= nil and snapshotData.voidform.drainStacks > 0 then
-							valid = true
-						end						
-					elseif characterData.talents.lotv.isSelected == true and var == "$vfDrain" then
-						if snapshotData.voidform.currentDrainRate ~= nil and snapshotData.voidform.currentDrainRate > 0 then
-							valid = true
-						end
 					elseif var == "$vfTime" then
 						if snapshotData.voidform.remainingTime ~= nil and snapshotData.voidform.remainingTime > 0 then
+							valid = true
+						end
+					elseif var == "$hvAvgTime" then
+						if characterData.talents.hungeringVoid.isSelected and snapshotData.voidform.remainingHvAvgTime ~= nil and snapshotData.voidform.remainingHvAvgTime > 0 then
+							valid = true
+						end
+					elseif var == "$vbAvgCasts" then
+						if characterData.talents.hungeringVoid.isSelected and snapshotData.voidform.remainingHvAvgTime ~= nil and snapshotData.voidform.remainingHvAvgTime > 0 then
+							valid = true
+						end
+					elseif var == "$hvTime" then
+						if characterData.talents.hungeringVoid.isSelected and snapshotData.voidform.remainingHvTime ~= nil and snapshotData.voidform.remainingHvTime > 0 then
+							valid = true
+						end
+					elseif var == "$vbCasts" then
+						if characterData.talents.hungeringVoid.isSelected and snapshotData.voidform.remainingHvTime ~= nil and snapshotData.voidform.remainingHvTime > 0 then
 							valid = true
 						end
 					elseif var == "$insanity" then
@@ -4370,13 +4319,12 @@ local function BarText()
 
 	--$mastery
 	local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", RoundTo(snapshotData.mastery, settings.hastePrecision))
-
 	
 	--$haste
 	local _hasteColor = settings.colors.text.left
 	local _hasteValue = RoundTo(snapshotData.haste, settings.hastePrecision)
     
-    if snapshotData.voidform.totalStacks ~= nil and snapshotData.voidform.totalStacks > 0 then        
+    if snapshotData.voidform.spellId then        
         if settings.hasteThreshold <= snapshotData.haste then
             _hasteColor = settings.colors.text.hasteAbove    
         elseif settings.hasteApproachingThreshold <= snapshotData.haste then
@@ -4396,19 +4344,19 @@ local function BarText()
 	local gcd = string.format("%.2f", _gcd)
 
 	local hastePercent = string.format("|c%s%." .. settings.hastePrecision .. "f|c%s", _hasteColor, snapshotData.haste, settings.colors.text.left)
-	--$vfStacks
-	local voidformStacks = string.format("%.0f", math.min(snapshotData.voidform.totalStacks, 100))
-	--$vfIncoming
-	local voidformStacksIncoming = string.format("%.0f", snapshotData.voidform.additionalStacks)
 	
 	----------
 	
-	--$vfDrainStacks
-	local voidformDrainStacks = string.format("%.0f", snapshotData.voidform.drainStacks)
-	--$vfDrain
-	local voidformDrainAmount = string.format("%.1f", snapshotData.voidform.currentDrainRate)
 	--$vfTime
-	local voidformDrainTime = string.format("%.1f", snapshotData.voidform.remainingTime)
+	local voidformTime = string.format("%.1f", snapshotData.voidform.remainingTime)
+	--$hvTime
+	local hungeringVoidTime = string.format("%.1f", snapshotData.voidform.remainingHvTime)
+	--$vbCasts
+	local voidBoltCasts = string.format("%.0f", snapshotData.voidform.additionalVbCasts)
+	--$hvAvgTime
+	local hungeringVoidTimeAvg = string.format("%.1f", snapshotData.voidform.remainingHvAvgTime)
+	--$vbAvgCasts
+	local voidBoltCastsAvg = string.format("%.0f", snapshotData.voidform.additionalVbAvgCasts)
 
 	----------
 
@@ -4429,7 +4377,7 @@ local function BarText()
 	local mbTime = string.format("%.1f", snapshotData.mindbender.remaining.time)
 	--$loiInsanity
 	local loiInsanity = string.format("%.0f", snapshotData.eternalCallToTheVoid.insanityFinal)
-	--$loiInsanity
+	--$loiTicks
 	local loiTicks = string.format("%.0f", snapshotData.eternalCallToTheVoid.maxTicksRemaining)
 	--$ecttvCount
 	local ecttvCount = string.format("%.0f", snapshotData.eternalCallToTheVoid.numberActive)
@@ -4483,11 +4431,6 @@ local function BarText()
 	Global_TwintopInsanityBar = {
 		ttd = ttd or "--",
 		voidform = {
-			stacks = snapshotData.voidform.totalStacks or 0,
-			incomingStacks = snapshotData.voidform.additionalStacks or 0,
-			drainStacks = snapshotData.voidform.drainStacks or 0,
-			drain = snapshotData.voidform.currentDrainRate or 0,
-			drainTime = snapshotData.voidform.remainingTime or 0
 		},
 		insanity = {
 			insanity = snapshotData.insanity or 0,
@@ -4539,6 +4482,8 @@ local function BarText()
 	lookup["#loi"] = spells.lashOfInsanity.icon
 	lookup["#vf"] = spells.voidform.icon
 	lookup["#voidform"] = spells.voidform.icon
+	lookup["#vb"] = spells.voidBolt.icon
+	lookup["#voidBolt"] = spells.voidBolt.icon
 	lookup["#vt"] = spells.vampiricTouch.icon
 	lookup["#vampiricTouch"] = spells.vampiricTouch.icon
 	lookup["#swp"] = spells.shadowWordPain.icon
@@ -4557,11 +4502,11 @@ local function BarText()
 	lookup["$swpCount"] = shadowWordPainCount
 	lookup["$vtCount"] = vampiricTouchCount
 	lookup["$dpCount"] = devouringPlagueCount
-	lookup["$vfIncoming"] = voidformStacksIncoming
-	lookup["$vfStacks"] = voidformStacks
-	lookup["$vfDrainStacks"] = voidformDrainStacks
-	lookup["$vfDrain"] = voidformDrainAmount
-	lookup["$vfTime"] = voidformDrainTime
+	lookup["$vfTime"] = voidformTime
+	lookup["$hvTime"] = hungeringVoidTime
+	lookup["$vbCasts"] = voidBoltCasts
+	lookup["$hvAvgTime"] = hungeringVoidTimeAvg
+	lookup["$vbAvgCasts"] = voidBoltCastsAvg
 	lookup["$insanityPlusCasting"] = insanityPlusCasting
 	lookup["$insanityPlusPassive"] = insanityPlusPassive
 	lookup["$insanityTotal"] = insanityTotal
@@ -4590,7 +4535,7 @@ local function BarText()
 	returnText[0] = {}
 	returnText[1] = {}
 	returnText[2] = {}
-	if snapshotData.voidform.totalStacks > 0 then
+	if snapshotData.voidform.spellId then
 		returnText[0].text = settings.displayText.left.inVoidformText
 		returnText[1].text = settings.displayText.middle.inVoidformText
 		returnText[2].text = settings.displayText.right.inVoidformText
@@ -4829,9 +4774,12 @@ local function UpdateDeathAndMadness()
 	end
 end
 
-local function UpdateSnapshot()
+local function UpdateSnapshot()	
+	local currentTime = GetTime()
+	--local _
 	spells.s2m.isActive = select(10, FindBuffById(spells.s2m.id))
 	spells.s2m.isDebuffActive = select(10, FindDebuffById(spells.s2m.debuffId))
+	--_, _, _, _, snapshotData.voidform.duration, snapshotData.voidform.expirationTime, _, _, _, snapshotData.voidform.spellId = FindBuffById(spells.voidform.id)
 	snapshotData.haste = UnitSpellHaste("player")
 	snapshotData.crit = GetCritChance("player")
 	snapshotData.mastery = GetMasteryEffect("player")
@@ -4847,19 +4795,6 @@ end
 
 local function UpdateInsanityBar()
 	UpdateSnapshot()
-	leftText, middleText, rightText = BarText()
-	
-	if not pcall(TryUpdateText, leftTextFrame, leftText) then
-		leftTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.left.fontSize, "OUTLINE")
-	end
-
-	if not pcall(TryUpdateText, middleTextFrame, middleText) then
-		middleTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.middle.fontSize, "OUTLINE")
-	end
-
-	if not pcall(TryUpdateText, rightTextFrame, rightText) then
-		rightTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.right.fontSize, "OUTLINE")
-	end
 
 	if barContainerFrame:IsShown() then
 		if snapshotData.insanity == 0 then
@@ -4888,45 +4823,61 @@ local function UpdateInsanityBar()
 			passiveFrame.threshold.texture:Hide()
 			passiveFrame:SetValue(snapshotData.insanity + snapshotData.casting.insanityFinal)
 		end
-		
-		if snapshotData.voidform.totalStacks > 0 then
-			barContainerFrame:SetAlpha(1.0)
-			local gcd = GetCurrentGCDTime()	
-			if snapshotData.voidform.remainingTime <= gcd then
-				insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.inVoidform1GCD, true))
-			elseif snapshotData.voidform.remainingTime <= (gcd * 2.0) then
-				insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.inVoidform2GCD, true))
-			else
-				insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.inVoidform, true))	
-			end
-		end
-		
+
 		if characterData.devouringPlagueThreshold < characterData.maxInsanity and settings.devouringPlagueThreshold then
 			insanityFrame.threshold:Show()
 		else
 			insanityFrame.threshold:Hide()
 		end
-
+		
 		if snapshotData.insanity >= characterData.devouringPlagueThreshold then
 			insanityFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.over, true))
-			insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.enterVoidform, true))
 			if settings.colors.bar.flashEnabled then
 				PulseFrame(barContainerFrame)
-			--insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.enterVoidformFlash, true))
 			else
 				barContainerFrame:SetAlpha(1.0)
-			end
-
-			if settings.audio.vfReady.enabled and snapshotData.voidform.playedCue == false then
+			end			
+	
+			if settings.audio.dpReady.enabled and snapshotData.voidform.playedCue == false then
 				snapshotData.voidform.playedCue = true
-				PlaySoundFile(settings.audio.vfReady.sound, settings.audio.channel.channel)
+				PlaySoundFile(settings.audio.dpReady.sound, settings.audio.channel.channel)
 			end
 		else
 			insanityFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
-			insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base, true))
 			barContainerFrame:SetAlpha(1.0)
 			snapshotData.voidform.playedCue = false
 		end
+
+		if snapshotData.voidform.spellId then
+			local gcd = GetCurrentGCDTime()	
+			if snapshotData.voidform.remainingTime <= gcd then
+				insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.inVoidform1GCD, true))
+			elseif snapshotData.voidform.remainingTime <= (gcd * 2.0) then
+				insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.inVoidform2GCD, true))
+			else				
+				insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.inVoidform, true))	
+			end
+		else
+			if snapshotData.insanity >= characterData.devouringPlagueThreshold then
+				insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.enterVoidform, true))
+			else
+				insanityFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base, true))
+			end
+		end
+	end
+	
+	leftText, middleText, rightText = BarText()
+	
+	if not pcall(TryUpdateText, leftTextFrame, leftText) then
+		leftTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.left.fontSize, "OUTLINE")
+	end
+
+	if not pcall(TryUpdateText, middleTextFrame, middleText) then
+		middleTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.middle.fontSize, "OUTLINE")
+	end
+
+	if not pcall(TryUpdateText, rightTextFrame, rightText) then
+		rightTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.right.fontSize, "OUTLINE")
 	end
 end
 
@@ -4944,52 +4895,6 @@ local function TriggerInsanityBarUpdates()
 	if updateRateLimit + 0.05 < currentTime then
 		updateRateLimit = currentTime
 		UpdateInsanityBar()
-	end
-end
-
-local function ResetVoidformSnapshotData()
-	snapshotData.voidform.totalStacks = 0
-	snapshotData.voidform.drainStacks = 0
-	snapshotData.voidform.additionalStacks = 0
-	snapshotData.voidform.currentDrainRate = 0
-	snapshotData.voidform.duration = 0
-	snapshotData.voidform.spellId = nil
-	snapshotData.voidform.startTime = 0
-	snapshotData.voidform.previousStackTime = 0
-	snapshotData.voidform.remainingTime = 0
-	snapshotData.voidform.voidTorrent.stacks = 0
-	snapshotData.voidform.voidTorrent.startTime = nil
-end
-
-local function PrintVoidformSummary(isS2M)
-	local currentTime = GetTime()
-	if settings.summary.simple and isS2M == false then
-		if snapshotData.voidform.totalStacks > 100 then
-			print(string.format("Voidform Stacks: 100 (+%.0f)", (snapshotData.voidform.totalStacks-100)))
-		else
-			print(string.format("Voidform Stacks: %.0f", snapshotData.voidform.totalStacks))
-		end
-	else
-		print("--------------------------")
-		if isS2M then
-			print("Surrender to Madness Info:")
-			print("--------------------------")
-			print(string.format("S2M Duration: %.2f seconds", (currentTime-snapshotData.voidform.s2m.startTime)))
-		else
-			print("Voidform Info:")
-			print("--------------------------")	
-		end
-		print(string.format("Voidform Duration: %.2f seconds", (currentTime-snapshotData.voidform.startTime)))
-
-		if snapshotData.voidform.totalStacks > 100 then
-			print(string.format("Voidform Stacks: 100 (+%.0f)", (snapshotData.voidform.totalStacks-100)))
-		else
-			print(string.format("Voidform Stacks: %.0f", snapshotData.voidform.totalStacks))
-		end
-
-		print(string.format("Void Torrent Stacks: %.0f", snapshotData.voidform.voidTorrent.stacks))
-		print(string.format("Final Drain: %.0f stacks %.1f / sec", snapshotData.voidform.drainStacks, InsanityDrain(snapshotData.voidform.drainStacks)))
-		print("--------------------------")
 	end
 end
 
@@ -5074,6 +4979,7 @@ function timerFrame:onUpdate(sinceLastUpdate)
 	end
 end
 
+--[[
 function mindbenderAudioCueFrame:onUpdate(sinceLastUpdate)
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	self.sinceLastPlay = self.sinceLastPlay + sinceLastUpdate
@@ -5091,33 +4997,12 @@ function mindbenderAudioCueFrame:onUpdate(sinceLastUpdate)
 		self.sinceLastUpdate = 0
 	end
 end
+]]
 
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local currentTime = GetTime()
 	local triggerUpdate = false
-	
-	if event == "UNIT_POWER_FREQUENT" then	
-		local unit, unitPowerType = ...
-		if unit == "player" and unitPowerType == "INSANITY" then
-			snapshotData.insanity = UnitPower("player", SPELL_POWER_INSANITY)
-      
-			if snapshotData.voidform.totalStacks >= 100 then --When above 100 stacks there are no longer combat log events for Voidform stacks, need to do a manual check instead			
-				if (currentTime - snapshotData.voidform.previousStackTime) >= 1 then					
-					snapshotData.voidform.previousStackTime = currentTime
-					snapshotData.voidform.totalStacks = snapshotData.voidform.totalStacks + 1
-										
-					if snapshotData.voidform.voidTorrent.startTime == nil then						
-						snapshotData.voidform.drainStacks = snapshotData.voidform.drainStacks + 1						
-					elseif snapshotData.voidform.voidTorrent.startTime ~= nil then						
-						snapshotData.voidform.voidTorrent.stacks = snapshotData.voidform.voidTorrent.stacks + 1
-					end               
-				end				
-			end
-		end
-					
-		triggerUpdate = true
-	end
-	
+		
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
@@ -5135,45 +5020,8 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			end	
 		end
 
-		if sourceGUID == characterData.guid then  
-			if spellId == spells.voidform.id then
-                if type == "SPELL_AURA_APPLIED" then -- Entered Voidform                    
-					snapshotData.voidform.previousStackTime = currentTime
-                    snapshotData.voidform.drainStacks = 1
-                    snapshotData.voidform.startTime = currentTime
-                    snapshotData.voidform.totalStacks = 1
-                    snapshotData.voidform.voidTorrent.startTime = nil
-                    snapshotData.voidform.voidTorrent.stacks = 0
-					
-					triggerUpdate = true
-                elseif type == "SPELL_AURA_APPLIED_DOSE" then -- New Voidform Stack   
-                    snapshotData.voidform.previousStackTime = currentTime
-                    snapshotData.voidform.totalStacks = snapshotData.voidform.totalStacks + 1
-                    
-                    if snapshotData.voidform.voidTorrent.startTime == nil then
-                        snapshotData.voidform.drainStacks = snapshotData.voidform.drainStacks + 1                        
-                    elseif snapshotData.voidform.voidTorrent.startTime ~= nil then                        
-                        snapshotData.voidform.voidTorrent.stacks = snapshotData.voidform.voidTorrent.stacks + 1                   
-                    end
-					
-					triggerUpdate = true
-                elseif type == "SPELL_AURA_REMOVED" then -- Exited Voidform
-                    if settings.summary.enabled == true then
-						PrintVoidformSummary(false)
-                    end
-            
-                    ResetVoidformSnapshotData()
-					triggerUpdate = true
-                end                
-            elseif spellId == spells.voidTorrent.id then                
-                if type == "SPELL_AURA_APPLIED" then -- Started channeling Void Torrent                    
-                    snapshotData.voidform.voidTorrent.startTime = currentTime                    
-                elseif type == "SPELL_AURA_REMOVED" and snapshotData.voidform.voidTorrent.startTime ~= nil then -- Stopped channeling Void Torrent                    
-                    snapshotData.voidform.voidTorrent.startTime = nil                    
-                end
-					
-				triggerUpdate = true
-            elseif spellId == spells.s2m.id then                
+		if sourceGUID == characterData.guid then 
+			if spellId == spells.s2m.id then                
                 if type == "SPELL_AURA_APPLIED" then -- Gain Surrender to Madness   
                     snapshotData.voidform.s2m.active = true
                     snapshotData.voidform.s2m.startTime = currentTime
