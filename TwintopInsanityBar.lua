@@ -218,6 +218,13 @@ local spells = {
 		isActive = false,
 		modifier = 2.0
 	},
+	mindDevourer = {
+		id = 338333,
+		--id = 17, --PWS for testing
+		name = "",
+		icon = "",
+		isActive = false
+	},
 	eternalCallToTheVoid_Tendril = {
 		id = 193470,
 		idTick = 193473,
@@ -348,6 +355,11 @@ local snapshotData = {
 		insanityFinal = 0,
 		maxTicksRemaining = 0,		
 		voidTendrils = {}
+	},
+	mindDevourer = {
+		spellId = nil,
+		endTime = nil,
+		duration = 0
 	}
 }
 
@@ -519,8 +531,8 @@ local function LoadDefaultBarTextAdvancedSettings()
 			fontSize = 13
 		},
 		middle = {
-			outVoidformText = "",
-			inVoidformText = "{$hvAvgTime}[$hvAvgTime (+$vbAvgCasts)][$vfTime]",
+			outVoidformText = "{$mdTime}[#mDev $mdTime #mDev]",
+			inVoidformText = "{$mdTime}[#mDev $mdTime #mDev||n]{$hvAvgTime}[$hvAvgTime (+$vbAvgCasts)][$vfTime]",
 			fontFace = "Fonts\\FRIZQT__.TTF",
 			fontFaceName = "Friz Quadrata TT",
 			fontSize = 13
@@ -701,6 +713,8 @@ local function FillBarTextVariables()
 			{ variable = "#vampiricTouch", icon = spells.vampiricTouch.icon, description = "Vampiric Touch", printInSettings = false },
 			{ variable = "#dp", icon = spells.devouringPlague.icon, description = "Devouring Plague", printInSettings = true },
 			{ variable = "#devouringPlague", icon = spells.devouringPlague.icon, description = "Devouring Plague", printInSettings = false },
+			{ variable = "#mDev", icon = spells.mindDevourer.icon, description = "Mind Devourer", printInSettings = true },
+			{ variable = "#mindDevourer", icon = spells.mindDevourer.icon, description = "Mind Devourer", printInSettings = false },
 
 			{ variable = "#as", icon = spells.auspiciousSpirits.icon, description = "Auspicious Spirits", printInSettings = true },
 			{ variable = "#auspiciousSpirits", icon = spells.auspiciousSpirits.icon, description = "Auspicious Spirits", printInSettings = false },
@@ -750,6 +764,8 @@ local function FillBarTextVariables()
 			{ variable = "$swpCount", description = "Number of Shadow Word: Pains active on targets", printInSettings = true, color = false },
 			{ variable = "$vtCount", description = "Number of Vampiric Touches active on targets", printInSettings = true, color = false },
 			{ variable = "$dpCount", description = "Number of Devouring Plagues active on targets", printInSettings = true, color = false },
+
+			{ variable = "$mdTime", description = "Time remaining on Mind Devourer buff", printInSettings = true, color = false },
 
 			{ variable = "$vfTime", description = "Duration of Voidform", printInSettings = true, color = false },
 			{ variable = "$hvTime", description = "Duration of Voidform w/max Void Bolt casts in Hungering Void", printInSettings = true, color = false },
@@ -4177,6 +4193,14 @@ local function RemoveInvalidVariablesFromBarText(input)
 						if snapshotData.targetData.vampiricTouch > 0 then
 							valid = true
 						end
+					elseif var == "$dpCount" then
+						if snapshotData.targetData.devouringPlague > 0 then
+							valid = true
+						end
+					elseif var == "$mdTime" then
+						if snapshotData.mindDevourer.spellId ~= nil then
+							valid = true
+						end
 					elseif var == "$ttd" then
 						if snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid] ~= nil and snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].ttd > 0 then
 							valid = true
@@ -4344,6 +4368,7 @@ local function GetFromBarTextCache(barText)
 end
 
 local function BarText()
+	local currentTime = GetTime()
 	--$crit
 	local critPercent = string.format("%." .. settings.hastePrecision .. "f", RoundTo(snapshotData.crit, settings.hastePrecision))
 
@@ -4442,6 +4467,13 @@ local function BarText()
 	--$dpCount	
 	local devouringPlagueCount = snapshotData.targetData.devouringPlague or 0
 
+	--$mdTime
+	local _mdTime = 0
+	if snapshotData.mindDevourer.spellId ~= nil then
+		_mdTime = snapshotData.mindDevourer.endTime - currentTime
+	end
+	local mdTime = string.format("%.1f", _mdTime)
+
 	----------
 
 	--$ttd
@@ -4520,6 +4552,8 @@ local function BarText()
 	lookup["#shadowWordPain"] = spells.shadowWordPain.icon
 	lookup["#dp"] = spells.devouringPlague.icon
 	lookup["#devouringPlague"] = spells.devouringPlague.icon
+	lookup["#mDev"] = spells.mindDevourer.icon
+	lookup["#mindDevourer"] = spells.mindDevourer.icon
 	lookup["#md"] = spells.massDispel.icon
 	lookup["#massDispel"] = spells.massDispel.icon
 	lookup["#casting"] = castingIcon
@@ -4532,6 +4566,7 @@ local function BarText()
 	lookup["$swpCount"] = shadowWordPainCount
 	lookup["$vtCount"] = vampiricTouchCount
 	lookup["$dpCount"] = devouringPlagueCount
+	lookup["$mdTime"] = mdTime
 	lookup["$vfTime"] = voidformTime
 	lookup["$hvTime"] = hungeringVoidTime
 	lookup["$vbCasts"] = voidBoltCasts
@@ -4864,13 +4899,13 @@ local function UpdateInsanityBar()
 			passiveFrame:SetValue(snapshotData.insanity + snapshotData.casting.insanityFinal)
 		end
 
-		if characterData.devouringPlagueThreshold < characterData.maxInsanity and settings.devouringPlagueThreshold then
+		if settings.devouringPlagueThreshold then
 			insanityFrame.threshold:Show()
 		else
 			insanityFrame.threshold:Hide()
 		end
 		
-		if snapshotData.insanity >= characterData.devouringPlagueThreshold then
+		if snapshotData.insanity >= characterData.devouringPlagueThreshold or spells.mindDevourer.isActive then
 			insanityFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.over, true))
 			if settings.colors.bar.flashEnabled then
 				PulseFrame(barContainerFrame)
@@ -5045,7 +5080,8 @@ end
 
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local currentTime = GetTime()
-	local triggerUpdate = false
+	local triggerUpdate = false	
+	local _
 		
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
@@ -5163,6 +5199,16 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					spells.memoryOfLucidDreams.isActive = true
 				elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 					spells.memoryOfLucidDreams.isActive = false
+				end	
+			elseif spellId == spells.mindDevourer.id then
+				if type == "SPELL_AURA_APPLIED" then -- Gained buff
+					spells.mindDevourer.isActive = true
+					_, _, _, _, snapshotData.mindDevourer.duration, snapshotData.mindDevourer.endTime, _, _, _, snapshotData.mindDevourer.spellId = FindBuffById(spells.mindDevourer.id)
+				elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+					spells.mindDevourer.isActive = false
+					snapshotData.mindDevourer.spellId = nil
+					snapshotData.mindDevourer.duration = 0
+					snapshotData.mindDevourer.endTime = nil
 				end			
 			elseif type == "SPELL_SUMMON" and settings.voidTendrilTracker and (spellId == spells.eternalCallToTheVoid_Tendril.id or spellId == spells.eternalCallToTheVoid_Lasher.id) then
 				InitializeVoidTendril(destGUID)
