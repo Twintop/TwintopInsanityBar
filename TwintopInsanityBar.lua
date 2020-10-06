@@ -1,5 +1,5 @@
-local addonVersion = "9.0.2.1"
-local addonReleaseDate = "October 01, 2020"
+local addonVersion = "9.0.2.2"
+local addonReleaseDate = "October 06, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -217,14 +217,23 @@ local spells = {
 		isActive = false,
 		modifier = 2.0
 	},
-	eternalCallToTheVoid = {
+	eternalCallToTheVoid_Tendril = {
 		id = 193470,
 		idTick = 193473,
 		idLegendaryBonus = 6983,
 		name = "",
-		icon = ""
+		icon = "",
+		tocMinVersion = 90001
 	},
-	lashOfInsanity = {
+	eternalCallToTheVoid_Lasher = {
+		id = 344753,
+		idTick = 344752,
+		idLegendaryBonus = 6983,
+		name = "",
+		icon = "",
+		tocMinVersion = 90002
+	},
+	lashOfInsanity_Tendril = {
 		id = 240843,
 		name = "",
 		icon = "",
@@ -232,7 +241,19 @@ local spells = {
 		fotm = false,
 		duration = 15,
 		ticks = 14,
-		tickDuration = 1
+		tickDuration = 1,
+		tocMinVersion = 90001
+	},
+	lashOfInsanity_Lasher = {
+		id = 344838,
+		name = "",
+		icon = "",
+		insanity = 3,
+		fotm = false,
+		duration = 15,
+		ticks = 14,
+		tickDuration = 1,
+		tocMinVersion = 90002
 	}
 }
 
@@ -251,10 +272,12 @@ local function FillSpellData()
 	spells.mindbender.name = select(2, GetTalentInfo(6, 2, characterData.specGroup))
 	spells.s2m.name = select(2, GetTalentInfo(7, 3, characterData.specGroup))
 
+	local toc = select(4, GetBuildInfo())
+
 	for k, v in pairs(spells) do
-		if spells[k] ~= nil and spells[k]["id"] ~= nil then
+		if spells[k] ~= nil and spells[k]["id"] ~= nil and (spells[k]["tocMinVersion"] == nil or toc >= spells[k]["tocMinVersion"]) then
 			local _, name, icon
-			name, _, icon = GetSpellInfo(spells[k]["id"])
+			name, _, icon = GetSpellInfo(spells[k]["id"])			
 			spells[k]["icon"] = string.format("|T%s:0|t", icon)
 			spells[k]["name"] = name
 		end
@@ -682,9 +705,9 @@ local function FillBarTextVariables()
 			{ variable = "#shadowfiend", icon = spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = false },
 			{ variable = "#sf", icon = spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = true },
 			
-			{ variable = "#ecttv", icon = spells.eternalCallToTheVoid.icon, description = "Eternal Call to the Void", printInSettings = true },
-			{ variable = "#tb", icon = spells.eternalCallToTheVoid.icon, description = "Eternal Call to the Void", printInSettings = false },
-			{ variable = "#loi", icon = spells.lashOfInsanity.icon, description = "Lash of Insanity", printInSettings = true },
+			{ variable = "#ecttv", icon = spells.eternalCallToTheVoid_Tendril.icon, description = "Eternal Call to the Void", printInSettings = true },
+			{ variable = "#tb", icon = spells.eternalCallToTheVoid_Tendril.icon, description = "Eternal Call to the Void", printInSettings = false },
+			{ variable = "#loi", icon = spells.lashOfInsanity_Tendril.icon, description = "Lash of Insanity", printInSettings = true },
 
 			{ variable = "#md", icon = spells.massDispel.icon, description = "Mass Dispel", printInSettings = true },
 			{ variable = "#massDispel", icon = spells.massDispel.icon, description = "Mass Dispel", printInSettings = false }
@@ -779,7 +802,7 @@ local function CheckCharacter()
 		-- 15+ = Bonuses
 		if tonumber(wristParts[2]) == 173249 and tonumber(wristParts[14]) > 0 then
 			for x = 1, tonumber(wristParts[14]) do
-				if tonumber(wristParts[14+x]) == spells.eternalCallToTheVoid.idLegendaryBonus then
+				if tonumber(wristParts[14+x]) == spells.eternalCallToTheVoid_Tendril.idLegendaryBonus then
 					callToTheVoid = true
 					break
 				end			
@@ -791,7 +814,7 @@ local function CheckCharacter()
 		local handsParts = { strsplit(":", handsItemLink) }
 		if tonumber(handsParts[2]) == 173244 and tonumber(handsParts[14]) > 0 then
 			for x = 1, tonumber(handsParts[14]) do
-				if tonumber(handsParts[14+x]) == spells.eternalCallToTheVoid.idLegendaryBonus then
+				if tonumber(handsParts[14+x]) == spells.eternalCallToTheVoid_Tendril.idLegendaryBonus then
 					callToTheVoid = true
 					break
 				end			
@@ -862,6 +885,7 @@ local function InitializeVoidTendril(guid)
 		snapshotData.eternalCallToTheVoid.voidTendrils[guid] = {}
 		snapshotData.eternalCallToTheVoid.voidTendrils[guid].startTime = nil
 		snapshotData.eternalCallToTheVoid.voidTendrils[guid].tickTime = nil
+		snapshotData.eternalCallToTheVoid.voidTendrils[guid].type = nil
 	end	
 end
 
@@ -3512,7 +3536,7 @@ local function ConstructOptionsPanel()
 	f = controls.checkBoxes.as
 	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Track Eternal Call to the Void")
-	f.tooltip = "Track Insanity generated from Lash of Insanity via Void Tendril spawns / Eternal Call of the Void procs."
+	f.tooltip = "Track Insanity generated from Lash of Insanity via Void Tendril + Void Lasher spawns / Eternal Call of the Void procs."
 	f:SetChecked(settings.voidTendrilTracker)
 	f:SetScript("OnClick", function(self, ...)
 		settings.voidTendrilTracker = self:GetChecked()
@@ -4477,9 +4501,9 @@ local function BarText()
 	lookup["#mindbender"] = spells.mindbender.icon
 	lookup["#shadowfiend"] = spells.shadowfiend.icon
 	lookup["#sf"] = spells.shadowfiend.icon
-	lookup["#ecttv"] = spells.eternalCallToTheVoid.icon
-	lookup["#tb"] = spells.eternalCallToTheVoid.icon
-	lookup["#loi"] = spells.lashOfInsanity.icon
+	lookup["#ecttv"] = spells.eternalCallToTheVoid_Tendril.icon
+	lookup["#tb"] = spells.eternalCallToTheVoid_Tendril.icon
+	lookup["#loi"] = spells.lashOfInsanity_Tendril.icon
 	lookup["#vf"] = spells.voidform.icon
 	lookup["#voidform"] = spells.voidform.icon
 	lookup["#vb"] = spells.voidBolt.icon
@@ -4726,23 +4750,24 @@ local function UpdateExternalCallToTheVoidValues()
 	local totalTicksRemaining = 0
 	local totalActive = 0
 
+	-- TODO: Add separate counts for Tendril vs Lasher?
 	if TableLength(snapshotData.eternalCallToTheVoid.voidTendrils) > 0 then
 		for vtGuid,v in pairs(snapshotData.eternalCallToTheVoid.voidTendrils) do
 			if snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid] ~= nil and snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].startTime ~= nil then
-				local endTime = snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].startTime + spells.lashOfInsanity.duration
+				local endTime = snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].startTime + spells.lashOfInsanity_Tendril.duration
 				local timeRemaining = endTime - currentTime
 
 				if timeRemaining < 0 then
 					RemoveVoidTendril(vtGuid)
 				else
-					local nextTick = snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].tickTime + spells.lashOfInsanity.tickDuration
+					local nextTick = snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].tickTime + spells.lashOfInsanity_Tendril.tickDuration
 
 					if nextTick < currentTime then
 						nextTick = currentTime --There should be a tick. ANY second now. Maybe.
 					end
 					
 					-- NOTE: Might need to be math.floor()
-					local ticksRemaining = math.ceil((endTime - nextTick) / spells.lashOfInsanity.tickDuration) --Not needed as it is 1sec, but adding in case it changes
+					local ticksRemaining = math.ceil((endTime - nextTick) / spells.lashOfInsanity_Tendril.tickDuration) --Not needed as it is 1sec, but adding in case it changes
 
 					totalTicksRemaining = totalTicksRemaining + ticksRemaining;
 					totalActive = totalActive + 1
@@ -4753,10 +4778,10 @@ local function UpdateExternalCallToTheVoidValues()
 
 	snapshotData.eternalCallToTheVoid.maxTicksRemaining = totalTicksRemaining
 	snapshotData.eternalCallToTheVoid.numberActive = totalActive
-	snapshotData.eternalCallToTheVoid.insanityRaw = totalTicksRemaining * spells.lashOfInsanity.insanity
+	snapshotData.eternalCallToTheVoid.insanityRaw = totalTicksRemaining * spells.lashOfInsanity_Tendril.insanity
 	-- TODO: Need to verify that Tentacle Bro's insanity generation via Lash of Insanity doesn't get affected by the Priest's insanity generation modifiers
 	-- TODO: If they do, is Fortress of the Mind applied as well?
-	snapshotData.eternalCallToTheVoid.insanityFinal = CalculateInsanityGain(snapshotData.eternalCallToTheVoid.insanityRaw, spells.lashOfInsanity.fotm)
+	snapshotData.eternalCallToTheVoid.insanityFinal = CalculateInsanityGain(snapshotData.eternalCallToTheVoid.insanityRaw, spells.lashOfInsanity_Tendril.fotm)
 end
 
 local function UpdateDeathAndMadness()
@@ -4776,10 +4801,8 @@ end
 
 local function UpdateSnapshot()	
 	local currentTime = GetTime()
-	--local _
 	spells.s2m.isActive = select(10, FindBuffById(spells.s2m.id))
 	spells.s2m.isDebuffActive = select(10, FindDebuffById(spells.s2m.debuffId))
-	--_, _, _, _, snapshotData.voidform.duration, snapshotData.voidform.expirationTime, _, _, _, snapshotData.voidform.spellId = FindBuffById(spells.voidform.id)
 	snapshotData.haste = UnitSpellHaste("player")
 	snapshotData.crit = GetCritChance("player")
 	snapshotData.mastery = GetMasteryEffect("player")
@@ -4929,7 +4952,6 @@ function timerFrame:onUpdate(sinceLastUpdate)
 			local timeDelta = 0
 			local dps = 0
 			local ttd = 0
-			--local cleanupTime = currentTime - (settings.ttd.numEntries * settings.ttd.sampleRate)
 
 			local count = TableLength(snapshotData.targetData.targets[guid].snapshot)
 			if count > 0 and snapshotData.targetData.targets[guid].snapshot[1] ~= nil then
@@ -5104,14 +5126,20 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 					spells.memoryOfLucidDreams.isActive = false
 				end			
-			elseif type == "SPELL_SUMMON" and settings.voidTendrilTracker and spellId == spells.eternalCallToTheVoid.id then
+			elseif type == "SPELL_SUMMON" and settings.voidTendrilTracker and (spellId == spells.eternalCallToTheVoid_Tendril.id or spellId == spells.eternalCallToTheVoid_Lasher.id) then
 				InitializeVoidTendril(destGUID)
+				if spellId == spells.eternalCallToTheVoid_Tendril.id then
+					snapshotData.eternalCallToTheVoid.voidTendrils[guid].type = "Tendril"
+				elseif spellId == spells.eternalCallToTheVoid_Lasher.id then
+					snapshotData.eternalCallToTheVoid.voidTendrils[guid].type = "Lasher"
+				end
+
 				snapshotData.eternalCallToTheVoid.numberActive = snapshotData.eternalCallToTheVoid.numberActive + 1
-				snapshotData.eternalCallToTheVoid.maxTicksRemaining = snapshotData.eternalCallToTheVoid.maxTicksRemaining + spells.lashOfInsanity.ticks
+				snapshotData.eternalCallToTheVoid.maxTicksRemaining = snapshotData.eternalCallToTheVoid.maxTicksRemaining + spells.lashOfInsanity_Tendril.ticks
 				snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].startTime = currentTime
 				snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].tickTime = currentTime
 			end
-		elseif settings.voidTendrilTracker and spellId == spells.eternalCallToTheVoid.idTick and CheckVoidTendrilExists(sourceGUID) then
+		elseif settings.voidTendrilTracker and (spellId == spells.eternalCallToTheVoid_Tendril.idTick or spellId == spells.eternalCallToTheVoid_Lasher.idTick) and CheckVoidTendrilExists(sourceGUID) then
 			snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].tickTime = currentTime
 		end
 		
