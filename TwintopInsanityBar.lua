@@ -155,9 +155,10 @@ local spells = {
 	},
 	mindSear = {
 		id = 48045,
+		idTick = 49821,
 		name = "",
 		icon = "",
-		insanity = (5 / 4) * 1.25, --Need to figure out a better value here.
+		insanity = 1, -- Per tick per target
 		fotm = false
 	},
 	shadowfiend = {
@@ -308,6 +309,11 @@ local snapshotData = {
 			active = false
 		},
 		playedCue = false
+	},
+	mindSear = {
+		targetsHit = 0,
+		hitTime = nil,
+		hasStruckTargets = false
 	},
 	targetData = {
 		ttdIsActive = false,
@@ -4108,7 +4114,7 @@ local function RemoveInvalidVariablesFromBarText(input)
 					elseif var == "$insanityPlusPassive" then
 						valid = true
 					elseif var == "$casting" then
-						if snapshotData.casting.insanityRaw ~= nil and snapshotData.casting.insanityRaw > 0 then
+						if snapshotData.casting.insanityRaw ~= nil and (snapshotData.casting.insanityRaw > 0 or snapshotData.casting.spellId == spells.mindSear.id) then
 							valid = true
 						end
 					elseif var == "$passive" then
@@ -4622,10 +4628,21 @@ local function CastingSpell()
 				snapshotData.casting.insanityRaw = spells.mindFlay.insanity
 				snapshotData.casting.icon = spells.mindFlay.icon
 				UpdateCastingInsanityFinal(spells.mindFlay.fotm)
-			elseif spellName == spells.mindSear.name then --TODO: Try to figure out total targets being hit
+			elseif spellName == spells.mindSear.name then				
+				local down, up, lagHome, lagWorld = GetNetStats()
+				local latency = lagWorld / 1000
+
+				if snapshotData.mindSear.hitTime == nil then
+					snapshotData.mindSear.targetsHit = 1
+					snapshotData.mindSear.hitTime = currentTime
+					snapshotData.mindSear.hasStruckTargets = false
+				elseif currentTime > (snapshotData.mindSear.hitTime + (GetCurrentGCDTime(true) / 2) + latency) then
+					snapshotData.mindSear.targetsHit = 0
+				end
+
 				snapshotData.casting.spellId = spells.mindSear.id
-				snapshotData.casting.startTime = currentTime
-				snapshotData.casting.insanityRaw = spells.mindSear.insanity
+				snapshotData.casting.startTime = currentTime				
+				snapshotData.casting.insanityRaw = spells.mindSear.insanity * snapshotData.mindSear.targetsHit
 				snapshotData.casting.icon = spells.mindSear.icon
 				UpdateCastingInsanityFinal(spells.mindSear.fotm)
 			elseif spellName == spells.voidTorrent.name then
@@ -4922,12 +4939,17 @@ local function TriggerInsanityBarUpdates()
 end
 
 function timerFrame:onUpdate(sinceLastUpdate)
+	local currentTime = GetTime()
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate
 	self.characterCheckSinceLastUpdate = self.characterCheckSinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 0.05 then -- in seconds
 		TriggerInsanityBarUpdates()
 		self.sinceLastUpdate = 0
+		if snapshotData.mindSear.hitTime ~= nil and currentTime > (snapshotData.mindSear.hitTime + 5) then
+			snapshotData.mindSear.hitTime = nil
+			snapshotData.mindSear.targetsHit = 0
+		end
 	end
 
 	if self.characterCheckSinceLastUpdate >= settings.dataRefreshRate then -- in seconds
@@ -5082,6 +5104,22 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					snapshotData.targetData.targets[destGUID].shadowWordPain = false
 					snapshotData.targetData.shadowWordPain = snapshotData.targetData.shadowWordPain - 1
 				--elseif type == "SPELL_PERIODIC_DAMAGE" then
+				end			
+			elseif spellId == spells.mindSear.id then
+				if type == "SPELL_AURA_APPLIED" or type == "SPELL_CAST_SUCCESS" then
+					if snapshotData.mindSear.hitTime == nil then --This is a new cast without target data
+						snapshotData.mindSear.targetsHit = 1
+					end
+					snapshotData.mindSear.hitTime = currentTime
+				end		
+			elseif spellId == spells.mindSear.idTick then
+				if type == "SPELL_DAMAGE" then
+					if currentTime > (snapshotData.mindSear.hitTime + 0.1) then --This is a new tick
+						snapshotData.mindSear.targetsHit = 0
+					end
+					snapshotData.mindSear.targetsHit = snapshotData.mindSear.targetsHit + 1
+					snapshotData.mindSear.hitTime = currentTime					
+					snapshotData.mindSear.hasStruckTargets = true
 				end
 			elseif spellId == spells.vampiricTouch.id then
 				InitializeTarget(destGUID)
