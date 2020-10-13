@@ -1,5 +1,5 @@
-local addonVersion = "9.0.2.2"
-local addonReleaseDate = "October 06, 2020"
+local addonVersion = "9.0.2.3"
+local addonReleaseDate = "October 13, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -4493,11 +4493,21 @@ local function BarText()
 	Global_TwintopInsanityBar = {
 		ttd = ttd or "--",
 		voidform = {
+			hungeringVoid = {
+				timeRemaining = snapshotData.voidform.remainingHvTime,
+				voidBoltCasts = snapshotData.voidform.additionalVbCasts,
+				TimeRemainingAverage = snapshotData.voidform.remainingHvAvgTime,
+				voidBoltCastsAverage = snapshotData.voidform.additionalVbAvgCasts,
+			}
 		},
 		insanity = {
 			insanity = snapshotData.insanity or 0,
 			casting = snapshotData.casting.insanityFinal or 0,
-			passive = _passiveInsanity
+			passive = _passiveInsanity,
+			auspiciousSpirits = _asInsanity,
+			mindbender = snapshotData.mindbender.insanityFinal or 0,
+			deathAndMadness = _damInsanity,
+			ecttv = snapshotData.eternalCallToTheVoid.insanityFinal or 0
 		},
 		auspiciousSpirits = {
 			count = snapshotData.targetData.auspiciousSpirits or 0,
@@ -4508,12 +4518,15 @@ local function BarText()
 			vtCount = vampiricTouchCount or 0,
 			dpCount = devouringPlagueCount or 0
 		},
-		mindbender = {
+		mindbender = {			
 			insanity = snapshotData.mindbender.insanityFinal or 0,
 			gcds = snapshotData.mindbender.remaining.gcds or 0,
 			swings = snapshotData.mindbender.remaining.swings or 0,
 			time = snapshotData.mindbender.remaining.time or 0
 		},
+		mindSear = {
+			targetsHit = snapshotData.mindSear.targetsHit or 0
+		}
 		deathAndMadness = {
 			insanity = _damInsanity,
 			ticks = snapshotData.deathAndMadness.ticksRemaining
