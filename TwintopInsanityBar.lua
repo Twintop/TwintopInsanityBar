@@ -81,6 +81,9 @@ local characterData = {
 		},
 		hungeringVoid = {
 			isSelected = false
+		},
+		surrenderToMadeness = {
+			isSelected = false
 		}
 	},
 	items = {
@@ -112,9 +115,7 @@ local spells = {
 		isDebuffActive = false,
 		modifier = 2.0,
 		modifierDebuff = 0.0,
-		--id = 212570
-		id = 193223,
-		debuffId = 263406,
+		id = 319952,
 		name = "",
 		icon = ""
 	},
@@ -136,7 +137,7 @@ local spells = {
 		id = 8092,
 		name = "",
 		icon = "",
-		insanity = 8,
+		insanity = 7,
 		fotm = true
 	},
 	devouringPlague = {
@@ -557,6 +558,8 @@ local function LoadDefaultSettings()
 		},
 		hasteApproachingThreshold=135,
 		hasteThreshold=140,
+		s2mApproachingThreshold=15,
+		s2mThreshold=20,
 		hastePrecision=2,
 		devouringPlagueThreshold=true,
 		thresholdWidth=2,
@@ -600,7 +603,10 @@ local function LoadDefaultSettings()
 				right="FFFFFFFF",
 				hasteBelow="FFFFFFFF",
 				hasteApproaching="FFFFFF00",
-				hasteAbove="FF00FF00"
+				hasteAbove="FF00FF00",
+				s2mBelow="FF00FF00",
+				s2mApproaching="FFFFFF00",
+				s2mAbove="FFFF0000"
 			},
 			bar={
 				border="FF431863",
@@ -745,8 +751,8 @@ local function FillBarTextVariables()
 			{ variable = "$insanityPlusPassive", description = "Current + Passive Insanity Total", printInSettings = true, color = false },
 			{ variable = "$insanityTotal", description = "Current + Passive + Casting Insanity Total", printInSettings = true, color = false },   
 
-			{ variable = "$damInsanity", description = "Insanity from Death and Insanity", printInSettings = true, color = false },
-			{ variable = "$damTicks", description = "Number of ticks left on Death and Insanity", printInSettings = true, color = false },
+			{ variable = "$damInsanity", description = "Insanity from Death and Madness", printInSettings = true, color = false },
+			{ variable = "$damTicks", description = "Number of ticks left on Death and Madness", printInSettings = true, color = false },
 
 			{ variable = "$mbInsanity", description = "Insanity from Mindbender/Shadowfiend (per settings)", printInSettings = true, color = false },
 			{ variable = "$mbGcds", description = "Number of GCDs left on Mindbender/Shadowfiend", printInSettings = true, color = false },
@@ -754,12 +760,12 @@ local function FillBarTextVariables()
 			{ variable = "$mbTime", description = "Time left on Mindbender/Shadowfiend", printInSettings = true, color = false },
 			
 			{ variable = "$cttvEquipped", description = "Checks if you have Call of the Void equipped. Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$ecttvCount", description = "Number of active Void Tendrils", printInSettings = true, color = false },
-			{ variable = "$loiInsanity", description = "Number of ticks remaining for all active Void Tendrils", printInSettings = true, color = false },
-			{ variable = "$loiTicks", description = "Number of ticks remaining for all active Void Tendrils", printInSettings = true, color = false },
+			{ variable = "$ecttvCount", description = "Number of active Void Tendrils/Void Lashers", printInSettings = true, color = false },
+			{ variable = "$loiInsanity", description = "Insanity from all Void Tendrils and Void Lashers", printInSettings = true, color = false },
+			{ variable = "$loiTicks", description = "Number of ticks remaining for all active Void Tendrils/Void Lashers", printInSettings = true, color = false },
 
 			{ variable = "$asInsanity", description = "Insanity from Auspicious Spirits", printInSettings = true, color = false },
-			{ variable = "$asCount", description = "Number of Auspicious Spirits in Flight", printInSettings = true, color = false },
+			{ variable = "$asCount", description = "Number of Auspicious Spirits in flight", printInSettings = true, color = false },
 
 			{ variable = "$swpCount", description = "Number of Shadow Word: Pains active on targets", printInSettings = true, color = false },
 			{ variable = "$vtCount", description = "Number of Vampiric Touches active on targets", printInSettings = true, color = false },
@@ -767,13 +773,13 @@ local function FillBarTextVariables()
 
 			{ variable = "$mdTime", description = "Time remaining on Mind Devourer buff", printInSettings = true, color = false },
 
-			{ variable = "$vfTime", description = "Duration of Voidform", printInSettings = true, color = false },
-			{ variable = "$hvTime", description = "Duration of Voidform w/max Void Bolt casts in Hungering Void", printInSettings = true, color = false },
+			{ variable = "$vfTime", description = "Duration remaining of Voidform", printInSettings = true, color = false },
+			{ variable = "$hvTime", description = "Duration remaining `of Voidform w/max Void Bolt casts in Hungering Void", printInSettings = true, color = false },
 			{ variable = "$vbCasts", description = "Max Void Bolt casts remaining in Hungering Void", printInSettings = true, color = false },
 			{ variable = "$hvAvgTime", description = "Duration of Voidform w/max Void Bolt casts in Hungering Void, includes crits", printInSettings = true, color = false },
 			{ variable = "$vbAvgCasts", description = "Max Void Bolt casts remaining in Hungering Void, includes crits", printInSettings = true, color = false },
 
-			{ variable = "$ttd", description = "Time To Die of current target", printInSettings = true, color = false }
+			{ variable = "$ttd", description = "Time To Die of current target", printInSettings = true, color = true }
 		},
 		pipe = {
 			{ variable = "||n", description = "Insert a Newline", printInSettings = true },
@@ -794,6 +800,7 @@ local function CheckCharacter()
 	characterData.talents.as.isSelected = select(4, GetTalentInfo(5, 1, characterData.specGroup))
 	characterData.talents.mindbender.isSelected = select(4, GetTalentInfo(6, 2, characterData.specGroup))	
 	characterData.talents.hungeringVoid.isSelected = select(4, GetTalentInfo(7, 2, characterData.specGroup))
+	characterData.talents.surrenderToMadeness.isSelected = select(4, GetTalentInfo(7, 3, characterData.specGroup))
 		
 	FillSpellData()
 	FillBarTextVariables()
@@ -2802,8 +2809,7 @@ local function ConstructOptionsPanel()
 	end)
 
 
-	yCoord = yCoord - yOffset40 - yOffset20
-
+	yCoord = yCoord - yOffset60
 	controls.textDisplaySection = BuildSectionHeader(parent, "Font Size and Colors", xCoord+xPadding, yCoord)
 
 	title = "Left Bar Text Font Size"
@@ -2954,7 +2960,10 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	yCoord = yCoord - yOffset40	
+	yCoord = yCoord - yOffset60
+	controls.textDisplaySection = BuildSectionHeader(parent, "Insanity Text Colors", xCoord+xPadding, yCoord)
+
+	yCoord = yCoord - yOffset60
 	controls.colors.currentInsanityText = BuildColorPicker(parent, "Current Insanity", settings.colors.text.currentInsanity, 250, 25, xCoord+xPadding*2, yCoord)
 	f = controls.colors.currentInsanityText
 	f.recolorTexture = function(color)
@@ -3001,8 +3010,11 @@ local function ConstructOptionsPanel()
 			ShowColorPicker(r, g, b, a, self.recolorTexture)
 		end
 	end)
+	
+	yCoord = yCoord - yOffset60
+	controls.textDisplaySection = BuildSectionHeader(parent, "Haste Threshold Colors in Voidform", xCoord+xPadding, yCoord)
 
-	yCoord = yCoord - yOffset40	
+	yCoord = yCoord - yOffset60
 	title = "Low to Medium Haste% Threshold in Voidform"
 	controls.hasteApproachingThreshold = BuildSlider(parent, title, 0, 500, settings.hasteApproachingThreshold, 0.25, 2,
 									barWidth, barHeight, xCoord+xPadding2, yCoord)
@@ -3111,6 +3123,123 @@ local function ConstructOptionsPanel()
 		self.EditBox:SetText(value)		
 		settings.hasteThreshold = value
 	end)
+	
+	yCoord = yCoord - yOffset60
+	controls.textDisplaySection = BuildSectionHeader(parent, "Surrender to Madness Target Time to Die Thresholds", xCoord+xPadding, yCoord)
+
+	yCoord = yCoord - yOffset60
+	title = "Low to Medium S2M Time to Die Threshold (sec)"
+	controls.s2mApproachingThreshold = BuildSlider(parent, title, 0, 30, settings.s2mApproachingThreshold, 0.25, 2,
+									barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.s2mApproachingThreshold:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		elseif value > settings.s2mThreshold then
+			value = settings.s2mThreshold
+		end
+
+		value = RoundTo(value, 2)
+		self.EditBox:SetText(value)		
+		settings.s2mApproachingThreshold = value
+	end)
+
+	controls.colors.s2mBelow = BuildColorPicker(parent, "Low S2M Time to Die Threshold", settings.colors.text.s2mBelow,
+												250, 25, xCoord2, yCoord+10)
+	f = controls.colors.s2mBelow
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		--Text doesn't care about Alpha, but the color picker does!
+		a = 1.0
+
+		controls.colors.s2mBelow.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.text.s2mBelow = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.text.s2mBelow, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	controls.colors.s2mApproaching = BuildColorPicker(parent, "Medium S2M Time to Die", settings.colors.text.s2mApproaching,
+												250, 25, xCoord2, yCoord-30)
+	f = controls.colors.s2mApproaching
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		--Text doesn't care about Alpha, but the color picker does!
+		a = 1.0
+
+		controls.colors.s2mApproaching.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.text.s2mApproaching = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.text.s2mApproaching, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	controls.colors.s2mAbove = BuildColorPicker(parent, "High S2M Time to Die", settings.colors.text.s2mAbove,
+												250, 25, xCoord2, yCoord-70)
+	f = controls.colors.s2mAbove
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		--Text doesn't care about Alpha, but the color picker does!
+		a = 1.0
+
+		controls.colors.s2mAbove.Texture:SetColorTexture(r, g, b, a)
+		settings.colors.text.s2mAbove = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.text.s2mAbove, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	yCoord = yCoord - yOffset60	
+	title = "Medium to High S2M Time to Die Threshold (sec)"
+	controls.s2mThreshold = BuildSlider(parent, title, 0, 30, settings.s2mThreshold, 0.25, 2,
+									barWidth, barHeight, xCoord+xPadding2, yCoord)
+	controls.s2mThreshold:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		elseif value < settings.s2mApproachingThreshold then
+			value = settings.s2mApproachingThreshold
+		end
+
+		value = RoundTo(value, 2)
+		self.EditBox:SetText(value)		
+		settings.s2mThreshold = value
+	end)
+
+	
+	yCoord = yCoord - yOffset60
+	controls.textDisplaySection = BuildSectionHeader(parent, "Decimal Precision", xCoord+xPadding, yCoord)
 
 	yCoord = yCoord - yOffset60	
 	title = "Haste / Crit / Mastery Decimals to Show"
@@ -3447,7 +3576,7 @@ local function ConstructOptionsPanel()
 	controls.checkBoxes.dpReady = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dpReady
 	f:SetPoint("TOPLEFT", xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Play Audio Cue When Devouring Plague is Usable")
+	getglobal(f:GetName() .. 'Text'):SetText("Play Audio Cue When DP is Usable")
 	f.tooltip = "Play an audio cue when Devouring Plague can be cast."
 	f:SetChecked(settings.audio.dpReady.enabled)
 	f:SetScript("OnClick", function(self, ...)
@@ -3527,7 +3656,7 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	yCoord = yCoord - yOffset10
+	yCoord = yCoord - yOffset30
 	controls.textSection = BuildSectionHeader(parent, "Auspicious Spirits Tracking", xCoord+xPadding, yCoord)
 
 	yCoord = yCoord - yOffset30
@@ -3962,7 +4091,7 @@ local function RemainingTimeAndStackCount()
 		if characterData.talents.hungeringVoid.isSelected == true then
 			local down, up, lagHome, lagWorld = GetNetStats()
 			local latency = lagWorld / 1000
-			local vbStart, vbDuration, _, _ = GetSpellCooldown(spells.voidBolt.id);
+			local vbStart, vbDuration, _, _ = GetSpellCooldown(spells.voidBolt.id)
 			local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(spells.voidBolt.id)
 			local vbCooldown = (vbBaseCooldown / (((snapshotData.haste / 100) + 1) * 1000)) + latency
 
@@ -4036,10 +4165,6 @@ local function CalculateInsanityGain(insanity, fotm)
 
 	if spells.s2m.isActive then
 		modifier = modifier * spells.s2m.modifier
-	end
-	
-	if spells.s2m.isDebuffActive then
-		modifier = modifier * spells.s2m.modifierDebuff
 	end
 	
 	return insanity * modifier	
@@ -4477,11 +4602,31 @@ local function BarText()
 	----------
 
 	--$ttd
+	local _ttd = ""
 	local ttd = ""
+
 	if snapshotData.targetData.ttdIsActive and snapshotData.targetData.currentTargetGuid ~= nil and snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid] ~= nil and snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].ttd ~= 0 then
-		local ttdMinutes = math.floor(snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].ttd / 60)
-		local ttdSeconds = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].ttd % 60
-		ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
+		local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
+		local ttdMinutes = math.floor(target.ttd / 60)
+		local ttdSeconds = target.ttd % 60
+		_ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
+		
+		local _ttdColor = settings.colors.text.left
+		local s2mStart, s2mDuration, _, _ = GetSpellCooldown(spells.s2m.id)
+				
+		if characterData.talents.surrenderToMadeness.isSelected and not snapshotData.voidform.s2m.active and s2mDuration == 0 then
+			if settings.s2mThreshold <= target.ttd then
+				_ttdColor = settings.colors.text.s2mAbove    
+			elseif settings.s2mApproachingThreshold <= target.ttd then
+				_ttdColor = settings.colors.text.s2mApproaching    
+			else
+				_ttdColor = settings.colors.text.s2mBelow
+			end
+			
+			ttd = string.format("|c%s%d:%0.2d|c%s", _ttdColor, ttdMinutes, ttdSeconds, settings.colors.text.left)
+		else
+			ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
+		end
 	else
 		ttd = "--"
 	end
@@ -4526,7 +4671,7 @@ local function BarText()
 		},
 		mindSear = {
 			targetsHit = snapshotData.mindSear.targetsHit or 0
-		}
+		},
 		deathAndMadness = {
 			insanity = _damInsanity,
 			ticks = snapshotData.deathAndMadness.ticksRemaining
@@ -4867,7 +5012,6 @@ end
 local function UpdateSnapshot()	
 	local currentTime = GetTime()
 	spells.s2m.isActive = select(10, FindBuffById(spells.s2m.id))
-	spells.s2m.isDebuffActive = select(10, FindDebuffById(spells.s2m.debuffId))
 	snapshotData.haste = UnitSpellHaste("player")
 	snapshotData.crit = GetCritChance("player")
 	snapshotData.mastery = GetMasteryEffect("player")
@@ -5118,8 +5262,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
                 if type == "SPELL_AURA_APPLIED" then -- Gain Surrender to Madness   
                     snapshotData.voidform.s2m.active = true
                     snapshotData.voidform.s2m.startTime = currentTime
-					UpdateCastingInsanityFinal()
-					
+					UpdateCastingInsanityFinal()					
 					triggerUpdate = true
                 elseif type == "SPELL_AURA_REMOVED" and snapshotData.voidform.s2m.active then -- Lose Surrender to Madness
 					if destGUID == characterData.guid then -- You died
