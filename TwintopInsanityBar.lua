@@ -1,5 +1,5 @@
-local addonVersion = "9.0.2.5"
-local addonReleaseDate = "October 14, 2020"
+local addonVersion = "9.0.2.6"
+local addonReleaseDate = "October 15, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -4479,7 +4479,7 @@ local function RemoveInvalidVariablesFromBarText(input)
 						if snapshotData.deathAndMadness.insanity > 0 then
 							valid = true
 						end
-					elseif var == "$damITicks" then
+					elseif var == "$damTicks" then
 						if snapshotData.deathAndMadness.ticksRemaining > 0 then
 							valid = true
 						end
