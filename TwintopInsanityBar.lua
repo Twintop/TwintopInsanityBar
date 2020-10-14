@@ -103,7 +103,6 @@ local spells = {
 		icon = ""
 	},
 	voidTorrent = {
-		--id = 205065
 		id = 263165,
 		name = "",
 		icon = "",
@@ -195,11 +194,17 @@ local spells = {
 		icon = ""
 	},
 	shadowCrash = {
-		id = 205385,
+		id = 342834,
 		name = "",
 		icon = "",
 		insanity = 8,
 		fotm = false
+	},
+	hungeringVoid = {
+		id = 345218,
+		idDebuff = 345219,
+		name = "",
+		icon = ""
 	},
 	shadowyApparition = {
 		id = 78203,
@@ -405,46 +410,59 @@ local function IsNumeric(data)
     return false
 end
 
-local function FindBuffByName(spellName)
+local function FindBuffByName(spellName, onWhom)
+	if onWhom == nil then
+		onWhom = "player"
+	end
 	for i = 1, 40 do
-		local unitSpellName = UnitBuff("player", i)
+		local unitSpellName = UnitBuff(onWhom, i)
 		if not unitSpellName then
 			return
 		elseif spellName == unitSpellName then
-			return UnitBuff("player", i)
+			return UnitBuff(onWhom, i)
 		end
 	end
 end
 
-local function FindBuffById(spellId)
+local function FindBuffById(spellId, onWhom)
+	if onWhom == nil then
+		onWhom = "player"
+	end
 	for i = 1, 40 do
-		local unitSpellId = select(10, UnitBuff("player", i))
+		local unitSpellId = select(10, UnitBuff(onWhom, i))
 		if not unitSpellId then
 			return
 		elseif spellId == unitSpellId then
-			return UnitBuff("player", i)
+			return UnitBuff(onWhom, i)
 		end
 	end
 end
 
-local function FindDebuffByName(spellName)
+local function FindDebuffByName(spellName, onWhom)
+	if onWhom == nil then
+		onWhom = "player"
+	end
 	for i = 1, 40 do
-		local unitSpellName = UnitDebuff("player", i)
+		local unitSpellName = UnitDebuff(onWhom, i)
 		if not unitSpellName then
 			return
 		elseif spellName == unitSpellName then
-			return UnitDebuff("player", i)
+			return UnitDebuff(onWhom, i)
 		end
 	end
 end
 
-local function FindDebuffById(spellId)
+local function FindDebuffById(spellId, onWhom)
+	if onWhom == nil then
+		onWhom = "player"
+	end
+
 	for i = 1, 40 do
-		local unitSpellId = select(10, UnitDebuff("player", i))
+		local unitSpellId = select(10, UnitDebuff(onWhom, i))
 		if not unitSpellId then
 			return
 		elseif spellId == unitSpellId then
-			return UnitDebuff("player", i)
+			return UnitDebuff(onWhom, i)
 		end
 	end
 end
@@ -4236,6 +4254,14 @@ local function RemainingTimeAndStackCount()
 			local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(spells.voidBolt.id)
 			local vbCooldown = (vbBaseCooldown / (((snapshotData.haste / 100) + 1) * 1000)) + latency
 
+			local targetDebuffId = select(10, FindDebuffById(spells.hungeringVoid.idDebuff, "target"))
+			
+			local castGrantsExtension = false
+
+			if targetDebuffId ~= nil then
+				castGrantsExtension = true
+			end
+
 			local remainingTimeTmp = remainingTime
 			local remainingTimeTotal = remainingTime
 			local remainingTimeTmpAverage = remainingTime
@@ -4251,31 +4277,45 @@ local function RemainingTimeAndStackCount()
 			if vbDuration > 0 then
 				local vbRemaining = vbStart + vbDuration - currentTime
 				if remainingTimeTmp > (vbRemaining + latency) then
-					moreCasts = moreCasts + 1
-					remainingTimeTmp = remainingTimeTmp + 1.0 - (vbRemaining + latency)
-					remainingTimeTotal = remainingTimeTotal + 1.0
+					if castGrantsExtension == true then
+						moreCasts = moreCasts + 1
+						remainingTimeTmp = remainingTimeTmp + 1.0 - (vbRemaining + latency)
+						remainingTimeTotal = remainingTimeTotal + 1.0
 
-					moreCastsAverage = moreCastsAverage + 1
-					remainingTimeTmpAverage = remainingTimeTmpAverage + critValue - (vbRemaining + latency)
-					remainingTimeTotalAverage = remainingTimeTotalAverage + critValue
+						moreCastsAverage = moreCastsAverage + 1
+						remainingTimeTmpAverage = remainingTimeTmpAverage + critValue - (vbRemaining + latency)
+						remainingTimeTotalAverage = remainingTimeTotalAverage + critValue
+					else
+						remainingTimeTmp = remainingTimeTmp + 1.0 - (vbRemaining + latency)
+						remainingTimeTmpAverage = remainingTimeTmpAverage + critValue - (vbRemaining + latency)
+						castGrantsExtension = true
+					end
 				end
 			end
 
 			while (remainingTimeTmpAverage >= vbCooldown or remainingTimeTmp >= vbCooldown)
 			do
-				if remainingTimeTmp >= vbCooldown then
+				if remainingTimeTmp >= vbCooldown then					
 					local additionalCasts = RoundTo(remainingTimeTmp / vbCooldown, 0)
+					if castGrantsExtension == false then
+						additionalCasts = additionalCasts - 1
+					end
 					moreCasts = moreCasts + additionalCasts
 					remainingTimeTmp = remainingTimeTmp + additionalCasts - (additionalCasts * vbCooldown)
 					remainingTimeTotal = remainingTimeTotal + additionalCasts
 				end
 				
-				if remainingTimeTmpAverage >= vbCooldown then
+				if remainingTimeTmpAverage >= vbCooldown then					
 					local additionalCastsAverage = RoundTo(remainingTimeTmpAverage / vbCooldown, 0)
+					if castGrantsExtension == false then
+						additionalCastsAverage = additionalCastsAverage - 1
+					end
 					moreCastsAverage = moreCastsAverage + additionalCastsAverage
 					remainingTimeTmpAverage = remainingTimeTmpAverage + (critValue * additionalCastsAverage) - (additionalCastsAverage * vbCooldown)
 					remainingTimeTotalAverage = remainingTimeTotalAverage + (critValue * additionalCastsAverage)
 				end
+
+				castGrantsExtension = true
 			end
 			
 			snapshotData.voidform.remainingTime = remainingTime or 0
