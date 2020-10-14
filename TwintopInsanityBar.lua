@@ -198,7 +198,7 @@ local spells = {
 		id = 205385,
 		name = "",
 		icon = "",
-		insanity = 20,
+		insanity = 8,
 		fotm = false
 	},
 	shadowyApparition = {
@@ -315,8 +315,11 @@ local snapshotData = {
 		s2m = {
 			startTime = nil,
 			active = false
-		},
-		playedCue = false
+		}
+	},
+	audio = {
+		playedDpCue = false,
+		playedMdCue = false
 	},
 	mindSear = {
 		targetsHit = 0,
@@ -666,6 +669,11 @@ local function LoadDefaultSettings()
 				soundName="Wilhelm Scream (TIB)"
 			},
 			dpReady={
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
+				soundName="Boxing Arena Gong (TIB)"
+			},
+			mdProc={
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 				soundName="Boxing Arena Gong (TIB)"
@@ -2664,6 +2672,52 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
+	yCoord = yCoord - yOffset30
+	controls.colors.mindbenderThreshold = BuildColorPicker(parent, "Shadowfiend Insanity Gain Threshold Line", settings.colors.bar.passive, 250, 25, xCoord+xPadding*2, yCoord)
+	f = controls.colors.mindbenderThreshold
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		
+		controls.colors.mindbenderThreshold.Texture:SetColorTexture(r, g, b, a)
+		passiveFrame:SetStatusBarColor(r, g, b, a)
+		settings.colors.threshold.mindbender = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.threshold.mindbender, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
+	yCoord = yCoord - yOffset30
+	controls.colors.passive = BuildColorPicker(parent, "Insanity from Auspicious Spirits, Shadowfiend swings, Death and Madness ticks, and Lash of Insanity ticks", settings.colors.bar.passive, 550, 25, xCoord+xPadding*2, yCoord)
+	f = controls.colors.passive
+	f.recolorTexture = function(color)
+		local r, g, b, a
+		if color then
+			r, g, b, a = unpack(color)
+		else
+			r, g, b = ColorPickerFrame:GetColorRGB()
+			a = OpacitySliderFrame:GetValue()
+		end
+		
+		controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
+		passiveFrame:SetStatusBarColor(r, g, b, a)
+		settings.colors.bar.passive = ConvertColorDecimalToHex(r, g, b, a)
+	end
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			local r, g, b, a = GetRGBAFromString(settings.colors.bar.passive, true)
+			ShowColorPicker(r, g, b, a, self.recolorTexture)
+		end
+	end)
+
 	-------------------------------------------------
 
 
@@ -3584,14 +3638,14 @@ local function ConstructOptionsPanel()
 	yCoord = -5
 	parent = interfaceSettingsFrame.optionalFeaturesPanel.scrollChild
 
-	controls.textSection = BuildSectionHeader(parent, "Passive Options", xCoord+xPadding, yCoord)
+	controls.textSection = BuildSectionHeader(parent, "Audio Options", xCoord+xPadding, yCoord)
 
 	yCoord = yCoord - yOffset30
 	controls.checkBoxes.s2mDeath = CreateFrame("CheckButton", "TIBCB3_2", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.s2mDeath
 	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Play Audio When S2M Ends")
-	f.tooltip = "When you (almost) die, horribly, after Surrender to Madness ends, play the infamous Wilhelm Scream (or another sound) to make you feel a bit better."
+	getglobal(f:GetName() .. 'Text'):SetText("Play audio when you die, horribly, from Surrender to Madness")
+	f.tooltip = "When you die, horribly, after Surrender to Madness ends, play the infamous Wilhelm Scream (or another sound) to make you feel a bit better."
 	f:SetChecked(settings.audio.s2mDeath.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		settings.audio.s2mDeath.enabled = self:GetChecked()
@@ -3599,10 +3653,8 @@ local function ConstructOptionsPanel()
 		
 	-- Create the dropdown, and configure its appearance
 	controls.dropDown.s2mAudio = CreateFrame("FRAME", "TIBS2MDeathAudio", parent, "UIDropDownMenuTemplate")
-	--controls.dropDown.s2mAudio.label = BuildSectionHeader(parent, "Surrender to Madness Ending Audio", xCoord+xPadding, yCoord+20)
-	--controls.dropDown.s2mAudio.label.font:SetFontObject(GameFontNormal)
 	controls.dropDown.s2mAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-yOffset30+10)
-	UIDropDownMenu_SetWidth(controls.dropDown.s2mAudio, 250)
+	UIDropDownMenu_SetWidth(controls.dropDown.s2mAudio, 300)
 	UIDropDownMenu_SetText(controls.dropDown.s2mAudio, settings.audio.s2mDeath.soundName)
 	UIDropDownMenu_JustifyText(controls.dropDown.s2mAudio, "LEFT")
 
@@ -3648,10 +3700,11 @@ local function ConstructOptionsPanel()
 	end
 
 
+	yCoord = yCoord - yOffset60
 	controls.checkBoxes.dpReady = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dpReady
-	f:SetPoint("TOPLEFT", xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Play Audio Cue When DP is Usable")
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Devouring Plague is usable")
 	f.tooltip = "Play an audio cue when Devouring Plague can be cast."
 	f:SetChecked(settings.audio.dpReady.enabled)
 	f:SetScript("OnClick", function(self, ...)
@@ -3660,10 +3713,8 @@ local function ConstructOptionsPanel()
 		
 	-- Create the dropdown, and configure its appearance
 	controls.dropDown.dpReadyAudio = CreateFrame("FRAME", "TIBdpReadyAudio", parent, "UIDropDownMenuTemplate")
-	--controls.dropDown.s2mAudio.label = BuildSectionHeader(parent, "Surrender to Madness Ending Audio", xCoord+xPadding, yCoord+20)
-	--controls.dropDown.s2mAudio.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.dpReadyAudio:SetPoint("TOPLEFT", xCoord2, yCoord-yOffset30+10)
-	UIDropDownMenu_SetWidth(controls.dropDown.dpReadyAudio, 250)
+	controls.dropDown.dpReadyAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-yOffset30+10)
+	UIDropDownMenu_SetWidth(controls.dropDown.dpReadyAudio, 300)
 	UIDropDownMenu_SetText(controls.dropDown.dpReadyAudio, settings.audio.dpReady.soundName)
 	UIDropDownMenu_JustifyText(controls.dropDown.dpReadyAudio, "LEFT")
 
@@ -3708,30 +3759,67 @@ local function ConstructOptionsPanel()
 		PlaySoundFile(settings.audio.dpReady.sound, settings.audio.channel.channel)
 	end
 
+
 	yCoord = yCoord - yOffset60
-	controls.colors.passive = BuildColorPicker(parent, "Insanity from Auspicious Spirits, Shadowfiend swings, Death and Madness ticks, and Lash of Insanity ticks", settings.colors.bar.passive, 250, 25, xCoord+xPadding*2, yCoord)
-	f = controls.colors.passive
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
+	controls.checkBoxes.dpReady = CreateFrame("CheckButton", "TIBCB3_MD_Sound", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dpReady
+	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Mind Devourer proc occurs")
+	f.tooltip = "Play an audio cue when a Mind Devourer proc occurs. This supercedes the regular Devouring Plague audio sound."
+	f:SetChecked(settings.audio.mdProc.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		settings.audio.mdProc.enabled = self:GetChecked()
+	end)	
 		
-		controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
-		passiveFrame:SetStatusBarColor(r, g, b, a)
-		settings.colors.bar.passive = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.bar.passive, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.mdProcAudio = CreateFrame("FRAME", "TIBmdProcAudio", parent, "UIDropDownMenuTemplate")
+	controls.dropDown.mdProcAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-yOffset30+10)
+	UIDropDownMenu_SetWidth(controls.dropDown.mdProcAudio, 300)
+	UIDropDownMenu_SetText(controls.dropDown.mdProcAudio, settings.audio.mdProc.soundName)
+	UIDropDownMenu_JustifyText(controls.dropDown.mdProcAudio, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	UIDropDownMenu_Initialize(controls.dropDown.mdProcAudio, function(self, level, menuList)
+		local entries = 25
+		local info = UIDropDownMenu_CreateInfo()
+		local sounds = addonData.libs.SharedMedia:HashTable("sound")
+		local soundsList = addonData.libs.SharedMedia:List("sound")
+		if (level or 1) == 1 or menuList == nil then
+			local menus = math.ceil(TableLength(sounds) / entries)
+			for i=0, menus-1 do
+				info.hasArrow = true
+				info.notCheckable = true
+				info.text = "Sounds " .. i+1
+				info.menuList = i
+				UIDropDownMenu_AddButton(info)
+			end
+		else
+			local start = entries * menuList
+
+			for k, v in pairs(soundsList) do
+				if k > start and k <= start + entries then
+					info.text = v
+					info.value = sounds[v]
+					info.checked = sounds[v] == settings.audio.mdProc.sound
+					info.func = self.SetValue			
+					info.arg1 = sounds[v]
+					info.arg2 = v
+					UIDropDownMenu_AddButton(info, level)
+				end
+			end
 		end
 	end)
 
-	yCoord = yCoord - yOffset30
+	-- Implement the function to change the audio
+	function controls.dropDown.mdProcAudio:SetValue(newValue, newName)
+		settings.audio.mdProc.sound = newValue
+		settings.audio.mdProc.soundName = newName
+		UIDropDownMenu_SetText(controls.dropDown.mdProcAudio, newName)
+		CloseDropDownMenus()
+		PlaySoundFile(settings.audio.mdProc.sound, settings.audio.channel.channel)
+	end
+
+	yCoord = yCoord - yOffset60
 	controls.textSection = BuildSectionHeader(parent, "Auspicious Spirits Tracking", xCoord+xPadding, yCoord)
 
 	yCoord = yCoord - yOffset30
@@ -3755,7 +3843,7 @@ local function ConstructOptionsPanel()
 	end)
 
 	yCoord = yCoord - yOffset30
-	controls.textSection = BuildSectionHeader(parent, "Eternal Call to the Void / Void Tendril Tracking", xCoord+xPadding, yCoord)
+	controls.textSection = BuildSectionHeader(parent, "Eternal Call to the Void / Void Tendril + Void Lasher Tracking", xCoord+xPadding, yCoord)
 
 	yCoord = yCoord - yOffset30
 	controls.checkBoxes.as = CreateFrame("CheckButton", "TIBCB3_6a", parent, "ChatConfigCheckButtonTemplate")
@@ -3774,7 +3862,7 @@ local function ConstructOptionsPanel()
 	end)
 
 	yCoord = yCoord - yOffset30
-	controls.textSection = BuildSectionHeader(parent, "Shadowfiend (+ Mindbender) Tracking", xCoord+xPadding, yCoord)
+	controls.textSection = BuildSectionHeader(parent, "Shadowfiend/Mindbender Tracking", xCoord+xPadding, yCoord)
 
 	yCoord = yCoord - yOffset30	
 	controls.checkBoxes.mindbender = CreateFrame("CheckButton", "TIBCB3_7", parent, "ChatConfigCheckButtonTemplate")
@@ -3787,29 +3875,7 @@ local function ConstructOptionsPanel()
 		settings.mindbender.enabled = self:GetChecked()
 	end)
 
-	controls.colors.mindbenderThreshold = BuildColorPicker(parent, "Shadowfiend Insanity Gain Threshold Line", settings.colors.bar.passive, 250, 25, xCoord2, yCoord)
-	f = controls.colors.mindbenderThreshold
-	f.recolorTexture = function(color)
-		local r, g, b, a
-		if color then
-			r, g, b, a = unpack(color)
-		else
-			r, g, b = ColorPickerFrame:GetColorRGB()
-			a = OpacitySliderFrame:GetValue()
-		end
-		
-		controls.colors.mindbenderThreshold.Texture:SetColorTexture(r, g, b, a)
-		passiveFrame:SetStatusBarColor(r, g, b, a)
-		settings.colors.threshold.mindbender = ConvertColorDecimalToHex(r, g, b, a)
-	end
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		if button == "LeftButton" then
-			local r, g, b, a = GetRGBAFromString(settings.colors.threshold.mindbender, true)
-			ShowColorPicker(r, g, b, a, self.recolorTexture)
-		end
-	end)
-
-	yCoord = yCoord - yOffset60	
+	yCoord = yCoord - yOffset30	
 	controls.checkBoxes.mindbenderModeGCDs = CreateFrame("CheckButton", "TIBRB3_8", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.mindbenderModeGCDs
 	f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
@@ -5143,16 +5209,21 @@ local function UpdateInsanityBar()
 				PulseFrame(barContainerFrame)
 			else
 				barContainerFrame:SetAlpha(1.0)
-			end			
+			end	
 	
-			if settings.audio.dpReady.enabled and snapshotData.voidform.playedCue == false then
-				snapshotData.voidform.playedCue = true
+			if spells.mindDevourer.isActive and settings.audio.mdProc.enabled and snapshotData.audio.playedMdCue == false then				
+				snapshotData.audio.playedDpCue = true
+				snapshotData.audio.playedMdCue = true
+				PlaySoundFile(settings.audio.mdProc.sound, settings.audio.channel.channel)
+			elseif settings.audio.dpReady.enabled and snapshotData.audio.playedDpCue == false then
+				snapshotData.audio.playedDpCue = true
 				PlaySoundFile(settings.audio.dpReady.sound, settings.audio.channel.channel)
 			end
 		else
 			insanityFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
 			barContainerFrame:SetAlpha(1.0)
-			snapshotData.voidform.playedCue = false
+			snapshotData.audio.playedDpCue = false
+			snapshotData.audio.playedMdCue = false
 		end
 
 		if snapshotData.voidform.spellId then
