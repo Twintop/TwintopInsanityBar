@@ -1017,6 +1017,10 @@ end
 local function TargetsCleanup(clearAll)
 	if clearAll == true then
 		snapshotData.targetData.targets = {}
+		snapshotData.targetData.shadowWordPain = 0
+		snapshotData.targetData.vampiricTouch = 0		
+		snapshotData.targetData.devouringPlague = 0
+		snapshotData.targetData.auspiciousSpirits = 0
 	else
 		local currentTime = GetTime()
 		for tguid,count in pairs(snapshotData.targetData.targets) do
