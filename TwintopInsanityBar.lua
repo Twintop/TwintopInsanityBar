@@ -1,4 +1,4 @@
-local addonVersion = "9.0.2.4"
+local addonVersion = "9.0.2.5"
 local addonReleaseDate = "October 14, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -541,6 +541,36 @@ local function LoadDefaultBarTextAdvancedSettings()
 		right = {
 			outVoidformText = "{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$damInsanity}[#dam$damInsanity+]$insanity",
 			inVoidformText = "{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$damInsanity}[#dam$damInsanity+]$insanity",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",			
+			fontSize = 22
+		}
+	}
+
+	return textSettings
+end
+
+local function LoadDefaultBarTextNarrowAdvancedSettings()
+	local textSettings = {		
+		fontSizeLock = false,
+		fontFaceLock = true,
+		left = {
+			outVoidformText = "#swp $swpCount   $haste% ($gcd)||n#vt $vtCount   {$ttd}[TTD: $ttd]",
+			inVoidformText = "#swp $swpCount   $haste% ($gcd)||n#vt $vtCount   {$ttd}[TTD: $ttd]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontSize = 13
+		},
+		middle = {
+			outVoidformText = "{$mdTime}[#mDev $mdTime #mDev]",
+			inVoidformText = "{$mdTime}[#mDev $mdTime #mDev||n]{$hvAvgTime}[$hvAvgTime (+$vbAvgCasts)][$vfTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontSize = 13
+		},
+		right = {
+			outVoidformText = "{$casting}[#casting$casting+]{$passive}[$passive+]$insanity",
+			inVoidformText = "{$casting}[#casting$casting+]{$passive}[$passive+]$insanity",
 			fontFace = "Fonts\\FRIZQT__.TTF",
 			fontFaceName = "Friz Quadrata TT",			
 			fontSize = 22
@@ -1632,6 +1662,19 @@ local function ConstructOptionsPanel()
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
+	StaticPopupDialogs["TwintopInsanityBar_ResetBarTextNarrowAdvanced"] = {
+		text = "Do you want to reset Twintop's Insanity Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? This will cause your UI to be reloaded!",
+		button1 = "Yes",
+		button2 = "No",
+		OnAccept = function()
+			settings.displayText = LoadDefaultBarTextNarrowAdvancedSettings()
+			ReloadUI()			
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
 
 	yCoord = yCoord - yOffset40
 	controls.labels.infoVersion = BuildDisplayTextHelpEntry(parent, "Author:", "Twintop - Frostmourne-US/OCE", xCoord+xPadding*2, yCoord, 75, 200)
@@ -1694,12 +1737,40 @@ local function ConstructOptionsPanel()
 		StaticPopup_Show("TwintopInsanityBar_ResetBarTextSimple")
 	end)
 
-	controls.resetButton = CreateFrame("Button", "TwintopInsanityBar_ResetBarTextAdvancedButton", parent)
+	yCoord = yCoord - yOffset40
+	controls.resetButton = CreateFrame("Button", "TwintopInsanityBar_ResetBarTextNarrowAdvancedButton", parent)
 	f = controls.resetButton
-	f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2+275, yCoord)
+	f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2, yCoord)
 	f:SetWidth(250)
 	f:SetHeight(30)
-	f:SetText("Reset Bar Text (Advanced)")
+	f:SetText("Reset Bar Text (Narrow Advanced)")
+	f:SetNormalFontObject("GameFontNormal")
+	f.ntex = f:CreateTexture()
+	f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
+	f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
+	f.ntex:SetAllPoints()	
+	f:SetNormalTexture(f.ntex)
+	f.htex = f:CreateTexture()
+	f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
+	f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
+	f.htex:SetAllPoints()
+	f:SetHighlightTexture(f.htex)	
+	f.ptex = f:CreateTexture()
+	f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
+	f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
+	f.ptex:SetAllPoints()
+	f:SetPushedTexture(f.ptex)
+	f:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopInsanityBar_ResetBarTextNarrowAdvanced")
+	end)
+
+	yCoord = yCoord - yOffset40
+	controls.resetButton = CreateFrame("Button", "TwintopInsanityBar_ResetBarTextAdvancedButton", parent)
+	f = controls.resetButton
+	f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2, yCoord)
+	f:SetWidth(250)
+	f:SetHeight(30)
+	f:SetText("Reset Bar Text (Full Advanced)")
 	f:SetNormalFontObject("GameFontNormal")
 	f.ntex = f:CreateTexture()
 	f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
