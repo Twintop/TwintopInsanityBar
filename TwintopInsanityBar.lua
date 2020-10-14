@@ -1,5 +1,5 @@
-local addonVersion = "9.0.2.3"
-local addonReleaseDate = "October 13, 2020"
+local addonVersion = "9.0.2.4"
+local addonReleaseDate = "October 14, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -4545,7 +4545,7 @@ local function BarText()
 	--$casting
 	local castingInsanity = string.format("|c%s%.0f|r", settings.colors.text.castingInsanity, snapshotData.casting.insanityFinal)
 	if snapshotData.casting.insanityFinal > 0 and characterData.talents.fotm.isSelected then        
-		castingInsanity = string.format("|c%s%.2f|r", settings.colors.text.castingInsanity, snapshotData.casting.insanityFinal)
+		castingInsanity = string.format("|c%s%.1f|r", settings.colors.text.castingInsanity, snapshotData.casting.insanityFinal)
 	end
 	--$mbInsanity
 	local mbInsanity = string.format("%.0f", snapshotData.mindbender.insanityFinal)
