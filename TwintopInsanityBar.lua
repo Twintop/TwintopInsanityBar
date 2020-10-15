@@ -1,4 +1,4 @@
-local addonVersion = "9.0.2.6"
+local addonVersion = "9.0.2.7"
 local addonReleaseDate = "October 15, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -10,7 +10,8 @@ local leftTextFrame = CreateFrame("Frame", nil, barContainerFrame)
 local middleTextFrame = CreateFrame("Frame", nil, barContainerFrame)
 local rightTextFrame = CreateFrame("Frame", nil, barContainerFrame)
 
-insanityFrame.threshold = CreateFrame("Frame", nil, insanityFrame)
+insanityFrame.thresholdDp = CreateFrame("Frame", nil, insanityFrame)
+insanityFrame.thresholdSn = CreateFrame("Frame", nil, insanityFrame)
 passiveFrame.threshold = CreateFrame("Frame", nil, passiveFrame)
 leftTextFrame.font = leftTextFrame:CreateFontString(nil, "BACKGROUND")
 middleTextFrame.font = middleTextFrame:CreateFontString(nil, "BACKGROUND")
@@ -67,6 +68,7 @@ local characterData = {
 	guid = UnitGUID("player"),
 	maxInsanity = 100,
 	devouringPlagueThreshold = 50,
+	searingNightmareThreshold = 35,
 	specGroup = GetActiveSpecGroup(),
 	talents = {
 		fotm = {
@@ -83,6 +85,9 @@ local characterData = {
 			isSelected = false
 		},
 		surrenderToMadeness = {
+			isSelected = false
+		},
+		searingNightmare = {
 			isSelected = false
 		}
 	},
@@ -613,6 +618,7 @@ local function LoadDefaultSettings()
 		s2mThreshold=20,
 		hastePrecision=2,
 		devouringPlagueThreshold=true,
+		searingNightmareThreshold=true,
 		thresholdWidth=2,
 		auspiciousSpiritsTracker=true,
 		voidTendrilTracker=true,
@@ -738,11 +744,18 @@ local function MergeSettings(settings, user)
     return settings
 end
 
-local function RepositionInsanityFrameThreshold()
-	insanityFrame.threshold:SetPoint("CENTER",
+local function RepositionInsanityFrameThresholdDp()
+	insanityFrame.thresholdDp:SetPoint("CENTER",
 									 insanityFrame,
 									 "LEFT",
 									 math.ceil((settings.bar.width - (settings.bar.border * 2)) * (characterData.devouringPlagueThreshold / characterData.maxInsanity) + math.ceil(settings.thresholdWidth / 2)), 0)
+end
+
+local function RepositionInsanityFrameThresholdSn()
+	insanityFrame.thresholdSn:SetPoint("CENTER",
+									 insanityFrame,
+									 "LEFT",
+									 math.ceil((settings.bar.width - (settings.bar.border * 2)) * (characterData.searingNightmareThreshold / characterData.maxInsanity) + math.ceil(settings.thresholdWidth / 2)), 0)
 end
 
 
@@ -852,6 +865,7 @@ local function CheckCharacter()
 	characterData.guid = UnitGUID("player")
 	characterData.maxInsanity = UnitPowerMax("player", SPELL_POWER_INSANITY)
 	characterData.specGroup = GetActiveSpecGroup()
+	characterData.talents.searingNightmare.isSelected = select(4, GetTalentInfo(3, 3, characterData.specGroup))
 	characterData.talents.fotm.isSelected = select(4, GetTalentInfo(1, 1, characterData.specGroup))
 	characterData.talents.as.isSelected = select(4, GetTalentInfo(5, 1, characterData.specGroup))
 	characterData.talents.mindbender.isSelected = select(4, GetTalentInfo(6, 2, characterData.specGroup))	
@@ -866,12 +880,20 @@ local function CheckCharacter()
 	passiveFrame:SetMinMaxValues(0, characterData.maxInsanity)	
 		
 	characterData.devouringPlagueThreshold = 50
+	characterData.searingNightmareThreshold = 35
 	
-	if characterData.devouringPlagueThreshold < characterData.maxInsanity then
-		insanityFrame.threshold:Show()
-		RepositionInsanityFrameThreshold()
+	if settings.devouringPlagueThreshold and characterData.devouringPlagueThreshold < characterData.maxInsanity then
+		insanityFrame.thresholdDp:Show()
+		RepositionInsanityFrameThresholdDp()
 	else
-		insanityFrame.threshold:Hide()
+		insanityFrame.thresholdDp:Hide()
+	end
+	
+	if  settings.searingNightmareThreshold and characterData.talents.searingNightmare.isSelected == true and snapshotData.casting.spellId == spells.mindSear.id then
+		insanityFrame.thresholdSn:Show()
+		RepositionInsanityFrameThresholdSn()
+	else
+		insanityFrame.thresholdSn:Hide()
 	end
 
 	local wristItemLink = GetInventoryItemLink("player", 9)
@@ -1220,14 +1242,23 @@ local function ConstructInsanityBar()
 	insanityFrame:SetFrameStrata(settings.strata.level)
 	insanityFrame:SetFrameLevel(125)
 	
-	insanityFrame.threshold:SetWidth(settings.thresholdWidth)
-	insanityFrame.threshold:SetHeight(settings.bar.height)
-	insanityFrame.threshold.texture = insanityFrame.threshold:CreateTexture(nil, settings.strata.level)
-	insanityFrame.threshold.texture:SetAllPoints(insanityFrame.threshold)
-	insanityFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
-	insanityFrame.threshold:SetFrameStrata(settings.strata.level)
-	insanityFrame.threshold:SetFrameLevel(128)
-	insanityFrame.threshold:Show()
+	insanityFrame.thresholdDp:SetWidth(settings.thresholdWidth)
+	insanityFrame.thresholdDp:SetHeight(settings.bar.height)
+	insanityFrame.thresholdDp.texture = insanityFrame.thresholdDp:CreateTexture(nil, settings.strata.level)
+	insanityFrame.thresholdDp.texture:SetAllPoints(insanityFrame.thresholdDp)
+	insanityFrame.thresholdDp.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
+	insanityFrame.thresholdDp:SetFrameStrata(settings.strata.level)
+	insanityFrame.thresholdDp:SetFrameLevel(128)
+	insanityFrame.thresholdDp:Show()
+	
+	insanityFrame.thresholdSn:SetWidth(settings.thresholdWidth)
+	insanityFrame.thresholdSn:SetHeight(settings.bar.height)
+	insanityFrame.thresholdSn.texture = insanityFrame.thresholdSn:CreateTexture(nil, settings.strata.level)
+	insanityFrame.thresholdSn.texture:SetAllPoints(insanityFrame.thresholdSn)
+	insanityFrame.thresholdSn.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
+	insanityFrame.thresholdSn:SetFrameStrata(settings.strata.level)
+	insanityFrame.thresholdSn:SetFrameLevel(128)
+	insanityFrame.thresholdSn:Show()
 	
 	castingFrame:Show()
 	castingFrame:SetMinMaxValues(0, 100)
@@ -1877,7 +1908,8 @@ local function ConstructOptionsPanel()
 		insanityFrame:SetWidth(value-(settings.bar.border*2))
 		castingFrame:SetWidth(value-(settings.bar.border*2))
 		passiveFrame:SetWidth(value-(settings.bar.border*2))
-		RepositionInsanityFrameThreshold()
+		RepositionInsanityFrameThresholdDp()
+		RepositionInsanityFrameThresholdSn()
 		local maxBorderSize = math.min(math.floor(settings.bar.height / 8), math.floor(settings.bar.width / 8))
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -1898,7 +1930,8 @@ local function ConstructOptionsPanel()
 		barContainerFrame:SetHeight(value-(settings.bar.border*2))
 		barBorderFrame:SetHeight(settings.bar.height)
 		insanityFrame:SetHeight(value-(settings.bar.border*2))
-		insanityFrame.threshold:SetHeight(value-(settings.bar.border*2))
+		insanityFrame.thresholdDp:SetHeight(value-(settings.bar.border*2))
+		insanityFrame.thresholdSn:SetHeight(value-(settings.bar.border*2))
 		castingFrame:SetHeight(value-(settings.bar.border*2))
 		passiveFrame:SetHeight(value-(settings.bar.border*2))
 		passiveFrame.threshold:SetHeight(value-(settings.bar.border*2))		
@@ -2004,7 +2037,8 @@ local function ConstructOptionsPanel()
 		end
 		self.EditBox:SetText(value)
 		settings.thresholdWidth = value
-		insanityFrame.threshold:SetWidth(settings.thresholdWidth)
+		insanityFrame.thresholdDp:SetWidth(settings.thresholdWidth)
+		insanityFrame.thresholdSn:SetWidth(settings.thresholdWidth)
 		passiveFrame.threshold:SetWidth(settings.thresholdWidth)
 	end)
 
@@ -2455,14 +2489,24 @@ local function ConstructOptionsPanel()
 		settings.colors.bar.flashEnabled = self:GetChecked()
 	end)
 
-	controls.checkBoxes.vfThresholdShow = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.vfThresholdShow
+	controls.checkBoxes.dpThresholdShow = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dpThresholdShow
 	f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
 	getglobal(f:GetName() .. 'Text'):SetText("Show Devouring Plague Threshold Line")
 	f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Devouring Plague."
 	f:SetChecked(settings.devouringPlagueThreshold)
 	f:SetScript("OnClick", function(self, ...)
 		settings.devouringPlagueThreshold = self:GetChecked()
+	end)
+
+	controls.checkBoxes.snThresholdShow = CreateFrame("CheckButton", "TIBCB1_7", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.snThresholdShow
+	f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
+	getglobal(f:GetName() .. 'Text'):SetText("Show Searing Nightmare Threshold Line")
+	f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Searing Nightmare. Only visibile if spec'd in to Searing Nightmare and channeling Mind Sear."
+	f:SetChecked(settings.searingNightmareThreshold)
+	f:SetScript("OnClick", function(self, ...)
+		settings.searingNightmareThreshold = self:GetChecked()
 	end)
 
 	------------------------------------------------
@@ -5238,13 +5282,24 @@ local function UpdateInsanityBar()
 		end
 
 		if settings.devouringPlagueThreshold then
-			insanityFrame.threshold:Show()
+			insanityFrame.thresholdDp:Show()
 		else
-			insanityFrame.threshold:Hide()
+			insanityFrame.thresholdDp:Hide()
+		end
+
+		if settings.searingNightmareThreshold and characterData.talents.searingNightmare.isSelected == true and snapshotData.casting.spellId == spells.mindSear.id then			
+			if snapshotData.insanity >= characterData.searingNightmareThreshold then
+				insanityFrame.thresholdSn.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.over, true))
+			else
+				insanityFrame.thresholdSn.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
+			end
+			insanityFrame.thresholdSn:Show()
+		else
+			insanityFrame.thresholdSn:Hide()
 		end
 		
 		if snapshotData.insanity >= characterData.devouringPlagueThreshold or spells.mindDevourer.isActive then
-			insanityFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.over, true))
+			insanityFrame.thresholdDp.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.over, true))
 			if settings.colors.bar.flashEnabled then
 				PulseFrame(barContainerFrame)
 			else
@@ -5260,12 +5315,12 @@ local function UpdateInsanityBar()
 				PlaySoundFile(settings.audio.dpReady.sound, settings.audio.channel.channel)
 			end
 		else
-			insanityFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
+			insanityFrame.thresholdDp.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
 			barContainerFrame:SetAlpha(1.0)
 			snapshotData.audio.playedDpCue = false
 			snapshotData.audio.playedMdCue = false
 		end
-
+		
 		if snapshotData.voidform.spellId then
 			local gcd = GetCurrentGCDTime()	
 			if snapshotData.voidform.remainingTime <= gcd then
