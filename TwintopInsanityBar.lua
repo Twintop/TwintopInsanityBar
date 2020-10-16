@@ -1,5 +1,5 @@
-local addonVersion = "9.0.2.7"
-local addonReleaseDate = "October 15, 2020"
+local addonVersion = "9.0.2.8"
+local addonReleaseDate = "October 16, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -100,7 +100,9 @@ local spells = {
 	voidBolt = {
 		id = 205448,
 		name = "",
-		icon = ""
+		icon = "",
+		insanity = 12,
+		fotm = false
 	},
 	voidform = {
 		id = 194249,
@@ -111,7 +113,7 @@ local spells = {
 		id = 263165,
 		name = "",
 		icon = "",
-		insanity = 10,
+		insanity = 6,
 		fotm = false
 	},
 	s2m = {
@@ -177,7 +179,7 @@ local spells = {
 		id = 34433,
 		name = "",
 		icon = "",
-		insanity = 6,
+		insanity = 5,
 		fotm = false
 	},
 	deathAndMadness = {
@@ -193,7 +195,7 @@ local spells = {
 		id = 155271,
 		idSpawn = 147193,
 		idImpact = 148859,
-		insanity = 2,
+		insanity = 1,
 		fotm = false,
 		name = "",
 		icon = ""
