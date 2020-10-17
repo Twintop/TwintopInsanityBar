@@ -610,15 +610,12 @@ end
 
 local function LoadDefaultSettings()
 	settings = {
-		summary = {
-			show=false,
-			simple=false
-		},
 		hasteApproachingThreshold=135,
 		hasteThreshold=140,
 		s2mApproachingThreshold=15,
 		s2mThreshold=20,
 		hastePrecision=2,
+		fotmPrecision=true,
 		devouringPlagueThreshold=true,
 		searingNightmareThreshold=true,
 		thresholdWidth=2,
@@ -3027,7 +3024,7 @@ local function ConstructOptionsPanel()
 	
 	controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TIBCB2_F1", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.fontSizeLock
-	f:SetPoint("TOPLEFT", xCoord2+10, yCoord)
+	f:SetPoint("TOPLEFT", xCoord2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 	f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
 	f:SetChecked(settings.displayText.fontSizeLock)
@@ -3153,10 +3150,10 @@ local function ConstructOptionsPanel()
 		end
 	end)
 
-	yCoord = yCoord - yOffset60
+	yCoord = yCoord - yOffset40
 	controls.textDisplaySection = BuildSectionHeader(parent, "Insanity Text Colors", xCoord+xPadding, yCoord)
 
-	yCoord = yCoord - yOffset60
+	yCoord = yCoord - yOffset30
 	controls.colors.currentInsanityText = BuildColorPicker(parent, "Current Insanity", settings.colors.text.currentInsanity, 250, 25, xCoord+xPadding*2, yCoord)
 	f = controls.colors.currentInsanityText
 	f.recolorTexture = function(color)
@@ -3204,10 +3201,10 @@ local function ConstructOptionsPanel()
 		end
 	end)
 	
-	yCoord = yCoord - yOffset60
+	yCoord = yCoord - yOffset40
 	controls.textDisplaySection = BuildSectionHeader(parent, "Haste Threshold Colors in Voidform", xCoord+xPadding, yCoord)
 
-	yCoord = yCoord - yOffset60
+	yCoord = yCoord - yOffset40
 	title = "Low to Medium Haste% Threshold in Voidform"
 	controls.hasteApproachingThreshold = BuildSlider(parent, title, 0, 500, settings.hasteApproachingThreshold, 0.25, 2,
 									barWidth, barHeight, xCoord+xPadding2, yCoord)
@@ -3317,10 +3314,10 @@ local function ConstructOptionsPanel()
 		settings.hasteThreshold = value
 	end)
 	
-	yCoord = yCoord - yOffset60
+	yCoord = yCoord - yOffset40
 	controls.textDisplaySection = BuildSectionHeader(parent, "Surrender to Madness Target Time to Die Thresholds", xCoord+xPadding, yCoord)
 
-	yCoord = yCoord - yOffset60
+	yCoord = yCoord - yOffset40
 	title = "Low to Medium S2M Time to Die Threshold (sec)"
 	controls.s2mApproachingThreshold = BuildSlider(parent, title, 0, 30, settings.s2mApproachingThreshold, 0.25, 2,
 									barWidth, barHeight, xCoord+xPadding2, yCoord)
@@ -3431,10 +3428,10 @@ local function ConstructOptionsPanel()
 	end)
 
 	
-	yCoord = yCoord - yOffset60
+	yCoord = yCoord - yOffset40
 	controls.textDisplaySection = BuildSectionHeader(parent, "Decimal Precision", xCoord+xPadding, yCoord)
 
-	yCoord = yCoord - yOffset60	
+	yCoord = yCoord - yOffset40	
 	title = "Haste / Crit / Mastery Decimals to Show"
 	controls.hastePrecision = BuildSlider(parent, title, 0, 10, settings.hastePrecision, 1, 0,
 									barWidth, barHeight, xCoord+xPadding2, yCoord)
@@ -3449,6 +3446,16 @@ local function ConstructOptionsPanel()
 		value = RoundTo(value, 0)
 		self.EditBox:SetText(value)		
 		settings.hastePrecision = value
+	end)
+	
+	controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TIBCB1_FOTM", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.fontFaceLock
+	f:SetPoint("TOPLEFT", xCoord2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Show decimals w/Fortress of the Mind")
+	f.tooltip = "Show decimal values with Fortress of the Mind. If unchecked, rounded (approximate) values will be displayed instead."
+	f:SetChecked(settings.fotmPrecision)
+	f:SetScript("OnClick", function(self, ...)
+		settings.fotmPrecision = self:GetChecked()
 	end)
 
 	------------------------------------------------
@@ -4788,7 +4795,7 @@ local function BarText()
 	local currentInsanity = string.format("|c%s%.0f|r", settings.colors.text.currentInsanity, snapshotData.insanity)
 	--$casting
 	local castingInsanity = string.format("|c%s%.0f|r", settings.colors.text.castingInsanity, snapshotData.casting.insanityFinal)
-	if snapshotData.casting.insanityFinal > 0 and characterData.talents.fotm.isSelected then        
+	if snapshotData.casting.insanityFinal > 0 and characterData.talents.fotm.isSelected and settings.fotmPrecision then        
 		castingInsanity = string.format("|c%s%.1f|r", settings.colors.text.castingInsanity, snapshotData.casting.insanityFinal)
 	end
 	--$mbInsanity
