@@ -1,5 +1,5 @@
-local addonVersion = "9.0.2.8"
-local addonReleaseDate = "October 16, 2020"
+local addonVersion = "9.0.2.9"
+local addonReleaseDate = "October 18, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -4474,19 +4474,31 @@ local function RemoveInvalidVariablesFromBarText(input)
 							valid = true
 						end
 					elseif var == "$insanity" then
-						valid = true
+						if snapshotData.insanity > 0 then
+							valid = true
+						end
 					elseif var == "$insanityTotal" then
-						valid = true
+						if snapshotData.insanity > 0 or
+							(snapshotData.casting.insanityRaw ~= nil and (snapshotData.casting.insanityRaw > 0 or snapshotData.casting.spellId == spells.mindSear.id)) or
+							(((CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.targetData.auspiciousSpirits) + snapshotData.mindbender.insanityRaw + snapshotData.eternalCallToTheVoid.insanityFinal + CalculateInsanityGain(snapshotData.deathAndMadness.insanity, false)) > 0) then
+							valid = true
+						end
 					elseif var == "$insanityPlusCasting" then
-						valid = true
+						if snapshotData.insanity > 0 or
+							(snapshotData.casting.insanityRaw ~= nil and (snapshotData.casting.insanityRaw > 0 or snapshotData.casting.spellId == spells.mindSear.id)) then
+							valid = true
+						end
 					elseif var == "$insanityPlusPassive" then
-						valid = true
+						if snapshotData.insanity > 0 or
+							((CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.targetData.auspiciousSpirits) + snapshotData.mindbender.insanityRaw + snapshotData.eternalCallToTheVoid.insanityFinal + CalculateInsanityGain(snapshotData.deathAndMadness.insanity, false)) > 0 then
+							valid = true
+						end
 					elseif var == "$casting" then
 						if snapshotData.casting.insanityRaw ~= nil and (snapshotData.casting.insanityRaw > 0 or snapshotData.casting.spellId == spells.mindSear.id) then
 							valid = true
 						end
 					elseif var == "$passive" then
-						if (CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.targetData.auspiciousSpirits) + snapshotData.mindbender.insanityRaw > 0 then
+						if ((CalculateInsanityGain(spells.auspiciousSpirits.insanity, false) * snapshotData.targetData.auspiciousSpirits) + snapshotData.mindbender.insanityRaw + snapshotData.eternalCallToTheVoid.insanityFinal + CalculateInsanityGain(snapshotData.deathAndMadness.insanity, false)) > 0 then
 							valid = true
 						end
 					elseif var == "$mbInsanity" then
@@ -4605,6 +4617,11 @@ local function AddToBarTextCache(input)
 	local returnVariables = {}
 	local p = 0
 	local infinity = 0
+	local barTextValuesVars = barTextVariables.values
+	table.sort(barTextValuesVars,
+		function(a, b)
+			return string.len(a.variable) > string.len(b.variable)
+		end)
 	while p <= string.len(input) and infinity < 20 do
 		infinity = infinity + 1
 		local a, b, c, a1, b1, c1
@@ -4632,8 +4649,8 @@ local function AddToBarTextCache(input)
 			end
 		elseif b ~= nil and (c == nil or b < c) and (d == nil or b < d) then
 			for x = 1, valueEntries do
-				local len = string.len(barTextVariables.values[x].variable)
-				z, z1 = string.find(input, barTextVariables.values[x].variable, b-1)
+				local len = string.len(barTextValuesVars[x].variable)
+				z, z1 = string.find(input, barTextValuesVars[x].variable, b-1)
 				if z ~= nil and z == b then
 					match = true
 					if p ~= b then
@@ -4641,9 +4658,9 @@ local function AddToBarTextCache(input)
 					end
 
 					returnText = returnText .. "%s"
-					table.insert(returnVariables, barTextVariables.values[x].variable)
+					table.insert(returnVariables, barTextValuesVars[x].variable)
 
-					if barTextVariables.values[x].color == true then
+					if barTextValuesVars[x].color == true then
 						returnText = returnText .. "%s"
 						table.insert(returnVariables, "color")
 					end
@@ -5695,8 +5712,11 @@ insanityFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				ConstructOptionsPanel()
 
 				SLASH_TWINTOP1 = "/twintop"
-				SLASH_TWINTOP2 = "/tib"
-				SLASH_TWINTOP3 = "/tit"
+				SLASH_TWINTOP2 = "/tt"
+				SLASH_TWINTOP3 = "/tib"
+				SLASH_TWINTOP4 = "/tit"
+				SLASH_TWINTOP5 = "/ttib"
+				SLASH_TWINTOP6 = "/ttit"
 			end			
 		end	
 
