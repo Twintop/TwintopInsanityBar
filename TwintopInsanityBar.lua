@@ -1,5 +1,5 @@
-local addonVersion = "9.0.2.9"
-local addonReleaseDate = "October 18, 2020"
+local addonVersion = "9.0.2.10"
+local addonReleaseDate = "October 19, 2020"
 local barContainerFrame = CreateFrame("Frame", "TwintopInsanityBarFrame", UIParent, "BackdropTemplate")
 local insanityFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
 local castingFrame = CreateFrame("StatusBar", nil, barContainerFrame, "BackdropTemplate")
@@ -4865,9 +4865,9 @@ local function BarText()
 		local _ttdColor = settings.colors.text.left
 		local s2mStart, s2mDuration, _, _ = GetSpellCooldown(spells.s2m.id)
 				
-		if characterData.talents.surrenderToMadeness.isSelected and not snapshotData.voidform.s2m.active and s2mDuration == 0 then
+		if characterData.talents.surrenderToMadeness.isSelected and not snapshotData.voidform.s2m.active then
 			if settings.s2mThreshold <= target.ttd then
-				_ttdColor = settings.colors.text.s2mAbove    
+				_ttdColor = settings.colors.text.s2mAbove
 			elseif settings.s2mApproachingThreshold <= target.ttd then
 				_ttdColor = settings.colors.text.s2mApproaching    
 			else
