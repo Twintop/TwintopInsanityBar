@@ -18,3 +18,5 @@ Options.lua
 
 Classes\Priest.lua
 Classes\PriestOptions.lua
+Classes\Shaman.lua
+Classes\ShamanOptions.lua

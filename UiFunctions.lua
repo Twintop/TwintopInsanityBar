@@ -106,7 +106,7 @@ local function BuildSlider(parent, title, minValue, maxValue, defaultValue, step
             elseif value > max then
                 f:SetValue(max)
             end
-			value = RoundTo(value, numDecimalPlaces)
+			value = TRB.Functions.RoundTo(value, numDecimalPlaces)
             eb:SetText(f:GetValue())
         else
             f:SetValue(f:GetValue())

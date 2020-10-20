@@ -254,19 +254,7 @@ end
 TRB.Functions.ShowResourceBar = ShowResourceBar
 
 local function HideResourceBar()
-	local affectingCombat = UnitAffectingCombat("player")
-
-	if (not affectingCombat) and
-		(not UnitInVehicle("player")) and (
-			(not TRB.Data.settings.displayBar.alwaysShow) and (
-				(not TRB.Data.settings.displayBar.notZeroShow) or
-				(TRB.Data.settings.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0)
-			)
-		 ) then
-        TRB.Frames.barContainerFrame:Hide()	
-	else
-		TRB.Frames.barContainerFrame:Show()	
-	end
+	--This is a placeholder for an implementation per class/spec
 end
 TRB.Functions.HideResourceBar = HideResourceBar
 
@@ -324,8 +312,8 @@ local function CaptureBarPosition()
 end
 TRB.Functions.CaptureBarPosition = CaptureBarPosition
 
-local function ConstructResourceBar()    
-    if TRB.Data.settings ~= nil and TRB.Data.settings.bar ~= nil then
+local function ConstructResourceBar(settings)    
+    if settings.bar ~= nil then
         local barContainerFrame = TRB.Frames.barContainerFrame
         local resourceFrame = TRB.Frames.resourceFrame
         local castingFrame = TRB.Frames.castingFrame
@@ -337,38 +325,38 @@ local function ConstructResourceBar()
 
         barContainerFrame:Show()
         barContainerFrame:SetBackdrop({
-            bgFile = TRB.Data.settings.textures.background,
+            bgFile = settings.textures.background,
             tile = true,
-            tileSize = TRB.Data.settings.bar.width,
+            tileSize = settings.bar.width,
             edgeSize = 1,
             insets = {0, 0, 0, 0}
         })
         barContainerFrame:ClearAllPoints()
         barContainerFrame:SetPoint("CENTER", UIParent)
-        barContainerFrame:SetPoint("CENTER", TRB.Data.settings.bar.xPos, TRB.Data.settings.bar.yPos)
-        barContainerFrame:SetBackdropColor(GetRGBAFromString(TRB.Data.settings.colors.bar.background, true))
-        barContainerFrame:SetWidth(TRB.Data.settings.bar.width-(TRB.Data.settings.bar.border*2))
-        barContainerFrame:SetHeight(TRB.Data.settings.bar.height-(TRB.Data.settings.bar.border*2))
+        barContainerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+        barContainerFrame:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))
+        barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
+        barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
         barContainerFrame:SetFrameStrata(TRB.Data.settings.strata.level)
         barContainerFrame:SetFrameLevel(0)
 
         barContainerFrame:SetScript("OnMouseDown", function(self, button)
-            if button == "LeftButton" and not self.isMoving and TRB.Data.settings.bar.dragAndDrop then
+            if button == "LeftButton" and not self.isMoving and settings.bar.dragAndDrop then
                 self:StartMoving()
                 self.isMoving = true
             end
         end)	
 
         barContainerFrame:SetScript("OnMouseUp", function(self, button)
-            if button == "LeftButton" and self.isMoving and TRB.Data.settings.bar.dragAndDrop then
+            if button == "LeftButton" and self.isMoving and settings.bar.dragAndDrop then
                 self:StopMovingOrSizing()
                 CaptureBarPosition()
                 self.isMoving = false
             end
         end)
         
-        barContainerFrame:SetMovable(TRB.Data.settings.bar.dragAndDrop)
-        barContainerFrame:EnableMouse(TRB.Data.settings.bar.dragAndDrop)
+        barContainerFrame:SetMovable(settings.bar.dragAndDrop)
+        barContainerFrame:EnableMouse(settings.bar.dragAndDrop)
 
         barContainerFrame:SetScript("OnHide", function(self)
             if self.isMoving then
@@ -378,10 +366,10 @@ local function ConstructResourceBar()
             end
         end)
 
-        if TRB.Data.settings.bar.border < 1 then
+        if settings.bar.border < 1 then
             barBorderFrame:Show()
             barBorderFrame.backdropInfo = {
-                edgeFile = TRB.Data.settings.textures.border,
+                edgeFile = settings.textures.border,
                 tile = true,
                 tileSize=4,
                 edgeSize = 1,
@@ -392,10 +380,10 @@ local function ConstructResourceBar()
         else
             barBorderFrame:Show()
             barBorderFrame.backdropInfo = {
-                edgeFile = TRB.Data.settings.textures.border,
+                edgeFile = settings.textures.border,
                 tile = true,
                 tileSize = 4,
-                edgeSize = TRB.Data.settings.bar.border,
+                edgeSize = settings.bar.border,
                 insets = {0, 0, 0, 0}
             }
             barBorderFrame:ApplyBackdrop()
@@ -405,85 +393,85 @@ local function ConstructResourceBar()
         barBorderFrame:SetPoint("CENTER", barContainerFrame)
         barBorderFrame:SetPoint("CENTER", 0, 0)
         barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-        barBorderFrame:SetBackdropBorderColor(GetRGBAFromString(TRB.Data.settings.colors.bar.border, true))
-        barBorderFrame:SetWidth(TRB.Data.settings.bar.width)
-        barBorderFrame:SetHeight(TRB.Data.settings.bar.height)
+        barBorderFrame:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
+        barBorderFrame:SetWidth(settings.bar.width)
+        barBorderFrame:SetHeight(settings.bar.height)
         barBorderFrame:SetFrameStrata(TRB.Data.settings.strata.level)
         barBorderFrame:SetFrameLevel(126)
 
         resourceFrame:Show()
         resourceFrame:SetMinMaxValues(0, 100)
-        resourceFrame:SetHeight(TRB.Data.settings.bar.height)	
+        resourceFrame:SetHeight(settings.bar.height)	
         resourceFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         resourceFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-        resourceFrame:SetStatusBarTexture(TRB.Data.settings.textures.insanityBar)
-        resourceFrame:SetStatusBarColor(GetRGBAFromString(TRB.Data.settings.colors.bar.base))
+        resourceFrame:SetStatusBarTexture(settings.textures.resourceBar)
+        resourceFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
         resourceFrame:SetFrameStrata(TRB.Data.settings.strata.level)
         resourceFrame:SetFrameLevel(125)
         
         castingFrame:Show()
         castingFrame:SetMinMaxValues(0, 100)
-        castingFrame:SetHeight(TRB.Data.settings.bar.height)
+        castingFrame:SetHeight(settings.bar.height)
         castingFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-        castingFrame:SetStatusBarTexture(TRB.Data.settings.textures.castingBar)
-        castingFrame:SetStatusBarColor(GetRGBAFromString(TRB.Data.settings.colors.bar.casting))
+        castingFrame:SetStatusBarTexture(settings.textures.castingBar)
+        castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting))
         castingFrame:SetFrameStrata(TRB.Data.settings.strata.level)
         castingFrame:SetFrameLevel(90)
         
         passiveFrame:Show()
         passiveFrame:SetMinMaxValues(0, 100)
-        passiveFrame:SetHeight(TRB.Data.settings.bar.height)
+        passiveFrame:SetHeight(settings.bar.height)
         passiveFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-        passiveFrame:SetStatusBarTexture(TRB.Data.settings.textures.passiveBar)
-        passiveFrame:SetStatusBarColor(GetRGBAFromString(TRB.Data.settings.colors.bar.passive))
+        passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
+        passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive))
         passiveFrame:SetFrameStrata(TRB.Data.settings.strata.level)
         passiveFrame:SetFrameLevel(80)
         
         passiveFrame.threshold:SetWidth(TRB.Data.settings.thresholdWidth)
-        passiveFrame.threshold:SetHeight(TRB.Data.settings.bar.height)
+        passiveFrame.threshold:SetHeight(settings.bar.height)
         passiveFrame.threshold.texture = passiveFrame.threshold:CreateTexture(nil, TRB.Data.settings.strata.level)
         passiveFrame.threshold.texture:SetAllPoints(passiveFrame.threshold)
-        passiveFrame.threshold.texture:SetColorTexture(GetRGBAFromString(TRB.Data.settings.colors.threshold.mindbender, true))
+        passiveFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
         passiveFrame.threshold:SetFrameStrata(TRB.Data.settings.strata.level)
         passiveFrame.threshold:SetFrameLevel(127)
         passiveFrame.threshold:Show()
         
         leftTextFrame:Show()
-        leftTextFrame:SetWidth(TRB.Data.settings.bar.width)
-        leftTextFrame:SetHeight(TRB.Data.settings.bar.height * 3.5)
+        leftTextFrame:SetWidth(settings.bar.width)
+        leftTextFrame:SetHeight(settings.bar.height * 3.5)
         leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 2, 0)
         leftTextFrame:SetFrameStrata(TRB.Data.settings.strata.level)
         leftTextFrame:SetFrameLevel(129)
         leftTextFrame.font:SetPoint("LEFT", 0, 0)
         leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
         leftTextFrame.font:SetJustifyH("LEFT")
-        leftTextFrame.font:SetFont(TRB.Data.settings.displayText.left.fontFace, TRB.Data.settings.displayText.left.fontSize, "OUTLINE")
+        leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
         leftTextFrame.font:Show()
         
         middleTextFrame:Show()
-        middleTextFrame:SetWidth(TRB.Data.settings.bar.width)
-        middleTextFrame:SetHeight(TRB.Data.settings.bar.height * 3.5)
+        middleTextFrame:SetWidth(settings.bar.width)
+        middleTextFrame:SetHeight(settings.bar.height * 3.5)
         middleTextFrame:SetPoint("CENTER", barContainerFrame, "CENTER", 0, 0)
         middleTextFrame:SetFrameStrata(TRB.Data.settings.strata.level)
         middleTextFrame:SetFrameLevel(129)
         middleTextFrame.font:SetPoint("CENTER", 0, 0)
         middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
         middleTextFrame.font:SetJustifyH("CENTER")
-        middleTextFrame.font:SetFont(TRB.Data.settings.displayText.middle.fontFace, TRB.Data.settings.displayText.middle.fontSize, "OUTLINE")
+        middleTextFrame.font:SetFont(settings.displayText.middle.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
         middleTextFrame.font:Show()
         
         rightTextFrame:Show()
-        rightTextFrame:SetWidth(TRB.Data.settings.bar.width)
-        rightTextFrame:SetHeight(TRB.Data.settings.bar.height * 3.5)
+        rightTextFrame:SetWidth(settings.bar.width)
+        rightTextFrame:SetHeight(settings.bar.height * 3.5)
         rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         rightTextFrame:SetFrameStrata(TRB.Data.settings.strata.level)
         rightTextFrame:SetFrameLevel(129)
         rightTextFrame.font:SetPoint("RIGHT", 0, 0)
         rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
         rightTextFrame.font:SetJustifyH("RIGHT")
-        rightTextFrame.font:SetFont(TRB.Data.settings.displayText.right.fontFace, TRB.Data.settings.displayText.right.fontSize, "OUTLINE")
+        rightTextFrame.font:SetFont(settings.displayText.right.fontFace, settings.displayText.right.fontSize, "OUTLINE")
         rightTextFrame.font:Show()
     end
 end
@@ -650,8 +638,13 @@ local function GetReturnText(inputText)
 end
 TRB.Functions.GetReturnText = GetReturnText
 
-local function UpdateResourceBar()    
-    if TRB.Data.settings ~= nil and TRB.Data.settings.bar ~= nil then
+local function IsTtdActive()
+    --To be implemented in each class/spec module
+end
+TRB.Functions.IsTtdActive = IsTtdActive
+
+local function UpdateResourceBar(settings)    
+    if settings ~= nil and settings.bar ~= nil then
         local leftTextFrame = TRB.Frames.leftTextFrame
         local middleTextFrame = TRB.Frames.middleTextFrame
         local rightTextFrame = TRB.Frames.rightTextFrame
@@ -659,38 +652,19 @@ local function UpdateResourceBar()
         local leftText, middleText, rightText = TRB.Data.BarText()
         
         if not pcall(TRB.Functions.TryUpdateText, leftTextFrame, leftText) then
-            TRB.Frames.leftTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", TRB.Data.settings.displayText.left.fontSize, "OUTLINE")
+            TRB.Frames.leftTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.left.fontSize, "OUTLINE")
         end
 
         if not pcall(TRB.Functions.TryUpdateText, middleTextFrame, middleText) then
-            TRB.Frames.middleTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", TRB.Data.settings.displayText.middle.fontSize, "OUTLINE")
+            TRB.Frames.middleTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.middle.fontSize, "OUTLINE")
         end
 
         if not pcall(TRB.Functions.TryUpdateText, rightTextFrame, rightText) then
-            TRB.Frames.rightTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", TRB.Data.settings.displayText.right.fontSize, "OUTLINE")
+            TRB.Frames.rightTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.right.fontSize, "OUTLINE")
         end
     end
 end
 TRB.Functions.UpdateResourceBar = UpdateResourceBar
-
--- TODO: Change this from being stored in Voidform-centric variables
-local function IsTtdActive()
-    if TRB.Data.settings.displayText ~= nil then
-        if string.find(TRB.Data.settings.displayText.left.outVoidformText, "$ttd") or
-            string.find(TRB.Data.settings.displayText.left.inVoidformText, "$ttd") or
-            string.find(TRB.Data.settings.displayText.middle.outVoidformText, "$ttd") or
-            string.find(TRB.Data.settings.displayText.middle.inVoidformText, "$ttd") or
-            string.find(TRB.Data.settings.displayText.right.outVoidformText, "$ttd") or
-            string.find(TRB.Data.settings.displayText.right.inVoidformText, "$ttd") then
-            TRB.Data.snapshotData.targetData.ttdIsActive = true
-        else
-            TRB.Data.snapshotData.targetData.ttdIsActive = false
-        end
-    else
-        TRB.Data.snapshotData.targetData.ttdIsActive = false
-    end
-end
-TRB.Functions.IsTtdActive = IsTtdActive
 
 local function RemoveInvalidVariablesFromBarText(input)
     --1         11                       36     43

@@ -377,7 +377,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
 
 		{ variable = "$insanity", description = "Current Insanity", printInSettings = true, color = false },
-		{ variable = "$casting", description = "Insanity from Hardcasting TRB.Data.spells", printInSettings = true, color = false },
+		{ variable = "$casting", description = "Insanity from Hardcasting Spells", printInSettings = true, color = false },
 		{ variable = "$passive", description = "Insanity from Passive Sources", printInSettings = true, color = false },
 		{ variable = "$insanityPlusCasting", description = "Current + Casting Insanity Total", printInSettings = true, color = false },
 		{ variable = "$insanityPlusPassive", description = "Current + Passive Insanity Total", printInSettings = true, color = false },
@@ -482,6 +482,24 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 		TRB.Data.character.items.callToTheVoid = callToTheVoid
 	end
+	
+	local function IsTtdActive()
+		if TRB.Data.settings.priest.shadow.displayText ~= nil then
+			if string.find(TRB.Data.settings.priest.shadow.displayText.left.outVoidformText, "$ttd") or
+				string.find(TRB.Data.settings.priest.shadow.displayText.left.inVoidformText, "$ttd") or
+				string.find(TRB.Data.settings.priest.shadow.displayText.middle.outVoidformText, "$ttd") or
+				string.find(TRB.Data.settings.priest.shadow.displayText.middle.inVoidformText, "$ttd") or
+				string.find(TRB.Data.settings.priest.shadow.displayText.right.outVoidformText, "$ttd") or
+				string.find(TRB.Data.settings.priest.shadow.displayText.right.inVoidformText, "$ttd") then
+				TRB.Data.snapshotData.targetData.ttdIsActive = true
+			else
+				TRB.Data.snapshotData.targetData.ttdIsActive = false
+			end
+		else
+			TRB.Data.snapshotData.targetData.ttdIsActive = false
+		end
+	end
+    TRB.Functions.IsTtdActive = IsTtdActive
 
 	local function EventRegistration()
 		if GetSpecialization() == 3 then		
@@ -600,7 +618,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function ConstructResourceBar()
-		TRB.Functions.ConstructResourceBar()
+		TRB.Functions.ConstructResourceBar(TRB.Data.settings.priest.shadow)
 		
 		resourceFrame.thresholdDp:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
 		resourceFrame.thresholdDp:SetHeight(TRB.Data.settings.priest.shadow.bar.height)
@@ -1377,6 +1395,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateDeathAndMadness()
 	end
 
+	local function HideResourceBar()
+		local affectingCombat = UnitAffectingCombat("player")
+	
+		if (not affectingCombat) and
+			(not UnitInVehicle("player")) and (
+				(not TRB.Data.settings.priest.shadow.displayBar.alwaysShow) and (
+					(not TRB.Data.settings.priest.shadow.displayBar.notZeroShow) or
+					(TRB.Data.settings.priest.shadow.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0)
+				)
+			 ) then
+			TRB.Frames.barContainerFrame:Hide()	
+		else
+			TRB.Frames.barContainerFrame:Show()	
+		end
+	end
+	TRB.Functions.HideResourceBar = HideResourceBar
+
 	local function UpdateResourceBar()
 		UpdateSnapshot()
 
@@ -1466,7 +1501,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end
 
-		TRB.Functions.UpdateResourceBar()
+		TRB.Functions.UpdateResourceBar(TRB.Data.settings.priest.shadow)
 	end
 
 	--HACK to fix FPS
@@ -1486,6 +1521,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 	end
 
+	-- TODO: Combine this in a shared resource!
 	function timerFrame:onUpdate(sinceLastUpdate)
 		local currentTime = GetTime()
 		self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
@@ -1821,7 +1857,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end	
 
 			if event == "PLAYER_LOGOUT" then
-				TwintopInsanityBarSettings = TRB.Data.settings.priest.shadow
+				TwintopInsanityBarSettings = TRB.Data.settings
 			end
 					
 			if TRB.Details.addonData.registered == true and event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then

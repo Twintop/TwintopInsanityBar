@@ -191,3 +191,24 @@ do
 
 	hooksecurefunc("InterfaceOptionsFrame_OpenToCategory", InterfaceOptionsFrame_OpenToCategory_Fix)
 end
+
+function SlashCmdList.TWINTOP(msg)
+    local cmd, subcmd = TRB.Functions.ParseCmdString(msg);
+    if cmd == "reset" then
+        StaticPopup_Show("TwintopInsanityBar_Reset")
+    elseif cmd == "set" then
+        cmd, subcmd = TRB.Functions.ParseCmdString(subcmd)
+
+        if cmd == "numEntries" and subcmd ~= nil then
+            local num = TRB.Functions.RoundTo(subcmd, 0)
+            settings.ttd.numEntries = num
+        end
+    elseif cmd == "fill" then				
+        TRB.Functions.FillSpellData()
+    elseif cmd == "move" then
+        local x, y = TRB.Functions.ParseCmdString(subcmd)
+        TRB.Functions.UpdateBarPosition(tonumber(x), tonumber(y))
+    else
+        InterfaceOptionsFrame_OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)
+    end
+end
