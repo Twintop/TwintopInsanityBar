@@ -1796,7 +1796,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar" then
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
-					local settings = TRB.Options.LoadDefaultSettings()
+					local settings = TRB.Options.Priest.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
 						settings = TRB.Data.settings
@@ -1805,7 +1805,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					TRB.Functions.IsTtdActive()		
 					TRB.Functions.FillSpellData()
 					ConstructResourceBar()
-					TRB.Options.ConstructOptionsPanel()
+					TRB.Options.Priest.ConstructOptionsPanel()
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"
@@ -1829,7 +1829,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					
 				local affectingCombat = UnitAffectingCombat("player")
 
-				if (not affectingCombat) and (
+				if (not affectingCombat) and TRB.Data.settings ~= nil and TRB.Data.settings.displayBar ~= nil and (
 					(not TRB.Data.settings.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.displayBar.notZeroShow) or
 						(TRB.Data.settings.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0))) then	

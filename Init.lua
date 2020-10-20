@@ -2,8 +2,8 @@ local _, TRB = ...
 
 -- Addon details data
 TRB.Details = {}
-TRB.Details.addonVersion = "9.0.2.11"
-TRB.Details.addonReleaseDate = "October 20, 2020"
+TRB.Details.addonVersion = "9.0.2.12"
+TRB.Details.addonReleaseDate = "October 21, 2020"
 
 local addonData = {
 	loaded = false,
