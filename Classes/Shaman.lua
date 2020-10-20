@@ -158,8 +158,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Data.character.talents.ascendance.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 		
 		TRB.Data.character.earthShockThreshold = 60
-		
-		if TRB.Data.settings.shaman.elemental.earthShockThreshold and TRB.Data.character.earthShockThreshold < TRB.Data.character.maxResource then
+        
+		if TRB.Data.settings.shaman ~= nil and TRB.Data.settings.shaman.elemental ~= nil and TRB.Data.settings.shaman.elemental.earthShockThreshold and TRB.Data.character.earthShockThreshold < TRB.Data.character.maxResource then
 			resourceFrame.thresholdEs:Show()
 			TRB.Functions.RepositionThreshold(resourceFrame.thresholdEs, resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 		else
@@ -168,7 +168,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 	
 	local function IsTtdActive()
-		if TRB.Data.settings.shaman.elemental.displayText ~= nil then
+		if TRB.Data.settings.shaman ~= nil and TRB.Data.settings.shaman.elemental ~= nil and TRB.Data.settings.shaman.elemental.displayText ~= nil then
 			if string.find(TRB.Data.settings.shaman.elemental.displayText.left.text, "$ttd") or
 				string.find(TRB.Data.settings.shaman.elemental.displayText.middle.text, "$ttd") or
 				string.find(TRB.Data.settings.shaman.elemental.displayText.right.text, "$ttd") then
@@ -743,13 +743,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 		local _, _, classIndex = UnitClass("player")
 		if classIndex == 7 then
-			if event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar" then
+			if (event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar") then
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 					local settings = TRB.Options.Shaman.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
+						TRB.Options.PortForwardPriestSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
-					end
+					else
+						TRB.Data.settings = settings
+					end	
+					print(TRB.Data.settings.shaman.elemental.thresholdWidth)
 					TRB.Functions.UpdateSanityCheckValues()
 					TRB.Functions.IsTtdActive()		
 					TRB.Functions.FillSpellData()

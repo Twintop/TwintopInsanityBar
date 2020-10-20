@@ -226,14 +226,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
-		settings.priest = {}
-		local specId = GetSpecialization()
-		if specId == 1 then
-		elseif specId == 2 then
-		elseif specId == 3 then
-			settings.priest.shadow = ShadowLoadDefaultSettings()
-		else
-		end
+		settings.priest.shadow = ShadowLoadDefaultSettings()
 		return settings
 	end
 	TRB.Options.Priest.LoadDefaultSettings = LoadDefaultSettings
@@ -2658,23 +2651,4 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		ShadowConstructBarTextDisplayLayoutPanel()
 	end
 	TRB.Options.Priest.ConstructOptionsPanel = ConstructOptionsPanel
-
-	local function PortForwardPriestSettings()		
-		if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.priest == nil then
-			local tempSettings = TwintopInsanityBarSettings
-			TwintopInsanityBarSettings.priest = {}
-			TwintopInsanityBarSettings.priest.discipline = {}
-			TwintopInsanityBarSettings.priest.holy = {}
-			TwintopInsanityBarSettings.priest.shadow = tempSettings
-			TwintopInsanityBarSettings.priest.shadow.textures.resourceBar = TwintopInsanityBarSettings.priest.shadow.textures.insanityBar
-			TwintopInsanityBarSettings.priest.shadow.textures.resourceBarName = TwintopInsanityBarSettings.priest.shadow.textures.insanityBarName
-			TwintopInsanityBarSettings.core = {}
-			TwintopInsanityBarSettings.core.dataRefreshRate = tempSettings.dataRefreshRate
-			TwintopInsanityBarSettings.core.ttd = tempSettings.ttd
-			TwintopInsanityBarSettings.core.audio = {}
-			TwintopInsanityBarSettings.core.audio.channel = tempSettings.audio.channel
-			TwintopInsanityBarSettings.core.strata = tempSettings.strata
-		end
-	end
-	TRB.Options.Priest.PortForwardPriestSettings = PortForwardPriestSettings
 end

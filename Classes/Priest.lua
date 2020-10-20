@@ -434,57 +434,59 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.character.devouringPlagueThreshold = 50
 		TRB.Data.character.searingNightmareThreshold = 35
 		
-		if TRB.Data.settings.priest.shadow.devouringPlagueThreshold and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
-			resourceFrame.thresholdDp:Show()
-			TRB.Functions.RepositionThreshold(resourceFrame.thresholdDp, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-		else
-			resourceFrame.thresholdDp:Hide()
-		end
-		
-		if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then
-			resourceFrame.thresholdSn:Show()		
-			TRB.Functions.RepositionThreshold(resourceFrame.thresholdSn, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
-		else
-			resourceFrame.thresholdSn:Hide()
-		end
+		if TRB.Data.settings.priest ~= nil and TRB.Data.settings.priest.shadow ~= nil then
+			if TRB.Data.settings.priest.shadow.devouringPlagueThreshold and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
+				resourceFrame.thresholdDp:Show()
+				TRB.Functions.RepositionThreshold(resourceFrame.thresholdDp, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+			else
+				resourceFrame.thresholdDp:Hide()
+			end
+			
+			if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then
+				resourceFrame.thresholdSn:Show()		
+				TRB.Functions.RepositionThreshold(resourceFrame.thresholdSn, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			else
+				resourceFrame.thresholdSn:Hide()
+			end
 
-		local wristItemLink = GetInventoryItemLink("player", 9)
-		local handsItemLink = GetInventoryItemLink("player", 10)
+			local wristItemLink = GetInventoryItemLink("player", 9)
+			local handsItemLink = GetInventoryItemLink("player", 10)
 
-		local callToTheVoid = false
-		if wristItemLink ~= nil then
-			local wristParts = { strsplit(":", wristItemLink) }
-			-- Note for Future Twintop:
-			--  1  = Item Name
-			--  2  = Item Id
-			-- 14  = # of Bonuses
-			-- 15+ = Bonuses
-			if tonumber(wristParts[2]) == 173249 and tonumber(wristParts[14]) > 0 then
-				for x = 1, tonumber(wristParts[14]) do
-					if tonumber(wristParts[14+x]) == TRB.Data.spells.eternalCallToTheVoid_Tendril.idLegendaryBonus then
-						callToTheVoid = true
-						break
-					end			
+			local callToTheVoid = false
+			if wristItemLink ~= nil then
+				local wristParts = { strsplit(":", wristItemLink) }
+				-- Note for Future Twintop:
+				--  1  = Item Name
+				--  2  = Item Id
+				-- 14  = # of Bonuses
+				-- 15+ = Bonuses
+				if tonumber(wristParts[2]) == 173249 and tonumber(wristParts[14]) > 0 then
+					for x = 1, tonumber(wristParts[14]) do
+						if tonumber(wristParts[14+x]) == TRB.Data.spells.eternalCallToTheVoid_Tendril.idLegendaryBonus then
+							callToTheVoid = true
+							break
+						end			
+					end
 				end
 			end
-		end
-		
-		if callToTheVoid == false and handsItemLink ~= nil then
-			local handsParts = { strsplit(":", handsItemLink) }
-			if tonumber(handsParts[2]) == 173244 and tonumber(handsParts[14]) > 0 then
-				for x = 1, tonumber(handsParts[14]) do
-					if tonumber(handsParts[14+x]) == TRB.Data.spells.eternalCallToTheVoid_Tendril.idLegendaryBonus then
-						callToTheVoid = true
-						break
-					end			
+			
+			if callToTheVoid == false and handsItemLink ~= nil then
+				local handsParts = { strsplit(":", handsItemLink) }
+				if tonumber(handsParts[2]) == 173244 and tonumber(handsParts[14]) > 0 then
+					for x = 1, tonumber(handsParts[14]) do
+						if tonumber(handsParts[14+x]) == TRB.Data.spells.eternalCallToTheVoid_Tendril.idLegendaryBonus then
+							callToTheVoid = true
+							break
+						end			
+					end
 				end
 			end
+			TRB.Data.character.items.callToTheVoid = callToTheVoid
 		end
-		TRB.Data.character.items.callToTheVoid = callToTheVoid
 	end
 	
 	local function IsTtdActive()
-		if TRB.Data.settings.priest.shadow.displayText ~= nil then
+		if TRB.Data.settings.priest ~= nil and TRB.Data.settings.priest.shadow ~= nil and TRB.Data.settings.priest.shadow.displayText ~= nil then
 			if string.find(TRB.Data.settings.priest.shadow.displayText.left.outVoidformText, "$ttd") or
 				string.find(TRB.Data.settings.priest.shadow.displayText.left.inVoidformText, "$ttd") or
 				string.find(TRB.Data.settings.priest.shadow.displayText.middle.outVoidformText, "$ttd") or
@@ -1834,8 +1836,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					TRB.Details.addonData.loaded = true
 					local settings = TRB.Options.Priest.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
-						TRB.Options.Priest.PortForwardPriestSettings()
+						TRB.Options.PortForwardPriestSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
+					else
+						TRB.Data.settings = settings
 					end
 					TRB.Functions.UpdateSanityCheckValues()
 					TRB.Functions.IsTtdActive()		

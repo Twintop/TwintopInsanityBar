@@ -4,22 +4,35 @@ TRB.Options = {}
 
 local function LoadDefaultSettings()
     local settings = {
-        dataRefreshRate = 5.0,
-        ttd = {
-            sampleRate = 0.2,
-            numEntries = 50
-        },
-        audio = {            
-            channel={
-                name="Master",
-                channel="Master"
+        core = {
+            dataRefreshRate = 5.0,
+            ttd = {
+                sampleRate = 0.2,
+                numEntries = 50
+            },
+            audio = {            
+                channel={
+                    name="Master",
+                    channel="Master"
+                }
+            },
+            strata={
+                level="BACKGROUND",
+                name="Background"
             }
+        },        
+        priest = {
+            discipline = {},
+            holy = {},
+            shadow = {}
         },
-        strata={
-            level="BACKGROUND",
-            name="Background"
+        shaman = {
+            elemental = {},
+            enhancement = {},
+            restoration = {}
         }
     }
+    
     return settings
 end
 TRB.Options.LoadDefaultSettings = LoadDefaultSettings
@@ -256,3 +269,22 @@ local function ConstructOptionsPanel()
     ConstructAddonOptionsPanel()
 end
 TRB.Options.ConstructOptionsPanel = ConstructOptionsPanel
+
+local function PortForwardPriestSettings()		
+    if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.priest == nil then
+        local tempSettings = TwintopInsanityBarSettings
+        TwintopInsanityBarSettings.priest = {}
+        TwintopInsanityBarSettings.priest.discipline = {}
+        TwintopInsanityBarSettings.priest.holy = {}
+        TwintopInsanityBarSettings.priest.shadow = tempSettings			
+        TwintopInsanityBarSettings.priest.shadow.textures.resourceBar = TwintopInsanityBarSettings.priest.shadow.textures.insanityBar
+        TwintopInsanityBarSettings.priest.shadow.textures.resourceBarName = TwintopInsanityBarSettings.priest.shadow.textures.insanityBarName
+        TwintopInsanityBarSettings.core = {}
+        TwintopInsanityBarSettings.core.dataRefreshRate = tempSettings.dataRefreshRate
+        TwintopInsanityBarSettings.core.ttd = tempSettings.ttd
+        TwintopInsanityBarSettings.core.audio = {}
+        TwintopInsanityBarSettings.core.audio.channel = tempSettings.audio.channel
+        TwintopInsanityBarSettings.core.strata = tempSettings.strata
+    end
+end
+TRB.Options.PortForwardPriestSettings = PortForwardPriestSettings

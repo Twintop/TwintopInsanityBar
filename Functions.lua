@@ -62,7 +62,6 @@ local function GetRGBAFromString(s, normalize)
         _g = min(255, tonumber(string.sub(s, 5, 6), 16))
         _b = min(255, tonumber(string.sub(s, 7, 8), 16))
     end
-    
 	if normalize then
 		return _r/255, _g/255, _b/255, _a/255
 	else
@@ -79,7 +78,7 @@ local function ConvertColorDecimalToHex(r, g, b, a)
 	else
 		_r = string.format("%x", math.ceil(r * 255))
 		if string.len(_r) == 1 then
-			_r = _r .. _r
+			_r = "0" .. _r
 		end
 	end
 
@@ -88,7 +87,7 @@ local function ConvertColorDecimalToHex(r, g, b, a)
 	else
 		_g = string.format("%x", math.ceil(g * 255))
 		if string.len(_g) == 1 then
-			_g = _g .. _g
+			_g = "0" .. _g
 		end
 	end
 	
@@ -97,7 +96,7 @@ local function ConvertColorDecimalToHex(r, g, b, a)
 	else
 		_b = string.format("%x", math.ceil(b * 255))
 		if string.len(_b) == 1 then
-			_b = _b .. _b
+			_b = "0" .. _b
 		end
 	end
 
@@ -106,7 +105,7 @@ local function ConvertColorDecimalToHex(r, g, b, a)
 	else
 		_a = string.format("%x", math.ceil(a * 255))
 		if string.len(_a) == 1 then	
-			_a = _a .. _a
+			_a = "0" .. _a
 		end
 	end
 
@@ -313,7 +312,7 @@ end
 TRB.Functions.CaptureBarPosition = CaptureBarPosition
 
 local function ConstructResourceBar(settings)    
-    if settings.bar ~= nil then
+    if settings ~= nil and settings.bar ~= nil then
         local barContainerFrame = TRB.Frames.barContainerFrame
         local resourceFrame = TRB.Frames.resourceFrame
         local castingFrame = TRB.Frames.castingFrame
@@ -337,7 +336,7 @@ local function ConstructResourceBar(settings)
         barContainerFrame:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))
         barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
         barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-        barContainerFrame:SetFrameStrata(TRB.Data.settings.strata.level)
+        barContainerFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         barContainerFrame:SetFrameLevel(0)
 
         barContainerFrame:SetScript("OnMouseDown", function(self, button)
@@ -396,7 +395,7 @@ local function ConstructResourceBar(settings)
         barBorderFrame:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
         barBorderFrame:SetWidth(settings.bar.width)
         barBorderFrame:SetHeight(settings.bar.height)
-        barBorderFrame:SetFrameStrata(TRB.Data.settings.strata.level)
+        barBorderFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         barBorderFrame:SetFrameLevel(126)
 
         resourceFrame:Show()
@@ -406,7 +405,7 @@ local function ConstructResourceBar(settings)
         resourceFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         resourceFrame:SetStatusBarTexture(settings.textures.resourceBar)
         resourceFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
-        resourceFrame:SetFrameStrata(TRB.Data.settings.strata.level)
+        resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         resourceFrame:SetFrameLevel(125)
         
         castingFrame:Show()
@@ -416,7 +415,7 @@ local function ConstructResourceBar(settings)
         castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         castingFrame:SetStatusBarTexture(settings.textures.castingBar)
         castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting))
-        castingFrame:SetFrameStrata(TRB.Data.settings.strata.level)
+        castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         castingFrame:SetFrameLevel(90)
         
         passiveFrame:Show()
@@ -426,15 +425,15 @@ local function ConstructResourceBar(settings)
         passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
         passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive))
-        passiveFrame:SetFrameStrata(TRB.Data.settings.strata.level)
+        passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         passiveFrame:SetFrameLevel(80)
         
-        passiveFrame.threshold:SetWidth(TRB.Data.settings.thresholdWidth)
+        passiveFrame.threshold:SetWidth(settings.thresholdWidth)
         passiveFrame.threshold:SetHeight(settings.bar.height)
-        passiveFrame.threshold.texture = passiveFrame.threshold:CreateTexture(nil, TRB.Data.settings.strata.level)
+        passiveFrame.threshold.texture = passiveFrame.threshold:CreateTexture(nil, TRB.Data.settings.core.strata.level)
         passiveFrame.threshold.texture:SetAllPoints(passiveFrame.threshold)
         passiveFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
-        passiveFrame.threshold:SetFrameStrata(TRB.Data.settings.strata.level)
+        passiveFrame.threshold:SetFrameStrata(TRB.Data.settings.core.strata.level)
         passiveFrame.threshold:SetFrameLevel(127)
         passiveFrame.threshold:Show()
         
@@ -442,7 +441,7 @@ local function ConstructResourceBar(settings)
         leftTextFrame:SetWidth(settings.bar.width)
         leftTextFrame:SetHeight(settings.bar.height * 3.5)
         leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 2, 0)
-        leftTextFrame:SetFrameStrata(TRB.Data.settings.strata.level)
+        leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         leftTextFrame:SetFrameLevel(129)
         leftTextFrame.font:SetPoint("LEFT", 0, 0)
         leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
@@ -454,7 +453,7 @@ local function ConstructResourceBar(settings)
         middleTextFrame:SetWidth(settings.bar.width)
         middleTextFrame:SetHeight(settings.bar.height * 3.5)
         middleTextFrame:SetPoint("CENTER", barContainerFrame, "CENTER", 0, 0)
-        middleTextFrame:SetFrameStrata(TRB.Data.settings.strata.level)
+        middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         middleTextFrame:SetFrameLevel(129)
         middleTextFrame.font:SetPoint("CENTER", 0, 0)
         middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
@@ -466,7 +465,7 @@ local function ConstructResourceBar(settings)
         rightTextFrame:SetWidth(settings.bar.width)
         rightTextFrame:SetHeight(settings.bar.height * 3.5)
         rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-        rightTextFrame:SetFrameStrata(TRB.Data.settings.strata.level)
+        rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         rightTextFrame:SetFrameLevel(129)
         rightTextFrame.font:SetPoint("RIGHT", 0, 0)
         rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)

@@ -50,6 +50,33 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		return textSettings
 	end
     
+    local function ElementalLoadDefaultBarTextAdvancedSettings()
+		local textSettings = {		
+			fontSizeLock = false,
+			fontFaceLock = true,
+			left = {
+				text = "$haste% ($gcd)||n#flameShock $fsCount   {$ttd}[TTD: $ttd]",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 13
+			},
+			middle = {
+				text="",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 13
+			},
+			right = {
+				text = "{$casting}[#casting$casting+]{$passive}[$passive+]$maelstrom",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",			
+				fontSize = 22
+			}
+		}
+
+		return textSettings
+	end
+
 	local function ElementalLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
@@ -69,23 +96,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			},
 			colors = {
 				text = {
-					currentMaelstrom="FFC2A3E0",
+					currentMaelstrom="FF6563E0",
 					castingMaelstrom="FFFFFFFF",
-					passiveMaelstrom="FFDF00FF",		
+					passiveMaelstrom="FF995BDD",		
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
-					right="FFFFFFFF",
-					hasteBelow="FFFFFFFF",
-					hasteApproaching="FFFFFF00",
-					hasteAbove="FF00FF00",
+					right="FFFFFFFF"
 				},
 				bar = {
-					border="FF431863",
+					border="FF00008D",
 					background="66000000",
-					base="FF763BAF",
+					base="FF0055FF",
 					casting="FFFFFFFF",
-					passive="FFDF00FF",
-					earthShock="FF431863",
+					passive="FF995BDD",
+					earthShock="FF00096A",
 					flashAlpha=0.70,
 					flashPeriod=0.5,
 					flashEnabled=true
@@ -124,14 +148,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
-		settings.shaman = {}
 		local specId = GetSpecialization()
-		if specId == 1 then
-			settings.shaman.elemental = ElementalLoadDefaultSettings()
-		elseif specId == 2 then
-		elseif specId == 3 then
-		else
-		end
+		settings.shaman.elemental = ElementalLoadDefaultSettings()
 		return settings
 	end
     TRB.Options.Shaman.LoadDefaultSettings = LoadDefaultSettings
@@ -191,7 +209,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		--[[StaticPopupDialogs["TwintopMaelstromBar_ResetBarTextAdvanced"] = {
+		StaticPopupDialogs["TwintopMaelstromBar_ResetBarTextAdvanced"] = {
 			text = "Do you want to reset Twintop's Maelstrom Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
@@ -204,7 +222,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		StaticPopupDialogs["TwintopMaelstromBar_ResetBarTextNarrowAdvanced"] = {
+		--[[StaticPopupDialogs["TwintopMaelstromBar_ResetBarTextNarrowAdvanced"] = {
 			text = "Do you want to reset Twintop's Maelstrom Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
@@ -275,8 +293,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetPushedTexture(f.ptex)
 		f:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopMaelstromBar_ResetBarTextSimple")
-		end)
-        --[[
+        end)
+		
+		--[[
 		yCoord = yCoord - 40
 		controls.resetButton = CreateFrame("Button", "TwintopMaelstromBar_ResetBarTextNarrowAdvancedButton", parent)
 		f = controls.resetButton
@@ -303,7 +322,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopMaelstromBar_ResetBarTextNarrowAdvanced")
 		end)
-
+		]]
+        
 		controls.resetButton = CreateFrame("Button", "TwintopMaelstromBar_ResetBarTextAdvancedButton", parent)
 		f = controls.resetButton
 		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2, yCoord)
@@ -328,7 +348,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetPushedTexture(f.ptex)
 		f:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopMaelstromBar_ResetBarTextAdvanced")
-		end)]]
+		end)
 
 		yCoord = yCoord - 40
 		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", xCoord+xPadding, yCoord)
@@ -947,16 +967,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.base, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+                local r1, g1, b1, a1 = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.base, true)
+				TRB.UiFunctions.ShowColorPicker(r1, g1, b1, a1, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
+                        r = r / 255
+                        g = g / 255
+                        b = b / 255
+                        a = a / 255
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
                     controls.colors.base.Texture:SetColorTexture(r, g, b, a)
                     TRB.Data.settings.shaman.elemental.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
                 end)
