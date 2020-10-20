@@ -125,11 +125,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			thresholdWidth=2,
 			auspiciousSpiritsTracker=true,
 			voidTendrilTracker=true,
-			dataRefreshRate = 5.0,
-			ttd = {
-				sampleRate = 0.2,
-				numEntries = 50
-			},
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true
@@ -208,10 +203,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				mindbender={
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 					soundName="Boxing Arena Gong (TIB)"
-				},
-				channel={
-					name="Master",
-					channel="Master"
 				}
 			},
 			textures={
@@ -226,10 +217,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				castingBar="Interface\\TargetingFrame\\UI-StatusBar",
 				castingBarName="Blizzard",
 				textureLock=true
-			},
-			strata={
-				level="BACKGROUND",
-				name="Background"
 			}
 		}
 
@@ -238,16 +225,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function LoadDefaultSettings()
+		local settings = TRB.Options.LoadDefaultSettings()
+		settings.priest = {}
 		local specId = GetSpecialization()
 		if specId == 1 then
-			return {}
 		elseif specId == 2 then
-			return {}
 		elseif specId == 3 then
-			return ShadowLoadDefaultSettings()
+			settings.priest.shadow = ShadowLoadDefaultSettings()
 		else
-			return {}
 		end
+		return settings
 	end
 	TRB.Options.Priest.LoadDefaultSettings = LoadDefaultSettings
 
@@ -276,7 +263,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local barHeight = 20
 		local title = ""
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.bar.height/8), math.floor(TRB.Data.settings.bar.width/8))
+		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height/8), math.floor(TRB.Data.settings.priest.shadow.bar.width/8))
 
 
 		StaticPopupDialogs["TwintopInsanityBar_Reset"] = {
@@ -297,7 +284,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.displayText = ShadowLoadDefaultBarTextSimpleSettings()
+				TRB.Data.settings.priest.shadow.displayText = ShadowLoadDefaultBarTextSimpleSettings()
 				ReloadUI()			
 			end,
 			timeout = 0,
@@ -310,7 +297,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.displayText = ShadowLoadDefaultBarTextAdvancedSettings()
+				TRB.Data.settings.priest.shadow.displayText = ShadowLoadDefaultBarTextAdvancedSettings()
 				ReloadUI()			
 			end,
 			timeout = 0,
@@ -323,7 +310,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.displayText = ShadowLoadDefaultBarTextNarrowAdvancedSettings()
+				TRB.Data.settings.priest.shadow.displayText = ShadowLoadDefaultBarTextNarrowAdvancedSettings()
 				ReloadUI()			
 			end,
 			timeout = 0,
@@ -449,7 +436,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 		yCoord = yCoord - 40
 		title = "Bar Width"
-		controls.width = TRB.UiFunctions.BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinWidth, TRB.Data.sanityCheckValues.barMaxWidth, TRB.Data.settings.bar.width, 1, 2,
+		controls.width = TRB.UiFunctions.BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinWidth, TRB.Data.sanityCheckValues.barMaxWidth, TRB.Data.settings.priest.shadow.bar.width, 1, 2,
 									barWidth, barHeight, xCoord+xPadding2, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -459,21 +446,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.bar.width = value
-			barContainerFrame:SetWidth(value-(TRB.Data.settings.bar.border*2))
-			barBorderFrame:SetWidth(TRB.Data.settings.bar.width)
-			resourceFrame:SetWidth(value-(TRB.Data.settings.bar.border*2))
-			castingFrame:SetWidth(value-(TRB.Data.settings.bar.border*2))
-			passiveFrame:SetWidth(value-(TRB.Data.settings.bar.border*2))
+			TRB.Data.settings.priest.shadow.bar.width = value
+			barContainerFrame:SetWidth(value-(TRB.Data.settings.priest.shadow.bar.border*2))
+			barBorderFrame:SetWidth(TRB.Data.settings.priest.shadow.bar.width)
+			resourceFrame:SetWidth(value-(TRB.Data.settings.priest.shadow.bar.border*2))
+			castingFrame:SetWidth(value-(TRB.Data.settings.priest.shadow.bar.border*2))
+			passiveFrame:SetWidth(value-(TRB.Data.settings.priest.shadow.bar.border*2))
 			RepositionThreshold(resourceFrame.thresholdDp, resourceFrame, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
 			RepositionThreshold(resourceFrame.thresholdSn, resourceFrame, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.bar.height / 8), math.floor(TRB.Data.settings.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height / 8), math.floor(TRB.Data.settings.priest.shadow.bar.width / 8))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
 
 		title = "Bar Height"
-		controls.height = TRB.UiFunctions.BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinHeight, TRB.Data.sanityCheckValues.barMaxHeight, TRB.Data.settings.bar.height, 1, 2,
+		controls.height = TRB.UiFunctions.BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinHeight, TRB.Data.sanityCheckValues.barMaxHeight, TRB.Data.settings.priest.shadow.bar.height, 1, 2,
 										barWidth, barHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -483,26 +470,26 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = min
 			end		
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.bar.height = value
-			barContainerFrame:SetHeight(value-(TRB.Data.settings.bar.border*2))
-			barBorderFrame:SetHeight(TRB.Data.settings.bar.height)
-			resourceFrame:SetHeight(value-(TRB.Data.settings.bar.border*2))
-			resourceFrame.thresholdDp:SetHeight(value-(TRB.Data.settings.bar.border*2))
-			resourceFrame.thresholdSn:SetHeight(value-(TRB.Data.settings.bar.border*2))
-			castingFrame:SetHeight(value-(TRB.Data.settings.bar.border*2))
-			passiveFrame:SetHeight(value-(TRB.Data.settings.bar.border*2))
-			passiveFrame.threshold:SetHeight(value-(TRB.Data.settings.bar.border*2))		
-			leftTextFrame:SetHeight(TRB.Data.settings.bar.height * 3.5)
-			middleTextFrame:SetHeight(TRB.Data.settings.bar.height * 3.5)
-			rightTextFrame:SetHeight(TRB.Data.settings.bar.height * 3.5)
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.bar.height / 8), math.floor(TRB.Data.settings.bar.width / 8))
+			TRB.Data.settings.priest.shadow.bar.height = value
+			barContainerFrame:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
+			barBorderFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height)
+			resourceFrame:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
+			resourceFrame.thresholdDp:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
+			resourceFrame.thresholdSn:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
+			castingFrame:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
+			passiveFrame:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
+			passiveFrame.threshold:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))		
+			leftTextFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height * 3.5)
+			middleTextFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height * 3.5)
+			rightTextFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height * 3.5)
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height / 8), math.floor(TRB.Data.settings.priest.shadow.bar.width / 8))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
 
 		title = "Bar Horizontal Position"
 		yCoord = yCoord - 60
-		controls.horizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth/2), math.floor(TRB.Data.sanityCheckValues.barMaxWidth/2), TRB.Data.settings.bar.xPos, 1, 2,
+		controls.horizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth/2), math.floor(TRB.Data.sanityCheckValues.barMaxWidth/2), TRB.Data.settings.priest.shadow.bar.xPos, 1, 2,
 									barWidth, barHeight, xCoord+xPadding2, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -512,14 +499,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = min
 			end
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.bar.xPos = value
+			TRB.Data.settings.priest.shadow.bar.xPos = value
 			barContainerFrame:ClearAllPoints()
 			barContainerFrame:SetPoint("CENTER", UIParent)
-			barContainerFrame:SetPoint("CENTER", TRB.Data.settings.bar.xPos, TRB.Data.settings.bar.yPos)
+			barContainerFrame:SetPoint("CENTER", TRB.Data.settings.priest.shadow.bar.xPos, TRB.Data.settings.priest.shadow.bar.yPos)
 		end)
 
 		title = "Bar Vertical Position"
-		controls.vertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxHeight/2), math.floor(TRB.Data.sanityCheckValues.barMaxHeight/2), TRB.Data.settings.bar.yPos, 1, 2,
+		controls.vertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxHeight/2), math.floor(TRB.Data.sanityCheckValues.barMaxHeight/2), TRB.Data.settings.priest.shadow.bar.yPos, 1, 2,
 									barWidth, barHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -529,15 +516,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.bar.yPos = value
+			TRB.Data.settings.priest.shadow.bar.yPos = value
 			barContainerFrame:ClearAllPoints()
 			barContainerFrame:SetPoint("CENTER", UIParent)
-			barContainerFrame:SetPoint("CENTER", TRB.Data.settings.bar.xPos, TRB.Data.settings.bar.yPos)
+			barContainerFrame:SetPoint("CENTER", TRB.Data.settings.priest.shadow.bar.xPos, TRB.Data.settings.priest.shadow.bar.yPos)
 		end)
 
 		title = "Bar Border Width"
 		yCoord = yCoord - 60
-		controls.borderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.bar.border, 1, 2,
+		controls.borderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.priest.shadow.bar.border, 1, 2,
 									barWidth, barHeight, xCoord+xPadding2, yCoord)
 		controls.borderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -547,14 +534,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = min
 			end
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.bar.border = value
-			barContainerFrame:SetWidth(TRB.Data.settings.bar.width-(TRB.Data.settings.bar.border*2))
-			barContainerFrame:SetHeight(TRB.Data.settings.bar.height-(TRB.Data.settings.bar.border*2))
-			barBorderFrame:SetWidth(TRB.Data.settings.bar.width)
-			barBorderFrame:SetHeight(TRB.Data.settings.bar.height)
-			if TRB.Data.settings.bar.border < 1 then
+			TRB.Data.settings.priest.shadow.bar.border = value
+			barContainerFrame:SetWidth(TRB.Data.settings.priest.shadow.bar.width-(TRB.Data.settings.priest.shadow.bar.border*2))
+			barContainerFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height-(TRB.Data.settings.priest.shadow.bar.border*2))
+			barBorderFrame:SetWidth(TRB.Data.settings.priest.shadow.bar.width)
+			barBorderFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height)
+			if TRB.Data.settings.priest.shadow.bar.border < 1 then
 				barBorderFrame:SetBackdrop({
-					edgeFile = TRB.Data.settings.textures.border,
+					edgeFile = TRB.Data.settings.priest.shadow.textures.border,
 					tile = true,
 					tileSize = 4,
 					edgeSize = 1,
@@ -563,19 +550,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				barBorderFrame:Hide()
 			else
 				barBorderFrame:SetBackdrop({ 
-					edgeFile = TRB.Data.settings.textures.border,
+					edgeFile = TRB.Data.settings.priest.shadow.textures.border,
 					tile = true,
 					tileSize=4,
-					edgeSize=TRB.Data.settings.bar.border,								
+					edgeSize=TRB.Data.settings.priest.shadow.bar.border,								
 					insets = {0, 0, 0, 0}
 				})
 				barBorderFrame:Show()
 			end
 			barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.bar.border, true))
+			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.border, true))
 
-			local minBarWidth = math.max(TRB.Data.settings.bar.border*2, 120)
-			local minBarHeight = math.max(TRB.Data.settings.bar.border*2, 1)
+			local minBarWidth = math.max(TRB.Data.settings.priest.shadow.bar.border*2, 120)
+			local minBarHeight = math.max(TRB.Data.settings.priest.shadow.bar.border*2, 1)
 			controls.height:SetMinMaxValues(minBarHeight, TRB.Data.sanityCheckValues.barMaxHeight)
 			controls.height.MinLabel:SetText(minBarHeight)
 			controls.width:SetMinMaxValues(minBarWidth, TRB.Data.sanityCheckValues.barMaxWidth)
@@ -583,7 +570,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.priest.shadow.thresholdWidth, 1, 2,
 									barWidth, barHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -593,10 +580,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.thresholdWidth = value
-			resourceFrame.thresholdDp:SetWidth(TRB.Data.settings.thresholdWidth)
-			resourceFrame.thresholdSn:SetWidth(TRB.Data.settings.thresholdWidth)
-			passiveFrame.threshold:SetWidth(TRB.Data.settings.thresholdWidth)
+			TRB.Data.settings.priest.shadow.thresholdWidth = value
+			resourceFrame.thresholdDp:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
+			resourceFrame.thresholdSn:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
+			passiveFrame.threshold:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
 		end)
 
 		yCoord = yCoord - 40
@@ -606,11 +593,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
 		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved."
-		f:SetChecked(TRB.Data.settings.bar.dragAndDrop)
+		f:SetChecked(TRB.Data.settings.priest.shadow.bar.dragAndDrop)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.bar.dragAndDrop = self:GetChecked()
-			barContainerFrame:SetMovable(TRB.Data.settings.bar.dragAndDrop)
-			barContainerFrame:EnableMouse(TRB.Data.settings.bar.dragAndDrop)
+			TRB.Data.settings.priest.shadow.bar.dragAndDrop = self:GetChecked()
+			barContainerFrame:SetMovable(TRB.Data.settings.priest.shadow.bar.dragAndDrop)
+			barContainerFrame:EnableMouse(TRB.Data.settings.priest.shadow.bar.dragAndDrop)
 		end)
 
 
@@ -625,7 +612,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.dropDown.insanityBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.insanityBarTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.insanityBarTexture, 250)
-		UIDropDownMenu_SetText(controls.dropDown.insanityBarTexture, TRB.Data.settings.textures.insanityBarName)
+		UIDropDownMenu_SetText(controls.dropDown.insanityBarTexture, TRB.Data.settings.priest.shadow.textures.insanityBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.insanityBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -650,7 +637,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.textures.insanityBar
+						info.checked = textures[v] == TRB.Data.settings.priest.shadow.textures.insanityBar
 						info.func = self.SetValue			
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -663,18 +650,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.insanityBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.textures.insanityBar = newValue
-			TRB.Data.settings.textures.insanityBarName = newName
-			resourceFrame:SetStatusBarTexture(TRB.Data.settings.textures.insanityBar)
+			TRB.Data.settings.priest.shadow.textures.insanityBar = newValue
+			TRB.Data.settings.priest.shadow.textures.insanityBarName = newName
+			resourceFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.insanityBar)
 			UIDropDownMenu_SetText(controls.dropDown.insanityBarTexture, newName)
-			if TRB.Data.settings.textures.textureLock then
-				TRB.Data.settings.textures.castingBar = newValue
-				TRB.Data.settings.textures.castingBarName = newName
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.textures.castingBar)
+			if TRB.Data.settings.priest.shadow.textures.textureLock then
+				TRB.Data.settings.priest.shadow.textures.castingBar = newValue
+				TRB.Data.settings.priest.shadow.textures.castingBarName = newName
+				castingFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.castingBar)
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
-				TRB.Data.settings.textures.passiveBar = newValue
-				TRB.Data.settings.textures.passiveBarName = newName
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.textures.passiveBar)
+				TRB.Data.settings.priest.shadow.textures.passiveBar = newValue
+				TRB.Data.settings.priest.shadow.textures.passiveBarName = newName
+				passiveFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.passiveBar)
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
 			end
 			CloseDropDownMenus()
@@ -686,7 +673,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2-30, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, 250)
-		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.textures.castingBarName)
+		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.priest.shadow.textures.castingBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -711,7 +698,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.textures.castingBar
+						info.checked = textures[v] == TRB.Data.settings.priest.shadow.textures.castingBar
 						info.func = self.SetValue			
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -724,18 +711,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.castingBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.textures.castingBar = newValue
-			TRB.Data.settings.textures.castingBarName = newName
-			castingFrame:SetStatusBarTexture(TRB.Data.settings.textures.castingBar)
+			TRB.Data.settings.priest.shadow.textures.castingBar = newValue
+			TRB.Data.settings.priest.shadow.textures.castingBarName = newName
+			castingFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.castingBar)
 			UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
-			if TRB.Data.settings.textures.textureLock then
-				TRB.Data.settings.textures.insanityBar = newValue
-				TRB.Data.settings.textures.insanityBarName = newName
-				resourceFrame:SetStatusBarTexture(TRB.Data.settings.textures.insanityBar)
+			if TRB.Data.settings.priest.shadow.textures.textureLock then
+				TRB.Data.settings.priest.shadow.textures.insanityBar = newValue
+				TRB.Data.settings.priest.shadow.textures.insanityBarName = newName
+				resourceFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.insanityBar)
 				UIDropDownMenu_SetText(controls.dropDown.insanityBarTexture, newName)
-				TRB.Data.settings.textures.passiveBar = newValue
-				TRB.Data.settings.textures.passiveBarName = newName
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.textures.passiveBar)
+				TRB.Data.settings.priest.shadow.textures.passiveBar = newValue
+				TRB.Data.settings.priest.shadow.textures.passiveBarName = newName
+				passiveFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.passiveBar)
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
 			end
 			CloseDropDownMenus()
@@ -749,7 +736,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, 250)
-		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, TRB.Data.settings.textures.passiveBarName)
+		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, TRB.Data.settings.priest.shadow.textures.passiveBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -774,7 +761,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.textures.passiveBar
+						info.checked = textures[v] == TRB.Data.settings.priest.shadow.textures.passiveBar
 						info.func = self.SetValue			
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -787,18 +774,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.passiveBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.textures.passiveBar = newValue
-			TRB.Data.settings.textures.passiveBarName = newName
-			passiveFrame:SetStatusBarTexture(TRB.Data.settings.textures.passiveBar)
+			TRB.Data.settings.priest.shadow.textures.passiveBar = newValue
+			TRB.Data.settings.priest.shadow.textures.passiveBarName = newName
+			passiveFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.passiveBar)
 			UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
-			if TRB.Data.settings.textures.textureLock then
-				TRB.Data.settings.textures.insanityBar = newValue
-				TRB.Data.settings.textures.insanityBarName = newName
-				resourceFrame:SetStatusBarTexture(TRB.Data.settings.textures.insanityBar)
+			if TRB.Data.settings.priest.shadow.textures.textureLock then
+				TRB.Data.settings.priest.shadow.textures.insanityBar = newValue
+				TRB.Data.settings.priest.shadow.textures.insanityBarName = newName
+				resourceFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.insanityBar)
 				UIDropDownMenu_SetText(controls.dropDown.insanityBarTexture, newName)
-				TRB.Data.settings.textures.castingBar = newValue
-				TRB.Data.settings.textures.castingBarName = newName
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.textures.castingBar)
+				TRB.Data.settings.priest.shadow.textures.castingBar = newValue
+				TRB.Data.settings.priest.shadow.textures.castingBarName = newName
+				castingFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.castingBar)
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
 			end
 			CloseDropDownMenus()
@@ -809,18 +796,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
 		f.tooltip = "This will lock the texture for each part of the bar to be the same."
-		f:SetChecked(TRB.Data.settings.textures.textureLock)
+		f:SetChecked(TRB.Data.settings.priest.shadow.textures.textureLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.textures.textureLock = self:GetChecked()
-			if TRB.Data.settings.textures.textureLock then
-				TRB.Data.settings.textures.passiveBar = TRB.Data.settings.textures.insanityBar
-				TRB.Data.settings.textures.passiveBarName = TRB.Data.settings.textures.insanityBarName
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.textures.passiveBar)
-				UIDropDownMenu_SetText(controls.dropDown.insanityBarTexture, TRB.Data.settings.textures.passiveBarName)
-				TRB.Data.settings.textures.castingBar = TRB.Data.settings.textures.insanityBar
-				TRB.Data.settings.textures.castingBarName = TRB.Data.settings.textures.insanityBarName
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.textures.castingBar)
-				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.textures.castingBarName)
+			TRB.Data.settings.priest.shadow.textures.textureLock = self:GetChecked()
+			if TRB.Data.settings.priest.shadow.textures.textureLock then
+				TRB.Data.settings.priest.shadow.textures.passiveBar = TRB.Data.settings.priest.shadow.textures.insanityBar
+				TRB.Data.settings.priest.shadow.textures.passiveBarName = TRB.Data.settings.priest.shadow.textures.insanityBarName
+				passiveFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.passiveBar)
+				UIDropDownMenu_SetText(controls.dropDown.insanityBarTexture, TRB.Data.settings.priest.shadow.textures.passiveBarName)
+				TRB.Data.settings.priest.shadow.textures.castingBar = TRB.Data.settings.priest.shadow.textures.insanityBar
+				TRB.Data.settings.priest.shadow.textures.castingBarName = TRB.Data.settings.priest.shadow.textures.insanityBarName
+				castingFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.castingBar)
+				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.priest.shadow.textures.castingBarName)
 			end
 		end)
 
@@ -833,7 +820,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, 250)
-		UIDropDownMenu_SetText(controls.dropDown.borderTexture, TRB.Data.settings.textures.borderName)
+		UIDropDownMenu_SetText(controls.dropDown.borderTexture, TRB.Data.settings.priest.shadow.textures.borderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -858,7 +845,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.textures.border
+						info.checked = textures[v] == TRB.Data.settings.priest.shadow.textures.border
 						info.func = self.SetValue			
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -871,20 +858,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.borderTexture:SetValue(newValue, newName)
-			TRB.Data.settings.textures.border = newValue
-			TRB.Data.settings.textures.borderName = newName
-			if TRB.Data.settings.bar.border < 1 then
+			TRB.Data.settings.priest.shadow.textures.border = newValue
+			TRB.Data.settings.priest.shadow.textures.borderName = newName
+			if TRB.Data.settings.priest.shadow.bar.border < 1 then
 				barBorderFrame:SetBackdrop({ })
 			else
-				barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.textures.border,
+				barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.priest.shadow.textures.border,
 											tile = true,
 											tileSize=4,
-											edgeSize=TRB.Data.settings.bar.border,							
+											edgeSize=TRB.Data.settings.priest.shadow.bar.border,							
 											insets = {0, 0, 0, 0}
 											})
 			end
 			barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.bar.border, true))
+			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.border, true))
 			UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
 			CloseDropDownMenus()
 		end
@@ -895,7 +882,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2-30, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, 250)
-		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, TRB.Data.settings.textures.backgroundName)
+		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, TRB.Data.settings.priest.shadow.textures.backgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -920,7 +907,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.textures.background
+						info.checked = textures[v] == TRB.Data.settings.priest.shadow.textures.background
 						info.func = self.SetValue			
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -933,16 +920,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
-			TRB.Data.settings.textures.background = newValue
-			TRB.Data.settings.textures.backgroundName = newName
+			TRB.Data.settings.priest.shadow.textures.background = newValue
+			TRB.Data.settings.priest.shadow.textures.backgroundName = newName
 			barContainerFrame:SetBackdrop({ 
-				bgFile = TRB.Data.settings.textures.background,		
+				bgFile = TRB.Data.settings.priest.shadow.textures.background,		
 				tile = true,
-				tileSize = TRB.Data.settings.bar.width,
+				tileSize = TRB.Data.settings.priest.shadow.bar.width,
 				edgeSize = 1,
 				insets = {0, 0, 0, 0}
 			})
-			barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.bar.background, true))
+			barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.background, true))
 			UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, newName)
 			CloseDropDownMenus()
 		end
@@ -955,7 +942,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 50
 
 		title = "Devouring Plague Flash Alpha"
-		controls.flashAlpha = TRB.UiFunctions.BuildSlider(parent, title, 0, 1, TRB.Data.settings.colors.bar.flashAlpha, 0.01, 2,
+		controls.flashAlpha = TRB.UiFunctions.BuildSlider(parent, title, 0, 1, TRB.Data.settings.priest.shadow.colors.bar.flashAlpha, 0.01, 2,
 									barWidth, barHeight, xCoord+xPadding2, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -967,11 +954,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			value = RoundTo(value, 2)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.colors.bar.flashAlpha = value
+			TRB.Data.settings.priest.shadow.colors.bar.flashAlpha = value
 		end)
 
 		title = "Devouring Plague Flash Period (sec)"
-		controls.flashPeriod = TRB.UiFunctions.BuildSlider(parent, title, 0, 2, TRB.Data.settings.colors.bar.flashPeriod, 0.05, 2,
+		controls.flashPeriod = TRB.UiFunctions.BuildSlider(parent, title, 0, 2, TRB.Data.settings.priest.shadow.colors.bar.flashPeriod, 0.05, 2,
 										barWidth, barHeight, xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -983,7 +970,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			value = RoundTo(value, 2)
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.colors.bar.flashPeriod = value
+			TRB.Data.settings.priest.shadow.colors.bar.flashPeriod = value
 		end)
 
 		yCoord = yCoord - 40
@@ -993,13 +980,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		getglobal(f:GetName() .. 'Text'):SetText("Always show Insanity Bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Insanity Bar always visible on your UI, even when out of combat."
-		f:SetChecked(TRB.Data.settings.displayBar.alwaysShow)
+		f:SetChecked(TRB.Data.settings.priest.shadow.displayBar.alwaysShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(true)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(false)
-			TRB.Data.settings.displayBar.alwaysShow = true
-			TRB.Data.settings.displayBar.notZeroShow = false
+			TRB.Data.settings.priest.shadow.displayBar.alwaysShow = true
+			TRB.Data.settings.priest.shadow.displayBar.notZeroShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -1009,13 +996,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		getglobal(f:GetName() .. 'Text'):SetText("Show Insanity Bar when Insanity > 0")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Insanity Bar show out of combat only if Insanity > 0, hidden otherwise when out of combat."
-		f:SetChecked(TRB.Data.settings.displayBar.notZeroShow)
+		f:SetChecked(TRB.Data.settings.priest.shadow.displayBar.notZeroShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(true)
 			controls.checkBoxes.combatShow:SetChecked(false)
-			TRB.Data.settings.displayBar.alwaysShow = false
-			TRB.Data.settings.displayBar.notZeroShow = true
+			TRB.Data.settings.priest.shadow.displayBar.alwaysShow = false
+			TRB.Data.settings.priest.shadow.displayBar.notZeroShow = true
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -1025,13 +1012,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Insanity Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Insanity Bar only be visible on your UI when in combat."
-		f:SetChecked((not TRB.Data.settings.displayBar.alwaysShow) and (not TRB.Data.settings.displayBar.notZeroShow))
+		f:SetChecked((not TRB.Data.settings.priest.shadow.displayBar.alwaysShow) and (not TRB.Data.settings.priest.shadow.displayBar.notZeroShow))
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(true)
-			TRB.Data.settings.displayBar.alwaysShow = false
-			TRB.Data.settings.displayBar.notZeroShow = false
+			TRB.Data.settings.priest.shadow.displayBar.alwaysShow = false
+			TRB.Data.settings.priest.shadow.displayBar.notZeroShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -1041,9 +1028,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Devouring Plague is Usable")
 		f.tooltip = "This will flash the bar when Devouring Plague can be cast."
-		f:SetChecked(TRB.Data.settings.colors.bar.flashEnabled)
+		f:SetChecked(TRB.Data.settings.priest.shadow.colors.bar.flashEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.colors.bar.flashEnabled = self:GetChecked()
+			TRB.Data.settings.priest.shadow.colors.bar.flashEnabled = self:GetChecked()
 		end)
 
 		controls.checkBoxes.dpThresholdShow = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
@@ -1051,9 +1038,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Devouring Plague Threshold Line")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Devouring Plague."
-		f:SetChecked(TRB.Data.settings.devouringPlagueThreshold)
+		f:SetChecked(TRB.Data.settings.priest.shadow.devouringPlagueThreshold)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.devouringPlagueThreshold = self:GetChecked()
+			TRB.Data.settings.priest.shadow.devouringPlagueThreshold = self:GetChecked()
 		end)
 
 		controls.checkBoxes.snThresholdShow = CreateFrame("CheckButton", "TIBCB1_7", parent, "ChatConfigCheckButtonTemplate")
@@ -1061,9 +1048,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Searing Nightmare Threshold Line")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Searing Nightmare. Only visibile if spec'd in to Searing Nightmare and channeling Mind Sear."
-		f:SetChecked(TRB.Data.settings.searingNightmareThreshold)
+		f:SetChecked(TRB.Data.settings.priest.shadow.searingNightmareThreshold)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.searingNightmareThreshold = self:GetChecked()
+			TRB.Data.settings.priest.shadow.searingNightmareThreshold = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 60
@@ -1071,7 +1058,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while not in Voidform", TRB.Data.settings.colors.bar.base, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while not in Voidform", TRB.Data.settings.priest.shadow.colors.bar.base, 250, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.base
 		f.recolorTexture = function(color)
 			local r, g, b, a
@@ -1083,16 +1070,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			controls.colors.base.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.bar.base, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.base, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
-		controls.colors.inVoidform = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while in Voidform", TRB.Data.settings.colors.bar.inVoidform, 250, 25, xCoord2, yCoord)
+		controls.colors.inVoidform = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while in Voidform", TRB.Data.settings.priest.shadow.colors.bar.inVoidform, 250, 25, xCoord2, yCoord)
 		f = controls.colors.inVoidform
 		f.recolorTexture = function(color)
 			local r, g, b, a
@@ -1104,17 +1091,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			controls.colors.inVoidform.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.bar.inVoidform = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.bar.inVoidform = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.bar.inVoidform, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.enterVoidform = TRB.UiFunctions.BuildColorPicker(parent, "Insanity when you can cast Devouring Plague", TRB.Data.settings.colors.bar.enterVoidform, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.enterVoidform = TRB.UiFunctions.BuildColorPicker(parent, "Insanity when you can cast Devouring Plague", TRB.Data.settings.priest.shadow.colors.bar.enterVoidform, 250, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.enterVoidform
 		f.recolorTexture = function(color)
 			local r, g, b, a
@@ -1126,16 +1113,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			controls.colors.enterVoidform.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.bar.enterVoidform = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.bar.enterVoidform = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.bar.enterVoidform, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.enterVoidform, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
-		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Insanity Bar's border", TRB.Data.settings.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Insanity Bar's border", TRB.Data.settings.priest.shadow.colors.bar.border, 225, 25, xCoord2, yCoord)
 		f = controls.colors.border
 		f.recolorTexture = function(color)
 			local r, g, b, a
@@ -1147,18 +1134,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			controls.colors.border.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 			barBorderFrame:SetBackdropBorderColor(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.bar.border, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.border, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Insanity from hardcasting spells", TRB.Data.settings.colors.bar.casting, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Insanity from hardcasting spells", TRB.Data.settings.priest.shadow.colors.bar.casting, 250, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.casting
 		f.recolorTexture = function(color)
 			local r, g, b, a
@@ -1170,17 +1157,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			controls.colors.casting.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 			castingFrame:SetStatusBarColor(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.bar.casting, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.casting, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)	
 			
-		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.colors.bar.background, 250, 25, xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.priest.shadow.colors.bar.background, 250, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f.recolorTexture = function(color)
 			local r, g, b, a
@@ -1192,18 +1179,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			controls.colors.background.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 			barContainerFrame:SetBackdropColor(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.bar.background, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.background, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under min. req. Insanity to cast Devouring Plague Threshold Line", TRB.Data.settings.colors.threshold.under, 260, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under min. req. Insanity to cast Devouring Plague Threshold Line", TRB.Data.settings.priest.shadow.colors.threshold.under, 260, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.thresholdUnder
 		f.recolorTexture = function(color)
 			local r, g, b, a
@@ -1215,16 +1202,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.threshold.under, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)	
 			
-		controls.colors.inVoidform2GCD = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while you have between 1-2 GCDs left in Voidform", TRB.Data.settings.colors.bar.inVoidform2GCD, 250, 25, xCoord2, yCoord)
+		controls.colors.inVoidform2GCD = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while you have between 1-2 GCDs left in Voidform", TRB.Data.settings.priest.shadow.colors.bar.inVoidform2GCD, 250, 25, xCoord2, yCoord)
 		f = controls.colors.inVoidform2GCD
 		f.recolorTexture = function(color)
 			local r, g, b, a
@@ -1236,17 +1223,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			controls.colors.inVoidform2GCD.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.bar.inVoidform2GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.bar.inVoidform2GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.bar.inVoidform2GCD, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform2GCD, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over min. req. Insanity to cast Devouring Plague Threshold Line", TRB.Data.settings.colors.threshold.over, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over min. req. Insanity to cast Devouring Plague Threshold Line", TRB.Data.settings.priest.shadow.colors.threshold.over, 250, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.thresholdOver
 		f.recolorTexture = function(color)
 			local r, g, b, a
@@ -1258,16 +1245,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.threshold.over, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
-		controls.colors.inVoidform1GCD = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while you have less than 1 GCD left in Voidform", TRB.Data.settings.colors.bar.inVoidform1GCD, 250, 25, xCoord2, yCoord)
+		controls.colors.inVoidform1GCD = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while you have less than 1 GCD left in Voidform", TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, 250, 25, xCoord2, yCoord)
 		f = controls.colors.inVoidform1GCD
 		f.recolorTexture = function(color)
 			local r, g, b, a
@@ -1279,17 +1266,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			controls.colors.inVoidform1GCD.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.bar.inVoidform1GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.bar.inVoidform1GCD, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.mindbenderThreshold = TRB.UiFunctions.BuildColorPicker(parent, "Shadowfiend Insanity Gain Threshold Line", TRB.Data.settings.colors.bar.passive, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.mindbenderThreshold = TRB.UiFunctions.BuildColorPicker(parent, "Shadowfiend Insanity Gain Threshold Line", TRB.Data.settings.priest.shadow.colors.bar.passive, 250, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.mindbenderThreshold
 		f.recolorTexture = function(color)
 			local r, g, b, a
@@ -1302,17 +1289,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			
 			controls.colors.mindbenderThreshold.Texture:SetColorTexture(r, g, b, a)
 			passiveFrame:SetStatusBarColor(r, g, b, a)
-			TRB.Data.settings.colors.threshold.mindbender = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.threshold.mindbender = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.threshold.mindbender, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.mindbender, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Insanity from Auspicious Spirits, Shadowfiend swings, Death and Madness ticks, and Lash of Insanity ticks", TRB.Data.settings.colors.bar.passive, 550, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Insanity from Auspicious Spirits, Shadowfiend swings, Death and Madness ticks, and Lash of Insanity ticks", TRB.Data.settings.priest.shadow.colors.bar.passive, 550, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.passive
 		f.recolorTexture = function(color)
 			local r, g, b, a
@@ -1325,11 +1312,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			
 			controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
 			passiveFrame:SetStatusBarColor(r, g, b, a)
-			TRB.Data.settings.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.bar.passive, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.passive, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
@@ -1346,7 +1333,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, 250)
-		UIDropDownMenu_SetText(controls.dropDown.fontLeft, TRB.Data.settings.displayText.left.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontLeft, TRB.Data.settings.priest.shadow.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -1371,7 +1358,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.displayText.left.fontFace
+						info.checked = fonts[v] == TRB.Data.settings.priest.shadow.displayText.left.fontFace
 						info.func = self.SetValue			
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -1385,18 +1372,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-- Implement the function to change the favoriteNumber
 		function controls.dropDown.fontLeft:SetValue(newValue, newName)
-			TRB.Data.settings.displayText.left.fontFace = newValue
-			TRB.Data.settings.displayText.left.fontFaceName = newName
-			leftTextFrame.font:SetFont(TRB.Data.settings.displayText.left.fontFace, TRB.Data.settings.displayText.left.fontSize, "OUTLINE")
+			TRB.Data.settings.priest.shadow.displayText.left.fontFace = newValue
+			TRB.Data.settings.priest.shadow.displayText.left.fontFaceName = newName
+			leftTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.left.fontFace, TRB.Data.settings.priest.shadow.displayText.left.fontSize, "OUTLINE")
 			UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-			if TRB.Data.settings.displayText.fontFaceLock then
-				TRB.Data.settings.displayText.middle.fontFace = newValue
-				TRB.Data.settings.displayText.middle.fontFaceName = newName
-				middleTextFrame.font:SetFont(TRB.Data.settings.displayText.middle.fontFace, TRB.Data.settings.displayText.middle.fontSize, "OUTLINE")
+			if TRB.Data.settings.priest.shadow.displayText.fontFaceLock then
+				TRB.Data.settings.priest.shadow.displayText.middle.fontFace = newValue
+				TRB.Data.settings.priest.shadow.displayText.middle.fontFaceName = newName
+				middleTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.middle.fontFace, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-				TRB.Data.settings.displayText.right.fontFace = newValue
-				TRB.Data.settings.displayText.right.fontFaceName = newName
-				rightTextFrame.font:SetFont(TRB.Data.settings.displayText.right.fontFace, TRB.Data.settings.displayText.right.fontSize, "OUTLINE")
+				TRB.Data.settings.priest.shadow.displayText.right.fontFace = newValue
+				TRB.Data.settings.priest.shadow.displayText.right.fontFaceName = newName
+				rightTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.right.fontFace, TRB.Data.settings.priest.shadow.displayText.right.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
 			CloseDropDownMenus()
@@ -1408,7 +1395,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2-30, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, 250)
-		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.displayText.middle.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.priest.shadow.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -1433,7 +1420,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.displayText.middle.fontFace
+						info.checked = fonts[v] == TRB.Data.settings.priest.shadow.displayText.middle.fontFace
 						info.func = self.SetValue			
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -1447,18 +1434,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-- Implement the function to change the favoriteNumber
 		function controls.dropDown.fontMiddle:SetValue(newValue, newName)
-			TRB.Data.settings.displayText.middle.fontFace = newValue
-			TRB.Data.settings.displayText.middle.fontFaceName = newName
-			middleTextFrame.font:SetFont(TRB.Data.settings.displayText.middle.fontFace, TRB.Data.settings.displayText.middle.fontSize, "OUTLINE")
+			TRB.Data.settings.priest.shadow.displayText.middle.fontFace = newValue
+			TRB.Data.settings.priest.shadow.displayText.middle.fontFaceName = newName
+			middleTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.middle.fontFace, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, "OUTLINE")
 			UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-			if TRB.Data.settings.displayText.fontFaceLock then
-				TRB.Data.settings.displayText.left.fontFace = newValue
-				TRB.Data.settings.displayText.left.fontFaceName = newName
-				leftTextFrame.font:SetFont(TRB.Data.settings.displayText.left.fontFace, TRB.Data.settings.displayText.left.fontSize, "OUTLINE")
+			if TRB.Data.settings.priest.shadow.displayText.fontFaceLock then
+				TRB.Data.settings.priest.shadow.displayText.left.fontFace = newValue
+				TRB.Data.settings.priest.shadow.displayText.left.fontFaceName = newName
+				leftTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.left.fontFace, TRB.Data.settings.priest.shadow.displayText.left.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)			
-				TRB.Data.settings.displayText.right.fontFace = newValue
-				TRB.Data.settings.displayText.right.fontFaceName = newName
-				rightTextFrame.font:SetFont(TRB.Data.settings.displayText.right.fontFace, TRB.Data.settings.displayText.right.fontSize, "OUTLINE")
+				TRB.Data.settings.priest.shadow.displayText.right.fontFace = newValue
+				TRB.Data.settings.priest.shadow.displayText.right.fontFaceName = newName
+				rightTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.right.fontFace, TRB.Data.settings.priest.shadow.displayText.right.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
 			CloseDropDownMenus()
@@ -1472,7 +1459,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, 250)
-		UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.displayText.right.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.priest.shadow.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -1497,7 +1484,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.displayText.right.fontFace
+						info.checked = fonts[v] == TRB.Data.settings.priest.shadow.displayText.right.fontFace
 						info.func = self.SetValue			
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -1511,18 +1498,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-- Implement the function to change the favoriteNumber
 		function controls.dropDown.fontRight:SetValue(newValue, newName)		
-			TRB.Data.settings.displayText.right.fontFace = newValue
-			TRB.Data.settings.displayText.right.fontFaceName = newName
-			rightTextFrame.font:SetFont(TRB.Data.settings.displayText.right.fontFace, TRB.Data.settings.displayText.right.fontSize, "OUTLINE")
+			TRB.Data.settings.priest.shadow.displayText.right.fontFace = newValue
+			TRB.Data.settings.priest.shadow.displayText.right.fontFaceName = newName
+			rightTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.right.fontFace, TRB.Data.settings.priest.shadow.displayText.right.fontSize, "OUTLINE")
 			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-			if TRB.Data.settings.displayText.fontFaceLock then
-				TRB.Data.settings.displayText.left.fontFace = newValue
-				TRB.Data.settings.displayText.left.fontFaceName = newName
-				leftTextFrame.font:SetFont(TRB.Data.settings.displayText.left.fontFace, TRB.Data.settings.displayText.left.fontSize, "OUTLINE")
+			if TRB.Data.settings.priest.shadow.displayText.fontFaceLock then
+				TRB.Data.settings.priest.shadow.displayText.left.fontFace = newValue
+				TRB.Data.settings.priest.shadow.displayText.left.fontFaceName = newName
+				leftTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.left.fontFace, TRB.Data.settings.priest.shadow.displayText.left.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				TRB.Data.settings.displayText.middle.fontFace = newValue
-				TRB.Data.settings.displayText.middle.fontFaceName = newName
-				middleTextFrame.font:SetFont(TRB.Data.settings.displayText.middle.fontFace, TRB.Data.settings.displayText.middle.fontSize, "OUTLINE")
+				TRB.Data.settings.priest.shadow.displayText.middle.fontFace = newValue
+				TRB.Data.settings.priest.shadow.displayText.middle.fontFaceName = newName
+				middleTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.middle.fontFace, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 			end
 			CloseDropDownMenus()
@@ -1533,18 +1520,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
 		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
-		f:SetChecked(TRB.Data.settings.displayText.fontFaceLock)
+		f:SetChecked(TRB.Data.settings.priest.shadow.displayText.fontFaceLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.displayText.fontFaceLock = self:GetChecked()
-			if TRB.Data.settings.displayText.fontFaceLock then
-				TRB.Data.settings.displayText.middle.fontFace = TRB.Data.settings.displayText.left.fontFace
-				TRB.Data.settings.displayText.middle.fontFaceName = TRB.Data.settings.displayText.left.fontFaceName
-				middleTextFrame.font:SetFont(TRB.Data.settings.displayText.middle.fontFace, TRB.Data.settings.displayText.middle.fontSize, "OUTLINE")
-				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.displayText.middle.fontFaceName)
-				TRB.Data.settings.displayText.right.fontFace = TRB.Data.settings.displayText.left.fontFace
-				TRB.Data.settings.displayText.right.fontFaceName = TRB.Data.settings.displayText.left.fontFaceName
-				rightTextFrame.font:SetFont(TRB.Data.settings.displayText.right.fontFace, TRB.Data.settings.displayText.right.fontSize, "OUTLINE")
-				UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.displayText.right.fontFaceName)
+			TRB.Data.settings.priest.shadow.displayText.fontFaceLock = self:GetChecked()
+			if TRB.Data.settings.priest.shadow.displayText.fontFaceLock then
+				TRB.Data.settings.priest.shadow.displayText.middle.fontFace = TRB.Data.settings.priest.shadow.displayText.left.fontFace
+				TRB.Data.settings.priest.shadow.displayText.middle.fontFaceName = TRB.Data.settings.priest.shadow.displayText.left.fontFaceName
+				middleTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.middle.fontFace, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, "OUTLINE")
+				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.priest.shadow.displayText.middle.fontFaceName)
+				TRB.Data.settings.priest.shadow.displayText.right.fontFace = TRB.Data.settings.priest.shadow.displayText.left.fontFace
+				TRB.Data.settings.priest.shadow.displayText.right.fontFaceName = TRB.Data.settings.priest.shadow.displayText.left.fontFaceName
+				rightTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.right.fontFace, TRB.Data.settings.priest.shadow.displayText.right.fontSize, "OUTLINE")
+				UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.priest.shadow.displayText.right.fontFaceName)
 			end
 		end)
 
@@ -1554,7 +1541,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
-		controls.fontSizeLeft = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.displayText.left.fontSize, 1, 0,
+		controls.fontSizeLeft = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.priest.shadow.displayText.left.fontSize, 1, 0,
 									barWidth, barHeight, xCoord+xPadding2, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1564,9 +1551,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = min
 			end
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.displayText.left.fontSize = value
-			leftTextFrame.font:SetFont(TRB.Data.settings.displayText.left.fontFace, TRB.Data.settings.displayText.left.fontSize, "OUTLINE")
-			if TRB.Data.settings.displayText.fontSizeLock then
+			TRB.Data.settings.priest.shadow.displayText.left.fontSize = value
+			leftTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.left.fontFace, TRB.Data.settings.priest.shadow.displayText.left.fontSize, "OUTLINE")
+			if TRB.Data.settings.priest.shadow.displayText.fontSizeLock then
 				controls.fontSizeMiddle:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
@@ -1577,16 +1564,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
-		f:SetChecked(TRB.Data.settings.displayText.fontSizeLock)
+		f:SetChecked(TRB.Data.settings.priest.shadow.displayText.fontSizeLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.displayText.fontSizeLock = self:GetChecked()
-			if TRB.Data.settings.displayText.fontSizeLock then
-				controls.fontSizeMiddle:SetValue(TRB.Data.settings.displayText.left.fontSize)
-				controls.fontSizeRight:SetValue(TRB.Data.settings.displayText.left.fontSize)
+			TRB.Data.settings.priest.shadow.displayText.fontSizeLock = self:GetChecked()
+			if TRB.Data.settings.priest.shadow.displayText.fontSizeLock then
+				controls.fontSizeMiddle:SetValue(TRB.Data.settings.priest.shadow.displayText.left.fontSize)
+				controls.fontSizeRight:SetValue(TRB.Data.settings.priest.shadow.displayText.left.fontSize)
 			end
 		end)
 
-		controls.colors.leftText = TRB.UiFunctions.BuildColorPicker(parent, "Left Text", TRB.Data.settings.colors.text.left,
+		controls.colors.leftText = TRB.UiFunctions.BuildColorPicker(parent, "Left Text", TRB.Data.settings.priest.shadow.colors.text.left,
 														250, 25, xCoord2, yCoord-30)
 		f = controls.colors.leftText
 		f.recolorTexture = function(color)
@@ -1601,16 +1588,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			a = 1.0
 
 			controls.colors.leftText.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.text.left, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.left, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
-		controls.colors.middleText = TRB.UiFunctions.BuildColorPicker(parent, "Middle Text", TRB.Data.settings.colors.text.middle,
+		controls.colors.middleText = TRB.UiFunctions.BuildColorPicker(parent, "Middle Text", TRB.Data.settings.priest.shadow.colors.text.middle,
 														225, 25, xCoord2, yCoord-70)
 		f = controls.colors.middleText
 		f.recolorTexture = function(color)
@@ -1625,17 +1612,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			a = 1.0
 
 			controls.colors.middleText.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 			--barContainerFrame:SetBackdropBorderColor(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.text.middle, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.middle, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
-		controls.colors.rightText = TRB.UiFunctions.BuildColorPicker(parent, "Right Text", TRB.Data.settings.colors.text.right,
+		controls.colors.rightText = TRB.UiFunctions.BuildColorPicker(parent, "Right Text", TRB.Data.settings.priest.shadow.colors.text.right,
 														225, 25, xCoord2, yCoord-110)
 		f = controls.colors.rightText
 		f.recolorTexture = function(color)
@@ -1650,19 +1637,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			a = 1.0
 
 			controls.colors.rightText.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 			--barContainerFrame:SetBackdropBorderColor(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.text.right, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.right, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 		
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeMiddle = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.displayText.middle.fontSize, 1, 0,
+		controls.fontSizeMiddle = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, 1, 0,
 									barWidth, barHeight, xCoord+xPadding2, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1672,9 +1659,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = min
 			end
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.displayText.middle.fontSize = value
-			middleTextFrame.font:SetFont(TRB.Data.settings.displayText.middle.fontFace, TRB.Data.settings.displayText.middle.fontSize, "OUTLINE")
-			if TRB.Data.settings.displayText.fontSizeLock then
+			TRB.Data.settings.priest.shadow.displayText.middle.fontSize = value
+			middleTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.middle.fontFace, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, "OUTLINE")
+			if TRB.Data.settings.priest.shadow.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
@@ -1682,7 +1669,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeRight = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.displayText.right.fontSize, 1, 0,
+		controls.fontSizeRight = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.priest.shadow.displayText.right.fontSize, 1, 0,
 									barWidth, barHeight, xCoord+xPadding2, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1692,9 +1679,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = min
 			end
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.displayText.right.fontSize = value
-			rightTextFrame.font:SetFont(TRB.Data.settings.displayText.right.fontFace, TRB.Data.settings.displayText.right.fontSize, "OUTLINE")
-			if TRB.Data.settings.displayText.fontSizeLock then
+			TRB.Data.settings.priest.shadow.displayText.right.fontSize = value
+			rightTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.right.fontFace, TRB.Data.settings.priest.shadow.displayText.right.fontSize, "OUTLINE")
+			if TRB.Data.settings.priest.shadow.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeMiddle:SetValue(value)
 			end
@@ -1704,7 +1691,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Insanity Text Colors", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentInsanityText = TRB.UiFunctions.BuildColorPicker(parent, "Current Insanity", TRB.Data.settings.colors.text.currentInsanity, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.currentInsanityText = TRB.UiFunctions.BuildColorPicker(parent, "Current Insanity", TRB.Data.settings.priest.shadow.colors.text.currentInsanity, 250, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.currentInsanityText
 		f.recolorTexture = function(color)
 			local r, g, b, a
@@ -1718,16 +1705,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			a = 1.0
 
 			controls.colors.currentInsanityText.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.text.currentInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.text.currentInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.text.currentInsanity, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.currentInsanity, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
-		controls.colors.castingInsanityText = TRB.UiFunctions.BuildColorPicker(parent, "Insanity from hardcasting spells", TRB.Data.settings.colors.text.castingInsanity, 250, 25, xCoord2, yCoord)
+		controls.colors.castingInsanityText = TRB.UiFunctions.BuildColorPicker(parent, "Insanity from hardcasting spells", TRB.Data.settings.priest.shadow.colors.text.castingInsanity, 250, 25, xCoord2, yCoord)
 		f = controls.colors.castingInsanityText
 		f.recolorTexture = function(color)
 			local r, g, b, a
@@ -1741,12 +1728,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			a = 1.0
 
 			controls.colors.castingInsanityText.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.text.castingInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.text.castingInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 			--barContainerFrame:SetBackdropBorderColor(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.text.currentInsanity, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.currentInsanity, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
@@ -1756,7 +1743,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = yCoord - 50
 		title = "Low to Medium Haste% Threshold in Voidform"
-		controls.hasteApproachingThreshold = TRB.UiFunctions.BuildSlider(parent, title, 0, 500, TRB.Data.settings.hasteApproachingThreshold, 0.25, 2,
+		controls.hasteApproachingThreshold = TRB.UiFunctions.BuildSlider(parent, title, 0, 500, TRB.Data.settings.priest.shadow.hasteApproachingThreshold, 0.25, 2,
 										barWidth, barHeight, xCoord+xPadding2, yCoord)
 		controls.hasteApproachingThreshold:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1764,16 +1751,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = max
 			elseif value < min then
 				value = min
-			elseif value > TRB.Data.settings.hasteThreshold then
-				value = TRB.Data.settings.hasteThreshold
+			elseif value > TRB.Data.settings.priest.shadow.hasteThreshold then
+				value = TRB.Data.settings.priest.shadow.hasteThreshold
 			end
 
 			value = RoundTo(value, 2)
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.hasteApproachingThreshold = value
+			TRB.Data.settings.priest.shadow.hasteApproachingThreshold = value
 		end)
 
-		controls.colors.hasteBelow = TRB.UiFunctions.BuildColorPicker(parent, "Low Haste% in Voidform", TRB.Data.settings.colors.text.hasteBelow,
+		controls.colors.hasteBelow = TRB.UiFunctions.BuildColorPicker(parent, "Low Haste% in Voidform", TRB.Data.settings.priest.shadow.colors.text.hasteBelow,
 													250, 25, xCoord2, yCoord+10)
 		f = controls.colors.hasteBelow
 		f.recolorTexture = function(color)
@@ -1788,16 +1775,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			a = 1.0
 
 			controls.colors.hasteBelow.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.text.hasteBelow = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.text.hasteBelow = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.text.hasteBelow, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.hasteBelow, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
-		controls.colors.hasteApproaching = TRB.UiFunctions.BuildColorPicker(parent, "Medium Haste% in Voidform", TRB.Data.settings.colors.text.hasteApproaching,
+		controls.colors.hasteApproaching = TRB.UiFunctions.BuildColorPicker(parent, "Medium Haste% in Voidform", TRB.Data.settings.priest.shadow.colors.text.hasteApproaching,
 													250, 25, xCoord2, yCoord-30)
 		f = controls.colors.hasteApproaching
 		f.recolorTexture = function(color)
@@ -1812,16 +1799,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			a = 1.0
 
 			controls.colors.hasteApproaching.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.text.hasteApproaching = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.text.hasteApproaching = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.text.hasteApproaching, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.hasteApproaching, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
-		controls.colors.hasteAbove = TRB.UiFunctions.BuildColorPicker(parent, "High Haste% in Voidform", TRB.Data.settings.colors.text.hasteAbove,
+		controls.colors.hasteAbove = TRB.UiFunctions.BuildColorPicker(parent, "High Haste% in Voidform", TRB.Data.settings.priest.shadow.colors.text.hasteAbove,
 													250, 25, xCoord2, yCoord-70)
 		f = controls.colors.hasteAbove
 		f.recolorTexture = function(color)
@@ -1836,18 +1823,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			a = 1.0
 
 			controls.colors.hasteAbove.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.text.hasteAbove = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.text.hasteAbove = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.text.hasteAbove, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.hasteAbove, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
 		yCoord = yCoord - 60	
 		title = "Medium to High Haste% Threshold in Voidform"
-		controls.hasteThreshold = TRB.UiFunctions.BuildSlider(parent, title, 0, 500, TRB.Data.settings.hasteThreshold, 0.25, 2,
+		controls.hasteThreshold = TRB.UiFunctions.BuildSlider(parent, title, 0, 500, TRB.Data.settings.priest.shadow.hasteThreshold, 0.25, 2,
 										barWidth, barHeight, xCoord+xPadding2, yCoord)
 		controls.hasteThreshold:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1855,13 +1842,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = max
 			elseif value < min then
 				value = min
-			elseif value < TRB.Data.settings.hasteApproachingThreshold then
-				value = TRB.Data.settings.hasteApproachingThreshold
+			elseif value < TRB.Data.settings.priest.shadow.hasteApproachingThreshold then
+				value = TRB.Data.settings.priest.shadow.hasteApproachingThreshold
 			end
 
 			value = RoundTo(value, 2)
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.hasteThreshold = value
+			TRB.Data.settings.priest.shadow.hasteThreshold = value
 		end)
 		
 		yCoord = yCoord - 40
@@ -1869,7 +1856,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = yCoord - 50
 		title = "Low to Medium S2M Time to Die Threshold (sec)"
-		controls.s2mApproachingThreshold = TRB.UiFunctions.BuildSlider(parent, title, 0, 30, TRB.Data.settings.s2mApproachingThreshold, 0.25, 2,
+		controls.s2mApproachingThreshold = TRB.UiFunctions.BuildSlider(parent, title, 0, 30, TRB.Data.settings.priest.shadow.s2mApproachingThreshold, 0.25, 2,
 										barWidth, barHeight, xCoord+xPadding2, yCoord)
 		controls.s2mApproachingThreshold:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1877,16 +1864,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = max
 			elseif value < min then
 				value = min
-			elseif value > TRB.Data.settings.s2mThreshold then
-				value = TRB.Data.settings.s2mThreshold
+			elseif value > TRB.Data.settings.priest.shadow.s2mThreshold then
+				value = TRB.Data.settings.priest.shadow.s2mThreshold
 			end
 
 			value = RoundTo(value, 2)
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.s2mApproachingThreshold = value
+			TRB.Data.settings.priest.shadow.s2mApproachingThreshold = value
 		end)
 
-		controls.colors.s2mBelow = TRB.UiFunctions.BuildColorPicker(parent, "Low S2M Time to Die Threshold", TRB.Data.settings.colors.text.s2mBelow,
+		controls.colors.s2mBelow = TRB.UiFunctions.BuildColorPicker(parent, "Low S2M Time to Die Threshold", TRB.Data.settings.priest.shadow.colors.text.s2mBelow,
 													250, 25, xCoord2, yCoord+10)
 		f = controls.colors.s2mBelow
 		f.recolorTexture = function(color)
@@ -1901,16 +1888,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			a = 1.0
 
 			controls.colors.s2mBelow.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.text.s2mBelow = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.text.s2mBelow = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.text.s2mBelow, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.s2mBelow, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
-		controls.colors.s2mApproaching = TRB.UiFunctions.BuildColorPicker(parent, "Medium S2M Time to Die", TRB.Data.settings.colors.text.s2mApproaching,
+		controls.colors.s2mApproaching = TRB.UiFunctions.BuildColorPicker(parent, "Medium S2M Time to Die", TRB.Data.settings.priest.shadow.colors.text.s2mApproaching,
 													250, 25, xCoord2, yCoord-30)
 		f = controls.colors.s2mApproaching
 		f.recolorTexture = function(color)
@@ -1925,16 +1912,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			a = 1.0
 
 			controls.colors.s2mApproaching.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.text.s2mApproaching = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.text.s2mApproaching = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.text.s2mApproaching, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.s2mApproaching, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
-		controls.colors.s2mAbove = TRB.UiFunctions.BuildColorPicker(parent, "High S2M Time to Die", TRB.Data.settings.colors.text.s2mAbove,
+		controls.colors.s2mAbove = TRB.UiFunctions.BuildColorPicker(parent, "High S2M Time to Die", TRB.Data.settings.priest.shadow.colors.text.s2mAbove,
 													250, 25, xCoord2, yCoord-70)
 		f = controls.colors.s2mAbove
 		f.recolorTexture = function(color)
@@ -1949,18 +1936,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			a = 1.0
 
 			controls.colors.s2mAbove.Texture:SetColorTexture(r, g, b, a)
-			TRB.Data.settings.colors.text.s2mAbove = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+			TRB.Data.settings.priest.shadow.colors.text.s2mAbove = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 		end
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.colors.text.s2mAbove, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.s2mAbove, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, self.recolorTexture)
 			end
 		end)
 
 		yCoord = yCoord - 60	
 		title = "Medium to High S2M Time to Die Threshold (sec)"
-		controls.s2mThreshold = TRB.UiFunctions.BuildSlider(parent, title, 0, 30, TRB.Data.settings.s2mThreshold, 0.25, 2,
+		controls.s2mThreshold = TRB.UiFunctions.BuildSlider(parent, title, 0, 30, TRB.Data.settings.priest.shadow.s2mThreshold, 0.25, 2,
 										barWidth, barHeight, xCoord+xPadding2, yCoord)
 		controls.s2mThreshold:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1968,31 +1955,46 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = max
 			elseif value < min then
 				value = min
-			elseif value < TRB.Data.settings.s2mApproachingThreshold then
-				value = TRB.Data.settings.s2mApproachingThreshold
+			elseif value < TRB.Data.settings.priest.shadow.s2mApproachingThreshold then
+				value = TRB.Data.settings.priest.shadow.s2mApproachingThreshold
 			end
 
 			value = RoundTo(value, 2)
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.s2mThreshold = value
+			TRB.Data.settings.priest.shadow.s2mThreshold = value
 		end)
 
-		
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Fortress of the Mind", xCoord+xPadding, yCoord)
-		yCoord = yCoord - 30
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", xCoord+xPadding, yCoord)
+	
+		yCoord = yCoord - 40
+		title = "Haste / Crit / Mastery Decimals to Show"
+		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.priest.shadow.hastePrecision, 1, 0,
+										barWidth, barHeight, xCoord+xPadding2, yCoord)
+		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+	
+			value = RoundTo(value, 0)
+			self.EditBox:SetText(value)		
+			TRB.Data.settings.priest.shadow.hastePrecision = value
+		end)
 
 		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TIBCB1_FOTM", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show decimals w/Fortress of the Mind")
 		f.tooltip = "Show decimal values with Fortress of the Mind. If unchecked, rounded (approximate) values will be displayed instead."
-		f:SetChecked(TRB.Data.settings.fotmPrecision)
+		f:SetChecked(TRB.Data.settings.priest.shadow.fotmPrecision)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.fotmPrecision = self:GetChecked()
+			TRB.Data.settings.priest.shadow.fotmPrecision = self:GetChecked()
 		end)
 
-		yCoord = yCoord - 30		
+		yCoord = yCoord - 60		
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
@@ -2001,16 +2003,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio when you die, horribly, from Surrender to Madness")
 		f.tooltip = "When you die, horribly, after Surrender to Madness ends, play the infamous Wilhelm Scream (or another sound) to make you feel a bit better."
-		f:SetChecked(TRB.Data.settings.audio.s2mDeath.enabled)
+		f:SetChecked(TRB.Data.settings.priest.shadow.audio.s2mDeath.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.audio.s2mDeath.enabled = self:GetChecked()
+			TRB.Data.settings.priest.shadow.audio.s2mDeath.enabled = self:GetChecked()
 		end)	
 			
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.s2mAudio = CreateFrame("FRAME", "TIBS2MDeathAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.s2mAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-30+10)
 		UIDropDownMenu_SetWidth(controls.dropDown.s2mAudio, 300)
-		UIDropDownMenu_SetText(controls.dropDown.s2mAudio, TRB.Data.settings.audio.s2mDeath.soundName)
+		UIDropDownMenu_SetText(controls.dropDown.s2mAudio, TRB.Data.settings.priest.shadow.audio.s2mDeath.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.s2mAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -2035,7 +2037,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.audio.s2mDeath.sound
+						info.checked = sounds[v] == TRB.Data.settings.priest.shadow.audio.s2mDeath.sound
 						info.func = self.SetValue			
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -2047,11 +2049,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.s2mAudio:SetValue(newValue, newName)
-			TRB.Data.settings.audio.s2mDeath.sound = newValue
-			TRB.Data.settings.audio.s2mDeath.soundName = newName
+			TRB.Data.settings.priest.shadow.audio.s2mDeath.sound = newValue
+			TRB.Data.settings.priest.shadow.audio.s2mDeath.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.s2mAudio, newName)
 			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.audio.s2mDeath.sound, TRB.Data.settings.audio.channel.channel)
+			PlaySoundFile(TRB.Data.settings.priest.shadow.audio.s2mDeath.sound, TRB.Data.settings.priest.shadow.audio.channel.channel)
 		end
 
 
@@ -2061,16 +2063,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Devouring Plague is usable")
 		f.tooltip = "Play an audio cue when Devouring Plague can be cast."
-		f:SetChecked(TRB.Data.settings.audio.dpReady.enabled)
+		f:SetChecked(TRB.Data.settings.priest.shadow.audio.dpReady.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.audio.dpReady.enabled = self:GetChecked()
+			TRB.Data.settings.priest.shadow.audio.dpReady.enabled = self:GetChecked()
 		end)	
 			
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.dpReadyAudio = CreateFrame("FRAME", "TIBdpReadyAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.dpReadyAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-30+10)
 		UIDropDownMenu_SetWidth(controls.dropDown.dpReadyAudio, 300)
-		UIDropDownMenu_SetText(controls.dropDown.dpReadyAudio, TRB.Data.settings.audio.dpReady.soundName)
+		UIDropDownMenu_SetText(controls.dropDown.dpReadyAudio, TRB.Data.settings.priest.shadow.audio.dpReady.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.dpReadyAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -2095,7 +2097,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.audio.dpReady.sound
+						info.checked = sounds[v] == TRB.Data.settings.priest.shadow.audio.dpReady.sound
 						info.func = self.SetValue			
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -2107,11 +2109,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.dpReadyAudio:SetValue(newValue, newName)
-			TRB.Data.settings.audio.dpReady.sound = newValue
-			TRB.Data.settings.audio.dpReady.soundName = newName
+			TRB.Data.settings.priest.shadow.audio.dpReady.sound = newValue
+			TRB.Data.settings.priest.shadow.audio.dpReady.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.dpReadyAudio, newName)
 			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.audio.dpReady.sound, TRB.Data.settings.audio.channel.channel)
+			PlaySoundFile(TRB.Data.settings.priest.shadow.audio.dpReady.sound, TRB.Data.settings.priest.shadow.audio.channel.channel)
 		end
 
 
@@ -2121,16 +2123,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Mind Devourer proc occurs")
 		f.tooltip = "Play an audio cue when a Mind Devourer proc occurs. This supercedes the regular Devouring Plague audio sound."
-		f:SetChecked(TRB.Data.settings.audio.mdProc.enabled)
+		f:SetChecked(TRB.Data.settings.priest.shadow.audio.mdProc.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.audio.mdProc.enabled = self:GetChecked()
+			TRB.Data.settings.priest.shadow.audio.mdProc.enabled = self:GetChecked()
 		end)	
 			
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.mdProcAudio = CreateFrame("FRAME", "TIBmdProcAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.mdProcAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-30+10)
 		UIDropDownMenu_SetWidth(controls.dropDown.mdProcAudio, 300)
-		UIDropDownMenu_SetText(controls.dropDown.mdProcAudio, TRB.Data.settings.audio.mdProc.soundName)
+		UIDropDownMenu_SetText(controls.dropDown.mdProcAudio, TRB.Data.settings.priest.shadow.audio.mdProc.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.mdProcAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -2155,7 +2157,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.audio.mdProc.sound
+						info.checked = sounds[v] == TRB.Data.settings.priest.shadow.audio.mdProc.sound
 						info.func = self.SetValue			
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -2167,11 +2169,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.mdProcAudio:SetValue(newValue, newName)
-			TRB.Data.settings.audio.mdProc.sound = newValue
-			TRB.Data.settings.audio.mdProc.soundName = newName
+			TRB.Data.settings.priest.shadow.audio.mdProc.sound = newValue
+			TRB.Data.settings.priest.shadow.audio.mdProc.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.mdProcAudio, newName)
 			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.audio.mdProc.sound, TRB.Data.settings.audio.channel.channel)
+			PlaySoundFile(TRB.Data.settings.priest.shadow.audio.mdProc.sound, TRB.Data.settings.priest.shadow.audio.channel.channel)
 		end
 
 		yCoord = yCoord - 60
@@ -2183,11 +2185,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track Auspicious Spirits")
 		f.tooltip = "Track Shadowy Apparitions in flight that will generate Insanity upon reaching their target with the Auspicious Spirits talent."
-		f:SetChecked(TRB.Data.settings.auspiciousSpiritsTracker)
+		f:SetChecked(TRB.Data.settings.priest.shadow.auspiciousSpiritsTracker)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.auspiciousSpiritsTracker = self:GetChecked()
+			TRB.Data.settings.priest.shadow.auspiciousSpiritsTracker = self:GetChecked()
 			
-			if ((TRB.Data.settings.auspiciousSpiritsTracker and TRB.Data.character.talents.as.isSelected) or TRB.Functions.IsTtdActive()) and GetSpecialization() == 3 then
+			if ((TRB.Data.settings.priest.shadow.auspiciousSpiritsTracker and TRB.Data.character.talents.as.isSelected) or TRB.Functions.IsTtdActive()) and GetSpecialization() == 3 then
 				targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			else
 				targetsTimerFrame:SetScript("OnUpdate", nil)
@@ -2206,9 +2208,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track Eternal Call to the Void")
 		f.tooltip = "Track Insanity generated from Lash of Insanity via Void Tendril + Void Lasher spawns / Eternal Call of the Void procs."
-		f:SetChecked(TRB.Data.settings.voidTendrilTracker)
+		f:SetChecked(TRB.Data.settings.priest.shadow.voidTendrilTracker)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.voidTendrilTracker = self:GetChecked()
+			TRB.Data.settings.priest.shadow.voidTendrilTracker = self:GetChecked()
 			snapshotData.eternalCallToTheVoid.numberActive = 0
 			snapshotData.eternalCallToTheVoid.resourceRaw = 0
 			snapshotData.eternalCallToTheVoid.resourceFinal = 0
@@ -2225,9 +2227,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track Shadowfiend Insanity Gain")
 		f.tooltip = "Show the gain of Insanity over the next serveral swings, GCDs, or fixed length of time. Select which to track from the options below."
-		f:SetChecked(TRB.Data.settings.mindbender.enabled)
+		f:SetChecked(TRB.Data.settings.priest.shadow.mindbender.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.mindbender.enabled = self:GetChecked()
+			TRB.Data.settings.priest.shadow.mindbender.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 30	
@@ -2237,18 +2239,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		getglobal(f:GetName() .. 'Text'):SetText("Insanity from GCDs remaining")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Insanity incoming over the up to next X GCDs, based on player's current GCD."
-		if TRB.Data.settings.mindbender.mode == "gcd" then
+		if TRB.Data.settings.priest.shadow.mindbender.mode == "gcd" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.mindbenderModeGCDs:SetChecked(true)
 			controls.checkBoxes.mindbenderModeSwings:SetChecked(false)
 			controls.checkBoxes.mindbenderModeTime:SetChecked(false)
-			TRB.Data.settings.mindbender.mode = "gcd"
+			TRB.Data.settings.priest.shadow.mindbender.mode = "gcd"
 		end)
 
 		title = "Shadowfiend GCDs - 0.75sec Floor"
-		controls.mindbenderGCDs = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.mindbender.gcdsMax, 1, 0,
+		controls.mindbenderGCDs = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.priest.shadow.mindbender.gcdsMax, 1, 0,
 										barWidth, barHeight, xCoord2, yCoord)
 		controls.mindbenderGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2259,7 +2261,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.mindbender.gcdsMax = value
+			TRB.Data.settings.priest.shadow.mindbender.gcdsMax = value
 		end)
 
 
@@ -2270,18 +2272,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		getglobal(f:GetName() .. 'Text'):SetText("Insanity from Swings remaining")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Insanity incoming over the up to next X melee swings from Shadowfiend/Mindbender. This is only different from the GCD option if you are above 200% haste (GCD cap)."
-		if TRB.Data.settings.mindbender.mode == "swing" then
+		if TRB.Data.settings.priest.shadow.mindbender.mode == "swing" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.mindbenderModeGCDs:SetChecked(false)
 			controls.checkBoxes.mindbenderModeSwings:SetChecked(true)
 			controls.checkBoxes.mindbenderModeTime:SetChecked(false)
-			TRB.Data.settings.mindbender.mode = "swing"
+			TRB.Data.settings.priest.shadow.mindbender.mode = "swing"
 		end)
 
 		title = "Shadowfiend Swings - No Floor"
-		controls.mindbenderSwings = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.mindbender.swingsMax, 1, 0,
+		controls.mindbenderSwings = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.priest.shadow.mindbender.swingsMax, 1, 0,
 										barWidth, barHeight, xCoord2, yCoord)
 		controls.mindbenderSwings:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2292,7 +2294,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.mindbender.swingsMax = value
+			TRB.Data.settings.priest.shadow.mindbender.swingsMax = value
 		end)
 
 		yCoord = yCoord - 60	
@@ -2302,18 +2304,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		getglobal(f:GetName() .. 'Text'):SetText("Insanity from Time remaining")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Insanity incoming over the up to next X seconds."
-		if TRB.Data.settings.mindbender.mode == "time" then
+		if TRB.Data.settings.priest.shadow.mindbender.mode == "time" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.mindbenderModeGCDs:SetChecked(false)
 			controls.checkBoxes.mindbenderModeSwings:SetChecked(false)
 			controls.checkBoxes.mindbenderModeTime:SetChecked(true)
-			TRB.Data.settings.mindbender.mode = "time"
+			TRB.Data.settings.priest.shadow.mindbender.mode = "time"
 		end)
 
 		title = "Shadowfiend Time Remaining"
-		controls.mindbenderTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.mindbender.timeMax, 0.25, 2,
+		controls.mindbenderTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.priest.shadow.mindbender.timeMax, 0.25, 2,
 										barWidth, barHeight, xCoord2, yCoord)
 		controls.mindbenderTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2325,7 +2327,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			value = RoundTo(value, 2)
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.mindbender.timeMax = value
+			TRB.Data.settings.priest.shadow.mindbender.timeMax = value
 		end)
 
 		--[[
@@ -2335,10 +2337,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play Audio Cue to use Shadowfiend")
 		f.tooltip = "Plays an audio cue when in Voidform, Shadowfiend/Mindbender is offcooldown, and the number of Drain Stacks is above a certain threshold."
-		f:SetChecked(TRB.Data.settings.mindbender.useNotification.enabled)
+		f:SetChecked(TRB.Data.settings.priest.shadow.mindbender.useNotification.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.mindbender.useNotification.enabled = self:GetChecked()
-			if TRB.Data.settings.mindbender.useNotification.enabled then
+			TRB.Data.settings.priest.shadow.mindbender.useNotification.enabled = self:GetChecked()
+			if TRB.Data.settings.priest.shadow.mindbender.useNotification.enabled then
 				mindbenderAudioCueFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) mindbenderAudioCueFrame:onUpdate(sinceLastUpdate) end)
 			else
 				mindbenderAudioCueFrame:SetScript("OnUpdate", nil)
@@ -2352,7 +2354,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.dropDown.mindbenderAudio.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.mindbenderAudio:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.mindbenderAudio, 250)
-		UIDropDownMenu_SetText(controls.dropDown.mindbenderAudio, TRB.Data.settings.audio.mindbender.soundName)
+		UIDropDownMenu_SetText(controls.dropDown.mindbenderAudio, TRB.Data.settings.priest.shadow.audio.mindbender.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.mindbenderAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -2377,7 +2379,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.audio.mindbender.sound
+						info.checked = sounds[v] == TRB.Data.settings.priest.shadow.audio.mindbender.sound
 						info.func = self.SetValue			
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -2389,11 +2391,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.mindbenderAudio:SetValue(newValue, newName)
-			TRB.Data.settings.audio.mindbender.sound = newValue
-			TRB.Data.settings.audio.mindbender.soundName = newName
+			TRB.Data.settings.priest.shadow.audio.mindbender.sound = newValue
+			TRB.Data.settings.priest.shadow.audio.mindbender.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.mindbenderAudio, newName)
 			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.audio.mindbender.sound, TRB.Data.settings.audio.channel.channel)
+			PlaySoundFile(TRB.Data.settings.priest.shadow.audio.mindbender.sound, TRB.Data.settings.priest.shadow.audio.channel.channel)
 		end
 		]]--
 		
@@ -2476,20 +2478,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f.font:SetSize(90, 20)
 		f.font:SetText("Left Text")
 
-		controls.textbox.voidformOutLeft = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.displayText.left.outVoidformText,
+		controls.textbox.voidformOutLeft = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.left.outVoidformText,
 														500, 225, 24, xCoord+xPadding*2+100, yCoord)
 		f = controls.textbox.voidformOutLeft
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.displayText.left.outVoidformText = self:GetText()
+			TRB.Data.settings.priest.shadow.displayText.left.outVoidformText = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive()
 		end)
 
-		controls.textbox.voidformInLeft = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.displayText.left.inVoidformText,
+		controls.textbox.voidformInLeft = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.left.inVoidformText,
 														500, 225, 24, xCoord2+25, yCoord)
 		f = controls.textbox.voidformInLeft
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.displayText.left.inVoidformText = self:GetText()
+			TRB.Data.settings.priest.shadow.displayText.left.inVoidformText = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive()
 		end)
@@ -2510,20 +2512,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f.font:SetSize(90, 20)
 		f.font:SetText("Middle Text")
 
-		controls.textbox.voidformOutMiddle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.displayText.middle.outVoidformText,
+		controls.textbox.voidformOutMiddle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.middle.outVoidformText,
 														500, 225, 24, xCoord+xPadding*2+100, yCoord)
 		f = controls.textbox.voidformOutMiddle
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.displayText.middle.outVoidformText = self:GetText()
+			TRB.Data.settings.priest.shadow.displayText.middle.outVoidformText = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive()
 		end)
 
-		controls.textbox.voidformInMiddle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.displayText.middle.inVoidformText,
+		controls.textbox.voidformInMiddle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.middle.inVoidformText,
 														500, 225, 24, xCoord2+25, yCoord)
 		f = controls.textbox.voidformInMiddle
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.displayText.middle.inVoidformText = self:GetText()
+			TRB.Data.settings.priest.shadow.displayText.middle.inVoidformText = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive()
 		end)
@@ -2544,20 +2546,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f.font:SetSize(90, 20)
 		f.font:SetText("Right Text")
 
-		controls.textbox.voidformOutRight = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.displayText.right.outVoidformText,
+		controls.textbox.voidformOutRight = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.right.outVoidformText,
 														500, 225, 24, xCoord+xPadding*2+100, yCoord)
 		f = controls.textbox.voidformOutRight
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.displayText.right.outVoidformText = self:GetText()
+			TRB.Data.settings.priest.shadow.displayText.right.outVoidformText = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive()
 		end)
 
-		controls.textbox.voidformInRight = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.displayText.right.inVoidformText,
+		controls.textbox.voidformInRight = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.right.inVoidformText,
 														500, 225, 24, xCoord2+25, yCoord)
 		f = controls.textbox.voidformInRight
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.displayText.right.inVoidformText = self:GetText()
+			TRB.Data.settings.priest.shadow.displayText.right.inVoidformText = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive()
 		end)
@@ -2680,6 +2682,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		ShadowConstructBarTextDisplayLayoutPanel()
 	end
 	TRB.Options.Priest.ConstructOptionsPanel = ConstructOptionsPanel
+
+	local function PortForwardPriestSettings()		
+		if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.priest == nil then
+			local tempSettings = TwintopInsanityBarSettings
+			TwintopInsanityBarSettings.priest = {}
+			TwintopInsanityBarSettings.priest.discipline = {}
+			TwintopInsanityBarSettings.priest.holy = {}
+			TwintopInsanityBarSettings.priest.shadow = tempSettings
+			TwintopInsanityBarSettings.core = {}
+			TwintopInsanityBarSettings.core.dataRefreshRate = tempSettings.dataRefreshRate
+			TwintopInsanityBarSettings.core.ttd = tempSettings.ttd
+			TwintopInsanityBarSettings.core.audio = {}
+			TwintopInsanityBarSettings.core.audio.channel = tempSettings.audio.channel
+			TwintopInsanityBarSettings.core.strata = tempSettings.strata
+		end
+	end
+	TRB.Options.Priest.PortForwardPriestSettings = PortForwardPriestSettings
 
 	function SlashCmdList.TWINTOP(msg)
 		local cmd, subcmd = TRB.Functions.ParseCmdString(msg);

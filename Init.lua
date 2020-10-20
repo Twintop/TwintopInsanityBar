@@ -48,6 +48,7 @@ TRB.Frames.interfaceSettingsFrameContainer = {}
 TRB.Data = {}
 
 TRB.Data.settings = {}
+TRB.Data.settings.core = {}
 
 TRB.Data.specSupported = false
 TRB.Data.resource = nil --SPELL_POWER_INSANITY
@@ -108,8 +109,6 @@ TRB.Data.sanityCheckValues = {
 	barMaxHeight = 0,
 	barMinHeight = 0
 }
-
-TRB.Data.settings = {}
 
 -- This gets overwritten with a spec/class specific version of the function
 local function IsValidVariableForSpec(input)

@@ -2,6 +2,28 @@ local _, TRB = ...
 
 TRB.Options = {}
 
+local function LoadDefaultSettings()
+    local settings = {
+        dataRefreshRate = 5.0,
+        ttd = {
+            sampleRate = 0.2,
+            numEntries = 50
+        },
+        audio = {            
+            channel={
+                name="Master",
+                channel="Master"
+            }
+        },
+        strata={
+            level="BACKGROUND",
+            name="Background"
+        }
+    }
+    return settings
+end
+TRB.Options.LoadDefaultSettings = LoadDefaultSettings
+
 local function ConstructAddonOptionsPanel()
     local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
     local parent = interfaceSettingsFrame.panel		
@@ -32,7 +54,7 @@ local function ConstructAddonOptionsPanel()
     yCoord = yCoord - 60
 
     title = "Sampling Rate (seconds)"
-    controls.ttdSamplingRate = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 2, TRB.Data.settings.ttd.sampleRate, 0.05, 2,
+    controls.ttdSamplingRate = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 2, TRB.Data.settings.core.ttd.sampleRate, 0.05, 2,
                                     barWidth, barHeight, xCoord+xPadding*2, yCoord)
     controls.ttdSamplingRate:SetScript("OnValueChanged", function(self, value)
         local min, max = self:GetMinMaxValues()
@@ -45,11 +67,11 @@ local function ConstructAddonOptionsPanel()
         end
 
         self.EditBox:SetText(value)		
-        TRB.Data.settings.ttd.sampleRate = value
+        TRB.Data.settings.core.ttd.sampleRate = value
     end)
 
     title = "Sample Size"
-    controls.ttdSampleSize = TRB.UiFunctions.BuildSlider(parent, title, 1, 1000, TRB.Data.settings.ttd.numEntries, 1, 0,
+    controls.ttdSampleSize = TRB.UiFunctions.BuildSlider(parent, title, 1, 1000, TRB.Data.settings.core.ttd.numEntries, 1, 0,
                                     barWidth, barHeight, xCoord2, yCoord)
     controls.ttdSampleSize:SetScript("OnValueChanged", function(self, value)
         local min, max = self:GetMinMaxValues()
@@ -60,7 +82,7 @@ local function ConstructAddonOptionsPanel()
         end
 
         self.EditBox:SetText(value)		
-        TRB.Data.settings.ttd.numEntries = value
+        TRB.Data.settings.core.ttd.numEntries = value
     end)
 
     yCoord = yCoord - 40
@@ -69,7 +91,7 @@ local function ConstructAddonOptionsPanel()
     yCoord = yCoord - 60
 
     title = "Refresh Rate (seconds)"
-    controls.ttdSamplingRate = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 60, TRB.Data.settings.dataRefreshRate, 0.05, 2,
+    controls.ttdSamplingRate = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 60, TRB.Data.settings.core.dataRefreshRate, 0.05, 2,
                                     barWidth, barHeight, xCoord+xPadding*2, yCoord)
     controls.ttdSamplingRate:SetScript("OnValueChanged", function(self, value)
         local min, max = self:GetMinMaxValues()
@@ -82,7 +104,7 @@ local function ConstructAddonOptionsPanel()
         end
 
         self.EditBox:SetText(value)		
-        TRB.Data.settings.dataRefreshRate = value
+        TRB.Data.settings.core.dataRefreshRate = value
     end)
     
     yCoord = yCoord - 40
@@ -96,7 +118,7 @@ local function ConstructAddonOptionsPanel()
     controls.dropDown.strata.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.strata:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
     UIDropDownMenu_SetWidth(controls.dropDown.strata, 250)
-    UIDropDownMenu_SetText(controls.dropDown.strata, TRB.Data.settings.strata.name)
+    UIDropDownMenu_SetText(controls.dropDown.strata, TRB.Data.settings.core.strata.name)
     UIDropDownMenu_JustifyText(controls.dropDown.strata, "LEFT")
 
     -- Create and bind the initialization function to the dropdown menu
@@ -126,7 +148,7 @@ local function ConstructAddonOptionsPanel()
         for k, v in pairs(strataList) do
             info.text = v
             info.value = strata[v]
-            info.checked = strata[v] == TRB.Data.settings.strata.level
+            info.checked = strata[v] == TRB.Data.settings.core.strata.level
             info.func = self.SetValue			
             info.arg1 = strata[v]
             info.arg2 = v
@@ -136,9 +158,9 @@ local function ConstructAddonOptionsPanel()
 
     -- Implement the function to change the texture
     function controls.dropDown.strata:SetValue(newValue, newName)
-        TRB.Data.settings.strata.level = newValue
-        TRB.Data.settings.strata.name = newName
-        barContainerFrame:SetFrameStrata(TRB.Data.settings.strata.level)
+        TRB.Data.settings.core.strata.level = newValue
+        TRB.Data.settings.core.strata.name = newName
+        barContainerFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         UIDropDownMenu_SetText(controls.dropDown.strata, newName)
         CloseDropDownMenus()
     end
@@ -156,7 +178,7 @@ local function ConstructAddonOptionsPanel()
     controls.dropDown.audioChannel.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.audioChannel:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
     UIDropDownMenu_SetWidth(controls.dropDown.audioChannel, 250)
-    UIDropDownMenu_SetText(controls.dropDown.audioChannel, TRB.Data.settings.audio.channel.name)
+    UIDropDownMenu_SetText(controls.dropDown.audioChannel, TRB.Data.settings.core.audio.channel.name)
     UIDropDownMenu_JustifyText(controls.dropDown.audioChannel, "LEFT")
 
     -- Create and bind the initialization function to the dropdown menu
@@ -173,7 +195,7 @@ local function ConstructAddonOptionsPanel()
         for k, v in pairs(channel) do
             info.text = v
             info.value = channel[v]
-            info.checked = channel[v] == TRB.Data.settings.audio.channel.channel
+            info.checked = channel[v] == TRB.Data.settings.core.audio.channel.channel
             info.func = self.SetValue			
             info.arg1 = channel[v]
             info.arg2 = v
@@ -183,31 +205,11 @@ local function ConstructAddonOptionsPanel()
 
     -- Implement the function to change the texture
     function controls.dropDown.audioChannel:SetValue(newValue, newName)
-        TRB.Data.settings.audio.channel.channel = newValue
-        TRB.Data.settings.audio.channel.name = newName
+        TRB.Data.settings.core.audio.channel.channel = newValue
+        TRB.Data.settings.core.audio.channel.name = newName
         UIDropDownMenu_SetText(controls.dropDown.audioChannel, newName)
         CloseDropDownMenus()
     end
-    		
-    yCoord = yCoord - 60
-    controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", xCoord+xPadding, yCoord)
-
-    yCoord = yCoord - 40	
-    title = "Haste / Crit / Mastery Decimals to Show"
-    controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hastePrecision, 1, 0,
-                                    barWidth, barHeight, xCoord+xPadding2, yCoord)
-    controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-        local min, max = self:GetMinMaxValues()
-        if value > max then
-            value = max
-        elseif value < min then
-            value = min
-        end
-
-        value = RoundTo(value, 0)
-        self.EditBox:SetText(value)		
-        TRB.Data.settings.hastePrecision = value
-    end)
     
     --interfaceSettingsFrame.panel = parent
     --interfaceSettingsFrame.controls = controls
