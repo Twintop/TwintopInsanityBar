@@ -288,3 +288,29 @@ local function PortForwardPriestSettings()
     end
 end
 TRB.Options.PortForwardPriestSettings = PortForwardPriestSettings
+
+local function CleanupSettings()	
+    local newSettings = {}	
+    if TwintopInsanityBarSettings ~= nil then
+        for k, v in pairs(TwintopInsanityBarSettings) do
+            if  k == "core" or
+                k == "demon hunter" or
+                k == "death knight" or
+                k == "druid" or
+                k == "hunter" or
+                k == "mage" or
+                k == "monk" or
+                k == "paladin" or
+                k == "priest" or
+                k == "rogue" or
+                k == "shaman" or
+                k == "warlock" or
+                k == "warrior"
+            then
+                newSettings[k] = v
+            end
+        end
+    end
+    return newSettings
+end
+TRB.Options.CleanupSettings = CleanupSettings

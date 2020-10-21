@@ -1933,7 +1933,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.s2mThreshold = value
 		end)
 
-		yCoord = yCoord - 40
+		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", xCoord+xPadding, yCoord)
 	
 		yCoord = yCoord - 40
@@ -2607,7 +2607,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local entries1 = TRB.Functions.TableLength(TRB.Data.barTextVariables.values)
 		for i=1, entries1 do
 			if TRB.Data.barTextVariables.values[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 115, 200)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 115, 200, 20)
 				yCoord = yCoord - 25
 			end
 		end
@@ -2615,7 +2615,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local entries2 = TRB.Functions.TableLength(TRB.Data.barTextVariables.pipe)
 		for i=1, entries2 do
 			if TRB.Data.barTextVariables.pipe[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 115, 200)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 115, 200, 20)
 				yCoord = yCoord - 25
 			end
 		end
@@ -2625,9 +2625,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = yCoordTop
 
-		--controls.labels.castingIconVar = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "#casting", "The icon of the Insanity Generating Spell you are currently hardcasting", xCoord, yCoord, 85, 500)
-		--yCoord = yCoord - 15
-
 		local entries3 = TRB.Functions.TableLength(TRB.Data.barTextVariables.icons)
 		for i=1, entries3 do
 			if TRB.Data.barTextVariables.icons[i].printInSettings == true then
@@ -2635,7 +2632,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if TRB.Data.barTextVariables.icons[i].icon ~= "" then
 					text = TRB.Data.barTextVariables.icons[i].icon .. " "
 				end
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord+115+200+25, yCoord, 50, 200)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord+115+200+25, yCoord, 50, 200, 20)
 				yCoord = yCoord - 25
 			end
 		end

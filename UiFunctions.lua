@@ -243,20 +243,19 @@ local function BuildSectionHeader(parent, title, posX, posY)
 end
 TRB.UiFunctions.BuildSectionHeader = BuildSectionHeader
 
-local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, width)
-    local settings = TRB.Data.settings
+local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, width, height)
 	local f = CreateFrame("Frame", nil, parent)
 	f:ClearAllPoints()
 	f:SetPoint("TOPLEFT", parent)
 	f:SetPoint("TOPLEFT", posX, posY)
 	f:SetWidth(offset)
-	f:SetHeight(20)
-	f.font = f:CreateFontString(nil, settings.core.strata.level)
+	f:SetHeight(height or 20)
+	f.font = f:CreateFontString(nil, TRB.Data.settings.core.strata.level)
 	f.font:SetFontObject(GameFontNormalSmall)
 	f.font:SetPoint("LEFT", f, "LEFT")
     f.font:SetSize(0, 14)
 	f.font:SetJustifyH("RIGHT")
-	f.font:SetSize(offset, 20)
+	f.font:SetSize(offset, height or 20)
 	f.font:SetText(var)
 
 	f.description = CreateFrame("Frame", nil, parent)
@@ -265,13 +264,13 @@ local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, 
 	fd:SetPoint("TOPLEFT", parent)
 	fd:SetPoint("TOPLEFT", posX+offset+10, posY)
 	fd:SetWidth(width)
-	fd:SetHeight(20)
-	fd.font = fd:CreateFontString(nil, settings.core.strata.level)
+	fd:SetHeight(height or 20)
+	fd.font = fd:CreateFontString(nil, TRB.Data.settings.core.strata.level)
 	fd.font:SetFontObject(GameFontHighlightSmall)
 	fd.font:SetPoint("LEFT", fd, "LEFT")
     fd.font:SetSize(0, 14)
 	fd.font:SetJustifyH("LEFT")
-	fd.font:SetSize(width, 20)
+	fd.font:SetSize(width, height or 20)
 	fd.font:SetText(desc)
 
 	return f

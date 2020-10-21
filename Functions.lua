@@ -229,16 +229,16 @@ TRB.Functions.TargetsCleanup = TargetsCleanup
 
 -- Bar Manipulation Functions
 
-local function RepositionThreshold(thresholdLine, parentFrame, thresholdWidth, resourceThreshold, resourceMax)
+local function RepositionThreshold(settings, thresholdLine, parentFrame, thresholdWidth, resourceThreshold, resourceMax)
     if resourceMax == nil or resourceMax == 0 then
         resourceMax = 100
     end
-    
-    if TRB.Data.settings ~= nil and TRB.Data.settings.bar ~= nil then
-        thresholdLine:SetPoint("CENTER",
+	
+	if settings ~= nil and settings.bar ~= nil then
+		thresholdLine:SetPoint("CENTER",
                             parentFrame,
                             "LEFT",
-                            math.ceil((TRB.Data.settings.bar.width - (TRB.Data.settings.bar.border * 2)) * (resourceThreshold / resourceMax) + math.ceil(TRB.Data.settings.thresholdWidth / 2)), 0)
+                            math.ceil((settings.bar.width - (settings.bar.border * 2)) * (resourceThreshold / resourceMax) + math.ceil(thresholdWidth / 2)), 0)
     end
 end
 TRB.Functions.RepositionThreshold = RepositionThreshold

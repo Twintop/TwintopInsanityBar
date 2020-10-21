@@ -326,99 +326,100 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		duration = 0
 	}
 
-	TRB.Data.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = "The icon of the Insanity generating spell you are currently hardcasting", printInSettings = true },
-
-		{ variable = "#vf", icon = TRB.Data.spells.voidform.icon, description = "Voidform", printInSettings = true },
-		{ variable = "#voidform", icon = TRB.Data.spells.voidform.icon, description = "Voidform", printInSettings = false },
-		{ variable = "#vb", icon = TRB.Data.spells.voidBolt.icon, description = "Void Bolt", printInSettings = true },
-		{ variable = "#voidBolt", icon = TRB.Data.spells.voidBolt.icon, description = "Void Bolt", printInSettings = false },
-
-		{ variable = "#mb", icon = TRB.Data.spells.mindBlast.icon, description = "Mind Blast", printInSettings = true },
-		{ variable = "#mindBlast", icon = TRB.Data.spells.mindBlast.icon, description = "Mind Blast", printInSettings = false },
-		{ variable = "#mf", icon = TRB.Data.spells.mindFlay.icon, description = "Mind Flay", printInSettings = true },
-		{ variable = "#mindFlay", icon = TRB.Data.spells.mindFlay.icon, description = "Mind Flay", printInSettings = false },
-		{ variable = "#ms", icon = TRB.Data.spells.mindSear.icon, description = "Mind Sear", printInSettings = true },
-		{ variable = "#mindSear", icon = TRB.Data.spells.mindSear.icon, description = "Mind Sear", printInSettings = false },
-		{ variable = "#voit", icon = TRB.Data.spells.voidTorrent.icon, description = "Void Torrent", printInSettings = true },
-		{ variable = "#voidTorrent", icon = TRB.Data.spells.voidTorrent.icon, description = "Void Torrent", printInSettings = false },
-		{ variable = "#dam", icon = TRB.Data.spells.deathAndMadness.icon, description = "Death and Madness", printInSettings = true },
-		{ variable = "#deathAndMadness", icon = TRB.Data.spells.deathAndMadness.icon, description = "Death and Madness", printInSettings = false },
-
-		{ variable = "#swp", icon = TRB.Data.spells.shadowWordPain.icon, description = "Shadow Word: Pain", printInSettings = true },
-		{ variable = "#shadowWordPain", icon = TRB.Data.spells.shadowWordPain.icon, description = "Shadow Word: Pain", printInSettings = false },
-		{ variable = "#vt", icon = TRB.Data.spells.vampiricTouch.icon, description = "Vampiric Touch", printInSettings = true },
-		{ variable = "#vampiricTouch", icon = TRB.Data.spells.vampiricTouch.icon, description = "Vampiric Touch", printInSettings = false },
-		{ variable = "#dp", icon = TRB.Data.spells.devouringPlague.icon, description = "Devouring Plague", printInSettings = true },
-		{ variable = "#devouringPlague", icon = TRB.Data.spells.devouringPlague.icon, description = "Devouring Plague", printInSettings = false },
-		{ variable = "#mDev", icon = TRB.Data.spells.mindDevourer.icon, description = "Mind Devourer", printInSettings = true },
-		{ variable = "#mindDevourer", icon = TRB.Data.spells.mindDevourer.icon, description = "Mind Devourer", printInSettings = false },
-
-		{ variable = "#as", icon = TRB.Data.spells.auspiciousSpirits.icon, description = "Auspicious Spirits", printInSettings = true },
-		{ variable = "#auspiciousSpirits", icon = TRB.Data.spells.auspiciousSpirits.icon, description = "Auspicious Spirits", printInSettings = false },
-		{ variable = "#sa", icon = TRB.Data.spells.shadowyApparition.icon, description = "Shadowy Apparition", printInSettings = true },
-		{ variable = "#shadowyApparition", icon = TRB.Data.spells.shadowyApparition.icon, description = "Shadowy Apparition", printInSettings = false },
-
-		{ variable = "#mindbender", icon = TRB.Data.spells.mindbender.icon, description = "Mindbender/Shadowfiend", printInSettings = false },
-		{ variable = "#shadowfiend", icon = TRB.Data.spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = false },
-		{ variable = "#sf", icon = TRB.Data.spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = true },
-		
-		{ variable = "#ecttv", icon = TRB.Data.spells.eternalCallToTheVoid_Tendril.icon, description = "Eternal Call to the Void", printInSettings = true },
-		{ variable = "#tb", icon = TRB.Data.spells.eternalCallToTheVoid_Tendril.icon, description = "Eternal Call to the Void", printInSettings = false },
-		{ variable = "#loi", icon = TRB.Data.spells.lashOfInsanity_Tendril.icon, description = "Lash of Insanity", printInSettings = true },
-
-		{ variable = "#md", icon = TRB.Data.spells.massDispel.icon, description = "Mass Dispel", printInSettings = true },
-		{ variable = "#massDispel", icon = TRB.Data.spells.massDispel.icon, description = "Mass Dispel", printInSettings = false }
-	}
-	TRB.Data.barTextVariables.values = {
-		{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-		{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
-		{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
-		{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
-
-		{ variable = "$insanity", description = "Current Insanity", printInSettings = true, color = false },
-		{ variable = "$casting", description = "Insanity from Hardcasting Spells", printInSettings = true, color = false },
-		{ variable = "$passive", description = "Insanity from Passive Sources", printInSettings = true, color = false },
-		{ variable = "$insanityPlusCasting", description = "Current + Casting Insanity Total", printInSettings = true, color = false },
-		{ variable = "$insanityPlusPassive", description = "Current + Passive Insanity Total", printInSettings = true, color = false },
-		{ variable = "$insanityTotal", description = "Current + Passive + Casting Insanity Total", printInSettings = true, color = false },   
-
-		{ variable = "$damInsanity", description = "Insanity from Death and Madness", printInSettings = true, color = false },
-		{ variable = "$damTicks", description = "Number of ticks left on Death and Madness", printInSettings = true, color = false },
-
-		{ variable = "$mbInsanity", description = "Insanity from Mindbender/Shadowfiend (per settings)", printInSettings = true, color = false },
-		{ variable = "$mbGcds", description = "Number of GCDs left on Mindbender/Shadowfiend", printInSettings = true, color = false },
-		{ variable = "$mbSwings", description = "Number of Swings left on Mindbender/Shadowfiend", printInSettings = true, color = false },
-		{ variable = "$mbTime", description = "Time left on Mindbender/Shadowfiend", printInSettings = true, color = false },
-		
-		{ variable = "$cttvEquipped", description = "Checks if you have Call of the Void equipped. Logic variable only!", printInSettings = true, color = false },
-		{ variable = "$ecttvCount", description = "Number of active Void Tendrils/Void Lashers", printInSettings = true, color = false },
-		{ variable = "$loiInsanity", description = "Insanity from all Void Tendrils and Void Lashers", printInSettings = true, color = false },
-		{ variable = "$loiTicks", description = "Number of ticks remaining for all active Void Tendrils/Void Lashers", printInSettings = true, color = false },
-
-		{ variable = "$asInsanity", description = "Insanity from Auspicious Spirits", printInSettings = true, color = false },
-		{ variable = "$asCount", description = "Number of Auspicious Spirits in flight", printInSettings = true, color = false },
-
-		{ variable = "$swpCount", description = "Number of Shadow Word: Pains active on targets", printInSettings = true, color = false },
-		{ variable = "$vtCount", description = "Number of Vampiric Touches active on targets", printInSettings = true, color = false },
-		{ variable = "$dpCount", description = "Number of Devouring Plagues active on targets", printInSettings = true, color = false },
-
-		{ variable = "$mdTime", description = "Time remaining on Mind Devourer buff", printInSettings = true, color = false },
-
-		{ variable = "$vfTime", description = "Duration remaining of Voidform", printInSettings = true, color = false },
-		{ variable = "$hvTime", description = "Duration remaining `of Voidform w/max Void Bolt casts in Hungering Void", printInSettings = true, color = false },
-		{ variable = "$vbCasts", description = "Max Void Bolt casts remaining in Hungering Void", printInSettings = true, color = false },
-		{ variable = "$hvAvgTime", description = "Duration of Voidform w/max Void Bolt casts in Hungering Void, includes crits", printInSettings = true, color = false },
-		{ variable = "$vbAvgCasts", description = "Max Void Bolt casts remaining in Hungering Void, includes crits", printInSettings = true, color = false },
-
-		{ variable = "$ttd", description = "Time To Die of current target", printInSettings = true, color = true }
-	}
-
 	local function FillSpellData()
 		TRB.Data.spells.mindbender.name = select(2, GetTalentInfo(6, 2, TRB.Data.character.specGroup))
 		TRB.Data.spells.s2m.name = select(2, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 
 		TRB.Functions.FillSpellData()
+		
+		-- This is done here so that we can get icons for the options menu!
+		TRB.Data.barTextVariables.icons = {
+			{ variable = "#casting", icon = "", description = "The icon of the Insanity generating spell you are currently hardcasting", printInSettings = true },
+
+			{ variable = "#vf", icon = TRB.Data.spells.voidform.icon, description = "Voidform", printInSettings = true },
+			{ variable = "#voidform", icon = TRB.Data.spells.voidform.icon, description = "Voidform", printInSettings = false },
+			{ variable = "#vb", icon = TRB.Data.spells.voidBolt.icon, description = "Void Bolt", printInSettings = true },
+			{ variable = "#voidBolt", icon = TRB.Data.spells.voidBolt.icon, description = "Void Bolt", printInSettings = false },
+
+			{ variable = "#mb", icon = TRB.Data.spells.mindBlast.icon, description = "Mind Blast", printInSettings = true },
+			{ variable = "#mindBlast", icon = TRB.Data.spells.mindBlast.icon, description = "Mind Blast", printInSettings = false },
+			{ variable = "#mf", icon = TRB.Data.spells.mindFlay.icon, description = "Mind Flay", printInSettings = true },
+			{ variable = "#mindFlay", icon = TRB.Data.spells.mindFlay.icon, description = "Mind Flay", printInSettings = false },
+			{ variable = "#ms", icon = TRB.Data.spells.mindSear.icon, description = "Mind Sear", printInSettings = true },
+			{ variable = "#mindSear", icon = TRB.Data.spells.mindSear.icon, description = "Mind Sear", printInSettings = false },
+			{ variable = "#voit", icon = TRB.Data.spells.voidTorrent.icon, description = "Void Torrent", printInSettings = true },
+			{ variable = "#voidTorrent", icon = TRB.Data.spells.voidTorrent.icon, description = "Void Torrent", printInSettings = false },
+			{ variable = "#dam", icon = TRB.Data.spells.deathAndMadness.icon, description = "Death and Madness", printInSettings = true },
+			{ variable = "#deathAndMadness", icon = TRB.Data.spells.deathAndMadness.icon, description = "Death and Madness", printInSettings = false },
+
+			{ variable = "#swp", icon = TRB.Data.spells.shadowWordPain.icon, description = "Shadow Word: Pain", printInSettings = true },
+			{ variable = "#shadowWordPain", icon = TRB.Data.spells.shadowWordPain.icon, description = "Shadow Word: Pain", printInSettings = false },
+			{ variable = "#vt", icon = TRB.Data.spells.vampiricTouch.icon, description = "Vampiric Touch", printInSettings = true },
+			{ variable = "#vampiricTouch", icon = TRB.Data.spells.vampiricTouch.icon, description = "Vampiric Touch", printInSettings = false },
+			{ variable = "#dp", icon = TRB.Data.spells.devouringPlague.icon, description = "Devouring Plague", printInSettings = true },
+			{ variable = "#devouringPlague", icon = TRB.Data.spells.devouringPlague.icon, description = "Devouring Plague", printInSettings = false },
+			{ variable = "#mDev", icon = TRB.Data.spells.mindDevourer.icon, description = "Mind Devourer", printInSettings = true },
+			{ variable = "#mindDevourer", icon = TRB.Data.spells.mindDevourer.icon, description = "Mind Devourer", printInSettings = false },
+
+			{ variable = "#as", icon = TRB.Data.spells.auspiciousSpirits.icon, description = "Auspicious Spirits", printInSettings = true },
+			{ variable = "#auspiciousSpirits", icon = TRB.Data.spells.auspiciousSpirits.icon, description = "Auspicious Spirits", printInSettings = false },
+			{ variable = "#sa", icon = TRB.Data.spells.shadowyApparition.icon, description = "Shadowy Apparition", printInSettings = true },
+			{ variable = "#shadowyApparition", icon = TRB.Data.spells.shadowyApparition.icon, description = "Shadowy Apparition", printInSettings = false },
+
+			{ variable = "#mindbender", icon = TRB.Data.spells.mindbender.icon, description = "Mindbender/Shadowfiend", printInSettings = false },
+			{ variable = "#shadowfiend", icon = TRB.Data.spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = false },
+			{ variable = "#sf", icon = TRB.Data.spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = true },
+			
+			{ variable = "#ecttv", icon = TRB.Data.spells.eternalCallToTheVoid_Tendril.icon, description = "Eternal Call to the Void", printInSettings = true },
+			{ variable = "#tb", icon = TRB.Data.spells.eternalCallToTheVoid_Tendril.icon, description = "Eternal Call to the Void", printInSettings = false },
+			{ variable = "#loi", icon = TRB.Data.spells.lashOfInsanity_Tendril.icon, description = "Lash of Insanity", printInSettings = true },
+
+			{ variable = "#md", icon = TRB.Data.spells.massDispel.icon, description = "Mass Dispel", printInSettings = true },
+			{ variable = "#massDispel", icon = TRB.Data.spells.massDispel.icon, description = "Mass Dispel", printInSettings = false }
+		}
+		TRB.Data.barTextVariables.values = {
+			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
+			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
+			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
+			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
+
+			{ variable = "$insanity", description = "Current Insanity", printInSettings = true, color = false },
+			{ variable = "$casting", description = "Insanity from Hardcasting Spells", printInSettings = true, color = false },
+			{ variable = "$passive", description = "Insanity from Passive Sources", printInSettings = true, color = false },
+			{ variable = "$insanityPlusCasting", description = "Current + Casting Insanity Total", printInSettings = true, color = false },
+			{ variable = "$insanityPlusPassive", description = "Current + Passive Insanity Total", printInSettings = true, color = false },
+			{ variable = "$insanityTotal", description = "Current + Passive + Casting Insanity Total", printInSettings = true, color = false },   
+
+			{ variable = "$damInsanity", description = "Insanity from Death and Madness", printInSettings = true, color = false },
+			{ variable = "$damTicks", description = "Number of ticks left on Death and Madness", printInSettings = true, color = false },
+
+			{ variable = "$mbInsanity", description = "Insanity from Mindbender/Shadowfiend (per settings)", printInSettings = true, color = false },
+			{ variable = "$mbGcds", description = "Number of GCDs left on Mindbender/Shadowfiend", printInSettings = true, color = false },
+			{ variable = "$mbSwings", description = "Number of Swings left on Mindbender/Shadowfiend", printInSettings = true, color = false },
+			{ variable = "$mbTime", description = "Time left on Mindbender/Shadowfiend", printInSettings = true, color = false },
+			
+			{ variable = "$cttvEquipped", description = "Checks if you have Call of the Void equipped. Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$ecttvCount", description = "Number of active Void Tendrils/Void Lashers", printInSettings = true, color = false },
+			{ variable = "$loiInsanity", description = "Insanity from all Void Tendrils and Void Lashers", printInSettings = true, color = false },
+			{ variable = "$loiTicks", description = "Number of ticks remaining for all active Void Tendrils/Void Lashers", printInSettings = true, color = false },
+
+			{ variable = "$asInsanity", description = "Insanity from Auspicious Spirits", printInSettings = true, color = false },
+			{ variable = "$asCount", description = "Number of Auspicious Spirits in flight", printInSettings = true, color = false },
+
+			{ variable = "$swpCount", description = "Number of Shadow Word: Pains active on targets", printInSettings = true, color = false },
+			{ variable = "$vtCount", description = "Number of Vampiric Touches active on targets", printInSettings = true, color = false },
+			{ variable = "$dpCount", description = "Number of Devouring Plagues active on targets", printInSettings = true, color = false },
+
+			{ variable = "$mdTime", description = "Time remaining on Mind Devourer buff", printInSettings = true, color = false },
+
+			{ variable = "$vfTime", description = "Duration remaining of Voidform", printInSettings = true, color = false },
+			{ variable = "$hvTime", description = "Duration remaining `of Voidform w/max Void Bolt casts in Hungering Void", printInSettings = true, color = false },
+			{ variable = "$vbCasts", description = "Max Void Bolt casts remaining in Hungering Void", printInSettings = true, color = false },
+			{ variable = "$hvAvgTime", description = "Duration of Voidform w/max Void Bolt casts in Hungering Void, includes crits", printInSettings = true, color = false },
+			{ variable = "$vbAvgCasts", description = "Max Void Bolt casts remaining in Hungering Void, includes crits", printInSettings = true, color = false },
+
+			{ variable = "$ttd", description = "Time To Die of current target", printInSettings = true, color = true }
+		}
 	end
 
 	local function CheckCharacter()
@@ -437,14 +438,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		if TRB.Data.settings.priest ~= nil and TRB.Data.settings.priest.shadow ~= nil then
 			if TRB.Data.settings.priest.shadow.devouringPlagueThreshold and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
 				resourceFrame.thresholdDp:Show()
-				TRB.Functions.RepositionThreshold(resourceFrame.thresholdDp, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholdDp, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
 			else
 				resourceFrame.thresholdDp:Hide()
 			end
 			
 			if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then
 				resourceFrame.thresholdSn:Show()		
-				TRB.Functions.RepositionThreshold(resourceFrame.thresholdSn, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholdSn, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 			else
 				resourceFrame.thresholdSn:Hide()
 			end
@@ -1838,12 +1839,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if TwintopInsanityBarSettings then
 						TRB.Options.PortForwardPriestSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
+						TRB.Data.settings = TRB.Options.CleanupSettings()
 					else
 						TRB.Data.settings = settings
 					end
 					TRB.Functions.UpdateSanityCheckValues()
 					TRB.Functions.IsTtdActive()		
-					TRB.Functions.FillSpellData()
+					FillSpellData()
 					ConstructResourceBar()
 					TRB.Options.Priest.ConstructOptionsPanel()
 

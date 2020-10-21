@@ -116,38 +116,39 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		targets = {}
 	}
 
-	TRB.Data.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = "The icon of the Maelstrom generating spell you are currently hardcasting", printInSettings = true },
-
-		{ variable = "#lightningBolt", icon = TRB.Data.spells.lightningBolt.icon, description = "Lightning Bolt", printInSettings = true },
-		{ variable = "#lavaBurst", icon = TRB.Data.spells.lavaBurst.icon, description = "Lava Burst", printInSettings = true },
-		{ variable = "#elementalBlast", icon = TRB.Data.spells.elementalBlast.icon, description = "Elemental Blast", printInSettings = true },
-		{ variable = "#chainLightning", icon = TRB.Data.spells.chainLightning.icon, description = "Chain Lightning", printInSettings = true },
-		{ variable = "#lavaBeam", icon = TRB.Data.spells.lavaBeam.icon, description = "Lava Beam", printInSettings = true },
-		{ variable = "#icefury", icon = TRB.Data.spells.icefury.icon, description = "Icefury", printInSettings = true },
-		{ variable = "#flameShock", icon = TRB.Data.spells.flameShock.icon, description = "Flame Shock", printInSettings = true },
-		{ variable = "#lightningShield", icon = TRB.Data.spells.lightningShield.icon, description = "Lightning Shield", printInSettings = true },
-	}
-	TRB.Data.barTextVariables.values = {
-		{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-		{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
-		{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
-		{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
-
-		{ variable = "$maelstrom", description = "Current Maelstrom", printInSettings = true, color = false },
-		{ variable = "$casting", description = "Maelstrom from Hardcasting Spells", printInSettings = true, color = false },
-		{ variable = "$passive", description = "Maelstrom from Passive Sources", printInSettings = true, color = false },
-		{ variable = "$maelstromPlusCasting", description = "Current + Casting Maelstrom Total", printInSettings = true, color = false },
-		{ variable = "$maelstromPlusPassive", description = "Current + Passive Maelstrom Total", printInSettings = true, color = false },
-		{ variable = "$maelstromTotal", description = "Current + Passive + Casting Maelstrom Total", printInSettings = true, color = false },   
-
-		{ variable = "$fsCount", description = "Number of Flame Shocks active on targets", printInSettings = true, color = false },
-
-		{ variable = "$ttd", description = "Time To Die of current target", printInSettings = true, color = true }
-	}
-
 	local function FillSpellData()
 		TRB.Functions.FillSpellData()
+		
+		-- This is done here so that we can get icons for the options menu!
+		TRB.Data.barTextVariables.icons = {
+			{ variable = "#casting", icon = "", description = "The icon of the Maelstrom generating spell you are currently hardcasting", printInSettings = true },
+	
+			{ variable = "#lightningBolt", icon = TRB.Data.spells.lightningBolt.icon, description = "Lightning Bolt", printInSettings = true },
+			{ variable = "#lavaBurst", icon = TRB.Data.spells.lavaBurst.icon, description = "Lava Burst", printInSettings = true },
+			{ variable = "#elementalBlast", icon = TRB.Data.spells.elementalBlast.icon, description = "Elemental Blast", printInSettings = true },
+			{ variable = "#chainLightning", icon = TRB.Data.spells.chainLightning.icon, description = "Chain Lightning", printInSettings = true },
+			{ variable = "#lavaBeam", icon = TRB.Data.spells.lavaBeam.icon, description = "Lava Beam", printInSettings = true },
+			{ variable = "#icefury", icon = TRB.Data.spells.icefury.icon, description = "Icefury", printInSettings = true },
+			{ variable = "#flameShock", icon = TRB.Data.spells.flameShock.icon, description = "Flame Shock", printInSettings = true },
+			{ variable = "#lightningShield", icon = TRB.Data.spells.lightningShield.icon, description = "Lightning Shield", printInSettings = true },
+		}
+		TRB.Data.barTextVariables.values = {
+			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
+			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
+			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
+			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
+	
+			{ variable = "$maelstrom", description = "Current Maelstrom", printInSettings = true, color = false },
+			{ variable = "$casting", description = "Maelstrom from Hardcasting Spells", printInSettings = true, color = false },
+			{ variable = "$passive", description = "Maelstrom from Passive Sources", printInSettings = true, color = false },
+			{ variable = "$maelstromPlusCasting", description = "Current + Casting Maelstrom Total", printInSettings = true, color = false },
+			{ variable = "$maelstromPlusPassive", description = "Current + Passive Maelstrom Total", printInSettings = true, color = false },
+			{ variable = "$maelstromTotal", description = "Current + Passive + Casting Maelstrom Total", printInSettings = true, color = false },   
+	
+			{ variable = "$fsCount", description = "Number of Flame Shocks active on targets", printInSettings = true, color = false },
+	
+			{ variable = "$ttd", description = "Time To Die of current target", printInSettings = true, color = true }
+		}
 	end
 
 	local function CheckCharacter()
@@ -158,10 +159,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Data.character.talents.ascendance.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 		
 		TRB.Data.character.earthShockThreshold = 60
-        
+		
 		if TRB.Data.settings.shaman ~= nil and TRB.Data.settings.shaman.elemental ~= nil and TRB.Data.settings.shaman.elemental.earthShockThreshold and TRB.Data.character.earthShockThreshold < TRB.Data.character.maxResource then
 			resourceFrame.thresholdEs:Show()
-			TRB.Functions.RepositionThreshold(resourceFrame.thresholdEs, resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholdEs, resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 		else
 			resourceFrame.thresholdEs:Hide()
 		end
@@ -475,7 +476,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						TRB.Data.snapshotData.chainLightning.targetsHit = 1
 						TRB.Data.snapshotData.chainLightning.hitTime = currentTime
 						TRB.Data.snapshotData.chainLightning.hasStruckTargets = false
-					elseif currentTime > (TRB.Data.snapshotData.chainLightning.hitTime + (TRB.Functions.GetCurrentGCDTime(true)) + latency) then
+					elseif currentTime > (TRB.Data.snapshotData.chainLightning.hitTime + (TRB.Functions.GetCurrentGCDTime(true) * 3) + latency) then
 						TRB.Data.snapshotData.chainLightning.targetsHit = 0
 					end
 
@@ -527,6 +528,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				castingFrame:SetValue(TRB.Data.snapshotData.resource)
 			end
 			
+			-- Elemental doesn't use the passive frame right now. Hide it and the threshold line
+			passiveFrame:Hide()
 			passiveFrame.threshold.texture:Hide()
 			passiveFrame:SetValue(TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal)
 
@@ -590,7 +593,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		if self.sinceLastUpdate >= 0.05 then -- in seconds
 			TriggerResourceBarUpdates()
 			self.sinceLastUpdate = 0
-			if TRB.Data.snapshotData.chainLightning.hitTime ~= nil and currentTime > (TRB.Data.snapshotData.chainLightning.hitTime + 5) then
+			if TRB.Data.snapshotData.chainLightning.hitTime ~= nil and currentTime > (TRB.Data.snapshotData.chainLightning.hitTime + 6) then
 				TRB.Data.snapshotData.chainLightning.hitTime = nil
 				TRB.Data.snapshotData.chainLightning.targetsHit = 0
 			end
@@ -689,7 +692,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					end		
 				elseif spellId == TRB.Data.spells.chainLightning.id or spellId == TRB.Data.spells.lavaBeam.id then
 					if type == "SPELL_DAMAGE" then
-						if currentTime > (TRB.Data.snapshotData.chainLightning.hitTime + 0.1) then --This is a new hit
+						if TRB.Data.snapshotData.chainLightning.hitTime == nil or currentTime > (TRB.Data.snapshotData.chainLightning.hitTime + 0.1) then --This is a new hit
 							TRB.Data.snapshotData.chainLightning.targetsHit = 0
 						end
 						TRB.Data.snapshotData.chainLightning.targetsHit = TRB.Data.snapshotData.chainLightning.targetsHit + 1
@@ -750,13 +753,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					if TwintopInsanityBarSettings then
 						TRB.Options.PortForwardPriestSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
+						TRB.Data.settings = TRB.Options.CleanupSettings()
 					else
 						TRB.Data.settings = settings
 					end	
-					print(TRB.Data.settings.shaman.elemental.thresholdWidth)
+
 					TRB.Functions.UpdateSanityCheckValues()
 					TRB.Functions.IsTtdActive()		
-					TRB.Functions.FillSpellData()
+					FillSpellData()
 					ConstructResourceBar()
 					TRB.Options.Shaman.ConstructOptionsPanel()
 
