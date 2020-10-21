@@ -19,7 +19,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
     
     local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
     
-	Global_TwintopMaelstromBar = {
+	Global_TwintopResourceBar = {
 		ttd = 0,
 		maelstrom = {
 			maelstrom = 0,
@@ -28,6 +28,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		},
 		dots = {
             fsCount = 0
+		},
+		chainLightning = {
+			targetsHit = 0
 		}
     }
     
@@ -139,12 +142,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
 	
 			{ variable = "$maelstrom", description = "Current Maelstrom", printInSettings = true, color = false },
+			{ variable = "$resource", description = "Current Maelstrom", printInSettings = false, color = false },
+			{ variable = "$maelstromMax", description = "Maximum Maelstrom", printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "Maximum Maelstrom", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Maelstrom from Hardcasting Spells", printInSettings = true, color = false },
 			{ variable = "$passive", description = "Maelstrom from Passive Sources", printInSettings = true, color = false },
 			{ variable = "$maelstromPlusCasting", description = "Current + Casting Maelstrom Total", printInSettings = true, color = false },
+			{ variable = "$resourcePlusCasting", description = "Current + Casting Maelstrom Total", printInSettings = false, color = false },
 			{ variable = "$maelstromPlusPassive", description = "Current + Passive Maelstrom Total", printInSettings = true, color = false },
+			{ variable = "$resourcePlusPassive", description = "Current + Passive Maelstrom Total", printInSettings = false, color = false },
 			{ variable = "$maelstromTotal", description = "Current + Passive + Casting Maelstrom Total", printInSettings = true, color = false },   
-	
+			{ variable = "$resourceTotal", description = "Current + Passive + Casting Maelstrom Total", printInSettings = false, color = false },   
+
 			{ variable = "$fsCount", description = "Number of Flame Shocks active on targets", printInSettings = true, color = false },
 	
 			{ variable = "$ttd", description = "Time To Die of current target", printInSettings = true, color = true }
@@ -269,21 +278,23 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			valid = true
 		elseif var == "$gcd" then
 			valid = true
-		elseif var == "$maelstrom" then
+		elseif var == "$resource" or var == "$maelstrom" then
 			if TRB.Data.snapshotData.resource > 0 then
 				valid = true
 			end
-		elseif var == "$maelstromTotal" then
+		elseif var == "$resourceMax" or var == "$maelstromMax" then
+			valid = true
+		elseif var == "$resourceTotal" or var == "$maelstromTotal" then
 			if TRB.Data.snapshotData.resource > 0 or
 				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.chainLightning.id or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.lavaBeam.id)) then
 				valid = true
 			end
-		elseif var == "$maelstromPlusCasting" then
+		elseif var == "$resourcePlusCasting" or var == "$maelstromPlusCasting" then
 			if TRB.Data.snapshotData.resource > 0 or
 				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.chainLightning.id or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.lavaBeam.id)) then
 				valid = true
 			end
-		elseif var == "$maelstromPlusPassive" then
+		elseif var == "$resourcePlusPassive" or var == "$maelstromPlusPassive" then
 			if TRB.Data.snapshotData.resource > 0 then
 				valid = true
 			end
@@ -342,13 +353,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local passiveMaelstrom = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.passiveMaelstrom, _passiveMaelstrom)
 		--$maelstromTotal
 		local _maelstromTotal = math.min(_passiveMaelstrom + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local maelstromTotal = string.format("|c%s%.0f%%|r", TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, _maelstromTotal)
+		local maelstromTotal = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, _maelstromTotal)
 		--$maelstromPlusCasting
 		local _maelstromPlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local maelstromPlusCasting = string.format("|c%s%.0f%%|r", TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, _maelstromPlusCasting)
+		local maelstromPlusCasting = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, _maelstromPlusCasting)
 		--$maelstromPlusPassive
 		local _maelstromPlusPassive = math.min(_passiveMaelstrom + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local maelstromPlusPassive = string.format("|c%s%.0f%%|r", TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, _maelstromPlusPassive)
+		local maelstromPlusPassive = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, _maelstromPlusPassive)
 
 		----------
 		--$fsCount
@@ -373,15 +384,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local castingIcon = TRB.Data.snapshotData.casting.icon or ""
 		----------------------------
 
-		Global_TwintopMaelstromBar = {
+		Global_TwintopResourceBar = {
 			ttd = ttd or "--",
-			maelstrom = {
-				maelstrom = TRB.Data.snapshotData.resource or 0,
+			resource = {
+				resource = TRB.Data.snapshotData.resource or 0,
 				casting = TRB.Data.snapshotData.casting.resourceFinal or 0,
 				passive = _passiveMaelstrom
 			},
 			dots = {
 				fsCount = flameShockCount or 0,
+			},
+			chainLightning = {
+				targetsHit = TRB.Data.snapshotData.chainLightning.targetsHit or 0
 			}
 		}
 		
@@ -403,7 +417,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["$maelstromPlusCasting"] = maelstromPlusCasting
 		lookup["$maelstromPlusPassive"] = maelstromPlusPassive
 		lookup["$maelstromTotal"] = maelstromTotal
+		lookup["$maelstromMax"] = TRB.Data.character.maxResource
 		lookup["$maelstrom"] = currentMaelstrom
+		lookup["$resourcePlusCasting"] = maelstromPlusCasting
+		lookup["$resourcePlusPassive"] = maelstromPlusPassive
+		lookup["$resourceTotal"] = maelstromTotal
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$resource"] = currentMaelstrom
 		lookup["$casting"] = castingMaelstrom
 		lookup["$passive"] = passiveMaelstrom
 		lookup["$ttd"] = ttd

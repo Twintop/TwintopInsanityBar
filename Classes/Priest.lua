@@ -51,6 +51,48 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		}
 	}
 
+	Global_TwintopResourceBar = {
+		ttd = 0,
+		voidform = {
+		},
+		resource = {
+			resource = 0,
+			casting = 0,
+			passive = 0,
+			auspiciousSpirits = 0,
+			mindbender = 0,
+			deathAndMadness = 0,
+			ecttv = 0
+		},
+		auspiciousSpirits = {
+			count = 0,
+			insanity = 0
+		},
+		dots = {
+			swpCount = 0,
+			vtCount = 0,
+			dpCount = 0
+		},
+		mindbender = {			
+			insanity = 0,
+			gcds = 0,
+			swings = 0,
+			time = 0
+		},
+		mindSear = {
+			targetsHit = 0
+		},
+		deathAndMadness = {
+			insanity = 0,
+			ticks = 0
+		},
+		eternalCallToTheVoid = {
+			insanity = 0,
+			ticks = 0,
+			count = 0
+		}
+	}
+
 	TRB.Data.character = {
 		guid = UnitGUID("player"),
 		specGroup = GetActiveSpecGroup(),
@@ -384,11 +426,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
 
 			{ variable = "$insanity", description = "Current Insanity", printInSettings = true, color = false },
+			{ variable = "$resource", description = "Current Insanity", printInSettings = false, color = false },
+			{ variable = "$insanityMax", description = "Maximum Insanity", printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "Maximum Insanity", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Insanity from Hardcasting Spells", printInSettings = true, color = false },
 			{ variable = "$passive", description = "Insanity from Passive Sources", printInSettings = true, color = false },
 			{ variable = "$insanityPlusCasting", description = "Current + Casting Insanity Total", printInSettings = true, color = false },
+			{ variable = "$resourcePlusCasting", description = "Current + Casting Insanity Total", printInSettings = false, color = false },
 			{ variable = "$insanityPlusPassive", description = "Current + Passive Insanity Total", printInSettings = true, color = false },
+			{ variable = "$resourcePlusPassive", description = "Current + Passive Insanity Total", printInSettings = false, color = false },
 			{ variable = "$insanityTotal", description = "Current + Passive + Casting Insanity Total", printInSettings = true, color = false },   
+			{ variable = "$resourceTotal", description = "Current + Passive + Casting Insanity Total", printInSettings = false, color = false },   
 
 			{ variable = "$damInsanity", description = "Insanity from Death and Madness", printInSettings = true, color = false },
 			{ variable = "$damTicks", description = "Number of ticks left on Death and Madness", printInSettings = true, color = false },
@@ -790,22 +838,24 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.character.talents.hungeringVoid.isSelected and TRB.Data.snapshotData.voidform.remainingHvTime ~= nil and TRB.Data.snapshotData.voidform.remainingHvTime > 0 then
 				valid = true
 			end
-		elseif var == "$insanity" then
+		elseif var == "$resource" or var == "$insanity" then
 			if TRB.Data.snapshotData.resource > 0 then
 				valid = true
 			end
-		elseif var == "$insanityTotal" then
+		elseif var == "$resourceMax" or var == "$insanityMax" then
+			valid = true
+		elseif var == "$resourceTotal" or var == "$insanityTotal" then
 			if TRB.Data.snapshotData.resource > 0 or
 				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id)) or
 				(((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity, false) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.mindbender.resourceRaw + TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal + CalculateInsanityGain(TRB.Data.snapshotData.deathAndMadness.insanity, false)) > 0) then
 				valid = true
 			end
-		elseif var == "$insanityPlusCasting" then
+		elseif var == "$resourcePlusCasting" or var == "$insanityPlusCasting" then
 			if TRB.Data.snapshotData.resource > 0 or
 				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id)) then
 				valid = true
 			end
-		elseif var == "$insanityPlusPassive" then
+		elseif var == "$resourcePlusPassive" or var == "$insanityPlusPassive" then
 			if TRB.Data.snapshotData.resource > 0 or
 				((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity, false) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.mindbender.resourceRaw + TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal + CalculateInsanityGain(TRB.Data.snapshotData.deathAndMadness.insanity, false)) > 0 then
 				valid = true
@@ -978,13 +1028,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local passiveInsanity = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.passiveInsanity, _passiveInsanity)
 		--$insanityTotal
 		local _insanityTotal = math.min(_passiveInsanity + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local insanityTotal = string.format("|c%s%.0f%%|r", TRB.Data.settings.priest.shadow.colors.text.currentInsanity, _insanityTotal)
+		local insanityTotal = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.currentInsanity, _insanityTotal)
 		--$insanityPlusCasting
 		local _insanityPlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local insanityPlusCasting = string.format("|c%s%.0f%%|r", TRB.Data.settings.priest.shadow.colors.text.currentInsanity, _insanityPlusCasting)
+		local insanityPlusCasting = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.currentInsanity, _insanityPlusCasting)
 		--$insanityPlusPassive
 		local _insanityPlusPassive = math.min(_passiveInsanity + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local insanityPlusPassive = string.format("|c%s%.0f%%|r", TRB.Data.settings.priest.shadow.colors.text.currentInsanity, _insanityPlusPassive)
+		local insanityPlusPassive = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.currentInsanity, _insanityPlusPassive)
 
 		----------
 		--$swpCount
@@ -1076,7 +1126,55 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			deathAndMadness = {
 				insanity = _damInsanity,
-				ticks = TRB.Data.snapshotData.deathAndMadness.ticksRemaining
+				ticks = TRB.Data.snapshotData.deathAndMadness.ticksRemaining or 0
+			},
+			eternalCallToTheVoid = {
+				insanity = TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal or 0,
+				ticks = TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining or 0,
+				count = TRB.Data.snapshotData.eternalCallToTheVoid.numberActive or 0
+			}
+		}
+		
+		Global_TwintopResourceBar = {
+			ttd = ttd or "--",
+			voidform = {
+				hungeringVoid = {
+					timeRemaining = TRB.Data.snapshotData.voidform.remainingHvTime,
+					voidBoltCasts = TRB.Data.snapshotData.voidform.additionalVbCasts,
+					TimeRemainingAverage = TRB.Data.snapshotData.voidform.remainingHvAvgTime,
+					voidBoltCastsAverage = TRB.Data.snapshotData.voidform.additionalVbAvgCasts,
+				}
+			},
+			resource = {
+				resource = TRB.Data.snapshotData.resource or 0,
+				casting = TRB.Data.snapshotData.casting.resourceFinal or 0,
+				passive = _passiveInsanity,
+				auspiciousSpirits = _asInsanity,
+				mindbender = TRB.Data.snapshotData.mindbender.resourceFinal or 0,
+				deathAndMadness = _damInsanity,
+				ecttv = TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal or 0
+			},
+			auspiciousSpirits = {
+				count = TRB.Data.snapshotData.targetData.auspiciousSpirits or 0,
+				insanity = _asInsanity
+			},
+			dots = {
+				swpCount = shadowWordPainCount or 0,
+				vtCount = vampiricTouchCount or 0,
+				dpCount = devouringPlagueCount or 0
+			},
+			mindbender = {			
+				insanity = TRB.Data.snapshotData.mindbender.resourceFinal or 0,
+				gcds = TRB.Data.snapshotData.mindbender.remaining.gcds or 0,
+				swings = TRB.Data.snapshotData.mindbender.remaining.swings or 0,
+				time = TRB.Data.snapshotData.mindbender.remaining.time or 0
+			},
+			mindSear = {
+				targetsHit = TRB.Data.snapshotData.mindSear.targetsHit or 0
+			},
+			deathAndMadness = {
+				insanity = _damInsanity,
+				ticks = TRB.Data.snapshotData.deathAndMadness.ticksRemaining or 0
 			},
 			eternalCallToTheVoid = {
 				insanity = TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal or 0,
@@ -1136,7 +1234,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$insanityPlusCasting"] = insanityPlusCasting
 		lookup["$insanityPlusPassive"] = insanityPlusPassive
 		lookup["$insanityTotal"] = insanityTotal
+		lookup["$insanityMax"] = TRB.Data.character.maxResource
 		lookup["$insanity"] = currentInsanity
+		lookup["$resourcePlusCasting"] = insanityPlusCasting
+		lookup["$resourcePlusPassive"] = insanityPlusPassive
+		lookup["$resourceTotal"] = insanityTotal
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$resource"] = currentInsanity
 		lookup["$casting"] = castingInsanity
 		lookup["$passive"] = passiveInsanity
 		lookup["$mbInsanity"] = mbInsanity 
