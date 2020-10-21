@@ -1947,7 +1947,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					else
 						TRB.Data.settings = settings
 					end
-					TRB.Functions.UpdateSanityCheckValues()
+					TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.priest.shadow)
 					TRB.Functions.IsTtdActive()		
 					FillSpellData()
 					ConstructResourceBar()

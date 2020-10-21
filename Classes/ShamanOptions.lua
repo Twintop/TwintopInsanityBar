@@ -371,7 +371,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			resourceFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
 			castingFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
 			passiveFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			RepositionThreshold(resourceFrame.thresholdEs, resourceFrame, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(resourceFrame.thresholdEs, resourceFrame, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / 8), math.floor(TRB.Data.settings.shaman.elemental.bar.width / 8))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)

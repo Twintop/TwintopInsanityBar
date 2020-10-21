@@ -778,7 +778,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						TRB.Data.settings = settings
 					end	
 
-					TRB.Functions.UpdateSanityCheckValues()
+					TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.shaman.elemental)
 					TRB.Functions.IsTtdActive()		
 					FillSpellData()
 					ConstructResourceBar()

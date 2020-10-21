@@ -150,12 +150,12 @@ TRB.Functions.ResetCastingSnapshotData = ResetCastingSnapshotData
 
 -- Addon Maintenance Functions
 
-local function UpdateSanityCheckValues()
-    if TRB.Data.settings ~= nil and TRB.Data.settings.bar ~= nil then
+local function UpdateSanityCheckValues(settings)
+    if settings ~= nil and settings.bar ~= nil then
         TRB.Data.sanityCheckValues.barMaxWidth = math.floor(GetScreenWidth())
-        TRB.Data.sanityCheckValues.barMinWidth = math.max(math.ceil(TRB.Data.settings.bar.border * 8), 120)	
+        TRB.Data.sanityCheckValues.barMinWidth = math.max(math.ceil(settings.bar.border * 8), 120)	
         TRB.Data.sanityCheckValues.barMaxHeight = math.floor(GetScreenHeight())
-        TRB.Data.sanityCheckValues.barMinHeight = math.max(math.ceil(TRB.Data.settings.bar.border * 8), 1)
+        TRB.Data.sanityCheckValues.barMinHeight = math.max(math.ceil(settings.bar.border * 8), 1)
     end
 end
 TRB.Functions.UpdateSanityCheckValues = UpdateSanityCheckValues
