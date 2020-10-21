@@ -43,8 +43,8 @@ local function ConstructAddonOptionsPanel()
     local controls = interfaceSettingsFrame.controls
     local yCoord = -5
     local f = nil
-    interfaceSettingsFrame.optionsPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopInsanityBar_Addon_OptionsLayoutPanel", parent)
-    interfaceSettingsFrame.optionsPanel.name = "Options"
+    interfaceSettingsFrame.optionsPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopResourceBar_Addon_OptionsLayoutPanel", parent)
+    interfaceSettingsFrame.optionsPanel.name = "Global Options"
     interfaceSettingsFrame.optionsPanel.parent = parent.name
     InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
 
@@ -239,8 +239,8 @@ local function ConstructOptionsPanel()
     controls.checkBoxes = {}
     controls.dropDown = {}
 
-    interfaceSettingsFrame.panel = CreateFrame("Frame", "TwintopInsanityBarPanel", UIParent)
-    interfaceSettingsFrame.panel.name = "Twintop's Insanity Bar"        
+    interfaceSettingsFrame.panel = CreateFrame("Frame", "TwintopResourceBarPanel", UIParent)
+    interfaceSettingsFrame.panel.name = "Twintop's Resource Bar"        
     local parent = interfaceSettingsFrame.panel
     local yCoord = -5
     local xPadding = 10
@@ -252,13 +252,15 @@ local function ConstructOptionsPanel()
     local xOffset1 = 50
     local xOffset2 = 275
 
-    interfaceSettingsFrame.controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Twintop's Insanity Bar", xCoord+xPadding, yCoord)
+    interfaceSettingsFrame.controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Twintop's Resource Bar", xCoord+xPadding, yCoord)
     yCoord = yCoord - 40
-    interfaceSettingsFrame.controls.labels.infoAuthor = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Author:", "Twintop - Frostmourne-US/OCE", xCoord+xPadding*2, yCoord, 75, 200)
+    interfaceSettingsFrame.controls.labels.infoAuthor = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Author:", "Twintop - Frostmourne-US/OCE", xCoord+xPadding*2, yCoord, 100, 200)
     yCoord = yCoord - 20
-    interfaceSettingsFrame.controls.labels.infoVersion = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Version:", TRB.Details.addonVersion, xCoord+xPadding*2, yCoord, 75, 200)
+    interfaceSettingsFrame.controls.labels.infoVersion = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Version:", TRB.Details.addonVersion, xCoord+xPadding*2, yCoord, 100, 200)
     yCoord = yCoord - 20
-    interfaceSettingsFrame.controls.labels.infoReleased = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Released:", TRB.Details.addonReleaseDate, xCoord+xPadding*2, yCoord, 75, 200)
+    interfaceSettingsFrame.controls.labels.infoReleased = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Released:", TRB.Details.addonReleaseDate, xCoord+xPadding*2, yCoord, 100, 200)
+    yCoord = yCoord - 20
+    interfaceSettingsFrame.controls.labels.infoReleased = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Supported Specs:", TRB.Details.supportedSpecs, xCoord+xPadding*2, yCoord, 100, 200)
     
 
     interfaceSettingsFrame.panel.yCoord = yCoord

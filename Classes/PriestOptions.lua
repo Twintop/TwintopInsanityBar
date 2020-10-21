@@ -237,7 +237,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local controls = interfaceSettingsFrame.controls
 		local yCoord = -5
 		local f = nil
-		interfaceSettingsFrame.shadowOptionsLayoutPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopInsanityBar_Shadow_OptionsLayoutPanel", parent)
+		interfaceSettingsFrame.shadowOptionsLayoutPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopResourceBar_Shadow_OptionsLayoutPanel", parent)
 		interfaceSettingsFrame.shadowOptionsLayoutPanel.name = "Shadow - Options"
 		interfaceSettingsFrame.shadowOptionsLayoutPanel.parent = parent.name
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.shadowOptionsLayoutPanel)
@@ -259,8 +259,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height/8), math.floor(TRB.Data.settings.priest.shadow.bar.width/8))
 
 
-		StaticPopupDialogs["TwintopInsanityBar_Reset"] = {
-			text = "Do you want to reset Twintop's Insanity Bar back to it's default configuration? This will cause your UI to be reloaded!",
+		StaticPopupDialogs["TwintopResourceBar_Reset"] = {
+			text = "Do you want to reset Twintop's Resource Bar back to it's default configuration? Only the Shadow Priest settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -272,8 +272,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		StaticPopupDialogs["TwintopInsanityBar_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Insanity Bar's text (including font size, font style, and text information) back to it's default (simple) configuration? This will cause your UI to be reloaded!",
+		StaticPopupDialogs["TwintopResourceBar_ResetBarTextSimple"] = {
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (simple) configuration? Only the Shadow Priest settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -285,8 +285,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		StaticPopupDialogs["TwintopInsanityBar_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Insanity Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? This will cause your UI to be reloaded!",
+		StaticPopupDialogs["TwintopResourceBar_ResetBarTextAdvanced"] = {
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? Only the Shadow Priest settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -298,8 +298,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		StaticPopupDialogs["TwintopInsanityBar_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Insanity Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? This will cause your UI to be reloaded!",
+		StaticPopupDialogs["TwintopResourceBar_ResetBarTextNarrowAdvanced"] = {
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? Only the Shadow Priest settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -312,10 +312,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Insanity Bar to Defaults", xCoord+xPadding, yCoord)
+		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar to Defaults", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopInsanityBar_ResetButton", parent)
+		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetButton", parent)
 		f = controls.resetButton
 		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2, yCoord)
 		f:SetWidth(150)
@@ -338,14 +338,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f.ptex:SetAllPoints()
 		f:SetPushedTexture(f.ptex)
 		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopInsanityBar_Reset")
+			StaticPopup_Show("TwintopResourceBar_Reset")
 		end)
 
 		yCoord = yCoord - 40		
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Insanity Bar Text", xCoord+xPadding, yCoord)
+		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopInsanityBar_ResetBarTextSimpleButton", parent)
+		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextSimpleButton", parent)
 		f = controls.resetButton
 		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2, yCoord)
 		f:SetWidth(250)
@@ -368,11 +368,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f.ptex:SetAllPoints()
 		f:SetPushedTexture(f.ptex)
 		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopInsanityBar_ResetBarTextSimple")
+			StaticPopup_Show("TwintopResourceBar_ResetBarTextSimple")
 		end)
 
 		yCoord = yCoord - 40
-		controls.resetButton = CreateFrame("Button", "TwintopInsanityBar_ResetBarTextNarrowAdvancedButton", parent)
+		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextNarrowAdvancedButton", parent)
 		f = controls.resetButton
 		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord2, yCoord)
 		f:SetWidth(250)
@@ -395,10 +395,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f.ptex:SetAllPoints()
 		f:SetPushedTexture(f.ptex)
 		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopInsanityBar_ResetBarTextNarrowAdvanced")
+			StaticPopup_Show("TwintopResourceBar_ResetBarTextNarrowAdvanced")
 		end)
 
-		controls.resetButton = CreateFrame("Button", "TwintopInsanityBar_ResetBarTextAdvancedButton", parent)
+		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextAdvancedButton", parent)
 		f = controls.resetButton
 		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2, yCoord)
 		f:SetWidth(250)
@@ -421,7 +421,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f.ptex:SetAllPoints()
 		f:SetPushedTexture(f.ptex)
 		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopInsanityBar_ResetBarTextAdvanced")
+			StaticPopup_Show("TwintopResourceBar_ResetBarTextAdvanced")
 		end)
 
 		yCoord = yCoord - 40
@@ -969,9 +969,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TIBRB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Always show Insanity Bar")
+		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Insanity Bar always visible on your UI, even when out of combat."
+		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
 		f:SetChecked(TRB.Data.settings.priest.shadow.displayBar.alwaysShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(true)
@@ -985,9 +985,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TIBRB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-15)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Insanity Bar when Insanity > 0")
+		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Insanity > 0")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Insanity Bar show out of combat only if Insanity > 0, hidden otherwise when out of combat."
+		f.tooltip = "This will make the Resource Bar show out of combat only if Insanity > 0, hidden otherwise when out of combat."
 		f:SetChecked(TRB.Data.settings.priest.shadow.displayBar.notZeroShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
@@ -1001,9 +1001,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TIBRB1_4", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.combatShow
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-30)
-		getglobal(f:GetName() .. 'Text'):SetText("Only show Insanity Bar in combat")
+		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Insanity Bar only be visible on your UI when in combat."
+		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
 		f:SetChecked((not TRB.Data.settings.priest.shadow.displayBar.alwaysShow) and (not TRB.Data.settings.priest.shadow.displayBar.notZeroShow))
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
@@ -1111,7 +1111,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Insanity Bar's border", TRB.Data.settings.priest.shadow.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.priest.shadow.colors.bar.border, 225, 25, xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -2379,7 +2379,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local controls = interfaceSettingsFrame.controls
 		local yCoord = -5
 		local f = nil
-		interfaceSettingsFrame.shadowBarTextDisplayPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopInsanityBar_Shadow_BarTextDisplayLayoutPanel", parent)
+		interfaceSettingsFrame.shadowBarTextDisplayPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopResourceBar_Shadow_BarTextDisplayLayoutPanel", parent)
 		interfaceSettingsFrame.shadowBarTextDisplayPanel.name = "Shadow - Bar Text"
 		interfaceSettingsFrame.shadowBarTextDisplayPanel.parent = parent.name
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.shadowBarTextDisplayPanel)

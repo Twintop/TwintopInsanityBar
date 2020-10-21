@@ -1,10 +1,10 @@
 ## Interface: 90002
-## Title: Twintop's Insanity Bar
+## Title: Twintop's Resource Bar
 ## Author: Twintop
 ## Version: 9.0.2.12
 ## SavedVariables: TwintopInsanityBarSettings
 ## DefaultState: enabled
-## Notes: Insanity Bar for Shadow Priests, based on my (Twintop's) previous Legion WeakAura set. 
+## Notes: Multi-class Resource Bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
 
 Libs\LibStub.lua
 Libs\CallbackHandler-1.0.lua

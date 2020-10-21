@@ -161,7 +161,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local controls = interfaceSettingsFrame.controls
 		local yCoord = -5
 		local f = nil
-		interfaceSettingsFrame.elementalOptionsLayoutPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopMaelstromBar_Elemental_OptionsLayoutPanel", parent)
+		interfaceSettingsFrame.elementalOptionsLayoutPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopResourceBar_Elemental_OptionsLayoutPanel", parent)
 		interfaceSettingsFrame.elementalOptionsLayoutPanel.name = "Elemental - Options"
 		interfaceSettingsFrame.elementalOptionsLayoutPanel.parent = parent.name
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.elementalOptionsLayoutPanel)
@@ -183,8 +183,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height/8), math.floor(TRB.Data.settings.shaman.elemental.bar.width/8))
 
 
-		StaticPopupDialogs["TwintopMaelstromBar_Reset"] = {
-			text = "Do you want to reset Twintop's Maelstrom Bar back to it's default configuration? This will cause your UI to be reloaded!",
+		StaticPopupDialogs["TwintopResourceBar_Reset"] = {
+			text = "Do you want to reset the Twintop's Resource Bar back to it's default configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -196,8 +196,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		StaticPopupDialogs["TwintopMaelstromBar_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Maelstrom Bar's text (including font size, font style, and text information) back to it's default (simple) configuration? This will cause your UI to be reloaded!",
+		StaticPopupDialogs["TwintopResourceBar_ResetBarTextSimple"] = {
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (simple) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -209,8 +209,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		StaticPopupDialogs["TwintopMaelstromBar_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Maelstrom Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? This will cause your UI to be reloaded!",
+		StaticPopupDialogs["TwintopResourceBar_ResetBarTextAdvanced"] = {
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -222,8 +222,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		--[[StaticPopupDialogs["TwintopMaelstromBar_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Maelstrom Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? This will cause your UI to be reloaded!",
+		--[[StaticPopupDialogs["TwintopResourceBar_ResetBarTextNarrowAdvanced"] = {
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -236,10 +236,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			preferredIndex = 3
 		}]]
 
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Maelstrom Bar to Defaults", xCoord+xPadding, yCoord)
+		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar to Defaults", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopMaelstromBar_ResetButton", parent)
+		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetButton", parent)
 		f = controls.resetButton
 		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2, yCoord)
 		f:SetWidth(150)
@@ -262,14 +262,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f.ptex:SetAllPoints()
 		f:SetPushedTexture(f.ptex)
 		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopMaelstromBar_Reset")
+			StaticPopup_Show("TwintopResourceBar_Reset")
 		end)
 
 		yCoord = yCoord - 40		
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Maelstrom Bar Text", xCoord+xPadding, yCoord)
+		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopMaelstromBar_ResetBarTextSimpleButton", parent)
+		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextSimpleButton", parent)
 		f = controls.resetButton
 		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2, yCoord)
 		f:SetWidth(250)
@@ -292,12 +292,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f.ptex:SetAllPoints()
 		f:SetPushedTexture(f.ptex)
 		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopMaelstromBar_ResetBarTextSimple")
+			StaticPopup_Show("TwintopResourceBar_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 		
 		--[[
-		controls.resetButton = CreateFrame("Button", "TwintopMaelstromBar_ResetBarTextNarrowAdvancedButton", parent)
+		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextNarrowAdvancedButton", parent)
 		f = controls.resetButton
 		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord2, yCoord)
 		f:SetWidth(250)
@@ -320,11 +320,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f.ptex:SetAllPoints()
 		f:SetPushedTexture(f.ptex)
 		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopMaelstromBar_ResetBarTextNarrowAdvanced")
+			StaticPopup_Show("TwintopResourceBar_ResetBarTextNarrowAdvanced")
 		end)
 		]]
         
-		controls.resetButton = CreateFrame("Button", "TwintopMaelstromBar_ResetBarTextAdvancedButton", parent)
+		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextAdvancedButton", parent)
 		f = controls.resetButton
 		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2, yCoord)
 		f:SetWidth(250)
@@ -347,7 +347,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f.ptex:SetAllPoints()
 		f:SetPushedTexture(f.ptex)
 		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopMaelstromBar_ResetBarTextAdvanced")
+			StaticPopup_Show("TwintopResourceBar_ResetBarTextAdvanced")
 		end)
 
 		yCoord = yCoord - 40
@@ -895,9 +895,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TIBRB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Always show Maelstrom Bar")
+		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Maelstrom Bar always visible on your UI, even when out of combat."
+		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
 		f:SetChecked(TRB.Data.settings.shaman.elemental.displayBar.alwaysShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(true)
@@ -911,9 +911,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TIBRB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-15)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Maelstrom Bar when Maelstrom > 0")
+		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Maelstrom > 0")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Maelstrom Bar show out of combat only if Maelstrom > 0, hidden otherwise when out of combat."
+		f.tooltip = "This will make the Resource Bar show out of combat only if Maelstrom > 0, hidden otherwise when out of combat."
 		f:SetChecked(TRB.Data.settings.shaman.elemental.displayBar.notZeroShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
@@ -927,9 +927,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TIBRB1_4", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.combatShow
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-30)
-		getglobal(f:GetName() .. 'Text'):SetText("Only show Maelstrom Bar in combat")
+		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Maelstrom Bar only be visible on your UI when in combat."
+		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
 		f:SetChecked((not TRB.Data.settings.shaman.elemental.displayBar.alwaysShow) and (not TRB.Data.settings.shaman.elemental.displayBar.notZeroShow))
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
@@ -989,7 +989,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)
 
-		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom Bar's border", TRB.Data.settings.shaman.elemental.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.shaman.elemental.colors.bar.border, 225, 25, xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1638,7 +1638,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local controls = interfaceSettingsFrame.controls
 		local yCoord = -5
 		local f = nil
-		interfaceSettingsFrame.elementalBarTextDisplayPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopMaelstromBar_Elemental_BarTextDisplayLayoutPanel", parent)
+		interfaceSettingsFrame.elementalBarTextDisplayPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopResourceBar_Elemental_BarTextDisplayLayoutPanel", parent)
 		interfaceSettingsFrame.elementalBarTextDisplayPanel.name = "Elemental - Bar Text"
 		interfaceSettingsFrame.elementalBarTextDisplayPanel.parent = parent.name
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.elementalBarTextDisplayPanel)

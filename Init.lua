@@ -3,7 +3,8 @@ local _, TRB = ...
 -- Addon details data
 TRB.Details = {}
 TRB.Details.addonVersion = "9.0.2.12"
-TRB.Details.addonReleaseDate = "October 21, 2020"
+TRB.Details.addonReleaseDate = "October 22, 2020"
+TRB.Details.supportedSpecs = "Shadow Priest, Elemental Shaman"
 
 local addonData = {
 	loaded = false,
@@ -195,7 +196,7 @@ end
 function SlashCmdList.TWINTOP(msg)
     local cmd, subcmd = TRB.Functions.ParseCmdString(msg);
     if cmd == "reset" then
-        StaticPopup_Show("TwintopInsanityBar_Reset")
+        StaticPopup_Show("TwintopResourceBar_Reset")
     elseif cmd == "set" then
         cmd, subcmd = TRB.Functions.ParseCmdString(subcmd)
 
