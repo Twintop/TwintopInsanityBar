@@ -1,6 +1,10 @@
 # Twintop's Resource Bar
 A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
 
+Currently supported specs:
+- Elemental Shaman
+- Shadow Priest
+
 This is a fully customizable resource bar for multiple classes and specs to use to track their primary resource while in combat. Features include:
 - Full color, font, and texture customization of every part of the bar to make it suit your UI or make certain situations stand out.
 - Audio and visual cues for when important spells (e.g. Devouring Plague, Earth Shock) can be cast.
