@@ -426,7 +426,7 @@ local function ConstructResourceBar(settings)
         passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
         passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive))
         passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        passiveFrame:SetFrameLevel(80)
+		passiveFrame:SetFrameLevel(80)
         
         passiveFrame.threshold:SetWidth(settings.thresholdWidth)
         passiveFrame.threshold:SetHeight(settings.bar.height)

@@ -56,7 +56,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "#flameShock $fsCount    $haste% ($gcd)||n           {$ttd}[TTD: $ttd]",
+				text = "#sunfire $sunfireCount    {$talentStellarFlare}[#stellarFlare $stellarFlareCount    ]$haste% ($gcd)||n#moonfire $moonfireCount               {$ttd}[TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -98,21 +98,22 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			},
 			colors = {
 				text = {
-					current="FF6563E0",
+					current="FFFFB668",
 					casting="FFFFFFFF",
-					passive="FF995BDD",		
+					passive="FF00AA00",		
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
 					right="FFFFFFFF"
 				},
 				bar = {
-					border="FF00008D",
+					border="FFC16920",
 					background="66000000",
-					base="FF0055FF",
-					lunar="FF0055FF",
-					solar="FF0055FF",
+					base="FFFF7C0A",
+					lunar="FF144D72",
+					solar="FFFFEE00",
+					celestial="FF4A95CE",
 					casting="FFFFFFFF",
-					passive="FF995BDD",
+					passive="FF006600",
 					flashAlpha=0.70,
 					flashPeriod=0.5,
 					flashEnabled=true

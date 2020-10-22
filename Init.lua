@@ -49,7 +49,6 @@ TRB.Frames.interfaceSettingsFrameContainer = {}
 TRB.Data = {}
 
 TRB.Data.settings = {}
-TRB.Data.settings.core = {}
 
 TRB.Data.specSupported = false
 TRB.Data.resource = nil --SPELL_POWER_INSANITY

@@ -198,13 +198,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.specSupported = true
             CheckCharacter()
             
-			if TRB.Functions.IsTtdActive() then
-				targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-			else
-				targetsTimerFrame:SetScript("OnUpdate", nil)
-            end
+			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
             
-			targetsTimerFrame:SetScript("OnUpdate", nil)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
 			barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -704,7 +699,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].flameShock = false
 						TRB.Data.snapshotData.targetData.flameShock = TRB.Data.snapshotData.targetData.flameShock - 1
-					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+					elseif type == "SPELL_PERIODIC_DAMAGE" then
+                        TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
 					end		
 				elseif spellId == TRB.Data.spells.chainLightning.id or spellId == TRB.Data.spells.lavaBeam.id then
 					if type == "SPELL_DAMAGE" then
@@ -769,7 +765,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					if TwintopInsanityBarSettings then
 						TRB.Options.PortForwardPriestSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
-						TRB.Data.settings = TRB.Options.CleanupSettings()
+						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
 					else
 						TRB.Data.settings = settings
 					end	

@@ -537,11 +537,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.specSupported = true
 			CheckCharacter()
 			
-			if (TRB.Data.settings.priest.shadow.auspiciousSpiritsTracker and TRB.Data.character.talents.as.isSelected) or TRB.Functions.IsTtdActive() then
-				targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-			else
-				targetsTimerFrame:SetScript("OnUpdate", nil)
-			end
+			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			
 			--[[
 			if TRB.Data.settings.priest.shadow.mindbender.useNotification.enabled then
@@ -628,10 +624,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			end
 		end
+
 		TRB.Data.snapshotData.targetData.auspiciousSpirits = asTotal		
 		if TRB.Data.snapshotData.targetData.auspiciousSpirits < 0 then
 			TRB.Data.snapshotData.targetData.auspiciousSpirits = 0
 		end
+
 		TRB.Data.snapshotData.targetData.shadowWordPain = swpTotal		
 		TRB.Data.snapshotData.targetData.vampiricTouch = vtTotal		
 		TRB.Data.snapshotData.targetData.devouringPlague = dpTotal
@@ -1773,7 +1771,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = false
 						TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain - 1
-					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+					elseif type == "SPELL_PERIODIC_DAMAGE" then
+                        TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
 					end			
 				elseif spellId == TRB.Data.spells.mindSear.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_CAST_SUCCESS" then
@@ -1800,7 +1799,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif type == "SPELL_AURA_REMOVED" then				
 						TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouch = false
 						TRB.Data.snapshotData.targetData.vampiricTouch = TRB.Data.snapshotData.targetData.vampiricTouch - 1
-					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+					elseif type == "SPELL_PERIODIC_DAMAGE" then
+                        TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
 					end
 				elseif spellId == TRB.Data.spells.devouringPlague.id then
 					InitializeTarget(destGUID)
@@ -1811,7 +1811,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif type == "SPELL_AURA_REMOVED" then				
 						TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlague = false
 						TRB.Data.snapshotData.targetData.devouringPlague = TRB.Data.snapshotData.targetData.devouringPlague - 1
-					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+					elseif type == "SPELL_PERIODIC_DAMAGE" then
+                        TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
 					end
 				elseif TRB.Data.settings.priest.shadow.auspiciousSpiritsTracker and TRB.Data.character.talents.as.isSelected and spellId == TRB.Data.spells.auspiciousSpirits.idSpawn and type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
 					InitializeTarget(destGUID)
@@ -1922,7 +1923,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if TwintopInsanityBarSettings then
 						TRB.Options.PortForwardPriestSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
-						TRB.Data.settings = TRB.Options.CleanupSettings()
+						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
 					else
 						TRB.Data.settings = settings
 					end

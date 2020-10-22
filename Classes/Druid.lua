@@ -10,7 +10,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local resourceFrame = TRB.Frames.resourceFrame
 	local passiveFrame = TRB.Frames.passiveFrame
 
-	resourceFrame.thresholdEs = CreateFrame("Frame", nil, resourceFrame)
+	resourceFrame.thresholdSs = CreateFrame("Frame", nil, resourceFrame)
+	resourceFrame.thresholdSf = CreateFrame("Frame", nil, resourceFrame)
 	passiveFrame.threshold = CreateFrame("Frame", nil, passiveFrame)
 
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
@@ -80,13 +81,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			astralPower = 8
 		},
 		sunfire = {
-			id = 93402,
+			id = 164815,
 			name = "",
 			icon = "",
 			astralPower = 2
 		},
 		moonfire = {
-			id = 8921,
+			id = 164812,
 			name = "",
 			icon = "",
 			astralPower = 2
@@ -187,13 +188,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
     }
     
 	TRB.Data.snapshotData.audio = {
-		playedSsCue = false
+		playedSsCue = false,
 		playedSfCue = false
     }
 	TRB.Data.snapshotData.targetData = {
 		ttdIsActive = false,
-		currentTargetGuid = nil,
-		flameShock = 0,
+        currentTargetGuid = nil,
+        sunfire = 0,
+        moonfire = 0,
+		stellarFlare = 0,
 		targets = {}
 	}
 
@@ -281,14 +284,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 		if TRB.Data.settings.druid ~= nil and TRB.Data.settings.druid.balance ~= nil and TRB.Data.settings.druid.balance.starsurgeThreshold and TRB.Data.character.starsurgeThreshold < TRB.Data.character.maxResource then
 			resourceFrame.thresholdSs:Show()
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholdEs, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholdSs, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
 		else
 			resourceFrame.thresholdSs:Hide()
         end
         
 		if TRB.Data.settings.druid ~= nil and TRB.Data.settings.druid.balance ~= nil and TRB.Data.settings.druid.balance.starfallThreshold and TRB.Data.character.starfallThreshold < TRB.Data.character.maxResource then
 			resourceFrame.thresholdSf:Show()
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholdEs, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholdSf, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
 		else
 			resourceFrame.thresholdSf:Hide()
 		end
@@ -315,13 +318,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.specSupported = true
             CheckCharacter()
             
-			if TRB.Functions.IsTtdActive() then
-				targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-			else
-				targetsTimerFrame:SetScript("OnUpdate", nil)
-            end
+            targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
             
-			targetsTimerFrame:SetScript("OnUpdate", nil)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
 			barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -374,7 +372,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					stellarFlareTotal = stellarFlareTotal + 1
 				end
 			end
-		end		
+        end
+
 		TRB.Data.snapshotData.targetData.sunfire = sunfireTotal
 		TRB.Data.snapshotData.targetData.moonfire = moonfireTotal
 		TRB.Data.snapshotData.targetData.stellarFlare = stellarFlareTotal
@@ -413,6 +412,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
     local function IsValidVariableForSpec(var)
 		local valid = false
+        local affectingCombat = UnitAffectingCombat("player")
 
 		if var == "$crit" then
 			valid = true
@@ -430,12 +430,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			valid = true
 		elseif var == "$resourceTotal" or var == "$astralPowerTotal" then
 			if TRB.Data.snapshotData.resource > 0 or
-				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.chainLightning.id or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.lavaBeam.id)) then
+				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw > 0) then
 				valid = true
 			end
 		elseif var == "$resourcePlusCasting" or var == "$astralPowerPlusCasting" then
 			if TRB.Data.snapshotData.resource > 0 or
-				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.chainLightning.id or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.lavaBeam.id)) then
+				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw > 0) then
 				valid = true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$astralPowerPlusPassive" then
@@ -443,11 +443,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				valid = true
 			end
 		elseif var == "$casting" then
-			if TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.chainLightning.id) then
+			if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw > 0 then
 				valid = true
 			end
         elseif var == "$passive" then
-            valid = false --No passive sources?
+            if TRB.Data.character.talents.naturesBalance.isSelected and affectingCombat then
+                valid = true
+            end
 		elseif var == "$sunfireCount" then
 			if TRB.Data.snapshotData.targetData.sunfire > 0 then
 				valid = true
@@ -459,7 +461,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		elseif var == "$stellarFlareCount" then
 			if TRB.Data.snapshotData.targetData.stellarFlare > 0 then
 				valid = true
-			end
+            end
+        elseif var == "$talentStellarFlare" then
+            if TRB.Data.character.talents.stellarFlare.isSelected then
+                valid = true
+            end
 		elseif var == "$ttd" then
 			if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
 				valid = true
@@ -496,21 +502,26 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		----------
 		
 		--$astralPower
-		local currentAstralPower = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.currentAstralPower, TRB.Data.snapshotData.resource)
+		local currentAstralPower = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.current, TRB.Data.snapshotData.resource)
 		--$casting
-		local castingAstralPower = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.castingAstralPower, TRB.Data.snapshotData.casting.resourceFinal)
+		local castingAstralPower = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.casting, TRB.Data.snapshotData.casting.resourceFinal)
 		--$passive
-		local _passiveAstralPower = 0
-		local passiveAstralPower = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.passiveAstralPower, _passiveAstralPower)
+        local _passiveAstralPower = 0
+        
+        if TRB.Data.character.talents.naturesBalance.isSelected then
+            _passiveAstralPower = TRB.Data.spells.naturesBalance.astralPower
+        end
+
+		local passiveAstralPower = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.passive, _passiveAstralPower)
 		--$astralPowerTotal
 		local _astralPowerTotal = math.min(_passiveAstralPower + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local astralPowerTotal = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.currentAstralPower, _astralPowerTotal)
+		local astralPowerTotal = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.current, _astralPowerTotal)
 		--$astralPowerPlusCasting
 		local _astralPowerPlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local astralPowerPlusCasting = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.currentAstralPower, _astralPowerPlusCasting)
+		local astralPowerPlusCasting = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.current, _astralPowerPlusCasting)
 		--$astralPowerPlusPassive
 		local _astralPowerPlusPassive = math.min(_passiveAstralPower + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local astralPowerPlusPassive = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.currentAstralPower, _astralPowerPlusPassive)
+		local astralPowerPlusPassive = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.current, _astralPowerPlusPassive)
 
 		----------
 		--$sfCount
@@ -572,19 +583,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#starsurge"] = TRB.Data.spells.starsurge.icon
 		lookup["#starfall"] = TRB.Data.spells.starfall.icon
 		lookup["#celestialAlignment"] = TRB.Data.spells.celestialAlignment.icon
-		lookup["#solar"] = TRB.Data.spells.solar.icon
+		lookup["#solar"] = TRB.Data.spells.eclipseSolar.icon
 		lookup["#eclipseSolar"] = TRB.Data.spells.eclipseSolar.icon
-		lookup["#solarEclipse"] = TRB.Data.spells.solarEclipse.icon
-		lookup["#lunar"] = TRB.Data.spells.lunar.icon
+		lookup["#solarEclipse"] = TRB.Data.spells.eclipseSolar.icon
+		lookup["#lunar"] = TRB.Data.spells.eclipseLunar.icon
 		lookup["#eclipseLunar"] = TRB.Data.spells.eclipseLunar.icon
-		lookup["#lunarEclipse"] = TRB.Data.spells.lunarEclipse.icon
+		lookup["#lunarEclipse"] = TRB.Data.spells.eclipseLunar.icon
 		lookup["#naturesBalance"] = TRB.Data.spells.naturesBalance.icon
-		lookup["#woe"] = TRB.Data.spells.woe.icon
+		lookup["#woe"] = TRB.Data.spells.warriorOfElune.icon
 		lookup["#warriorOfElune"] = TRB.Data.spells.warriorOfElune.icon
 		lookup["#forceOfNature"] = TRB.Data.spells.forceOfNature.icon
 		lookup["#soulOfTheForest"] = TRB.Data.spells.soulOfTheForest.icon
 		lookup["#stellarFlare"] = TRB.Data.spells.stellarFlare.icon
-		lookup["#foe"] = TRB.Data.spells.foe.icon
+		lookup["#foe"] = TRB.Data.spells.furyOfElune.icon
 		lookup["#furyOfElune"] = TRB.Data.spells.furyOfElune.icon
 		lookup["#stellarFlare"] = TRB.Data.spells.stellarFlare.icon
 		lookup["#newMoon"] = TRB.Data.spells.newMoon.icon
@@ -612,6 +623,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$passive"] = passiveAstralPower
 		lookup["$foeAstralPower"] = foeAstralPower
 		lookup["$foeTicks"] = foeTicks
+		lookup["$talentStellarFlare"] = TRB.Data.character.talents.stellarFlare.isSelected
 		lookup["$ttd"] = ttd
 		lookup["||n"] = string.format("\n")
 		lookup["||c"] = string.format("%s", "|c")
@@ -659,7 +671,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				local spellName = select(1, currentSpell)
 				if spellName == TRB.Data.spells.wrath.name then
                     FillSnapshotDataCasting(TRB.Data.spells.wrath)
-                    if TRB.Data.character.talents.soulOfTheForest then
+                    if TRB.Data.character.talents.soulOfTheForest and TRB.Data.spells.eclipseSolar.isActive then
                         TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal * TRB.Data.spells.soulOfTheForest.modifier
                     end
 				elseif spellName == TRB.Data.spells.starfire.name then
@@ -692,7 +704,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Functions.UpdateSnapshot()
 		TRB.Data.spells.eclipseSolar.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.eclipseSolar.id))
         TRB.Data.spells.eclipseLunar.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.eclipseLunar.id))
-        -- TODO: UpdateFuryOfElune()
+        --UpdateFuryOfElune()
 	end    
 
 	local function HideResourceBar()
@@ -704,7 +716,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					(not TRB.Data.settings.druid.balance.displayBar.notZeroShow) or
                     (TRB.Data.settings.druid.balance.displayBar.notZeroShow and
                         ((not TRB.Data.character.talents.naturesBalance.isSelected and TRB.Data.snapshotData.resource == 0) or
-                         (TRB.Data.character.talents.naturesBalance.isSelected and (TRB.Data.snapshotData.resource == 50 or TRB.Data.snapshotData.resource == 51)))
+                         (TRB.Data.character.talents.naturesBalance.isSelected and TRB.Data.snapshotData.resource >= 50))
                     )
 				)
 			 ) then
@@ -732,49 +744,58 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			else
 				castingFrame:SetValue(TRB.Data.snapshotData.resource)
 			end
-            
+
             if TRB.Data.character.talents.naturesBalance.isSelected and (affectingCombat or (not affectingCombat and TRB.Data.snapshotData.resource < 50)) then
                 passiveFrame:SetValue(TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.naturesBalance.astralPower)
             else
                 passiveFrame:SetValue(TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal)
             end
             
-			-- Elemental doesn't use the passive frame right now. Hide it and the threshold line
+			-- Balance doesn't use the passive threshold right now. Hide it
 			passiveFrame.threshold.texture:Hide()
 
 			if TRB.Data.settings.druid.balance.starsurgeThreshold then
-				resourceFrame.thresholdSs:Show()
+                resourceFrame.thresholdSs:Show()                
+                if TRB.Data.snapshotData.resource >= TRB.Data.character.starsurgeThreshold then
+                    resourceFrame.thresholdSs.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+                    if TRB.Data.settings.druid.balance.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
+                        TRB.Data.snapshotData.audio.playedSsCue = true
+                        PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
+                    end
+                else
+                    resourceFrame.thresholdSs.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+                    TRB.Data.snapshotData.audio.playedSsCue = false
+                end
 			else
 				resourceFrame.thresholdSs:Hide()
             end
             
 			if TRB.Data.settings.druid.balance.starfallThreshold then
 				resourceFrame.thresholdSf:Show()
+                if TRB.Data.snapshotData.resource >= TRB.Data.character.starfallThreshold then
+                    resourceFrame.thresholdSf.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+                    if TRB.Data.settings.druid.balance.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
+                        TRB.Data.snapshotData.audio.playedSfCue = true
+                        PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
+                    end
+                else
+                    resourceFrame.thresholdSf.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+                    TRB.Data.snapshotData.audio.playedSfCue = false
+                end
 			else
 				resourceFrame.thresholdSf:Hide()
-			end
-			
-			if TRB.Data.snapshotData.resource >= TRB.Data.character.starsurgeThreshold then
-				resourceFrame.thresholdSs.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-				if TRB.Data.settings.druid.balance.audio.esReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
-					TRB.Data.snapshotData.audio.playedSsCue = true
-					PlaySoundFile(TRB.Data.settings.druid.balance.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
-				end
-			else
-				resourceFrame.thresholdSs.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-				TRB.Data.snapshotData.audio.playedSsCue = false
-			end
-			
-			if TRB.Data.snapshotData.resource >= TRB.Data.character.starsurgeThreshold then
-				resourceFrame.thresholdSf.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-				if TRB.Data.settings.druid.balance.audio.esReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
-					TRB.Data.snapshotData.audio.playedSfCue = true
-					PlaySoundFile(TRB.Data.settings.druid.balance.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
-				end
-			else
-				resourceFrame.thresholdSs.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-				TRB.Data.snapshotData.audio.playedSfCue = false
-			end
+            end
+            
+            if TRB.Data.spells.eclipseSolar.isActive and TRB.Data.spells.eclipseLunar.isActive then
+                resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.celestial, true))	
+            elseif TRB.Data.spells.eclipseSolar.isActive then
+                resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.solar, true))	
+            elseif TRB.Data.spells.eclipseLunar.isActive then
+                resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.lunar, true))	
+            else
+                resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.base, true))	
+            end
+
 		end
 
 		TRB.Functions.UpdateResourceBar(TRB.Data.settings.druid.balance)
@@ -806,10 +827,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if self.sinceLastUpdate >= 0.05 then -- in seconds
 			TriggerResourceBarUpdates()
 			self.sinceLastUpdate = 0
-			if TRB.Data.snapshotData.chainLightning.hitTime ~= nil and currentTime > (TRB.Data.snapshotData.chainLightning.hitTime + 6) then
-				TRB.Data.snapshotData.chainLightning.hitTime = nil
-				TRB.Data.snapshotData.chainLightning.targetsHit = 0
-			end
 		end
 
 		if self.characterCheckSinceLastUpdate >= TRB.Data.settings.core.dataRefreshRate then -- in seconds
@@ -901,7 +918,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].sunfire = false
 						TRB.Data.snapshotData.targetData.sunfire = TRB.Data.snapshotData.targetData.sunfire - 1
-					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+					elseif type == "SPELL_PERIODIC_DAMAGE" then
+                        TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
 					end
 				elseif spellId == TRB.Data.spells.moonfire.id then
 					InitializeTarget(destGUID)
@@ -912,7 +930,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].moonfire = false
 						TRB.Data.snapshotData.targetData.moonfire = TRB.Data.snapshotData.targetData.moonfire - 1
-					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+                    elseif type == "SPELL_PERIODIC_DAMAGE" then
+                        TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
 					end		
 				elseif spellId == TRB.Data.spells.stellarFlare.id then
 					InitializeTarget(destGUID)
@@ -923,7 +942,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].stellarFlare = false
 						TRB.Data.snapshotData.targetData.stellarFlare = TRB.Data.snapshotData.targetData.stellarFlare - 1
-					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+					elseif type == "SPELL_PERIODIC_DAMAGE" then
+                        TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
 					end		
 				else
                 end
@@ -980,7 +1000,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if TwintopInsanityBarSettings then
 						TRB.Options.PortForwardPriestSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
-						TRB.Data.settings = TRB.Options.CleanupSettings()
+						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
 					else
 						TRB.Data.settings = settings
 					end	
