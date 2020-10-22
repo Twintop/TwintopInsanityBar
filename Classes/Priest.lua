@@ -1951,15 +1951,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					
 			if TRB.Details.addonData.registered == true and event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
 				EventRegistration()
-					
-				local affectingCombat = UnitAffectingCombat("player")
-
-				if (not affectingCombat) and TRB.Data.settings.priest.shadow ~= nil and TRB.Data.settings.priest.shadow.displayBar ~= nil and (
-					(not TRB.Data.settings.priest.shadow.displayBar.alwaysShow) and (
-						(not TRB.Data.settings.priest.shadow.displayBar.notZeroShow) or
-						(TRB.Data.settings.priest.shadow.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0))) then	
-					barContainerFrame:Hide()
-				end
+				TRB.Functions.HideResourceBar()
 			end
 		end
 	end)

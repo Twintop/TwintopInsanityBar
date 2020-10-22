@@ -21,8 +21,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
     
 	Global_TwintopResourceBar = {
 		ttd = 0,
-		maelstrom = {
-			maelstrom = 0,
+		resource = {
+			resource = 0,
 			casting = 0,
 			passive = 0
 		},
@@ -559,7 +559,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				resourceFrame.thresholdEs:Hide()
 			end
 			
-			if TRB.Data.snapshotData.resource >= TRB.Data.character.earthShockThreshold then
+			if TRB.Data.snapshotData.resource >= TRB.Data.character.earthShockThreshold then				
+                resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.earthShock, true))
 				resourceFrame.thresholdEs.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.over, true))
 				if TRB.Data.settings.shaman.elemental.colors.bar.flashEnabled then
 					TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.shaman.elemental.colors.bar.flashAlpha, TRB.Data.settings.shaman.elemental.colors.bar.flashPeriod)
@@ -574,14 +575,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			else
 				resourceFrame.thresholdEs.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.under, true))
 				barContainerFrame:SetAlpha(1.0)
+                resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.base, true))
 				TRB.Data.snapshotData.audio.playedEsCue = false
 			end
-			
-            if TRB.Data.snapshotData.resource >= TRB.Data.character.earthShockThreshold then
-                resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.earthShock, true))
-            else
-                resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.base, true))
-            end
 		end
 
 		TRB.Functions.UpdateResourceBar(TRB.Data.settings.shaman.elemental)
@@ -802,16 +798,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 					
 			if TRB.Details.addonData.registered == true and event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
-				EventRegistration()
-					
-				local affectingCombat = UnitAffectingCombat("player")
-
-				if (not affectingCombat) and TRB.Data.settings.shaman.elemental ~= nil and TRB.Data.settings.shaman.elemental.displayBar ~= nil and (
-					(not TRB.Data.settings.shaman.elemental.displayBar.alwaysShow) and (
-						(not TRB.Data.settings.shaman.elemental.displayBar.notZeroShow) or
-						(TRB.Data.settings.shaman.elemental.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0))) then	
-					barContainerFrame:Hide()
-				end
+				EventRegistration()				
+				TRB.Functions.HideResourceBar()
 			end
 		end
 	end)
