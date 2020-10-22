@@ -354,24 +354,24 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local sunfireTotal = 0
 		local moonfireTotal = 0
 		local stellarFlareTotal = 0
-		for tguid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
-			if (currentTime - TRB.Data.snapshotData.targetData.targets[tguid].lastUpdate) > 10 then
-                TRB.Data.snapshotData.targetData.targets[guid].sunfire = false
-                TRB.Data.snapshotData.targetData.targets[guid].moonfire = false
-                TRB.Data.snapshotData.targetData.targets[guid].stellarFlare = false
-			else
-				if TRB.Data.snapshotData.targetData.targets[tguid].sunfire == true then
-					sunfireTotal = sunfireTotal + 1
+        for tguid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
+            if (currentTime - TRB.Data.snapshotData.targetData.targets[tguid].lastUpdate) > 10 then
+                TRB.Data.snapshotData.targetData.targets[tguid].sunfire = false
+                TRB.Data.snapshotData.targetData.targets[tguid].moonfire = false
+                TRB.Data.snapshotData.targetData.targets[tguid].stellarFlare = false
+            else
+                if TRB.Data.snapshotData.targetData.targets[tguid].sunfire == true then
+                    sunfireTotal = sunfireTotal + 1
                 end
                 
-				if TRB.Data.snapshotData.targetData.targets[tguid].moonfire == true then
-					moonfireTotal = moonfireTotal + 1
+                if TRB.Data.snapshotData.targetData.targets[tguid].moonfire == true then
+                    moonfireTotal = moonfireTotal + 1
                 end
                 
-				if TRB.Data.snapshotData.targetData.targets[tguid].stellarFlare == true then
-					stellarFlareTotal = stellarFlareTotal + 1
-				end
-			end
+                if TRB.Data.snapshotData.targetData.targets[tguid].stellarFlare == true then
+                    stellarFlareTotal = stellarFlareTotal + 1
+                end
+            end
         end
 
 		TRB.Data.snapshotData.targetData.sunfire = sunfireTotal
@@ -918,8 +918,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].sunfire = false
 						TRB.Data.snapshotData.targetData.sunfire = TRB.Data.snapshotData.targetData.sunfire - 1
-					elseif type == "SPELL_PERIODIC_DAMAGE" then
-                        TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+					--elseif type == "SPELL_PERIODIC_DAMAGE" then
 					end
 				elseif spellId == TRB.Data.spells.moonfire.id then
 					InitializeTarget(destGUID)
@@ -930,8 +929,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].moonfire = false
 						TRB.Data.snapshotData.targetData.moonfire = TRB.Data.snapshotData.targetData.moonfire - 1
-                    elseif type == "SPELL_PERIODIC_DAMAGE" then
-                        TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+                    --elseif type == "SPELL_PERIODIC_DAMAGE" then
 					end		
 				elseif spellId == TRB.Data.spells.stellarFlare.id then
 					InitializeTarget(destGUID)
@@ -942,8 +940,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].stellarFlare = false
 						TRB.Data.snapshotData.targetData.stellarFlare = TRB.Data.snapshotData.targetData.stellarFlare - 1
-					elseif type == "SPELL_PERIODIC_DAMAGE" then
-                        TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+					--elseif type == "SPELL_PERIODIC_DAMAGE" then
 					end		
 				else
                 end

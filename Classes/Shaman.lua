@@ -699,8 +699,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].flameShock = false
 						TRB.Data.snapshotData.targetData.flameShock = TRB.Data.snapshotData.targetData.flameShock - 1
-					elseif type == "SPELL_PERIODIC_DAMAGE" then
-                        TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+					--elseif type == "SPELL_PERIODIC_DAMAGE" then
 					end		
 				elseif spellId == TRB.Data.spells.chainLightning.id or spellId == TRB.Data.spells.lavaBeam.id then
 					if type == "SPELL_DAMAGE" then

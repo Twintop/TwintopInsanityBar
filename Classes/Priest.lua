@@ -1771,8 +1771,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = false
 						TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain - 1
-					elseif type == "SPELL_PERIODIC_DAMAGE" then
-                        TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+					--elseif type == "SPELL_PERIODIC_DAMAGE" then
 					end			
 				elseif spellId == TRB.Data.spells.mindSear.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_CAST_SUCCESS" then
@@ -1799,8 +1798,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif type == "SPELL_AURA_REMOVED" then				
 						TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouch = false
 						TRB.Data.snapshotData.targetData.vampiricTouch = TRB.Data.snapshotData.targetData.vampiricTouch - 1
-					elseif type == "SPELL_PERIODIC_DAMAGE" then
-                        TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+					--elseif type == "SPELL_PERIODIC_DAMAGE" then
 					end
 				elseif spellId == TRB.Data.spells.devouringPlague.id then
 					InitializeTarget(destGUID)
@@ -1811,8 +1809,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif type == "SPELL_AURA_REMOVED" then				
 						TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlague = false
 						TRB.Data.snapshotData.targetData.devouringPlague = TRB.Data.snapshotData.targetData.devouringPlague - 1
-					elseif type == "SPELL_PERIODIC_DAMAGE" then
-                        TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+					--elseif type == "SPELL_PERIODIC_DAMAGE" then
 					end
 				elseif TRB.Data.settings.priest.shadow.auspiciousSpiritsTracker and TRB.Data.character.talents.as.isSelected and spellId == TRB.Data.spells.auspiciousSpirits.idSpawn and type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
 					InitializeTarget(destGUID)
