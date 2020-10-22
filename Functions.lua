@@ -835,13 +835,12 @@ local function DoesItemLinkMatchMatchIdAndHaveBonus(itemLink, id, bonusId)
 		for x = 1, tonumber(parts[14]) do
 			if tonumber(parts[14+x]) == bonusId then
 				return true
-				break
 			end			
 		end
 	end
 	return false
 end
-TRB.Function.DoesItemLinkMatchMatchIdAndHaveBonus = DoesItemLinkMatchMatchIdAndHaveBonus
+TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus = DoesItemLinkMatchMatchIdAndHaveBonus
 
 -- Misc Functions
 
