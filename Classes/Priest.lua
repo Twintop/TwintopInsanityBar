@@ -503,32 +503,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			local callToTheVoid = false
 			if wristItemLink ~= nil then
-				local wristParts = { strsplit(":", wristItemLink) }
-				-- Note for Future Twintop:
-				--  1  = Item Name
-				--  2  = Item Id
-				-- 14  = # of Bonuses
-				-- 15+ = Bonuses
-				if tonumber(wristParts[2]) == 173249 and tonumber(wristParts[14]) > 0 then
-					for x = 1, tonumber(wristParts[14]) do
-						if tonumber(wristParts[14+x]) == TRB.Data.spells.eternalCallToTheVoid_Tendril.idLegendaryBonus then
-							callToTheVoid = true
-							break
-						end			
-					end
-				end
+				callToTheVoid = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(wristItemLink, 173249, TRB.Data.spells.eternalCallToTheVoid_Tendril.idLegendaryBonus)
 			end
 			
 			if callToTheVoid == false and handsItemLink ~= nil then
-				local handsParts = { strsplit(":", handsItemLink) }
-				if tonumber(handsParts[2]) == 173244 and tonumber(handsParts[14]) > 0 then
-					for x = 1, tonumber(handsParts[14]) do
-						if tonumber(handsParts[14+x]) == TRB.Data.spells.eternalCallToTheVoid_Tendril.idLegendaryBonus then
-							callToTheVoid = true
-							break
-						end			
-					end
-				end
+				callToTheVoid = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(handsItemLink, 173244, TRB.Data.spells.eternalCallToTheVoid_Tendril.idLegendaryBonus)
 			end
 			TRB.Data.character.items.callToTheVoid = callToTheVoid
 		end

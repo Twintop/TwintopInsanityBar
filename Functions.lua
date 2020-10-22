@@ -824,6 +824,24 @@ local function UpdateSnapshot()
 end
 TRB.Functions.UpdateSnapshot = UpdateSnapshot
 
+local function DoesItemLinkMatchMatchIdAndHaveBonus(itemLink, id, bonusId)
+	local parts = { strsplit(":", itemLink) }
+	-- Note for Future Twintop:
+	--  1  = Item Name
+	--  2  = Item Id
+	-- 14  = # of Bonuses
+	-- 15+ = Bonuses
+	if tonumber(parts[2]) == id and tonumber(parts[14]) > 0 then
+		for x = 1, tonumber(parts[14]) do
+			if tonumber(parts[14+x]) == bonusId then
+				return true
+				break
+			end			
+		end
+	end
+	return false
+end
+TRB.Function.DoesItemLinkMatchMatchIdAndHaveBonus = DoesItemLinkMatchMatchIdAndHaveBonus
 
 -- Misc Functions
 
