@@ -472,7 +472,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function CheckCharacter()
 		TRB.Functions.CheckCharacter()
-		TRB.Data.character.maxResource = UnitPowerMax("player", SPELL_POWER_INSANITY)
+		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Insanity)
 		TRB.Data.character.talents.searingNightmare.isSelected = select(4, GetTalentInfo(3, 3, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.fotm.isSelected = select(4, GetTalentInfo(1, 1, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.as.isSelected = select(4, GetTalentInfo(5, 1, TRB.Data.character.specGroup))
@@ -533,7 +533,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function EventRegistration()
 		if GetSpecialization() == 3 then		
-			TRB.Data.resource = SPELL_POWER_INSANITY
+			TRB.Data.resource = Enum.PowerType.Insanity
+			TRB.Data.resourceFactor = 100
 			TRB.Data.specSupported = true
 			CheckCharacter()
 			

@@ -51,7 +51,8 @@ TRB.Data = {}
 TRB.Data.settings = {}
 
 TRB.Data.specSupported = false
-TRB.Data.resource = nil --SPELL_POWER_INSANITY
+TRB.Data.resource = nil 
+TRB.Data.resourceFactor = 1
 
 TRB.Data.barTextVariables = {
     icons = {},

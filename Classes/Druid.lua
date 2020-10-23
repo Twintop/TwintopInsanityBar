@@ -270,7 +270,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function CheckCharacter()
 		TRB.Functions.CheckCharacter()
-		TRB.Data.character.maxResource = UnitPowerMax("player", SPELL_POWER_LUNAR_POWER)
+		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.LunarPower)
 		TRB.Data.character.talents.naturesBalance.isSelected = select(4, GetTalentInfo(1, 1, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.warriorOfElune.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.forceOfNature.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
@@ -314,7 +314,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function EventRegistration()
 		if GetSpecialization() == 1 then		
-			TRB.Data.resource = SPELL_POWER_LUNAR_POWER
+			TRB.Data.resource = Enum.PowerType.LunarPower
+			TRB.Data.resourceFactor = 10
 			TRB.Data.specSupported = true
             CheckCharacter()
             

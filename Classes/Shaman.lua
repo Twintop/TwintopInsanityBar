@@ -162,7 +162,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function CheckCharacter()
 		TRB.Functions.CheckCharacter()
-		TRB.Data.character.maxResource = UnitPowerMax("player", SPELL_POWER_MAELSTROM)
+		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom)
 		TRB.Data.character.talents.elementalBlast.isSelected = select(4, GetTalentInfo(2, 3, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.icefury.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.ascendance.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
@@ -194,7 +194,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function EventRegistration()
 		if GetSpecialization() == 1 then		
-			TRB.Data.resource = SPELL_POWER_MAELSTROM
+			TRB.Data.resource = Enum.PowerType.Maelstrom
+			TRB.Data.resourceFactor = 1
 			TRB.Data.specSupported = true
             CheckCharacter()
             
