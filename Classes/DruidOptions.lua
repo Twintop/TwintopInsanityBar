@@ -114,6 +114,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					celestial="FF4A95CE",
 					casting="FFFFFFFF",
 					passive="FF006600",
+					eclipse1GCD="FFFF0000",
+					moonkinFormMissing="FFFF0000",
 					flashAlpha=0.70,
 					flashPeriod=0.5,
 					flashEnabled=true

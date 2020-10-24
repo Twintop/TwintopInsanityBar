@@ -734,7 +734,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if barContainerFrame:IsShown() then
             local affectingCombat = UnitAffectingCombat("player")
 
-			if TRB.Data.snapshotData.resource == 0 then
+			if (not affectingCombat) and
+				((not TRB.Data.character.talents.naturesBalance.isSelected and TRB.Data.snapshotData.resource == 0) or
+				 (TRB.Data.character.talents.naturesBalance.isSelected and TRB.Data.snapshotData.resource >= 50)) then
 				TRB.Functions.HideResourceBar()
 			end
 			
