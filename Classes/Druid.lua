@@ -251,6 +251,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "#woe", icon = TRB.Data.spells.warriorOfElune.icon, description = "Warrior of Elune", printInSettings = false },
 			{ variable = "#warriorOfElune", icon = TRB.Data.spells.warriorOfElune.icon, description = "Warrior of Elune", printInSettings = true },
 			{ variable = "#forceOfNature", icon = TRB.Data.spells.forceOfNature.icon, description = "Force of Nature", printInSettings = true },
+			{ variable = "#fon", icon = TRB.Data.spells.forceOfNature.icon, description = "Force of Nature", printInSettings = false },
             
             { variable = "#soulOfTheForest", icon = TRB.Data.spells.soulOfTheForest.icon, description = "Soul of the Forest", printInSettings = true },
             
@@ -283,9 +284,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$resourcePlusPassive", description = "Current + Passive Astral Power Total", printInSettings = false, color = false },
 			{ variable = "$astralPowerTotal", description = "Current + Passive + Casting Astral Power Total", printInSettings = true, color = false },   
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Astral Power Total", printInSettings = false, color = false },     
-			{ variable = "$foeAstralPower", description = "Passive Astral Power incoming from Fury of Elune", printInSettings = false, color = false },   
-			{ variable = "$foeTicks", description = "Number of ticks of Fury of Elune remaining", printInSettings = false, color = false },   
-			{ variable = "$foeTime", description = "Amount of time remaining on Fury of Elune's effect", printInSettings = false, color = false },   
+			{ variable = "$foeAstralPower", description = "Passive Astral Power incoming from Fury of Elune", printInSettings = true, color = false },   
+			{ variable = "$foeTicks", description = "Number of ticks of Fury of Elune remaining", printInSettings = true, color = false },   
+			{ variable = "$foeTime", description = "Amount of time remaining on Fury of Elune's effect", printInSettings = true, color = false },   
 
 			{ variable = "$sunfireCount", description = "Number of Sunfires active on targets", printInSettings = true, color = false },
 			{ variable = "$moonfireCount", description = "Number of Moonfires active on targets", printInSettings = true, color = false },
@@ -627,7 +628,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			resource = {
 				resource = TRB.Data.snapshotData.resource or 0,
 				casting = TRB.Data.snapshotData.casting.resourceFinal or 0,
-				passive = _passiveAstralPower,
+				passive = _passiveAstralPower or 0,
+				furyOfElune = foeAstralPower or 0
             },            
 			dots = {
                 sunfireCount = sunfireCount or 0,
@@ -660,8 +662,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#woe"] = TRB.Data.spells.warriorOfElune.icon
 		lookup["#warriorOfElune"] = TRB.Data.spells.warriorOfElune.icon
 		lookup["#forceOfNature"] = TRB.Data.spells.forceOfNature.icon
+		lookup["#fon"] = TRB.Data.spells.forceOfNature.icon
 		lookup["#soulOfTheForest"] = TRB.Data.spells.soulOfTheForest.icon
-		lookup["#stellarFlare"] = TRB.Data.spells.stellarFlare.icon
 		lookup["#foe"] = TRB.Data.spells.furyOfElune.icon
 		lookup["#furyOfElune"] = TRB.Data.spells.furyOfElune.icon
 		lookup["#stellarFlare"] = TRB.Data.spells.stellarFlare.icon
