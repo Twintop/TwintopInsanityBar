@@ -1068,7 +1068,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while not in Voidform", TRB.Data.settings.priest.shadow.colors.bar.base, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while not in Voidform", TRB.Data.settings.priest.shadow.colors.bar.base, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1088,7 +1088,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		controls.colors.inVoidform = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while in Voidform", TRB.Data.settings.priest.shadow.colors.bar.inVoidform, 250, 25, xCoord2, yCoord)
+		controls.colors.inVoidform = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while in Voidform", TRB.Data.settings.priest.shadow.colors.bar.inVoidform, 275, 25, xCoord2, yCoord)
 		f = controls.colors.inVoidform
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1109,7 +1109,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.enterVoidform = TRB.UiFunctions.BuildColorPicker(parent, "Insanity when you can cast Devouring Plague", TRB.Data.settings.priest.shadow.colors.bar.enterVoidform, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.enterVoidform = TRB.UiFunctions.BuildColorPicker(parent, "Insanity when you can cast Devouring Plague", TRB.Data.settings.priest.shadow.colors.bar.enterVoidform, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.enterVoidform
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1151,7 +1151,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Insanity from hardcasting spells", TRB.Data.settings.priest.shadow.colors.bar.casting, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Insanity from hardcasting spells", TRB.Data.settings.priest.shadow.colors.bar.casting, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1172,7 +1172,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)	
 			
-		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.priest.shadow.colors.bar.background, 250, 25, xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.priest.shadow.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1214,7 +1214,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)	
 			
-		controls.colors.inVoidform2GCD = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while you have between 1-2 GCDs left in Voidform", TRB.Data.settings.priest.shadow.colors.bar.inVoidform2GCD, 250, 25, xCoord2, yCoord)
+		controls.colors.inVoidform2GCD = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while you have between 1-2 GCDs left in Voidform", TRB.Data.settings.priest.shadow.colors.bar.inVoidform2GCD, 275, 25, xCoord2, yCoord)
 		f = controls.colors.inVoidform2GCD
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1235,7 +1235,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over min. req. Insanity to cast Devouring Plague Threshold Line", TRB.Data.settings.priest.shadow.colors.threshold.over, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over min. req. Insanity to cast Devouring Plague Threshold Line", TRB.Data.settings.priest.shadow.colors.threshold.over, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.thresholdOver
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1255,7 +1255,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		controls.colors.inVoidform1GCD = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while you have less than 1 GCD left in Voidform", TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, 250, 25, xCoord2, yCoord)
+		controls.colors.inVoidform1GCD = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while you have less than 1 GCD left in Voidform", TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, 275, 25, xCoord2, yCoord)
 		f = controls.colors.inVoidform1GCD
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1276,7 +1276,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.mindbenderThreshold = TRB.UiFunctions.BuildColorPicker(parent, "Shadowfiend Insanity Gain Threshold Line", TRB.Data.settings.priest.shadow.colors.threshold.mindbender, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.mindbenderThreshold = TRB.UiFunctions.BuildColorPicker(parent, "Shadowfiend Insanity Gain Threshold Line", TRB.Data.settings.priest.shadow.colors.threshold.mindbender, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.mindbenderThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1297,7 +1297,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		controls.colors.overcapBorder = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Insanity", TRB.Data.settings.priest.shadow.colors.bar.overcapBorder, 250, 25, xCoord2, yCoord)
+		controls.colors.overcapBorder = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Insanity", TRB.Data.settings.priest.shadow.colors.bar.overcapBorder, 275, 25, xCoord2, yCoord)
 		f = controls.colors.overcapBorder
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1706,7 +1706,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Insanity Text Colors", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentInsanityText = TRB.UiFunctions.BuildColorPicker(parent, "Current Insanity", TRB.Data.settings.priest.shadow.colors.text.currentInsanity, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.currentInsanityText = TRB.UiFunctions.BuildColorPicker(parent, "Current Insanity", TRB.Data.settings.priest.shadow.colors.text.currentInsanity, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.currentInsanityText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1728,7 +1728,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		controls.colors.castingInsanityText = TRB.UiFunctions.BuildColorPicker(parent, "Insanity from hardcasting spells", TRB.Data.settings.priest.shadow.colors.text.castingInsanity, 250, 25, xCoord2, yCoord)
+		controls.colors.castingInsanityText = TRB.UiFunctions.BuildColorPicker(parent, "Insanity from hardcasting spells", TRB.Data.settings.priest.shadow.colors.text.castingInsanity, 275, 25, xCoord2, yCoord)
 		f = controls.colors.castingInsanityText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1752,7 +1752,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 		
 		yCoord = yCoord - 30
-		controls.colors.overcapInsanityText = TRB.UiFunctions.BuildColorPicker(parent, "Cast will overcap Insanity", TRB.Data.settings.priest.shadow.colors.text.overcapInsanity, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.overcapInsanityText = TRB.UiFunctions.BuildColorPicker(parent, "Cast will overcap Insanity", TRB.Data.settings.priest.shadow.colors.text.overcapInsanity, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.overcapInsanityText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1769,7 +1769,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					a = 1.0
 		
 					controls.colors.overcapInsanityText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.text.currentInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					TRB.Data.settings.priest.shadow.colors.text.overcapInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 				end)
 			end
 		end)

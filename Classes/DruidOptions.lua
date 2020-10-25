@@ -100,13 +100,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				text = {
 					current="FFFFB668",
 					casting="FFFFFFFF",
-					passive="FF00AA00",		
+					passive="FF00AA00",	
+					overcap="FFFF0000",	
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
 					right="FFFFFFFF"
 				},
 				bar = {
 					border="FFC16920",
+					borderOvercap="FFFF0000",
 					background="66000000",
 					base="FFFF7C0A",
 					lunar="FF144D72",
@@ -118,7 +120,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					moonkinFormMissing="FFFF0000",
 					flashAlpha=0.70,
 					flashPeriod=0.5,
-					flashEnabled=true
+					flashEnabled=true,
+					overcapEnabled=true
 				},
 				threshold = {
 					under="FFFFFFFF",
@@ -130,13 +133,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				ssReady={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
-					soundName="Boxing Arena Gong (TIB)"
+					soundName="TRB: Boxing Arena Gong"
 				},
 				sfReady={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
-					soundName="Boxing Arena Gong (TIB)"
+					soundName="TRB: Boxing Arena Gong"
 				},
+				overcap={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				}
             },
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -172,7 +180,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local controls = interfaceSettingsFrame.controls
 		local yCoord = -5
 		local f = nil
-		interfaceSettingsFrame.balanceOptionsLayoutPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopResourceBar_Balance_OptionsLayoutPanel", parent)
+		interfaceSettingsFrame.balanceOptionsLayoutPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopResourceBar_Shadow_OptionsLayoutPanel", parent)
 		interfaceSettingsFrame.balanceOptionsLayoutPanel.name = "Balance - Options"
 		interfaceSettingsFrame.balanceOptionsLayoutPanel.parent = parent.name
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.balanceOptionsLayoutPanel)
@@ -195,7 +203,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 
 		StaticPopupDialogs["TwintopResourceBar_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to it's default configuration? Only the Balance Druid settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar back to it's default configuration? Only the Balance Druid settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -304,9 +312,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPushedTexture(f.ptex)
 		f:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_ResetBarTextSimple")
-        end)
+		end)
+
 		yCoord = yCoord - 40
-		
 		--[[
 		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextNarrowAdvancedButton", parent)
 		f = controls.resetButton
@@ -334,7 +342,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			StaticPopup_Show("TwintopResourceBar_ResetBarTextNarrowAdvanced")
 		end)
 		]]
-        
+
 		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextAdvancedButton", parent)
 		f = controls.resetButton
 		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2, yCoord)
@@ -382,7 +390,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			resourceFrame:SetWidth(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			castingFrame:SetWidth(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			passiveFrame:SetWidth(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			TRB.Functions.RepositionThreshold(resourceFrame.thresholdEs, resourceFrame, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(resourceFrame.thresholdDp, resourceFrame, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(resourceFrame.thresholdSn, resourceFrame, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / 8), math.floor(TRB.Data.settings.druid.balance.bar.width / 8))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -403,7 +412,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			barContainerFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			barBorderFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height)
 			resourceFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			resourceFrame.thresholdEs:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
+			resourceFrame.thresholdDp:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
+			resourceFrame.thresholdSn:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			castingFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			passiveFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			passiveFrame.threshold:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))		
@@ -487,7 +497,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				barBorderFrame:Show()
 			end
 			barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.border, true))
+			barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.border, true))
 
 			local minBarWidth = math.max(TRB.Data.settings.druid.balance.bar.border*2, 120)
 			local minBarHeight = math.max(TRB.Data.settings.druid.balance.bar.border*2, 1)
@@ -509,7 +519,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.druid.balance.thresholdWidth = value
-			resourceFrame.thresholdEs:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
+			resourceFrame.thresholdDp:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
+			resourceFrame.thresholdSn:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
 			passiveFrame.threshold:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
 		end)
 
@@ -534,7 +545,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 30
 		
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TIBAstralPowerBarTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TIBInsanityBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Main Bar Texture", xCoord+xPadding, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
@@ -655,7 +666,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			CloseDropDownMenus()
 		end
 
-		--[[
 		yCoord = yCoord - 60
 			
 		-- Create the dropdown, and configure its appearance
@@ -718,9 +728,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 			CloseDropDownMenus()
 		end	
-		]]
-
-		yCoord = yCoord - 40
+		
 		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TIBCB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -870,7 +878,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		yCoord = yCoord - 50
 
-		title = "Earth Shock/EQ Flash Alpha"
+		title = "Moonkin Form Missing Flash Alpha"
 		controls.flashAlpha = TRB.UiFunctions.BuildSlider(parent, title, 0, 1, TRB.Data.settings.druid.balance.colors.bar.flashAlpha, 0.01, 2,
 									barWidth, barHeight, xCoord+xPadding2, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
@@ -886,7 +894,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.colors.bar.flashAlpha = value
 		end)
 
-		title = "Earth Shock/EQ Flash Period (sec)"
+		title = "Moonkin Form Missing Flash Period (sec)"
 		controls.flashPeriod = TRB.UiFunctions.BuildSlider(parent, title, 0, 2, TRB.Data.settings.druid.balance.colors.bar.flashPeriod, 0.05, 2,
 										barWidth, barHeight, xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
@@ -922,9 +930,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TIBRB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-15)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when AstralPower > 0")
+		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Astral Power > 0")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar show out of combat only if AstralPower > 0, hidden otherwise when out of combat."
+		f.tooltip = "This will make the Resource Bar show out of combat only if Astral Power > 0 (or < 50 with Nature's Balance), hidden otherwise when out of combat."
 		f:SetChecked(TRB.Data.settings.druid.balance.displayBar.notZeroShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
@@ -955,201 +963,319 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TIBCB1_5", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Earth Shock/EQ is Usable")
-		f.tooltip = "This will flash the bar when Earth Shock/EQ can be cast."
+		getglobal(f:GetName() .. 'Text'):SetText("Flash bar when Moonkin Form is missing")
+		f.tooltip = "This will flash the bar when Moonkin Form is missing while in combat."
 		f:SetChecked(TRB.Data.settings.druid.balance.colors.bar.flashEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.balance.colors.bar.flashEnabled = self:GetChecked()
 		end)
 
-		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.esThresholdShow
+		controls.checkBoxes.ssThresholdShow = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.ssThresholdShow
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Earth Shock/EQ Threshold Line")
-		f.tooltip = "This will show the vertical line on the bar denoting how much AstralPower is required to cast Earth Shock/EQ."
-		f:SetChecked(TRB.Data.settings.druid.balance.earthShockThreshold)
+		getglobal(f:GetName() .. 'Text'):SetText("Show Starsurge threshold line")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast Starsurge."
+		f:SetChecked(TRB.Data.settings.druid.balance.starsurgeThreshold)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.earthShockThreshold = self:GetChecked()
+			TRB.Data.settings.druid.balance.starsurgeThreshold = self:GetChecked()
 		end)
 
-		yCoord = yCoord - 60
+		controls.checkBoxes.sfThresholdShow = CreateFrame("CheckButton", "TIBCB1_7", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.sfThresholdShow
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
+		getglobal(f:GetName() .. 'Text'):SetText("Show Starfall Threshold Line")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast Starfall."
+		f:SetChecked(TRB.Data.settings.druid.balance.starfallThreshold)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.starfallThreshold = self:GetChecked()
+		end)
+
+		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TIBCB1_8", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapEnabled
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
+		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
+		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Astral Power."
+		f:SetChecked(TRB.Data.settings.druid.balance.colors.bar.overcapEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.colors.bar.overcapEnabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 80
 
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "AstralPower", TRB.Data.settings.druid.balance.colors.bar.base, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power", TRB.Data.settings.druid.balance.colors.bar.base, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-                local r1, g1, b1, a1 = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.base, true)
-				TRB.UiFunctions.ShowColorPicker(r1, g1, b1, a1, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                        r = r / 255
-                        g = g / 255
-                        b = b / 255
-                        a = a / 255
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    controls.colors.base.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.druid.balance.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-                end)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.base, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+		
+					controls.colors.base.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
 			end
 		end)
 
-		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.druid.balance.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.solar = TRB.UiFunctions.BuildColorPicker(parent, "Eclipse (Solar) is Active", TRB.Data.settings.druid.balance.colors.bar.solar, 275, 25, xCoord2, yCoord)
+		f = controls.colors.solar
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.solar, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+		
+					controls.colors.solar.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.bar.solar = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
+			end
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.druid.balance.colors.bar.border, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.border, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.border.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.druid.balance.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-                    barBorderFrame:SetBackdropBorderColor(r, g, b, a)
-                end)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+		
+					controls.colors.border.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					barBorderFrame:SetBackdropBorderColor(r, g, b, a)
+				end)
+			end
+		end)
+
+		controls.colors.lunar = TRB.UiFunctions.BuildColorPicker(parent, "Eclipse (Lunar) is Active", TRB.Data.settings.druid.balance.colors.bar.lunar, 275, 25, xCoord2, yCoord)
+		f = controls.colors.lunar
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.lunar, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+		
+					controls.colors.lunar.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.bar.lunar = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
 			end
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.earthShock = TRB.UiFunctions.BuildColorPicker(parent, "AstralPower when you can cast Earth Shock/Earthquake", TRB.Data.settings.druid.balance.colors.bar.earthShock, 250, 25, xCoord+xPadding*2, yCoord)
-		f = controls.colors.earthShock
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.earthShock, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.earthShock.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.druid.balance.colors.bar.earthShock = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-                end)
-			end
-		end)	
-			
-		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.druid.balance.colors.bar.background, 250, 25, xCoord2, yCoord)
-		f = controls.colors.background
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.background, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.background.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.druid.balance.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-                    barContainerFrame:SetBackdropColor(r, g, b, a)
-                end)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "AstralPower from hardcasting spells", TRB.Data.settings.druid.balance.colors.bar.casting, 525, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power from hardcasting spells", TRB.Data.settings.druid.balance.colors.bar.casting, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.casting, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.casting.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.druid.balance.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-                    castingFrame:SetStatusBarColor(r, g, b, a)
-                end)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+		
+					controls.colors.casting.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					castingFrame:SetStatusBarColor(r, g, b, a)
+				end)
+			end
+		end)
+			
+		controls.colors.celestial = TRB.UiFunctions.BuildColorPicker(parent, "Celestial Alignment / Incarnation: Chosen of Elune is Active", TRB.Data.settings.druid.balance.colors.bar.celestial, 275, 25, xCoord2, yCoord)
+		f = controls.colors.celestial
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.celestial, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+		
+					controls.colors.celestial.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.bar.celestial = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
 			end
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under min. req. AstralPower to cast Earth Shock/Earthquake Threshold Line", TRB.Data.settings.druid.balance.colors.threshold.under, 525, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under min. req. Astral Power to cast Starsurge/Starfall Threshold Line", TRB.Data.settings.druid.balance.colors.threshold.under, 260, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.thresholdUnder
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.druid.balance.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-                end)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+		
+					controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
+			end
+		end)
+
+		controls.colors.eclipse1GCD = TRB.UiFunctions.BuildColorPicker(parent, "Under 1 GCD left in Eclipse", TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD, 275, 25, xCoord2, yCoord)
+		f = controls.colors.eclipse1GCD
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+		
+					controls.colors.eclipse1GCD.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
 			end
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over min. req. AstralPower to cast Earth Shock/Earthquake Threshold Line", TRB.Data.settings.druid.balance.colors.threshold.over, 525, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over min. req. Astral Power to cast Starsurge/Starfall Threshold Line", TRB.Data.settings.druid.balance.colors.threshold.over, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.thresholdOver
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.druid.balance.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-                end)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+		
+					controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
 			end
 		end)
 
-		--[[
+		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Astral Power", TRB.Data.settings.druid.balance.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		f = controls.colors.borderOvercap
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.borderOvercap, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+		
+					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
+			end
+		end)
+
+		
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "AstralPower from Passive Sources (?)", TRB.Data.settings.druid.balance.colors.bar.passive, 550, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.moonkinFormMissing = TRB.UiFunctions.BuildColorPicker(parent, "Moonkin Form missing when in combat", TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing, 275, 25, xCoord+xPadding*2, yCoord)
+		f = controls.colors.moonkinFormMissing
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					
+					controls.colors.moonkinFormMissing.Texture:SetColorTexture(r, g, b, a)
+					passiveFrame:SetStatusBarColor(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
+			end
+		end)
+			
+		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.druid.balance.colors.bar.background, 275, 25, xCoord2, yCoord)
+		f = controls.colors.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.background, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+		
+					controls.colors.background.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					barContainerFrame:SetBackdropColor(r, g, b, a)
+				end)
+			end
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power from Fury of Elune and Nature's Balance", TRB.Data.settings.druid.balance.colors.bar.passive, 550, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.passive, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    
-                    controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
-                    passiveFrame:SetStatusBarColor(r, g, b, a)
-                    TRB.Data.settings.druid.balance.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-                end)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					
+					controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
+					passiveFrame:SetStatusBarColor(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
 			end
 		end)
-		]]
 
 		yCoord = yCoord - 40
 		
@@ -1410,19 +1536,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.left, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    --Text doesn't care about Alpha, but the color picker does!
-                    a = 1.0
-        
-                    controls.colors.leftText.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.druid.balance.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-                end)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					--Text doesn't care about Alpha, but the color picker does!
+					a = 1.0
+		
+					controls.colors.leftText.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
 			end
 		end)
 
@@ -1433,19 +1559,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.middle, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    --Text doesn't care about Alpha, but the color picker does!
-                    a = 1.0
-        
-                    controls.colors.middleText.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.druid.balance.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-                end)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					--Text doesn't care about Alpha, but the color picker does!
+					a = 1.0
+		
+					controls.colors.middleText.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					--barContainerFrame:SetBackdropBorderColor(r, g, b, a)
+				end)
 			end
 		end)
 
@@ -1456,19 +1583,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.right, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    --Text doesn't care about Alpha, but the color picker does!
-                    a = 1.0
-        
-                    controls.colors.rightText.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.druid.balance.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-                end)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					--Text doesn't care about Alpha, but the color picker does!
+					a = 1.0
+		
+					controls.colors.rightText.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					--barContainerFrame:SetBackdropBorderColor(r, g, b, a)
+				end)
 			end
 		end)
 		
@@ -1513,114 +1641,77 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "AstralPower Text Colors", xCoord+xPadding, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Astral Power Text Colors", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentAstralPowerText = TRB.UiFunctions.BuildColorPicker(parent, "Current AstralPower", TRB.Data.settings.druid.balance.colors.text.currentAstralPower, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.currentAstralPowerText = TRB.UiFunctions.BuildColorPicker(parent, "Current Astral Power", TRB.Data.settings.druid.balance.colors.text.current, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.currentAstralPowerText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.currentAstralPower, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.current, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    --Text doesn't care about Alpha, but the color picker does!
-                    a = 1.0
-        
-                    controls.colors.currentAstralPowerText.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.druid.balance.colors.text.currentAstralPower = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-                end)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					--Text doesn't care about Alpha, but the color picker does!
+					a = 1.0
+		
+					controls.colors.currentAstralPowerText.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.text.current = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
 			end
 		end)
 
-		controls.colors.castingAstralPowerText = TRB.UiFunctions.BuildColorPicker(parent, "AstralPower from hardcasting spells", TRB.Data.settings.druid.balance.colors.text.castingAstralPower, 250, 25, xCoord2, yCoord)
+		controls.colors.castingAstralPowerText = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power from hardcasting spells", TRB.Data.settings.druid.balance.colors.text.casting, 275, 25, xCoord2, yCoord)
 		f = controls.colors.castingAstralPowerText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.currentAstralPower, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.casting, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    --Text doesn't care about Alpha, but the color picker does!
-                    a = 1.0
-        
-                    controls.colors.castingAstralPowerText.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.druid.balance.colors.text.castingAstralPower = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-                end)
-			end
-		end)
-
-		yCoord = yCoord - 40		
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", xCoord+xPadding, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.esReady = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.esReady
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Earth Shock/EQ is usable")
-		f.tooltip = "Play an audio cue when Earth Shock or Earthquake can be cast."
-		f:SetChecked(TRB.Data.settings.druid.balance.audio.esReady.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.audio.esReady.enabled = self:GetChecked()
-		end)	
-			
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.esReadyAudio = CreateFrame("FRAME", "TIBesReadyAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.esReadyAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-30+10)
-		UIDropDownMenu_SetWidth(controls.dropDown.esReadyAudio, 300)
-		UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, TRB.Data.settings.druid.balance.audio.esReady.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.esReadyAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.esReadyAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.druid.balance.audio.esReady.sound
-						info.func = self.SetValue			
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
 					end
-				end
+					--Text doesn't care about Alpha, but the color picker does!
+					a = 1.0
+		
+					controls.colors.castingAstralPowerText.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.text.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					--barContainerFrame:SetBackdropBorderColor(r, g, b, a)
+				end)
+			end
+		end)
+		
+		yCoord = yCoord - 30
+		controls.colors.overcapAstralPowerText = TRB.UiFunctions.BuildColorPicker(parent, "Cast will overcap Astral Power", TRB.Data.settings.druid.balance.colors.text.overcap, 275, 25, xCoord+xPadding*2, yCoord)
+		f = controls.colors.overcapAstralPowerText
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.overcap, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					--Text doesn't care about Alpha, but the color picker does!
+					a = 1.0
+		
+					controls.colors.overcapAstralPowerText.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.text.overcap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
 			end
 		end)
 
-		-- Implement the function to change the audio
-		function controls.dropDown.esReadyAudio:SetValue(newValue, newName)
-			TRB.Data.settings.druid.balance.audio.esReady.sound = newValue
-			TRB.Data.settings.druid.balance.audio.esReady.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, newName)
-			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.druid.balance.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
 
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", xCoord+xPadding, yCoord)
@@ -1641,6 +1732,202 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			self.EditBox:SetText(value)		
 			TRB.Data.settings.druid.balance.hastePrecision = value
 		end)
+
+		yCoord = yCoord - 60		
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", xCoord+xPadding, yCoord)
+
+
+		yCoord = yCoord - 40
+		controls.checkBoxes.ssReady = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.ssReady
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Starsurge is usable")
+		f.tooltip = "Play an audio cue when Devouring Plague can be cast."
+		f:SetChecked(TRB.Data.settings.druid.balance.audio.ssReady.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.audio.ssReady.enabled = self:GetChecked()
+
+			if TRB.Data.settings.druid.balance.audio.ssReady.enabled then
+				PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)	
+			
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.ssReadyAudio = CreateFrame("FRAME", "TIBssReadyAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.ssReadyAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-30+10)
+		UIDropDownMenu_SetWidth(controls.dropDown.ssReadyAudio, 300)
+		UIDropDownMenu_SetText(controls.dropDown.ssReadyAudio, TRB.Data.settings.druid.balance.audio.ssReady.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.ssReadyAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.ssReadyAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.druid.balance.audio.ssReady.sound
+						info.func = self.SetValue			
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.ssReadyAudio:SetValue(newValue, newName)
+			TRB.Data.settings.druid.balance.audio.dpReady.sound = newValue
+			TRB.Data.settings.druid.balance.audio.dpReady.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.ssReadyAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.sfReady = CreateFrame("CheckButton", "TIBCB3_MD_Sound", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.sfReady
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Starfall is usable")
+		f.tooltip = "Play an audio cue when Starfall is usable. This supercedes the regular Starsurge audio sound if both are usable."
+		f:SetChecked(TRB.Data.settings.druid.balance.audio.sfReady.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.audio.sfReady.enabled = self:GetChecked()
+
+			if TRB.Data.settings.druid.balance.audio.sfReady.enabled then
+				PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)	
+			
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.sfReadyAudio = CreateFrame("FRAME", "TIBsfReadyAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.sfReadyAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-30+10)
+		UIDropDownMenu_SetWidth(controls.dropDown.sfReadyAudio, 300)
+		UIDropDownMenu_SetText(controls.dropDown.sfReadyAudio, TRB.Data.settings.druid.balance.audio.sfReady.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.sfReadyAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.sfReadyAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.druid.balance.audio.sfReady.sound
+						info.func = self.SetValue			
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.sfReadyAudio:SetValue(newValue, newName)
+			TRB.Data.settings.druid.balance.audio.sfReady.sound = newValue
+			TRB.Data.settings.druid.balance.audio.sfReady.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.sfReadyAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+		
+		yCoord = yCoord - 60
+		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TIBCB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapAudio
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Astral Power")
+		f.tooltip = "Play an audio cue when your hardcast spell will overcap Astral Power."
+		f:SetChecked(TRB.Data.settings.druid.balance.audio.overcap.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.audio.overcap.enabled = self:GetChecked()
+
+			if TRB.Data.settings.druid.balance.audio.overcap.enabled then
+				PlaySoundFile(TRB.Data.settings.druid.balance.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)	
+			
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TIBovercapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-30+10)
+		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, 300)
+		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.druid.balance.audio.overcap.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.druid.balance.audio.overcap.sound
+						info.func = self.SetValue			
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+			TRB.Data.settings.druid.balance.audio.overcap.sound = newValue
+			TRB.Data.settings.druid.balance.audio.overcap.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.druid.balance.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
 	end
     
 	local function BalanceConstructBarTextDisplayLayoutPanel()	
@@ -1851,8 +2138,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function ConstructOptionsPanel()
 		TRB.Options.ConstructOptionsPanel()
-		--BalanceConstructOptionsLayoutPanel()
-		--BalanceConstructBarTextDisplayLayoutPanel()
+		BalanceConstructOptionsLayoutPanel()
+		BalanceConstructBarTextDisplayLayoutPanel()
 	end
 	TRB.Options.Druid.ConstructOptionsPanel = ConstructOptionsPanel
 end

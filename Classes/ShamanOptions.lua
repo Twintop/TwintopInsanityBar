@@ -127,7 +127,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				esReady={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
-					soundName="Boxing Arena Gong (TIB)"
+					soundName="TRB: Boxing Arena Gong"
 				},
 				overcap={
 					enabled=false,
@@ -984,7 +984,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom", TRB.Data.settings.shaman.elemental.colors.bar.base, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom", TRB.Data.settings.shaman.elemental.colors.bar.base, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1029,7 +1029,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.earthShock = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom when you can cast Earth Shock/Earthquake", TRB.Data.settings.shaman.elemental.colors.bar.earthShock, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.earthShock = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom when you can cast Earth Shock/Earthquake", TRB.Data.settings.shaman.elemental.colors.bar.earthShock, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.earthShock
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1049,7 +1049,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)	
 			
-		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.shaman.elemental.colors.bar.background, 250, 25, xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.shaman.elemental.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1092,7 +1092,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)
 
-		controls.colors.overcapBorder = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Insanity", TRB.Data.settings.shaman.elemental.colors.bar.overcapBorder, 250, 25, xCoord2, yCoord)
+		controls.colors.overcapBorder = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Insanity", TRB.Data.settings.shaman.elemental.colors.bar.overcapBorder, 275, 25, xCoord2, yCoord)
 		f = controls.colors.overcapBorder
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1543,7 +1543,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Maelstrom Text Colors", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Current Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.currentMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Current Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.currentMaelstromText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1565,7 +1565,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)
 
-		controls.colors.castingMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom from hardcasting spells", TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom, 250, 25, xCoord2, yCoord)
+		controls.colors.castingMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom from hardcasting spells", TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom, 275, 25, xCoord2, yCoord)
 		f = controls.colors.castingMaelstromText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1588,7 +1588,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 		
 		yCoord = yCoord - 30
-		controls.colors.overcapMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Cast will overcap Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.overcapInsanity, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.overcapMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Cast will overcap Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.overcapInsanity, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.overcapMaelstromText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1605,7 +1605,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					a = 1.0
 		
 					controls.colors.overcapMaelstromText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.shaman.elemental.colors.text.currentInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 				end)
 			end
 		end)
