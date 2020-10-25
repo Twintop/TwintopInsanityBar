@@ -626,7 +626,8 @@ local function GetReturnText(inputText)
     end
 
     if TRB.Functions.TableLength(mapping) > 0 then	
-        inputText.text = string.format(cache.stringFormat, unpack(mapping))
+		local result
+		result, inputText.text = pcall(string.format, cache.stringFormat, unpack(mapping))
     elseif string.len(cache.stringFormat) > 0 then
         inputText.text = cache.stringFormat
     else

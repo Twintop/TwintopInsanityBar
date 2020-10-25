@@ -2736,33 +2736,27 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f.font:SetSize(600, 20)
 		f.font:SetText("For icons use #ICONVARIABLENAME")
 
-		--interfaceSettingsFrame.barTextPanel.variableFrame = TRB.UiFunctions.CreateScrollFrameContainer("TIB_VariablesFrame", interfaceSettingsFrame.barTextPanel)
-		--interfaceSettingsFrame.barTextPanel.variableFrame:ClearAllPoints()
-		--interfaceSettingsFrame.barTextPanel.variableFrame:SetPoint("TOPLEFT", xCoord, yCoord - 15)
-		--parent = interfaceSettingsFrame.barTextPanel.variableFrame.scrollChild
-		
 		yCoord = yCoord - 25
 		local yCoordTop = yCoord
 		local entries1 = TRB.Functions.TableLength(TRB.Data.barTextVariables.values)
 		for i=1, entries1 do
 			if TRB.Data.barTextVariables.values[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 115, 200, 20)
-				yCoord = yCoord - 25
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 150, 400, 15)
+				local height = 15
+				yCoord = yCoord - height - 5
 			end
 		end
 
 		local entries2 = TRB.Functions.TableLength(TRB.Data.barTextVariables.pipe)
 		for i=1, entries2 do
 			if TRB.Data.barTextVariables.pipe[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 115, 200, 20)
-				yCoord = yCoord - 25
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 150, 400, 15)
+				local height = 15
+				yCoord = yCoord - height - 5
 			end
 		end
 
-		-----	
-		
-
-		yCoord = yCoordTop
+		---------
 
 		local entries3 = TRB.Functions.TableLength(TRB.Data.barTextVariables.icons)
 		for i=1, entries3 do
@@ -2771,14 +2765,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if TRB.Data.barTextVariables.icons[i].icon ~= "" then
 					text = TRB.Data.barTextVariables.icons[i].icon .. " "
 				end
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord+115+200+25, yCoord, 50, 200, 20)
-				yCoord = yCoord - 25
+				local height = 15
+				if TRB.Data.barTextVariables.icons[i].variable == "#casting" then
+					height = 15
+				end
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord, yCoord, 150, 400, height)
+				yCoord = yCoord - height - 5
 			end
 		end
-		
-		--interfaceSettingsFrame.shadowBarTextDisplayPanel.scrollChild = parent
-		--interfaceSettingsFrame.controls = controls
-		--TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	end
 	
 	local function ConstructOptionsPanel()

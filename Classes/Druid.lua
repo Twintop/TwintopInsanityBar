@@ -258,9 +258,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			{ variable = "#foe", icon = TRB.Data.spells.furyOfElune.icon, description = "Fury Of Elune", printInSettings = false },
 			{ variable = "#furyOfElune", icon = TRB.Data.spells.furyOfElune.icon, description = "Fury Of Elune", printInSettings = true },
+			
 			{ variable = "#newMoon", icon = TRB.Data.spells.newMoon.icon, description = "New Moon", printInSettings = true },
 			{ variable = "#halfMoon", icon = TRB.Data.spells.halfMoon.icon, description = "Half Moon", printInSettings = true },
-			{ variable = "#fullMoon", icon = TRB.Data.spells.fullMoon.icon, description = "Full Moon", printInSettings = true },
+			{ variable = "#fullMoon", icon = TRB.Data.spells.fullMoon.icon, description = "Full Moon", printInSettings = true }
 		}
 		TRB.Data.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },

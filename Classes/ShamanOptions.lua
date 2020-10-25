@@ -1928,11 +1928,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f.font:SetText("For icons use #ICONVARIABLENAME")
 
 		yCoord = yCoord - 25
-		local yCoordTop = yCoord
 		local entries1 = TRB.Functions.TableLength(TRB.Data.barTextVariables.values)
 		for i=1, entries1 do
 			if TRB.Data.barTextVariables.values[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 130, 200, 20)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 150, 400, 20)
 				yCoord = yCoord - 25
 			end
 		end
@@ -1940,15 +1939,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local entries2 = TRB.Functions.TableLength(TRB.Data.barTextVariables.pipe)
 		for i=1, entries2 do
 			if TRB.Data.barTextVariables.pipe[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 130, 200, 20)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 150, 400, 20)
 				yCoord = yCoord - 25
 			end
 		end
 
-		-----	
-		
-
-		yCoord = yCoordTop
+		-----			
 
 		local entries3 = TRB.Functions.TableLength(TRB.Data.barTextVariables.icons)
 		for i=1, entries3 do
@@ -1961,7 +1957,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if TRB.Data.barTextVariables.icons[i].variable == "#casting" then
 					height = 30
 				end
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord+115+200+15, yCoord, 90, 150, height)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord, yCoord, 150, 400, height)
 				yCoord = yCoord - height - 5
 			end
 		end
