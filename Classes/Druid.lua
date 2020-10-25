@@ -217,7 +217,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	TRB.Data.snapshotData.furyOfElune = {
 		isActive = false,
 		ticksRemaining = 0,
-		startTime = 0,
+		startTime = nil,
 		astralPower = 0
 	}
 
@@ -577,7 +577,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local stellarFlareCount = TRB.Data.snapshotData.targetData.stellarFlare or 0
 
         ----------
-        -- TODO: Fury of Elune AP and Ticks logic
         --$foeAstralPower
         local foeAstralPower = TRB.Data.snapshotData.furyOfElune.astralPower or 0
         --$foeTicks
@@ -585,7 +584,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		--$foeTime
 		local foeTime = 0
 		if TRB.Data.snapshotData.furyOfElune.startTime ~= nil then
-			foeTime = currentTime - (TRB.Data.snapshotData.furyOfElune.startTime + TRB.Data.spells.furyOfElune.duration)
+			foeTime = string.format("%.1f", math.abs(currentTime - (TRB.Data.snapshotData.furyOfElune.startTime + TRB.Data.spells.furyOfElune.duration)))
 		end
 
 		----------

@@ -55,7 +55,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "#flameShock $fsCount    $haste% ($gcd)||n           {$ttd}[TTD: $ttd]",
+				text = "#flameShock $fsCount    $haste% ($gcd)||n{$ifStacks}[#frostShock $ifStacks][       ]    {$ttd}[TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -98,13 +98,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				text = {
 					currentMaelstrom="FF6563E0",
 					castingMaelstrom="FFFFFFFF",
-					passiveMaelstrom="FF995BDD",		
+					passiveMaelstrom="FF995BDD",
+					overcapMaelstrom="FFFF0000",
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
 					right="FFFFFFFF"
 				},
 				bar = {
 					border="FF00008D",
+					borderOvercap="FFFF0000",
 					background="66000000",
 					base="FF0055FF",
 					casting="FFFFFFFF",
@@ -112,7 +114,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					earthShock="FF00096A",
 					flashAlpha=0.70,
 					flashPeriod=0.5,
-					flashEnabled=true
+					flashEnabled=true,
+					overcapEnabled=true
 				},
 				threshold = {
 					under="FFFFFFFF",
@@ -126,6 +129,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 					soundName="Boxing Arena Gong (TIB)"
 				},
+				overcap={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				}
             },
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -961,6 +969,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.elemental.earthShockThreshold = self:GetChecked()
 		end)
 
+		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TIBCB1_8", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapEnabled
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
+		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
+		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Maelstrom."
+		f:SetChecked(TRB.Data.settings.shaman.elemental.colors.bar.overcapEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.shaman.elemental.colors.bar.overcapEnabled = self:GetChecked()
+		end)
+
 		yCoord = yCoord - 60
 
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", xCoord+xPadding, yCoord)
@@ -1071,6 +1089,26 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     TRB.Data.settings.shaman.elemental.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
                     castingFrame:SetStatusBarColor(r, g, b, a)
                 end)
+			end
+		end)
+
+		controls.colors.overcapBorder = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Insanity", TRB.Data.settings.shaman.elemental.colors.bar.overcapBorder, 250, 25, xCoord2, yCoord)
+		f = controls.colors.overcapBorder
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.overcapBorder, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+		
+					controls.colors.overcapBorder.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.shaman.elemental.colors.bar.overcapBorder = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
 			end
 		end)
 
@@ -1548,6 +1586,29 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                 end)
 			end
 		end)
+		
+		yCoord = yCoord - 30
+		controls.colors.overcapMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Cast will overcap Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.overcapInsanity, 250, 25, xCoord+xPadding*2, yCoord)
+		f = controls.colors.overcapMaelstromText
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.overcapInsanity, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					--Text doesn't care about Alpha, but the color picker does!
+					a = 1.0
+		
+					controls.colors.overcapMaelstromText.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.shaman.elemental.colors.text.currentInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
+			end
+		end)
 
 		yCoord = yCoord - 40		
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", xCoord+xPadding, yCoord)
@@ -1610,6 +1671,74 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
+
+
+		
+		yCoord = yCoord - 60
+		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TIBCB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapAudio
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Insanity")
+		f.tooltip = "Play an audio cue when your hardcast spell will overcap Insanity."
+		f:SetChecked(TRB.Data.settings.shaman.elemental.audio.overcap.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.shaman.elemental.audio.overcap.enabled = self:GetChecked()
+
+			if TRB.Data.settings.shaman.elemental.audio.overcap.enabled then
+				PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)	
+			
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TIBovercapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-30+10)
+		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, 300)
+		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.shaman.elemental.audio.overcap.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.shaman.elemental.audio.overcap.sound
+						info.func = self.SetValue			
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+			TRB.Data.settings.shaman.elemental.audio.overcap.sound = newValue
+			TRB.Data.settings.shaman.elemental.audio.overcap.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+
 
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", xCoord+xPadding, yCoord)

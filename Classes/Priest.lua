@@ -1045,7 +1045,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$mdTime
 		local _mdTime = 0
 		if TRB.Data.snapshotData.mindDevourer.spellId ~= nil then
-			_mdTime = TRB.Data.snapshotData.mindDevourer.endTime - currentTime
+			_mdTime = math.abs(TRB.Data.snapshotData.mindDevourer.endTime - currentTime)
 		end
 		local mdTime = string.format("%.1f", _mdTime)
 
@@ -1526,6 +1526,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		if barContainerFrame:IsShown() then
 			local passiveBarValue = 0
 			local castingBarValue = 0
+
 			if TRB.Data.snapshotData.resource == 0 then
 				TRB.Functions.HideResourceBar()
 			end
