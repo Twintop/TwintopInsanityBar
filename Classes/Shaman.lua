@@ -464,6 +464,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["#lavaBeam"] = TRB.Data.spells.lavaBeam.icon
 		lookup["#icefury"] = TRB.Data.spells.icefury.icon
 		lookup["#flameShock"] = TRB.Data.spells.flameShock.icon
+		lookup["#frostShock"] = TRB.Data.spells.frostShock.icon
 		lookup["#lightningShield"] = TRB.Data.spells.lightningShield.icon
 		lookup["#casting"] = castingIcon
 		lookup["$haste"] = hastePercent
@@ -809,17 +810,21 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						TRB.Data.snapshotData.chainLightning.hasStruckTargets = true
                     end
 				elseif spellId == TRB.Data.spells.icefury.id then
+					print("Icefury!")
 					if type == "SPELL_AURA_APPLIED" then -- Icefury
+						print("Applied")
 						TRB.Data.snapshotData.icefury.isActive = true
 						TRB.Data.snapshotData.icefury.stacksRemaining = TRB.Data.spells.icefury.stacks
 						TRB.Data.snapshotData.icefury.maelstrom = TRB.Data.snapshotData.icefury.stacksRemaining * TRB.Data.spells.frostShock.maelstrom
 						TRB.Data.snapshotData.icefury.startTime = currentTime
 					elseif type == "SPELL_AURA_REMOVED" then
+						print("Removed")						
 						TRB.Data.snapshotData.icefury.isActive = false
 						TRB.Data.snapshotData.icefury.stacksRemaining = 0
 						TRB.Data.snapshotData.icefury.maelstrom = 0
 						TRB.Data.snapshotData.icefury.startTime = nil
 					elseif type == "SPELL_AURA_REMOVED_DOSE" then
+						print("Stack--")
 						TRB.Data.snapshotData.icefury.stacksRemaining = TRB.Data.snapshotData.icefury.stacksRemaining - 1
 						TRB.Data.snapshotData.icefury.maelstrom = TRB.Data.snapshotData.icefury.stacksRemaining * TRB.Data.spells.frostShock.maelstrom
 					end		
