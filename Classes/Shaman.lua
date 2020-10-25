@@ -440,7 +440,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			resource = {
 				resource = TRB.Data.snapshotData.resource or 0,
 				casting = TRB.Data.snapshotData.casting.resourceFinal or 0,
-				passive = _passiveMaelstrom
+				passive = _passiveMaelstrom,
+				icefury = icefuryMaelstrom
 			},
 			dots = {
 				fsCount = flameShockCount or 0,
