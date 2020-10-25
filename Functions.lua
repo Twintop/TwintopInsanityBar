@@ -426,7 +426,7 @@ local function ConstructResourceBar(settings)
         passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
         passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive))
         passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        passiveFrame:SetFrameLevel(80)
+		passiveFrame:SetFrameLevel(80)
         
         passiveFrame.threshold:SetWidth(settings.thresholdWidth)
         passiveFrame.threshold:SetHeight(settings.bar.height)
@@ -626,7 +626,8 @@ local function GetReturnText(inputText)
     end
 
     if TRB.Functions.TableLength(mapping) > 0 then	
-        inputText.text = string.format(cache.stringFormat, unpack(mapping))
+		local result
+		result, inputText.text = pcall(string.format, cache.stringFormat, unpack(mapping))
     elseif string.len(cache.stringFormat) > 0 then
         inputText.text = cache.stringFormat
     else
@@ -817,7 +818,7 @@ end
 TRB.Functions.CheckCharacter = CheckCharacter
 
 local function UpdateSnapshot()	    
-	TRB.Data.snapshotData.resource = UnitPower("player", TRB.Data.resource)
+	TRB.Data.snapshotData.resource = TRB.Functions.RoundTo(UnitPower("player", TRB.Data.resource, true) / TRB.Data.resourceFactor, 0)
 	TRB.Data.snapshotData.haste = UnitSpellHaste("player")
 	TRB.Data.snapshotData.crit = GetCritChance("player")
 	TRB.Data.snapshotData.mastery = GetMasteryEffect("player")

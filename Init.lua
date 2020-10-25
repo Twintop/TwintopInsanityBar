@@ -3,8 +3,8 @@ local _, TRB = ...
 -- Addon details data
 TRB.Details = {}
 TRB.Details.addonVersion = "9.0.2.14"
-TRB.Details.addonReleaseDate = "October 22, 2020"
-TRB.Details.supportedSpecs = "Shadow Priest, Elemental Shaman"
+TRB.Details.addonReleaseDate = "October 26, 2020"
+TRB.Details.supportedSpecs = "Shadow Priest, Elemental Shaman, Balance Druid"
 
 local addonData = {
 	loaded = false,
@@ -12,8 +12,9 @@ local addonData = {
 	libs = {}
 }
 addonData.libs.SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
-addonData.libs.SharedMedia:Register("sound", "Wilhelm Scream (TIB)", "Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg")
-addonData.libs.SharedMedia:Register("sound", "Boxing Arena Gong (TIB)", "Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg")
+addonData.libs.SharedMedia:Register("sound", "TRB: Wilhelm Scream", "Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg")
+addonData.libs.SharedMedia:Register("sound", "TRB: Boxing Arena Gong", "Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg")
+addonData.libs.SharedMedia:Register("sound", "TRB: Air Horn", "Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg")
 TRB.Details.addonData = addonData
 
 -- Frames
@@ -49,10 +50,10 @@ TRB.Frames.interfaceSettingsFrameContainer = {}
 TRB.Data = {}
 
 TRB.Data.settings = {}
-TRB.Data.settings.core = {}
 
 TRB.Data.specSupported = false
-TRB.Data.resource = nil --SPELL_POWER_INSANITY
+TRB.Data.resource = nil 
+TRB.Data.resourceFactor = 1
 
 TRB.Data.barTextVariables = {
     icons = {},

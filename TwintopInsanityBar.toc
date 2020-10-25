@@ -16,7 +16,9 @@ UiFunctions.lua
 
 Options.lua
 
-Classes\Priest.lua
+Classes\DruidOptions.lua
+Classes\Druid.lua
 Classes\PriestOptions.lua
-Classes\Shaman.lua
+Classes\Priest.lua
 Classes\ShamanOptions.lua
+Classes\Shaman.lua
