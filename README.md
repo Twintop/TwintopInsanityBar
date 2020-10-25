@@ -2,6 +2,7 @@
 A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
 
 Currently supported specs:
+- Balance Druid
 - Elemental Shaman
 - Shadow Priest
 
