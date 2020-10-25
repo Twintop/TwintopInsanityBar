@@ -825,8 +825,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				resourceFrame.thresholdSf:Hide()
             end
 			
-			if not TRB.Data.spells.moonkinForm.isActive then
+			if not TRB.Data.spells.moonkinForm.isActive and affectingCombat then
 				resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing, true))
+
+				if TRB.Data.settings.druid.balance.colors.bar.flashEnabled then
+					TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.druid.balance.colors.bar.flashAlpha, TRB.Data.settings.druid.balance.colors.bar.flashPeriod)
+				end
 			elseif TRB.Data.spells.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive then
 				local gcd = TRB.Functions.GetCurrentGCDTime()
 				
@@ -849,8 +853,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.lunar, true))	
 					end
 				end
+				barContainerFrame:SetAlpha(1.0)
 			else
                 resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.base, true))	
+				barContainerFrame:SetAlpha(1.0)
             end
 
 		end
