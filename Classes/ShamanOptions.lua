@@ -1608,7 +1608,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.elemental.audio.esReady.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, newName)
 			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.esReady.sound, TRB.Data.settings.shaman.elemental.audio.channel.channel)
+			PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 		yCoord = yCoord - 60

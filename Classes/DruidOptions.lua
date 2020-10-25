@@ -1619,7 +1619,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.audio.esReady.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, newName)
 			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.druid.balance.audio.esReady.sound, TRB.Data.settings.druid.balance.audio.channel.channel)
+			PlaySoundFile(TRB.Data.settings.druid.balance.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 		yCoord = yCoord - 60
