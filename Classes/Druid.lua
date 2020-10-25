@@ -31,6 +31,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             sunfireCount = 0,
             moonfireCount = 0,
             stellarFlareCount = 0
+		},
+		furyOfElune = {
+			astralPower = 0,
+			ticks = 0,
+			remaining = 0
 		}
     }
     
@@ -174,7 +179,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             astralPower = 2.5,
             duration = 10,
             ticks = 16,
-            tickRate = 0.625
+			tickRate = 0.625
         },
         newMoon = {
             id = 274281,
@@ -199,7 +204,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	TRB.Data.snapshotData.audio = {
 		playedSsCue = false,
 		playedSfCue = false
-    }
+	}
+	
 	TRB.Data.snapshotData.targetData = {
 		ttdIsActive = false,
         currentTargetGuid = nil,
@@ -207,6 +213,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         moonfire = 0,
 		stellarFlare = 0,
 		targets = {}
+	}
+	TRB.Data.snapshotData.furyOfElune = {
+		isActive = false,
+		ticksRemaining = 0,
+		startTime = 0,
+		astralPower = 0
 	}
 
 	local function FillSpellData()
@@ -272,6 +284,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Astral Power Total", printInSettings = false, color = false },     
 			{ variable = "$foeAstralPower", description = "Passive Astral Power incoming from Fury of Elune", printInSettings = false, color = false },   
 			{ variable = "$foeTicks", description = "Number of ticks of Fury of Elune remaining", printInSettings = false, color = false },   
+			{ variable = "$foeTime", description = "Amount of time remaining on Fury of Elune's effect", printInSettings = false, color = false },   
 
 			{ variable = "$sunfireCount", description = "Number of Sunfires active on targets", printInSettings = true, color = false },
 			{ variable = "$moonfireCount", description = "Number of Moonfires active on targets", printInSettings = true, color = false },
@@ -483,7 +496,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         elseif var == "$talentStellarFlare" then
             if TRB.Data.character.talents.stellarFlare.isSelected then
                 valid = true
-            end
+			end
+		elseif var == "$foeAstralPower" then
+			if TRB.Data.snapshotData.furyOfElune.astralPower > 0 then
+				valid = true
+			end
+		elseif var == "$foeTicks" then
+			if TRB.Data.snapshotData.furyOfElune.remainingTicks > 0 then
+				valid = true
+			end
+		elseif var == "$foeTime" then
+			if TRB.Data.snapshotData.furyOfElune.startTime ~= nil then
+				valid = true
+			end
 		elseif var == "$ttd" then
 			if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
 				valid = true
@@ -526,11 +551,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		--$casting
 		local castingAstralPower = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.casting, TRB.Data.snapshotData.casting.resourceFinal)
 		--$passive
-        local _passiveAstralPower = 0
+        local _passiveAstralPower = TRB.Data.snapshotData.furyOfElune.astralPower
         
         if TRB.Data.character.talents.naturesBalance.isSelected then
-            _passiveAstralPower = TRB.Data.spells.naturesBalance.astralPower
-        end
+            _passiveAstralPower = _passiveAstralPower + TRB.Data.spells.naturesBalance.astralPower
+		end
 
 		local passiveAstralPower = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.passive, _passiveAstralPower)
 		--$astralPowerTotal
@@ -554,9 +579,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         ----------
         -- TODO: Fury of Elune AP and Ticks logic
         --$foeAstralPower
-        local foeAstralPower = 0
+        local foeAstralPower = TRB.Data.snapshotData.furyOfElune.astralPower or 0
         --$foeTicks
-        local foeTicks = 0
+		local foeTicks = TRB.Data.snapshotData.furyOfElune.ticksRemaining or 0
+		--$foeTime
+		local foeTime = 0
+		if TRB.Data.snapshotData.furyOfElune.startTime ~= nil then
+			foeTime = currentTime - (TRB.Data.snapshotData.furyOfElune.startTime + TRB.Data.spells.furyOfElune.duration)
+		end
 
 		----------
 
@@ -590,8 +620,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                 stellarFlareCount = stellarFlareCount or 0
             },
             furyOfElune = {
-                astralPower = foeAstralPower,
-                ticks = foeTicks
+                astralPower = foeAstralPower or 0,
+				ticks = foeTicks or 0,
+				remaining = foeTime or 0
             }
 		}
 		
@@ -645,6 +676,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$passive"] = passiveAstralPower
 		lookup["$foeAstralPower"] = foeAstralPower
 		lookup["$foeTicks"] = foeTicks
+		lookup["$foeTime"] = foeTime
 		lookup["$talentStellarFlare"] = TRB.Data.character.talents.stellarFlare.isSelected
 		lookup["$ttd"] = ttd
 		lookup["||n"] = string.format("\n")
@@ -722,6 +754,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 	end
 
+	local function UpdateFuryOfElune()
+		if TRB.Data.snapshotData.furyOfElune.isActive then
+			local currentTime = GetTime()
+			if TRB.Data.snapshotData.furyOfElune.startTime == nil or currentTime > (TRB.Data.snapshotData.furyOfElune.startTime + TRB.Data.spells.furyOfElune.duration) then
+				TRB.Data.snapshotData.furyOfElune.ticksRemaining = 0
+				TRB.Data.snapshotData.furyOfElune.startTime = nil
+				TRB.Data.snapshotData.furyOfElune.astralPower = 0			
+				TRB.Data.snapshotData.furyOfElune.isActive = false
+			end
+		end
+	end
+
 	local function UpdateSnapshot()
 		TRB.Functions.UpdateSnapshot()
 		local currentTime = GetTime()
@@ -741,7 +785,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
         TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))
-        --UpdateFuryOfElune()
+        UpdateFuryOfElune()
 	end    
 
 	local function HideResourceBar()
@@ -785,9 +829,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 
             if TRB.Data.character.talents.naturesBalance.isSelected and (affectingCombat or (not affectingCombat and TRB.Data.snapshotData.resource < 50)) then
-                passiveFrame:SetValue(TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.naturesBalance.astralPower)
+                passiveFrame:SetValue(TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.naturesBalance.astralPower + TRB.Data.snapshotData.furyOfElune.astralPower)
             else
-                passiveFrame:SetValue(TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal)
+                passiveFrame:SetValue(TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower)
             end
             
 			-- Balance doesn't use the passive threshold right now. Hide it
@@ -1004,6 +1048,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						TRB.Data.snapshotData.targetData.targets[destGUID].stellarFlare = false
 						TRB.Data.snapshotData.targetData.stellarFlare = TRB.Data.snapshotData.targetData.stellarFlare - 1
 					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+					end	
+				elseif spellId == TRB.Data.spells.furyOfElune.id then
+					if type == "SPELL_AURA_APPLIED" then -- Gain Death and Madness
+						TRB.Data.snapshotData.furyOfElune.isActive = true
+						TRB.Data.snapshotData.furyOfElune.ticksRemaining = TRB.Data.spells.furyOfElune.ticks
+						TRB.Data.snapshotData.furyOfElune.astralPower = TRB.Data.snapshotData.furyOfElune.ticksRemaining * TRB.Data.spells.furyOfElune.astralPower
+						TRB.Data.snapshotData.furyOfElune.startTime = currentTime
+					elseif type == "SPELL_AURA_REMOVED" then
+						TRB.Data.snapshotData.furyOfElune.isActive = false
+						TRB.Data.snapshotData.furyOfElune.ticksRemaining = 0
+						TRB.Data.snapshotData.furyOfElune.astralPower = 0
+						TRB.Data.snapshotData.furyOfElune.startTime = nil
+					elseif type == "SPELL_PERIODIC_ENERGIZE" then
+						TRB.Data.snapshotData.furyOfElune.ticksRemaining = TRB.Data.snapshotData.furyOfElune.ticksRemaining - 1
+						TRB.Data.snapshotData.furyOfElune.astralPower = TRB.Data.snapshotData.furyOfElune.ticksRemaining * TRB.Data.spells.furyOfElune.astralPower
 					end		
 				else
                 end
