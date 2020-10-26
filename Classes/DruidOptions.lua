@@ -1928,6 +1928,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.druid.balance.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
+		
+		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrame.controls = controls
 	end
     
 	local function BalanceConstructBarTextDisplayLayoutPanel()	

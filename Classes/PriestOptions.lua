@@ -2509,7 +2509,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 		--interfaceSettingsFrame.shadowOptionsLayoutPanel.scrollChild = parent
 		--interfaceSettingsFrame.controls = controls
-		--TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrame.controls = controls
 	end
 
 	local function ShadowConstructBarTextDisplayLayoutPanel()	

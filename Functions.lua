@@ -271,40 +271,39 @@ local function UpdateBarPosition(xOfs, yOfs)
 			yOfs = math.floor(TRB.Data.sanityCheckValues.barMaxHeight/2)
 		end
 
-
-		interfaceSettingsFrame.controls.horizontal:SetValue(xOfs)
-		interfaceSettingsFrame.controls.horizontal.EditBox:SetText(RoundTo(xOfs, 0))
-		interfaceSettingsFrame.controls.vertical:SetValue(yOfs)
-		interfaceSettingsFrame.controls.vertical.EditBox:SetText(RoundTo(yOfs, 0))	
+		TRB.Frames.interfaceSettingsFrame.controls.horizontal:SetValue(xOfs)
+		TRB.Frames.interfaceSettingsFrame.controls.horizontal.EditBox:SetText(RoundTo(xOfs, 0))
+		TRB.Frames.interfaceSettingsFrame.controls.vertical:SetValue(yOfs)
+		TRB.Frames.interfaceSettingsFrame.controls.vertical.EditBox:SetText(RoundTo(yOfs, 0))	
 	end
 end
 TRB.Functions.UpdateBarPosition = UpdateBarPosition
 
-local function CaptureBarPosition()
-	local point, relativeTo, relativePoint, xOfs, yOfs = barContainerFrame:GetPoint()
+local function CaptureBarPosition(settings)
+	local point, relativeTo, relativePoint, xOfs, yOfs = TRB.Frames.barContainerFrame:GetPoint()
 
 	if relativePoint == "CENTER" then
 		--No action needed.
 	elseif relativePoint == "TOP" then
-		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight/2) + yOfs - (TRB.Data.settings.bar.height/2))
+		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight/2) + yOfs - (settings.bar.height/2))
 	elseif relativePoint == "TOPRIGHT" then
-		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth/2) + xOfs - (TRB.Data.settings.bar.width/2))
-		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight/2) + yOfs - (TRB.Data.settings.bar.height/2))
+		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth/2) + xOfs - (settings.bar.width/2))
+		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight/2) + yOfs - (settings.bar.height/2))
 	elseif relativePoint == "RIGHT" then
-		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth/2) + xOfs - (TRB.Data.settings.bar.width/2))
+		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth/2) + xOfs - (settings.bar.width/2))
 	elseif relativePoint == "BOTTOMRIGHT" then
-		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth/2) + xOfs - (TRB.Data.settings.bar.width/2))
-		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight/2) - yOfs - (TRB.Data.settings.bar.height/2))
+		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth/2) + xOfs - (settings.bar.width/2))
+		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight/2) - yOfs - (settings.bar.height/2))
 	elseif relativePoint == "BOTTOM" then
-		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight/2) - yOfs - (TRB.Data.settings.bar.height/2))
+		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight/2) - yOfs - (settings.bar.height/2))
 	elseif relativePoint == "BOTTOMLEFT" then
-		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (TRB.Data.settings.bar.width/2))
-		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight/2) - yOfs - (TRB.Data.settings.bar.height/2))
+		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (settings.bar.width/2))
+		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight/2) - yOfs - (settings.bar.height/2))
 	elseif relativePoint == "LEFT" then				
-		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (TRB.Data.settings.bar.width/2))
+		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (settings.bar.width/2))
 	elseif relativePoint == "TOPLEFT" then
-		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (TRB.Data.settings.bar.width/2))
-		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight/2) + yOfs - (TRB.Data.settings.bar.height/2))
+		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (settings.bar.width/2))
+		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight/2) + yOfs - (settings.bar.height/2))
 	end
 
 	TRB.Functions.UpdateBarPosition(xOfs, yOfs)
@@ -349,7 +348,7 @@ local function ConstructResourceBar(settings)
         barContainerFrame:SetScript("OnMouseUp", function(self, button)
             if button == "LeftButton" and self.isMoving and settings.bar.dragAndDrop then
                 self:StopMovingOrSizing()
-                CaptureBarPosition()
+                CaptureBarPosition(settings)
                 self.isMoving = false
             end
         end)
@@ -360,7 +359,7 @@ local function ConstructResourceBar(settings)
         barContainerFrame:SetScript("OnHide", function(self)
             if self.isMoving then
                 self:StopMovingOrSizing()
-                CaptureBarPosition()
+                CaptureBarPosition(settings)
                 self.isMoving = false
             end
         end)

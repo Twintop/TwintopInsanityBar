@@ -1759,6 +1759,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			self.EditBox:SetText(value)		
 			TRB.Data.settings.shaman.elemental.hastePrecision = value
 		end)
+		
+		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrame.controls = controls
 	end
     
 	local function ElementalConstructBarTextDisplayLayoutPanel()	
