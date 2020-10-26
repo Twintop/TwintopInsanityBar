@@ -165,6 +165,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		return settings
     end
 
+	local function BalanceResetSettings()
+		local settings = BalanceLoadDefaultSettings()
+		return settings
+	end
+
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 		local specId = GetSpecialization()
@@ -207,7 +212,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				BalanceLoadDefaultSettings()
+				TRB.Data.settings.druid.balance = BalanceResetSettings()
 				ReloadUI()			
 			end,
 			timeout = 0,

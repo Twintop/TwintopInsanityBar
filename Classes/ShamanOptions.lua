@@ -154,6 +154,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		return settings
     end
 
+	local function ElementalResetSettings()
+		local settings = ElementalLoadDefaultSettings()
+		return settings
+	end
+
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 		local specId = GetSpecialization()
@@ -196,7 +201,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				ElementalLoadDefaultSettings()
+				TRB.Data.settings.shaman.elemental = ElementalResetSettings()
 				ReloadUI()			
 			end,
 			timeout = 0,

@@ -232,6 +232,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return settings
 	end
 
+	local function ShadowResetSettings()
+		local settings = ShadowLoadDefaultSettings()
+		return settings
+	end
+
 	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 		settings.priest.shadow = ShadowLoadDefaultSettings()
@@ -272,7 +277,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				ShadowLoadDefaultSettings()
+				TRB.Data.settings.priest.shadow = ShadowResetSettings()
 				ReloadUI()			
 			end,
 			timeout = 0,
