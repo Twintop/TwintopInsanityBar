@@ -1503,16 +1503,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateDeathAndMadness()
 	end
 
-	local function HideResourceBar()
+	local function HideResourceBar(force)
 		local affectingCombat = UnitAffectingCombat("player")
 	
-		if (not affectingCombat) and
+		if force or GetSpecialization() ~= 3 or ((not affectingCombat) and
 			(not UnitInVehicle("player")) and (
 				(not TRB.Data.settings.priest.shadow.displayBar.alwaysShow) and (
 					(not TRB.Data.settings.priest.shadow.displayBar.notZeroShow) or
 					(TRB.Data.settings.priest.shadow.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0)
 				)
-			 ) then
+			 )) then
 			TRB.Frames.barContainerFrame:Hide()	
 		else
 			TRB.Frames.barContainerFrame:Show()	
@@ -1636,7 +1636,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function TriggerResourceBarUpdates()
 		if GetSpecialization() ~= 3 then
-			TRB.Functions.HideResourceBar()
+			TRB.Functions.HideResourceBar(true)
 			return
 		end	
 

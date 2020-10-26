@@ -592,16 +592,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		UpdateIcefury()
 	end    
 
-	local function HideResourceBar()
+	local function HideResourceBar(force)
 		local affectingCombat = UnitAffectingCombat("player")
 	
-		if (not affectingCombat) and
+		if force or GetSpecialization() ~= 1 or ((not affectingCombat) and
 			(not UnitInVehicle("player")) and (
 				(not TRB.Data.settings.shaman.elemental.displayBar.alwaysShow) and (
 					(not TRB.Data.settings.shaman.elemental.displayBar.notZeroShow) or
 					(TRB.Data.settings.shaman.elemental.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0)
 				)
-			 ) then
+			 )) then
 			TRB.Frames.barContainerFrame:Hide()	
 		else
 			TRB.Frames.barContainerFrame:Show()	
@@ -682,7 +682,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function TriggerResourceBarUpdates()
 		if GetSpecialization() ~= 1 then
-			TRB.Functions.HideResourceBar()
+			TRB.Functions.HideResourceBar(true)
 			return
 		end	
 

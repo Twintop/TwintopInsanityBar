@@ -808,10 +808,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         UpdateFuryOfElune()
 	end    
 
-	local function HideResourceBar()
+	local function HideResourceBar(force)
 		local affectingCombat = UnitAffectingCombat("player")
 	
-		if (not affectingCombat) and
+		if force or GetSpecialization() ~= 1 or (not affectingCombat) and
 			(not UnitInVehicle("player")) and (
 				(not TRB.Data.settings.druid.balance.displayBar.alwaysShow) and (
 					(not TRB.Data.settings.druid.balance.displayBar.notZeroShow) or
@@ -951,7 +951,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function TriggerResourceBarUpdates()
 		if GetSpecialization() ~= 1 then
-			TRB.Functions.HideResourceBar()
+			TRB.Functions.HideResourceBar(true)
 			return
 		end	
 
