@@ -1608,12 +1608,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			
 			if TRB.Data.snapshotData.voidform.spellId then
-				local gcd = TRB.Functions.GetCurrentGCDTime()	
+				local gcd = TRB.Functions.GetCurrentGCDTime()
 				if TRB.Data.snapshotData.voidform.remainingTime <= gcd then
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, true))
 				elseif TRB.Data.snapshotData.voidform.remainingTime <= (gcd * 2.0) then
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform2GCD, true))
-				else				
+				elseif TRB.Data.snapshotData.resource >= TRB.Data.character.devouringPlagueThreshold then
+					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.enterVoidform, true))
+				else
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform, true))	
 				end
 			else
