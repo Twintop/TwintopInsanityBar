@@ -1097,7 +1097,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)
 
-		controls.colors.overcapBorder = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Insanity", TRB.Data.settings.shaman.elemental.colors.bar.overcapBorder, 275, 25, xCoord2, yCoord)
+		controls.colors.overcapBorder = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Maelstrom", TRB.Data.settings.shaman.elemental.colors.bar.overcapBorder, 275, 25, xCoord2, yCoord)
 		f = controls.colors.overcapBorder
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1593,11 +1593,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 		
 		yCoord = yCoord - 30
-		controls.colors.overcapMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Cast will overcap Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.overcapInsanity, 275, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.overcapMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Cast will overcap Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.overcap, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.overcapMaelstromText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.overcapInsanity, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
 					local r, g, b, a
 					if color then
@@ -1683,8 +1683,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TIBCB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Insanity")
-		f.tooltip = "Play an audio cue when your hardcast spell will overcap Insanity."
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Maelstrom")
+		f.tooltip = "Play an audio cue when your hardcast spell will overcap Maelstrom."
 		f:SetChecked(TRB.Data.settings.shaman.elemental.audio.overcap.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.shaman.elemental.audio.overcap.enabled = self:GetChecked()

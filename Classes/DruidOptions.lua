@@ -550,7 +550,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 30
 		
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TIBInsanityBarTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TIBResourceBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Main Bar Texture", xCoord+xPadding, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
