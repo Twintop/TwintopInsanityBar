@@ -1296,7 +1296,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 					
 					controls.colors.mindbenderThreshold.Texture:SetColorTexture(r, g, b, a)
-					passiveFrame:SetStatusBarColor(r, g, b, a)
 					TRB.Data.settings.priest.shadow.colors.threshold.mindbender = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 				end)
 			end
@@ -1337,7 +1336,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 					
-					controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
 					passiveFrame:SetStatusBarColor(r, g, b, a)
 					TRB.Data.settings.priest.shadow.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 				end)

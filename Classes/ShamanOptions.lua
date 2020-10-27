@@ -1159,9 +1159,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)
 
-		--[[
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom from Passive Sources (?)", TRB.Data.settings.shaman.elemental.colors.bar.passive, 550, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom from Passive Sources", TRB.Data.settings.shaman.elemental.colors.bar.passive, 550, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1181,7 +1180,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                 end)
 			end
 		end)
-		]]
 
 		yCoord = yCoord - 40
 		

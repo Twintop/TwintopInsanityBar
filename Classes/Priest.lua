@@ -7,9 +7,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local passiveFrame = TRB.Frames.passiveFrame
 	local barBorderFrame = TRB.Frames.barBorderFrame
 
-	local resourceFrame = TRB.Frames.resourceFrame
-	local passiveFrame = TRB.Frames.passiveFrame
-
 	resourceFrame.thresholdDp = CreateFrame("Frame", nil, resourceFrame)
 	resourceFrame.thresholdSn = CreateFrame("Frame", nil, resourceFrame)
 	passiveFrame.threshold = CreateFrame("Frame", nil, passiveFrame)
@@ -1556,7 +1553,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			castingFrame:SetValue(castingBarValue)
 
 			if TRB.Data.character.talents.as.isSelected or TRB.Data.snapshotData.mindbender.resourceFinal > 0 or TRB.Data.snapshotData.deathAndMadness.isActive then
-				passiveBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal + ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity, false) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.mindbender.resourceFinal + TRB.Data.snapshotData.deathAndMadness.insanity + TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal)
+				passiveBarValue = castingBarValue + ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity, false) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.mindbender.resourceFinal + TRB.Data.snapshotData.deathAndMadness.insanity + TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal)
 				if TRB.Data.snapshotData.mindbender.resourceFinal > 0 and (castingFrame:GetValue() + TRB.Data.snapshotData.mindbender.resourceFinal) < TRB.Data.character.maxResource then
 					passiveFrame.threshold:SetPoint("CENTER", passiveFrame, "LEFT", ((TRB.Data.settings.priest.shadow.bar.width-(TRB.Data.settings.priest.shadow.bar.border*2)) * ((castingFrame:GetValue() + TRB.Data.snapshotData.mindbender.resourceFinal) / TRB.Data.character.maxResource)), 0)
 					passiveFrame.threshold.texture:Show()
@@ -1565,7 +1562,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			else
 				passiveFrame.threshold.texture:Hide()
-				passiveBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
+				passiveBarValue = castingBarValue
 			end
 
 			passiveFrame:SetValue(passiveBarValue)

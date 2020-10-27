@@ -7,9 +7,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local passiveFrame = TRB.Frames.passiveFrame
 	local barBorderFrame = TRB.Frames.barBorderFrame
 
-	local resourceFrame = TRB.Frames.resourceFrame
-	local passiveFrame = TRB.Frames.passiveFrame
-
 	resourceFrame.thresholdSs = CreateFrame("Frame", nil, resourceFrame)
 	resourceFrame.thresholdSf = CreateFrame("Frame", nil, resourceFrame)
 	passiveFrame.threshold = CreateFrame("Frame", nil, passiveFrame)
