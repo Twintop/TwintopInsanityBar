@@ -657,7 +657,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			CloseDropDownMenus()
 		end
 
-		--[[
+		
 		yCoord = yCoord - 60
 			
 		-- Create the dropdown, and configure its appearance
@@ -720,9 +720,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			CloseDropDownMenus()
 		end	
-		]]
 
-		yCoord = yCoord - 40
 		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TIBCB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -1097,11 +1095,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)
 
-		controls.colors.overcapBorder = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Maelstrom", TRB.Data.settings.shaman.elemental.colors.bar.overcapBorder, 275, 25, xCoord2, yCoord)
-		f = controls.colors.overcapBorder
+		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Maelstrom", TRB.Data.settings.shaman.elemental.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.overcapBorder, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.borderOvercap, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
 					local r, g, b, a
 					if color then
@@ -1111,8 +1109,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.overcapBorder.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.shaman.elemental.colors.bar.overcapBorder = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.shaman.elemental.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 				end)
 			end
 		end)
@@ -1174,8 +1172,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
                     
-                    controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
-                    passiveFrame:SetStatusBarColor(r, g, b, a)
+					controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
+					passiveFrame:SetStatusBarColor(r, g, b, a)
                     TRB.Data.settings.shaman.elemental.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
                 end)
 			end
@@ -1591,7 +1589,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 		
 		yCoord = yCoord - 30
-		controls.colors.overcapMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Cast will overcap Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.overcap, 275, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.overcapMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Cast will overcap Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom, 275, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.overcapMaelstromText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then

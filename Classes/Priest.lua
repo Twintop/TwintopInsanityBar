@@ -683,8 +683,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			local remainingTime = (expirationTime - currentTime) or 0
 
 			if TRB.Data.character.talents.hungeringVoid.isSelected == true then
-				local down, up, lagHome, lagWorld = GetNetStats()
-				local latency = lagWorld / 1000
+				local latency = TRB.Functions.GetLatency()
 				local vbStart, vbDuration, _, _ = GetSpellCooldown(TRB.Data.spells.voidBolt.id)
 				local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(TRB.Data.spells.voidBolt.id)
 				local vbCooldown = (vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) + latency
@@ -1304,9 +1303,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindFlay.insanity
 					TRB.Data.snapshotData.casting.icon = TRB.Data.spells.mindFlay.icon
 					UpdateCastingResourceFinal(TRB.Data.spells.mindFlay.fotm)
-				elseif spellName == TRB.Data.spells.mindSear.name then				
-					local down, up, lagHome, lagWorld = GetNetStats()
-					local latency = lagWorld / 1000
+				elseif spellName == TRB.Data.spells.mindSear.name then
+					local latency = TRB.Functions.GetLatency()
 
 					if TRB.Data.snapshotData.mindSear.hitTime == nil then
 						TRB.Data.snapshotData.mindSear.targetsHit = 1

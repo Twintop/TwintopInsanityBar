@@ -902,10 +902,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					elseif spellId == TRB.Data.spells.lavaBeam.id then 
 						spell = TRB.Data.spells.lavaBeam
 					end
-
+					
 					InitializeTarget(destGUID)
+
 					TRB.Data.snapshotData.targetData.targets[destGUID].echoingShockSpell = spell
-					TRB.Data.snapshotData.targetData.targets[destGUID].echoingShockExpiration = currentTime + TRB.Data.character.talents.echoingShock.duration
+					TRB.Data.snapshotData.targetData.targets[destGUID].echoingShockExpiration = currentTime + TRB.Data.character.talents.echoingShock.duration - TRB.Functions.GetLatency()
 					TRB.Data.snapshotData.echoingShock.isActive = false
 					TRB.Data.snapshotData.echoingShock.spell = spell
 				end

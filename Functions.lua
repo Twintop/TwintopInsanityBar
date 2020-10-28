@@ -55,7 +55,7 @@ local function GetRGBAFromString(s, normalize)
     local _r = 0
     local _g = 1
     local _b = 0
-    
+		
     if not (s == nil) then        
         _a = min(255, tonumber(string.sub(s, 1, 2), 16))
         _r = min(255, tonumber(string.sub(s, 3, 4), 16))
@@ -147,6 +147,13 @@ local function ResetCastingSnapshotData()
 	TRB.Data.snapshotData.casting.icon = ""
 end
 TRB.Functions.ResetCastingSnapshotData = ResetCastingSnapshotData
+
+local function GetLatency()	
+	local down, up, lagHome, lagWorld = GetNetStats()
+	local latency = lagWorld / 1000
+	return latency
+end
+TRB.Functions.GetLatency = GetLatency
 
 -- Addon Maintenance Functions
 
@@ -413,7 +420,7 @@ local function ConstructResourceBar(settings)
         castingFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         castingFrame:SetStatusBarTexture(settings.textures.castingBar)
-        castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting))
+        castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting, true))
         castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         castingFrame:SetFrameLevel(90)
         
@@ -423,10 +430,10 @@ local function ConstructResourceBar(settings)
         passiveFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
-        passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive))
+        passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive, true))
         passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		passiveFrame:SetFrameLevel(80)
-        
+
         passiveFrame.threshold:SetWidth(settings.thresholdWidth)
         passiveFrame.threshold:SetHeight(settings.bar.height)
         passiveFrame.threshold.texture = passiveFrame.threshold:CreateTexture(nil, TRB.Data.settings.core.strata.level)

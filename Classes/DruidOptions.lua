@@ -1576,7 +1576,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 					controls.colors.middleText.Texture:SetColorTexture(r, g, b, a)
 					TRB.Data.settings.druid.balance.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-					--barContainerFrame:SetBackdropBorderColor(r, g, b, a)
 				end)
 			end
 		end)
@@ -1600,7 +1599,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 					controls.colors.rightText.Texture:SetColorTexture(r, g, b, a)
 					TRB.Data.settings.druid.balance.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-					--barContainerFrame:SetBackdropBorderColor(r, g, b, a)
 				end)
 			end
 		end)
@@ -1689,7 +1687,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 					controls.colors.castingAstralPowerText.Texture:SetColorTexture(r, g, b, a)
 					TRB.Data.settings.druid.balance.colors.text.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-					--barContainerFrame:SetBackdropBorderColor(r, g, b, a)
 				end)
 			end
 		end)
