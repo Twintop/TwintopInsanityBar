@@ -1019,7 +1019,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.base, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1028,8 +1028,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.base.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.base.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1039,7 +1039,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.solar, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1048,8 +1048,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.solar.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.bar.solar = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.solar.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.bar.solar = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1060,7 +1060,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.border, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1069,8 +1069,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.border.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 					barBorderFrame:SetBackdropBorderColor(r, g, b, a)
 				end)
 			end
@@ -1081,7 +1081,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.lunar, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1090,8 +1090,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.lunar.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.bar.lunar = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.lunar.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.bar.lunar = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1102,7 +1102,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.casting, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1111,8 +1111,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.casting.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.casting.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 					castingFrame:SetStatusBarColor(r, g, b, a)
 				end)
 			end
@@ -1123,7 +1123,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.celestial, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1132,8 +1132,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.celestial.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.bar.celestial = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.celestial.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.bar.celestial = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1144,7 +1144,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1153,8 +1153,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1164,7 +1164,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1173,8 +1173,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.eclipse1GCD.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.eclipse1GCD.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1185,7 +1185,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1194,8 +1194,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1205,7 +1205,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.borderOvercap, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1214,8 +1214,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1227,7 +1227,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1236,8 +1236,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 					
-					controls.colors.starfallPandemic.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.starfallPandemic.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1247,7 +1247,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1256,8 +1256,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 					
-					controls.colors.moonkinFormMissing.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.moonkinFormMissing.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1269,7 +1269,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.passive, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1278,9 +1278,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 					
-					controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
+					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
 					passiveFrame:SetStatusBarColor(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)		
@@ -1290,7 +1290,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.background, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1299,8 +1299,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.background.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 					barContainerFrame:SetBackdropColor(r, g, b, a)
 				end)
 			end
@@ -1564,7 +1564,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.left, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1575,8 +1575,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.leftText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1587,7 +1587,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.middle, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1598,8 +1598,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.middleText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1610,7 +1610,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.right, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1621,8 +1621,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.rightText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1676,7 +1676,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.current, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1687,8 +1687,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.currentAstralPowerText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.text.current = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.currentAstralPowerText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.text.current = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1698,7 +1698,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.casting, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1709,8 +1709,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.castingAstralPowerText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.text.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.castingAstralPowerText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.text.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1721,7 +1721,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.overThreshold, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1732,8 +1732,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.thresholdAstralPowerText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.thresholdAstralPowerText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1743,7 +1743,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.overcap, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1754,8 +1754,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.overcapAstralPowerText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.text.overcap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.overcapAstralPowerText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.text.overcap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)

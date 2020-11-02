@@ -1081,7 +1081,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.base, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1090,8 +1090,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.base.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.base.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1101,7 +1101,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1110,8 +1110,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.inVoidform.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.bar.inVoidform = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.inVoidform.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.bar.inVoidform = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1122,7 +1122,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.enterVoidform, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1131,8 +1131,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.enterVoidform.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.bar.enterVoidform = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.enterVoidform.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.bar.enterVoidform = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1142,7 +1142,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.border, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1151,8 +1151,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.border.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 					barBorderFrame:SetBackdropBorderColor(r, g, b, a)
 				end)
 			end
@@ -1164,7 +1164,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.casting, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1173,8 +1173,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.casting.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.casting.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 					castingFrame:SetStatusBarColor(r, g, b, a)
 				end)
 			end
@@ -1185,7 +1185,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.background, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1194,8 +1194,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.background.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 					barContainerFrame:SetBackdropColor(r, g, b, a)
 				end)
 			end
@@ -1207,7 +1207,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1216,8 +1216,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)	
@@ -1227,7 +1227,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform2GCD, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1236,8 +1236,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.inVoidform2GCD.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.bar.inVoidform2GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.inVoidform2GCD.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.bar.inVoidform2GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1248,7 +1248,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1257,8 +1257,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1268,7 +1268,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1277,8 +1277,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.inVoidform1GCD.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.inVoidform1GCD.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1289,7 +1289,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.mindbender, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1298,9 +1298,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 					
-					controls.colors.mindbenderThreshold.Texture:SetColorTexture(r, g, b, a)
-					passiveFrame.threshold.texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.threshold.mindbender = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.mindbenderThreshold.Texture:SetColorTexture(r, g, b, 1-a)
+					passiveFrame.threshold.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.threshold.mindbender = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1310,7 +1310,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.borderOvercap, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1319,8 +1319,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1331,7 +1331,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.passive, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1340,9 +1340,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 					
-					controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
+					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
 					passiveFrame:SetStatusBarColor(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					TRB.Data.settings.priest.shadow.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1605,7 +1605,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.left, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1616,8 +1616,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.leftText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1628,7 +1628,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.middle, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1639,8 +1639,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.middleText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1651,7 +1651,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.right, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1662,8 +1662,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.rightText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1717,7 +1717,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.currentInsanity, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1728,8 +1728,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.currentInsanityText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.text.currentInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.currentInsanityText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.text.currentInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1739,7 +1739,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.currentInsanity, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1750,8 +1750,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.castingInsanityText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.text.castingInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.castingInsanityText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.text.castingInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1762,7 +1762,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.overThreshold, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1773,8 +1773,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.thresholdInsanityText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.thresholdInsanityText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1784,7 +1784,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.overcapInsanity, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1795,8 +1795,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.overcapInsanityText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.text.overcapInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.overcapInsanityText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.text.overcapInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1851,7 +1851,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.hasteBelow, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1862,8 +1862,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.hasteBelow.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.text.hasteBelow = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.hasteBelow.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.text.hasteBelow = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1874,7 +1874,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.hasteApproaching, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1885,8 +1885,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.hasteApproaching.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.text.hasteApproaching = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.hasteApproaching.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.text.hasteApproaching = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1897,7 +1897,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.hasteAbove, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1908,8 +1908,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.hasteAbove.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.text.hasteAbove = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.hasteAbove.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.text.hasteAbove = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1961,7 +1961,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.s2mBelow, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1972,8 +1972,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.s2mBelow.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.text.s2mBelow = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.s2mBelow.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.text.s2mBelow = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1984,7 +1984,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.s2mApproaching, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1995,8 +1995,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.s2mApproaching.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.text.s2mApproaching = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.s2mApproaching.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.text.s2mApproaching = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -2007,7 +2007,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.s2mAbove, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -2018,8 +2018,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.s2mAbove.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.priest.shadow.colors.text.s2mAbove = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.s2mAbove.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.text.s2mAbove = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)

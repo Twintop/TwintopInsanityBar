@@ -995,20 +995,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
                 local r1, g1, b1, a1 = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.base, true)
-				TRB.UiFunctions.ShowColorPicker(r1, g1, b1, a1, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
-                        r = r / 255
-                        g = g / 255
-                        b = b / 255
-                        a = a / 255
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-                    controls.colors.base.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.base.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -1018,7 +1014,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.border, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1027,8 +1023,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.border.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barBorderFrame:SetBackdropBorderColor(r, g, b, a)
                 end)
 			end
@@ -1040,7 +1036,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.earthShock, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1049,8 +1045,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.earthShock.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.earthShock = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.earthShock.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.bar.earthShock = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)	
@@ -1060,7 +1056,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.background, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1069,8 +1065,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.background.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barContainerFrame:SetBackdropColor(r, g, b, a)
                 end)
 			end
@@ -1082,7 +1078,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.casting, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1091,8 +1087,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.casting.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.casting.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     castingFrame:SetStatusBarColor(r, g, b, a)
                 end)
 			end
@@ -1103,7 +1099,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.borderOvercap, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1112,8 +1108,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.shaman.elemental.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.shaman.elemental.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1124,7 +1120,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.under, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1133,8 +1129,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -1145,7 +1141,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.over, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1154,8 +1150,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -1166,7 +1162,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.passive, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1175,9 +1171,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
                     
-					controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
+					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
 					passiveFrame:SetStatusBarColor(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    TRB.Data.settings.shaman.elemental.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -1440,7 +1436,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.left, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1451,8 +1447,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 1.0
         
-                    controls.colors.leftText.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -1463,7 +1459,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.middle, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1474,8 +1470,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 1.0
         
-                    controls.colors.middleText.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -1486,7 +1482,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.right, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1497,8 +1493,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 1.0
         
-                    controls.colors.rightText.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -1552,7 +1548,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1563,8 +1559,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 1.0
         
-                    controls.colors.currentMaelstromText.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.currentMaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -1574,7 +1570,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1585,8 +1581,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 1.0
         
-                    controls.colors.castingMaelstromText.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.castingMaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -1597,7 +1593,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.overThreshold, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1608,8 +1604,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.thresholdmaelstromText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.shaman.elemental.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.thresholdmaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.shaman.elemental.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1619,7 +1615,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1630,8 +1626,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.overcapmaelstromText.Texture:SetColorTexture(r, g, b, a)
-					TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.overcapmaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
