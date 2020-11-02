@@ -112,7 +112,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			id = 191034,
 			name = "",
 			icon = "",
-			astralPower = 50
+			astralPower = 50,
+			isActive = false
         },
         
         celestialAlignment = {
@@ -216,6 +217,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		ticksRemaining = 0,
 		startTime = nil,
 		astralPower = 0
+	}
+	TRB.Data.snapshotData.starfall = {
+		spellId = nil,
+		ticksRemaining = 0,
+		endTime = nil
 	}
 
 	local function FillSpellData()
@@ -830,6 +836,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	TRB.Functions.HideResourceBar = HideResourceBar
 
 	local function UpdateResourceBar()
+		local currentTime = GetTime()
 		UpdateSnapshot()
 
 		if barContainerFrame:IsShown() then
@@ -894,8 +901,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             
 			if TRB.Data.settings.druid.balance.starfallThreshold then
 				resourceFrame.thresholdSf:Show()
-                if TRB.Data.snapshotData.resource >= TRB.Data.character.starfallThreshold then
-                    resourceFrame.thresholdSf.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+				if TRB.Data.snapshotData.resource >= TRB.Data.character.starfallThreshold then
+					if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > 2.4 then -- 8 * 0.3 = pandemic range
+						resourceFrame.thresholdSf.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
+					else
+						resourceFrame.thresholdSf.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+					end
+
                     if TRB.Data.settings.druid.balance.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
                         TRB.Data.snapshotData.audio.playedSfCue = true
                         PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1102,7 +1114,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif type == "SPELL_PERIODIC_ENERGIZE" then
 						TRB.Data.snapshotData.furyOfElune.ticksRemaining = TRB.Data.snapshotData.furyOfElune.ticksRemaining - 1
 						TRB.Data.snapshotData.furyOfElune.astralPower = TRB.Data.snapshotData.furyOfElune.ticksRemaining * TRB.Data.spells.furyOfElune.astralPower
-					end		
+					end
+				elseif spellId == TRB.Data.spells.starfall.id then
+					if type == "SPELL_AURA_APPLIED" then -- Gained buff
+						TRB.Data.spells.starfall.isActive = true
+						_, _, _, _, TRB.Data.snapshotData.starfall.duration, TRB.Data.snapshotData.starfall.endTime, _, _, _, TRB.Data.snapshotData.starfall.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.starfall.id)
+					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						TRB.Data.spells.starfall.isActive = false
+						TRB.Data.snapshotData.starfall.spellId = nil
+						TRB.Data.snapshotData.starfall.duration = 0
+						TRB.Data.snapshotData.starfall.endTime = nil
+					end
 				else
                 end
             end

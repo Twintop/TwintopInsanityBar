@@ -155,7 +155,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					passiveInsanity="FFDF00FF",
 					overcapInsanity="FFFF0000",
 					overThreshold="FF00FF00",
-					overThresholdEnabled=true,
+					overThresholdEnabled=false,
 					overcapEnabled=true,
 					left="FFFFFFFF",
 					middle="FFFFFFFF",

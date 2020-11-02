@@ -103,7 +103,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					passive="FF00AA00",	
 					overcap="FFFF0000",	
 					overThreshold="FF00FF00",
-					overThresholdEnabled=true,
+					overThresholdEnabled=false,
 					overcapEnabled=true,
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
@@ -128,7 +128,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				},
 				threshold = {
 					under="FFFFFFFF",
-					over="FF00FF00"
+					over="FF00FF00",
+					starfallPandemic="FF8B0000"
 				}
 			},
 			displayText = {},
@@ -1219,9 +1220,29 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		end)
 
-		
+
 		yCoord = yCoord - 30
-		controls.colors.moonkinFormMissing = TRB.UiFunctions.BuildColorPicker(parent, "Moonkin Form missing when in combat", TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing, 300, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.starfallPandemic = TRB.UiFunctions.BuildColorPicker(parent, "Starfall Threshold Line when outside Pandemic refresh range", TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, 300, 25, xCoord+xPadding*2, yCoord)
+		f = controls.colors.starfallPandemic
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					
+					controls.colors.starfallPandemic.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
+			end
+		end)
+		
+		controls.colors.moonkinFormMissing = TRB.UiFunctions.BuildColorPicker(parent, "Moonkin Form missing when in combat", TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing, 275, 25, xCoord2, yCoord)
 		f = controls.colors.moonkinFormMissing
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1236,12 +1257,34 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 					
 					controls.colors.moonkinFormMissing.Texture:SetColorTexture(r, g, b, a)
-					passiveFrame:SetStatusBarColor(r, g, b, a)
 					TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 				end)
 			end
 		end)
-			
+		
+
+		yCoord = yCoord - 30
+		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power from Fury of Elune and Nature's Balance", TRB.Data.settings.druid.balance.colors.bar.passive, 300, 25, xCoord+xPadding*2, yCoord)
+		f = controls.colors.passive
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.passive, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					
+					controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
+					passiveFrame:SetStatusBarColor(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
+			end
+		end)		
+		
 		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.druid.balance.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1259,28 +1302,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					controls.colors.background.Texture:SetColorTexture(r, g, b, a)
 					TRB.Data.settings.druid.balance.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 					barContainerFrame:SetBackdropColor(r, g, b, a)
-				end)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power from Fury of Elune and Nature's Balance", TRB.Data.settings.druid.balance.colors.bar.passive, 550, 25, xCoord+xPadding*2, yCoord)
-		f = controls.colors.passive
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.passive, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					
-					controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
-					passiveFrame:SetStatusBarColor(r, g, b, a)
-					TRB.Data.settings.druid.balance.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 				end)
 			end
 		end)

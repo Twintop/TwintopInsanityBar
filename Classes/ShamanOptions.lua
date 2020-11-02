@@ -101,7 +101,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					passiveMaelstrom="FF995BDD",
 					overcapMaelstrom="FFFF0000",
 					overThreshold="FF00FF00",
-					overThresholdEnabled=true,
+					overThresholdEnabled=false,
 					overcapEnabled=true,
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
