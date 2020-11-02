@@ -339,7 +339,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		isActive = false,
 		ticksRemaining = 0,
 		insanity = 0,
-		startTime = nil
+		endTime = nil,
+		lastTick = nil
 	}
 	TRB.Data.snapshotData.mindbender = {
 		isActive = false,
@@ -1478,13 +1479,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function UpdateDeathAndMadness()
 		if TRB.Data.snapshotData.deathAndMadness.isActive then
 			local currentTime = GetTime()
-			if TRB.Data.snapshotData.deathAndMadness.startTime == nil or currentTime > (TRB.Data.snapshotData.deathAndMadness.startTime + TRB.Data.spells.deathAndMadness.duration) then
+			if TRB.Data.snapshotData.deathAndMadness.endTime == nil or currentTime > TRB.Data.snapshotData.deathAndMadness.endTime then
 				TRB.Data.snapshotData.deathAndMadness.ticksRemaining = 0
-				TRB.Data.snapshotData.deathAndMadness.startTime = nil
+				TRB.Data.snapshotData.deathAndMadness.endTime = nil
 				TRB.Data.snapshotData.deathAndMadness.insanity = 0			
 				TRB.Data.snapshotData.deathAndMadness.isActive = false
 			else
-				TRB.Data.snapshotData.deathAndMadness.ticksRemaining = math.floor(TRB.Data.spells.deathAndMadness.duration - (currentTime - TRB.Data.snapshotData.deathAndMadness.startTime)) + 1
+				TRB.Data.snapshotData.deathAndMadness.ticksRemaining = math.ceil(TRB.Data.snapshotData.deathAndMadness.endTime - currentTime)
 				TRB.Data.snapshotData.deathAndMadness.insanity = TRB.Data.snapshotData.deathAndMadness.ticksRemaining * TRB.Data.spells.deathAndMadness.insanity
 			end
 		end
@@ -1792,15 +1793,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.deathAndMadness.isActive = true
 						TRB.Data.snapshotData.deathAndMadness.ticksRemaining = TRB.Data.spells.deathAndMadness.ticks
 						TRB.Data.snapshotData.deathAndMadness.insanity = TRB.Data.snapshotData.deathAndMadness.ticksRemaining * TRB.Data.spells.deathAndMadness.insanity
-						TRB.Data.snapshotData.deathAndMadness.startTime = currentTime
+						TRB.Data.snapshotData.deathAndMadness.endTime = currentTime + TRB.Data.spells.deathAndMadness.duration
+						TRB.Data.snapshotData.deathAndMadness.lastTick = currentTime
+					elseif type == "SPELL_AURA_REFRESH" then
+						TRB.Data.snapshotData.deathAndMadness.ticksRemaining = TRB.Data.spells.deathAndMadness.ticks + 1
+						TRB.Data.snapshotData.deathAndMadness.insanity = TRB.Data.snapshotData.deathAndMadness.ticksRemaining * TRB.Data.spells.deathAndMadness.insanity
+						TRB.Data.snapshotData.deathAndMadness.endTime = currentTime + TRB.Data.spells.deathAndMadness.duration + ((TRB.Data.spells.deathAndMadness.duration / TRB.Data.spells.deathAndMadness.ticks) - (currentTime - TRB.Data.snapshotData.deathAndMadness.lastTick))
+						TRB.Data.snapshotData.deathAndMadness.lastTick = currentTime
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.deathAndMadness.isActive = false
 						TRB.Data.snapshotData.deathAndMadness.ticksRemaining = 0
 						TRB.Data.snapshotData.deathAndMadness.insanity = 0
-						TRB.Data.snapshotData.deathAndMadness.startTime = nil
+						TRB.Data.snapshotData.deathAndMadness.endTime = nil
+						TRB.Data.snapshotData.deathAndMadness.lastTick = nil
 					elseif type == "SPELL_PERIODIC_ENERGIZE" then
 						TRB.Data.snapshotData.deathAndMadness.ticksRemaining = TRB.Data.snapshotData.deathAndMadness.ticksRemaining - 1
 						TRB.Data.snapshotData.deathAndMadness.insanity = TRB.Data.snapshotData.deathAndMadness.ticksRemaining * TRB.Data.spells.deathAndMadness.insanity
+						TRB.Data.snapshotData.deathAndMadness.lastTick = currentTime
 					end				
 				elseif spellId == TRB.Data.spells.shadowWordPain.id then
 					InitializeTarget(destGUID)
