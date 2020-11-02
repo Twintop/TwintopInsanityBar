@@ -981,9 +981,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local currentInsanityColor = TRB.Data.settings.priest.shadow.colors.text.currentInsanity
 		local castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.castingInsanity
 
-		if overcap then 
+		local insanityThreshold = TRB.Data.character.devouringPlagueThreshold
+
+		if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then
+			insanityThreshold = TRB.Data.character.searingNightmareThreshold
+		end
+		
+		if TRB.Data.settings.priest.shadow.colors.text.overcapEnabled and overcap then 
 			currentInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overcapInsanity
-			castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overcapInsanity
+			castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overcapInsanity	
+		elseif TRB.Data.settings.priest.shadow.colors.text.overThresholdEnabled and TRB.Data.snapshotData.resource >= insanityThreshold then
+			currentInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overThreshold
 		end
 
 		--$insanity

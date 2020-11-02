@@ -554,10 +554,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.current
 		local castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.casting
-
-		if overcap then 
+		
+		local astralPowerThreshold = math.min(TRB.Data.character.starsurgeThreshold, TRB.Data.character.starfallThreshold)
+		
+		if TRB.Data.settings.druid.balance.colors.text.overcapEnabled and overcap then 
 			currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap
-			castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap
+			castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap	
+		elseif TRB.Data.settings.druid.balance.colors.text.overThresholdEnabled and TRB.Data.snapshotData.resource >= astralPowerThreshold then
+			currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overThreshold
 		end
 		
 		--$astralPower

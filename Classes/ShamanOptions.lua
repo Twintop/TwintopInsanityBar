@@ -100,6 +100,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					castingMaelstrom="FFFFFFFF",
 					passiveMaelstrom="FF995BDD",
 					overcapMaelstrom="FFFF0000",
+					overThreshold="FF00FF00",
+					overThresholdEnabled=true,
+					overcapEnabled=true,
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
 					right="FFFFFFFF"
@@ -987,7 +990,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom", TRB.Data.settings.shaman.elemental.colors.bar.base, 275, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom", TRB.Data.settings.shaman.elemental.colors.bar.base, 300, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1032,7 +1035,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.earthShock = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom when you can cast Earth Shock/Earthquake", TRB.Data.settings.shaman.elemental.colors.bar.earthShock, 275, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.earthShock = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom when you can cast Earth Shock/Earthquake", TRB.Data.settings.shaman.elemental.colors.bar.earthShock, 300, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.earthShock
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1544,7 +1547,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Maelstrom Text Colors", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Current Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, 275, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.currentMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Current Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, 300, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.currentMaelstromText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1589,8 +1592,30 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 		
 		yCoord = yCoord - 30
-		controls.colors.overcapMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Cast will overcap Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom, 275, 25, xCoord+xPadding*2, yCoord)
-		f = controls.colors.overcapMaelstromText
+		controls.colors.thresholdmaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Maelstrom to cast Earth Shock or Earthquake", TRB.Data.settings.shaman.elemental.colors.text.overThreshold, 300, 25, xCoord+xPadding*2, yCoord)
+		f = controls.colors.thresholdmaelstromText
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.overThreshold, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					--Text doesn't care about Alpha, but the color picker does!
+					a = 1.0
+		
+					controls.colors.thresholdmaelstromText.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.shaman.elemental.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
+			end
+		end)
+
+		controls.colors.overcapmaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Cast will overcap Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom, 300, 25, xCoord2, yCoord)
+		f = controls.colors.overcapmaelstromText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom, true)
@@ -1605,10 +1630,32 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 1.0
 		
-					controls.colors.overcapMaelstromText.Texture:SetColorTexture(r, g, b, a)
+					controls.colors.overcapmaelstromText.Texture:SetColorTexture(r, g, b, a)
 					TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 				end)
 			end
+		end)
+
+		yCoord = yCoord - 30
+		
+		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TRB_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overThresholdEnabled
+		f:SetPoint("TOPLEFT", xCoord+xPadding*3, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
+		f.tooltip = "This will change the Maelstrom text color when you are able to cast Earth Shock or Earthquake."
+		f:SetChecked(TRB.Data.settings.shaman.elemental.colors.text.overThresholdEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.shaman.elemental.colors.text.overThresholdEnabled = self:GetChecked()
+		end)
+		
+		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TRB_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapTextEnabled
+		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
+		f.tooltip = "This will change the Maelstrom text color when your current hardcast spell will result in overcapping maximum Maelstrom."
+		f:SetChecked(TRB.Data.settings.shaman.elemental.colors.text.overcapEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.shaman.elemental.colors.text.overcapEnabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40		

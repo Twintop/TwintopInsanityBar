@@ -102,6 +102,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					casting="FFFFFFFF",
 					passive="FF00AA00",	
 					overcap="FFFF0000",	
+					overThreshold="FF00FF00",
+					overThresholdEnabled=true,
+					overcapEnabled=true,
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
 					right="FFFFFFFF"
@@ -1010,7 +1013,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power", TRB.Data.settings.druid.balance.colors.bar.base, 275, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power", TRB.Data.settings.druid.balance.colors.bar.base, 300, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1051,7 +1054,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.druid.balance.colors.bar.border, 275, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.druid.balance.colors.bar.border, 300, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1093,7 +1096,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power from hardcasting spells", TRB.Data.settings.druid.balance.colors.bar.casting, 275, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power from hardcasting spells", TRB.Data.settings.druid.balance.colors.bar.casting, 300, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1176,7 +1179,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over min. req. Astral Power to cast Starsurge/Starfall Threshold Line", TRB.Data.settings.druid.balance.colors.threshold.over, 275, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over min. req. Astral Power to cast Starsurge/Starfall Threshold Line", TRB.Data.settings.druid.balance.colors.threshold.over, 300, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.thresholdOver
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1218,7 +1221,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		
 		yCoord = yCoord - 30
-		controls.colors.moonkinFormMissing = TRB.UiFunctions.BuildColorPicker(parent, "Moonkin Form missing when in combat", TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing, 275, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.moonkinFormMissing = TRB.UiFunctions.BuildColorPicker(parent, "Moonkin Form missing when in combat", TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing, 300, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.moonkinFormMissing
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1647,7 +1650,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Astral Power Text Colors", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentAstralPowerText = TRB.UiFunctions.BuildColorPicker(parent, "Current Astral Power", TRB.Data.settings.druid.balance.colors.text.current, 275, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.currentAstralPowerText = TRB.UiFunctions.BuildColorPicker(parent, "Current Astral Power", TRB.Data.settings.druid.balance.colors.text.current, 300, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.currentAstralPowerText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1692,7 +1695,29 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 		
 		yCoord = yCoord - 30
-		controls.colors.overcapAstralPowerText = TRB.UiFunctions.BuildColorPicker(parent, "Cast will overcap Astral Power", TRB.Data.settings.druid.balance.colors.text.overcap, 275, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.thresholdAstralPowerText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Astral Power to cast Starsurge or Starfall", TRB.Data.settings.druid.balance.colors.text.overThreshold, 300, 25, xCoord+xPadding*2, yCoord)
+		f = controls.colors.thresholdAstralPowerText
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.overThreshold, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					--Text doesn't care about Alpha, but the color picker does!
+					a = 1.0
+		
+					controls.colors.thresholdAstralPowerText.Texture:SetColorTexture(r, g, b, a)
+					TRB.Data.settings.druid.balance.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+				end)
+			end
+		end)
+
+		controls.colors.overcapAstralPowerText = TRB.UiFunctions.BuildColorPicker(parent, "Cast will overcap Astral Power", TRB.Data.settings.druid.balance.colors.text.overcap, 300, 25, xCoord2, yCoord)
 		f = controls.colors.overcapAstralPowerText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1712,6 +1737,28 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Data.settings.druid.balance.colors.text.overcap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
 				end)
 			end
+		end)
+
+		yCoord = yCoord - 30
+		
+		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TRB_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overThresholdEnabled
+		f:SetPoint("TOPLEFT", xCoord+xPadding*3, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
+		f.tooltip = "This will change the Astral Power text color when you are able to cast Starsurge or Starfall"
+		f:SetChecked(TRB.Data.settings.druid.balance.colors.text.overThresholdEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.colors.text.overThresholdEnabled = self:GetChecked()
+		end)
+		
+		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TRB_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapTextEnabled
+		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
+		f.tooltip = "This will change the Astral Power text color when your current hardcast spell will result in overcapping maximum Astral Power."
+		f:SetChecked(TRB.Data.settings.druid.balance.colors.text.overcapEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.colors.text.overcapEnabled = self:GetChecked()
 		end)
 
 

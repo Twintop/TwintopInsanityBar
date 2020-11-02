@@ -424,9 +424,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom
 		local castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom
 
-		if overcap then 
+		local maelstromThreshold = TRB.Data.character.earthShockThreshold
+		
+		if TRB.Data.settings.shaman.elemental.colors.text.overcapEnabled and overcap then 
 			currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom
 			castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom
+		elseif TRB.Data.settings.shaman.elemental.colors.text.overThresholdEnabled and TRB.Data.snapshotData.resource >= maelstromThreshold then
+			currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overThreshold
 		end
 		
 		--$maelstrom
