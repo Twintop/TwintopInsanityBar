@@ -265,7 +265,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			isActive = false
 		},
 		eternalCallToTheVoid_Tendril = {
-			id = 193470,
+			id = 336216,
 			idTick = 193473,
 			idLegendaryBonus = 6983,
 			name = "",
