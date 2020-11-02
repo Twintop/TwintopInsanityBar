@@ -1153,7 +1153,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 					controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					barBorderFrame:SetBackdropBorderColor(r, g, b, a)
+					barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1175,7 +1175,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 					controls.colors.casting.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					castingFrame:SetStatusBarColor(r, g, b, a)
+					castingFrame:SetStatusBarColor(r, g, b, 1-a)
 				end)
 			end
 		end)	
@@ -1196,7 +1196,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 					controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					barContainerFrame:SetBackdropColor(r, g, b, a)
+					barContainerFrame:SetBackdropColor(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1341,7 +1341,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 					
 					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
-					passiveFrame:SetStatusBarColor(r, g, b, a)
+					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
