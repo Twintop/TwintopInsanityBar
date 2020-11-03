@@ -119,6 +119,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		},
 		items = {
 			callToTheVoid = false
+		},
+		darkThought = {
+			tickCount = 0, --Sum of ticks of Mind Flay * # of DoTs on the target when tick occurred.
+			partialTickCount = 0, --Partial ticks from Mind Sear. Kept separate for tracking purposes.
+			partialTickMax = 3
 		}
 	}
 
@@ -301,6 +306,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			ticks = 14,
 			tickDuration = 1,
 			tocMinVersion = 90002
+		},
+		darkThought = {
+			id = 341207,
+			name = "",
+			icon = "",
+			probability = 0.03
 		}
 	}
 
@@ -365,6 +376,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		spellId = nil,
 		endTime = nil,
 		duration = 0
+	}
+	TRB.Data.snapshotData.darkThought = {
+
 	}
 
 	local function FillSpellData()
@@ -636,6 +650,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.snapshotData.targetData.shadowWordPain = swpTotal		
 		TRB.Data.snapshotData.targetData.vampiricTouch = vtTotal		
 		TRB.Data.snapshotData.targetData.devouringPlague = dpTotal
+	end
+
+	local function GetTargetDotCount(guid)
+		local count = 0
+		if guid ~= nil and TRB.Functions.CheckTargetExists(guid) then			
+			if TRB.Data.snapshotData.targetData.targets[guid].shadowWordPain then
+				count = count + 1
+			end
+			if TRB.Data.snapshotData.targetData.targets[guid].vampiricTouch then
+				count = count + 1
+			end
+			if TRB.Data.snapshotData.targetData.targets[guid].devouringPlague then
+				count = count + 1
+			end
+		end	
+		return count
 	end
 
 	local function TargetsCleanup(clearAll)
@@ -1499,12 +1529,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 	end
 
+	local function UpdateDarkThought()
+		TRB.Data.snapshotData.darkThought.oneDot = math.ceil(math.log10(TRB.Data.spells.darkThought.probability * 1)/math.log10(0.80))
+		TRB.Data.snapshotData.darkThought.twoDot = math.ceil(math.log10(TRB.Data.spells.darkThought.probability * 2)/math.log10(0.80))
+		TRB.Data.snapshotData.darkThought.threeDot = math.ceil(math.log10(TRB.Data.spells.darkThought.probability * 3)/math.log10(0.80))
+	end
+
 	local function UpdateSnapshot()
 		TRB.Functions.UpdateSnapshot()
 		TRB.Data.spells.s2m.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.s2m.id))
 		UpdateMindbenderValues()
 		UpdateExternalCallToTheVoidValues()
 		UpdateDeathAndMadness()
+		UpdateDarkThought()
 	end
 
 	local function HideResourceBar(force)
@@ -1819,17 +1856,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.deathAndMadness.insanity = TRB.Data.snapshotData.deathAndMadness.ticksRemaining * TRB.Data.spells.deathAndMadness.insanity
 						TRB.Data.snapshotData.deathAndMadness.lastTick = currentTime
 					end				
-				elseif spellId == TRB.Data.spells.shadowWordPain.id then
-					InitializeTarget(destGUID)
-					TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-					if type == "SPELL_AURA_APPLIED" then -- SWP Applied to Target
-						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = true
-						TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain + 1
-					elseif type == "SPELL_AURA_REMOVED" then
-						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = false
-						TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain - 1
-					--elseif type == "SPELL_PERIODIC_DAMAGE" then
-					end			
+				elseif spellId == TRB.Data.spells.mindFlay.id then
+					if type == "SPELL_PERIODIC_DAMAGE" then
+						TRB.Data.character.darkThought.tickCount = TRB.Data.character.darkThought.tickCount + GetTargetDotCount(destGUID)
+						UpdateDarkThought()
+						--print("Current: ", TRB.Data.character.darkThought.tickCount, " ", TRB.Data.character.darkThought.partialTickCount, "/", TRB.Data.character.darkThought.partialTickMax)
+						--print("80% w/One: ", TRB.Data.snapshotData.darkThought.oneDot)
+						--print("80% w/Two: ", TRB.Data.snapshotData.darkThought.twoDot)
+						--print("80% w/Three: ", TRB.Data.snapshotData.darkThought.threeDot)
+					end
 				elseif spellId == TRB.Data.spells.mindSear.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_CAST_SUCCESS" then
 						if TRB.Data.snapshotData.mindSear.hitTime == nil then --This is a new cast without target data
@@ -1845,7 +1880,27 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.mindSear.targetsHit = TRB.Data.snapshotData.mindSear.targetsHit + 1
 						TRB.Data.snapshotData.mindSear.hitTime = currentTime					
 						TRB.Data.snapshotData.mindSear.hasStruckTargets = true
+						
+						local partialTicks = TRB.Data.character.darkThought.partialTickCount + GetTargetDotCount(destGUID)
+						TRB.Data.character.darkThought.tickCount = TRB.Data.character.darkThought.tickCount + math.floor(partialTicks / TRB.Data.character.darkThought.partialTickMax)
+						TRB.Data.character.darkThought.partialTickCount = partialTicks % TRB.Data.character.darkThought.partialTickMax
+						UpdateDarkThought()
+						--print("Current: ", TRB.Data.character.darkThought.tickCount, " ", TRB.Data.character.darkThought.partialTickCount, "/", TRB.Data.character.darkThought.partialTickMax)
+						--print("80% w/One: ", TRB.Data.snapshotData.darkThought.oneDot)
+						--print("80% w/Two: ", TRB.Data.snapshotData.darkThought.twoDot)
+						--print("80% w/Three: ", TRB.Data.snapshotData.darkThought.threeDot)
 					end
+				elseif spellId == TRB.Data.spells.shadowWordPain.id then
+					InitializeTarget(destGUID)
+					TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+					if type == "SPELL_AURA_APPLIED" then -- SWP Applied to Target
+						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = true
+						TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain + 1
+					elseif type == "SPELL_AURA_REMOVED" then
+						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = false
+						TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain - 1
+					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+					end			
 				elseif spellId == TRB.Data.spells.vampiricTouch.id then
 					InitializeTarget(destGUID)
 					TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
@@ -1881,7 +1936,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.targetData.auspiciousSpirits = TRB.Data.snapshotData.targetData.auspiciousSpirits - 1
 					end
 					triggerUpdate = true
-				elseif type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.shadowCrash.id then
+				elseif spellId == TRB.Data.spells.shadowCrash.id and type == "SPELL_ENERGIZE" then
 					triggerUpdate = true
 				elseif spellId == TRB.Data.spells.memoryOfLucidDreams.id then
 					if type == "SPELL_AURA_APPLIED" then -- Gained buff
@@ -1898,7 +1953,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.mindDevourer.spellId = nil
 						TRB.Data.snapshotData.mindDevourer.duration = 0
 						TRB.Data.snapshotData.mindDevourer.endTime = nil
-					end			
+					end
+				elseif spellId == TRB.Data.spells.darkThought.id then
+					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff						
+						print("PROC!: ", TRB.Data.character.darkThought.tickCount, " ", TRB.Data.character.darkThought.partialTickCount, "/", TRB.Data.character.darkThought.partialTickMax)
+						table.insert(TRB.Data.settings.priest.shadow.TEMP.darkThought, ((TRB.Data.character.darkThought.tickCount * TRB.Data.character.darkThought.partialTickMax) + TRB.Data.character.darkThought.partialTickCount)/TRB.Data.character.darkThought.partialTickMax)
+						TRB.Data.character.darkThought.tickCount = 0
+						TRB.Data.character.darkThought.partialTickCount = 0
+					end
 				elseif type == "SPELL_SUMMON" and TRB.Data.settings.priest.shadow.voidTendrilTracker and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.id or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id) then
 					InitializeVoidTendril(destGUID)
 					if spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.id then
@@ -1986,6 +2048,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					FillSpellData()
 					ConstructResourceBar()
 					TRB.Options.Priest.ConstructOptionsPanel()
+
+					TRB.Data.settings.priest.shadow.TEMP = TRB.Data.settings.priest.shadow.TEMP or {}
+					TRB.Data.settings.priest.shadow.TEMP.darkThought = TRB.Data.settings.priest.shadow.TEMP.darkThought or {}
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"
