@@ -402,6 +402,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#mindFlay", icon = TRB.Data.spells.mindFlay.icon, description = "Mind Flay", printInSettings = false },
 			{ variable = "#ms", icon = TRB.Data.spells.mindSear.icon, description = "Mind Sear", printInSettings = true },
 			{ variable = "#mindSear", icon = TRB.Data.spells.mindSear.icon, description = "Mind Sear", printInSettings = false },
+			{ variable = "#darkThought", icon = TRB.Data.spells.darkThought.icon, description = "Dark Thought", printInSettings = true },
+			{ variable = "#dt", icon = TRB.Data.spells.darkThought.icon, description = "Dark Thought", printInSettings = false },
+			
 			{ variable = "#voit", icon = TRB.Data.spells.voidTorrent.icon, description = "Void Torrent", printInSettings = true },
 			{ variable = "#voidTorrent", icon = TRB.Data.spells.voidTorrent.icon, description = "Void Torrent", printInSettings = false },
 			{ variable = "#dam", icon = TRB.Data.spells.deathAndMadness.icon, description = "Death and Madness", printInSettings = true },
@@ -453,6 +456,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$overcap", description = "Will hardcast spell will overcap Insanity? Logic variable only!", printInSettings = false, color = false },
 			{ variable = "$resourceOvercap", description = "Will hardcast spell will overcap Insanity? Logic variable only!", printInSettings = false, color = false },
 			{ variable = "$insanityOvercap", description = "Will hardcast spell will overcap Insanity? Logic variable only!", printInSettings = false, color = false },
+			
+			{ variable = "$dtTicks", description = "Current number of DoT-Mind Flay ticks towards triggering a Dark Thought proc.", printInSettings = false, color = false },
+			{ variable = "$dtThreshold", description = "Number of total DoT-Mind Flay ticks before being \"due\" for a Dark Thought proc, based on settings.", printInSettings = false, color = false },
+			{ variable = "$dtThresholdTicks", description = "Number of DoT-Mind Flay ticks left before being \"due\" for a Dark Thought Proc, based on settings.", printInSettings = false, color = false },
+			{ variable = "$dtOverThreshold", description = "Are you overdue for a Dark Thought proc (based on settings)? Logic variable only!", printInSettings = false, color = false },
 
 			{ variable = "$damInsanity", description = "Insanity from Death and Madness", printInSettings = true, color = false },
 			{ variable = "$damTicks", description = "Number of ticks left on Death and Madness", printInSettings = true, color = false },
@@ -653,19 +661,33 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function GetTargetDotCount(guid)
-		local count = 0
+		local dotCount = 0
 		if guid ~= nil and TRB.Functions.CheckTargetExists(guid) then			
 			if TRB.Data.snapshotData.targetData.targets[guid].shadowWordPain then
-				count = count + 1
+				dotCount = dotCount + 1
 			end
 			if TRB.Data.snapshotData.targetData.targets[guid].vampiricTouch then
-				count = count + 1
+				dotCount = dotCount + 1
 			end
 			if TRB.Data.snapshotData.targetData.targets[guid].devouringPlague then
-				count = count + 1
+				dotCount = dotCount + 1
 			end
 		end	
-		return count
+		return dotCount
+	end
+
+	local function GetDarkThoughtThreshold()
+		local dotCount = GetTargetDotCount(UnitGUID("target"))
+
+		if dotCount == 1 then
+			return TRB.Data.snapshotData.darkThought.oneDot
+		elseif dotCount == 2 then
+			return TRB.Data.snapshotData.darkThought.twoDot
+		elseif dotCount == 3 then
+			return TRB.Data.snapshotData.darkThought.threeDot
+		end
+
+		return 0
 	end
 
 	local function TargetsCleanup(clearAll)
@@ -945,6 +967,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.snapshotData.mindDevourer.spellId ~= nil then
 				valid = true
 			end
+		elseif var == "$dtTicks" then
+			valid = true
+		elseif var == "$dtThreshold" then
+			local dotCount = GetTargetDotCount()
+			if dotCount > 0 then
+				valid = true
+			end
+		elseif var == "$dtThresholdTicks" then
+			valid = true
+		elseif var == "$dtOverThreshold" then
+			local threshold = GetDarkThoughtThreshold()
+			if TRB.Data.character.darkThought.tickCount > 0 and TRB.Data.character.darkThought.tickCount >= threshold then
+				valid = true
+			end
 		elseif var == "$ttd" then
 			if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
 				valid = true
@@ -1076,13 +1112,33 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local vampiricTouchCount = TRB.Data.snapshotData.targetData.vampiricTouch or 0
 		--$dpCount	
 		local devouringPlagueCount = TRB.Data.snapshotData.targetData.devouringPlague or 0
-
 		--$mdTime
 		local _mdTime = 0
 		if TRB.Data.snapshotData.mindDevourer.spellId ~= nil then
 			_mdTime = math.abs(TRB.Data.snapshotData.mindDevourer.endTime - currentTime)
 		end
 		local mdTime = string.format("%.1f", _mdTime)
+
+		--------
+		--Dark Thought
+
+		local targetDotCount = GetTargetDotCount(UnitGUID("target"))
+
+		--$dtTicks
+		local _dtTicks = TRB.Data.character.darkThought.tickCount
+		local darkThoughtTickCount = string.format("%.0f", _dtTicks) --Ignore 1/3 Mind Sear ticks
+		--$dtThreshold
+		local _dtThreshold = GetDarkThoughtThreshold()
+		local darkThoughtThreshold = string.format("%.0f", _dtThreshold)
+		--$dtThresholdTicks
+		local darkThoughtThresholdTicks = string.format("%.0f", math.max(_dtThreshold - _dtTicks, 0))
+		--$dtOverThreshold
+		--This isn't actually available, logic only!
+		--[[local darkThoughtOverThreshold = false		
+
+		if _dtTicks >= _dtThreshold then
+			darkThoughtOverThreshold = true
+		end]]
 
 		----------
 
@@ -1228,6 +1284,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#mindFlay"] = TRB.Data.spells.mindFlay.icon
 		lookup["#ms"] = TRB.Data.spells.mindSear.icon
 		lookup["#mindSear"] = TRB.Data.spells.mindSear.icon
+		lookup["#dt"] = TRB.Data.spells.darkThought.icon
+		lookup["#darkThought"] = TRB.Data.spells.darkThought.icon
 		lookup["#mindbender"] = TRB.Data.spells.mindbender.icon
 		lookup["#shadowfiend"] = TRB.Data.spells.shadowfiend.icon
 		lookup["#sf"] = TRB.Data.spells.shadowfiend.icon
@@ -1289,6 +1347,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$ecttvCount"] = ecttvCount
 		lookup["$damInsanity"] = damInsanity
 		lookup["$damTicks"] = damTicks
+		lookup["$dtTicks"] = darkThoughtTickCount
+		lookup["$dtThresholdTicks"] = darkThoughtThresholdTicks
+		lookup["$dtThreshold"] = darkThoughtThreshold
+		lookup["$dtOverThreshold"] = ""
 		lookup["$asCount"] = asCount
 		lookup["$asInsanity"] = asInsanity
 		lookup["$ttd"] = ttd
@@ -1393,6 +1455,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					return false				
 				end
 			end
+			TRB.Data.snapshotData.casting.targetGuid = UnitGUID("target")
 			return true
 		end
 	end
@@ -1530,9 +1593,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function UpdateDarkThought()
-		TRB.Data.snapshotData.darkThought.oneDot = math.ceil(math.log10(TRB.Data.spells.darkThought.probability * 1)/math.log10(0.80))
-		TRB.Data.snapshotData.darkThought.twoDot = math.ceil(math.log10(TRB.Data.spells.darkThought.probability * 2)/math.log10(0.80))
-		TRB.Data.snapshotData.darkThought.threeDot = math.ceil(math.log10(TRB.Data.spells.darkThought.probability * 3)/math.log10(0.80))
+		TRB.Data.snapshotData.darkThought.oneDot = math.max(math.ceil(math.log10(TRB.Data.spells.darkThought.probability * 1)/math.log10(TRB.Data.settings.priest.shadow.darkThought.threshold)), 10)
+		TRB.Data.snapshotData.darkThought.twoDot = math.max(math.ceil(math.log10(TRB.Data.spells.darkThought.probability * 2)/math.log10(TRB.Data.settings.priest.shadow.darkThought.threshold)), 10)
+		TRB.Data.snapshotData.darkThought.threeDot = math.max(math.ceil(math.log10(TRB.Data.spells.darkThought.probability * 3)/math.log10(TRB.Data.settings.priest.shadow.darkThought.threshold)), 10)	
 	end
 
 	local function UpdateSnapshot()
@@ -1860,10 +1923,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if type == "SPELL_PERIODIC_DAMAGE" then
 						TRB.Data.character.darkThought.tickCount = TRB.Data.character.darkThought.tickCount + GetTargetDotCount(destGUID)
 						UpdateDarkThought()
-						--print("Current: ", TRB.Data.character.darkThought.tickCount, " ", TRB.Data.character.darkThought.partialTickCount, "/", TRB.Data.character.darkThought.partialTickMax)
-						--print("80% w/One: ", TRB.Data.snapshotData.darkThought.oneDot)
-						--print("80% w/Two: ", TRB.Data.snapshotData.darkThought.twoDot)
-						--print("80% w/Three: ", TRB.Data.snapshotData.darkThought.threeDot)
 					end
 				elseif spellId == TRB.Data.spells.mindSear.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_CAST_SUCCESS" then
@@ -1885,10 +1944,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.character.darkThought.tickCount = TRB.Data.character.darkThought.tickCount + math.floor(partialTicks / TRB.Data.character.darkThought.partialTickMax)
 						TRB.Data.character.darkThought.partialTickCount = partialTicks % TRB.Data.character.darkThought.partialTickMax
 						UpdateDarkThought()
-						--print("Current: ", TRB.Data.character.darkThought.tickCount, " ", TRB.Data.character.darkThought.partialTickCount, "/", TRB.Data.character.darkThought.partialTickMax)
-						--print("80% w/One: ", TRB.Data.snapshotData.darkThought.oneDot)
-						--print("80% w/Two: ", TRB.Data.snapshotData.darkThought.twoDot)
-						--print("80% w/Three: ", TRB.Data.snapshotData.darkThought.threeDot)
 					end
 				elseif spellId == TRB.Data.spells.shadowWordPain.id then
 					InitializeTarget(destGUID)
@@ -1956,8 +2011,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 				elseif spellId == TRB.Data.spells.darkThought.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff						
-						print("PROC!: ", TRB.Data.character.darkThought.tickCount, " ", TRB.Data.character.darkThought.partialTickCount, "/", TRB.Data.character.darkThought.partialTickMax)
-						table.insert(TRB.Data.settings.priest.shadow.TEMP.darkThought, ((TRB.Data.character.darkThought.tickCount * TRB.Data.character.darkThought.partialTickMax) + TRB.Data.character.darkThought.partialTickCount)/TRB.Data.character.darkThought.partialTickMax)
 						TRB.Data.character.darkThought.tickCount = 0
 						TRB.Data.character.darkThought.partialTickCount = 0
 					end
