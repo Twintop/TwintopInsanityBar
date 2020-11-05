@@ -1922,6 +1922,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				elseif spellId == TRB.Data.spells.mindFlay.id then
 					if type == "SPELL_PERIODIC_DAMAGE" then
 						TRB.Data.character.darkThought.tickCount = TRB.Data.character.darkThought.tickCount + GetTargetDotCount(destGUID)
+						TRB.Data.character.darkThought.flayTickCount = TRB.Data.character.darkThought.flayTickCount + 1
+						TRB.Data.character.darkThought.mindFlayLast = true
+						TRB.Data.character.darkThought.mindSearLast = false
 						UpdateDarkThought()
 					end
 				elseif spellId == TRB.Data.spells.mindSear.id then
@@ -1943,6 +1946,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						local partialTicks = TRB.Data.character.darkThought.partialTickCount + GetTargetDotCount(destGUID)
 						TRB.Data.character.darkThought.tickCount = TRB.Data.character.darkThought.tickCount + math.floor(partialTicks / TRB.Data.character.darkThought.partialTickMax)
 						TRB.Data.character.darkThought.partialTickCount = partialTicks % TRB.Data.character.darkThought.partialTickMax
+						TRB.Data.character.darkThought.searTickCount = TRB.Data.character.darkThought.searTickCount + 1
+						TRB.Data.character.darkThought.mindFlayLast = false
+						TRB.Data.character.darkThought.mindSearLast = true
 						UpdateDarkThought()
 					end
 				elseif spellId == TRB.Data.spells.shadowWordPain.id then
@@ -2010,9 +2016,27 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.mindDevourer.endTime = nil
 					end
 				elseif spellId == TRB.Data.spells.darkThought.id then
-					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff						
+					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
+						local targetGuid = UnitGUID("target")
+						print("PROC!: ", TRB.Data.character.darkThought.tickCount, " ", TRB.Data.character.darkThought.partialTickCount, "/", TRB.Data.character.darkThought.partialTickMax)
+
+						local result = {
+							totalTicks = ((TRB.Data.character.darkThought.tickCount * TRB.Data.character.darkThought.partialTickMax) + TRB.Data.character.darkThought.partialTickCount)/TRB.Data.character.darkThought.partialTickMax,
+							procMindFlay = TRB.Data.character.darkThought.mindFlayLast,
+							procMindSear = TRB.Data.character.darkThought.mindSearLast,
+							mindFlayTicks = TRB.Data.character.darkThought.flayTickCount,
+							mindSearTicks = TRB.Data.character.darkThought.searTickCount,
+							totalDots = GetTargetDotCount(UnitGUID("target")),
+							shadowWordPain = TRB.Data.snapshotData.targetData.targets[targetGuid].shadowWordPain,
+							vapiricTouch = TRB.Data.snapshotData.targetData.targets[targetGuid].vampiricTouch,
+							devouringPlague = TRB.Data.snapshotData.targetData.targets[targetGuid].devouringPlague
+						}
+
+						table.insert(TRB.Data.settings.priest.shadow.TEMP.darkThought, result)
 						TRB.Data.character.darkThought.tickCount = 0
 						TRB.Data.character.darkThought.partialTickCount = 0
+						TRB.Data.character.darkThought.flayTickCount = 0
+						TRB.Data.character.darkThought.searTickCount = 0
 					end
 				elseif type == "SPELL_SUMMON" and TRB.Data.settings.priest.shadow.voidTendrilTracker and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.id or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id) then
 					InitializeVoidTendril(destGUID)
@@ -2104,6 +2128,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					TRB.Data.settings.priest.shadow.TEMP = TRB.Data.settings.priest.shadow.TEMP or {}
 					TRB.Data.settings.priest.shadow.TEMP.darkThought = TRB.Data.settings.priest.shadow.TEMP.darkThought or {}
+					TRB.Data.character.darkThought.flayTickCount = TRB.Data.settings.priest.shadow.TEMP.flayTickCount or 0
+					TRB.Data.character.darkThought.searTickCount = TRB.Data.settings.priest.shadow.TEMP.searTickCount or 0
+					TRB.Data.character.darkThought.tickCount = TRB.Data.settings.priest.shadow.TEMP.tickCount or 0
+					TRB.Data.character.darkThought.partialTickCount = TRB.Data.settings.priest.shadow.TEMP.partialTickCount or 0
+
+					print("Loaded Dark Thought State:")
+					print("Current overall DoT-MF/Ms ticks: ", TRB.Data.character.darkThought.tickCount, " ", TRB.Data.character.darkThought.partialTickCount, "/", TRB.Data.character.darkThought.partialTickMax)
+					print("Mind Flay ticks:", TRB.Data.character.darkThought.flayTickCount)
+					print("Mind Sear ticks:", TRB.Data.character.darkThought.searTickCount)
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"
@@ -2118,7 +2151,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end			
 			end	
 
-			if event == "PLAYER_LOGOUT" then
+			if event == "PLAYER_LOGOUT" then				
+				TRB.Data.settings.priest.shadow.TEMP.tickCount = TRB.Data.character.darkThought.tickCount
+				TRB.Data.settings.priest.shadow.TEMP.partialTickCount = TRB.Data.character.darkThought.partialTickCount
+				TRB.Data.settings.priest.shadow.TEMP.flayTickCount = TRB.Data.character.darkThought.flayTickCount
+				TRB.Data.settings.priest.shadow.TEMP.searTickCount = TRB.Data.character.darkThought.searTickCount
 				TwintopInsanityBarSettings = TRB.Data.settings
 			end
 					
