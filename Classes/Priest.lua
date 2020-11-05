@@ -2028,7 +2028,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							mindSearTicks = TRB.Data.character.darkThought.searTickCount,
 							totalDots = GetTargetDotCount(UnitGUID("target")),
 							shadowWordPain = TRB.Data.snapshotData.targetData.targets[targetGuid].shadowWordPain,
-							vapiricTouch = TRB.Data.snapshotData.targetData.targets[targetGuid].vampiricTouch,
+							vampiricTouch = TRB.Data.snapshotData.targetData.targets[targetGuid].vampiricTouch,
 							devouringPlague = TRB.Data.snapshotData.targetData.targets[targetGuid].devouringPlague
 						}
 
