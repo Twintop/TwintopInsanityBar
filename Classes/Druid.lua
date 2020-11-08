@@ -7,10 +7,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local passiveFrame = TRB.Frames.passiveFrame
 	local barBorderFrame = TRB.Frames.barBorderFrame
 
-	resourceFrame.thresholdSs = CreateFrame("Frame", nil, resourceFrame)
-	resourceFrame.thresholdSf = CreateFrame("Frame", nil, resourceFrame)
-	passiveFrame.threshold = CreateFrame("Frame", nil, passiveFrame)
-
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
     local combatFrame = TRB.Frames.combatFrame
@@ -314,17 +310,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Data.character.starfallThreshold = TRB.Data.spells.starfall.astralPower
 		
 		if TRB.Data.settings.druid ~= nil and TRB.Data.settings.druid.balance ~= nil and TRB.Data.settings.druid.balance.starsurgeThreshold and TRB.Data.character.starsurgeThreshold < TRB.Data.character.maxResource then
-			resourceFrame.thresholdSs:Show()
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholdSs, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
+			resourceFrame.threshold1:Show()
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
 		else
-			resourceFrame.thresholdSs:Hide()
+			resourceFrame.threshold1:Hide()
         end
         
 		if TRB.Data.settings.druid ~= nil and TRB.Data.settings.druid.balance ~= nil and TRB.Data.settings.druid.balance.starfallThreshold and TRB.Data.character.starfallThreshold < TRB.Data.character.maxResource then
-			resourceFrame.thresholdSf:Show()
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholdSf, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
+			resourceFrame.threshold2:Show()
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold2, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
 		else
-			resourceFrame.thresholdSf:Hide()
+			resourceFrame.threshold2:Hide()
 		end
 	end
 	
@@ -423,23 +419,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function ConstructResourceBar()
 		TRB.Functions.ConstructResourceBar(TRB.Data.settings.druid.balance)
 		
-		resourceFrame.thresholdSs:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
-		resourceFrame.thresholdSs:SetHeight(TRB.Data.settings.druid.balance.bar.height)
-		resourceFrame.thresholdSs.texture = resourceFrame.thresholdSs:CreateTexture(nil, TRB.Data.settings.core.strata.level)
-		resourceFrame.thresholdSs.texture:SetAllPoints(resourceFrame.thresholdSs)
-		resourceFrame.thresholdSs.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-		resourceFrame.thresholdSs:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		resourceFrame.thresholdSs:SetFrameLevel(128)
-		resourceFrame.thresholdSs:Show()
+		resourceFrame.threshold1:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
+		resourceFrame.threshold1:SetHeight(TRB.Data.settings.druid.balance.bar.height)
+		resourceFrame.threshold1.texture = resourceFrame.threshold1:CreateTexture(nil, TRB.Data.settings.core.strata.level)
+		resourceFrame.threshold1.texture:SetAllPoints(resourceFrame.threshold1)
+		resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+		resourceFrame.threshold1:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		resourceFrame.threshold1:SetFrameLevel(128)
+		resourceFrame.threshold1:Show()
 		
-		resourceFrame.thresholdSf:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
-		resourceFrame.thresholdSf:SetHeight(TRB.Data.settings.druid.balance.bar.height)
-		resourceFrame.thresholdSf.texture = resourceFrame.thresholdSf:CreateTexture(nil, TRB.Data.settings.core.strata.level)
-		resourceFrame.thresholdSf.texture:SetAllPoints(resourceFrame.thresholdSf)
-		resourceFrame.thresholdSf.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-		resourceFrame.thresholdSf:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		resourceFrame.thresholdSf:SetFrameLevel(128)
-		resourceFrame.thresholdSf:Show()
+		resourceFrame.threshold2:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
+		resourceFrame.threshold2:SetHeight(TRB.Data.settings.druid.balance.bar.height)
+		resourceFrame.threshold2.texture = resourceFrame.threshold2:CreateTexture(nil, TRB.Data.settings.core.strata.level)
+		resourceFrame.threshold2.texture:SetAllPoints(resourceFrame.threshold2)
+		resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+		resourceFrame.threshold2:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		resourceFrame.threshold2:SetFrameLevel(128)
+		resourceFrame.threshold2:Show()
 	end
 
     local function IsValidVariableForSpec(var)
@@ -829,8 +825,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				)
 			 ) then
 			TRB.Frames.barContainerFrame:Hide()	
+			TRB.Data.snapshotData.isTracking = false
 		else
-			TRB.Frames.barContainerFrame:Show()	
+			TRB.Data.snapshotData.isTracking = true
+			if TRB.Data.settings.druid.balance.displayBar.neverShow == true then
+				TRB.Frames.barContainerFrame:Hide()	
+			else
+				TRB.Frames.barContainerFrame:Show()	
+			end
 		end
 	end
 	TRB.Functions.HideResourceBar = HideResourceBar
@@ -839,121 +841,117 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local currentTime = GetTime()
 		UpdateSnapshot()
 
-		if barContainerFrame:IsShown() then
-			local passiveBarValue = 0
-			local castingBarValue = 0
-            local affectingCombat = UnitAffectingCombat("player")
-
-			if (not affectingCombat) and
-				((not TRB.Data.character.talents.naturesBalance.isSelected and TRB.Data.snapshotData.resource == 0) or
-				 (TRB.Data.character.talents.naturesBalance.isSelected and TRB.Data.snapshotData.resource >= 50)) then
-				TRB.Functions.HideResourceBar()
-			end
+		if TRB.Data.snapshotData.isTracking then
+			TRB.Functions.HideResourceBar()
 			
-			if TRB.Data.settings.druid.balance.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.borderOvercap, true))
+			if TRB.Data.settings.druid.balance.displayBar.neverShow == false then
+				local passiveBarValue = 0
+				local castingBarValue = 0
+
+				if TRB.Data.settings.druid.balance.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.borderOvercap, true))
+					
+					if TRB.Data.settings.druid.balance.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
+						TRB.Data.snapshotData.audio.overcapCue = true
+						PlaySoundFile(TRB.Data.settings.druid.balance.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+					end
+				else
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.border, true))
+					TRB.Data.snapshotData.audio.overcapCue = false
+				end
 				
-				if TRB.Data.settings.druid.balance.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
-					TRB.Data.snapshotData.audio.overcapCue = true
-					PlaySoundFile(TRB.Data.settings.druid.balance.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, resourceFrame, TRB.Data.snapshotData.resource)
+							
+				if CastingSpell() then
+					castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
+				else
+					castingBarValue = TRB.Data.snapshotData.resource
 				end
-			else
-				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.border, true))
-				TRB.Data.snapshotData.audio.overcapCue = false
-			end
-			
-			TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, resourceFrame, TRB.Data.snapshotData.resource)
-						
-			if CastingSpell() then
-				castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
-			else
-				castingBarValue = TRB.Data.snapshotData.resource
-			end
-			
-			TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, castingFrame, castingBarValue)
-
-            if TRB.Data.character.talents.naturesBalance.isSelected and (affectingCombat or (not affectingCombat and TRB.Data.snapshotData.resource < 50)) then
-                passiveBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.naturesBalance.astralPower + TRB.Data.snapshotData.furyOfElune.astralPower
-            else
-                passiveBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower
-            end
-						
-			TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, passiveFrame, passiveBarValue)
-			
-			-- Balance doesn't use the passive threshold right now. Hide it
-			passiveFrame.threshold.texture:Hide()
-
-			if TRB.Data.settings.druid.balance.starsurgeThreshold then
-                resourceFrame.thresholdSs:Show()                
-                if TRB.Data.snapshotData.resource >= TRB.Data.character.starsurgeThreshold then
-                    resourceFrame.thresholdSs.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-                    if TRB.Data.settings.druid.balance.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
-                        TRB.Data.snapshotData.audio.playedSsCue = true
-                        PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
-                    end
-                else
-                    resourceFrame.thresholdSs.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-                    TRB.Data.snapshotData.audio.playedSsCue = false
-                end
-			else
-				resourceFrame.thresholdSs:Hide()
-            end
-            
-			if TRB.Data.settings.druid.balance.starfallThreshold then
-				resourceFrame.thresholdSf:Show()
-				if TRB.Data.snapshotData.resource >= TRB.Data.character.starfallThreshold then
-					if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > 2.4 then -- 8 * 0.3 = pandemic range
-						resourceFrame.thresholdSf.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
-					else
-						resourceFrame.thresholdSf.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-					end
-
-                    if TRB.Data.settings.druid.balance.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
-                        TRB.Data.snapshotData.audio.playedSfCue = true
-                        PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
-                    end
-                else
-                    resourceFrame.thresholdSf.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-                    TRB.Data.snapshotData.audio.playedSfCue = false
-                end
-			else
-				resourceFrame.thresholdSf:Hide()
-            end
-			
-			if not TRB.Data.spells.moonkinForm.isActive and affectingCombat then
-				resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing, true))
-
-				if TRB.Data.settings.druid.balance.colors.bar.flashEnabled then
-					TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.druid.balance.colors.bar.flashAlpha, TRB.Data.settings.druid.balance.colors.bar.flashPeriod)
-				end
-			elseif TRB.Data.spells.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive then
-				local gcd = TRB.Functions.GetCurrentGCDTime()
 				
-				if TRB.Data.spells.eclipseSolar.isActive and TRB.Data.spells.eclipseLunar.isActive then
-					if TRB.Data.spells.eclipseSolar.remainingTime <= gcd then
-						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD, true))
-					else
-						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.celestial, true))	
-					end
-				elseif TRB.Data.spells.eclipseSolar.isActive then
-					if TRB.Data.spells.eclipseSolar.remainingTime <= gcd then
-						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD, true))
-					else
-						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.solar, true))	
-					end
-				else--if TRB.Data.spells.eclipseLunar.isActive then					
-					if TRB.Data.spells.eclipseLunar.remainingTime <= gcd then
-						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD, true))
-					else
-						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.lunar, true))	
-					end
-				end
-				barContainerFrame:SetAlpha(1.0)
-			else
-                resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.base, true))	
-				barContainerFrame:SetAlpha(1.0)
-            end
+				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, castingFrame, castingBarValue)
 
+				if TRB.Data.character.talents.naturesBalance.isSelected and (affectingCombat or (not affectingCombat and TRB.Data.snapshotData.resource < 50)) then
+					passiveBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.naturesBalance.astralPower + TRB.Data.snapshotData.furyOfElune.astralPower
+				else
+					passiveBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower
+				end
+							
+				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, passiveFrame, passiveBarValue)
+				
+				-- Balance doesn't use the passive threshold right now. Hide it
+				passiveFrame.threshold1.texture:Hide()
+
+				if TRB.Data.settings.druid.balance.starsurgeThreshold then
+					resourceFrame.threshold1:Show()                
+					if TRB.Data.snapshotData.resource >= TRB.Data.character.starsurgeThreshold then
+						resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+						if TRB.Data.settings.druid.balance.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
+							TRB.Data.snapshotData.audio.playedSsCue = true
+							PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
+						end
+					else
+						resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+						TRB.Data.snapshotData.audio.playedSsCue = false
+					end
+				else
+					resourceFrame.threshold1:Hide()
+				end
+				
+				if TRB.Data.settings.druid.balance.starfallThreshold then
+					resourceFrame.threshold2:Show()
+					if TRB.Data.snapshotData.resource >= TRB.Data.character.starfallThreshold then
+						if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > 2.4 then -- 8 * 0.3 = pandemic range
+							resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
+						else
+							resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+						end
+
+						if TRB.Data.settings.druid.balance.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
+							TRB.Data.snapshotData.audio.playedSfCue = true
+							PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
+						end
+					else
+						resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+						TRB.Data.snapshotData.audio.playedSfCue = false
+					end
+				else
+					resourceFrame.threshold2:Hide()
+				end
+				
+				if not TRB.Data.spells.moonkinForm.isActive and affectingCombat then
+					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing, true))
+
+					if TRB.Data.settings.druid.balance.colors.bar.flashEnabled then
+						TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.druid.balance.colors.bar.flashAlpha, TRB.Data.settings.druid.balance.colors.bar.flashPeriod)
+					end
+				elseif TRB.Data.spells.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive then
+					local gcd = TRB.Functions.GetCurrentGCDTime()
+					
+					if TRB.Data.spells.eclipseSolar.isActive and TRB.Data.spells.eclipseLunar.isActive then
+						if TRB.Data.spells.eclipseSolar.remainingTime <= gcd then
+							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD, true))
+						else
+							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.celestial, true))	
+						end
+					elseif TRB.Data.spells.eclipseSolar.isActive then
+						if TRB.Data.spells.eclipseSolar.remainingTime <= gcd then
+							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD, true))
+						else
+							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.solar, true))	
+						end
+					else--if TRB.Data.spells.eclipseLunar.isActive then					
+						if TRB.Data.spells.eclipseLunar.remainingTime <= gcd then
+							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD, true))
+						else
+							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.lunar, true))	
+						end
+					end
+					barContainerFrame:SetAlpha(1.0)
+				else
+					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.base, true))	
+					barContainerFrame:SetAlpha(1.0)
+				end
+			end
 		end
 
 		TRB.Functions.UpdateResourceBar(TRB.Data.settings.druid.balance)

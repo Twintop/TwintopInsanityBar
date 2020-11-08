@@ -127,7 +127,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			voidTendrilTracker=true,
 			displayBar = {
 				alwaysShow=false,
-				notZeroShow=true
+				notZeroShow=true,
+				neverShow=false
 			},
 			bar = {		
 				width=555,
@@ -462,8 +463,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			castingFrame:SetWidth(value-(TRB.Data.settings.priest.shadow.bar.border*2))
 			passiveFrame:SetWidth(value-(TRB.Data.settings.priest.shadow.bar.border*2))
 			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.priest.shadow)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholdDp, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholdSn, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.threshold2, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height / 8), math.floor(TRB.Data.settings.priest.shadow.bar.width / 8))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -484,11 +485,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			barContainerFrame:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
 			barBorderFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height)
 			resourceFrame:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
-			resourceFrame.thresholdDp:SetHeight(value)
-			resourceFrame.thresholdSn:SetHeight(value)
+			resourceFrame.threshold1:SetHeight(value)
+			resourceFrame.threshold2:SetHeight(value)
 			castingFrame:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
 			passiveFrame:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
-			passiveFrame.threshold:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))		
+			passiveFrame.threshold1:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))		
 			leftTextFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height * 3.5)
 			middleTextFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height * 3.5)
 			rightTextFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height * 3.5)
@@ -572,8 +573,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.border, true))
 
 			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.priest.shadow)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholdDp, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholdSn, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth,TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.threshold2, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth,TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 
 			local minBarWidth = math.max(TRB.Data.settings.priest.shadow.bar.border*2, 120)
 			local minBarHeight = math.max(TRB.Data.settings.priest.shadow.bar.border*2, 1)
@@ -595,9 +596,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.shadow.thresholdWidth = value
-			resourceFrame.thresholdDp:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
-			resourceFrame.thresholdSn:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
-			passiveFrame.threshold:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
+			resourceFrame.threshold1:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
+			resourceFrame.threshold2:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
+			passiveFrame.threshold1:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
 		end)
 
 		yCoord = yCoord - 40
@@ -998,8 +999,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			controls.checkBoxes.alwaysShow:SetChecked(true)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(false)
+			controls.checkBoxes.neverShow:SetChecked(false)
 			TRB.Data.settings.priest.shadow.displayBar.alwaysShow = true
 			TRB.Data.settings.priest.shadow.displayBar.notZeroShow = false
+			TRB.Data.settings.priest.shadow.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -1014,8 +1017,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(true)
 			controls.checkBoxes.combatShow:SetChecked(false)
+			controls.checkBoxes.neverShow:SetChecked(false)
 			TRB.Data.settings.priest.shadow.displayBar.alwaysShow = false
 			TRB.Data.settings.priest.shadow.displayBar.notZeroShow = true
+			TRB.Data.settings.priest.shadow.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -1025,13 +1030,33 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
-		f:SetChecked((not TRB.Data.settings.priest.shadow.displayBar.alwaysShow) and (not TRB.Data.settings.priest.shadow.displayBar.notZeroShow))
+		f:SetChecked((not TRB.Data.settings.priest.shadow.displayBar.alwaysShow) and (not TRB.Data.settings.priest.shadow.displayBar.notZeroShow) and (not TRB.Data.settings.priest.shadow.displayBar.neverShow))
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(true)
+			controls.checkBoxes.neverShow:SetChecked(false)
 			TRB.Data.settings.priest.shadow.displayBar.alwaysShow = false
 			TRB.Data.settings.priest.shadow.displayBar.notZeroShow = false
+			TRB.Data.settings.priest.shadow.displayBar.neverShow = false
+			TRB.Functions.HideResourceBar()
+		end)
+
+		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TIBRB1_5", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.neverShow
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-45)
+		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
+		f:SetChecked(TRB.Data.settings.priest.shadow.displayBar.neverShow)
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.alwaysShow:SetChecked(false)
+			controls.checkBoxes.notZeroShow:SetChecked(false)
+			controls.checkBoxes.combatShow:SetChecked(false)
+			controls.checkBoxes.neverShow:SetChecked(true)
+			TRB.Data.settings.priest.shadow.displayBar.alwaysShow = false
+			TRB.Data.settings.priest.shadow.displayBar.notZeroShow = false
+			TRB.Data.settings.priest.shadow.displayBar.neverShow = true
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -1304,7 +1329,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 					
 					controls.colors.mindbenderThreshold.Texture:SetColorTexture(r, g, b, 1-a)
-					passiveFrame.threshold.Texture:SetColorTexture(r, g, b, 1-a)
+					passiveFrame.threshold1.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.threshold.mindbender = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end

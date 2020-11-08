@@ -26,6 +26,10 @@ TRB.Frames.castingFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerF
 TRB.Frames.passiveFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
 TRB.Frames.barBorderFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
 
+TRB.Frames.passiveFrame.threshold1 = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
+TRB.Frames.resourceFrame.threshold1 = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+TRB.Frames.resourceFrame.threshold2 = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+
 TRB.Frames.leftTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
 TRB.Frames.middleTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
 TRB.Frames.rightTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
@@ -88,7 +92,8 @@ TRB.Data.snapshotData = {
 	resource = 0,
 	haste = 0,
 	crit = 0,
-    mastery = 0,
+	mastery = 0,
+	isTracking = false,
 	casting = {
 		spellId = nil,
 		startTime = nil,
@@ -102,7 +107,7 @@ TRB.Data.snapshotData = {
 		currentTargetGuid = nil,
 		targets = {}
     },
-    audio = {}
+	audio = {}	
 }
 
 TRB.Data.sanityCheckValues = {

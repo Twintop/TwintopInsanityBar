@@ -179,7 +179,17 @@ local function ConstructAddonOptionsPanel()
     function controls.dropDown.strata:SetValue(newValue, newName)
         TRB.Data.settings.core.strata.level = newValue
         TRB.Data.settings.core.strata.name = newName
-        barContainerFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.barContainerFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.barBorderFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.passiveFrame.threshold1:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.resourceFrame.threshold1:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.resourceFrame.threshold2:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         UIDropDownMenu_SetText(controls.dropDown.strata, newName)
         CloseDropDownMenus()
     end

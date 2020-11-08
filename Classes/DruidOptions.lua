@@ -86,7 +86,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			starfallThreshold=true,
 			displayBar = {
 				alwaysShow=false,
-				notZeroShow=true
+				notZeroShow=true,
+				neverShow=false
 			},
 			bar = {		
 				width=555,
@@ -400,8 +401,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			castingFrame:SetWidth(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			passiveFrame:SetWidth(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.druid.balance)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholdSs, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholdSf, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold2, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / 8), math.floor(TRB.Data.settings.druid.balance.bar.width / 8))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -422,11 +423,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			barContainerFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			barBorderFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height)
 			resourceFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			resourceFrame.thresholdSs:SetHeight(value)
-			resourceFrame.thresholdSf:SetHeight(value)
+			resourceFrame.threshold1:SetHeight(value)
+			resourceFrame.threshold2:SetHeight(value)
 			castingFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			passiveFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			passiveFrame.threshold:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))		
+			passiveFrame.threshold1:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))		
 			leftTextFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height * 3.5)
 			middleTextFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height * 3.5)
 			rightTextFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height * 3.5)
@@ -510,8 +511,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.border, true))
 
 			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.druid.balance)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholdSs, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholdSf, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold2, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 
 			local minBarWidth = math.max(TRB.Data.settings.druid.balance.bar.border*2, 120)
 			local minBarHeight = math.max(TRB.Data.settings.druid.balance.bar.border*2, 1)
@@ -533,9 +534,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.druid.balance.thresholdWidth = value
-			resourceFrame.thresholdSs:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
-			resourceFrame.thresholdSf:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
-			passiveFrame.threshold:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
+			resourceFrame.threshold1:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
+			resourceFrame.threshold2:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
+			passiveFrame.threshold1:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
 		end)
 
 		yCoord = yCoord - 40
@@ -936,8 +937,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			controls.checkBoxes.alwaysShow:SetChecked(true)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(false)
+			controls.checkBoxes.neverShow:SetChecked(false)
 			TRB.Data.settings.druid.balance.displayBar.alwaysShow = true
 			TRB.Data.settings.druid.balance.displayBar.notZeroShow = false
+			TRB.Data.settings.druid.balance.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -952,8 +955,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(true)
 			controls.checkBoxes.combatShow:SetChecked(false)
+			controls.checkBoxes.neverShow:SetChecked(false)
 			TRB.Data.settings.druid.balance.displayBar.alwaysShow = false
 			TRB.Data.settings.druid.balance.displayBar.notZeroShow = true
+			TRB.Data.settings.druid.balance.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -968,8 +973,28 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(true)
+			controls.checkBoxes.neverShow:SetChecked(false)
 			TRB.Data.settings.druid.balance.displayBar.alwaysShow = false
 			TRB.Data.settings.druid.balance.displayBar.notZeroShow = false
+			TRB.Data.settings.druid.balance.displayBar.neverShow = false
+			TRB.Functions.HideResourceBar()
+		end)
+
+		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TIBRB1_5", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.neverShow
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-45)
+		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
+		f:SetChecked(TRB.Data.settings.druid.balance.displayBar.neverShow)
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.alwaysShow:SetChecked(false)
+			controls.checkBoxes.notZeroShow:SetChecked(false)
+			controls.checkBoxes.combatShow:SetChecked(false)
+			controls.checkBoxes.neverShow:SetChecked(true)
+			TRB.Data.settings.druid.balance.displayBar.alwaysShow = false
+			TRB.Data.settings.druid.balance.displayBar.notZeroShow = false
+			TRB.Data.settings.druid.balance.displayBar.neverShow = true
 			TRB.Functions.HideResourceBar()
 		end)
 
