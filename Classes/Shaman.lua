@@ -687,7 +687,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Data.snapshotData.audio.overcapCue = false
 			end
 
-			resourceFrame:SetValue(TRB.Data.snapshotData.resource)
+			TRB.Functions.SetBarCurrentValue(TRB.Data.shaman.elemental.shadow, resourceFrame, TRB.Data.snapshotData.resource)
 			
 			if CastingSpell() then
 				castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
@@ -695,7 +695,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				castingBarValue = TRB.Data.snapshotData.resource
 			end
 			
-			castingFrame:SetValue(castingBarValue)
+			TRB.Functions.SetBarCurrentValue(TRB.Data.shaman.elemental.shadow, castingFrame, castingBarValue)
 			
 			-- Elemental doesn't use the passive frame right now. Hide it and the threshold line
 			
@@ -705,7 +705,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				passiveBarValue = castingBarValue
 			end
 			passiveFrame.threshold.texture:Hide()
-			passiveFrame:SetValue(passiveBarValue)
+			
+			TRB.Functions.SetBarCurrentValue(TRB.Data.shaman.elemental.shadow, passiveFrame, passiveBarValue)
 
 			if TRB.Data.settings.shaman.elemental.earthShockThreshold then
 				resourceFrame.thresholdEs:Show()

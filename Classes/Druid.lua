@@ -862,23 +862,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.Data.snapshotData.audio.overcapCue = false
 			end
 			
-			resourceFrame:SetValue(TRB.Data.snapshotData.resource)
-			
+			TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, resourceFrame, TRB.Data.snapshotData.resource)
+						
 			if CastingSpell() then
 				castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
 			else
 				castingBarValue = TRB.Data.snapshotData.resource
 			end
 			
-			castingFrame:SetValue(castingBarValue)
+			TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, castingFrame, castingBarValue)
 
             if TRB.Data.character.talents.naturesBalance.isSelected and (affectingCombat or (not affectingCombat and TRB.Data.snapshotData.resource < 50)) then
                 passiveBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.naturesBalance.astralPower + TRB.Data.snapshotData.furyOfElune.astralPower
             else
                 passiveBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower
             end
-			
-			passiveFrame:SetValue(passiveBarValue)
+						
+			TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, passiveFrame, passiveBarValue)
 			
 			-- Balance doesn't use the passive threshold right now. Hide it
 			passiveFrame.threshold.texture:Hide()

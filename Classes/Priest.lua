@@ -1549,7 +1549,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.audio.overcapCue = false
 			end
 
-			resourceFrame:SetValue(TRB.Data.snapshotData.resource)
+			TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.shadow, resourceFrame, TRB.Data.snapshotData.resource)
 			
 			if CastingSpell() then
 				castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
@@ -1557,7 +1557,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				castingBarValue = TRB.Data.snapshotData.resource
 			end
 			
-			castingFrame:SetValue(castingBarValue)
+			TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.shadow, castingFrame, castingBarValue)
 
 			if TRB.Data.character.talents.as.isSelected or TRB.Data.snapshotData.mindbender.resourceFinal > 0 or TRB.Data.snapshotData.deathAndMadness.isActive then
 				passiveBarValue = castingBarValue + ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity, false) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.mindbender.resourceFinal + TRB.Data.snapshotData.deathAndMadness.insanity + TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal)
@@ -1572,7 +1572,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				passiveBarValue = castingBarValue
 			end
 
-			passiveFrame:SetValue(passiveBarValue)
+			TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.shadow, passiveFrame, passiveBarValue)
 
 			if TRB.Data.settings.priest.shadow.devouringPlagueThreshold then
 				resourceFrame.thresholdDp:Show()

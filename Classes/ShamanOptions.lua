@@ -387,7 +387,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			resourceFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
 			castingFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
 			passiveFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			TRB.Functions.RepositionThreshold(resourceFrame.thresholdEs, resourceFrame, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.shaman.elemental)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholdEs, resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / 8), math.floor(TRB.Data.settings.shaman.elemental.bar.width / 8))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -408,7 +409,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			barContainerFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
 			barBorderFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height)
 			resourceFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			resourceFrame.thresholdEs:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
+			resourceFrame.thresholdEs:SetHeight(value)
 			castingFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
 			passiveFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
 			passiveFrame.threshold:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))		
@@ -493,6 +494,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.border, true))
+
+			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.shaman.elemental)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholdEs, resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 
 			local minBarWidth = math.max(TRB.Data.settings.shaman.elemental.bar.border*2, 120)
 			local minBarHeight = math.max(TRB.Data.settings.shaman.elemental.bar.border*2, 1)

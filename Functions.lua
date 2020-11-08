@@ -238,15 +238,21 @@ TRB.Functions.TargetsCleanup = TargetsCleanup
 
 local function RepositionThreshold(settings, thresholdLine, parentFrame, thresholdWidth, resourceThreshold, resourceMax)
     if resourceMax == nil or resourceMax == 0 then
-        resourceMax = 100
+        resourceMax = TRB.Data.character.maxResource or 100
     end
-	
+		
+	local min, max = parentFrame:GetMinMaxValues()
+	--local factor = max / TRB.Data.character.maxResource
+	local factor = max / resourceMax
+
+
 	if settings ~= nil and settings.bar ~= nil then
-		thresholdLine:SetPoint("CENTER",
-                            parentFrame,
-                            "LEFT",
-                            math.ceil((settings.bar.width - (settings.bar.border * 2)) * (resourceThreshold / resourceMax) + math.ceil(thresholdWidth / 2)), 0)
-    end
+		thresholdLine:SetPoint("LEFT",
+								parentFrame,
+								"LEFT",
+								(resourceThreshold * factor) - settings.bar.border,
+								0)
+	end
 end
 TRB.Functions.RepositionThreshold = RepositionThreshold
 
@@ -316,6 +322,25 @@ local function CaptureBarPosition(settings)
 	TRB.Functions.UpdateBarPosition(xOfs, yOfs)
 end
 TRB.Functions.CaptureBarPosition = CaptureBarPosition
+
+local function SetBarCurrentValue(settings, bar, value)
+	value = value or 0
+	if settings ~= nil and settings.bar ~= nil and bar ~= nil then
+		local min, max = bar:GetMinMaxValues()
+		local factor = max / TRB.Data.character.maxResource
+		bar:SetValue(value * factor)
+	end
+end
+TRB.Functions.SetBarCurrentValue = SetBarCurrentValue
+
+local function SetBarMinMaxValues(settings)
+	if settings ~= nil and settings.bar ~= nil then
+		TRB.Frames.resourceFrame:SetMinMaxValues(0, settings.bar.width)
+		TRB.Frames.castingFrame:SetMinMaxValues(0, settings.bar.width)
+		TRB.Frames.passiveFrame:SetMinMaxValues(0, settings.bar.width)
+	end
+end
+TRB.Functions.SetBarMinMaxValues = SetBarMinMaxValues
 
 local function ConstructResourceBar(settings)    
     if settings ~= nil and settings.bar ~= nil then
@@ -405,7 +430,7 @@ local function ConstructResourceBar(settings)
         barBorderFrame:SetFrameLevel(126)
 
         resourceFrame:Show()
-        resourceFrame:SetMinMaxValues(0, 100)
+        resourceFrame:SetMinMaxValues(0, settings.bar.width)
         resourceFrame:SetHeight(settings.bar.height)	
         resourceFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         resourceFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
@@ -415,7 +440,7 @@ local function ConstructResourceBar(settings)
         resourceFrame:SetFrameLevel(125)
         
         castingFrame:Show()
-        castingFrame:SetMinMaxValues(0, 100)
+        castingFrame:SetMinMaxValues(0, settings.bar.width)
         castingFrame:SetHeight(settings.bar.height)
         castingFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
@@ -425,7 +450,7 @@ local function ConstructResourceBar(settings)
         castingFrame:SetFrameLevel(90)
         
         passiveFrame:Show()
-        passiveFrame:SetMinMaxValues(0, 100)
+        passiveFrame:SetMinMaxValues(0, settings.bar.width)
         passiveFrame:SetHeight(settings.bar.height)
         passiveFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
@@ -441,8 +466,10 @@ local function ConstructResourceBar(settings)
         passiveFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
         passiveFrame.threshold:SetFrameStrata(TRB.Data.settings.core.strata.level)
         passiveFrame.threshold:SetFrameLevel(127)
-        passiveFrame.threshold:Show()
-        
+		passiveFrame.threshold:Show()
+		
+		SetBarMinMaxValues(settings)
+		
         leftTextFrame:Show()
         leftTextFrame:SetWidth(settings.bar.width)
         leftTextFrame:SetHeight(settings.bar.height * 3.5)
@@ -817,9 +844,9 @@ local function CheckCharacter()
 	TRB.Data.character.guid = UnitGUID("player")
     TRB.Data.character.specGroup = GetActiveSpecGroup()
 	TRB.Functions.FillSpellData()
-	TRB.Frames.resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)
-	TRB.Frames.castingFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)	
-	TRB.Frames.passiveFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)	
+	--TRB.Frames.resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)
+	--TRB.Frames.castingFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)	
+	--TRB.Frames.passiveFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)	
 end
 TRB.Functions.CheckCharacter = CheckCharacter
 

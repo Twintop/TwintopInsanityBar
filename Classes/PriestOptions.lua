@@ -461,8 +461,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			resourceFrame:SetWidth(value-(TRB.Data.settings.priest.shadow.bar.border*2))
 			castingFrame:SetWidth(value-(TRB.Data.settings.priest.shadow.bar.border*2))
 			passiveFrame:SetWidth(value-(TRB.Data.settings.priest.shadow.bar.border*2))
-			TRB.Functions.RepositionThreshold(resourceFrame.thresholdDp, resourceFrame, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			TRB.Functions.RepositionThreshold(resourceFrame.thresholdSn, resourceFrame, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.priest.shadow)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholdDp, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholdSn, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height / 8), math.floor(TRB.Data.settings.priest.shadow.bar.width / 8))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -483,8 +484,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			barContainerFrame:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
 			barBorderFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height)
 			resourceFrame:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
-			resourceFrame.thresholdDp:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
-			resourceFrame.thresholdSn:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
+			resourceFrame.thresholdDp:SetHeight(value)
+			resourceFrame.thresholdSn:SetHeight(value)
 			castingFrame:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
 			passiveFrame:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
 			passiveFrame.threshold:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))		
@@ -569,6 +570,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 			barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.border, true))
+
+			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.priest.shadow)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholdDp, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholdSn, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth,TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 
 			local minBarWidth = math.max(TRB.Data.settings.priest.shadow.bar.border*2, 120)
 			local minBarHeight = math.max(TRB.Data.settings.priest.shadow.bar.border*2, 1)

@@ -399,8 +399,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			resourceFrame:SetWidth(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			castingFrame:SetWidth(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			passiveFrame:SetWidth(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			TRB.Functions.RepositionThreshold(resourceFrame.thresholdSs, resourceFrame, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			TRB.Functions.RepositionThreshold(resourceFrame.thresholdSf, resourceFrame, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.druid.balance)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholdSs, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholdSf, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / 8), math.floor(TRB.Data.settings.druid.balance.bar.width / 8))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -421,8 +422,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			barContainerFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			barBorderFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height)
 			resourceFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			resourceFrame.thresholdSs:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			resourceFrame.thresholdSf:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
+			resourceFrame.thresholdSs:SetHeight(value)
+			resourceFrame.thresholdSf:SetHeight(value)
 			castingFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			passiveFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			passiveFrame.threshold:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))		
@@ -507,6 +508,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 			barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 			barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.border, true))
+
+			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.druid.balance)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholdSs, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholdSf, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 
 			local minBarWidth = math.max(TRB.Data.settings.druid.balance.bar.border*2, 120)
 			local minBarHeight = math.max(TRB.Data.settings.druid.balance.bar.border*2, 1)
