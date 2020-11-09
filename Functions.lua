@@ -236,15 +236,14 @@ TRB.Functions.TargetsCleanup = TargetsCleanup
 
 -- Bar Manipulation Functions
 
-local function RepositionThreshold(settings, thresholdLine, parentFrame, thresholdWidth, resourceThreshold, resourceMax)
-    if resourceMax == nil or resourceMax == 0 then
+local function RepositionThreshold(settings, thresholdLine, parentFrame, thresholdWidth, resourceThreshold, resourceMax)	
+	if resourceMax == nil or resourceMax == 0 then
         resourceMax = TRB.Data.character.maxResource or 100
     end
 		
 	local min, max = parentFrame:GetMinMaxValues()
 	--local factor = max / TRB.Data.character.maxResource
 	local factor = max / resourceMax
-
 
 	if settings ~= nil and settings.bar ~= nil then
 		thresholdLine:SetPoint("LEFT",
