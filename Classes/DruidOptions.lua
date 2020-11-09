@@ -125,6 +125,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					flashAlpha=0.70,
 					flashPeriod=0.5,
 					flashEnabled=true,
+					flashSsEnabled=true,
 					overcapEnabled=true
 				},
 				threshold = {
@@ -893,7 +894,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		yCoord = yCoord - 50
 
-		title = "Moonkin Form Missing Flash Alpha"
+		title = "Bar Flash Alpha"
 		controls.flashAlpha = TRB.UiFunctions.BuildSlider(parent, title, 0, 1, TRB.Data.settings.druid.balance.colors.bar.flashAlpha, 0.01, 2,
 									barWidth, barHeight, xCoord+xPadding2, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
@@ -909,7 +910,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.colors.bar.flashAlpha = value
 		end)
 
-		title = "Moonkin Form Missing Flash Period (sec)"
+		title = "Bar Flash Period (sec)"
 		controls.flashPeriod = TRB.UiFunctions.BuildSlider(parent, title, 0, 2, TRB.Data.settings.druid.balance.colors.bar.flashPeriod, 0.05, 2,
 										barWidth, barHeight, xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
@@ -1009,9 +1010,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.colors.bar.flashEnabled = self:GetChecked()
 		end)
 
-		controls.checkBoxes.ssThresholdShow = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.ssThresholdShow
+		controls.checkBoxes.flashSsEnabled = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.flashSsEnabled
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+		getglobal(f:GetName() .. 'Text'):SetText("Flash bar when Starsurge is usable")
+		f.tooltip = "This will flash the bar when Starsurge can be cast."
+		f:SetChecked(TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled = self:GetChecked()
+		end)
+
+		controls.checkBoxes.ssThresholdShow = CreateFrame("CheckButton", "TIBCB1_7", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.ssThresholdShow
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Starsurge threshold line")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast Starsurge."
 		f:SetChecked(TRB.Data.settings.druid.balance.starsurgeThreshold)
@@ -1019,19 +1030,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.starsurgeThreshold = self:GetChecked()
 		end)
 
-		controls.checkBoxes.sfThresholdShow = CreateFrame("CheckButton", "TIBCB1_7", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.sfThresholdShow = CreateFrame("CheckButton", "TIBCB1_8", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sfThresholdShow
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Starfall Threshold Line")
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
+		getglobal(f:GetName() .. 'Text'):SetText("Show Starfall threshold line")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast Starfall."
 		f:SetChecked(TRB.Data.settings.druid.balance.starfallThreshold)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.balance.starfallThreshold = self:GetChecked()
 		end)
 
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TIBCB1_8", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TIBCB1_9", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-80)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
 		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Astral Power."
 		f:SetChecked(TRB.Data.settings.druid.balance.colors.bar.overcapEnabled)
@@ -1039,7 +1050,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.colors.bar.overcapEnabled = self:GetChecked()
 		end)
 
-		yCoord = yCoord - 80
+		yCoord = yCoord - 100
 
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", xCoord+xPadding, yCoord)
 

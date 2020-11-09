@@ -845,8 +845,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Functions.HideResourceBar()
 			
 			if TRB.Data.settings.druid.balance.displayBar.neverShow == false then
+				local affectingCombat = UnitAffectingCombat("player")
 				local passiveBarValue = 0
 				local castingBarValue = 0
+				local flashBar = false
 
 				if TRB.Data.settings.druid.balance.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.borderOvercap, true))
@@ -917,12 +919,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				else
 					resourceFrame.threshold2:Hide()
 				end
-				
+								
+				if TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled and TRB.Data.snapshotData.resource >= TRB.Data.character.starsurgeThreshold then
+					flashBar = true
+				end
+
 				if not TRB.Data.spells.moonkinForm.isActive and affectingCombat then
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing, true))
-
 					if TRB.Data.settings.druid.balance.colors.bar.flashEnabled then
-						TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.druid.balance.colors.bar.flashAlpha, TRB.Data.settings.druid.balance.colors.bar.flashPeriod)
+						flashBar = true
 					end
 				elseif TRB.Data.spells.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive then
 					local gcd = TRB.Functions.GetCurrentGCDTime()
@@ -951,6 +956,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.base, true))	
 					barContainerFrame:SetAlpha(1.0)
 				end
+
+				if flashBar then
+					TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.druid.balance.colors.bar.flashAlpha, TRB.Data.settings.druid.balance.colors.bar.flashPeriod)
+				end
+				
 			end
 		end
 
