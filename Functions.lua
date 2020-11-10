@@ -695,28 +695,145 @@ local function IsTtdActive()
 end
 TRB.Functions.IsTtdActive = IsTtdActive
 
-local function UpdateResourceBar(settings)    
-    if settings ~= nil and settings.bar ~= nil then
-        local leftTextFrame = TRB.Frames.leftTextFrame
-        local middleTextFrame = TRB.Frames.middleTextFrame
-        local rightTextFrame = TRB.Frames.rightTextFrame
-        
-        local leftText, middleText, rightText = TRB.Data.BarText()
-        
-        if not pcall(TRB.Functions.TryUpdateText, leftTextFrame, leftText) then
-            TRB.Frames.leftTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.left.fontSize, "OUTLINE")
-        end
+local function BarText(settings)	
+	if settings ~= nil and settings.colors ~= nil and settings.colors.text ~= nil and settings.displayText ~= nil and
+		settings.displayText.left ~= nil and settings.displayText.middle ~= nil and settings.displayText.right ~= nil then	
+		local returnText = {}
+		returnText[0] = {}
+		returnText[1] = {}
+		returnText[2] = {}
+		returnText[0].text = settings.displayText.left.text
+		returnText[1].text = settings.displayText.middle.text
+		returnText[2].text = settings.displayText.right.text
 
-        if not pcall(TRB.Functions.TryUpdateText, middleTextFrame, middleText) then
-            TRB.Frames.middleTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.middle.fontSize, "OUTLINE")
-        end
+		returnText[0].color = string.format("|c%s", settings.colors.text.left)
+		returnText[1].color = string.format("|c%s", settings.colors.text.middle)
+		returnText[2].color = string.format("|c%s", settings.colors.text.right)
 
-        if not pcall(TRB.Functions.TryUpdateText, rightTextFrame, rightText) then
-            TRB.Frames.rightTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.right.fontSize, "OUTLINE")
-        end
-    end
+		return TRB.Functions.GetReturnText(returnText[0]), TRB.Functions.GetReturnText(returnText[1]), TRB.Functions.GetReturnText(returnText[2])
+	else
+		return "", "", ""
+	end
+end
+TRB.Functions.BarText = BarText
+
+local function RefreshLookupDataBase(settings)
+	--Spec specific implementations also needed. This is general/cross-spec data
+
+	--$crit
+	local critPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.crit, settings.hastePrecision))
+
+	--$mastery
+	local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.mastery, settings.hastePrecision))
+	
+	--$haste
+
+	--$gcd
+	local _gcd = 1.5 / (1 + (TRB.Data.snapshotData.haste/100))
+	if _gcd > 1.5 then
+		_gcd = 1.5
+	elseif _gcd < 0.75 then
+		_gcd = 0.75
+	end
+	local gcd = string.format("%.2f", _gcd)
+
+	local hastePercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.haste, settings.hastePrecision))
+		
+	--$ttd
+	local _ttd = ""
+	local ttd = ""
+	local ttdTotalSeconds = nil
+
+	if TRB.Data.snapshotData.targetData.ttdIsActive and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd ~= 0 then
+		local target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
+		local ttdMinutes = math.floor(target.ttd / 60)
+		local ttdSeconds = target.ttd % 60
+		ttdTotalSeconds = target.ttd
+		ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
+	else
+		ttd = "--"
+	end
+
+	--#castingIcon
+	local castingIcon = TRB.Data.snapshotData.casting.icon or ""
+	
+	local lookup = TRB.Data.lookup or {}
+	lookup["#casting"] = castingIcon
+	lookup["$haste"] = hastePercent
+	lookup["$crit"] = critPercent
+	lookup["$mastery"] = masteryPercent
+	lookup["$gcd"] = gcd
+	lookup["$ttd"] = ttd
+	lookup["||n"] = string.format("\n")
+	lookup["||c"] = string.format("%s", "|c")
+	lookup["||r"] = string.format("%s", "|r")
+	lookup["%%"] = "%"
+	TRB.Data.lookup = lookup
+	
+	Global_TwintopResourceBar = {
+		ttd = {
+			ttd = ttd or "--",
+			seconds = ttdTotalSeconds
+		},
+		resource = {
+			resource = TRB.Data.snapshotData.resource or 0,
+			casting = TRB.Data.snapshotData.casting.resourceFinal or 0
+		}
+	}
+end
+TRB.Functions.RefreshLookupDataBase = RefreshLookupDataBase
+
+local function UpdateResourceBar(settings, refreshText)
+	TRB.Functions.RefreshLookupDataBase(settings)
+	TRB.Functions.RefreshLookupData()
+
+	if refreshText then
+		local leftText, middleText, rightText = TRB.Functions.BarText(settings)
+		TRB.Functions.UpdateResourceBarText(settings, leftText, middleText, rightText)
+	end
 end
 TRB.Functions.UpdateResourceBar = UpdateResourceBar
+
+local function UpdateResourceBarText(settings, leftText, middleText, rightText)
+	if settings ~= nil and settings.bar ~= nil then
+		local leftTextFrame = TRB.Frames.leftTextFrame
+		local middleTextFrame = TRB.Frames.middleTextFrame
+		local rightTextFrame = TRB.Frames.rightTextFrame
+		
+		if not pcall(TRB.Functions.TryUpdateText, leftTextFrame, leftText) then
+			leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
+		end
+
+		if not pcall(TRB.Functions.TryUpdateText, middleTextFrame, middleText) then
+			middleTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
+		end
+
+		if not pcall(TRB.Functions.TryUpdateText, rightTextFrame, rightText) then
+			rightTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.right.fontSize, "OUTLINE")
+		end
+	end
+end
+TRB.Functions.UpdateResourceBarText = UpdateResourceBarText
+
+local function IsValidVariableBase(var)
+	local valid = false
+	if var == "$crit" then
+		valid = true
+	elseif var == "$mastery" then
+		valid = true
+	elseif var == "$haste" then
+		valid = true
+	elseif var == "$gcd" then
+		valid = true
+	elseif var == "$ttd" then
+		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
+			valid = true
+		end
+	end
+
+	return valid
+end
+TRB.Functions.IsValidVariableBase = IsValidVariableBase
 
 local function RemoveInvalidVariablesFromBarText(input)
     --1         11                       36     43

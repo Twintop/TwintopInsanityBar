@@ -321,17 +321,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
     local function IsValidVariableForSpec(var)
-		local valid = false
-
-		if var == "$crit" then
-			valid = true
-		elseif var == "$mastery" then
-			valid = true
-		elseif var == "$haste" then
-			valid = true
-		elseif var == "$gcd" then
-			valid = true
-		elseif var == "$resource" or var == "$maelstrom" then
+		local valid = TRB.Functions.IsValidVariableBase(var)
+		if valid then
+			return valid
+		end
+		
+		if var == "$resource" or var == "$maelstrom" then
 			if TRB.Data.snapshotData.resource > 0 then
 				valid = true
 			end
@@ -380,10 +375,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			if TRB.Data.snapshotData.icefury.startTime ~= nil and TRB.Data.snapshotData.icefury.startTime > 0 then
 				valid = true
 			end
-		elseif var == "$ttd" then
-			if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
-				valid = true
-			end
 		else
 			valid = false					
 		end
@@ -392,28 +383,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 	TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
 
-    local function BarText()
+	local function RefreshLookupData()
+		--Spec specific implementation
 		local currentTime = GetTime()
-		--$crit
-		local critPercent = string.format("%." .. TRB.Data.settings.shaman.elemental.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.crit, TRB.Data.settings.shaman.elemental.hastePrecision))
-
-		--$mastery
-		local masteryPercent = string.format("%." .. TRB.Data.settings.shaman.elemental.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.mastery, TRB.Data.settings.shaman.elemental.hastePrecision))
-		
-		--$haste
-
-		--$gcd
-		local _gcd = 1.5 / (1 + (TRB.Data.snapshotData.haste/100))
-		if _gcd > 1.5 then
-			_gcd = 1.5
-		elseif _gcd < 0.75 then
-			_gcd = 0.75
-		end
-		local gcd = string.format("%.2f", _gcd)
-
-		local hastePercent = string.format("%." .. TRB.Data.settings.shaman.elemental.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.haste, TRB.Data.settings.shaman.elemental.hastePrecision))
-		
-		----------
 
 		--$overcap
 		local overcap = IsValidVariableForSpec("$overcap")
@@ -468,45 +440,23 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			icefuryTime = string.format("%.1f", math.abs(currentTime - (TRB.Data.snapshotData.icefury.startTime + TRB.Data.spells.icefury.duration)))
 		end
 
-		--$ttd
-		local _ttd = ""
-		local ttd = ""
-
-		if TRB.Data.snapshotData.targetData.ttdIsActive and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd ~= 0 then
-			local target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
-			local ttdMinutes = math.floor(target.ttd / 60)
-			local ttdSeconds = target.ttd % 60
-			ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
-		else
-			ttd = "--"
-		end
-
-		--#castingIcon
-		local castingIcon = TRB.Data.snapshotData.casting.icon or ""
 		----------------------------
 
-		Global_TwintopResourceBar = {
-			ttd = ttd or "--",
-			resource = {
-				resource = TRB.Data.snapshotData.resource or 0,
-				casting = TRB.Data.snapshotData.casting.resourceFinal or 0,
-				passive = _passiveMaelstrom,
-				icefury = icefuryMaelstrom
-			},
-			dots = {
-				fsCount = flameShockCount or 0,
-			},
-			chainLightning = {
-				targetsHit = TRB.Data.snapshotData.chainLightning.targetsHit or 0
-			},
-            icefury = {
-                maelstrom = icefuryMaelstrom,
-				stacks = icefuryStacks,
-				remaining = icefuryTime
-            }
+		Global_TwintopResourceBar.resource.passive = _passiveMaelstrom
+		Global_TwintopResourceBar.resource.icefury = icefuryMaelstrom
+		Global_TwintopResourceBar.dots = {
+			fsCount = flameShockCount or 0,
 		}
-		
-		local lookup = {}
+		Global_TwintopResourceBar.chainLightning = {
+			targetsHit = TRB.Data.snapshotData.chainLightning.targetsHit or 0
+		}
+		Global_TwintopResourceBar.icefury = {
+			maelstrom = icefuryMaelstrom,
+			stacks = icefuryStacks,
+			remaining = icefuryTime
+		}
+
+		lookup = TRB.Data.lookup or {}	
 		lookup["#lightningBolt"] = TRB.Data.spells.lightningBolt.icon
 		lookup["#lavaBurst"] = TRB.Data.spells.lavaBurst.icon
 		lookup["#elementalBlast"] = TRB.Data.spells.elementalBlast.icon
@@ -518,11 +468,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["#flameShock"] = TRB.Data.spells.flameShock.icon
 		lookup["#frostShock"] = TRB.Data.spells.frostShock.icon
 		lookup["#lightningShield"] = TRB.Data.spells.lightningShield.icon
-		lookup["#casting"] = castingIcon
-		lookup["$haste"] = hastePercent
-		lookup["$crit"] = critPercent
-		lookup["$mastery"] = masteryPercent
-		lookup["$gcd"] = gcd
 		lookup["$fsCount"] = flameShockCount
 		lookup["$maelstromPlusCasting"] = maelstromPlusCasting
 		lookup["$maelstromPlusPassive"] = maelstromPlusPassive
@@ -542,28 +487,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["$ifMaelstrom"] = icefuryMaelstrom
 		lookup["$ifStacks"] = icefuryStacks
 		lookup["$ifTime"] = icefuryTime
-		lookup["$ttd"] = ttd
-		lookup["||n"] = string.format("\n")
-		lookup["||c"] = string.format("%s", "|c")
-		lookup["||r"] = string.format("%s", "|r")
-		lookup["%%"] = "%"
 		TRB.Data.lookup = lookup
-
-		local returnText = {}
-		returnText[0] = {}
-		returnText[1] = {}
-		returnText[2] = {}
-        returnText[0].text = TRB.Data.settings.shaman.elemental.displayText.left.text
-        returnText[1].text = TRB.Data.settings.shaman.elemental.displayText.middle.text
-        returnText[2].text = TRB.Data.settings.shaman.elemental.displayText.right.text
-
-		returnText[0].color = string.format("|c%s", TRB.Data.settings.shaman.elemental.colors.text.left)
-		returnText[1].color = string.format("|c%s", TRB.Data.settings.shaman.elemental.colors.text.middle)
-		returnText[2].color = string.format("|c%s", TRB.Data.settings.shaman.elemental.colors.text.right)
-
-		return TRB.Functions.GetReturnText(returnText[0]), TRB.Functions.GetReturnText(returnText[1]), TRB.Functions.GetReturnText(returnText[2])
 	end
-	TRB.Data.BarText = BarText
+	TRB.Functions.RefreshLookupData = RefreshLookupData
 
     local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
@@ -668,12 +594,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	TRB.Functions.HideResourceBar = HideResourceBar
 
 	local function UpdateResourceBar()
+		local refreshText = false
 		UpdateSnapshot()
 
 		if TRB.Data.snapshotData.isTracking then
 			TRB.Functions.HideResourceBar()	
 			
-			if TRB.Data.settings.priest.shadow.displayBar.neverShow == false then
+			if TRB.Data.settings.shaman.elemental.displayBar.neverShow == false then
+				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0	
 				
@@ -737,8 +665,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 			end		
 		end
-
-		TRB.Functions.UpdateResourceBar(TRB.Data.settings.shaman.elemental)
+		TRB.Functions.UpdateResourceBar(TRB.Data.settings.shaman.elemental, refreshText)
 	end
 
 	--HACK to fix FPS

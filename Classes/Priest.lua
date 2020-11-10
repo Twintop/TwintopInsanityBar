@@ -783,17 +783,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function IsValidVariableForSpec(var)
-		local valid = false
+		local valid = TRB.Functions.IsValidVariableBase(var)
+		if valid then
+			return valid
+		end
 
-		if var == "$crit" then
-			valid = true
-		elseif var == "$mastery" then
-			valid = true
-		elseif var == "$haste" then
-			valid = true
-		elseif var == "$gcd" then
-			valid = true
-		elseif var == "$vfTime" then
+		if var == "$vfTime" then
 			if TRB.Data.snapshotData.voidform.remainingTime ~= nil and TRB.Data.snapshotData.voidform.remainingTime > 0 then
 				valid = true
 			end
@@ -911,53 +906,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.snapshotData.mindDevourer.spellId ~= nil then
 				valid = true
 			end
-		elseif var == "$ttd" then
-			if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
-				valid = true
-			end
 		else
-			valid = false					
+			valid = false
 		end
 
 		return valid
 	end
 	TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
 
-	local function BarText()
+	local function RefreshLookupData()
 		local currentTime = GetTime()
-		--$crit
-		local critPercent = string.format("%." .. TRB.Data.settings.priest.shadow.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.crit, TRB.Data.settings.priest.shadow.hastePrecision))
-
-		--$mastery
-		local masteryPercent = string.format("%." .. TRB.Data.settings.priest.shadow.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.mastery, TRB.Data.settings.priest.shadow.hastePrecision))
-		
-		--$haste
-		local _hasteColor = TRB.Data.settings.priest.shadow.colors.text.left
-		local _hasteValue = TRB.Functions.RoundTo(TRB.Data.snapshotData.haste, TRB.Data.settings.priest.shadow.hastePrecision)
-		
-		if TRB.Data.snapshotData.voidform.spellId then        
-			if TRB.Data.settings.priest.shadow.hasteThreshold <= TRB.Data.snapshotData.haste then
-				_hasteColor = TRB.Data.settings.priest.shadow.colors.text.hasteAbove    
-			elseif TRB.Data.settings.priest.shadow.hasteApproachingThreshold <= TRB.Data.snapshotData.haste then
-				_hasteColor = TRB.Data.settings.priest.shadow.colors.text.hasteApproaching    
-			else
-				_hasteColor = TRB.Data.settings.priest.shadow.colors.text.hasteBelow
-			end
-		end
-
-		--$gcd
-		local _gcd = 1.5 / (1 + (TRB.Data.snapshotData.haste/100))
-		if _gcd > 1.5 then
-			_gcd = 1.5
-		elseif _gcd < 0.75 then
-			_gcd = 0.75
-		end
-		local gcd = string.format("%.2f", _gcd)
-
-		local hastePercent = string.format("|c%s%." .. TRB.Data.settings.priest.shadow.hastePrecision .. "f|c%s", _hasteColor, TRB.Data.snapshotData.haste, TRB.Data.settings.priest.shadow.colors.text.left)
-		
-		----------
-		
+				
 		--$vfTime
 		local voidformTime = string.format("%.1f", TRB.Data.snapshotData.voidform.remainingTime)
 		--$hvTime
@@ -1052,6 +1011,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		----------
 
+		--We have extra custom stuff we want to do with TTD for Priests
 		--$ttd
 		local _ttd = ""
 		local ttd = ""
@@ -1134,56 +1094,49 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			}
 		}
 		
-		Global_TwintopResourceBar = {
-			ttd = ttd or "--",
-			voidform = {
-				hungeringVoid = {
-					timeRemaining = TRB.Data.snapshotData.voidform.remainingHvTime,
-					voidBoltCasts = TRB.Data.snapshotData.voidform.additionalVbCasts,
-					TimeRemainingAverage = TRB.Data.snapshotData.voidform.remainingHvAvgTime,
-					voidBoltCastsAverage = TRB.Data.snapshotData.voidform.additionalVbAvgCasts,
-				}
-			},
-			resource = {
-				resource = TRB.Data.snapshotData.resource or 0,
-				casting = TRB.Data.snapshotData.casting.resourceFinal or 0,
-				passive = _passiveInsanity,
-				auspiciousSpirits = _asInsanity,
-				mindbender = TRB.Data.snapshotData.mindbender.resourceFinal or 0,
-				deathAndMadness = _damInsanity,
-				ecttv = TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal or 0
-			},
-			auspiciousSpirits = {
-				count = TRB.Data.snapshotData.targetData.auspiciousSpirits or 0,
-				insanity = _asInsanity
-			},
-			dots = {
-				swpCount = shadowWordPainCount or 0,
-				vtCount = vampiricTouchCount or 0,
-				dpCount = devouringPlagueCount or 0
-			},
-			mindbender = {			
-				insanity = TRB.Data.snapshotData.mindbender.resourceFinal or 0,
-				gcds = TRB.Data.snapshotData.mindbender.remaining.gcds or 0,
-				swings = TRB.Data.snapshotData.mindbender.remaining.swings or 0,
-				time = TRB.Data.snapshotData.mindbender.remaining.time or 0
-			},
-			mindSear = {
-				targetsHit = TRB.Data.snapshotData.mindSear.targetsHit or 0
-			},
-			deathAndMadness = {
-				insanity = _damInsanity,
-				ticks = TRB.Data.snapshotData.deathAndMadness.ticksRemaining or 0
-			},
-			eternalCallToTheVoid = {
-				insanity = TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal or 0,
-				ticks = TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining or 0,
-				count = TRB.Data.snapshotData.eternalCallToTheVoid.numberActive or 0
+		Global_TwintopResourceBar.voidform = {
+			hungeringVoid = {
+				timeRemaining = TRB.Data.snapshotData.voidform.remainingHvTime,
+				voidBoltCasts = TRB.Data.snapshotData.voidform.additionalVbCasts,
+				TimeRemainingAverage = TRB.Data.snapshotData.voidform.remainingHvAvgTime,
+				voidBoltCastsAverage = TRB.Data.snapshotData.voidform.additionalVbAvgCasts,
 			}
+		}
+		Global_TwintopResourceBar.resource.passive = _passiveInsanity
+		Global_TwintopResourceBar.resource.auspiciousSpirits = _asInsanity
+		Global_TwintopResourceBar.resource.mindbender = TRB.Data.snapshotData.mindbender.resourceFinal or 0
+		Global_TwintopResourceBar.resource.deathAndMadness = _damInsanity
+		Global_TwintopResourceBar.resource.ecttv = TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal or 0
+		Global_TwintopResourceBar.auspiciousSpirits = {
+			count = TRB.Data.snapshotData.targetData.auspiciousSpirits or 0,
+			insanity = _asInsanity
+		}
+		Global_TwintopResourceBar.dots = {
+			swpCount = shadowWordPainCount or 0,
+			vtCount = vampiricTouchCount or 0,
+			dpCount = devouringPlagueCount or 0
+		}
+		Global_TwintopResourceBar.mindbender = {			
+			insanity = TRB.Data.snapshotData.mindbender.resourceFinal or 0,
+			gcds = TRB.Data.snapshotData.mindbender.remaining.gcds or 0,
+			swings = TRB.Data.snapshotData.mindbender.remaining.swings or 0,
+			time = TRB.Data.snapshotData.mindbender.remaining.time or 0
+		}
+		Global_TwintopResourceBar.mindSear = {
+			targetsHit = TRB.Data.snapshotData.mindSear.targetsHit or 0
+		}
+		Global_TwintopResourceBar.deathAndMadness = {
+			insanity = _damInsanity,
+			ticks = TRB.Data.snapshotData.deathAndMadness.ticksRemaining or 0
+		}
+		Global_TwintopResourceBar.eternalCallToTheVoid = {
+			insanity = TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal or 0,
+			ticks = TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining or 0,
+			count = TRB.Data.snapshotData.eternalCallToTheVoid.numberActive or 0
 		}
 
 		
-		local lookup = {}
+		local lookup = TRB.Data.lookup or {}
 		lookup["#as"] = TRB.Data.spells.auspiciousSpirits.icon
 		lookup["#auspiciousSpirits"] = TRB.Data.spells.auspiciousSpirits.icon
 		lookup["#sa"] = TRB.Data.spells.shadowyApparition.icon
@@ -1214,13 +1167,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#mindDevourer"] = TRB.Data.spells.mindDevourer.icon
 		lookup["#md"] = TRB.Data.spells.massDispel.icon
 		lookup["#massDispel"] = TRB.Data.spells.massDispel.icon
-		lookup["#casting"] = castingIcon
 		lookup["#dam"] = TRB.Data.spells.deathAndMadness.icon
 		lookup["#deathAndMadness"] = TRB.Data.spells.deathAndMadness.icon
-		lookup["$haste"] = hastePercent
-		lookup["$crit"] = critPercent
-		lookup["$mastery"] = masteryPercent
-		lookup["$gcd"] = gcd
 		lookup["$swpCount"] = shadowWordPainCount
 		lookup["$vtCount"] = vampiricTouchCount
 		lookup["$dpCount"] = devouringPlagueCount
@@ -1257,34 +1205,40 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$damTicks"] = damTicks
 		lookup["$asCount"] = asCount
 		lookup["$asInsanity"] = asInsanity
-		lookup["$ttd"] = ttd
-		lookup["||n"] = string.format("\n")
-		lookup["||c"] = string.format("%s", "|c")
-		lookup["||r"] = string.format("%s", "|r")
-		lookup["%%"] = "%"
+		lookup["$ttd"] = ttd --Custom TTD for Shadow
 		TRB.Data.lookup = lookup
+	end
+	TRB.Functions.RefreshLookupData = RefreshLookupData
 
-		local returnText = {}
-		returnText[0] = {}
-		returnText[1] = {}
-		returnText[2] = {}
-		if TRB.Data.snapshotData.voidform.spellId then
-			returnText[0].text = TRB.Data.settings.priest.shadow.displayText.left.inVoidformText
-			returnText[1].text = TRB.Data.settings.priest.shadow.displayText.middle.inVoidformText
-			returnText[2].text = TRB.Data.settings.priest.shadow.displayText.right.inVoidformText
-		else
-			returnText[0].text = TRB.Data.settings.priest.shadow.displayText.left.outVoidformText
-			returnText[1].text = TRB.Data.settings.priest.shadow.displayText.middle.outVoidformText
-			returnText[2].text = TRB.Data.settings.priest.shadow.displayText.right.outVoidformText
+	local function UpdateResourceBarShadow(settings, refreshText)
+		TRB.Functions.RefreshLookupDataBase(settings)
+		TRB.Functions.RefreshLookupData()
+		local leftText, middleText, rightText = "", "", ""
+
+		if refreshText then
+			local returnText = {}
+			returnText[0] = {}
+			returnText[1] = {}
+			returnText[2] = {}
+			if TRB.Data.snapshotData.voidform.spellId then
+				returnText[0].text = settings.displayText.left.inVoidformText
+				returnText[1].text = settings.displayText.middle.inVoidformText
+				returnText[2].text = settings.displayText.right.inVoidformText
+			else
+				returnText[0].text = settings.displayText.left.outVoidformText
+				returnText[1].text = settings.displayText.middle.outVoidformText
+				returnText[2].text = settings.displayText.right.outVoidformText
+			end
+
+			returnText[0].color = string.format("|c%s", settings.colors.text.left)
+			returnText[1].color = string.format("|c%s", settings.colors.text.middle)
+			returnText[2].color = string.format("|c%s", settings.colors.text.right)
+
+			leftText, middleText, rightText = TRB.Functions.GetReturnText(returnText[0]), TRB.Functions.GetReturnText(returnText[1]), TRB.Functions.GetReturnText(returnText[2])
 		end
 
-		returnText[0].color = string.format("|c%s", TRB.Data.settings.priest.shadow.colors.text.left)
-		returnText[1].color = string.format("|c%s", TRB.Data.settings.priest.shadow.colors.text.middle)
-		returnText[2].color = string.format("|c%s", TRB.Data.settings.priest.shadow.colors.text.right)
-
-		return TRB.Functions.GetReturnText(returnText[0]), TRB.Functions.GetReturnText(returnText[1]), TRB.Functions.GetReturnText(returnText[2])
+		TRB.Functions.UpdateResourceBarText(settings, leftText, middleText, rightText)
 	end
-	TRB.Data.BarText = BarText
 
 	local function UpdateCastingResourceFinal(fotm)	
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateInsanityGain(TRB.Data.snapshotData.casting.resourceRaw, fotm)
@@ -1527,6 +1481,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	TRB.Functions.HideResourceBar = HideResourceBar
 
 	local function UpdateResourceBar()
+		local refreshText = false
 		UpdateSnapshot()
 
 		if TRB.Data.snapshotData.isTracking then
@@ -1535,6 +1490,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			CalculateRemainingTime()
 			
 			if TRB.Data.settings.priest.shadow.displayBar.neverShow == false then
+				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
 
@@ -1635,8 +1591,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			end
 		end
-
-		TRB.Functions.UpdateResourceBar(TRB.Data.settings.priest.shadow)
+		--Normally we'd just call the base, but Shadow has special dual text output because of Voidform. Make manual calls instead
+		--TRB.Functions.UpdateResourceBar(TRB.Data.settings.priest.shadow, not TRB.Data.settings.priest.shadow.displayBar.neverShow)
+		UpdateResourceBarShadow(TRB.Data.settings.priest.shadow, refreshText)
 	end
 
 	--HACK to fix FPS

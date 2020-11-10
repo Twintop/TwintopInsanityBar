@@ -439,18 +439,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 
     local function IsValidVariableForSpec(var)
-		local valid = false
+		local valid = TRB.Functions.IsValidVariableBase(var)
+		if valid then
+			return valid
+		end
+
         local affectingCombat = UnitAffectingCombat("player")
 
-		if var == "$crit" then
-			valid = true
-		elseif var == "$mastery" then
-			valid = true
-		elseif var == "$haste" then
-			valid = true
-		elseif var == "$gcd" then
-			valid = true
-		elseif var == "$moonkinForm" then
+		if var == "$moonkinForm" then
 			if TRB.Data.spells.moonkinForm.isActive then
 				valid = true
 			end
@@ -514,10 +510,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if TRB.Data.snapshotData.furyOfElune.startTime ~= nil then
 				valid = true
 			end
-		elseif var == "$ttd" then
-			if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
-				valid = true
-			end
 		else
 			valid = false					
 		end
@@ -526,28 +518,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 	TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
 
-    local function BarText()
+	local function RefreshLookupData()
 		local currentTime = GetTime()
-		--$crit
-		local critPercent = string.format("%." .. TRB.Data.settings.druid.balance.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.crit, TRB.Data.settings.druid.balance.hastePrecision))
-
-		--$mastery
-		local masteryPercent = string.format("%." .. TRB.Data.settings.druid.balance.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.mastery, TRB.Data.settings.druid.balance.hastePrecision))
-		
-		--$haste
-
-		--$gcd
-		local _gcd = 1.5 / (1 + (TRB.Data.snapshotData.haste/100))
-		if _gcd > 1.5 then
-			_gcd = 1.5
-		elseif _gcd < 0.75 then
-			_gcd = 0.75
-		end
-		local gcd = string.format("%.2f", _gcd)
-
-		local hastePercent = string.format("%." .. TRB.Data.settings.druid.balance.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.haste, TRB.Data.settings.druid.balance.hastePrecision))
-		
-		----------
 
 		local moonkinFormActive = TRB.Data.spells.moonkinForm.isActive
 
@@ -607,46 +579,22 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			foeTime = string.format("%.1f", math.abs(currentTime - (TRB.Data.snapshotData.furyOfElune.startTime + TRB.Data.spells.furyOfElune.duration)))
 		end
 
-		----------
-
-		--$ttd
-		local _ttd = ""
-		local ttd = ""
-
-		if TRB.Data.snapshotData.targetData.ttdIsActive and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd ~= 0 then
-			local target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
-			local ttdMinutes = math.floor(target.ttd / 60)
-			local ttdSeconds = target.ttd % 60
-			ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
-		else
-			ttd = "--"
-		end
-
-		--#castingIcon
-		local castingIcon = TRB.Data.snapshotData.casting.icon or ""
 		----------------------------
 
-		Global_TwintopResourceBar = {
-			ttd = ttd or "--",
-			resource = {
-				resource = TRB.Data.snapshotData.resource or 0,
-				casting = TRB.Data.snapshotData.casting.resourceFinal or 0,
-				passive = _passiveAstralPower or 0,
-				furyOfElune = foeAstralPower or 0
-            },            
-			dots = {
-                sunfireCount = sunfireCount or 0,
-                moonfireCount = moonfireCount or 0,
-                stellarFlareCount = stellarFlareCount or 0
-            },
-            furyOfElune = {
-                astralPower = foeAstralPower or 0,
-				ticks = foeTicks or 0,
-				remaining = foeTime or 0
-            }
+		Global_TwintopResourceBar.resource.passive = _passiveAstralPower or 0
+		Global_TwintopResourceBar.resource.furyOfElune = foeAstralPower or 0
+		Global_TwintopResourceBar.dots = {
+			sunfireCount = sunfireCount or 0,
+			moonfireCount = moonfireCount or 0,
+			stellarFlareCount = stellarFlareCount or 0
+		}
+		Global_TwintopResourceBar.furyOfElune = {
+			astralPower = foeAstralPower or 0,
+			ticks = foeTicks or 0,
+			remaining = foeTime or 0
 		}
 		
-		local lookup = {}
+		local lookup = TRB.Data.lookup or {}
 		lookup["#wrath"] = TRB.Data.spells.wrath.icon
 		lookup["#moonkinForm"] = TRB.Data.spells.moonkinForm.icon
 		lookup["#starfire"] = TRB.Data.spells.starfire.icon
@@ -673,11 +621,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#newMoon"] = TRB.Data.spells.newMoon.icon
 		lookup["#halfMoon"] = TRB.Data.spells.halfMoon.icon
 		lookup["#fullMoon"] = TRB.Data.spells.fullMoon.icon
-		lookup["#casting"] = castingIcon
-		lookup["$haste"] = hastePercent
-		lookup["$crit"] = critPercent
-		lookup["$mastery"] = masteryPercent
-		lookup["$gcd"] = gcd
 		lookup["$moonkinForm"] = moonkinFormActive
 		lookup["$sunfireCount"] = sunfireCount
 		lookup["$moonfireCount"] = moonfireCount
@@ -701,28 +644,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$foeTicks"] = foeTicks
 		lookup["$foeTime"] = foeTime
 		lookup["$talentStellarFlare"] = TRB.Data.character.talents.stellarFlare.isSelected
-		lookup["$ttd"] = ttd
-		lookup["||n"] = string.format("\n")
-		lookup["||c"] = string.format("%s", "|c")
-		lookup["||r"] = string.format("%s", "|r")
-		lookup["%%"] = "%"
-		TRB.Data.lookup = lookup
-
-		local returnText = {}
-		returnText[0] = {}
-		returnText[1] = {}
-		returnText[2] = {}
-        returnText[0].text = TRB.Data.settings.druid.balance.displayText.left.text
-        returnText[1].text = TRB.Data.settings.druid.balance.displayText.middle.text
-        returnText[2].text = TRB.Data.settings.druid.balance.displayText.right.text
-
-		returnText[0].color = string.format("|c%s", TRB.Data.settings.druid.balance.colors.text.left)
-		returnText[1].color = string.format("|c%s", TRB.Data.settings.druid.balance.colors.text.middle)
-		returnText[2].color = string.format("|c%s", TRB.Data.settings.druid.balance.colors.text.right)
-
-		return TRB.Functions.GetReturnText(returnText[0]), TRB.Functions.GetReturnText(returnText[1]), TRB.Functions.GetReturnText(returnText[2])
+		TRB.Data.lookup = lookup	
 	end
-	TRB.Data.BarText = BarText
+	TRB.Functions.RefreshLookupData = RefreshLookupData
 
     local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
@@ -839,12 +763,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function UpdateResourceBar()
 		local currentTime = GetTime()
+		local refreshText = false
 		UpdateSnapshot()
 
 		if TRB.Data.snapshotData.isTracking then
 			TRB.Functions.HideResourceBar()
 			
 			if TRB.Data.settings.druid.balance.displayBar.neverShow == false then
+				refreshText = true
 				local affectingCombat = UnitAffectingCombat("player")
 				local passiveBarValue = 0
 				local castingBarValue = 0
@@ -959,12 +885,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 				if flashBar then
 					TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.druid.balance.colors.bar.flashAlpha, TRB.Data.settings.druid.balance.colors.bar.flashPeriod)
-				end
-				
+				end				
 			end
 		end
-
-		TRB.Functions.UpdateResourceBar(TRB.Data.settings.druid.balance)
+		TRB.Functions.UpdateResourceBar(TRB.Data.settings.druid.balance, refreshText)
 	end
 
 	--HACK to fix FPS
