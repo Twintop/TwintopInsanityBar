@@ -242,14 +242,13 @@ local function RepositionThreshold(settings, thresholdLine, parentFrame, thresho
     end
 		
 	local min, max = parentFrame:GetMinMaxValues()
-	--local factor = max / TRB.Data.character.maxResource
-	local factor = max / resourceMax
+	local factor = (max - (settings.bar.border * 2)) / resourceMax
 
 	if settings ~= nil and settings.bar ~= nil then
 		thresholdLine:SetPoint("LEFT",
 								parentFrame,
 								"LEFT",
-								(resourceThreshold * factor) - settings.bar.border,
+								(resourceThreshold * factor),
 								0)
 	end
 end
