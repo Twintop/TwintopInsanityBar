@@ -867,11 +867,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				valid = true
 			end
 		elseif var == "$cttvEquipped" then
-			if TRB.Data.character.items.callToTheVoid == true then
+			if TRB.Data.settings.priest.shadow.voidTendrilTracker and TRB.Data.character.items.callToTheVoid == true then
 				valid = true
 			end
 		elseif var == "$ecttvCount" then
-			if TRB.Data.snapshotData.eternalCallToTheVoid.numberActive > 0 then
+			if TRB.Data.settings.priest.shadow.voidTendrilTracker and TRB.Data.snapshotData.eternalCallToTheVoid.numberActive > 0 then
 				valid = true
 			end
 		elseif var == "$damInsanity" then
