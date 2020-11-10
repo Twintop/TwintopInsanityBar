@@ -89,6 +89,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				notZeroShow=true,
 				neverShow=false
 			},
+			endOfEclipse = {
+				enabled=true,
+				celestialAlignmentOnly=false,
+				mode="gcd",
+				gcdsMax=2,
+				timeMax=3.0
+			},
 			bar = {		
 				width=555,
 				height=34,
@@ -1347,8 +1354,98 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		end)
 
-		yCoord = yCoord - 40
 		
+
+		yCoord = yCoord - 30
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Eclipse Configuration", xCoord+xPadding, yCoord)
+
+		yCoord = yCoord - 30	
+		controls.checkBoxes.endOfEclipse = CreateFrame("CheckButton", "TRB_EOE_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfEclipse
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Eclipse")
+		f.tooltip = "Changes the bar color when Eclipse is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(TRB.Data.settings.druid.balance.endOfEclipse.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.endOfEclipse.enabled = self:GetChecked()
+		end)
+		yCoord = yCoord - 20	
+		controls.checkBoxes.endOfEclipseHungeringVoidOnly = CreateFrame("CheckButton", "TRB_EOE_CB_CAO", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfEclipseHungeringVoidOnly
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2+20, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Only change the bar color when in Celestial Alignment")
+		f.tooltip = "Only changes the bar color when you are exiting an Eclipse from Celestial Alignment or Incarnation: Chosen of Elune."
+		f:SetChecked(TRB.Data.settings.druid.balance.endOfEclipse.celestialAlignmentOnly)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.endOfEclipse.celestialAlignmentOnly = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 40	
+		controls.checkBoxes.endOfEclipseModeGCDs = CreateFrame("CheckButton", "TRB_EOE_M_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfEclipseModeGCDs
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Eclipse ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many GCDs remain until Eclipse ends."
+		if TRB.Data.settings.druid.balance.endOfEclipse.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfEclipseModeGCDs:SetChecked(true)
+			controls.checkBoxes.endOfEclipseModeTime:SetChecked(false)
+			TRB.Data.settings.druid.balance.endOfEclipse.mode = "gcd"
+		end)
+
+		title = "Eclipse GCDs - 0.75sec Floor"
+		controls.endOfEclipseGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 15, TRB.Data.settings.druid.balance.endOfEclipse.gcdsMax, 0.25, 2,
+										barWidth, barHeight, xCoord2, yCoord)
+		controls.endOfEclipseGCDs:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			self.EditBox:SetText(value)
+			TRB.Data.settings.druid.balance.endOfEclipse.gcdsMax = value
+		end)
+
+
+		yCoord = yCoord - 60	
+		controls.checkBoxes.endOfEclipseModeTime = CreateFrame("CheckButton", "TRB_EOE_M_TIME", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfEclipseModeTime
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Time until Eclipse ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many seconds remain until Eclipse ends."
+		if TRB.Data.settings.druid.balance.endOfEclipse.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfEclipseModeGCDs:SetChecked(false)
+			controls.checkBoxes.endOfEclipseModeTime:SetChecked(true)
+			TRB.Data.settings.druid.balance.endOfEclipse.mode = "time"
+		end)
+
+		title = "Eclipse Time Remaining"
+		controls.endOfEclipseTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 20, TRB.Data.settings.druid.balance.endOfEclipse.timeMax, 0.25, 2,
+										barWidth, barHeight, xCoord2, yCoord)
+		controls.endOfEclipseTime:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 2)
+			self.EditBox:SetText(value)		
+			TRB.Data.settings.druid.balance.endOfEclipse.timeMax = value
+		end)
+
+
+		yCoord = yCoord - 40		
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30

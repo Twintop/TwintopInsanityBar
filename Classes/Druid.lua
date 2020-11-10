@@ -116,6 +116,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			id = 194223,
 			name = "",
 			icon = "",
+			isActive = false,
+			remainingTime = 0
         },        
         eclipseSolar = {
 			id = 48517,
@@ -157,7 +159,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             name = "",
             icon = "",
             modifier = 1.5
-        },
+        },        
+        incarnationChosenOfElune = {
+			id = 102560,
+			name = "",
+			icon = "",
+			isActive = false,
+			remainingTime = 0
+        }, 
 
         stellarFlare = {
             id = 202347,
@@ -270,7 +279,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
 	
 			{ variable = "$moonkinForm", description = "Currently in Moonkin Form. Logic variable only!", printInSettings = true, color = false },
-	
+			{ variable = "$eclipse", description = "Currently in any kind of Eclipse. Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$lunar", description = "Currently in Eclipse (Lunar). Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$lunarEclipse", description = "Currently in Eclipse (Lunar). Logic variable only!", printInSettings = false, color = false },
+			{ variable = "$eclipseLunar", description = "Currently in Eclipse (Lunar). Logic variable only!", printInSettings = false, color = false },
+			{ variable = "$solar", description = "Currently in Eclipse (Solar). Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$solarEclipse", description = "Currently in Eclipse (Solar). Logic variable only!", printInSettings = false, color = false },
+			{ variable = "$eclipseSolar", description = "Currently in Eclipse (Solar). Logic variable only!", printInSettings = false, color = false },
+			{ variable = "$celestialAlignment", description = "Currently in/using Celestial Alignment or Incarnation: Chosen of Elune. Logic variable only!", printInSettings = true, color = false },
+
 			{ variable = "$astralPower", description = "Current Astral Power", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Astral Power", printInSettings = false, color = false },
 			{ variable = "$astralPowerMax", description = "Maximum Astral Power", printInSettings = true, color = false },
@@ -450,6 +467,22 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if TRB.Data.spells.moonkinForm.isActive then
 				valid = true
 			end
+		elseif var == "$eclipse" then
+			if TRB.Data.spells.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive or TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
+				valid = true
+			end
+		elseif var == "$solar" or var == "$eclipseSolar" or var == "$solarEclipse" then
+			if TRB.Data.spells.eclipseSolar.isActive then
+				valid = true
+			end
+		elseif var == "$lunar" or var == "$eclipseLunar" or var == "$lunarEclipse" then
+			if TRB.Data.spells.eclipseLunar.isActive then
+				valid = true
+			end
+		elseif var == "$celestialAlignment" then
+			if TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
+				valid = true
+			end
 		elseif var == "$resource" or var == "$astralPower" then
 			if TRB.Data.snapshotData.resource > 0 then
 				valid = true
@@ -621,7 +654,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#newMoon"] = TRB.Data.spells.newMoon.icon
 		lookup["#halfMoon"] = TRB.Data.spells.halfMoon.icon
 		lookup["#fullMoon"] = TRB.Data.spells.fullMoon.icon
-		lookup["$moonkinForm"] = moonkinFormActive
+		lookup["$moonkinForm"] = ""
+		lookup["$eclipse"] = ""
+		lookup["$lunar"] = ""
+		lookup["$lunarEclipse"] = ""
+		lookup["$eclipseLunar"] = ""
+		lookup["$solar"] = ""
+		lookup["$solarEclipse"] = ""
+		lookup["$eclipseSolar"] = ""
+		lookup["$celestialAlignment"] = ""
 		lookup["$sunfireCount"] = sunfireCount
 		lookup["$moonfireCount"] = moonfireCount
 		lookup["$stellarFlareCount"] = stellarFlareCount
@@ -730,6 +771,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		else
 			TRB.Data.spells.eclipseLunar.remainingTime = 0
 		end
+		_, _, _, _, _, expirationTime, _, _, _, TRB.Data.spells.celestialAlignment.isActive = TRB.Functions.FindBuffById(TRB.Data.spells.celestialAlignment.id)
+		if TRB.Data.spells.celestialAlignment.isActive then
+			TRB.Data.spells.celestialAlignment.remainingTime = expirationTime - currentTime
+		else
+			TRB.Data.spells.celestialAlignment.remainingTime = 0
+		end
+		_, _, _, _, _, expirationTime, _, _, _, TRB.Data.spells.incarnationChosenOfElune.isActive = TRB.Functions.FindBuffById(TRB.Data.spells.incarnationChosenOfElune.id)
+		if TRB.Data.spells.incarnationChosenOfElune.isActive then
+			TRB.Data.spells.incarnationChosenOfElune.remainingTime = expirationTime - currentTime
+		else
+			TRB.Data.spells.incarnationChosenOfElune.remainingTime = 0
+		end		
 
         TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))
         UpdateFuryOfElune()
@@ -850,38 +903,53 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					flashBar = true
 				end
 
+				local barColor = TRB.Data.settings.druid.balance.colors.bar.base
+
 				if not TRB.Data.spells.moonkinForm.isActive and affectingCombat then
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing, true))
+					barColor = TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing
 					if TRB.Data.settings.druid.balance.colors.bar.flashEnabled then
 						flashBar = true
 					end
-				elseif TRB.Data.spells.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive then
-					local gcd = TRB.Functions.GetCurrentGCDTime()
-					
-					if TRB.Data.spells.eclipseSolar.isActive and TRB.Data.spells.eclipseLunar.isActive then
-						if TRB.Data.spells.eclipseSolar.remainingTime <= gcd then
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD, true))
-						else
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.celestial, true))	
-						end
+				elseif TRB.Data.spells.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive or TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
+					local timeThreshold = 0
+					local useEndOfEclipseColor = false
+					local remainingTime = 0
+
+					if TRB.Data.spells.celestialAlignment.isActive then
+						remainingTime = TRB.Data.spells.celestialAlignment.remainingTime
+					elseif TRB.Data.spells.incarnationChosenOfElune.isActive then
+						remainingTime = TRB.Data.spells.incarnationChosenOfElune.remainingTime
 					elseif TRB.Data.spells.eclipseSolar.isActive then
-						if TRB.Data.spells.eclipseSolar.remainingTime <= gcd then
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD, true))
-						else
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.solar, true))	
-						end
-					else--if TRB.Data.spells.eclipseLunar.isActive then					
-						if TRB.Data.spells.eclipseLunar.remainingTime <= gcd then
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD, true))
-						else
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.lunar, true))	
+						remainingTime = TRB.Data.spells.eclipseSolar.remainingTime
+					elseif TRB.Data.spells.eclipseLunar.isActive then
+						remainingTime = TRB.Data.spells.eclipseLunar.remainingTime
+					end
+
+					if TRB.Data.settings.druid.balance.endOfEclipse.enabled and (not TRB.Data.settings.druid.balance.endOfEclipse.celestialAlignmentOnly or TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive) then
+						useEndOfEclipseColor = true
+						if TRB.Data.settings.druid.balance.endOfEclipse.mode == "gcd" then
+							local gcd = TRB.Functions.GetCurrentGCDTime()
+							timeThreshold = gcd * TRB.Data.settings.druid.balance.endOfEclipse.gcdsMax
+						elseif TRB.Data.settings.druid.balance.endOfEclipse.mode == "time" then
+							timeThreshold = TRB.Data.settings.druid.balance.endOfEclipse.timeMax
 						end
 					end
-					barContainerFrame:SetAlpha(1.0)
-				else
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.base, true))	
-					barContainerFrame:SetAlpha(1.0)
+					
+					if useEndOfEclipseColor and remainingTime <= timeThreshold then
+						barColor = TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD
+					else
+						if TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive or (TRB.Data.spells.eclipseSolar.isActive and TRB.Data.spells.eclipseLunar.isActive) then
+							barColor = TRB.Data.settings.druid.balance.colors.bar.celestial
+						elseif TRB.Data.spells.eclipseSolar.isActive then
+							barColor = TRB.Data.settings.druid.balance.colors.bar.solar
+						else--if TRB.Data.spells.eclipseLunar.isActive then
+							barColor = TRB.Data.settings.druid.balance.colors.bar.lunar
+						end
+					end
 				end
+
+				resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))	
+				barContainerFrame:SetAlpha(1.0)
 
 				if flashBar then
 					TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.druid.balance.colors.bar.flashAlpha, TRB.Data.settings.druid.balance.colors.bar.flashPeriod)

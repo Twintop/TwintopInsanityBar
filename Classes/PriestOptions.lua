@@ -1371,7 +1371,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.endOfVoidform
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Voidform")
-		f.tooltip = "Changes the bar color when Voidform is ended in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f.tooltip = "Changes the bar color when Voidform is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
 		f:SetChecked(TRB.Data.settings.priest.shadow.endOfVoidform.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.priest.shadow.endOfVoidform.enabled = self:GetChecked()
@@ -1423,9 +1423,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.endOfVoidformModeTime = CreateFrame("CheckButton", "TRB_EOFV_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfVoidformModeTime
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time until Voidform Ends")
+		getglobal(f:GetName() .. 'Text'):SetText("Time until Voidform ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Insanity incoming over the up to next X seconds."
+		f.tooltip = "Change the bar color based on how many seconds remain until Voidform will end."
 		if TRB.Data.settings.priest.shadow.endOfVoidform.mode == "time" then
 			f:SetChecked(true)
 		end
