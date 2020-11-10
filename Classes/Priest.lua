@@ -1858,18 +1858,25 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.mindDevourer.duration = 0
 						TRB.Data.snapshotData.mindDevourer.endTime = nil
 					end			
-				elseif type == "SPELL_SUMMON" and TRB.Data.settings.priest.shadow.voidTendrilTracker and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.id or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id) then
-					InitializeVoidTendril(destGUID)
-					if spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.id then
-						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].type = "Tendril"
-					elseif spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id then
-						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].type = "Lasher"
-					end
+				elseif type == "SPELL_SUMMON" and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.id or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id) then
+					print("TENTACLE BRO?")
+					if TRB.Data.settings.priest.shadow.voidTendrilTracker then
+						InitializeVoidTendril(destGUID)
+						if spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.id then
+							TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].type = "Tendril"
+							print("Tendril Boi!")
+						elseif spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id then							
+							TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].type = "Lasher"
+							print("Lasher Bruh!")
+						else
+							print("Step bro?")
+						end
 
-					TRB.Data.snapshotData.eternalCallToTheVoid.numberActive = TRB.Data.snapshotData.eternalCallToTheVoid.numberActive + 1
-					TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining = TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining + TRB.Data.spells.lashOfInsanity_Tendril.ticks
-					TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].startTime = currentTime
-					TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].tickTime = currentTime
+						TRB.Data.snapshotData.eternalCallToTheVoid.numberActive = TRB.Data.snapshotData.eternalCallToTheVoid.numberActive + 1
+						TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining = TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining + TRB.Data.spells.lashOfInsanity_Tendril.ticks
+						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].startTime = currentTime
+						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].tickTime = currentTime
+					end
 				end
 			elseif TRB.Data.settings.priest.shadow.voidTendrilTracker and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.idTick or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.idTick) and CheckVoidTendrilExists(sourceGUID) then
 				TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].tickTime = currentTime
