@@ -135,7 +135,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			id = 263165,
 			name = "",
 			icon = "",
-			insanity = 6,
+			insanity = 15,
 			fotm = false
 		},
 		s2m = {
@@ -226,7 +226,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			id = 342834,
 			name = "",
 			icon = "",
-			insanity = 8,
+			insanity = 20,
 			fotm = false
 		},
 		hungeringVoid = {
