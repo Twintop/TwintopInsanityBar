@@ -196,9 +196,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$ifStacks", description = "Number of Icefury Frost Shock stacks remaining", printInSettings = true, color = false },
 			{ variable = "$ifMaelstrom", description = "Total Maelstrom from available Icefury Frost Shock stacks", printInSettings = true, color = false },
 			{ variable = "$ifTime", description = "Time remaining on Icefury buff", printInSettings = true, color = false },
-			
-	
-			{ variable = "$ttd", description = "Time To Die of current target", printInSettings = true, color = true }
+				
+			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true }
+			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
 	end
 

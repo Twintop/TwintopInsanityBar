@@ -307,8 +307,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$sunfireCount", description = "Number of Sunfires active on targets", printInSettings = true, color = false },
 			{ variable = "$moonfireCount", description = "Number of Moonfires active on targets", printInSettings = true, color = false },
 			{ variable = "$stellarFlareCount", description = "Number of Stellar Flares active on targets", printInSettings = true, color = false },
-	
-			{ variable = "$ttd", description = "Time To Die of current target", printInSettings = true, color = true }
+				
+			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true }
+			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
 	end
 

@@ -463,8 +463,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$vbCasts", description = "Max Void Bolt casts remaining in Hungering Void", printInSettings = true, color = false },
 			{ variable = "$hvAvgTime", description = "Duration of Voidform w/max Void Bolt casts in Hungering Void, includes crits", printInSettings = true, color = false },
 			{ variable = "$vbAvgCasts", description = "Max Void Bolt casts remaining in Hungering Void, includes crits", printInSettings = true, color = false },
-
-			{ variable = "$ttd", description = "Time To Die of current target", printInSettings = true, color = true }
+				
+			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true }
+			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
 	end
 

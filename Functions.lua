@@ -763,6 +763,7 @@ local function RefreshLookupDataBase(settings)
 	lookup["$mastery"] = masteryPercent
 	lookup["$gcd"] = gcd
 	lookup["$ttd"] = ttd
+	lookup["$ttdSeconds"] = ttdTotalSeconds or 0
 	lookup["||n"] = string.format("\n")
 	lookup["||c"] = string.format("%s", "|c")
 	lookup["||r"] = string.format("%s", "|r")
@@ -772,7 +773,7 @@ local function RefreshLookupDataBase(settings)
 	Global_TwintopResourceBar = {
 		ttd = {
 			ttd = ttd or "--",
-			seconds = ttdTotalSeconds
+			seconds = ttdTotalSeconds or 0
 		},
 		resource = {
 			resource = TRB.Data.snapshotData.resource or 0,
@@ -824,7 +825,7 @@ local function IsValidVariableBase(var)
 		valid = true
 	elseif var == "$gcd" then
 		valid = true
-	elseif var == "$ttd" then
+	elseif var == "$ttd" or var == "$ttdSeconds" then
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
 			valid = true
 		end
