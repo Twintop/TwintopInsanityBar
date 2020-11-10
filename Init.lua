@@ -2,9 +2,9 @@ local _, TRB = ...
 
 -- Addon details data
 TRB.Details = {}
-TRB.Details.addonVersion = "9.0.2.13"
-TRB.Details.addonReleaseDate = "October 22, 2020"
-TRB.Details.supportedSpecs = "Shadow Priest, Elemental Shaman"
+TRB.Details.addonVersion = "9.0.2.21"
+TRB.Details.addonReleaseDate = "November 11, 2020"
+TRB.Details.supportedSpecs = "Shadow Priest, Elemental Shaman, Balance Druid"
 
 local addonData = {
 	loaded = false,
@@ -12,8 +12,9 @@ local addonData = {
 	libs = {}
 }
 addonData.libs.SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
-addonData.libs.SharedMedia:Register("sound", "Wilhelm Scream (TIB)", "Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg")
-addonData.libs.SharedMedia:Register("sound", "Boxing Arena Gong (TIB)", "Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg")
+addonData.libs.SharedMedia:Register("sound", "TRB: Wilhelm Scream", "Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg")
+addonData.libs.SharedMedia:Register("sound", "TRB: Boxing Arena Gong", "Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg")
+addonData.libs.SharedMedia:Register("sound", "TRB: Air Horn", "Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg")
 TRB.Details.addonData = addonData
 
 -- Frames
@@ -24,6 +25,10 @@ TRB.Frames.resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainer
 TRB.Frames.castingFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
 TRB.Frames.passiveFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
 TRB.Frames.barBorderFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
+
+TRB.Frames.passiveFrame.threshold1 = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
+TRB.Frames.resourceFrame.threshold1 = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+TRB.Frames.resourceFrame.threshold2 = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 
 TRB.Frames.leftTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
 TRB.Frames.middleTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
@@ -49,10 +54,10 @@ TRB.Frames.interfaceSettingsFrameContainer = {}
 TRB.Data = {}
 
 TRB.Data.settings = {}
-TRB.Data.settings.core = {}
 
 TRB.Data.specSupported = false
-TRB.Data.resource = nil --SPELL_POWER_INSANITY
+TRB.Data.resource = nil 
+TRB.Data.resourceFactor = 1
 
 TRB.Data.barTextVariables = {
     icons = {},
@@ -87,7 +92,8 @@ TRB.Data.snapshotData = {
 	resource = 0,
 	haste = 0,
 	crit = 0,
-    mastery = 0,
+	mastery = 0,
+	isTracking = false,
 	casting = {
 		spellId = nil,
 		startTime = nil,
@@ -101,7 +107,7 @@ TRB.Data.snapshotData = {
 		currentTargetGuid = nil,
 		targets = {}
     },
-    audio = {}
+	audio = {}	
 }
 
 TRB.Data.sanityCheckValues = {

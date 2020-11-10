@@ -28,13 +28,13 @@ local function BuildSlider(parent, title, minValue, maxValue, defaultValue, step
 	f:SetScript("OnLeave", function(self)
         self:SetBackdropBorderColor(0.7, 0.7, 0.7, 1.0)
     end)
-    f:SetScript("OnMouseWheel", function(self, delta)
+    --[[if:SetScript("OnMouseWheel", function(self, delta)
         if delta > 0 then
             self:SetValue(self:GetValue() + self:GetValueStep())
         else
             self:SetValue(self:GetValue() - self:GetValueStep())
         end
-    end)
+    end)]]
     f:SetScript("OnValueChanged", function(self, value)
 		self.EditBox:SetText(value)
 	end)	

@@ -55,7 +55,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "#flameShock $fsCount    $haste% ($gcd)||n           {$ttd}[TTD: $ttd]",
+				text = "#flameShock $fsCount    $haste% ($gcd)||n{$ifStacks}[#frostShock $ifStacks][       ]    {$ttd}[TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -84,7 +84,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			earthShockThreshold=true,
 			displayBar = {
 				alwaysShow=false,
-				notZeroShow=true
+				notZeroShow=true,
+				neverShow=false
 			},
 			bar = {		
 				width=555,
@@ -98,13 +99,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				text = {
 					currentMaelstrom="FF6563E0",
 					castingMaelstrom="FFFFFFFF",
-					passiveMaelstrom="FF995BDD",		
+					passiveMaelstrom="FF995BDD",
+					overcapMaelstrom="FFFF0000",
+					overThreshold="FF00FF00",
+					overThresholdEnabled=false,
+					overcapEnabled=true,
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
 					right="FFFFFFFF"
 				},
 				bar = {
 					border="FF00008D",
+					borderOvercap="FFFF0000",
 					background="66000000",
 					base="FF0055FF",
 					casting="FFFFFFFF",
@@ -112,7 +118,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					earthShock="FF00096A",
 					flashAlpha=0.70,
 					flashPeriod=0.5,
-					flashEnabled=true
+					flashEnabled=true,
+					overcapEnabled=true
 				},
 				threshold = {
 					under="FFFFFFFF",
@@ -124,8 +131,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				esReady={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
-					soundName="Boxing Arena Gong (TIB)"
+					soundName="TRB: Boxing Arena Gong"
 				},
+				overcap={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				}
             },
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -145,6 +157,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		settings.displayText = ElementalLoadDefaultBarTextSimpleSettings()
 		return settings
     end
+
+	local function ElementalResetSettings()
+		local settings = ElementalLoadDefaultSettings()
+		return settings
+	end
 
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
@@ -188,7 +205,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				ElementalLoadDefaultSettings()
+				TRB.Data.settings.shaman.elemental = ElementalResetSettings()
 				ReloadUI()			
 			end,
 			timeout = 0,
@@ -371,7 +388,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			resourceFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
 			castingFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
 			passiveFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			TRB.Functions.RepositionThreshold(resourceFrame.thresholdEs, resourceFrame, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.shaman.elemental)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / 8), math.floor(TRB.Data.settings.shaman.elemental.bar.width / 8))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -392,10 +410,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			barContainerFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
 			barBorderFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height)
 			resourceFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			resourceFrame.thresholdEs:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
+			resourceFrame.threshold1:SetHeight(value)
 			castingFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
 			passiveFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			passiveFrame.threshold:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))		
+			passiveFrame.threshold1:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))		
 			leftTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
 			middleTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
 			rightTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
@@ -478,6 +496,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.border, true))
 
+			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.shaman.elemental)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+
 			local minBarWidth = math.max(TRB.Data.settings.shaman.elemental.bar.border*2, 120)
 			local minBarHeight = math.max(TRB.Data.settings.shaman.elemental.bar.border*2, 1)
 			controls.height:SetMinMaxValues(minBarHeight, TRB.Data.sanityCheckValues.barMaxHeight)
@@ -498,8 +519,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.thresholdWidth = value
-			resourceFrame.thresholdEs:SetWidth(TRB.Data.settings.shaman.elemental.thresholdWidth)
-			passiveFrame.threshold:SetWidth(TRB.Data.settings.shaman.elemental.thresholdWidth)
+			resourceFrame.threshold1:SetWidth(TRB.Data.settings.shaman.elemental.thresholdWidth)
+			passiveFrame.threshold1:SetWidth(TRB.Data.settings.shaman.elemental.thresholdWidth)
 		end)
 
 		yCoord = yCoord - 40
@@ -644,7 +665,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			CloseDropDownMenus()
 		end
 
-		--[[
+		
 		yCoord = yCoord - 60
 			
 		-- Create the dropdown, and configure its appearance
@@ -707,9 +728,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			CloseDropDownMenus()
 		end	
-		]]
 
-		yCoord = yCoord - 40
 		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TIBCB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -903,8 +922,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			controls.checkBoxes.alwaysShow:SetChecked(true)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(false)
+			controls.checkBoxes.neverShow:SetChecked(false)
 			TRB.Data.settings.shaman.elemental.displayBar.alwaysShow = true
 			TRB.Data.settings.shaman.elemental.displayBar.notZeroShow = false
+			TRB.Data.settings.shaman.elemental.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -919,8 +940,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(true)
 			controls.checkBoxes.combatShow:SetChecked(false)
+			controls.checkBoxes.neverShow:SetChecked(false)
 			TRB.Data.settings.shaman.elemental.displayBar.alwaysShow = false
 			TRB.Data.settings.shaman.elemental.displayBar.notZeroShow = true
+			TRB.Data.settings.shaman.elemental.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -935,8 +958,28 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(true)
+			controls.checkBoxes.neverShow:SetChecked(false)
 			TRB.Data.settings.shaman.elemental.displayBar.alwaysShow = false
 			TRB.Data.settings.shaman.elemental.displayBar.notZeroShow = false
+			TRB.Data.settings.shaman.elemental.displayBar.neverShow = false
+			TRB.Functions.HideResourceBar()
+		end)
+
+		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TIBRB1_5", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.neverShow
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-45)
+		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
+		f:SetChecked(TRB.Data.settings.shaman.elemental.displayBar.neverShow)
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.alwaysShow:SetChecked(false)
+			controls.checkBoxes.notZeroShow:SetChecked(false)
+			controls.checkBoxes.combatShow:SetChecked(false)
+			controls.checkBoxes.neverShow:SetChecked(true)
+			TRB.Data.settings.shaman.elemental.displayBar.alwaysShow = false
+			TRB.Data.settings.shaman.elemental.displayBar.notZeroShow = false
+			TRB.Data.settings.shaman.elemental.displayBar.neverShow = true
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -961,30 +1004,36 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.elemental.earthShockThreshold = self:GetChecked()
 		end)
 
+		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TIBCB1_8", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapEnabled
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
+		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
+		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Maelstrom."
+		f:SetChecked(TRB.Data.settings.shaman.elemental.colors.bar.overcapEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.shaman.elemental.colors.bar.overcapEnabled = self:GetChecked()
+		end)
+
 		yCoord = yCoord - 60
 
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom", TRB.Data.settings.shaman.elemental.colors.bar.base, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom", TRB.Data.settings.shaman.elemental.colors.bar.base, 300, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
                 local r1, g1, b1, a1 = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.base, true)
-				TRB.UiFunctions.ShowColorPicker(r1, g1, b1, a1, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
-                        r = r / 255
-                        g = g / 255
-                        b = b / 255
-                        a = a / 255
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-                    controls.colors.base.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.base.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -994,7 +1043,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.border, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1003,20 +1052,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.border.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-                    barBorderFrame:SetBackdropBorderColor(r, g, b, a)
+                    controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
                 end)
 			end
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.earthShock = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom when you can cast Earth Shock/Earthquake", TRB.Data.settings.shaman.elemental.colors.bar.earthShock, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.earthShock = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom when you can cast Earth Shock/Earthquake", TRB.Data.settings.shaman.elemental.colors.bar.earthShock, 300, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.earthShock
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.earthShock, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1025,18 +1074,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.earthShock.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.earthShock = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.earthShock.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.bar.earthShock = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)	
 			
-		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.shaman.elemental.colors.bar.background, 250, 25, xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.shaman.elemental.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.background, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1045,9 +1094,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.background.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-                    barContainerFrame:SetBackdropColor(r, g, b, a)
+                    controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -1058,7 +1107,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.casting, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1067,10 +1116,30 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.casting.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
-                    castingFrame:SetStatusBarColor(r, g, b, a)
+                    controls.colors.casting.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    castingFrame:SetStatusBarColor(r, g, b, 1-a)
                 end)
+			end
+		end)
+
+		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Maelstrom", TRB.Data.settings.shaman.elemental.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		f = controls.colors.borderOvercap
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.borderOvercap, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+		
+					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.shaman.elemental.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
 			end
 		end)
 
@@ -1080,7 +1149,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.under, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1089,8 +1158,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -1101,7 +1170,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.over, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1110,20 +1179,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
 
-		--[[
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom from Passive Sources (?)", TRB.Data.settings.shaman.elemental.colors.bar.passive, 550, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom from Passive Sources", TRB.Data.settings.shaman.elemental.colors.bar.passive, 550, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.passive, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1132,13 +1200,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
                     
-                    controls.colors.passive.Texture:SetColorTexture(r, g, b, a)
-                    passiveFrame:SetStatusBarColor(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
+					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
-		]]
 
 		yCoord = yCoord - 40
 		
@@ -1398,7 +1465,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.left, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1409,8 +1476,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 1.0
         
-                    controls.colors.leftText.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -1421,7 +1488,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.middle, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1432,8 +1499,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 1.0
         
-                    controls.colors.middleText.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -1444,7 +1511,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.right, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1455,8 +1522,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 1.0
         
-                    controls.colors.rightText.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -1505,12 +1572,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Maelstrom Text Colors", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Current Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, 250, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.currentMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Current Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, 300, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.currentMaelstromText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1521,18 +1588,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 1.0
         
-                    controls.colors.currentMaelstromText.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.currentMaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
 
-		controls.colors.castingMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom from hardcasting spells", TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom, 250, 25, xCoord2, yCoord)
+		controls.colors.castingMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom from hardcasting spells", TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom, 275, 25, xCoord2, yCoord)
 		f = controls.colors.castingMaelstromText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, a, function(color)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1543,10 +1610,77 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 1.0
         
-                    controls.colors.castingMaelstromText.Texture:SetColorTexture(r, g, b, a)
-                    TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, a)
+                    controls.colors.castingMaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
+		end)
+		
+		yCoord = yCoord - 30
+		controls.colors.thresholdmaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Maelstrom to cast Earth Shock or Earthquake", TRB.Data.settings.shaman.elemental.colors.text.overThreshold, 300, 25, xCoord+xPadding*2, yCoord)
+		f = controls.colors.thresholdmaelstromText
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.overThreshold, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					--Text doesn't care about Alpha, but the color picker does!
+					a = 1.0
+		
+					controls.colors.thresholdmaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.shaman.elemental.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)
+
+		controls.colors.overcapmaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Cast will overcap Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom, 300, 25, xCoord2, yCoord)
+		f = controls.colors.overcapmaelstromText
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					--Text doesn't care about Alpha, but the color picker does!
+					a = 1.0
+		
+					controls.colors.overcapmaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)
+
+		yCoord = yCoord - 30
+		
+		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TRB_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overThresholdEnabled
+		f:SetPoint("TOPLEFT", xCoord+xPadding*3, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
+		f.tooltip = "This will change the Maelstrom text color when you are able to cast Earth Shock or Earthquake."
+		f:SetChecked(TRB.Data.settings.shaman.elemental.colors.text.overThresholdEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.shaman.elemental.colors.text.overThresholdEnabled = self:GetChecked()
+		end)
+		
+		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TRB_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapTextEnabled
+		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
+		f.tooltip = "This will change the Maelstrom text color when your current hardcast spell will result in overcapping maximum Maelstrom."
+		f:SetChecked(TRB.Data.settings.shaman.elemental.colors.text.overcapEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.shaman.elemental.colors.text.overcapEnabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40		
@@ -1608,8 +1742,76 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.elemental.audio.esReady.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, newName)
 			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.esReady.sound, TRB.Data.settings.shaman.elemental.audio.channel.channel)
+			PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
+
+
+		
+		yCoord = yCoord - 60
+		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TIBCB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapAudio
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Maelstrom")
+		f.tooltip = "Play an audio cue when your hardcast spell will overcap Maelstrom."
+		f:SetChecked(TRB.Data.settings.shaman.elemental.audio.overcap.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.shaman.elemental.audio.overcap.enabled = self:GetChecked()
+
+			if TRB.Data.settings.shaman.elemental.audio.overcap.enabled then
+				PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)	
+			
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TIBovercapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-30+10)
+		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, 300)
+		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.shaman.elemental.audio.overcap.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.shaman.elemental.audio.overcap.sound
+						info.func = self.SetValue			
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+			TRB.Data.settings.shaman.elemental.audio.overcap.sound = newValue
+			TRB.Data.settings.shaman.elemental.audio.overcap.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+
 
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", xCoord+xPadding, yCoord)
@@ -1630,6 +1832,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			self.EditBox:SetText(value)		
 			TRB.Data.settings.shaman.elemental.hastePrecision = value
 		end)
+		
+		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrame.controls = controls
 	end
     
 	local function ElementalConstructBarTextDisplayLayoutPanel()	
@@ -1799,11 +2004,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f.font:SetText("For icons use #ICONVARIABLENAME")
 
 		yCoord = yCoord - 25
-		local yCoordTop = yCoord
 		local entries1 = TRB.Functions.TableLength(TRB.Data.barTextVariables.values)
 		for i=1, entries1 do
 			if TRB.Data.barTextVariables.values[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 130, 200, 20)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 150, 400, 20)
 				yCoord = yCoord - 25
 			end
 		end
@@ -1811,15 +2015,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local entries2 = TRB.Functions.TableLength(TRB.Data.barTextVariables.pipe)
 		for i=1, entries2 do
 			if TRB.Data.barTextVariables.pipe[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 130, 200, 20)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 150, 400, 20)
 				yCoord = yCoord - 25
 			end
 		end
 
-		-----	
-		
-
-		yCoord = yCoordTop
+		-----			
 
 		local entries3 = TRB.Functions.TableLength(TRB.Data.barTextVariables.icons)
 		for i=1, entries3 do
@@ -1832,7 +2033,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if TRB.Data.barTextVariables.icons[i].variable == "#casting" then
 					height = 30
 				end
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord+115+200+15, yCoord, 90, 150, height)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord, yCoord, 150, 400, height)
 				yCoord = yCoord - height - 5
 			end
 		end

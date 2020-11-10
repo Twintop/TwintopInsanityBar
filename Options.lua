@@ -21,6 +21,12 @@ local function LoadDefaultSettings()
                 name="Background"
             }
         },        
+        druid = {
+            balance = {},
+            feral = {},
+            guardian = {},
+            restoration = {}
+        },        
         priest = {
             discipline = {},
             holy = {},
@@ -173,7 +179,17 @@ local function ConstructAddonOptionsPanel()
     function controls.dropDown.strata:SetValue(newValue, newName)
         TRB.Data.settings.core.strata.level = newValue
         TRB.Data.settings.core.strata.name = newName
-        barContainerFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.barContainerFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.barBorderFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.passiveFrame.threshold1:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.resourceFrame.threshold1:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.resourceFrame.threshold2:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         UIDropDownMenu_SetText(controls.dropDown.strata, newName)
         CloseDropDownMenus()
     end
@@ -273,7 +289,7 @@ end
 TRB.Options.ConstructOptionsPanel = ConstructOptionsPanel
 
 local function PortForwardPriestSettings()		
-    if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.priest == nil then
+    if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.priest == nil and TwintopInsanityBarSettings.bar ~= nil then
         local tempSettings = TwintopInsanityBarSettings
         TwintopInsanityBarSettings.priest = {}
         TwintopInsanityBarSettings.priest.discipline = {}
@@ -291,13 +307,13 @@ local function PortForwardPriestSettings()
 end
 TRB.Options.PortForwardPriestSettings = PortForwardPriestSettings
 
-local function CleanupSettings()	
+local function CleanupSettings(oldSettings)	
     local newSettings = {}	
-    if TwintopInsanityBarSettings ~= nil then
-        for k, v in pairs(TwintopInsanityBarSettings) do
+    if oldSettings ~= nil then
+        for k, v in pairs(oldSettings) do
             if  k == "core" or
-                k == "demon hunter" or
-                k == "death knight" or
+                k == "demonhunter" or
+                k == "deathknight" or
                 k == "druid" or
                 k == "hunter" or
                 k == "mage" or

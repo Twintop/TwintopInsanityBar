@@ -55,7 +55,7 @@ local function GetRGBAFromString(s, normalize)
     local _r = 0
     local _g = 1
     local _b = 0
-    
+		
     if not (s == nil) then        
         _a = min(255, tonumber(string.sub(s, 1, 2), 16))
         _r = min(255, tonumber(string.sub(s, 3, 4), 16))
@@ -148,6 +148,13 @@ local function ResetCastingSnapshotData()
 end
 TRB.Functions.ResetCastingSnapshotData = ResetCastingSnapshotData
 
+local function GetLatency()	
+	local down, up, lagHome, lagWorld = GetNetStats()
+	local latency = lagWorld / 1000
+	return latency
+end
+TRB.Functions.GetLatency = GetLatency
+
 -- Addon Maintenance Functions
 
 local function UpdateSanityCheckValues(settings)
@@ -229,17 +236,21 @@ TRB.Functions.TargetsCleanup = TargetsCleanup
 
 -- Bar Manipulation Functions
 
-local function RepositionThreshold(settings, thresholdLine, parentFrame, thresholdWidth, resourceThreshold, resourceMax)
-    if resourceMax == nil or resourceMax == 0 then
-        resourceMax = 100
+local function RepositionThreshold(settings, thresholdLine, parentFrame, thresholdWidth, resourceThreshold, resourceMax)	
+	if resourceMax == nil or resourceMax == 0 then
+        resourceMax = TRB.Data.character.maxResource or 100
     end
-	
+		
+	local min, max = parentFrame:GetMinMaxValues()
+	local factor = (max - (settings.bar.border * 2)) / resourceMax
+
 	if settings ~= nil and settings.bar ~= nil then
-		thresholdLine:SetPoint("CENTER",
-                            parentFrame,
-                            "LEFT",
-                            math.ceil((settings.bar.width - (settings.bar.border * 2)) * (resourceThreshold / resourceMax) + math.ceil(thresholdWidth / 2)), 0)
-    end
+		thresholdLine:SetPoint("LEFT",
+								parentFrame,
+								"LEFT",
+								(resourceThreshold * factor),
+								0)
+	end
 end
 TRB.Functions.RepositionThreshold = RepositionThreshold
 
@@ -247,12 +258,14 @@ local function ShowResourceBar()
 	if TRB.Details.addonData.registered == false then
 		EventRegistration()
 	end
-
+	
+	TRB.Data.snapshotData.isTracking = true
 	TRB.Frames.barContainerFrame:Show()
 end
 TRB.Functions.ShowResourceBar = ShowResourceBar
 
 local function HideResourceBar()
+	TRB.Data.snapshotData.isTracking = false
 	--This is a placeholder for an implementation per class/spec
 end
 TRB.Functions.HideResourceBar = HideResourceBar
@@ -271,45 +284,63 @@ local function UpdateBarPosition(xOfs, yOfs)
 			yOfs = math.floor(TRB.Data.sanityCheckValues.barMaxHeight/2)
 		end
 
-
-		interfaceSettingsFrame.controls.horizontal:SetValue(xOfs)
-		interfaceSettingsFrame.controls.horizontal.EditBox:SetText(RoundTo(xOfs, 0))
-		interfaceSettingsFrame.controls.vertical:SetValue(yOfs)
-		interfaceSettingsFrame.controls.vertical.EditBox:SetText(RoundTo(yOfs, 0))	
+		TRB.Frames.interfaceSettingsFrame.controls.horizontal:SetValue(xOfs)
+		TRB.Frames.interfaceSettingsFrame.controls.horizontal.EditBox:SetText(RoundTo(xOfs, 0))
+		TRB.Frames.interfaceSettingsFrame.controls.vertical:SetValue(yOfs)
+		TRB.Frames.interfaceSettingsFrame.controls.vertical.EditBox:SetText(RoundTo(yOfs, 0))	
 	end
 end
 TRB.Functions.UpdateBarPosition = UpdateBarPosition
 
-local function CaptureBarPosition()
-	local point, relativeTo, relativePoint, xOfs, yOfs = barContainerFrame:GetPoint()
+local function CaptureBarPosition(settings)
+	local point, relativeTo, relativePoint, xOfs, yOfs = TRB.Frames.barContainerFrame:GetPoint()
 
 	if relativePoint == "CENTER" then
 		--No action needed.
 	elseif relativePoint == "TOP" then
-		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight/2) + yOfs - (TRB.Data.settings.bar.height/2))
+		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight/2) + yOfs - (settings.bar.height/2))
 	elseif relativePoint == "TOPRIGHT" then
-		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth/2) + xOfs - (TRB.Data.settings.bar.width/2))
-		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight/2) + yOfs - (TRB.Data.settings.bar.height/2))
+		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth/2) + xOfs - (settings.bar.width/2))
+		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight/2) + yOfs - (settings.bar.height/2))
 	elseif relativePoint == "RIGHT" then
-		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth/2) + xOfs - (TRB.Data.settings.bar.width/2))
+		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth/2) + xOfs - (settings.bar.width/2))
 	elseif relativePoint == "BOTTOMRIGHT" then
-		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth/2) + xOfs - (TRB.Data.settings.bar.width/2))
-		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight/2) - yOfs - (TRB.Data.settings.bar.height/2))
+		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth/2) + xOfs - (settings.bar.width/2))
+		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight/2) - yOfs - (settings.bar.height/2))
 	elseif relativePoint == "BOTTOM" then
-		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight/2) - yOfs - (TRB.Data.settings.bar.height/2))
+		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight/2) - yOfs - (settings.bar.height/2))
 	elseif relativePoint == "BOTTOMLEFT" then
-		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (TRB.Data.settings.bar.width/2))
-		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight/2) - yOfs - (TRB.Data.settings.bar.height/2))
+		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (settings.bar.width/2))
+		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight/2) - yOfs - (settings.bar.height/2))
 	elseif relativePoint == "LEFT" then				
-		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (TRB.Data.settings.bar.width/2))
+		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (settings.bar.width/2))
 	elseif relativePoint == "TOPLEFT" then
-		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (TRB.Data.settings.bar.width/2))
-		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight/2) + yOfs - (TRB.Data.settings.bar.height/2))
+		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (settings.bar.width/2))
+		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight/2) + yOfs - (settings.bar.height/2))
 	end
 
 	TRB.Functions.UpdateBarPosition(xOfs, yOfs)
 end
 TRB.Functions.CaptureBarPosition = CaptureBarPosition
+
+local function SetBarCurrentValue(settings, bar, value)
+	value = value or 0
+	if settings ~= nil and settings.bar ~= nil and bar ~= nil then
+		local min, max = bar:GetMinMaxValues()
+		local factor = max / TRB.Data.character.maxResource
+		bar:SetValue(value * factor)
+	end
+end
+TRB.Functions.SetBarCurrentValue = SetBarCurrentValue
+
+local function SetBarMinMaxValues(settings)
+	if settings ~= nil and settings.bar ~= nil then
+		TRB.Frames.resourceFrame:SetMinMaxValues(0, settings.bar.width)
+		TRB.Frames.castingFrame:SetMinMaxValues(0, settings.bar.width)
+		TRB.Frames.passiveFrame:SetMinMaxValues(0, settings.bar.width)
+	end
+end
+TRB.Functions.SetBarMinMaxValues = SetBarMinMaxValues
 
 local function ConstructResourceBar(settings)    
     if settings ~= nil and settings.bar ~= nil then
@@ -349,7 +380,7 @@ local function ConstructResourceBar(settings)
         barContainerFrame:SetScript("OnMouseUp", function(self, button)
             if button == "LeftButton" and self.isMoving and settings.bar.dragAndDrop then
                 self:StopMovingOrSizing()
-                CaptureBarPosition()
+                CaptureBarPosition(settings)
                 self.isMoving = false
             end
         end)
@@ -360,7 +391,7 @@ local function ConstructResourceBar(settings)
         barContainerFrame:SetScript("OnHide", function(self)
             if self.isMoving then
                 self:StopMovingOrSizing()
-                CaptureBarPosition()
+                CaptureBarPosition(settings)
                 self.isMoving = false
             end
         end)
@@ -399,7 +430,7 @@ local function ConstructResourceBar(settings)
         barBorderFrame:SetFrameLevel(126)
 
         resourceFrame:Show()
-        resourceFrame:SetMinMaxValues(0, 100)
+        resourceFrame:SetMinMaxValues(0, settings.bar.width)
         resourceFrame:SetHeight(settings.bar.height)	
         resourceFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         resourceFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
@@ -407,36 +438,56 @@ local function ConstructResourceBar(settings)
         resourceFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
         resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         resourceFrame:SetFrameLevel(125)
+
+        resourceFrame.threshold1:SetWidth(settings.thresholdWidth)
+        resourceFrame.threshold1:SetHeight(settings.bar.height)
+        resourceFrame.threshold1.texture = resourceFrame.threshold1:CreateTexture(nil, TRB.Data.settings.core.strata.level)
+        resourceFrame.threshold1.texture:SetAllPoints(resourceFrame.threshold1)
+        resourceFrame.threshold1.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
+        resourceFrame.threshold1:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        resourceFrame.threshold1:SetFrameLevel(127)
+		resourceFrame.threshold1:Show()
+
+        resourceFrame.threshold2:SetWidth(settings.thresholdWidth)
+        resourceFrame.threshold2:SetHeight(settings.bar.height)
+        resourceFrame.threshold2.texture = resourceFrame.threshold2:CreateTexture(nil, TRB.Data.settings.core.strata.level)
+        resourceFrame.threshold2.texture:SetAllPoints(resourceFrame.threshold2)
+        resourceFrame.threshold2.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
+        resourceFrame.threshold2:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        resourceFrame.threshold2:SetFrameLevel(127)
+		resourceFrame.threshold2:Show()
         
         castingFrame:Show()
-        castingFrame:SetMinMaxValues(0, 100)
+        castingFrame:SetMinMaxValues(0, settings.bar.width)
         castingFrame:SetHeight(settings.bar.height)
         castingFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         castingFrame:SetStatusBarTexture(settings.textures.castingBar)
-        castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting))
+        castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting, true))
         castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         castingFrame:SetFrameLevel(90)
         
         passiveFrame:Show()
-        passiveFrame:SetMinMaxValues(0, 100)
+        passiveFrame:SetMinMaxValues(0, settings.bar.width)
         passiveFrame:SetHeight(settings.bar.height)
         passiveFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
-        passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive))
+        passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive, true))
         passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        passiveFrame:SetFrameLevel(80)
-        
-        passiveFrame.threshold:SetWidth(settings.thresholdWidth)
-        passiveFrame.threshold:SetHeight(settings.bar.height)
-        passiveFrame.threshold.texture = passiveFrame.threshold:CreateTexture(nil, TRB.Data.settings.core.strata.level)
-        passiveFrame.threshold.texture:SetAllPoints(passiveFrame.threshold)
-        passiveFrame.threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
-        passiveFrame.threshold:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        passiveFrame.threshold:SetFrameLevel(127)
-        passiveFrame.threshold:Show()
-        
+		passiveFrame:SetFrameLevel(80)
+
+        passiveFrame.threshold1:SetWidth(settings.thresholdWidth)
+        passiveFrame.threshold1:SetHeight(settings.bar.height)
+        passiveFrame.threshold1.texture = passiveFrame.threshold1:CreateTexture(nil, TRB.Data.settings.core.strata.level)
+        passiveFrame.threshold1.texture:SetAllPoints(passiveFrame.threshold1)
+        passiveFrame.threshold1.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
+        passiveFrame.threshold1:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        passiveFrame.threshold1:SetFrameLevel(127)
+		passiveFrame.threshold1:Show()
+		
+		SetBarMinMaxValues(settings)
+		
         leftTextFrame:Show()
         leftTextFrame:SetWidth(settings.bar.width)
         leftTextFrame:SetHeight(settings.bar.height * 3.5)
@@ -626,7 +677,8 @@ local function GetReturnText(inputText)
     end
 
     if TRB.Functions.TableLength(mapping) > 0 then	
-        inputText.text = string.format(cache.stringFormat, unpack(mapping))
+		local result
+		result, inputText.text = pcall(string.format, cache.stringFormat, unpack(mapping))
     elseif string.len(cache.stringFormat) > 0 then
         inputText.text = cache.stringFormat
     else
@@ -642,28 +694,146 @@ local function IsTtdActive()
 end
 TRB.Functions.IsTtdActive = IsTtdActive
 
-local function UpdateResourceBar(settings)    
-    if settings ~= nil and settings.bar ~= nil then
-        local leftTextFrame = TRB.Frames.leftTextFrame
-        local middleTextFrame = TRB.Frames.middleTextFrame
-        local rightTextFrame = TRB.Frames.rightTextFrame
-        
-        local leftText, middleText, rightText = TRB.Data.BarText()
-        
-        if not pcall(TRB.Functions.TryUpdateText, leftTextFrame, leftText) then
-            TRB.Frames.leftTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.left.fontSize, "OUTLINE")
-        end
+local function BarText(settings)	
+	if settings ~= nil and settings.colors ~= nil and settings.colors.text ~= nil and settings.displayText ~= nil and
+		settings.displayText.left ~= nil and settings.displayText.middle ~= nil and settings.displayText.right ~= nil then	
+		local returnText = {}
+		returnText[0] = {}
+		returnText[1] = {}
+		returnText[2] = {}
+		returnText[0].text = settings.displayText.left.text
+		returnText[1].text = settings.displayText.middle.text
+		returnText[2].text = settings.displayText.right.text
 
-        if not pcall(TRB.Functions.TryUpdateText, middleTextFrame, middleText) then
-            TRB.Frames.middleTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.middle.fontSize, "OUTLINE")
-        end
+		returnText[0].color = string.format("|c%s", settings.colors.text.left)
+		returnText[1].color = string.format("|c%s", settings.colors.text.middle)
+		returnText[2].color = string.format("|c%s", settings.colors.text.right)
 
-        if not pcall(TRB.Functions.TryUpdateText, rightTextFrame, rightText) then
-            TRB.Frames.rightTextFrame.font:SetFont("Fonts\\FRIZQT__.TTF", settings.displayText.right.fontSize, "OUTLINE")
-        end
-    end
+		return TRB.Functions.GetReturnText(returnText[0]), TRB.Functions.GetReturnText(returnText[1]), TRB.Functions.GetReturnText(returnText[2])
+	else
+		return "", "", ""
+	end
+end
+TRB.Functions.BarText = BarText
+
+local function RefreshLookupDataBase(settings)
+	--Spec specific implementations also needed. This is general/cross-spec data
+
+	--$crit
+	local critPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.crit, settings.hastePrecision))
+
+	--$mastery
+	local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.mastery, settings.hastePrecision))
+	
+	--$haste
+
+	--$gcd
+	local _gcd = 1.5 / (1 + (TRB.Data.snapshotData.haste/100))
+	if _gcd > 1.5 then
+		_gcd = 1.5
+	elseif _gcd < 0.75 then
+		_gcd = 0.75
+	end
+	local gcd = string.format("%.2f", _gcd)
+
+	local hastePercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.haste, settings.hastePrecision))
+		
+	--$ttd
+	local _ttd = ""
+	local ttd = ""
+	local ttdTotalSeconds = nil
+
+	if TRB.Data.snapshotData.targetData.ttdIsActive and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd ~= 0 then
+		local target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
+		local ttdMinutes = math.floor(target.ttd / 60)
+		local ttdSeconds = target.ttd % 60
+		ttdTotalSeconds = target.ttd
+		ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
+	else
+		ttd = "--"
+	end
+
+	--#castingIcon
+	local castingIcon = TRB.Data.snapshotData.casting.icon or ""
+	
+	local lookup = TRB.Data.lookup or {}
+	lookup["#casting"] = castingIcon
+	lookup["$haste"] = hastePercent
+	lookup["$crit"] = critPercent
+	lookup["$mastery"] = masteryPercent
+	lookup["$gcd"] = gcd
+	lookup["$ttd"] = ttd
+	lookup["$ttdSeconds"] = ttdTotalSeconds or 0
+	lookup["||n"] = string.format("\n")
+	lookup["||c"] = string.format("%s", "|c")
+	lookup["||r"] = string.format("%s", "|r")
+	lookup["%%"] = "%"
+	TRB.Data.lookup = lookup
+	
+	Global_TwintopResourceBar = {
+		ttd = {
+			ttd = ttd or "--",
+			seconds = ttdTotalSeconds or 0
+		},
+		resource = {
+			resource = TRB.Data.snapshotData.resource or 0,
+			casting = TRB.Data.snapshotData.casting.resourceFinal or 0
+		}
+	}
+end
+TRB.Functions.RefreshLookupDataBase = RefreshLookupDataBase
+
+local function UpdateResourceBar(settings, refreshText)
+	TRB.Functions.RefreshLookupDataBase(settings)
+	TRB.Functions.RefreshLookupData()
+
+	if refreshText then
+		local leftText, middleText, rightText = TRB.Functions.BarText(settings)
+		TRB.Functions.UpdateResourceBarText(settings, leftText, middleText, rightText)
+	end
 end
 TRB.Functions.UpdateResourceBar = UpdateResourceBar
+
+local function UpdateResourceBarText(settings, leftText, middleText, rightText)
+	if settings ~= nil and settings.bar ~= nil then
+		local leftTextFrame = TRB.Frames.leftTextFrame
+		local middleTextFrame = TRB.Frames.middleTextFrame
+		local rightTextFrame = TRB.Frames.rightTextFrame
+		
+		if not pcall(TRB.Functions.TryUpdateText, leftTextFrame, leftText) then
+			leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
+		end
+
+		if not pcall(TRB.Functions.TryUpdateText, middleTextFrame, middleText) then
+			middleTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
+		end
+
+		if not pcall(TRB.Functions.TryUpdateText, rightTextFrame, rightText) then
+			rightTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.right.fontSize, "OUTLINE")
+		end
+	end
+end
+TRB.Functions.UpdateResourceBarText = UpdateResourceBarText
+
+local function IsValidVariableBase(var)
+	local valid = false
+	if var == "$crit" then
+		valid = true
+	elseif var == "$mastery" then
+		valid = true
+	elseif var == "$haste" then
+		valid = true
+	elseif var == "$gcd" then
+		valid = true
+	elseif var == "$ttd" or var == "$ttdSeconds" then
+		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
+			valid = true
+		end
+	end
+
+	return valid
+end
+TRB.Functions.IsValidVariableBase = IsValidVariableBase
 
 local function RemoveInvalidVariablesFromBarText(input)
     --1         11                       36     43
@@ -810,20 +980,37 @@ local function CheckCharacter()
 	TRB.Data.character.guid = UnitGUID("player")
     TRB.Data.character.specGroup = GetActiveSpecGroup()
 	TRB.Functions.FillSpellData()
-	TRB.Frames.resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)
-	TRB.Frames.castingFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)	
-	TRB.Frames.passiveFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)	
+	--TRB.Frames.resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)
+	--TRB.Frames.castingFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)	
+	--TRB.Frames.passiveFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)	
 end
 TRB.Functions.CheckCharacter = CheckCharacter
 
 local function UpdateSnapshot()	    
-	TRB.Data.snapshotData.resource = UnitPower("player", TRB.Data.resource)
+	TRB.Data.snapshotData.resource = TRB.Functions.RoundTo(UnitPower("player", TRB.Data.resource, true) / TRB.Data.resourceFactor, 0)
 	TRB.Data.snapshotData.haste = UnitSpellHaste("player")
 	TRB.Data.snapshotData.crit = GetCritChance("player")
 	TRB.Data.snapshotData.mastery = GetMasteryEffect("player")
 end
 TRB.Functions.UpdateSnapshot = UpdateSnapshot
 
+local function DoesItemLinkMatchMatchIdAndHaveBonus(itemLink, id, bonusId)
+	local parts = { strsplit(":", itemLink) }
+	-- Note for Future Twintop:
+	--  1  = Item Name
+	--  2  = Item Id
+	-- 14  = # of Bonuses
+	-- 15+ = Bonuses
+	if tonumber(parts[2]) == id and tonumber(parts[14]) > 0 then
+		for x = 1, tonumber(parts[14]) do
+			if tonumber(parts[14+x]) == bonusId then
+				return true
+			end			
+		end
+	end
+	return false
+end
+TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus = DoesItemLinkMatchMatchIdAndHaveBonus
 
 -- Misc Functions
 
