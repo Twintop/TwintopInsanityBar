@@ -1572,11 +1572,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 				
 				if TRB.Data.snapshotData.voidform.spellId then
-					local gcd = TRB.Functions.GetCurrentGCDTime()
-					if TRB.Data.snapshotData.voidform.remainingTime <= gcd then
+					local timeThreshold = 0
+					local useEndOfVoidformColor = false
+
+					if TRB.Data.settings.priest.shadow.endOfVoidform.enabled and (not TRB.Data.settings.priest.shadow.endOfVoidform.hungeringVoidOnly or TRB.Data.character.talents.hungeringVoid.isSelected) then
+						useEndOfVoidformColor = true
+						if TRB.Data.settings.priest.shadow.endOfVoidform.mode == "gcd" then
+							local gcd = TRB.Functions.GetCurrentGCDTime()
+							timeThreshold = gcd * TRB.Data.settings.priest.shadow.endOfVoidform.gcdsMax
+						elseif TRB.Data.settings.priest.shadow.endOfVoidform.mode == "time" then
+							timeThreshold = TRB.Data.settings.priest.shadow.endOfVoidform.timeMax
+						end
+					end
+					
+					if useEndOfVoidformColor and TRB.Data.snapshotData.voidform.remainingTime <= timeThreshold then
 						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, true))
-					elseif TRB.Data.snapshotData.voidform.remainingTime <= (gcd * 2.0) then
-						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform2GCD, true))
 					elseif TRB.Data.snapshotData.resource >= TRB.Data.character.devouringPlagueThreshold then
 						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.enterVoidform, true))
 					else

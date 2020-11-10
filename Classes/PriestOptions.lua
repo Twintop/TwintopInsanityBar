@@ -149,6 +149,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					thresholdStacks=10
 				}
 			},
+			endOfVoidform = {
+				enabled=true,
+				hungeringVoidOnly=false,
+				mode="gcd",
+				gcdsMax=2,
+				timeMax=3.0
+			},
 			colors={
 				text={
 					currentInsanity="FFC2A3E0",
@@ -175,7 +182,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					base="FF763BAF",
 					enterVoidform="FF5C2F89",
 					inVoidform="FF431863",
-					inVoidform2GCD="FFFFFF00",
 					inVoidform1GCD="FFFF0000",
 					casting="FFFFFFFF",
 					passive="FFDF00FF",
@@ -1250,13 +1256,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					TRB.Data.settings.priest.shadow.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
-		end)	
-			
-		controls.colors.inVoidform2GCD = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while you have between 1-2 GCDs left in Voidform", TRB.Data.settings.priest.shadow.colors.bar.inVoidform2GCD, 275, 25, xCoord2, yCoord)
-		f = controls.colors.inVoidform2GCD
+		end)
+
+		controls.colors.inVoidform1GCD = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while you have less than 1 GCD left in Voidform (if enabled)", TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, 275, 25, xCoord2, yCoord)
+		f = controls.colors.inVoidform1GCD
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform2GCD, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1266,8 +1272,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.inVoidform2GCD.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.shadow.colors.bar.inVoidform2GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.inVoidform1GCD.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1293,11 +1299,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		controls.colors.inVoidform1GCD = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while you have less than 1 GCD left in Voidform", TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, 275, 25, xCoord2, yCoord)
-		f = controls.colors.inVoidform1GCD
+		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Insanity", TRB.Data.settings.priest.shadow.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.borderOvercap, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1307,8 +1313,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.inVoidform1GCD.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1335,26 +1341,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Insanity", TRB.Data.settings.priest.shadow.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
-		f = controls.colors.borderOvercap
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.borderOvercap, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-		
-					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.shadow.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-
 		yCoord = yCoord - 30
 		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Insanity from Auspicious Spirits, Shadowfiend swings, Death and Madness ticks, and Lash of Insanity ticks", TRB.Data.settings.priest.shadow.colors.bar.passive, 550, 25, xCoord+xPadding*2, yCoord)
 		f = controls.colors.passive
@@ -1377,8 +1363,96 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		yCoord = yCoord - 40
-		
+		yCoord = yCoord - 30
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Voidform Configuration", xCoord+xPadding, yCoord)
+
+		yCoord = yCoord - 30	
+		controls.checkBoxes.endOfVoidform = CreateFrame("CheckButton", "TRB_EOVF_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfVoidform
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Voidform")
+		f.tooltip = "Changes the bar color when Voidform is ended in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(TRB.Data.settings.priest.shadow.endOfVoidform.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.shadow.endOfVoidform.enabled = self:GetChecked()
+		end)
+		yCoord = yCoord - 20	
+		controls.checkBoxes.endOfVoidformHungeringVoidOnly = CreateFrame("CheckButton", "TRB_EOVF_CB_HVO", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfVoidformHungeringVoidOnly
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2+20, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Only change the bar color when using Hungering Void")
+		f.tooltip = "Only changes the bar color when you are spec'd in to Hungering Void."
+		f:SetChecked(TRB.Data.settings.priest.shadow.endOfVoidform.hungeringVoidOnly)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.shadow.endOfVoidform.hungeringVoidOnly = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 40	
+		controls.checkBoxes.endOfVoidformModeGCDs = CreateFrame("CheckButton", "TRB_EOFV_M_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfVoidformModeGCDs
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Voidform ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many GCDs remain until Voidform ends."
+		if TRB.Data.settings.priest.shadow.endOfVoidform.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfVoidformModeGCDs:SetChecked(true)
+			controls.checkBoxes.endOfVoidformModeTime:SetChecked(false)
+			TRB.Data.settings.priest.shadow.endOfVoidform.mode = "gcd"
+		end)
+
+		title = "Voidform GCDs - 0.75sec Floor"
+		controls.endOfVoidformGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 10, TRB.Data.settings.priest.shadow.endOfVoidform.gcdsMax, 0.25, 2,
+										barWidth, barHeight, xCoord2, yCoord)
+		controls.endOfVoidformGCDs:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			self.EditBox:SetText(value)
+			TRB.Data.settings.priest.shadow.endOfVoidform.gcdsMax = value
+		end)
+
+
+		yCoord = yCoord - 60	
+		controls.checkBoxes.endOfVoidformModeTime = CreateFrame("CheckButton", "TRB_EOFV_M_TIME", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfVoidformModeTime
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Time until Voidform Ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Shows the amount of Insanity incoming over the up to next X seconds."
+		if TRB.Data.settings.priest.shadow.endOfVoidform.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfVoidformModeGCDs:SetChecked(false)
+			controls.checkBoxes.endOfVoidformModeTime:SetChecked(true)
+			TRB.Data.settings.priest.shadow.endOfVoidform.mode = "time"
+		end)
+
+		title = "Voidform Time Remaining"
+		controls.endOfVoidformTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.priest.shadow.endOfVoidform.timeMax, 0.25, 2,
+										barWidth, barHeight, xCoord2, yCoord)
+		controls.endOfVoidformTime:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 2)
+			self.EditBox:SetText(value)		
+			TRB.Data.settings.priest.shadow.endOfVoidform.timeMax = value
+		end)
+
+
+		yCoord = yCoord - 30
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 30
@@ -1426,7 +1500,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		-- Implement the function to change the favoriteNumber
 		function controls.dropDown.fontLeft:SetValue(newValue, newName)
 			TRB.Data.settings.priest.shadow.displayText.left.fontFace = newValue
 			TRB.Data.settings.priest.shadow.displayText.left.fontFaceName = newName
@@ -1488,7 +1561,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		-- Implement the function to change the favoriteNumber
 		function controls.dropDown.fontMiddle:SetValue(newValue, newName)
 			TRB.Data.settings.priest.shadow.displayText.middle.fontFace = newValue
 			TRB.Data.settings.priest.shadow.displayText.middle.fontFaceName = newName
@@ -1552,7 +1624,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		-- Implement the function to change the favoriteNumber
 		function controls.dropDown.fontRight:SetValue(newValue, newName)		
 			TRB.Data.settings.priest.shadow.displayText.right.fontFace = newValue
 			TRB.Data.settings.priest.shadow.displayText.right.fontFaceName = newName
