@@ -277,12 +277,73 @@ local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, 
 end
 TRB.UiFunctions.BuildDisplayTextHelpEntry = BuildDisplayTextHelpEntry
 
-local function CreateScrollFrameContainer(name, parent)
+local function CreateScrollFrameContainer(name, parent, width, height)
+    width = width or 575
+    height = height or 620
 	local sf = CreateFrame("ScrollFrame", name, parent, "UIPanelScrollFrameTemplate")
+	sf:SetWidth(width)
+	sf:SetHeight(height)
 	sf.scrollChild = CreateFrame("Frame")
-	sf.scrollChild:SetWidth(620)
-	sf.scrollChild:SetHeight(565)
+	sf.scrollChild:SetWidth(width)
+	sf.scrollChild:SetHeight(height)
 	sf:SetScrollChild(sf.scrollChild)
 	return sf
 end
 TRB.UiFunctions.CreateScrollFrameContainer = CreateScrollFrameContainer
+
+local function CreateTabFrameContainer(name, parent, width, height)
+    width = width or 580
+    height = height or 515
+    local cf = CreateFrame("Frame", name, parent, "BackdropTemplate")
+    cf:SetBackdrop({
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile =  "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true,
+        edgeSize = 8,
+        tileSize = 32,
+        insets = {
+            left = 0,
+            right = 0,
+            top = 0,
+            bottom = 0,
+        }
+    })
+    cf:SetBackdropColor(0, 0, 0, 0.5)
+    cf:SetWidth(width)
+    cf:SetHeight(height)
+    cf:SetPoint("TOPLEFT", 0, 10)
+
+    cf.scrollFrame = TRB.UiFunctions.CreateScrollFrameContainer(name .. "ScrollFrame", cf, width - 30, height - 8)
+    cf.scrollFrame:SetPoint("TOPLEFT", cf, "TOPLEFT", 5, -5)
+    return cf
+end
+TRB.UiFunctions.CreateTabFrameContainer = CreateTabFrameContainer
+
+local function SwitchTab(self, tabId)
+	local parent = self:GetParent()    
+    if parent.lastTab then
+		parent.lastTab:Hide()
+	end
+	parent.tabsheets[tabId]:Show()
+	parent.lastTab = parent.tabsheets[tabId]
+end
+TRB.UiFunctions.SwitchTab = SwitchTab
+
+local function CreateTab(name, displayText, id, parent, width, rightOf)
+    width = width or 100
+    local tab = CreateFrame("Button", name, parent, "ConfigCategoryButtonTemplate")
+    tab.id = id
+    tab:SetSize(width, 16)
+    tab:SetText(displayText)
+    tab:SetScript("OnClick", function(self)
+        TRB.UiFunctions.SwitchTab(self, self.id)
+    end)
+
+    if rightOf ~= nil then
+        tab:SetPoint("LEFT", rightOf, "RIGHT")
+    else
+        tab:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, 10)
+    end
+    return tab
+end
+TRB.UiFunctions.CreateTab = CreateTab

@@ -1451,17 +1451,43 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.endOfVoidform.timeMax = value
 		end)
 
+		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrame.controls = controls
+	end
 
-		yCoord = yCoord - 30
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", xCoord+xPadding, yCoord)
+	local function ShadowConstructFontAndTextLayoutPanel(parent)	
+		if parent == nil then
+			return
+		end
+
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local controls = interfaceSettingsFrame.controls
+		local yCoord = 5
+		local f = nil
+
+		local maxOptionsWidth = 580
+
+		local xPadding = 10
+		local xPadding2 = 30
+		local xCoord = 0
+		local xCoord2 = 290
+		local xOffset1 = 50
+		local xOffset2 = xCoord2 + xOffset1
+
+		local title = ""
+
+		local sliderWidth = 240
+		local sliderHeight = 20
+
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontLeft = CreateFrame("FRAME", "TIBFontLeft", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontLeft.label = TRB.UiFunctions.BuildSectionHeader(parent, "Left Bar Font Face", xCoord+xPadding, yCoord)
+		controls.dropDown.fontLeft.label = TRB.UiFunctions.BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
+		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, 250)
 		UIDropDownMenu_SetText(controls.dropDown.fontLeft, TRB.Data.settings.priest.shadow.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
@@ -1520,9 +1546,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TIBfFontMiddle", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontMiddle.label = TRB.UiFunctions.BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2-20, yCoord)
+		controls.dropDown.fontMiddle.label = TRB.UiFunctions.BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2-30, yCoord-30)
+		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, 250)
 		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.priest.shadow.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
@@ -1583,9 +1609,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TIBFontRight", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontRight.label = TRB.UiFunctions.BuildSectionHeader(parent, "Right Bar Font Face", xCoord+xPadding, yCoord)
+		controls.dropDown.fontRight.label = TRB.UiFunctions.BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
+		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, 250)
 		UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.priest.shadow.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
@@ -1664,12 +1690,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 
 		yCoord = yCoord - 70
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Size and Colors", xCoord+xPadding, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Size and Colors", xCoord, yCoord)
 
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
 		controls.fontSizeLeft = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.priest.shadow.displayText.left.fontSize, 1, 0,
-									barWidth, barHeight, xCoord+xPadding2, yCoord)
+									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -1772,7 +1798,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeMiddle = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, 1, 0,
-									barWidth, barHeight, xCoord+xPadding2, yCoord)
+									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -1792,7 +1818,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeRight = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.priest.shadow.displayText.right.fontSize, 1, 0,
-									barWidth, barHeight, xCoord+xPadding2, yCoord)
+									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -1810,10 +1836,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Insanity Text Colors", xCoord+xPadding, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Insanity Text Colors", xCoord, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentInsanityText = TRB.UiFunctions.BuildColorPicker(parent, "Current Insanity", TRB.Data.settings.priest.shadow.colors.text.currentInsanity, 300, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.currentInsanityText = TRB.UiFunctions.BuildColorPicker(parent, "Current Insanity", TRB.Data.settings.priest.shadow.colors.text.currentInsanity, 300, 25, xCoord, yCoord)
 		f = controls.colors.currentInsanityText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1858,7 +1884,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 		
 		yCoord = yCoord - 30
-		controls.colors.thresholdInsanityText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Insanity to cast Devouring Plague or Searing Nightmare", TRB.Data.settings.priest.shadow.colors.text.overThreshold, 300, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.thresholdInsanityText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Insanity to cast Devouring Plague or Searing Nightmare", TRB.Data.settings.priest.shadow.colors.text.overThreshold, 300, 25, xCoord, yCoord)
 		f = controls.colors.thresholdInsanityText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1906,7 +1932,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TRB_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", xCoord+xPadding*3, yCoord)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Insanity text color when you are able to cast Devouring Plague or Searing Nightmare"
 		f:SetChecked(TRB.Data.settings.priest.shadow.colors.text.overThresholdEnabled)
@@ -1930,7 +1956,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 50
 		title = "Low to Medium Haste% Threshold in Voidform"
 		controls.hasteApproachingThreshold = TRB.UiFunctions.BuildSlider(parent, title, 0, 500, TRB.Data.settings.priest.shadow.hasteApproachingThreshold, 0.25, 2,
-										barWidth, barHeight, xCoord+xPadding2, yCoord)
+										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hasteApproachingThreshold:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -2018,7 +2044,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 60	
 		title = "Medium to High Haste% Threshold in Voidform"
 		controls.hasteThreshold = TRB.UiFunctions.BuildSlider(parent, title, 0, 500, TRB.Data.settings.priest.shadow.hasteThreshold, 0.25, 2,
-										barWidth, barHeight, xCoord+xPadding2, yCoord)
+										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hasteThreshold:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -2040,7 +2066,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 50
 		title = "Low to Medium S2M Time to Die Threshold (sec)"
 		controls.s2mApproachingThreshold = TRB.UiFunctions.BuildSlider(parent, title, 0, 30, TRB.Data.settings.priest.shadow.s2mApproachingThreshold, 0.25, 2,
-										barWidth, barHeight, xCoord+xPadding2, yCoord)
+										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.s2mApproachingThreshold:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -2128,7 +2154,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 60	
 		title = "Medium to High S2M Time to Die Threshold (sec)"
 		controls.s2mThreshold = TRB.UiFunctions.BuildSlider(parent, title, 0, 30, TRB.Data.settings.priest.shadow.s2mThreshold, 0.25, 2,
-										barWidth, barHeight, xCoord+xPadding2, yCoord)
+										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.s2mThreshold:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -2150,7 +2176,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 40
 		title = "Haste / Crit / Mastery Decimals to Show"
 		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.priest.shadow.hastePrecision, 1, 0,
-										barWidth, barHeight, xCoord+xPadding2, yCoord)
+										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -2174,13 +2200,41 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.fotmPrecision = self:GetChecked()
 		end)
 
-		yCoord = yCoord - 60		
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", xCoord+xPadding, yCoord)
+		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrame.controls = controls
+
+	end
+
+	local function ShadowConstructAudioAndTrackingLayoutPanel(parent)	
+		if parent == nil then
+			return
+		end
+
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local controls = interfaceSettingsFrame.controls
+		local yCoord = 5
+		local f = nil
+
+		local maxOptionsWidth = 580
+
+		local xPadding = 10
+		local xPadding2 = 30
+		local xCoord = 0
+		local xCoord2 = 290
+		local xOffset1 = 50
+		local xOffset2 = xCoord2 + xOffset1
+
+		local title = ""
+
+		local sliderWidth = 240
+		local sliderHeight = 20
+
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.s2mDeath = CreateFrame("CheckButton", "TIBCB3_2", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.s2mDeath
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio when you die, horribly, from Surrender to Madness")
 		f.tooltip = "When you die, horribly, after Surrender to Madness ends, play the infamous Wilhelm Scream (or another sound) to make you feel a bit better."
 		f:SetChecked(TRB.Data.settings.priest.shadow.audio.s2mDeath.enabled)
@@ -2194,7 +2248,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.s2mAudio = CreateFrame("FRAME", "TIBS2MDeathAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.s2mAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-30+10)
+		controls.dropDown.s2mAudio:SetPoint("TOPLEFT", xCoord+(xPadding*2), yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.s2mAudio, 300)
 		UIDropDownMenu_SetText(controls.dropDown.s2mAudio, TRB.Data.settings.priest.shadow.audio.s2mDeath.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.s2mAudio, "LEFT")
@@ -2244,7 +2298,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 60
 		controls.checkBoxes.dpReady = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dpReady
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Devouring Plague is usable")
 		f.tooltip = "Play an audio cue when Devouring Plague can be cast."
 		f:SetChecked(TRB.Data.settings.priest.shadow.audio.dpReady.enabled)
@@ -2258,7 +2312,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.dpReadyAudio = CreateFrame("FRAME", "TIBdpReadyAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.dpReadyAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-30+10)
+		controls.dropDown.dpReadyAudio:SetPoint("TOPLEFT", xCoord+(xPadding*2), yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.dpReadyAudio, 300)
 		UIDropDownMenu_SetText(controls.dropDown.dpReadyAudio, TRB.Data.settings.priest.shadow.audio.dpReady.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.dpReadyAudio, "LEFT")
@@ -2308,7 +2362,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 60
 		controls.checkBoxes.mdProc = CreateFrame("CheckButton", "TIBCB3_MD_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mdProc
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Mind Devourer proc occurs")
 		f.tooltip = "Play an audio cue when a Mind Devourer proc occurs. This supercedes the regular Devouring Plague audio sound."
 		f:SetChecked(TRB.Data.settings.priest.shadow.audio.mdProc.enabled)
@@ -2322,7 +2376,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.mdProcAudio = CreateFrame("FRAME", "TIBmdProcAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.mdProcAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-30+10)
+		controls.dropDown.mdProcAudio:SetPoint("TOPLEFT", xCoord+(xPadding*2), yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.mdProcAudio, 300)
 		UIDropDownMenu_SetText(controls.dropDown.mdProcAudio, TRB.Data.settings.priest.shadow.audio.mdProc.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.mdProcAudio, "LEFT")
@@ -2373,7 +2427,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 60
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TIBCB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Insanity")
 		f.tooltip = "Play an audio cue when your hardcast spell will overcap Insanity."
 		f:SetChecked(TRB.Data.settings.priest.shadow.audio.overcap.enabled)
@@ -2387,7 +2441,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TIBovercapAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-30+10)
+		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord+(xPadding*2), yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, 300)
 		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.priest.shadow.audio.overcap.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
@@ -2435,12 +2489,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 
 		yCoord = yCoord - 60
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Auspicious Spirits Tracking", xCoord+xPadding, yCoord)
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Auspicious Spirits Tracking", xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.as = CreateFrame("CheckButton", "TIBCB3_6", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.as
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track Auspicious Spirits")
 		f.tooltip = "Track Shadowy Apparitions in flight that will generate Insanity upon reaching their target with the Auspicious Spirits talent."
 		f:SetChecked(TRB.Data.settings.priest.shadow.auspiciousSpiritsTracker)
@@ -2456,12 +2510,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Eternal Call to the Void / Void Tendril + Void Lasher Tracking", xCoord+xPadding, yCoord)
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Eternal Call to the Void / Void Tendril + Void Lasher Tracking", xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.as = CreateFrame("CheckButton", "TIBCB3_6a", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.as
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track Eternal Call to the Void")
 		f.tooltip = "Track Insanity generated from Lash of Insanity via Void Tendril + Void Lasher spawns / Eternal Call of the Void procs."
 		f:SetChecked(TRB.Data.settings.priest.shadow.voidTendrilTracker)
@@ -2475,12 +2529,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Shadowfiend/Mindbender Tracking", xCoord+xPadding, yCoord)
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Shadowfiend/Mindbender Tracking", xCoord, yCoord)
 
 		yCoord = yCoord - 30	
 		controls.checkBoxes.mindbender = CreateFrame("CheckButton", "TIBCB3_7", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mindbender
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track Shadowfiend Insanity Gain")
 		f.tooltip = "Show the gain of Insanity over the next serveral swings, GCDs, or fixed length of time. Select which to track from the options below."
 		f:SetChecked(TRB.Data.settings.priest.shadow.mindbender.enabled)
@@ -2491,7 +2545,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 30	
 		controls.checkBoxes.mindbenderModeGCDs = CreateFrame("CheckButton", "TIBRB3_8", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.mindbenderModeGCDs
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Insanity from GCDs remaining")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Insanity incoming over the up to next X GCDs, based on player's current GCD."
@@ -2507,7 +2561,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		title = "Shadowfiend GCDs - 0.75sec Floor"
 		controls.mindbenderGCDs = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.priest.shadow.mindbender.gcdsMax, 1, 0,
-										barWidth, barHeight, xCoord2, yCoord)
+										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.mindbenderGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -2524,7 +2578,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 60	
 		controls.checkBoxes.mindbenderModeSwings = CreateFrame("CheckButton", "TIBRB3_9", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.mindbenderModeSwings
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Insanity from Swings remaining")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Insanity incoming over the up to next X melee swings from Shadowfiend/Mindbender. This is only different from the GCD option if you are above 200% haste (GCD cap)."
@@ -2540,7 +2594,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		title = "Shadowfiend Swings - No Floor"
 		controls.mindbenderSwings = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.priest.shadow.mindbender.swingsMax, 1, 0,
-										barWidth, barHeight, xCoord2, yCoord)
+										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.mindbenderSwings:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -2556,7 +2610,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 60	
 		controls.checkBoxes.mindbenderModeTime = CreateFrame("CheckButton", "TIBRB3_10", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.mindbenderModeTime
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Insanity from Time remaining")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Insanity incoming over the up to next X seconds."
@@ -2572,7 +2626,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		title = "Shadowfiend Time Remaining"
 		controls.mindbenderTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.priest.shadow.mindbender.timeMax, 0.25, 2,
-										barWidth, barHeight, xCoord2, yCoord)
+										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.mindbenderTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -2586,114 +2640,37 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.mindbender.timeMax = value
 		end)
 
-		--[[
-		yCoord = yCoord - 60	
-		controls.checkBoxes.mindbenderAudio = CreateFrame("CheckButton", "TIBCB3_11", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.mindbenderAudio
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play Audio Cue to use Shadowfiend")
-		f.tooltip = "Plays an audio cue when in Voidform, Shadowfiend/Mindbender is offcooldown, and the number of Drain Stacks is above a certain threshold."
-		f:SetChecked(TRB.Data.settings.priest.shadow.mindbender.useNotification.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.priest.shadow.mindbender.useNotification.enabled = self:GetChecked()
-			if TRB.Data.settings.priest.shadow.mindbender.useNotification.enabled then
-				mindbenderAudioCueFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) mindbenderAudioCueFrame:onUpdate(sinceLastUpdate) end)
-			else
-				mindbenderAudioCueFrame:SetScript("OnUpdate", nil)
-			end
-		end)	
-		
-		yCoord = yCoord - 40
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.mindbenderAudio = CreateFrame("FRAME", "TIBMindbenderAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.mindbenderAudio.label = TRB.UiFunctions.BuildSectionHeader(parent, "Mindbender Ready Audio", xCoord+xPadding, yCoord)
-		controls.dropDown.mindbenderAudio.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.mindbenderAudio:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.mindbenderAudio, 250)
-		UIDropDownMenu_SetText(controls.dropDown.mindbenderAudio, TRB.Data.settings.priest.shadow.audio.mindbender.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.mindbenderAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.mindbenderAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.priest.shadow.audio.mindbender.sound
-						info.func = self.SetValue			
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.mindbenderAudio:SetValue(newValue, newName)
-			TRB.Data.settings.priest.shadow.audio.mindbender.sound = newValue
-			TRB.Data.settings.priest.shadow.audio.mindbender.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.mindbenderAudio, newName)
-			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.priest.shadow.audio.mindbender.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-		]]--
-		
-		--interfaceSettingsFrame.shadowOptionsLayoutPanel.scrollChild = parent
-		--interfaceSettingsFrame.controls = controls
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrame.controls = controls
 	end
 
-	local function ShadowConstructBarTextDisplayLayoutPanel()	
-		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local parent = interfaceSettingsFrame.panel		
-		local controls = interfaceSettingsFrame.controls
-		local yCoord = -5
-		local f = nil
-		interfaceSettingsFrame.shadowBarTextDisplayPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopResourceBar_Shadow_BarTextDisplayLayoutPanel", parent)
-		interfaceSettingsFrame.shadowBarTextDisplayPanel.name = "Shadow - Bar Text"
-		interfaceSettingsFrame.shadowBarTextDisplayPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.shadowBarTextDisplayPanel)
+	local function ShadowConstructBarTextDisplayLayoutPanel(parent)	
+		if parent == nil then
+			return
+		end
 
-		parent = interfaceSettingsFrame.shadowBarTextDisplayPanel.scrollChild
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local controls = interfaceSettingsFrame.controls
+		local yCoord = 5
+		local f = nil
+
+		local maxOptionsWidth = 580
 
 		local xPadding = 10
 		local xPadding2 = 30
-		local xMax = 550
 		local xCoord = 0
-		local xCoord2 = 325
+		local xCoord2 = 290
 		local xOffset1 = 50
-		local xOffset2 = 275
+		local xOffset2 = xCoord2 + xOffset1
 
-		local barWidth = 250
-		local barHeight = 20
-		local title = ""
-
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", xCoord+xPadding, yCoord)
+		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.labels.outVoidform = CreateFrame("Frame", nil, parent)
 		f = controls.labels.outVoidform
 		f:ClearAllPoints()
 		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding2+100, yCoord)
+		f:SetPoint("TOPLEFT", xCoord+100, yCoord)
 		f:SetWidth(225)
 		f:SetHeight(20)
 		f.font = f:CreateFontString(nil, "BACKGROUND")
@@ -2701,30 +2678,30 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f.font:SetPoint("LEFT", f, "LEFT")
 		f.font:SetSize(0, 14)
 		f.font:SetJustifyH("CENTER")
-		f.font:SetSize(225, 20)
+		f.font:SetSize(220, 20)
 		f.font:SetText("Out of Voidform")
 
 		controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
 		f = controls.labels.inVoidform
 		f:ClearAllPoints()
 		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord2+25, yCoord)
-		f:SetWidth(200)
+		f:SetPoint("TOPLEFT", xCoord2+35, yCoord)
+		f:SetWidth(225)
 		f:SetHeight(20)
 		f.font = f:CreateFontString(nil, "BACKGROUND")
 		f.font:SetFontObject(GameFontNormal)
 		f.font:SetPoint("LEFT", f, "LEFT")
 		f.font:SetSize(0, 14)
 		f.font:SetJustifyH("CENTER")
-		f.font:SetSize(225, 20)
+		f.font:SetSize(220, 20)
 		f.font:SetText("In Voidform")
 
 		yCoord = yCoord - 20
-		controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
-		f = controls.labels.inVoidform
+		controls.labels.leftText = CreateFrame("Frame", nil, parent)
+		f = controls.labels.leftText
 		f:ClearAllPoints()
 		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		f:SetWidth(90)
 		f:SetHeight(20)
 		f.font = f:CreateFontString(nil, "BACKGROUND")
@@ -2736,7 +2713,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f.font:SetText("Left Text")
 
 		controls.textbox.voidformOutLeft = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.left.outVoidformText,
-														500, 225, 24, xCoord+xPadding*2+100, yCoord)
+														500, 220, 24, xCoord+100, yCoord)
 		f = controls.textbox.voidformOutLeft
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.priest.shadow.displayText.left.outVoidformText = self:GetText()
@@ -2745,7 +2722,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		controls.textbox.voidformInLeft = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.left.inVoidformText,
-														500, 225, 24, xCoord2+25, yCoord)
+														500, 220, 24, xCoord2+35, yCoord)
 		f = controls.textbox.voidformInLeft
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.priest.shadow.displayText.left.inVoidformText = self:GetText()
@@ -2754,11 +2731,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
-		f = controls.labels.inVoidform
+		controls.labels.middleText = CreateFrame("Frame", nil, parent)
+		f = controls.labels.middleText
 		f:ClearAllPoints()
 		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		f:SetWidth(90)
 		f:SetHeight(20)
 		f.font = f:CreateFontString(nil, "BACKGROUND")
@@ -2770,7 +2747,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f.font:SetText("Middle Text")
 
 		controls.textbox.voidformOutMiddle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.middle.outVoidformText,
-														500, 225, 24, xCoord+xPadding*2+100, yCoord)
+														500, 220, 24, xCoord+100, yCoord)
 		f = controls.textbox.voidformOutMiddle
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.priest.shadow.displayText.middle.outVoidformText = self:GetText()
@@ -2779,7 +2756,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		controls.textbox.voidformInMiddle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.middle.inVoidformText,
-														500, 225, 24, xCoord2+25, yCoord)
+														500, 220, 24, xCoord2+35, yCoord)
 		f = controls.textbox.voidformInMiddle
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.priest.shadow.displayText.middle.inVoidformText = self:GetText()
@@ -2788,11 +2765,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
-		f = controls.labels.inVoidform
+		controls.labels.rightText = CreateFrame("Frame", nil, parent)
+		f = controls.labels.rightText
 		f:ClearAllPoints()
 		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		f:SetWidth(90)
 		f:SetHeight(20)
 		f.font = f:CreateFontString(nil, "BACKGROUND")
@@ -2804,7 +2781,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f.font:SetText("Right Text")
 
 		controls.textbox.voidformOutRight = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.right.outVoidformText,
-														500, 225, 24, xCoord+xPadding*2+100, yCoord)
+														500, 220, 24, xCoord+100, yCoord)
 		f = controls.textbox.voidformOutRight
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.priest.shadow.displayText.right.outVoidformText = self:GetText()
@@ -2813,7 +2790,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		controls.textbox.voidformInRight = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.right.inVoidformText,
-														500, 225, 24, xCoord2+25, yCoord)
+														500, 220, 24, xCoord2+35, yCoord)
 		f = controls.textbox.voidformInRight
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.priest.shadow.displayText.right.inVoidformText = self:GetText()
@@ -2822,75 +2799,91 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructionsVar
+		controls.labels.instructions5Var = CreateFrame("Frame", nil, parent)
+		f = controls.labels.instructions5Var
 		f:ClearAllPoints()
 		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-		f:SetWidth(600)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetWidth(maxOptionsWidth-xPadding)
 		f:SetHeight(20)
 		f.font = f:CreateFontString(nil, "BACKGROUND")
 		f.font:SetFontObject(GameFontHighlight)
 		f.font:SetPoint("LEFT", f, "LEFT")
 		f.font:SetSize(0, 14)
 		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(600, 20)
-		f.font:SetText("For conditional display (only if $VARIABLE is active/non-zero): {$VARIABLE}[WHAT TO DISPLAY]")
+		f.font:SetSize(maxOptionsWidth-xPadding, 20)
+		f.font:SetText("For more detailed information about Bar Text customization, see the TRB Wiki on GitHub.")
+
+		yCoord = yCoord - 25
+		controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
+		f = controls.labels.instructionsVar
+		f:ClearAllPoints()
+		f:SetPoint("TOPLEFT", parent)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetWidth(maxOptionsWidth-xPadding)
+		f:SetHeight(20)
+		f.font = f:CreateFontString(nil, "BACKGROUND")
+		f.font:SetFontObject(GameFontHighlight)
+		f.font:SetPoint("LEFT", f, "LEFT")
+		f.font:SetSize(0, 14)
+		f.font:SetJustifyH("LEFT")
+		f.font:SetSize(maxOptionsWidth-xPadding, 20)
+		f.font:SetText("For conditional display (only if $VAR is active/non-zero): {$VAR}[WHAT TO DISPLAY]")
 			
-		yCoord = yCoord - 25
-		controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructionsVar
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-		f:SetWidth(600)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(600, 20)
-		f.font:SetText("Limited Boolean NOT logic for conditional display is supported via {!$VARIABLE}")
-
-		yCoord = yCoord - 25
-		controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructionsVar
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-		f:SetWidth(600)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(600, 20)
-		f.font:SetText("IF/ELSE is supported via {$VARIABLE}[TRUE output][FALSE output] and includes NOT support")
-
 		yCoord = yCoord - 25
 		controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
 		f = controls.labels.instructions2Var
 		f:ClearAllPoints()
 		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-		f:SetWidth(600)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetWidth(maxOptionsWidth-xPadding)
 		f:SetHeight(20)
 		f.font = f:CreateFontString(nil, "BACKGROUND")
 		f.font:SetFontObject(GameFontHighlight)
 		f.font:SetPoint("LEFT", f, "LEFT")
 		f.font:SetSize(0, 14)
 		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(600, 20)
-		f.font:SetText("For icons use #ICONVARIABLENAME")
+		f.font:SetSize(maxOptionsWidth-xPadding, 20)
+		f.font:SetText("Limited Boolean NOT logic for conditional display is supported via {!$VAR}")
 
 		yCoord = yCoord - 25
+		controls.labels.instructions3Var = CreateFrame("Frame", nil, parent)
+		f = controls.labels.instructions3Var
+		f:ClearAllPoints()
+		f:SetPoint("TOPLEFT", parent)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetWidth(maxOptionsWidth-xPadding)
+		f:SetHeight(20)
+		f.font = f:CreateFontString(nil, "BACKGROUND")
+		f.font:SetFontObject(GameFontHighlight)
+		f.font:SetPoint("LEFT", f, "LEFT")
+		f.font:SetSize(0, 14)
+		f.font:SetJustifyH("LEFT")
+		f.font:SetSize(maxOptionsWidth-xPadding, 20)
+		f.font:SetText("IF/ELSE is supported via {$VAR}[TRUE output][FALSE output] and includes NOT support")
+
+		yCoord = yCoord - 25
+		controls.labels.instructions4Var = CreateFrame("Frame", nil, parent)
+		f = controls.labels.instructions4Var
+		f:ClearAllPoints()
+		f:SetPoint("TOPLEFT", parent)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetWidth(maxOptionsWidth-xPadding)
+		f:SetHeight(20)
+		f.font = f:CreateFontString(nil, "BACKGROUND")
+		f.font:SetFontObject(GameFontHighlight)
+		f.font:SetPoint("LEFT", f, "LEFT")
+		f.font:SetSize(0, 14)
+		f.font:SetJustifyH("LEFT")
+		f.font:SetSize(maxOptionsWidth-xPadding, 20)
+		f.font:SetText("For icons use #ICONVARIABLENAME")
+		yCoord = yCoord - 25
+
 		local yCoordTop = yCoord
 		local entries1 = TRB.Functions.TableLength(TRB.Data.barTextVariables.values)
 		for i=1, entries1 do
 			if TRB.Data.barTextVariables.values[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 150, 400, 15)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 125, 400, 15)
 				local height = 15
 				yCoord = yCoord - height - 5
 			end
@@ -2899,7 +2892,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local entries2 = TRB.Functions.TableLength(TRB.Data.barTextVariables.pipe)
 		for i=1, entries2 do
 			if TRB.Data.barTextVariables.pipe[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 150, 400, 15)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 125, 400, 15)
 				local height = 15
 				yCoord = yCoord - height - 5
 			end
@@ -2918,16 +2911,89 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if TRB.Data.barTextVariables.icons[i].variable == "#casting" then
 					height = 15
 				end
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord, yCoord, 150, 400, height)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord, yCoord, 125, 400, height)
 				yCoord = yCoord - height - 5
 			end
 		end
 	end
 	
+	local function TempOptionsPanel()		
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local parent = interfaceSettingsFrame.panel		
+		local controls = interfaceSettingsFrame.controls
+		local yCoord = 0
+		local f = nil
+		local xPadding = 10
+		local xPadding2 = 30
+		local xMax = 550
+		local xCoord = 0
+		local xCoord2 = 325
+		local xOffset1 = 50
+		local xOffset2 = 275
+		interfaceSettingsFrame.shadowTempDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Priest_Shadow", UIParent)
+		interfaceSettingsFrame.shadowTempDisplayPanel.name = "Shadow Priest"
+		interfaceSettingsFrame.shadowTempDisplayPanel.parent = parent.name
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.shadowTempDisplayPanel)
+
+		parent = interfaceSettingsFrame.shadowTempDisplayPanel
+
+				
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Shadow Priest", xCoord+xPadding, yCoord)
+
+		yCoord = yCoord - 30	
+
+		local tabs = {}
+		local tabsheets = {}
+
+		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Shadow_Tab1", "Reset Defaults", 1, parent, 100)
+		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
+		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Shadow_Tab2", "Bar Colors & Behavior", 2, parent, 145, tabs[1])
+		tabs[3] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Shadow_Tab3", "Font & Text", 3, parent, 85, tabs[2])
+		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Shadow_Tab4", "Audio & Tracking", 4, parent, 120, tabs[3])
+		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Shadow_Tab5", "Bar Text", 5, parent, 60, tabs[4])
+
+		yCoord = yCoord - 15
+
+		for i = 1, 5 do 
+			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Shadow_LayoutPanel" .. i, parent)
+			tabsheets[i]:Hide()
+			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
+		end
+
+		tabsheets[1]:Show()
+		parent.tabs = tabs
+		parent.tabsheets = tabsheets
+		parent.lastTab = tabsheets[1]
+		--parent.childFrame:SetWidth(500)		
+		--parent.childFrame:SetHeight(300)
+
+		parent = tabsheets[1].scrollFrame.scrollChild -- interfaceSettingsFrame.shadowTempDisplayPanel.childFrame.scrollFrame.scrollChild
+		--parent.tabs = {}
+		yCoord = 5
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Tab 1 Scroll Heading", 0, yCoord)
+
+		yCoord = yCoord - 1000
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Tab 1 Scroll Heading2", 0, yCoord)
+
+		
+		parent = tabsheets[2].scrollFrame.scrollChild
+		--parent.tabs = {}
+		yCoord = 5
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Tab 2 Scroll Heading", 0, yCoord)
+
+		yCoord = yCoord - 1000
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Tab 2 Scroll Heading2", 0, yCoord)
+
+		ShadowConstructFontAndTextLayoutPanel(tabsheets[3].scrollFrame.scrollChild)
+		ShadowConstructAudioAndTrackingLayoutPanel(tabsheets[4].scrollFrame.scrollChild)
+		ShadowConstructBarTextDisplayLayoutPanel(tabsheets[5].scrollFrame.scrollChild)
+	end
+
 	local function ConstructOptionsPanel()
 		TRB.Options.ConstructOptionsPanel()
 		ShadowConstructOptionsLayoutPanel()
-		ShadowConstructBarTextDisplayLayoutPanel()
+		--ShadowConstructBarTextDisplayLayoutPanel()
+		TempOptionsPanel()
 	end
 	TRB.Options.Priest.ConstructOptionsPanel = ConstructOptionsPanel
 end
