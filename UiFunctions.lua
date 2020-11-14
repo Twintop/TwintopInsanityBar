@@ -278,8 +278,8 @@ end
 TRB.UiFunctions.BuildDisplayTextHelpEntry = BuildDisplayTextHelpEntry
 
 local function CreateScrollFrameContainer(name, parent, width, height)
-    width = width or 575
-    height = height or 620
+    width = width or 560
+    height = height or 540
 	local sf = CreateFrame("ScrollFrame", name, parent, "UIPanelScrollFrameTemplate")
 	sf:SetWidth(width)
 	sf:SetHeight(height)
@@ -293,7 +293,7 @@ TRB.UiFunctions.CreateScrollFrameContainer = CreateScrollFrameContainer
 
 local function CreateTabFrameContainer(name, parent, width, height)
     width = width or 580
-    height = height or 515
+    height = height or 503
     local cf = CreateFrame("Frame", name, parent, "BackdropTemplate")
     cf:SetBackdrop({
         bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -320,18 +320,22 @@ end
 TRB.UiFunctions.CreateTabFrameContainer = CreateTabFrameContainer
 
 local function SwitchTab(self, tabId)
-	local parent = self:GetParent()    
+    local parent = self:GetParent()   
+    local font
     if parent.lastTab then
-		parent.lastTab:Hide()
+        parent.lastTab:Hide()
+        parent.tabs[parent.lastTabId]:SetNormalFontObject(TRB.Options.fonts.options.tabNormalSmall)
 	end
 	parent.tabsheets[tabId]:Show()
-	parent.lastTab = parent.tabsheets[tabId]
+    parent.tabs[tabId]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+    parent.lastTab = parent.tabsheets[tabId]
+    parent.lastTabId = tabId
 end
 TRB.UiFunctions.SwitchTab = SwitchTab
 
 local function CreateTab(name, displayText, id, parent, width, rightOf)
     width = width or 100
-    local tab = CreateFrame("Button", name, parent, "ConfigCategoryButtonTemplate")
+    local tab = CreateFrame("Button", name, parent, "TabButtonTemplate")
     tab.id = id
     tab:SetSize(width, 16)
     tab:SetText(displayText)
@@ -342,8 +346,10 @@ local function CreateTab(name, displayText, id, parent, width, rightOf)
     if rightOf ~= nil then
         tab:SetPoint("LEFT", rightOf, "RIGHT")
     else
-        tab:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, 10)
+        tab:SetPoint("LEFT", parent, "LEFT", 0, 0)
     end
+
+    tab:SetNormalFontObject(TRB.Options.fonts.options.tabNormalSmall)
     return tab
 end
 TRB.UiFunctions.CreateTab = CreateTab

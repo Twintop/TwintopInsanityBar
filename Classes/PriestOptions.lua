@@ -2959,28 +2959,33 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local xCoord2 = 325
 		local xOffset1 = 50
 		local xOffset2 = 275
-		interfaceSettingsFrame.shadowTempDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Priest_Shadow", UIParent)
-		interfaceSettingsFrame.shadowTempDisplayPanel.name = "Shadow Priest"
-		interfaceSettingsFrame.shadowTempDisplayPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.shadowTempDisplayPanel)
+		interfaceSettingsFrame.shadowDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Priest_Shadow", UIParent)
+		interfaceSettingsFrame.shadowDisplayPanel.name = "Shadow Priest"
+		interfaceSettingsFrame.shadowDisplayPanel.parent = parent.name
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.shadowDisplayPanel)
 
-		parent = interfaceSettingsFrame.shadowTempDisplayPanel
+		parent = interfaceSettingsFrame.shadowDisplayPanel
 
 				
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Shadow Priest", xCoord+xPadding, yCoord)
 
-		yCoord = yCoord - 30	
+		yCoord = yCoord - 42	
 
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Shadow_Tab1", "Reset Defaults", 1, parent, 100)
+		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab1", "Reset Defaults", 1, parent, 100)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Shadow_Tab2", "Bar Display", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Shadow_Tab3", "Font & Text", 3, parent, 85, tabs[2])
-		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Shadow_Tab4", "Audio & Tracking", 4, parent, 120, tabs[3])
-		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Shadow_Tab5", "Bar Text", 5, parent, 60, tabs[4])
+		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab2", "Bar Display", 2, parent, 85, tabs[1])
+		tabs[3] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab3", "Font & Text", 3, parent, 85, tabs[2])
+		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab4", "Audio & Tracking", 4, parent, 120, tabs[3])
+		tabs[5] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab5", "Bar Text", 5, parent, 60, tabs[4])
 
+		PanelTemplates_TabResize(tabs[1], 0)
+		PanelTemplates_TabResize(tabs[2], 0)
+		PanelTemplates_TabResize(tabs[3], 0)
+		PanelTemplates_TabResize(tabs[4], 0)
+		PanelTemplates_TabResize(tabs[5], 0)
 		yCoord = yCoord - 15
 
 		for i = 1, 5 do 
@@ -2993,6 +2998,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		parent.tabs = tabs
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
+		parent.lastTabId = 1
+		parent.tabsheets[1].selected = true
+		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
 		ShadowConstructResetDefaultsPanel(tabsheets[1].scrollFrame.scrollChild)
 		ShadowConstructBarColorsAndBehaviorPanel(tabsheets[2].scrollFrame.scrollChild)
