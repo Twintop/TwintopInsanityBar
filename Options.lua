@@ -72,6 +72,7 @@ local function ConstructAddonOptionsPanel()
     local xOffset1 = 50
     local xOffset2 = xCoord2 + xOffset1
 
+    local dropdownWidth = 225
     local sliderWidth = 260
     local sliderHeight = 20
     local title = ""
@@ -152,7 +153,7 @@ local function ConstructAddonOptionsPanel()
     end)
     
     yCoord = yCoord - 40
-    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Frame Strata", xCoord, yCoord)
+    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Frame Strata", 0, yCoord)
 
     yCoord = yCoord - 30
     
@@ -161,7 +162,7 @@ local function ConstructAddonOptionsPanel()
     controls.dropDown.strata.label = TRB.UiFunctions.BuildSectionHeader(parent, "Frame Strata Level To Draw Bar On", xCoord, yCoord)
     controls.dropDown.strata.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.strata:SetPoint("TOPLEFT", xCoord, yCoord-30)
-    UIDropDownMenu_SetWidth(controls.dropDown.strata, 250)
+    UIDropDownMenu_SetWidth(controls.dropDown.strata, dropdownWidth)
     UIDropDownMenu_SetText(controls.dropDown.strata, TRB.Data.settings.core.strata.name)
     UIDropDownMenu_JustifyText(controls.dropDown.strata, "LEFT")
 
@@ -228,10 +229,10 @@ local function ConstructAddonOptionsPanel()
     
     -- Create the dropdown, and configure its appearance
     controls.dropDown.audioChannel = CreateFrame("FRAME", "TIBFrameAudioChannel", parent, "UIDropDownMenuTemplate")
-    controls.dropDown.audioChannel.label = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Channel To Use", xCoord+xPadding, yCoord)
+    controls.dropDown.audioChannel.label = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Channel To Use", xCoord, yCoord)
     controls.dropDown.audioChannel.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.audioChannel:SetPoint("TOPLEFT", xCoord, yCoord-30)
-    UIDropDownMenu_SetWidth(controls.dropDown.audioChannel, 250)
+    UIDropDownMenu_SetWidth(controls.dropDown.audioChannel, dropdownWidth)
     UIDropDownMenu_SetText(controls.dropDown.audioChannel, TRB.Data.settings.core.audio.channel.name)
     UIDropDownMenu_JustifyText(controls.dropDown.audioChannel, "LEFT")
 

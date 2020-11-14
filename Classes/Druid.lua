@@ -286,7 +286,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$solar", description = "Currently in Eclipse (Solar). Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$solarEclipse", description = "Currently in Eclipse (Solar). Logic variable only!", printInSettings = false, color = false },
 			{ variable = "$eclipseSolar", description = "Currently in Eclipse (Solar). Logic variable only!", printInSettings = false, color = false },
-			{ variable = "$celestialAlignment", description = "Currently in/using Celestial Alignment or Incarnation: Chosen of Elune. Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$celestialAlignment", description = "Currently in/using CA/I: CoE. Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$astralPower", description = "Current Astral Power", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Astral Power", printInSettings = false, color = false },

@@ -2231,7 +2231,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrame.controls = controls
-
 	end
 
 	local function ShadowConstructAudioAndTrackingPanel(parent)	
@@ -2989,7 +2988,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 15
 
 		for i = 1, 5 do 
-			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Shadow_LayoutPanel" .. i, parent)
+			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Priest_Shadow_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
 		end
