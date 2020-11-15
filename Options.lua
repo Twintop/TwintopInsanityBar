@@ -108,7 +108,7 @@ local function ConstructAddonOptionsPanel()
         elseif value < min then
             value = min
         else
-            value = RoundTo(value, 2)
+            value = TRB.Functions.RoundTo(value, 2)
         end
 
         self.EditBox:SetText(value)		
@@ -145,7 +145,7 @@ local function ConstructAddonOptionsPanel()
         elseif value < min then
             value = min
         else
-            value = RoundTo(value, 2)
+            value = TRB.Functions.RoundTo(value, 2)
         end
 
         self.EditBox:SetText(value)		
