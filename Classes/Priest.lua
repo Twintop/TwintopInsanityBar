@@ -407,6 +407,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#shadowfiend", icon = TRB.Data.spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = false },
 			{ variable = "#sf", icon = TRB.Data.spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = true },
 			
+			{ variable = "#s2m", icon = TRB.Data.spells.s2m.icon, description = "Surrender to Madness", printInSettings = true },
+			{ variable = "#surrenderToMadness", icon = TRB.Data.spells.s2m.icon, description = "Surrender to Madness", printInSettings = false },
+			
 			{ variable = "#ecttv", icon = TRB.Data.spells.eternalCallToTheVoid_Tendril.icon, description = "Eternal Call to the Void", printInSettings = true },
 			{ variable = "#tb", icon = TRB.Data.spells.eternalCallToTheVoid_Tendril.icon, description = "Eternal Call to the Void", printInSettings = false },
 			{ variable = "#loi", icon = TRB.Data.spells.lashOfInsanity_Tendril.icon, description = "Lash of Insanity", printInSettings = true },
@@ -459,10 +462,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$mdTime", description = "Time remaining on Mind Devourer buff", printInSettings = true, color = false },
 
 			{ variable = "$vfTime", description = "Duration remaining of Voidform", printInSettings = true, color = false },
-			{ variable = "$hvTime", description = "Duration remaining `of Voidform w/max Void Bolt casts in Hungering Void", printInSettings = true, color = false },
+			{ variable = "$hvTime", description = "Duration remaining of VF w/max VB casts in Hungering Void", printInSettings = true, color = false },
 			{ variable = "$vbCasts", description = "Max Void Bolt casts remaining in Hungering Void", printInSettings = true, color = false },
-			{ variable = "$hvAvgTime", description = "Duration of Voidform w/max Void Bolt casts in Hungering Void, includes crits", printInSettings = true, color = false },
+			{ variable = "$hvAvgTime", description = "Duration of VF w/max VB casts in Hungering Void, includes crits", printInSettings = true, color = false },
 			{ variable = "$vbAvgCasts", description = "Max Void Bolt casts remaining in Hungering Void, includes crits", printInSettings = true, color = false },
+
+			{ variable = "$s2m", description = "Is Surrender to Madness currently spec'd. Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$surrenderToMadness", description = "Is Surrender to Madness currently spec'd. Logic variable only!", printInSettings = true, color = false },
 				
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -907,6 +913,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.snapshotData.mindDevourer.spellId ~= nil then
 				valid = true
 			end
+		elseif var == "$s2m" or var == "$surrenderToMadness" then
+			if TRB.Data.character.talents.surrenderToMadeness.isSelected then
+				valid = true
+			end
 		else
 			valid = false
 		end
@@ -948,6 +958,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overcapInsanity	
 		elseif TRB.Data.settings.priest.shadow.colors.text.overThresholdEnabled and TRB.Data.snapshotData.resource >= insanityThreshold then
 			currentInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overThreshold
+			castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overThreshold	
 		end
 
 		--$insanity
@@ -1207,6 +1218,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$asCount"] = asCount
 		lookup["$asInsanity"] = asInsanity
 		lookup["$ttd"] = ttd --Custom TTD for Shadow
+		lookup["$s2m"] = ""
+		lookup["$surrenderToMadness"] = ""
 		TRB.Data.lookup = lookup
 	end
 	TRB.Functions.RefreshLookupData = RefreshLookupData
@@ -1869,25 +1882,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.mindDevourer.duration = 0
 						TRB.Data.snapshotData.mindDevourer.endTime = nil
 					end			
-				elseif type == "SPELL_SUMMON" and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.id or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id) then
-					print("TENTACLE BRO?")
-					if TRB.Data.settings.priest.shadow.voidTendrilTracker then
-						InitializeVoidTendril(destGUID)
-						if spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.id then
-							TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].type = "Tendril"
-							print("Tendril Boi!")
-						elseif spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id then							
-							TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].type = "Lasher"
-							print("Lasher Bruh!")
-						else
-							print("Step bro?")
-						end
-
-						TRB.Data.snapshotData.eternalCallToTheVoid.numberActive = TRB.Data.snapshotData.eternalCallToTheVoid.numberActive + 1
-						TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining = TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining + TRB.Data.spells.lashOfInsanity_Tendril.ticks
-						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].startTime = currentTime
-						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].tickTime = currentTime
+				elseif type == "SPELL_SUMMON" and TRB.Data.settings.priest.shadow.voidTendrilTracker and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.id or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id) then
+					InitializeVoidTendril(destGUID)
+					if spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.id then
+						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].type = "Tendril"
+					elseif spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id then							
+						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].type = "Lasher"
 					end
+
+					TRB.Data.snapshotData.eternalCallToTheVoid.numberActive = TRB.Data.snapshotData.eternalCallToTheVoid.numberActive + 1
+					TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining = TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining + TRB.Data.spells.lashOfInsanity_Tendril.ticks
+					TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].startTime = currentTime
+					TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].tickTime = currentTime
 				end
 			elseif TRB.Data.settings.priest.shadow.voidTendrilTracker and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.idTick or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.idTick) and CheckVoidTendrilExists(sourceGUID) then
 				TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].tickTime = currentTime

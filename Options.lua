@@ -2,6 +2,19 @@ local _, TRB = ...
 
 TRB.Options = {}
 
+local f1 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Highlight_Small_Color")
+f1:SetFontObject(GameFontHighlightSmall)
+local f2 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Green_Small_Color")
+f2:SetFontObject(GameFontGreenSmall)
+local f3 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Normal_Small_Color")
+f3:SetFontObject(GameFontNormalSmall)
+
+TRB.Options.fonts = {}
+TRB.Options.fonts.options = {}
+TRB.Options.fonts.options.tabHighlightSmall = f1
+TRB.Options.fonts.options.tabGreenSmall = f2
+TRB.Options.fonts.options.tabNormalSmall = f3
+
 local function LoadDefaultSettings()
     local settings = {
         core = {
@@ -49,32 +62,45 @@ local function ConstructAddonOptionsPanel()
     local controls = interfaceSettingsFrame.controls
     local yCoord = -5
     local f = nil
-    interfaceSettingsFrame.optionsPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopResourceBar_Addon_OptionsLayoutPanel", parent)
-    interfaceSettingsFrame.optionsPanel.name = "Global Options"
-    interfaceSettingsFrame.optionsPanel.parent = parent.name
-    InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
 
-    parent = interfaceSettingsFrame.optionsPanel.scrollChild
+    local maxOptionsWidth = 580
 
     local xPadding = 10
     local xPadding2 = 30
-    local xMax = 550
-    local xCoord = 0
-    local xCoord2 = 325
+    local xCoord = 5
+    local xCoord2 = 290
     local xOffset1 = 50
-    local xOffset2 = 275
+    local xOffset2 = xCoord2 + xOffset1
 
-    local barWidth = 250
-    local barHeight = 20
+    local dropdownWidth = 225
+    local sliderWidth = 260
+    local sliderHeight = 20
     local title = ""
 
-    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Time To Die", xCoord+xPadding, yCoord)
+    interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_General", UIParent)
+    interfaceSettingsFrame.optionsPanel.name = "Global Options"
+    interfaceSettingsFrame.optionsPanel.parent = parent.name
+    InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
+    
+    parent = interfaceSettingsFrame.optionsPanel
+    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "General Options", xCoord+xPadding, yCoord)
+
+    yCoord = yCoord - 30
+    parent.panel = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 580, 523)
+    parent.panel:SetPoint("TOPLEFT", 10, yCoord)
+    parent.panel:Show()
+
+    parent = parent.panel.scrollFrame.scrollChild
+
+    yCoord = 5
+
+    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Time To Die", 0, yCoord)
 
     yCoord = yCoord - 60
 
     title = "Sampling Rate (seconds)"
     controls.ttdSamplingRate = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 2, TRB.Data.settings.core.ttd.sampleRate, 0.05, 2,
-                                    barWidth, barHeight, xCoord+xPadding*2, yCoord)
+                                    sliderWidth, sliderHeight, xCoord, yCoord)
     controls.ttdSamplingRate:SetScript("OnValueChanged", function(self, value)
         local min, max = self:GetMinMaxValues()
         if value > max then
@@ -82,7 +108,7 @@ local function ConstructAddonOptionsPanel()
         elseif value < min then
             value = min
         else
-            value = RoundTo(value, 2)
+            value = TRB.Functions.RoundTo(value, 2)
         end
 
         self.EditBox:SetText(value)		
@@ -91,7 +117,7 @@ local function ConstructAddonOptionsPanel()
 
     title = "Sample Size"
     controls.ttdSampleSize = TRB.UiFunctions.BuildSlider(parent, title, 1, 1000, TRB.Data.settings.core.ttd.numEntries, 1, 0,
-                                    barWidth, barHeight, xCoord2, yCoord)
+                                    sliderWidth, sliderHeight, xCoord2, yCoord)
     controls.ttdSampleSize:SetScript("OnValueChanged", function(self, value)
         local min, max = self:GetMinMaxValues()
         if value > max then
@@ -105,21 +131,21 @@ local function ConstructAddonOptionsPanel()
     end)
 
     yCoord = yCoord - 40
-    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Character Data Refresh Rate", xCoord+xPadding, yCoord)
+    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Character Data Refresh Rate", 0, yCoord)
 
     yCoord = yCoord - 60
 
     title = "Refresh Rate (seconds)"
-    controls.ttdSamplingRate = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 60, TRB.Data.settings.core.dataRefreshRate, 0.05, 2,
-                                    barWidth, barHeight, xCoord+xPadding*2, yCoord)
-    controls.ttdSamplingRate:SetScript("OnValueChanged", function(self, value)
+    controls.characterRefreshRate = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 60, TRB.Data.settings.core.dataRefreshRate, 0.05, 2,
+                                    sliderWidth, sliderHeight, xCoord, yCoord)
+    controls.characterRefreshRate:SetScript("OnValueChanged", function(self, value)
         local min, max = self:GetMinMaxValues()
         if value > max then
             value = max
         elseif value < min then
             value = min
         else
-            value = RoundTo(value, 2)
+            value = TRB.Functions.RoundTo(value, 2)
         end
 
         self.EditBox:SetText(value)		
@@ -127,16 +153,16 @@ local function ConstructAddonOptionsPanel()
     end)
     
     yCoord = yCoord - 40
-    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Frame Strata", xCoord+xPadding, yCoord)
+    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Frame Strata", 0, yCoord)
 
     yCoord = yCoord - 30
     
     -- Create the dropdown, and configure its appearance
     controls.dropDown.strata = CreateFrame("FRAME", "TIBFrameStrata", parent, "UIDropDownMenuTemplate")
-    controls.dropDown.strata.label = TRB.UiFunctions.BuildSectionHeader(parent, "Frame Strata Level To Draw Bar On", xCoord+xPadding, yCoord)
+    controls.dropDown.strata.label = TRB.UiFunctions.BuildSectionHeader(parent, "Frame Strata Level To Draw Bar On", xCoord, yCoord)
     controls.dropDown.strata.label.font:SetFontObject(GameFontNormal)
-    controls.dropDown.strata:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
-    UIDropDownMenu_SetWidth(controls.dropDown.strata, 250)
+    controls.dropDown.strata:SetPoint("TOPLEFT", xCoord, yCoord-30)
+    UIDropDownMenu_SetWidth(controls.dropDown.strata, dropdownWidth)
     UIDropDownMenu_SetText(controls.dropDown.strata, TRB.Data.settings.core.strata.name)
     UIDropDownMenu_JustifyText(controls.dropDown.strata, "LEFT")
 
@@ -197,16 +223,16 @@ local function ConstructAddonOptionsPanel()
 
     
     yCoord = yCoord - 60
-    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Channel", xCoord+xPadding, yCoord)
+    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Channel", 0, yCoord)
 
     yCoord = yCoord - 30
     
     -- Create the dropdown, and configure its appearance
     controls.dropDown.audioChannel = CreateFrame("FRAME", "TIBFrameAudioChannel", parent, "UIDropDownMenuTemplate")
-    controls.dropDown.audioChannel.label = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Channel To Use", xCoord+xPadding, yCoord)
+    controls.dropDown.audioChannel.label = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Channel To Use", xCoord, yCoord)
     controls.dropDown.audioChannel.label.font:SetFontObject(GameFontNormal)
-    controls.dropDown.audioChannel:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
-    UIDropDownMenu_SetWidth(controls.dropDown.audioChannel, 250)
+    controls.dropDown.audioChannel:SetPoint("TOPLEFT", xCoord, yCoord-30)
+    UIDropDownMenu_SetWidth(controls.dropDown.audioChannel, dropdownWidth)
     UIDropDownMenu_SetText(controls.dropDown.audioChannel, TRB.Data.settings.core.audio.channel.name)
     UIDropDownMenu_JustifyText(controls.dropDown.audioChannel, "LEFT")
 

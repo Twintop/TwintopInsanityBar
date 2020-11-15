@@ -6,10 +6,10 @@ TRB.UiFunctions = {}
 local function BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
 	local f = CreateFrame("Slider", nil, parent, "BackdropTemplate")
 	f.EditBox = CreateFrame("EditBox", nil, f, "BackdropTemplate")
-	f:SetPoint("TOPLEFT", posX, posY)
+	f:SetPoint("TOPLEFT", posX+18, posY)
 	f:SetMinMaxValues(minValue, maxValue)
 	f:SetValueStep(stepValue)
-	f:SetSize(sizeX, sizeY)
+	f:SetSize(sizeX-36, sizeY)
     f:EnableMouseWheel(true)
 	f:SetObeyStepOnDrag(true)
     f:SetOrientation("Horizontal")
@@ -107,7 +107,7 @@ local function BuildSlider(parent, title, minValue, maxValue, defaultValue, step
                 f:SetValue(max)
             end
 			value = TRB.Functions.RoundTo(value, numDecimalPlaces)
-            eb:SetText(f:GetValue())
+            eb:SetText(value)
         else
             f:SetValue(f:GetValue())
         end
@@ -277,12 +277,79 @@ local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, 
 end
 TRB.UiFunctions.BuildDisplayTextHelpEntry = BuildDisplayTextHelpEntry
 
-local function CreateScrollFrameContainer(name, parent)
+local function CreateScrollFrameContainer(name, parent, width, height)
+    width = width or 560
+    height = height or 540
 	local sf = CreateFrame("ScrollFrame", name, parent, "UIPanelScrollFrameTemplate")
+	sf:SetWidth(width)
+	sf:SetHeight(height)
 	sf.scrollChild = CreateFrame("Frame")
-	sf.scrollChild:SetWidth(620)
-	sf.scrollChild:SetHeight(565)
+	sf.scrollChild:SetWidth(width)
+	sf.scrollChild:SetHeight(height-10)
 	sf:SetScrollChild(sf.scrollChild)
 	return sf
 end
 TRB.UiFunctions.CreateScrollFrameContainer = CreateScrollFrameContainer
+
+local function CreateTabFrameContainer(name, parent, width, height)
+    width = width or 580
+    height = height or 503
+    local cf = CreateFrame("Frame", name, parent, "BackdropTemplate")
+    cf:SetBackdrop({
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile =  "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true,
+        edgeSize = 8,
+        tileSize = 32,
+        insets = {
+            left = 0,
+            right = 0,
+            top = 0,
+            bottom = 0,
+        }
+    })
+    cf:SetBackdropColor(0, 0, 0, 0.5)
+    cf:SetWidth(width)
+    cf:SetHeight(height)
+    cf:SetPoint("TOPLEFT", 0, 10)
+
+    cf.scrollFrame = TRB.UiFunctions.CreateScrollFrameContainer(name .. "ScrollFrame", cf, width - 30, height - 8)
+    cf.scrollFrame:SetPoint("TOPLEFT", cf, "TOPLEFT", 5, -5)
+    return cf
+end
+TRB.UiFunctions.CreateTabFrameContainer = CreateTabFrameContainer
+
+local function SwitchTab(self, tabId)
+    local parent = self:GetParent()   
+    local font
+    if parent.lastTab then
+        parent.lastTab:Hide()
+        parent.tabs[parent.lastTabId]:SetNormalFontObject(TRB.Options.fonts.options.tabNormalSmall)
+	end
+	parent.tabsheets[tabId]:Show()
+    parent.tabs[tabId]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+    parent.lastTab = parent.tabsheets[tabId]
+    parent.lastTabId = tabId
+end
+TRB.UiFunctions.SwitchTab = SwitchTab
+
+local function CreateTab(name, displayText, id, parent, width, rightOf)
+    width = width or 100
+    local tab = CreateFrame("Button", name, parent, "TabButtonTemplate")
+    tab.id = id
+    tab:SetSize(width, 16)
+    tab:SetText(displayText)
+    tab:SetScript("OnClick", function(self)
+        TRB.UiFunctions.SwitchTab(self, self.id)
+    end)
+
+    if rightOf ~= nil then
+        tab:SetPoint("LEFT", rightOf, "RIGHT")
+    else
+        tab:SetPoint("LEFT", parent, "LEFT", 0, 0)
+    end
+
+    tab:SetNormalFontObject(TRB.Options.fonts.options.tabNormalSmall)
+    return tab
+end
+TRB.UiFunctions.CreateTab = CreateTab

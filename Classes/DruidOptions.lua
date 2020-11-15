@@ -35,7 +35,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				fontSize=18
 			},
 			middle={
-				text="",
+				text="{$eclipse}[$eclipseTime sec.]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -62,7 +62,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				fontSize = 13
 			},
 			middle = {
-				text="",
+				text="{$eclipse}[#eclipse $eclipseTime #eclipse]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -153,6 +153,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
+				onethsReady={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
+					soundName="TRB: Boxing Arena Gong"
+				},
 				overcap={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
@@ -192,33 +197,30 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
     TRB.Options.Druid.LoadDefaultSettings = LoadDefaultSettings
 
     
-	local function BalanceConstructOptionsLayoutPanel()
-		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local parent = interfaceSettingsFrame.panel
-		local controls = interfaceSettingsFrame.controls
-		local yCoord = -5
-		local f = nil
-		interfaceSettingsFrame.balanceOptionsLayoutPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopResourceBar_Shadow_OptionsLayoutPanel", parent)
-		interfaceSettingsFrame.balanceOptionsLayoutPanel.name = "Balance - Options"
-		interfaceSettingsFrame.balanceOptionsLayoutPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.balanceOptionsLayoutPanel)
+	local function BalanceConstructResetDefaultsPanel(parent)	
+		if parent == nil then
+			return
+		end
 
-		parent = interfaceSettingsFrame.balanceOptionsLayoutPanel.scrollChild
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local controls = interfaceSettingsFrame.controls
+		local yCoord = 5
+		local f = nil
+
+		local maxOptionsWidth = 580
 
 		local xPadding = 10
 		local xPadding2 = 30
-		local xMax = 550
-		local xCoord = 0
-		local xCoord2 = 325
+		local xCoord = 5
+		local xCoord2 = 290
 		local xOffset1 = 50
-		local xOffset2 = 275
+		local xOffset2 = xCoord2 + xOffset1
 
-		local barWidth = 250
-		local barHeight = 20
 		local title = ""
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height/8), math.floor(TRB.Data.settings.druid.balance.bar.width/8))
-
+		local dropdownWidth = 225
+		local sliderWidth = 260
+		local sliderHeight = 20
 
 		StaticPopupDialogs["TwintopResourceBar_Reset"] = {
 			text = "Do you want to reset Twintop's Resource Bar back to it's default configuration? Only the Balance Druid settings will be changed. This will cause your UI to be reloaded!",
@@ -273,12 +275,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			preferredIndex = 3
 		}]]
 
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar to Defaults", xCoord+xPadding, yCoord)
+		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetButton", parent)
 		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
 		f:SetWidth(150)
 		f:SetHeight(30)
 		f:SetText("Reset to Defaults")
@@ -303,13 +305,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 40		
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", xCoord+xPadding, yCoord)
+		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextSimpleButton", parent)
 		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2, yCoord)
-		f:SetWidth(250)
+		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
+		f:SetWidth(dropdownWidth)
 		f:SetHeight(30)
 		f:SetText("Reset Bar Text (Simple)")
 		f:SetNormalFontObject("GameFontNormal")
@@ -337,7 +339,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextNarrowAdvancedButton", parent)
 		f = controls.resetButton
 		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord2, yCoord)
-		f:SetWidth(250)
+		f:SetWidth(dropdownWidth)
 		f:SetHeight(30)
 		f:SetText("Reset Bar Text (Narrow Advanced)")
 		f:SetNormalFontObject("GameFontNormal")
@@ -363,8 +365,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextAdvancedButton", parent)
 		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord+xPadding*2, yCoord)
-		f:SetWidth(250)
+		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
+		f:SetWidth(dropdownWidth)
 		f:SetHeight(30)
 		f:SetText("Reset Bar Text (Full Advanced)")
 		f:SetNormalFontObject("GameFontNormal")
@@ -387,13 +389,43 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			StaticPopup_Show("TwintopResourceBar_ResetBarTextAdvanced")
 		end)
 
-		yCoord = yCoord - 40
-		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", xCoord+xPadding, yCoord)
+		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrame.controls = controls
+	end
+
+	local function BalanceConstructBarColorsAndBehaviorPanel(parent)	
+		if parent == nil then
+			return
+		end
+
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local controls = interfaceSettingsFrame.controls
+		local yCoord = 5
+		local f = nil
+
+		local maxOptionsWidth = 580
+
+		local xPadding = 10
+		local xPadding2 = 30
+		local xCoord = 5
+		local xCoord2 = 290
+		local xOffset1 = 50
+		local xOffset2 = xCoord2 + xOffset1
+
+		local title = ""
+
+		local dropdownWidth = 225
+		local sliderWidth = 260
+		local sliderHeight = 20
+	
+		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height/8), math.floor(TRB.Data.settings.druid.balance.bar.width/8))
+
+		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
 		
 		yCoord = yCoord - 40
 		title = "Bar Width"
 		controls.width = TRB.UiFunctions.BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinWidth, TRB.Data.sanityCheckValues.barMaxWidth, TRB.Data.settings.druid.balance.bar.width, 1, 2,
-									barWidth, barHeight, xCoord+xPadding2, yCoord)
+									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -418,7 +450,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Bar Height"
 		controls.height = TRB.UiFunctions.BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinHeight, TRB.Data.sanityCheckValues.barMaxHeight, TRB.Data.settings.druid.balance.bar.height, 1, 2,
-										barWidth, barHeight, xCoord2, yCoord)
+										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -447,7 +479,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		title = "Bar Horizontal Position"
 		yCoord = yCoord - 60
 		controls.horizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth/2), math.floor(TRB.Data.sanityCheckValues.barMaxWidth/2), TRB.Data.settings.druid.balance.bar.xPos, 1, 2,
-									barWidth, barHeight, xCoord+xPadding2, yCoord)
+									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -464,7 +496,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Bar Vertical Position"
 		controls.vertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxHeight/2), math.floor(TRB.Data.sanityCheckValues.barMaxHeight/2), TRB.Data.settings.druid.balance.bar.yPos, 1, 2,
-									barWidth, barHeight, xCoord2, yCoord)
+									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -482,7 +514,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		title = "Bar Border Width"
 		yCoord = yCoord - 60
 		controls.borderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.druid.balance.bar.border, 1, 2,
-									barWidth, barHeight, xCoord+xPadding2, yCoord)
+									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.borderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -522,17 +554,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
 			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold2, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 
-			local minBarWidth = math.max(TRB.Data.settings.druid.balance.bar.border*2, 120)
-			local minBarHeight = math.max(TRB.Data.settings.druid.balance.bar.border*2, 1)
-			controls.height:SetMinMaxValues(minBarHeight, TRB.Data.sanityCheckValues.barMaxHeight)
-			controls.height.MinLabel:SetText(minBarHeight)
-			controls.width:SetMinMaxValues(minBarWidth, TRB.Data.sanityCheckValues.barMaxWidth)
-			controls.width.MinLabel:SetText(minBarWidth)
+			local minsliderWidth = math.max(TRB.Data.settings.druid.balance.bar.border*2, 120)
+			local minsliderHeight = math.max(TRB.Data.settings.druid.balance.bar.border*2, 1)
+			controls.height:SetMinMaxValues(minsliderHeight, TRB.Data.sanityCheckValues.barMaxHeight)
+			controls.height.MinLabel:SetText(minsliderHeight)
+			controls.width:SetMinMaxValues(minsliderWidth, TRB.Data.sanityCheckValues.barMaxWidth)
+			controls.width.MinLabel:SetText(minsliderWidth)
 		end)
 
 		title = "Threshold Line Width"
 		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.druid.balance.thresholdWidth, 1, 2,
-									barWidth, barHeight, xCoord2, yCoord)
+									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -564,15 +596,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 
 		yCoord = yCoord - 30
-		controls.textBarTexturesSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Textures", xCoord+xPadding, yCoord)
+		controls.textBarTexturesSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Textures", 0, yCoord)
 		yCoord = yCoord - 30
 		
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TIBResourceBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Main Bar Texture", xCoord+xPadding, yCoord)
+		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, 250)
+		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, TRB.Data.settings.druid.balance.textures.resourceBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.resourceBarTexture, "LEFT")
 
@@ -630,10 +662,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TIBCastBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.castingBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Casting Bar Texture", xCoord2-20, yCoord)
+		controls.dropDown.castingBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2-30, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, 250)
+		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.druid.balance.textures.castingBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
 
@@ -693,10 +725,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TIBPassiveBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Bar Texture", xCoord+xPadding, yCoord)
+		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, 250)
+		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, TRB.Data.settings.druid.balance.textures.passiveBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
 
@@ -777,10 +809,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.borderTexture = CreateFrame("FRAME", "TIBBorderTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.borderTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Border Texture", xCoord+xPadding, yCoord)
+		controls.dropDown.borderTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, 250)
+		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.borderTexture, TRB.Data.settings.druid.balance.textures.borderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
 
@@ -839,10 +871,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TIBBackgroundTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.backgroundTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2-20, yCoord)
+		controls.dropDown.backgroundTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2-30, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, 250)
+		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, TRB.Data.settings.druid.balance.textures.backgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
 
@@ -897,13 +929,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		
 		yCoord = yCoord - 70
-		controls.barDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display", xCoord+xPadding, yCoord)
+		controls.barDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display", 0, yCoord)
 
 		yCoord = yCoord - 50
 
 		title = "Bar Flash Alpha"
 		controls.flashAlpha = TRB.UiFunctions.BuildSlider(parent, title, 0, 1, TRB.Data.settings.druid.balance.colors.bar.flashAlpha, 0.01, 2,
-									barWidth, barHeight, xCoord+xPadding2, yCoord)
+									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -919,7 +951,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Bar Flash Period (sec)"
 		controls.flashPeriod = TRB.UiFunctions.BuildSlider(parent, title, 0, 2, TRB.Data.settings.druid.balance.colors.bar.flashPeriod, 0.05, 2,
-										barWidth, barHeight, xCoord2, yCoord)
+										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -936,7 +968,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 40
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TIBRB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
@@ -954,7 +986,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TIBRB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-15)
+		f:SetPoint("TOPLEFT", xCoord, yCoord-15)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Astral Power > 0")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar show out of combat only if Astral Power > 0 (or < 50 with Nature's Balance), hidden otherwise when out of combat."
@@ -972,7 +1004,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TIBRB1_4", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.combatShow
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-30)
+		f:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
@@ -990,7 +1022,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TIBRB1_5", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.neverShow
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-45)
+		f:SetPoint("TOPLEFT", xCoord, yCoord-45)
 		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
@@ -1059,10 +1091,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		yCoord = yCoord - 100
 
-		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", xCoord+xPadding, yCoord)
+		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power", TRB.Data.settings.druid.balance.colors.bar.base, 300, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power", TRB.Data.settings.druid.balance.colors.bar.base, 300, 25, xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1103,7 +1135,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.druid.balance.colors.bar.border, 300, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.druid.balance.colors.bar.border, 300, 25, xCoord, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1145,7 +1177,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power from hardcasting spells", TRB.Data.settings.druid.balance.colors.bar.casting, 300, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power from hardcasting spells", TRB.Data.settings.druid.balance.colors.bar.casting, 300, 25, xCoord, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1187,7 +1219,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under min. req. Astral Power to cast Starsurge/Starfall Threshold Line", TRB.Data.settings.druid.balance.colors.threshold.under, 260, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under min. req. Astral Power to cast Starsurge/Starfall Threshold Line", TRB.Data.settings.druid.balance.colors.threshold.under, 260, 25, xCoord, yCoord)
 		f = controls.colors.thresholdUnder
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1228,7 +1260,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over min. req. Astral Power to cast Starsurge/Starfall Threshold Line", TRB.Data.settings.druid.balance.colors.threshold.over, 300, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over min. req. Astral Power to cast Starsurge/Starfall Threshold Line", TRB.Data.settings.druid.balance.colors.threshold.over, 300, 25, xCoord, yCoord)
 		f = controls.colors.thresholdOver
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1270,7 +1302,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 
 		yCoord = yCoord - 30
-		controls.colors.starfallPandemic = TRB.UiFunctions.BuildColorPicker(parent, "Starfall Threshold Line when outside Pandemic refresh range", TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, 300, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.starfallPandemic = TRB.UiFunctions.BuildColorPicker(parent, "Starfall Threshold Line when outside Pandemic refresh range", TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, 300, 25, xCoord, yCoord)
 		f = controls.colors.starfallPandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1312,7 +1344,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power from Fury of Elune and Nature's Balance", TRB.Data.settings.druid.balance.colors.bar.passive, 300, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power from Fury of Elune and Nature's Balance", TRB.Data.settings.druid.balance.colors.bar.passive, 300, 25, xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1357,12 +1389,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 
 		yCoord = yCoord - 30
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Eclipse Configuration", xCoord+xPadding, yCoord)
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Eclipse Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30	
 		controls.checkBoxes.endOfEclipse = CreateFrame("CheckButton", "TRB_EOE_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfEclipse
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Eclipse")
 		f.tooltip = "Changes the bar color when Eclipse is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
 		f:SetChecked(TRB.Data.settings.druid.balance.endOfEclipse.enabled)
@@ -1370,9 +1402,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.endOfEclipse.enabled = self:GetChecked()
 		end)
 		yCoord = yCoord - 20	
-		controls.checkBoxes.endOfEclipseHungeringVoidOnly = CreateFrame("CheckButton", "TRB_EOE_CB_CAO", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfEclipseHungeringVoidOnly
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2+20, yCoord)
+		controls.checkBoxes.endOfEclipseOnly = CreateFrame("CheckButton", "TRB_EOE_CB_CAO", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfEclipseOnly
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Only change the bar color when in Celestial Alignment")
 		f.tooltip = "Only changes the bar color when you are exiting an Eclipse from Celestial Alignment or Incarnation: Chosen of Elune."
 		f:SetChecked(TRB.Data.settings.druid.balance.endOfEclipse.celestialAlignmentOnly)
@@ -1383,7 +1415,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 40	
 		controls.checkBoxes.endOfEclipseModeGCDs = CreateFrame("CheckButton", "TRB_EOE_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfEclipseModeGCDs
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Eclipse ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Change the bar color based on how many GCDs remain until Eclipse ends."
@@ -1398,7 +1430,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Eclipse GCDs - 0.75sec Floor"
 		controls.endOfEclipseGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 15, TRB.Data.settings.druid.balance.endOfEclipse.gcdsMax, 0.25, 2,
-										barWidth, barHeight, xCoord2, yCoord)
+										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfEclipseGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -1415,7 +1447,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 60	
 		controls.checkBoxes.endOfEclipseModeTime = CreateFrame("CheckButton", "TRB_EOE_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfEclipseModeTime
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Time until Eclipse ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Change the bar color based on how many seconds remain until Eclipse ends."
@@ -1430,7 +1462,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Eclipse Time Remaining"
 		controls.endOfEclipseTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 20, TRB.Data.settings.druid.balance.endOfEclipse.timeMax, 0.25, 2,
-										barWidth, barHeight, xCoord2, yCoord)
+										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfEclipseTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -1444,18 +1476,44 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.endOfEclipse.timeMax = value
 		end)
 
+		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrame.controls = controls
+	end
 
-		yCoord = yCoord - 40		
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", xCoord+xPadding, yCoord)
+	local function BalanceConstructFontAndTextPanel(parent)	
+		if parent == nil then
+			return
+		end
 
-		yCoord = yCoord - 30
-		
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local controls = interfaceSettingsFrame.controls
+		local yCoord = 5
+		local f = nil
+
+		local maxOptionsWidth = 580
+
+		local xPadding = 10
+		local xPadding2 = 30
+		local xCoord = 5
+		local xCoord2 = 290
+		local xOffset1 = 50
+		local xOffset2 = xCoord2 + xOffset1
+
+		local title = ""
+
+		local dropdownWidth = 225
+		local sliderWidth = 280
+		local sliderHeight = 20
+
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", 0, yCoord)
+
+		yCoord = yCoord - 30		
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontLeft = CreateFrame("FRAME", "TIBFontLeft", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontLeft.label = TRB.UiFunctions.BuildSectionHeader(parent, "Left Bar Font Face", xCoord+xPadding, yCoord)
+		controls.dropDown.fontLeft.label = TRB.UiFunctions.BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, 250)
+		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontLeft, TRB.Data.settings.druid.balance.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
@@ -1514,10 +1572,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TIBfFontMiddle", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontMiddle.label = TRB.UiFunctions.BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2-20, yCoord)
+		controls.dropDown.fontMiddle.label = TRB.UiFunctions.BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2-30, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, 250)
+		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.druid.balance.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
@@ -1578,10 +1636,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TIBFontRight", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontRight.label = TRB.UiFunctions.BuildSectionHeader(parent, "Right Bar Font Face", xCoord+xPadding, yCoord)
+		controls.dropDown.fontRight.label = TRB.UiFunctions.BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, 250)
+		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.druid.balance.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
@@ -1660,12 +1718,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 
 		yCoord = yCoord - 70
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Size and Colors", xCoord+xPadding, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Size and Colors", 0, yCoord)
 
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
 		controls.fontSizeLeft = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.druid.balance.displayText.left.fontSize, 1, 0,
-									barWidth, barHeight, xCoord+xPadding2, yCoord)
+									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -1768,7 +1826,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeMiddle = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.druid.balance.displayText.middle.fontSize, 1, 0,
-									barWidth, barHeight, xCoord+xPadding2, yCoord)
+									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -1788,7 +1846,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeRight = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.druid.balance.displayText.right.fontSize, 1, 0,
-									barWidth, barHeight, xCoord+xPadding2, yCoord)
+									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -1806,10 +1864,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Astral Power Text Colors", xCoord+xPadding, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Astral Power Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentAstralPowerText = TRB.UiFunctions.BuildColorPicker(parent, "Current Astral Power", TRB.Data.settings.druid.balance.colors.text.current, 300, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.currentAstralPowerText = TRB.UiFunctions.BuildColorPicker(parent, "Current Astral Power", TRB.Data.settings.druid.balance.colors.text.current, 300, 25, xCoord, yCoord)
 		f = controls.colors.currentAstralPowerText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1854,7 +1912,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 		
 		yCoord = yCoord - 30
-		controls.colors.thresholdAstralPowerText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Astral Power to cast Starsurge or Starfall", TRB.Data.settings.druid.balance.colors.text.overThreshold, 300, 25, xCoord+xPadding*2, yCoord)
+		controls.colors.thresholdAstralPowerText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Astral Power to cast Starsurge or Starfall", TRB.Data.settings.druid.balance.colors.text.overThreshold, 300, 25, xCoord, yCoord)
 		f = controls.colors.thresholdAstralPowerText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1902,7 +1960,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TRB_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", xCoord+xPadding*3, yCoord)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Astral Power text color when you are able to cast Starsurge or Starfall"
 		f:SetChecked(TRB.Data.settings.druid.balance.colors.text.overThresholdEnabled)
@@ -1921,13 +1979,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 
-		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", xCoord+xPadding, yCoord)
-	
 		yCoord = yCoord - 40
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+	
+		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery Decimals to Show"
 		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.druid.balance.hastePrecision, 1, 0,
-										barWidth, barHeight, xCoord+xPadding2, yCoord)
+										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
@@ -1941,14 +1999,40 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.hastePrecision = value
 		end)
 
-		yCoord = yCoord - 60		
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", xCoord+xPadding, yCoord)
+		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrame.controls = controls
+	end
 
+	local function BalanceConstructAudioAndTrackingPanel(parent)	
+		if parent == nil then
+			return
+		end
 
-		yCoord = yCoord - 40
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local controls = interfaceSettingsFrame.controls
+		local yCoord = 5
+		local f = nil
+
+		local maxOptionsWidth = 580
+
+		local xPadding = 10
+		local xPadding2 = 30
+		local xCoord = 5
+		local xCoord2 = 290
+		local xOffset1 = 50
+		local xOffset2 = xCoord2 + xOffset1
+
+		local title = ""
+
+		local sliderWidth = 260
+		local sliderHeight = 20
+
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+
+		yCoord = yCoord - 30
 		controls.checkBoxes.ssReady = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ssReady
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Starsurge is usable")
 		f.tooltip = "Play an audio cue when Devouring Plague can be cast."
 		f:SetChecked(TRB.Data.settings.druid.balance.audio.ssReady.enabled)
@@ -1962,8 +2046,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.ssReadyAudio = CreateFrame("FRAME", "TIBssReadyAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.ssReadyAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-30+10)
-		UIDropDownMenu_SetWidth(controls.dropDown.ssReadyAudio, 300)
+		controls.dropDown.ssReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
+		UIDropDownMenu_SetWidth(controls.dropDown.ssReadyAudio, sliderWidth)
 		UIDropDownMenu_SetText(controls.dropDown.ssReadyAudio, TRB.Data.settings.druid.balance.audio.ssReady.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.ssReadyAudio, "LEFT")
 
@@ -2001,8 +2085,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.ssReadyAudio:SetValue(newValue, newName)
-			TRB.Data.settings.druid.balance.audio.dpReady.sound = newValue
-			TRB.Data.settings.druid.balance.audio.dpReady.soundName = newName
+			TRB.Data.settings.druid.balance.audio.ssReady.sound = newValue
+			TRB.Data.settings.druid.balance.audio.ssReady.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.ssReadyAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -2012,7 +2096,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 60
 		controls.checkBoxes.sfReady = CreateFrame("CheckButton", "TIBCB3_MD_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sfReady
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Starfall is usable")
 		f.tooltip = "Play an audio cue when Starfall is usable. This supercedes the regular Starsurge audio sound if both are usable."
 		f:SetChecked(TRB.Data.settings.druid.balance.audio.sfReady.enabled)
@@ -2026,8 +2110,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.sfReadyAudio = CreateFrame("FRAME", "TIBsfReadyAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.sfReadyAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-30+10)
-		UIDropDownMenu_SetWidth(controls.dropDown.sfReadyAudio, 300)
+		controls.dropDown.sfReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
+		UIDropDownMenu_SetWidth(controls.dropDown.sfReadyAudio, sliderWidth)
 		UIDropDownMenu_SetText(controls.dropDown.sfReadyAudio, TRB.Data.settings.druid.balance.audio.sfReady.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.sfReadyAudio, "LEFT")
 
@@ -2073,11 +2157,75 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 
+		yCoord = yCoord - 60
+		controls.checkBoxes.onethsReady = CreateFrame("CheckButton", "TIBCB3_oneths_Sound", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.onethsReady
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Oneth's Clear Vision or Oneth's Perception proc occurs.")
+		f.tooltip = "Play an audio cue when an Oneth's Clear Vision or Oneth's Perception proc occurs. This supercedes the regular Starsurge and Starfall audio sound if both are usable."
+		f:SetChecked(TRB.Data.settings.druid.balance.audio.onethsReady.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.audio.onethsReady.enabled = self:GetChecked()
+
+			if TRB.Data.settings.druid.balance.audio.onethsReady.enabled then
+				PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsReady.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)	
+			
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.onethsReadyAudio = CreateFrame("FRAME", "TIBonethsReadyAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.onethsReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
+		UIDropDownMenu_SetWidth(controls.dropDown.onethsReadyAudio, sliderWidth)
+		UIDropDownMenu_SetText(controls.dropDown.onethsReadyAudio, TRB.Data.settings.druid.balance.audio.onethsReady.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.onethsReadyAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.onethsReadyAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.druid.balance.audio.onethsReady.sound
+						info.func = self.SetValue			
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.onethsReadyAudio:SetValue(newValue, newName)
+			TRB.Data.settings.druid.balance.audio.onethsReady.sound = newValue
+			TRB.Data.settings.druid.balance.audio.onethsReady.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.onethsReadyAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsReady.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
 		
 		yCoord = yCoord - 60
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TIBCB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Astral Power")
 		f.tooltip = "Play an audio cue when your hardcast spell will overcap Astral Power."
 		f:SetChecked(TRB.Data.settings.druid.balance.audio.overcap.enabled)
@@ -2091,8 +2239,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TIBovercapAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord+xPadding+10, yCoord-30+10)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, 300)
+		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
+		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, sliderWidth)
 		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.druid.balance.audio.overcap.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
@@ -2141,39 +2289,33 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Frames.interfaceSettingsFrame.controls = controls
 	end
     
-	local function BalanceConstructBarTextDisplayLayoutPanel()	
-		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local parent = interfaceSettingsFrame.panel		
-		local controls = interfaceSettingsFrame.controls
-		local yCoord = -5
-		local f = nil
-		interfaceSettingsFrame.balanceBarTextDisplayPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopResourceBar_Balance_BarTextDisplayLayoutPanel", parent)
-		interfaceSettingsFrame.balanceBarTextDisplayPanel.name = "Balance - Bar Text"
-		interfaceSettingsFrame.balanceBarTextDisplayPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.balanceBarTextDisplayPanel)
+	local function BalanceConstructBarTextDisplayPanel(parent)	
+		if parent == nil then
+			return
+		end
 
-		parent = interfaceSettingsFrame.balanceBarTextDisplayPanel.scrollChild
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local controls = interfaceSettingsFrame.controls
+		local yCoord = 5
+		local f = nil
+
+		local maxOptionsWidth = 580
 
 		local xPadding = 10
 		local xPadding2 = 30
-		local xMax = 550
-		local xCoord = 0
-		local xCoord2 = 325
+		local xCoord = 5
+		local xCoord2 = 290
 		local xOffset1 = 50
-		local xOffset2 = 275
+		local xOffset2 = xCoord2 + xOffset1
 
-		local barWidth = 250
-		local barHeight = 20
-		local title = ""
-
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", xCoord+xPadding, yCoord)
+		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.labels.text = CreateFrame("Frame", nil, parent)
 		f = controls.labels.text
 		f:ClearAllPoints()
 		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		f:SetWidth(90)
 		f:SetHeight(20)
 		f.font = f:CreateFontString(nil, "BACKGROUND")
@@ -2185,7 +2327,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f.font:SetText("Left Text")
 
 		controls.textbox.left = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.druid.balance.displayText.left.text,
-														500, 450, 24, xCoord+xPadding*2+100, yCoord)
+														500, 440, 24, xCoord+100, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.druid.balance.displayText.left.text = self:GetText()
@@ -2198,7 +2340,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f = controls.labels.text
 		f:ClearAllPoints()
 		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		f:SetWidth(90)
 		f:SetHeight(20)
 		f.font = f:CreateFontString(nil, "BACKGROUND")
@@ -2210,7 +2352,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f.font:SetText("Middle Text")
 
 		controls.textbox.middle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.druid.balance.displayText.middle.text,
-														500, 450, 24, xCoord+xPadding*2+100, yCoord)
+														500, 440, 24, xCoord+100, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.druid.balance.displayText.middle.text = self:GetText()
@@ -2223,7 +2365,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f = controls.labels.text
 		f:ClearAllPoints()
 		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		f:SetWidth(90)
 		f:SetHeight(20)
 		f.font = f:CreateFontString(nil, "BACKGROUND")
@@ -2235,7 +2377,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f.font:SetText("Right Text")
 
 		controls.textbox.right = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.druid.balance.displayText.right.text,
-														500, 450, 24, xCoord+xPadding*2+100, yCoord)
+														500, 440, 24, xCoord+100, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.druid.balance.displayText.right.text = self:GetText()
@@ -2244,75 +2386,90 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructionsVar
+		controls.labels.instructions5Var = CreateFrame("Frame", nil, parent)
+		f = controls.labels.instructions5Var
 		f:ClearAllPoints()
 		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-		f:SetWidth(600)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetWidth(maxOptionsWidth-xPadding)
 		f:SetHeight(20)
 		f.font = f:CreateFontString(nil, "BACKGROUND")
 		f.font:SetFontObject(GameFontHighlight)
 		f.font:SetPoint("LEFT", f, "LEFT")
 		f.font:SetSize(0, 14)
 		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(600, 20)
-		f.font:SetText("For conditional display (only if $VARIABLE is active/non-zero): {$VARIABLE}[WHAT TO DISPLAY]")
+		f.font:SetSize(maxOptionsWidth-xPadding, 20)
+		f.font:SetText("For more detailed information about Bar Text customization, see the TRB Wiki on GitHub.")
+
+		yCoord = yCoord - 25
+		controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
+		f = controls.labels.instructionsVar
+		f:ClearAllPoints()
+		f:SetPoint("TOPLEFT", parent)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetWidth(maxOptionsWidth-xPadding)
+		f:SetHeight(20)
+		f.font = f:CreateFontString(nil, "BACKGROUND")
+		f.font:SetFontObject(GameFontHighlight)
+		f.font:SetPoint("LEFT", f, "LEFT")
+		f.font:SetSize(0, 14)
+		f.font:SetJustifyH("LEFT")
+		f.font:SetSize(maxOptionsWidth-xPadding, 20)
+		f.font:SetText("For conditional display (only if $VAR is active/non-zero): {$VAR}[WHAT TO DISPLAY]")
 			
-		yCoord = yCoord - 25
-		controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructionsVar
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-		f:SetWidth(600)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(600, 20)
-		f.font:SetText("Limited Boolean NOT logic for conditional display is supported via {!$VARIABLE}")
-
-		yCoord = yCoord - 25
-		controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructionsVar
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-		f:SetWidth(600)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(600, 20)
-		f.font:SetText("IF/ELSE is supported via {$VARIABLE}[TRUE output][FALSE output] and includes NOT support")
-
 		yCoord = yCoord - 25
 		controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
 		f = controls.labels.instructions2Var
 		f:ClearAllPoints()
 		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-		f:SetWidth(600)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetWidth(maxOptionsWidth-xPadding)
 		f:SetHeight(20)
 		f.font = f:CreateFontString(nil, "BACKGROUND")
 		f.font:SetFontObject(GameFontHighlight)
 		f.font:SetPoint("LEFT", f, "LEFT")
 		f.font:SetSize(0, 14)
 		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(600, 20)
-		f.font:SetText("For icons use #ICONVARIABLENAME")
+		f.font:SetSize(maxOptionsWidth-xPadding, 20)
+		f.font:SetText("Limited Boolean NOT logic for conditional display is supported via {!$VAR}")
 
 		yCoord = yCoord - 25
-		local yCoordTop = yCoord
+		controls.labels.instructions3Var = CreateFrame("Frame", nil, parent)
+		f = controls.labels.instructions3Var
+		f:ClearAllPoints()
+		f:SetPoint("TOPLEFT", parent)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetWidth(maxOptionsWidth-xPadding)
+		f:SetHeight(20)
+		f.font = f:CreateFontString(nil, "BACKGROUND")
+		f.font:SetFontObject(GameFontHighlight)
+		f.font:SetPoint("LEFT", f, "LEFT")
+		f.font:SetSize(0, 14)
+		f.font:SetJustifyH("LEFT")
+		f.font:SetSize(maxOptionsWidth-xPadding, 20)
+		f.font:SetText("IF/ELSE is supported via {$VAR}[TRUE output][FALSE output] and includes NOT support")
+
+		yCoord = yCoord - 25
+		controls.labels.instructions4Var = CreateFrame("Frame", nil, parent)
+		f = controls.labels.instructions4Var
+		f:ClearAllPoints()
+		f:SetPoint("TOPLEFT", parent)
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetWidth(maxOptionsWidth-xPadding)
+		f:SetHeight(20)
+		f.font = f:CreateFontString(nil, "BACKGROUND")
+		f.font:SetFontObject(GameFontHighlight)
+		f.font:SetPoint("LEFT", f, "LEFT")
+		f.font:SetSize(0, 14)
+		f.font:SetJustifyH("LEFT")
+		f.font:SetSize(maxOptionsWidth-xPadding, 20)
+		f.font:SetText("For icons use #ICONVARIABLENAME")
+		yCoord = yCoord - 25
+
 		local entries1 = TRB.Functions.TableLength(TRB.Data.barTextVariables.values)
 		for i=1, entries1 do
 			if TRB.Data.barTextVariables.values[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 150, 400, 15)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 135, 400, 15)
 				local height = 15
 				yCoord = yCoord - height - 5
 			end
@@ -2321,7 +2478,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local entries2 = TRB.Functions.TableLength(TRB.Data.barTextVariables.pipe)
 		for i=1, entries2 do
 			if TRB.Data.barTextVariables.pipe[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 150, 400, 15)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 135, 400, 15)
 				local height = 15
 				yCoord = yCoord - height - 5
 			end
@@ -2340,16 +2497,77 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				if TRB.Data.barTextVariables.icons[i].variable == "#casting" then
 					height = 15
 				end
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord, yCoord, 150, 400, height)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord, yCoord, 135, 400, height)
 				yCoord = yCoord - height - 5
 			end
 		end
 	end
 
+	local function BalanceConstructOptionsPanel()		
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local parent = interfaceSettingsFrame.panel		
+		local controls = interfaceSettingsFrame.controls
+		local yCoord = 0
+		local f = nil
+		local xPadding = 10
+		local xPadding2 = 30
+		local xMax = 550
+		local xCoord = 0
+		local xCoord2 = 325
+		local xOffset1 = 50
+		local xOffset2 = 275
+		interfaceSettingsFrame.shadowDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Balance", UIParent)
+		interfaceSettingsFrame.shadowDisplayPanel.name = "Balance Druid"
+		interfaceSettingsFrame.shadowDisplayPanel.parent = parent.name
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.shadowDisplayPanel)
+
+		parent = interfaceSettingsFrame.shadowDisplayPanel
+				
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Balance Druid", xCoord+xPadding, yCoord)
+
+		yCoord = yCoord - 42	
+
+		local tabs = {}
+		local tabsheets = {}
+
+		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Druid_Balance_Tab1", "Reset Defaults", 1, parent, 100)
+		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
+		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Druid_Balance_Tab2", "Bar Display", 2, parent, 85, tabs[1])
+		tabs[3] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Druid_Balance_Tab3", "Font & Text", 3, parent, 85, tabs[2])
+		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Druid_Balance_Tab4", "Audio & Tracking", 4, parent, 120, tabs[3])
+		tabs[5] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Druid_Balance_Tab5", "Bar Text", 5, parent, 60, tabs[4])
+
+		PanelTemplates_TabResize(tabs[1], 0)
+		PanelTemplates_TabResize(tabs[2], 0)
+		PanelTemplates_TabResize(tabs[3], 0)
+		PanelTemplates_TabResize(tabs[4], 0)
+		PanelTemplates_TabResize(tabs[5], 0)
+		yCoord = yCoord - 15
+
+		for i = 1, 5 do 
+			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Druid_Balance_LayoutPanel" .. i, parent)
+			tabsheets[i]:Hide()
+			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
+		end
+
+		tabsheets[1]:Show()
+		parent.tabs = tabs
+		parent.tabsheets = tabsheets
+		parent.lastTab = tabsheets[1]
+		parent.lastTabId = 1
+		parent.tabsheets[1].selected = true
+		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+
+		BalanceConstructResetDefaultsPanel(tabsheets[1].scrollFrame.scrollChild)
+		BalanceConstructBarColorsAndBehaviorPanel(tabsheets[2].scrollFrame.scrollChild)
+		BalanceConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
+		BalanceConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+		BalanceConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild)
+	end
+
 	local function ConstructOptionsPanel()
 		TRB.Options.ConstructOptionsPanel()
-		BalanceConstructOptionsLayoutPanel()
-		BalanceConstructBarTextDisplayLayoutPanel()
+		BalanceConstructOptionsPanel()
 	end
 	TRB.Options.Druid.ConstructOptionsPanel = ConstructOptionsPanel
 end
