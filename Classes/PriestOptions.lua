@@ -2541,8 +2541,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Eternal Call to the Void / Void Tendril + Void Lasher Tracking", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.as = CreateFrame("CheckButton", "TIBCB3_6a", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.as
+		controls.checkBoxes.voidTendril = CreateFrame("CheckButton", "TIBCB3_6a", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.voidTendril
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track Eternal Call to the Void")
 		f.tooltip = "Track Insanity generated from Lash of Insanity via Void Tendril + Void Lasher spawns / Eternal Call of the Void procs."
