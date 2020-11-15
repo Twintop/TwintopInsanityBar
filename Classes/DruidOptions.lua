@@ -1507,8 +1507,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", 0, yCoord)
 
-		yCoord = yCoord - 30
-		
+		yCoord = yCoord - 30		
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontLeft = CreateFrame("FRAME", "TIBFontLeft", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontLeft.label = TRB.UiFunctions.BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
@@ -2467,7 +2466,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f.font:SetText("For icons use #ICONVARIABLENAME")
 		yCoord = yCoord - 25
 
-		local yCoordTop = yCoord
 		local entries1 = TRB.Functions.TableLength(TRB.Data.barTextVariables.values)
 		for i=1, entries1 do
 			if TRB.Data.barTextVariables.values[i].printInSettings == true then
