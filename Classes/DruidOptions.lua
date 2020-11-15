@@ -2087,8 +2087,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.ssReadyAudio:SetValue(newValue, newName)
-			TRB.Data.settings.druid.balance.audio.dpReady.sound = newValue
-			TRB.Data.settings.druid.balance.audio.dpReady.soundName = newName
+			TRB.Data.settings.druid.balance.audio.ssReady.sound = newValue
+			TRB.Data.settings.druid.balance.audio.ssReady.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.ssReadyAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)

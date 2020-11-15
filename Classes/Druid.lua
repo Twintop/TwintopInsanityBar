@@ -208,6 +208,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			name = "", 
 			icon = "",
 			isActive = false
+		}, 
+		timewornDreambinder = {
+			id = 340049,
+			name = "",
+			icon = "",
+			isActive = false,
+			modifier = -0.15
 		}
     }
     
@@ -239,6 +246,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		spellId = nil,
 		endTime = nil,
 		duration = 0
+	}
+	TRB.Data.snapshotData.timewornDreambinder = {
+		spellId = nil,
+		endTime = nil,
+		duration = 0,
+		stacks = 0
 	}
 
 	local function FillSpellData()
@@ -345,16 +358,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Data.character.starfallThreshold = TRB.Data.spells.starfall.astralPower
 		
 		if TRB.Data.settings.druid ~= nil and TRB.Data.settings.druid.balance ~= nil then
+			local timewornModifier = TRB.Data.snapshotData.timewornDreambinder.stacks * TRB.Data.spells.timewornDreambinder.modifier
 			if TRB.Data.settings.druid.balance.starsurgeThreshold and TRB.Data.character.starsurgeThreshold < TRB.Data.character.maxResource then
 				resourceFrame.threshold1:Show()
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
 			else
 				resourceFrame.threshold1:Hide()
         	end
         
 			if TRB.Data.settings.druid.balance.starfallThreshold and TRB.Data.character.starfallThreshold < TRB.Data.character.maxResource then
 				resourceFrame.threshold2:Show()
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold2, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold2, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starfallThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
 			else
 				resourceFrame.threshold2:Hide()
 			end
@@ -1178,6 +1192,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						TRB.Data.snapshotData.onethsClearVision.duration = 0
 						TRB.Data.snapshotData.onethsClearVision.endTime = nil
 					end
+				elseif spellId == TRB.Data.spells.timewornDreambinder.id then
+					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						TRB.Data.spells.timewornDreambinder.isActive = true
+						_, _, TRB.Data.snapshotData.timewornDreambinder.stacks, _, TRB.Data.snapshotData.timewornDreambinder.duration, TRB.Data.snapshotData.timewornDreambinder.endTime, _, _, _, TRB.Data.snapshotData.onethsClearVision.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.onethsClearVision.id)
+					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						TRB.Data.spells.timewornDreambinder.isActive = false
+						TRB.Data.snapshotData.timewornDreambinder.spellId = nil
+						TRB.Data.snapshotData.timewornDreambinder.duration = 0
+						TRB.Data.snapshotData.timewornDreambinder.endTime = nil
+						TRB.Data.snapshotData.timewornDreambinder.stacks = 0
+					end
+					CheckCharacter()
+					triggerUpdate = true
 				else
                 end
             end
