@@ -136,9 +136,9 @@ local function ConstructAddonOptionsPanel()
     yCoord = yCoord - 60
 
     title = "Refresh Rate (seconds)"
-    controls.ttdSamplingRate = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 60, TRB.Data.settings.core.dataRefreshRate, 0.05, 2,
+    controls.characterRefreshRate = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 60, TRB.Data.settings.core.dataRefreshRate, 0.05, 2,
                                     sliderWidth, sliderHeight, xCoord, yCoord)
-    controls.ttdSamplingRate:SetScript("OnValueChanged", function(self, value)
+    controls.characterRefreshRate:SetScript("OnValueChanged", function(self, value)
         local min, max = self:GetMinMaxValues()
         if value > max then
             value = max
