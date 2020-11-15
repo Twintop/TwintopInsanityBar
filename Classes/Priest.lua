@@ -914,7 +914,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				valid = true
 			end
 		elseif var == "$s2m" or var == "$surrenderToMadness" then
-			if TRB.Data.character.surrenderToMadeness.isSelected then
+			if TRB.Data.character.talents.surrenderToMadeness.isSelected then
 				valid = true
 			end
 		else
