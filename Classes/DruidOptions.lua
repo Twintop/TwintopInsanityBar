@@ -153,6 +153,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
+				ocvReady={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
+					soundName="TRB: Boxing Arena Gong"
+				},
 				overcap={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
@@ -2044,7 +2049,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.ssReadyAudio = CreateFrame("FRAME", "TIBssReadyAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.ssReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
-		UIDropDownMenu_SetWidth(controls.dropDown.ssReadyAudio, 300)
+		UIDropDownMenu_SetWidth(controls.dropDown.ssReadyAudio, sliderWidth)
 		UIDropDownMenu_SetText(controls.dropDown.ssReadyAudio, TRB.Data.settings.druid.balance.audio.ssReady.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.ssReadyAudio, "LEFT")
 
@@ -2108,7 +2113,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.sfReadyAudio = CreateFrame("FRAME", "TIBsfReadyAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.sfReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
-		UIDropDownMenu_SetWidth(controls.dropDown.sfReadyAudio, 300)
+		UIDropDownMenu_SetWidth(controls.dropDown.sfReadyAudio, sliderWidth)
 		UIDropDownMenu_SetText(controls.dropDown.sfReadyAudio, TRB.Data.settings.druid.balance.audio.sfReady.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.sfReadyAudio, "LEFT")
 
@@ -2154,6 +2159,70 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 
+		yCoord = yCoord - 60
+		controls.checkBoxes.ocvReady = CreateFrame("CheckButton", "TIBCB3_ocv_Sound", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.ocvReady
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Oneth's Clear Vision proc occurs.")
+		f.tooltip = "Play an audio cue when an Oneth's Clear Vision proc occurs. This supercedes the regular Starsurge audio sound if both are usable."
+		f:SetChecked(TRB.Data.settings.druid.balance.audio.ocvReady.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.audio.ocvReady.enabled = self:GetChecked()
+
+			if TRB.Data.settings.druid.balance.audio.ocvReady.enabled then
+				PlaySoundFile(TRB.Data.settings.druid.balance.audio.ocvReady.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)	
+			
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.ocvReadyAudio = CreateFrame("FRAME", "TIBocvReadyAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.ocvReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
+		UIDropDownMenu_SetWidth(controls.dropDown.ocvReadyAudio, sliderWidth)
+		UIDropDownMenu_SetText(controls.dropDown.ocvReadyAudio, TRB.Data.settings.druid.balance.audio.ocvReady.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.ocvReadyAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.ocvReadyAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.druid.balance.audio.ocvReady.sound
+						info.func = self.SetValue			
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.ocvReadyAudio:SetValue(newValue, newName)
+			TRB.Data.settings.druid.balance.audio.ocvReady.sound = newValue
+			TRB.Data.settings.druid.balance.audio.ocvReady.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.ocvReadyAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.druid.balance.audio.ocvReady.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
 		
 		yCoord = yCoord - 60
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TIBCB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
@@ -2173,7 +2242,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TIBovercapAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, 300)
+		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, sliderWidth)
 		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.druid.balance.audio.overcap.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 

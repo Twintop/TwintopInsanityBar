@@ -201,7 +201,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             name = "",
             icon = "",
             astralPower = 40
-        }
+		}, 
+		
+		onethsClearVision = {
+			id = 339797,
+			name = "", 
+			icon = "",
+			isActive = false
+		}
     }
     
 	TRB.Data.snapshotData.audio = {
@@ -228,6 +235,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		ticksRemaining = 0,
 		endTime = nil
 	}
+	TRB.Data.snapshotData.onethsClearVision = {
+		spellId = nil,
+		endTime = nil,
+		duration = 0
+	}
 
 	local function FillSpellData()
 		TRB.Functions.FillSpellData()
@@ -246,8 +258,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             
 			{ variable = "#starsurge", icon = TRB.Data.spells.starsurge.icon, description = "Starsurge", printInSettings = true },
 			{ variable = "#starfall", icon = TRB.Data.spells.fullMoon.icon, description = "Starfall", printInSettings = true },
-            
-            { variable = "#celestialAlignment", icon = TRB.Data.spells.celestialAlignment.icon, description = "Celestial Alignment", printInSettings = true },            
+            { variable = "#ocv", icon = TRB.Data.spells.onethsClearVision.icon, description = "Oneth's Clear Vision", printInSettings = true },
+			{ variable = "#oneth", icon = TRB.Data.spells.onethsClearVision.icon, description = "Oneth's Clear Vision", printInSettings = false },
+			{ variable = "#oneths", icon = TRB.Data.spells.onethsClearVision.icon, description = "Oneth's Clear Vision", printInSettings = false },
+			
+			{ variable = "#celestialAlignment", icon = TRB.Data.spells.celestialAlignment.icon, description = "Celestial Alignment", printInSettings = true },            
             { variable = "#solar", icon = TRB.Data.spells.eclipseSolar.icon, description = "Eclipse (Solar)", printInSettings = true },
             { variable = "#eclipseSolar", icon = TRB.Data.spells.eclipseSolar.icon, description = "Eclipse (Solar)", printInSettings = false },
             { variable = "#solarEclipse", icon = TRB.Data.spells.eclipseSolar.icon, description = "Eclipse (Solar)", printInSettings = false },
@@ -307,6 +322,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$sunfireCount", description = "Number of Sunfires active on targets", printInSettings = true, color = false },
 			{ variable = "$moonfireCount", description = "Number of Moonfires active on targets", printInSettings = true, color = false },
 			{ variable = "$stellarFlareCount", description = "Number of Stellar Flares active on targets", printInSettings = true, color = false },
+			
+			{ variable = "$ocvTime", description = "Time remaining on Oneth's Clear Vision buff", printInSettings = true, color = false },
 				
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -327,18 +344,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Data.character.starsurgeThreshold = TRB.Data.spells.starsurge.astralPower
 		TRB.Data.character.starfallThreshold = TRB.Data.spells.starfall.astralPower
 		
-		if TRB.Data.settings.druid ~= nil and TRB.Data.settings.druid.balance ~= nil and TRB.Data.settings.druid.balance.starsurgeThreshold and TRB.Data.character.starsurgeThreshold < TRB.Data.character.maxResource then
-			resourceFrame.threshold1:Show()
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
-		else
-			resourceFrame.threshold1:Hide()
-        end
+		if TRB.Data.settings.druid ~= nil and TRB.Data.settings.druid.balance ~= nil then
+			if TRB.Data.settings.druid.balance.starsurgeThreshold and TRB.Data.character.starsurgeThreshold < TRB.Data.character.maxResource then
+				resourceFrame.threshold1:Show()
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
+			else
+				resourceFrame.threshold1:Hide()
+        	end
         
-		if TRB.Data.settings.druid ~= nil and TRB.Data.settings.druid.balance ~= nil and TRB.Data.settings.druid.balance.starfallThreshold and TRB.Data.character.starfallThreshold < TRB.Data.character.maxResource then
-			resourceFrame.threshold2:Show()
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold2, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
-		else
-			resourceFrame.threshold2:Hide()
+			if TRB.Data.settings.druid.balance.starfallThreshold and TRB.Data.character.starfallThreshold < TRB.Data.character.maxResource then
+				resourceFrame.threshold2:Show()
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold2, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
+			else
+				resourceFrame.threshold2:Hide()
+			end
 		end
 	end
 	
@@ -544,6 +563,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if TRB.Data.snapshotData.furyOfElune.startTime ~= nil then
 				valid = true
 			end
+		elseif var == "$ocvTime" then
+			if TRB.Data.snapshotData.onethsClearVision.spellId ~= nil then
+				valid = true
+			end
 		else
 			valid = false					
 		end
@@ -602,6 +625,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         --$sFlareCount
 		local stellarFlareCount = TRB.Data.snapshotData.targetData.stellarFlare or 0
 
+		--$mdTime
+		local _ocvTime = 0
+		if TRB.Data.snapshotData.onethsClearVision.spellId ~= nil then
+			_ocvTime = math.abs(TRB.Data.snapshotData.onethsClearVision.endTime - currentTime)
+		end
+		local ocvTime = string.format("%.1f", _ocvTime)
+
         ----------
         --$foeAstralPower
         local foeAstralPower = TRB.Data.snapshotData.furyOfElune.astralPower or 0
@@ -655,6 +685,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#newMoon"] = TRB.Data.spells.newMoon.icon
 		lookup["#halfMoon"] = TRB.Data.spells.halfMoon.icon
 		lookup["#fullMoon"] = TRB.Data.spells.fullMoon.icon
+		lookup["#ocv"] = TRB.Data.spells.onethsClearVision.icon
+		lookup["#oneth"] = TRB.Data.spells.onethsClearVision.icon
+		lookup["#oneths"] = TRB.Data.spells.onethsClearVision.icon
 		lookup["$moonkinForm"] = ""
 		lookup["$eclipse"] = ""
 		lookup["$lunar"] = ""
@@ -664,6 +697,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$solarEclipse"] = ""
 		lookup["$eclipseSolar"] = ""
 		lookup["$celestialAlignment"] = ""
+		lookup["$ocvTime"] = mdTime
 		lookup["$sunfireCount"] = sunfireCount
 		lookup["$moonfireCount"] = moonfireCount
 		lookup["$stellarFlareCount"] = stellarFlareCount
@@ -785,7 +819,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.spells.incarnationChosenOfElune.remainingTime = 0
 		end		
 
-        TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))
+		TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))		
+
         UpdateFuryOfElune()
 	end    
 
@@ -863,41 +898,48 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				-- Balance doesn't use the passive threshold right now. Hide it
 				passiveFrame.threshold1.texture:Hide()
 
+				
 				if TRB.Data.settings.druid.balance.starsurgeThreshold then
-					resourceFrame.threshold1:Show()                
-					if TRB.Data.snapshotData.resource >= TRB.Data.character.starsurgeThreshold then
-						resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-						if TRB.Data.settings.druid.balance.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
-							TRB.Data.snapshotData.audio.playedSsCue = true
-							PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					else
-						resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-						TRB.Data.snapshotData.audio.playedSsCue = false
-					end
+					resourceFrame.threshold1:Show()
 				else
 					resourceFrame.threshold1:Hide()
 				end
 				
 				if TRB.Data.settings.druid.balance.starfallThreshold then
 					resourceFrame.threshold2:Show()
-					if TRB.Data.snapshotData.resource >= TRB.Data.character.starfallThreshold then
-						if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > 2.4 then -- 8 * 0.3 = pandemic range
-							resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
-						else
-							resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-						end
-
-						if TRB.Data.settings.druid.balance.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
-							TRB.Data.snapshotData.audio.playedSfCue = true
-							PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					else
-						resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-						TRB.Data.snapshotData.audio.playedSfCue = false
-					end
 				else
 					resourceFrame.threshold2:Hide()
+				end
+               
+				if TRB.Data.snapshotData.resource >= TRB.Data.character.starsurgeThreshold then
+					resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+					if TRB.Data.settings.druid.balance.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
+						TRB.Data.snapshotData.audio.playedSsCue = true
+						PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
+					end
+				else
+					resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+					TRB.Data.snapshotData.audio.playedSsCue = false
+				end
+			
+				if TRB.Data.snapshotData.resource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.onethsClearVision.isActive then
+					if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > 2.4 then -- 8 * 0.3 = pandemic range
+						resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
+					else
+						resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+					end
+
+					if TRB.Data.spells.onethsClearVision.isActive and RB.Data.settings.druid.balance.audio.ocvReady.enabled and TRB.Data.snapshotData.audio.playedOcvCue == false then
+						TRB.Data.snapshotData.audio.playedOcvCue = true
+						TRB.Data.snapshotData.audio.playedSfCue = true
+						PlaySoundFile(TRB.Data.settings.priest.shadow.audio.ocvProc.sound, TRB.Data.settings.core.audio.channel.channel)
+					elseif TRB.Data.settings.druid.balance.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
+						TRB.Data.snapshotData.audio.playedSfCue = true
+						PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
+					end
+				else
+					resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+					TRB.Data.snapshotData.audio.playedSfCue = false
 				end
 								
 				if TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled and TRB.Data.snapshotData.resource >= TRB.Data.character.starsurgeThreshold then
@@ -1125,6 +1167,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						TRB.Data.snapshotData.starfall.spellId = nil
 						TRB.Data.snapshotData.starfall.duration = 0
 						TRB.Data.snapshotData.starfall.endTime = nil
+					end
+				elseif spellId == TRB.Data.spells.onethsClearVision.id then
+					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						TRB.Data.spells.onethsClearVision.isActive = true
+						_, _, _, _, TRB.Data.snapshotData.onethsClearVision.duration, TRB.Data.snapshotData.onethsClearVision.endTime, _, _, _, TRB.Data.snapshotData.onethsClearVision.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.onethsClearVision.id)
+					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						TRB.Data.spells.onethsClearVision.isActive = false
+						TRB.Data.snapshotData.onethsClearVision.spellId = nil
+						TRB.Data.snapshotData.onethsClearVision.duration = 0
+						TRB.Data.snapshotData.onethsClearVision.endTime = nil
 					end
 				else
                 end
