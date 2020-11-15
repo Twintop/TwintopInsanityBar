@@ -35,7 +35,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				fontSize=18
 			},
 			middle={
-				text="{$eclipse}[$eclipseTime]",
+				text="{$eclipse}[$eclipseTime sec.]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18

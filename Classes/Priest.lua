@@ -407,6 +407,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#shadowfiend", icon = TRB.Data.spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = false },
 			{ variable = "#sf", icon = TRB.Data.spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = true },
 			
+			{ variable = "#s2m", icon = TRB.Data.spells.s2m.icon, description = "Surrender to Madness", printInSettings = true },
+			{ variable = "#surrenderToMadness", icon = TRB.Data.spells.s2m.icon, description = "Surrender to Madness", printInSettings = false },
+			
 			{ variable = "#ecttv", icon = TRB.Data.spells.eternalCallToTheVoid_Tendril.icon, description = "Eternal Call to the Void", printInSettings = true },
 			{ variable = "#tb", icon = TRB.Data.spells.eternalCallToTheVoid_Tendril.icon, description = "Eternal Call to the Void", printInSettings = false },
 			{ variable = "#loi", icon = TRB.Data.spells.lashOfInsanity_Tendril.icon, description = "Lash of Insanity", printInSettings = true },
@@ -463,6 +466,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$vbCasts", description = "Max Void Bolt casts remaining in Hungering Void", printInSettings = true, color = false },
 			{ variable = "$hvAvgTime", description = "Duration of VF w/max VB casts in Hungering Void, includes crits", printInSettings = true, color = false },
 			{ variable = "$vbAvgCasts", description = "Max Void Bolt casts remaining in Hungering Void, includes crits", printInSettings = true, color = false },
+
+			{ variable = "$s2m", description = "Is Surrender to Madness currently spec'd. Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$surrenderToMadness", description = "Is Surrender to Madness currently spec'd. Logic variable only!", printInSettings = true, color = false },
 				
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -907,6 +913,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.snapshotData.mindDevourer.spellId ~= nil then
 				valid = true
 			end
+		elseif var == "$s2m" or var == "$surrenderToMadness" then
+			if TRB.Data.character.surrenderToMadeness.isSelected then
+				valid = true
+			end
 		else
 			valid = false
 		end
@@ -1207,6 +1217,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$asCount"] = asCount
 		lookup["$asInsanity"] = asInsanity
 		lookup["$ttd"] = ttd --Custom TTD for Shadow
+		lookup["$s2m"] = ""
+		lookup["$surrenderToMadness"] = ""
 		TRB.Data.lookup = lookup
 	end
 	TRB.Functions.RefreshLookupData = RefreshLookupData
