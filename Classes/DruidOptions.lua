@@ -35,7 +35,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				fontSize=18
 			},
 			middle={
-				text="",
+				text="{$eclipse}[$eclipseTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -62,7 +62,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				fontSize = 13
 			},
 			middle = {
-				text="",
+				text="{$eclipse}[#eclipse $eclipseTime #eclipse]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -153,7 +153,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
-				ocvReady={
+				onethsReady={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
@@ -2004,7 +2004,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Frames.interfaceSettingsFrame.controls = controls
 	end
 
-
 	local function BalanceConstructAudioAndTrackingPanel(parent)	
 		if parent == nil then
 			return
@@ -2160,29 +2159,29 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.ocvReady = CreateFrame("CheckButton", "TIBCB3_ocv_Sound", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.ocvReady
+		controls.checkBoxes.onethsReady = CreateFrame("CheckButton", "TIBCB3_oneths_Sound", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.onethsReady
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Oneth's Clear Vision proc occurs.")
-		f.tooltip = "Play an audio cue when an Oneth's Clear Vision proc occurs. This supercedes the regular Starsurge audio sound if both are usable."
-		f:SetChecked(TRB.Data.settings.druid.balance.audio.ocvReady.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Oneth's Clear Vision or Oneth's Perception proc occurs.")
+		f.tooltip = "Play an audio cue when an Oneth's Clear Vision or Oneth's Perception proc occurs. This supercedes the regular Starsurge and Starfall audio sound if both are usable."
+		f:SetChecked(TRB.Data.settings.druid.balance.audio.onethsReady.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.audio.ocvReady.enabled = self:GetChecked()
+			TRB.Data.settings.druid.balance.audio.onethsReady.enabled = self:GetChecked()
 
-			if TRB.Data.settings.druid.balance.audio.ocvReady.enabled then
-				PlaySoundFile(TRB.Data.settings.druid.balance.audio.ocvReady.sound, TRB.Data.settings.core.audio.channel.channel)
+			if TRB.Data.settings.druid.balance.audio.onethsReady.enabled then
+				PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsReady.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)	
 			
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.ocvReadyAudio = CreateFrame("FRAME", "TIBocvReadyAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.ocvReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
-		UIDropDownMenu_SetWidth(controls.dropDown.ocvReadyAudio, sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.ocvReadyAudio, TRB.Data.settings.druid.balance.audio.ocvReady.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.ocvReadyAudio, "LEFT")
+		controls.dropDown.onethsReadyAudio = CreateFrame("FRAME", "TIBonethsReadyAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.onethsReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
+		UIDropDownMenu_SetWidth(controls.dropDown.onethsReadyAudio, sliderWidth)
+		UIDropDownMenu_SetText(controls.dropDown.onethsReadyAudio, TRB.Data.settings.druid.balance.audio.onethsReady.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.onethsReadyAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.ocvReadyAudio, function(self, level, menuList)
+		UIDropDownMenu_Initialize(controls.dropDown.onethsReadyAudio, function(self, level, menuList)
 			local entries = 25
 			local info = UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
@@ -2203,7 +2202,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.druid.balance.audio.ocvReady.sound
+						info.checked = sounds[v] == TRB.Data.settings.druid.balance.audio.onethsReady.sound
 						info.func = self.SetValue			
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -2214,12 +2213,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.ocvReadyAudio:SetValue(newValue, newName)
-			TRB.Data.settings.druid.balance.audio.ocvReady.sound = newValue
-			TRB.Data.settings.druid.balance.audio.ocvReady.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.ocvReadyAudio, newName)
+		function controls.dropDown.onethsReadyAudio:SetValue(newValue, newName)
+			TRB.Data.settings.druid.balance.audio.onethsReady.sound = newValue
+			TRB.Data.settings.druid.balance.audio.onethsReady.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.onethsReadyAudio, newName)
 			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.druid.balance.audio.ocvReady.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsReady.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
@@ -2472,7 +2471,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local entries1 = TRB.Functions.TableLength(TRB.Data.barTextVariables.values)
 		for i=1, entries1 do
 			if TRB.Data.barTextVariables.values[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 125, 400, 15)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 135, 400, 15)
 				local height = 15
 				yCoord = yCoord - height - 5
 			end
@@ -2481,7 +2480,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local entries2 = TRB.Functions.TableLength(TRB.Data.barTextVariables.pipe)
 		for i=1, entries2 do
 			if TRB.Data.barTextVariables.pipe[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 125, 400, 15)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 135, 400, 15)
 				local height = 15
 				yCoord = yCoord - height - 5
 			end
@@ -2500,7 +2499,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				if TRB.Data.barTextVariables.icons[i].variable == "#casting" then
 					height = 15
 				end
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord, yCoord, 125, 400, height)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord, yCoord, 135, 400, height)
 				yCoord = yCoord - height - 5
 			end
 		end

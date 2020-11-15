@@ -116,22 +116,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			id = 194223,
 			name = "",
 			icon = "",
-			isActive = false,
-			remainingTime = 0
+			isActive = false
         },        
         eclipseSolar = {
 			id = 48517,
 			name = "",
             icon = "",
-			isActive = false,
-			remainingTime = 0
+			isActive = false
         },
         eclipseLunar = {
 			id = 48518,
 			name = "",
 			icon = "",
-            isActive = false,
-			remainingTime = 0
+            isActive = false
         },
 
         naturesBalance = {
@@ -209,6 +206,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			icon = "",
 			isActive = false
 		}, 
+		onethsPerception = {
+			id = 339800,
+			name = "", 
+			icon = "",
+			isActive = false
+		}, 
 		timewornDreambinder = {
 			id = 340049,
 			name = "",
@@ -220,7 +223,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
     
 	TRB.Data.snapshotData.audio = {
 		playedSsCue = false,
-		playedSfCue = false
+		playedSfCue = false,
+		playedOnethsCue = false
 	}
 	
 	TRB.Data.snapshotData.targetData = {
@@ -237,12 +241,37 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		startTime = nil,
 		astralPower = 0
 	}
+	TRB.Data.snapshotData.eclipseSolar = {
+		spellId = nil,
+		ticksRemaining = 0,
+		startTime = nil
+	}
+	TRB.Data.snapshotData.eclipseLunar = {
+		spellId = nil,
+		ticksRemaining = 0,
+		startTime = nil
+	}
+	TRB.Data.snapshotData.celestialAlignment = {
+		spellId = nil,
+		ticksRemaining = 0,
+		startTime = nil
+	}
+	TRB.Data.snapshotData.incarnationChosenOfElune = {
+		spellId = nil,
+		ticksRemaining = 0,
+		startTime = nil
+	}
 	TRB.Data.snapshotData.starfall = {
 		spellId = nil,
 		ticksRemaining = 0,
 		endTime = nil
 	}
 	TRB.Data.snapshotData.onethsClearVision = {
+		spellId = nil,
+		endTime = nil,
+		duration = 0
+	}
+	TRB.Data.snapshotData.onethsPerception = {
 		spellId = nil,
 		endTime = nil,
 		duration = 0
@@ -271,12 +300,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             
 			{ variable = "#starsurge", icon = TRB.Data.spells.starsurge.icon, description = "Starsurge", printInSettings = true },
 			{ variable = "#starfall", icon = TRB.Data.spells.fullMoon.icon, description = "Starfall", printInSettings = true },
-            { variable = "#ocv", icon = TRB.Data.spells.onethsClearVision.icon, description = "Oneth's Clear Vision", printInSettings = true },
-			{ variable = "#oneth", icon = TRB.Data.spells.onethsClearVision.icon, description = "Oneth's Clear Vision", printInSettings = false },
-			{ variable = "#oneths", icon = TRB.Data.spells.onethsClearVision.icon, description = "Oneth's Clear Vision", printInSettings = false },
+			{ variable = "#oneths", icon = TRB.Data.spells.onethsClearVision.icon .. " or " .. TRB.Data.spells.onethsPerception.icon, description = "Oneth's Clear Vision or Perception, whichever is active", printInSettings = true },
+			{ variable = "#onethsClearVision", icon = TRB.Data.spells.onethsClearVision.icon, description = "Oneth's Clear Vision", printInSettings = true },
+			{ variable = "#onethsPerception", icon = TRB.Data.spells.onethsPerception.icon, description = "Oneth's Perception", printInSettings = true },
 			
+			{ variable = "#eclipse", icon = TRB.Data.spells.incarnationChosenOfElune.icon .. TRB.Data.spells.celestialAlignment.icon .. TRB.Data.spells.eclipseSolar.icon .. " or " .. TRB.Data.spells.eclipseLunar.icon, description = "Current active Eclipse", printInSettings = true },
 			{ variable = "#celestialAlignment", icon = TRB.Data.spells.celestialAlignment.icon, description = "Celestial Alignment", printInSettings = true },            
-            { variable = "#solar", icon = TRB.Data.spells.eclipseSolar.icon, description = "Eclipse (Solar)", printInSettings = true },
+			{ variable = "#icoe", icon = TRB.Data.spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = true },            
+			{ variable = "#coe", icon = TRB.Data.spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = false },            
+			{ variable = "#incarnation", icon = TRB.Data.spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = false },            
+			{ variable = "#incarnationChosenOfElune", icon = TRB.Data.spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = false },            
+			{ variable = "#solar", icon = TRB.Data.spells.eclipseSolar.icon, description = "Eclipse (Solar)", printInSettings = true },
             { variable = "#eclipseSolar", icon = TRB.Data.spells.eclipseSolar.icon, description = "Eclipse (Solar)", printInSettings = false },
             { variable = "#solarEclipse", icon = TRB.Data.spells.eclipseSolar.icon, description = "Eclipse (Solar)", printInSettings = false },
             { variable = "#lunar", icon = TRB.Data.spells.eclipseLunar.icon, description = "Eclipse (Lunar)", printInSettings = true },
@@ -308,6 +342,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	
 			{ variable = "$moonkinForm", description = "Currently in Moonkin Form. Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$eclipse", description = "Currently in any kind of Eclipse. Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$eclipseTime", description = "Remaining duration of Eclipse.", printInSettings = true, color = false },
 			{ variable = "$lunar", description = "Currently in Eclipse (Lunar). Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$lunarEclipse", description = "Currently in Eclipse (Lunar). Logic variable only!", printInSettings = false, color = false },
 			{ variable = "$eclipseLunar", description = "Currently in Eclipse (Lunar). Logic variable only!", printInSettings = false, color = false },
@@ -336,7 +371,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$moonfireCount", description = "Number of Moonfires active on targets", printInSettings = true, color = false },
 			{ variable = "$stellarFlareCount", description = "Number of Stellar Flares active on targets", printInSettings = true, color = false },
 			
-			{ variable = "$ocvTime", description = "Time remaining on Oneth's Clear Vision buff", printInSettings = true, color = false },
+			{ variable = "$onethsTime", description = "Time remaining on Oneth's Clear Vision/Perception buff", printInSettings = true, color = false },
+			{ variable = "$oneths", description = "Oneth's Clear Vision/Perception proc is active. Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$onethsClearVision", description = "Oneth's Clear Vision proc is active. Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$onethsPerception", description = "Oneth's Perception proc is active. Logic variable only!", printInSettings = true, color = false },
 				
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -489,6 +527,28 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		resourceFrame.threshold2:Show()
 	end
 
+	local function GetEclipseRemainingTime()		
+		local currentTime = GetTime()
+		local remainingTime = 0
+		local icon = nil
+
+		if TRB.Data.spells.celestialAlignment.isActive then
+			remainingTime = TRB.Data.snapshotData.celestialAlignment.endTime - currentTime
+			icon = TRB.Data.spells.celestialAlignment.icon
+		elseif TRB.Data.spells.incarnationChosenOfElune.isActive then
+			remainingTime = TRB.Data.snapshotData.incarnationChosenOfElune.endTime - currentTime
+			icon = TRB.Data.spells.incarnationChosenOfElune.icon
+		elseif TRB.Data.spells.eclipseSolar.isActive then
+			remainingTime = TRB.Data.snapshotData.eclipseSolar.endTime - currentTime
+			icon = TRB.Data.spells.eclipseSolar.icon
+		elseif TRB.Data.spells.eclipseLunar.isActive then
+			remainingTime = TRB.Data.snapshotData.eclipseLunar.endTime - currentTime
+			icon = TRB.Data.spells.eclipseLunar.icon
+		end
+
+		return remainingTime, icon
+	end
+
     local function IsValidVariableForSpec(var)
 		local valid = TRB.Functions.IsValidVariableBase(var)
 		if valid then
@@ -515,6 +575,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		elseif var == "$celestialAlignment" then
 			if TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
+				valid = true
+			end
+		elseif var == "$eclipseTime" then
+			if TRB.Data.spells.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive or TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
 				valid = true
 			end
 		elseif var == "$resource" or var == "$astralPower" then
@@ -577,8 +641,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if TRB.Data.snapshotData.furyOfElune.startTime ~= nil then
 				valid = true
 			end
-		elseif var == "$ocvTime" then
-			if TRB.Data.snapshotData.onethsClearVision.spellId ~= nil then
+		elseif var == "$onethTime" then
+			if TRB.Data.spells.onethsClearVision.isActive or TRB.Data.spells.onethsClearVision.isActive  then
+				valid = true
+			end
+		elseif var == "$onethsClearVision" then
+			if TRB.Data.spells.onethsClearVision.isActive then
+				valid = true
+			end
+		elseif var == "$onethsPerception" then
+			if TRB.Data.spells.onethsClearVision.isActive then
 				valid = true
 			end
 		else
@@ -640,11 +712,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local stellarFlareCount = TRB.Data.snapshotData.targetData.stellarFlare or 0
 
 		--$mdTime
-		local _ocvTime = 0
+		local _onethsTime = 0
 		if TRB.Data.snapshotData.onethsClearVision.spellId ~= nil then
-			_ocvTime = math.abs(TRB.Data.snapshotData.onethsClearVision.endTime - currentTime)
+			_onethsTime = math.abs(TRB.Data.snapshotData.onethsClearVision.endTime - currentTime)
+		elseif TRB.Data.snapshotData.onethsClearVision.spellId ~= nil then
+			_onethsTime = math.abs(TRB.Data.snapshotData.onethsPerception.endTime - currentTime)
 		end
-		local ocvTime = string.format("%.1f", _ocvTime)
+		local onethsTime = string.format("%.1f", _onethsTime)
 
         ----------
         --$foeAstralPower
@@ -657,6 +731,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			foeTime = string.format("%.1f", math.abs(currentTime - (TRB.Data.snapshotData.furyOfElune.startTime + TRB.Data.spells.furyOfElune.duration)))
 		end
 
+		--$eclipseTime
+		local _eclispeTime, eclipseIcon = GetEclipseRemainingTime()
+		local eclipseTime = 0
+		if _eclispeTime ~= nil then
+			eclipseTime = string.format("%.1f", _eclispeTime)
+		end
+
+		--#oneths
+
+		local onethsIcon = TRB.Data.spells.onethsClearVision.icon
+		if TRB.Data.spells.onethsPerception.isActive then
+			onethsIcon = TRB.Data.spells.onethsPerception.icon
+		end
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveAstralPower or 0
@@ -680,7 +767,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#moonfire"] = TRB.Data.spells.moonfire.icon
 		lookup["#starsurge"] = TRB.Data.spells.starsurge.icon
 		lookup["#starfall"] = TRB.Data.spells.starfall.icon
+		lookup["#eclipse"] = eclipseIcon or TRB.Data.spells.celestialAlignment.icon
 		lookup["#celestialAlignment"] = TRB.Data.spells.celestialAlignment.icon
+		lookup["#icoe"] = TRB.Data.spells.incarnationChosenOfElune.icon
+		lookup["#coe"] = TRB.Data.spells.incarnationChosenOfElune.icon
+		lookup["#incarnation"] = TRB.Data.spells.incarnationChosenOfElune.icon
+		lookup["#incarnationChosenOfElune"] = TRB.Data.spells.incarnationChosenOfElune.icon
 		lookup["#solar"] = TRB.Data.spells.eclipseSolar.icon
 		lookup["#eclipseSolar"] = TRB.Data.spells.eclipseSolar.icon
 		lookup["#solarEclipse"] = TRB.Data.spells.eclipseSolar.icon
@@ -699,10 +791,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#newMoon"] = TRB.Data.spells.newMoon.icon
 		lookup["#halfMoon"] = TRB.Data.spells.halfMoon.icon
 		lookup["#fullMoon"] = TRB.Data.spells.fullMoon.icon
-		lookup["#ocv"] = TRB.Data.spells.onethsClearVision.icon
-		lookup["#oneth"] = TRB.Data.spells.onethsClearVision.icon
-		lookup["#oneths"] = TRB.Data.spells.onethsClearVision.icon
+		lookup["#oneths"] = onethsIcon
+		lookup["#onethsClearVision"] = TRB.Data.spells.onethsClearVision.icon
+		lookup["#onethsPerception"] = TRB.Data.spells.onethsPerception.icon
 		lookup["$moonkinForm"] = ""
+		lookup["$eclipseTime"] = eclipseTime
 		lookup["$eclipse"] = ""
 		lookup["$lunar"] = ""
 		lookup["$lunarEclipse"] = ""
@@ -711,7 +804,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$solarEclipse"] = ""
 		lookup["$eclipseSolar"] = ""
 		lookup["$celestialAlignment"] = ""
-		lookup["$ocvTime"] = mdTime
+		lookup["$onethsTime"] = onethsTime
+		lookup["$onethsClearVision"] = ""
+		lookup["$onethsPerception"] = ""
 		lookup["$sunfireCount"] = sunfireCount
 		lookup["$moonfireCount"] = moonfireCount
 		lookup["$stellarFlareCount"] = stellarFlareCount
@@ -805,33 +900,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function UpdateSnapshot()
 		TRB.Functions.UpdateSnapshot()
-		local currentTime = GetTime()
-		local _
-		local expirationTime
-		_, _, _, _, _, expirationTime, _, _, _, TRB.Data.spells.eclipseSolar.isActive = TRB.Functions.FindBuffById(TRB.Data.spells.eclipseSolar.id)
-		if TRB.Data.spells.eclipseSolar.isActive then
-			TRB.Data.spells.eclipseSolar.remainingTime = expirationTime - currentTime
-		else
-			TRB.Data.spells.eclipseSolar.remainingTime = 0
-		end
-		_, _, _, _, _, expirationTime, _, _, _, TRB.Data.spells.eclipseLunar.isActive = TRB.Functions.FindBuffById(TRB.Data.spells.eclipseLunar.id)
-		if TRB.Data.spells.eclipseLunar.isActive then
-			TRB.Data.spells.eclipseLunar.remainingTime = expirationTime - currentTime
-		else
-			TRB.Data.spells.eclipseLunar.remainingTime = 0
-		end
-		_, _, _, _, _, expirationTime, _, _, _, TRB.Data.spells.celestialAlignment.isActive = TRB.Functions.FindBuffById(TRB.Data.spells.celestialAlignment.id)
-		if TRB.Data.spells.celestialAlignment.isActive then
-			TRB.Data.spells.celestialAlignment.remainingTime = expirationTime - currentTime
-		else
-			TRB.Data.spells.celestialAlignment.remainingTime = 0
-		end
-		_, _, _, _, _, expirationTime, _, _, _, TRB.Data.spells.incarnationChosenOfElune.isActive = TRB.Functions.FindBuffById(TRB.Data.spells.incarnationChosenOfElune.id)
-		if TRB.Data.spells.incarnationChosenOfElune.isActive then
-			TRB.Data.spells.incarnationChosenOfElune.remainingTime = expirationTime - currentTime
-		else
-			TRB.Data.spells.incarnationChosenOfElune.remainingTime = 0
-		end		
+		--local currentTime = GetTime()
+		--local _
 
 		TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))		
 
@@ -927,26 +997,32 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                
 				if TRB.Data.snapshotData.resource >= TRB.Data.character.starsurgeThreshold then
 					resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-					if TRB.Data.settings.druid.balance.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
+
+					if TRB.Data.spells.onethsClearVision.isActive and RB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
+						TRB.Data.snapshotData.audio.playedOnethsCue = true
+						TRB.Data.snapshotData.audio.playedSfCue = true
+						PlaySoundFile(TRB.Data.settings.priest.shadow.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
+					elseif TRB.Data.settings.druid.balance.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
 						TRB.Data.snapshotData.audio.playedSsCue = true
 						PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
 					end
 				else
 					resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
 					TRB.Data.snapshotData.audio.playedSsCue = false
+					TRB.Data.snapshotData.audio.playedOnethsCue = false
 				end
 			
-				if TRB.Data.snapshotData.resource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.onethsClearVision.isActive then
+				if TRB.Data.snapshotData.resource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.onethsPerception.isActive then
 					if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > 2.4 then -- 8 * 0.3 = pandemic range
 						resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
 					else
 						resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
 					end
 
-					if TRB.Data.spells.onethsClearVision.isActive and RB.Data.settings.druid.balance.audio.ocvReady.enabled and TRB.Data.snapshotData.audio.playedOcvCue == false then
-						TRB.Data.snapshotData.audio.playedOcvCue = true
+					if TRB.Data.spells.onethsPerception.isActive and RB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
+						TRB.Data.snapshotData.audio.playedOnethsCue = true
 						TRB.Data.snapshotData.audio.playedSfCue = true
-						PlaySoundFile(TRB.Data.settings.priest.shadow.audio.ocvProc.sound, TRB.Data.settings.core.audio.channel.channel)
+						PlaySoundFile(TRB.Data.settings.priest.shadow.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
 					elseif TRB.Data.settings.druid.balance.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
 						TRB.Data.snapshotData.audio.playedSfCue = true
 						PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -954,6 +1030,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				else
 					resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
 					TRB.Data.snapshotData.audio.playedSfCue = false
+					TRB.Data.snapshotData.audio.playedOnethsCue = false
 				end
 								
 				if TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled and TRB.Data.snapshotData.resource >= TRB.Data.character.starsurgeThreshold then
@@ -970,17 +1047,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				elseif TRB.Data.spells.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive or TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
 					local timeThreshold = 0
 					local useEndOfEclipseColor = false
-					local remainingTime = 0
-
-					if TRB.Data.spells.celestialAlignment.isActive then
-						remainingTime = TRB.Data.spells.celestialAlignment.remainingTime
-					elseif TRB.Data.spells.incarnationChosenOfElune.isActive then
-						remainingTime = TRB.Data.spells.incarnationChosenOfElune.remainingTime
-					elseif TRB.Data.spells.eclipseSolar.isActive then
-						remainingTime = TRB.Data.spells.eclipseSolar.remainingTime
-					elseif TRB.Data.spells.eclipseLunar.isActive then
-						remainingTime = TRB.Data.spells.eclipseLunar.remainingTime
-					end
 
 					if TRB.Data.settings.druid.balance.endOfEclipse.enabled and (not TRB.Data.settings.druid.balance.endOfEclipse.celestialAlignmentOnly or TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive) then
 						useEndOfEclipseColor = true
@@ -992,7 +1058,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						end
 					end
 					
-					if useEndOfEclipseColor and remainingTime <= timeThreshold then
+					if useEndOfEclipseColor and GetEclipseRemainingTime() <= timeThreshold then
 						barColor = TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD
 					else
 						if TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive or (TRB.Data.spells.eclipseSolar.isActive and TRB.Data.spells.eclipseLunar.isActive) then
@@ -1172,6 +1238,48 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						TRB.Data.snapshotData.furyOfElune.ticksRemaining = TRB.Data.snapshotData.furyOfElune.ticksRemaining - 1
 						TRB.Data.snapshotData.furyOfElune.astralPower = TRB.Data.snapshotData.furyOfElune.ticksRemaining * TRB.Data.spells.furyOfElune.astralPower
 					end
+
+				elseif spellId == TRB.Data.spells.eclipseSolar.id then
+					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						TRB.Data.spells.eclipseSolar.isActive = true
+						_, _, _, _, TRB.Data.snapshotData.eclipseSolar.duration, TRB.Data.snapshotData.eclipseSolar.endTime, _, _, _, TRB.Data.snapshotData.eclipseSolar.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.eclipseSolar.id)
+					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						TRB.Data.spells.eclipseSolar.isActive = false
+						TRB.Data.snapshotData.eclipseSolar.spellId = nil
+						TRB.Data.snapshotData.eclipseSolar.duration = 0
+						TRB.Data.snapshotData.eclipseSolar.endTime = nil
+					end
+				elseif spellId == TRB.Data.spells.eclipseLunar.id then
+					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						TRB.Data.spells.eclipseLunar.isActive = true
+						_, _, _, _, TRB.Data.snapshotData.eclipseLunar.duration, TRB.Data.snapshotData.eclipseLunar.endTime, _, _, _, TRB.Data.snapshotData.eclipseLunar.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.eclipseLunar.id)
+					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						TRB.Data.spells.eclipseLunar.isActive = false
+						TRB.Data.snapshotData.eclipseLunar.spellId = nil
+						TRB.Data.snapshotData.eclipseLunar.duration = 0
+						TRB.Data.snapshotData.eclipseLunar.endTime = nil
+					end
+				elseif spellId == TRB.Data.spells.celestialAlignment.id then
+					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						TRB.Data.spells.celestialAlignment.isActive = true
+						_, _, _, _, TRB.Data.snapshotData.celestialAlignment.duration, TRB.Data.snapshotData.celestialAlignment.endTime, _, _, _, TRB.Data.snapshotData.celestialAlignment.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.celestialAlignment.id)
+					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						TRB.Data.spells.celestialAlignment.isActive = false
+						TRB.Data.snapshotData.celestialAlignment.spellId = nil
+						TRB.Data.snapshotData.celestialAlignment.duration = 0
+						TRB.Data.snapshotData.celestialAlignment.endTime = nil
+					end
+				elseif spellId == TRB.Data.spells.incarnationChosenOfElune.id then
+					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						TRB.Data.spells.incarnationChosenOfElune.isActive = true
+						_, _, _, _, TRB.Data.snapshotData.incarnationChosenOfElune.duration, TRB.Data.snapshotData.incarnationChosenOfElune.endTime, _, _, _, TRB.Data.snapshotData.incarnationChosenOfElune.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.incarnationChosenOfElune.id)
+					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						TRB.Data.spells.incarnationChosenOfElune.isActive = false
+						TRB.Data.snapshotData.incarnationChosenOfElune.spellId = nil
+						TRB.Data.snapshotData.incarnationChosenOfElune.duration = 0
+						TRB.Data.snapshotData.incarnationChosenOfElune.endTime = nil
+					end
+
 				elseif spellId == TRB.Data.spells.starfall.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 						TRB.Data.spells.starfall.isActive = true
@@ -1191,6 +1299,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						TRB.Data.snapshotData.onethsClearVision.spellId = nil
 						TRB.Data.snapshotData.onethsClearVision.duration = 0
 						TRB.Data.snapshotData.onethsClearVision.endTime = nil
+					end
+				elseif spellId == TRB.Data.spells.onethsPerception.id then
+					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						TRB.Data.spells.onethsPerception.isActive = true
+						_, _, _, _, TRB.Data.snapshotData.onethsPerception.duration, TRB.Data.snapshotData.onethsPerception.endTime, _, _, _, TRB.Data.snapshotData.onethsPerception.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.onethsPerception.id)
+					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						TRB.Data.spells.onethsPerception.isActive = false
+						TRB.Data.snapshotData.onethsPerception.spellId = nil
+						TRB.Data.snapshotData.onethsPerception.duration = 0
+						TRB.Data.snapshotData.onethsPerception.endTime = nil
 					end
 				elseif spellId == TRB.Data.spells.timewornDreambinder.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
