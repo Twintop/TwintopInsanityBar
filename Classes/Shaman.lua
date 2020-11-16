@@ -309,15 +309,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function ConstructResourceBar()
 		TRB.Functions.ConstructResourceBar(TRB.Data.settings.shaman.elemental)
-		
-		resourceFrame.threshold1:SetWidth(TRB.Data.settings.shaman.elemental.thresholdWidth)
-		resourceFrame.threshold1:SetHeight(TRB.Data.settings.shaman.elemental.bar.height)
-		resourceFrame.threshold1.texture = resourceFrame.threshold1:CreateTexture(nil, TRB.Data.settings.core.strata.level)
-		resourceFrame.threshold1.texture:SetAllPoints(resourceFrame.threshold1)
-		resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.under, true))
-		resourceFrame.threshold1:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		resourceFrame.threshold1:SetFrameLevel(128)
-		resourceFrame.threshold1:Show()
 	end
 
     local function IsValidVariableForSpec(var)

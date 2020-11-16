@@ -507,24 +507,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function ConstructResourceBar()
 		TRB.Functions.ConstructResourceBar(TRB.Data.settings.druid.balance)
-		
-		resourceFrame.threshold1:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
-		resourceFrame.threshold1:SetHeight(TRB.Data.settings.druid.balance.bar.height)
-		resourceFrame.threshold1.texture = resourceFrame.threshold1:CreateTexture(nil, TRB.Data.settings.core.strata.level)
-		resourceFrame.threshold1.texture:SetAllPoints(resourceFrame.threshold1)
-		resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-		resourceFrame.threshold1:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		resourceFrame.threshold1:SetFrameLevel(128)
-		resourceFrame.threshold1:Show()
-		
-		resourceFrame.threshold2:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
-		resourceFrame.threshold2:SetHeight(TRB.Data.settings.druid.balance.bar.height)
-		resourceFrame.threshold2.texture = resourceFrame.threshold2:CreateTexture(nil, TRB.Data.settings.core.strata.level)
-		resourceFrame.threshold2.texture:SetAllPoints(resourceFrame.threshold2)
-		resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-		resourceFrame.threshold2:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		resourceFrame.threshold2:SetFrameLevel(128)
-		resourceFrame.threshold2:Show()
 	end
 
 	local function GetEclipseRemainingTime()		
@@ -858,7 +840,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				local spellName = select(1, currentSpell)
 				if spellName == TRB.Data.spells.wrath.name then
                     FillSnapshotDataCasting(TRB.Data.spells.wrath)
-                    if TRB.Data.character.talents.soulOfTheForest and TRB.Data.spells.eclipseSolar.isActive then
+                    if TRB.Data.character.talents.soulOfTheForest.isSelected and TRB.Data.spells.eclipseSolar.isActive then
                         TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal * TRB.Data.spells.soulOfTheForest.modifier
                     end
 				elseif spellName == TRB.Data.spells.starfire.name then

@@ -653,24 +653,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function ConstructResourceBar()
 		TRB.Functions.ConstructResourceBar(TRB.Data.settings.priest.shadow)
-		
-		resourceFrame.threshold1:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
-		resourceFrame.threshold1:SetHeight(TRB.Data.settings.priest.shadow.bar.height)
-		resourceFrame.threshold1.texture = resourceFrame.threshold1:CreateTexture(nil, TRB.Data.settings.core.strata.level)
-		resourceFrame.threshold1.texture:SetAllPoints(resourceFrame.threshold1)
-		resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
-		resourceFrame.threshold1:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		resourceFrame.threshold1:SetFrameLevel(128)
-		resourceFrame.threshold1:Show()
-		
-		resourceFrame.threshold2:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
-		resourceFrame.threshold2:SetHeight(TRB.Data.settings.priest.shadow.bar.height)
-		resourceFrame.threshold2.texture = resourceFrame.threshold2:CreateTexture(nil, TRB.Data.settings.core.strata.level)
-		resourceFrame.threshold2.texture:SetAllPoints(resourceFrame.threshold2)
-		resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
-		resourceFrame.threshold2:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		resourceFrame.threshold2:SetFrameLevel(128)
-		resourceFrame.threshold2:Show()
 	end
 
 	local function CalculateRemainingTime()

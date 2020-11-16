@@ -1363,7 +1363,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 					
 					controls.colors.mindbenderThreshold.Texture:SetColorTexture(r, g, b, 1-a)
-					passiveFrame.threshold1.Texture:SetColorTexture(r, g, b, 1-a)
+					passiveFrame.threshold1.texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.threshold.mindbender = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
