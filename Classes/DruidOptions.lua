@@ -1769,7 +1769,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.druid.balance.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1792,7 +1792,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.druid.balance.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1815,7 +1815,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.druid.balance.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1881,7 +1881,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.currentAstralPowerText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.druid.balance.colors.text.current = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1903,7 +1903,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.castingAstralPowerText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.druid.balance.colors.text.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1926,7 +1926,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.thresholdAstralPowerText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.druid.balance.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1948,7 +1948,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.overcapAstralPowerText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.druid.balance.colors.text.overcap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)

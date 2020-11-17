@@ -1770,7 +1770,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1793,7 +1793,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1816,7 +1816,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1882,7 +1882,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.currentInsanityText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.text.currentInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1904,7 +1904,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.castingInsanityText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.text.castingInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1927,7 +1927,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.thresholdInsanityText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1949,7 +1949,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.overcapInsanityText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.text.overcapInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -2016,7 +2016,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.hasteBelow.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.text.hasteBelow = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -2039,7 +2039,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.hasteApproaching.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.text.hasteApproaching = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -2062,7 +2062,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.hasteAbove.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.text.hasteAbove = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -2126,7 +2126,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.s2mBelow.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.text.s2mBelow = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -2149,7 +2149,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.s2mApproaching.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.text.s2mApproaching = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -2172,7 +2172,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.s2mAbove.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.shadow.colors.text.s2mAbove = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)

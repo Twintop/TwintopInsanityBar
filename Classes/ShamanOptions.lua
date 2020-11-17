@@ -1527,7 +1527,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
                     --Text doesn't care about Alpha, but the color picker does!
-                    a = 1.0
+                    a = 0.0
         
                     controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1550,7 +1550,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
                     --Text doesn't care about Alpha, but the color picker does!
-                    a = 1.0
+                    a = 0.0
         
                     controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1573,7 +1573,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
                     --Text doesn't care about Alpha, but the color picker does!
-                    a = 1.0
+                    a = 0.0
         
                     controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1639,7 +1639,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
                     --Text doesn't care about Alpha, but the color picker does!
-                    a = 1.0
+                    a = 0.0
         
                     controls.colors.currentMaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1661,7 +1661,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
                     --Text doesn't care about Alpha, but the color picker does!
-                    a = 1.0
+                    a = 0.0
         
                     controls.colors.castingMaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1684,7 +1684,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.thresholdmaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.shaman.elemental.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1706,7 +1706,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						a = OpacitySliderFrame:GetValue()
 					end
 					--Text doesn't care about Alpha, but the color picker does!
-					a = 1.0
+					a = 0.0
 		
 					controls.colors.overcapmaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
