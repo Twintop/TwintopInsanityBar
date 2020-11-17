@@ -39,7 +39,12 @@ local function LoadDefaultSettings()
             feral = {},
             guardian = {},
             restoration = {}
-        },        
+        },
+        hunter = {
+            beastMastery = {},
+            marksmanship = {},
+            survival = {}
+        },
         priest = {
             discipline = {},
             holy = {},

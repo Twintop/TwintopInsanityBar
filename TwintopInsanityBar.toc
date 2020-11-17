@@ -1,7 +1,7 @@
-## Interface: 90001
+## Interface: 90002
 ## Title: Twintop's Resource Bar
 ## Author: Twintop
-## Version: 9.0.2.23
+## Version: 9.0.2.24
 ## SavedVariables: TwintopInsanityBarSettings
 ## DefaultState: enabled
 ## Notes: Multi-class Resource Bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
@@ -18,6 +18,8 @@ Options.lua
 
 Classes\DruidOptions.lua
 Classes\Druid.lua
+Classes\HunterOptions.lua
+Classes\Hunter.lua
 Classes\PriestOptions.lua
 Classes\Priest.lua
 Classes\ShamanOptions.lua
