@@ -135,7 +135,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			id = 263165,
 			name = "",
 			icon = "",
-			insanity = 6,
+			insanity = 15,
 			fotm = false
 		},
 		s2m = {
@@ -165,7 +165,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			id = 8092,
 			name = "",
 			icon = "",
-			insanity = 7,
+			insanity = 8,
 			fotm = true
 		},
 		devouringPlague = {
@@ -217,7 +217,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			id = 155271,
 			idSpawn = 147193,
 			idImpact = 148859,
-			insanity = 1,
+			insanity = 2,
 			fotm = false,
 			name = "",
 			icon = ""
@@ -226,7 +226,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			id = 342834,
 			name = "",
 			icon = "",
-			insanity = 8,
+			insanity = 20,
 			fotm = false
 		},
 		hungeringVoid = {
@@ -486,7 +486,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.character.talents.surrenderToMadeness.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 		
 		TRB.Data.character.devouringPlagueThreshold = 50
-		TRB.Data.character.searingNightmareThreshold = 35
+		TRB.Data.character.searingNightmareThreshold = 30
 		
 		if TRB.Data.settings.priest ~= nil and TRB.Data.settings.priest.shadow ~= nil then
 			if TRB.Data.settings.priest.shadow.devouringPlagueThreshold and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
