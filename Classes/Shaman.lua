@@ -92,11 +92,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			duration = 15
 		},
 		lavaBeam = {
-			id = 114050,
+			id = 114074,
 			name = "",
 			icon = "",
-			maelstrom = 3,
-			echoingShock = true
+			maelstrom = 4, --Tooltip says 3, but spell ID 217891 and in game says 4
+			echoingShock = false
         },
         flameShock = {
             id = 188389,
