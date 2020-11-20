@@ -145,6 +145,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			duration = 15
 		},
 
+		stormkeeper = {
+			id = 191634,
+			name = "",
+			icon = "",
+			stacks = 2,
+			duration = 15
+		},
 		ascendance = {
 			id = 114050,
 			name = "", 
@@ -847,6 +854,21 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					elseif type == "SPELL_AURA_REMOVED_DOSE" then
 						TRB.Data.snapshotData.icefury.stacksRemaining = TRB.Data.snapshotData.icefury.stacksRemaining - 1
 						TRB.Data.snapshotData.icefury.maelstrom = TRB.Data.snapshotData.icefury.stacksRemaining * TRB.Data.spells.frostShock.maelstrom
+					end
+				elseif spellId == TRB.Data.spells.stormkeeper.id then
+					if type == "SPELL_AURA_APPLIED" then -- Stormkeeper
+						TRB.Data.snapshotData.stormkeeper.isActive = true
+						TRB.Data.snapshotData.stormkeeper.stacksRemaining = TRB.Data.spells.stormkeeper.stacks
+						TRB.Data.snapshotData.stormkeeper.maelstrom = TRB.Data.snapshotData.stormkeeper.stacksRemaining * TRB.Data.spells.frostShock.maelstrom
+						TRB.Data.snapshotData.stormkeeper.startTime = currentTime
+					elseif type == "SPELL_AURA_REMOVED" then
+						TRB.Data.snapshotData.stormkeeper.isActive = false
+						TRB.Data.snapshotData.stormkeeper.stacksRemaining = 0
+						TRB.Data.snapshotData.stormkeeper.maelstrom = 0
+						TRB.Data.snapshotData.stormkeeper.startTime = nil
+					elseif type == "SPELL_AURA_REMOVED_DOSE" then
+						TRB.Data.snapshotData.stormkeeper.stacksRemaining = TRB.Data.snapshotData.stormkeeper.stacksRemaining - 1
+						TRB.Data.snapshotData.stormkeeper.maelstrom = TRB.Data.snapshotData.stormkeeper.stacksRemaining * TRB.Data.spells.frostShock.maelstrom
 					end
 				elseif spellId == TRB.Data.spells.surgeOfPower.id then
 					if type == "SPELL_AURA_APPLIED" then -- Surge of Power
