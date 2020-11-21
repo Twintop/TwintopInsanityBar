@@ -188,10 +188,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
         
         --[[
 		if TRB.Data.hunter.shaman ~= nil and TRB.Data.settings.hunter.marksmanship ~= nil and TRB.Data.settings.hunter.marksmanship.earthShockThreshold and TRB.Data.character.earthShockThreshold < TRB.Data.character.maxResource then
-			resourceFrame.threshold1:Show()
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+			resourceFrame.thresholds[1]:Show()
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 		else
-			resourceFrame.threshold1:Hide()
+			resourceFrame.thresholds[1]:Hide()
         end
         ]]
 	end
@@ -549,22 +549,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				else]]
 					passiveBarValue = castingBarValue
 				--end
-				passiveFrame.threshold1.texture:Hide()
+				passiveFrame.thresholds[1].texture:Hide()
 				
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.hunter.marksmanship, passiveFrame, passiveBarValue)
 
-                resourceFrame.threshold1:Hide()
-                resourceFrame.threshold2:Hide()
+                resourceFrame.thresholds[1]:Hide()
+                resourceFrame.thresholds[2]:Hide()
 
 				--[[if TRB.Data.settings.hunter.marksmanship.earthShockThreshold then
-					resourceFrame.threshold1:Show()
+					resourceFrame.thresholds[1]:Show()
 				else
-					resourceFrame.threshold1:Hide()
+					resourceFrame.thresholds[1]:Hide()
 				end]]
 				
 				--[[if TRB.Data.snapshotData.resource >= TRB.Data.character.earthShockThreshold then				
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.earthShock, true))
-					resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.threshold.over, true))
+					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.threshold.over, true))
 					if TRB.Data.settings.hunter.marksmanship.colors.bar.flashEnabled then
 						TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.hunter.marksmanship.colors.bar.flashAlpha, TRB.Data.settings.hunter.marksmanship.colors.bar.flashPeriod)
 					else
@@ -576,7 +576,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
 					end
 				else]]
-					resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.threshold.under, true))
+					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.threshold.under, true))
 					barContainerFrame:SetAlpha(1.0)
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.base, true))
 					--TRB.Data.snapshotData.audio.playedEsCue = false

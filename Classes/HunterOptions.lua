@@ -82,6 +82,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local settings = {
 			hastePrecision=2,
 			thresholdWidth=2,
+			thresholds = {
+				aimedShot = true,
+				arcaneShot = true, --Also Chimera Shot
+				serpentSting = true,
+				barrage = true,
+				killShot = true,
+				multiShot = true,
+				aMurderOfCrows = true,
+				explosiveShot = true,
+				scareBeast = true,
+				burstingShot = true
+			},
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,

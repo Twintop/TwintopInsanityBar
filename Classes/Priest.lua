@@ -1,6 +1,10 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 5 then --Only do this if we're on a Priest!
+	TRB.Frames.passiveFrame.thresholds[1] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
+	TRB.Frames.resourceFrame.thresholds[1] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+	TRB.Frames.resourceFrame.thresholds[2] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
@@ -490,17 +494,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 		if TRB.Data.settings.priest ~= nil and TRB.Data.settings.priest.shadow ~= nil then
 			if TRB.Data.settings.priest.shadow.devouringPlagueThreshold and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
-				resourceFrame.threshold1:Show()
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+				resourceFrame.thresholds[1]:Show()
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
 			else
-				resourceFrame.threshold1:Hide()
+				resourceFrame.thresholds[1]:Hide()
 			end
 			
 			if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then
-				resourceFrame.threshold2:Show()		
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.threshold2, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+				resourceFrame.thresholds[2]:Show()		
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 			else
-				resourceFrame.threshold2:Hide()
+				resourceFrame.thresholds[2]:Hide()
 			end
 
 			local wristItemLink = GetInventoryItemLink("player", 9)
@@ -1515,37 +1519,37 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if TRB.Data.character.talents.as.isSelected or TRB.Data.snapshotData.mindbender.resourceFinal > 0 or TRB.Data.snapshotData.deathAndMadness.isActive then
 					passiveBarValue = castingBarValue + ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity, false) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.mindbender.resourceFinal + TRB.Data.snapshotData.deathAndMadness.insanity + TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal)
 					if TRB.Data.snapshotData.mindbender.resourceFinal > 0 and (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal) < TRB.Data.character.maxResource then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, passiveFrame.threshold1, passiveFrame, TRB.Data.settings.priest.shadow.thresholdWidth, (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal), TRB.Data.character.maxResource)
-						passiveFrame.threshold1.texture:Show()
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, passiveFrame.thresholds[1], passiveFrame, TRB.Data.settings.priest.shadow.thresholdWidth, (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal), TRB.Data.character.maxResource)
+						passiveFrame.thresholds[1].texture:Show()
 					else
-						passiveFrame.threshold1.texture:Hide()
+						passiveFrame.thresholds[1].texture:Hide()
 					end
 				else
-					passiveFrame.threshold1.texture:Hide()
+					passiveFrame.thresholds[1].texture:Hide()
 					passiveBarValue = castingBarValue
 				end
 
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.shadow, passiveFrame, passiveBarValue)
 
 				if TRB.Data.settings.priest.shadow.devouringPlagueThreshold then
-					resourceFrame.threshold1:Show()
+					resourceFrame.thresholds[1]:Show()
 				else
-					resourceFrame.threshold1:Hide()
+					resourceFrame.thresholds[1]:Hide()
 				end
 
 				if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then			
 					if TRB.Data.snapshotData.resource >= TRB.Data.character.searingNightmareThreshold then
-						resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true))
+						resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true))
 					else
-						resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
+						resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
 					end
-					resourceFrame.threshold2:Show()
+					resourceFrame.thresholds[2]:Show()
 				else
-					resourceFrame.threshold2:Hide()
+					resourceFrame.thresholds[2]:Hide()
 				end
 				
 				if TRB.Data.snapshotData.resource >= TRB.Data.character.devouringPlagueThreshold or TRB.Data.spells.mindDevourer.isActive then
-					resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true))
+					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true))
 					if TRB.Data.settings.priest.shadow.colors.bar.flashEnabled then
 						TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.priest.shadow.colors.bar.flashAlpha, TRB.Data.settings.priest.shadow.colors.bar.flashPeriod)
 					else
@@ -1561,7 +1565,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						PlaySoundFile(TRB.Data.settings.priest.shadow.audio.dpReady.sound, TRB.Data.settings.core.audio.channel.channel)
 					end
 				else
-					resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
+					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
 					barContainerFrame:SetAlpha(1.0)
 					TRB.Data.snapshotData.audio.playedDpCue = false
 					TRB.Data.snapshotData.audio.playedMdCue = false

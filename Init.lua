@@ -26,9 +26,8 @@ TRB.Frames.castingFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerF
 TRB.Frames.passiveFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
 TRB.Frames.barBorderFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
 
-TRB.Frames.passiveFrame.threshold1 = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
-TRB.Frames.resourceFrame.threshold1 = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-TRB.Frames.resourceFrame.threshold2 = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+TRB.Frames.passiveFrame.thresholds = {}
+TRB.Frames.resourceFrame.thresholds = {}
 
 TRB.Frames.leftTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
 TRB.Frames.middleTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
