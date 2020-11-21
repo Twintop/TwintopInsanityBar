@@ -1,6 +1,10 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 3 then --Only do this if we're on a Hunter!
+	for x = 1, 10 do
+		TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+	end
+
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
@@ -549,12 +553,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				else]]
 					passiveBarValue = castingBarValue
 				--end
-				passiveFrame.thresholds[1].texture:Hide()
 				
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.hunter.marksmanship, passiveFrame, passiveBarValue)
 
-                resourceFrame.thresholds[1]:Hide()
-                resourceFrame.thresholds[2]:Hide()
+                --resourceFrame.thresholds[1]:Hide()
+                --resourceFrame.thresholds[2]:Hide()
 
 				--[[if TRB.Data.settings.hunter.marksmanship.earthShockThreshold then
 					resourceFrame.thresholds[1]:Show()
