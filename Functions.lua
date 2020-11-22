@@ -1024,15 +1024,10 @@ local function CheckCharacter()
 	TRB.Data.character.guid = UnitGUID("player")
     TRB.Data.character.specGroup = GetActiveSpecGroup()
 	TRB.Functions.FillSpellData()
-	--TRB.Frames.resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)
-	--TRB.Frames.castingFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)	
-	--TRB.Frames.passiveFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)	
 end
 TRB.Functions.CheckCharacter = CheckCharacter
 
-local function UpdateSnapshot()	    
-	--print(UnitPower("player", TRB.Data.resource, true))
-	--TRB.Data.snapshotData.resource = TRB.Functions.RoundTo(UnitPower("player", TRB.Data.resource, true) / TRB.Data.resourceFactor, 2)
+local function UpdateSnapshot()
 	TRB.Data.snapshotData.resource = UnitPower("player", TRB.Data.resource, true)
 	TRB.Data.snapshotData.haste = UnitSpellHaste("player")
 	TRB.Data.snapshotData.crit = GetCritChance("player")
