@@ -44,7 +44,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			elementalBlast = {
 				isSelected = false
 			},
+			surgeOfPower = {
+				isSelected = false
+			},
 			icefury = {
+				isSelected = false
+			},
+			stormkeeper = {
 				isSelected = false
 			},
 			ascendance = {
@@ -61,6 +67,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			name = "",
 			icon = "",
 			maelstrom = 8,
+			overload = 3,
 			echoingShock = true
 		},
 		lavaBurst = {
@@ -70,36 +77,24 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			maelstrom = 10,
 			echoingShock = true
 		},
-		elementalBlast = {
-			id = 117014,
-			name = "",
-			icon = "",
-			maelstrom = 30,
-			echoingShock = false --Is this possible to do?
-		},
+
 		chainLightning = {
 			id = 188443,
 			name = "",
 			icon = "",
 			maelstrom = 4,
+			overload = 3,
 			echoingShock = true
-		},
-		icefury = {
-			id = 210714,
-			name = "",
-			icon = "",
-			maelstrom = 25,
-			echoingShock = true,
-			stacks = 4,
-			duration = 15
 		},
 		lavaBeam = {
-			id = 114050,
+			id = 114074,
 			name = "",
 			icon = "",
-			maelstrom = 3,
-			echoingShock = true
-        },
+			maelstrom = 4, --Tooltip says 3, but spell ID 217891 and in game says 4
+			overload = 3,
+			echoingShock = false
+		},
+		
         flameShock = {
             id = 188389,
             name = "",
@@ -119,10 +114,45 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
             maelstrom = 5,
 			echoingShock = false
 		},
+
+		elementalBlast = {
+			id = 117014,
+			name = "",
+			icon = "",
+			maelstrom = 30,
+			overload = 15,
+			echoingShock = false --Is this possible to do?
+		},
 		echoingShock = {
 			id = 320125,
 			name = "", 
 			icon = ""
+		},
+	
+		
+		surgeOfPower = {
+			id = 285514,
+			name = "", 
+			icon = "",
+			isActive = false
+		},
+		icefury = {
+			id = 210714,
+			name = "",
+			icon = "",
+			maelstrom = 25,
+			overload = 12,
+			echoingShock = true,
+			stacks = 4,
+			duration = 15
+		},
+
+		stormkeeper = {
+			id = 191634,
+			name = "",
+			icon = "",
+			stacks = 2,
+			duration = 15
 		},
 		ascendance = {
 			id = 114050,
@@ -139,11 +169,22 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		hitTime = nil,
 		hasStruckTargets = false
 	}
+	TRB.Data.snapshotData.surgeOfPower = {
+		isActive = false
+	}
 	TRB.Data.snapshotData.icefury = {
 		isActive = false,
 		stacksRemaining = 0,
 		startTime = nil,
 		maelstrom = 0
+	}
+	TRB.Data.snapshotData.stormkeeper = {
+		isActive = false,
+		spell = nil
+	}
+	TRB.Data.snapshotData.echoingShock = {
+		isActive = false,
+		spell = nil
 	}
 	TRB.Data.snapshotData.echoingShock = {
 		isActive = false,
@@ -209,7 +250,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom)
 		TRB.Data.character.talents.echoingShock.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.elementalBlast.isSelected = select(4, GetTalentInfo(2, 3, TRB.Data.character.specGroup))
+		TRB.Data.character.talents.surgeOfPower.isSelected = select(4, GetTalentInfo(6, 1, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.icefury.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
+		TRB.Data.character.talents.stormkeeper.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.ascendance.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 		
 		TRB.Data.character.earthShockThreshold = 60
@@ -508,7 +551,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			else	
 				local spellName = select(1, currentSpell)
 				if spellName == TRB.Data.spells.lightningBolt.name then
-                    FillSnapshotDataCasting(TRB.Data.spells.lightningBolt)
+					FillSnapshotDataCasting(TRB.Data.spells.lightningBolt)
+					
+					if TRB.Data.spells.surgeOfPower.isActive then
+						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.snapshotData.casting.resourceRaw + TRB.Data.spells.lightningBolt.overload
+						TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.lightningBolt.overload
+					end
 				elseif spellName == TRB.Data.spells.lavaBurst.name then
                     FillSnapshotDataCasting(TRB.Data.spells.lavaBurst)
 				elseif spellName == TRB.Data.spells.elementalBlast.name then
@@ -805,6 +853,27 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					elseif type == "SPELL_AURA_REMOVED_DOSE" then
 						TRB.Data.snapshotData.icefury.stacksRemaining = TRB.Data.snapshotData.icefury.stacksRemaining - 1
 						TRB.Data.snapshotData.icefury.maelstrom = TRB.Data.snapshotData.icefury.stacksRemaining * TRB.Data.spells.frostShock.maelstrom
+					end
+				elseif spellId == TRB.Data.spells.stormkeeper.id then
+					if type == "SPELL_AURA_APPLIED" then -- Stormkeeper
+						TRB.Data.snapshotData.stormkeeper.isActive = true
+						TRB.Data.snapshotData.stormkeeper.stacksRemaining = TRB.Data.spells.stormkeeper.stacks
+						TRB.Data.snapshotData.stormkeeper.maelstrom = TRB.Data.snapshotData.stormkeeper.stacksRemaining * TRB.Data.spells.frostShock.maelstrom
+						TRB.Data.snapshotData.stormkeeper.startTime = currentTime
+					elseif type == "SPELL_AURA_REMOVED" then
+						TRB.Data.snapshotData.stormkeeper.isActive = false
+						TRB.Data.snapshotData.stormkeeper.stacksRemaining = 0
+						TRB.Data.snapshotData.stormkeeper.maelstrom = 0
+						TRB.Data.snapshotData.stormkeeper.startTime = nil
+					elseif type == "SPELL_AURA_REMOVED_DOSE" then
+						TRB.Data.snapshotData.stormkeeper.stacksRemaining = TRB.Data.snapshotData.stormkeeper.stacksRemaining - 1
+						TRB.Data.snapshotData.stormkeeper.maelstrom = TRB.Data.snapshotData.stormkeeper.stacksRemaining * TRB.Data.spells.frostShock.maelstrom
+					end
+				elseif spellId == TRB.Data.spells.surgeOfPower.id then
+					if type == "SPELL_AURA_APPLIED" then -- Surge of Power
+						TRB.Data.spells.surgeOfPower.isActive = true
+					elseif type == "SPELL_AURA_REMOVED" then
+						TRB.Data.spells.surgeOfPower.isActive = false
 					end
 				elseif spellId == TRB.Data.spells.echoingShock.id then
 					if type == "SPELL_AURA_APPLIED" then -- Echoing Shock

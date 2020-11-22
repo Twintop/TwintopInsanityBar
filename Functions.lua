@@ -42,8 +42,52 @@ local function IsNumeric(data)
 end
 TRB.Functions.IsNumeric = IsNumeric
 
-local function RoundTo(num, numDecimalPlaces)
-	return tonumber(string.format("%." .. (numDecimalPlaces or 0) .. "f", num))
+local function RoundTo(num, numDecimalPlaces, mode)
+	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
+	local newNum = tonumber(num)
+	if mode == "floor" then
+		local whole, decimal = strsplit(".", newNum, 2)
+		
+		if numDecimalPlaces == 0 then
+			newNum = whole
+		elseif decimal == nil or strlen(decimal) == 0 then
+			newNum = string.format("%s.%0" .. numDecimalPlaces .. "d", whole, 0)
+		else
+			local chopped = string.sub(decimal, 1, numDecimalPlaces)
+			if strlen(chopped) < numDecimalPlaces then
+				chopped = string.format("%s%0" .. (numDecimalPlaces - strlen(chopped)) .. "d", chopped, 0)
+			end
+			newNum = string.format("%s.%s", whole, chopped)
+		end
+		
+		return newNum
+	elseif mode == "ceil" then
+		local whole, decimal = strsplit(".", newNum, 2)
+		
+		if numDecimalPlaces == 0 then
+			if (tonumber(whole) or 0) < num then
+				whole = (tonumber(whole) or 0) + 1
+			end
+
+			newNum = whole
+		elseif decimal == nil or strlen(decimal) == 0 then
+			newNum = string.format("%s.%0" .. numDecimalPlaces .. "d", whole, 0)
+		else
+			local chopped = string.sub(decimal, 1, numDecimalPlaces)
+			if tonumber(string.format("0.%s", chopped)) < tonumber(string.format("0.%s", decimal)) then
+				chopped = chopped + 1
+			end
+
+			if strlen(chopped) < numDecimalPlaces then
+				chopped = string.format("%s%0" .. (numDecimalPlaces - strlen(chopped)) .. "d", chopped, 0)
+			end
+			newNum = string.format("%s.%s", whole, chopped)
+		end
+		
+		return newNum
+	end
+
+	return tonumber(string.format("%." .. numDecimalPlaces .. "f", newNum))
 end
 TRB.Functions.RoundTo = RoundTo
 
@@ -981,14 +1025,11 @@ local function CheckCharacter()
 	TRB.Data.character.guid = UnitGUID("player")
     TRB.Data.character.specGroup = GetActiveSpecGroup()
 	TRB.Functions.FillSpellData()
-	--TRB.Frames.resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)
-	--TRB.Frames.castingFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)	
-	--TRB.Frames.passiveFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)	
 end
 TRB.Functions.CheckCharacter = CheckCharacter
 
-local function UpdateSnapshot()	    
-	TRB.Data.snapshotData.resource = TRB.Functions.RoundTo(UnitPower("player", TRB.Data.resource, true) / TRB.Data.resourceFactor, 0)
+local function UpdateSnapshot()
+	TRB.Data.snapshotData.resource = UnitPower("player", TRB.Data.resource, true)
 	TRB.Data.snapshotData.haste = UnitSpellHaste("player")
 	TRB.Data.snapshotData.crit = GetCritChance("player")
 	TRB.Data.snapshotData.mastery = GetMasteryEffect("player")

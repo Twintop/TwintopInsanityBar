@@ -1260,7 +1260,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local title = ""
 
 		local dropdownWidth = 225
-		local sliderWidth = 280
+		local sliderWidth = 260
 		local sliderHeight = 20
 
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", 0, yCoord)

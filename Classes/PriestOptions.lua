@@ -119,7 +119,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			s2mApproachingThreshold=15,
 			s2mThreshold=20,
 			hastePrecision=2,
-			fotmPrecision=true,
+			insanityPrecision=0,
 			devouringPlagueThreshold=true,
 			searingNightmareThreshold=true,
 			thresholdWidth=2,
@@ -1505,7 +1505,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local title = ""
 
 		local dropdownWidth = 225
-		local sliderWidth = 280
+		local sliderWidth = 260
 		local sliderHeight = 20
 
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", 0, yCoord)
@@ -1983,7 +1983,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Haste Threshold Colors in Voidform", 0, yCoord)
 
 		yCoord = yCoord - 50
-		title = "Low to Medium Haste% Threshold in Voidform"
+		title = "Low to Med. Haste% Threshold in Voidform"
 		controls.hasteApproachingThreshold = TRB.UiFunctions.BuildSlider(parent, title, 0, 500, TRB.Data.settings.priest.shadow.hasteApproachingThreshold, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hasteApproachingThreshold:SetScript("OnValueChanged", function(self, value)
@@ -2071,7 +2071,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 60	
-		title = "Medium to High Haste% Threshold in Voidform"
+		title = "Med. to High Haste% Threshold in Voidform"
 		controls.hasteThreshold = TRB.UiFunctions.BuildSlider(parent, title, 0, 500, TRB.Data.settings.priest.shadow.hasteThreshold, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hasteThreshold:SetScript("OnValueChanged", function(self, value)
@@ -2093,7 +2093,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Surrender to Madness Target Time to Die Thresholds", 0, yCoord)
 
 		yCoord = yCoord - 50
-		title = "Low to Medium S2M Time to Die Threshold (sec)"
+		title = "Low to Medium S2M TTD Threshold (sec)"
 		controls.s2mApproachingThreshold = TRB.UiFunctions.BuildSlider(parent, title, 0, 30, TRB.Data.settings.priest.shadow.s2mApproachingThreshold, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.s2mApproachingThreshold:SetScript("OnValueChanged", function(self, value)
@@ -2111,7 +2111,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.s2mApproachingThreshold = value
 		end)
 
-		controls.colors.s2mBelow = TRB.UiFunctions.BuildColorPicker(parent, "Low S2M Time to Die Threshold", TRB.Data.settings.priest.shadow.colors.text.s2mBelow,
+		controls.colors.s2mBelow = TRB.UiFunctions.BuildColorPicker(parent, "Low S2M Time to Die", TRB.Data.settings.priest.shadow.colors.text.s2mBelow,
 													250, 25, xCoord2, yCoord+10)
 		f = controls.colors.s2mBelow
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2181,7 +2181,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 60	
-		title = "Medium to High S2M Time to Die Threshold (sec)"
+		title = "Medium to High S2M TTD Threshold (sec)"
 		controls.s2mThreshold = TRB.UiFunctions.BuildSlider(parent, title, 0, 30, TRB.Data.settings.priest.shadow.s2mThreshold, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.s2mThreshold:SetScript("OnValueChanged", function(self, value)
@@ -2203,7 +2203,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 	
 		yCoord = yCoord - 50
-		title = "Haste / Crit / Mastery Decimals to Show"
+		title = "Haste / Crit / Mastery Decimal Precision"
 		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.priest.shadow.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
@@ -2219,14 +2219,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.hastePrecision = value
 		end)
 
-		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TIBCB1_FOTM", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.fontFaceLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show decimals w/Fortress of the Mind")
-		f.tooltip = "Show decimal values with Fortress of the Mind. If unchecked, rounded (approximate) values will be displayed instead."
-		f:SetChecked(TRB.Data.settings.priest.shadow.fotmPrecision)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.priest.shadow.fotmPrecision = self:GetChecked()
+		title = "Insanity Decimal Precision"
+		controls.insanityPrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 2, TRB.Data.settings.priest.shadow.insanityPrecision, 1, 0,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.insanityPrecision:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+	
+			value = TRB.Functions.RoundTo(value, 0)
+			self.EditBox:SetText(value)		
+			TRB.Data.settings.priest.shadow.insanityPrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
@@ -2973,12 +2979,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab1", "Reset Defaults", 1, parent, 100)
+		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab1", "Bar Display", 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab2", "Bar Display", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab3", "Font & Text", 3, parent, 85, tabs[2])
-		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab4", "Audio & Tracking", 4, parent, 120, tabs[3])
-		tabs[5] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab5", "Bar Text", 5, parent, 60, tabs[4])
+		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab2", "Font & Text", 2, parent, 85, tabs[1])
+		tabs[3] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab3", "Audio & Tracking", 3, parent, 120, tabs[2])
+		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab4", "Bar Text", 4, parent, 60, tabs[3])
+		tabs[5] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab5", "Reset Defaults", 5, parent, 100, tabs[4])
 
 		PanelTemplates_TabResize(tabs[1], 0)
 		PanelTemplates_TabResize(tabs[2], 0)
@@ -3001,11 +3007,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		parent.tabsheets[1].selected = true
 		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
-		ShadowConstructResetDefaultsPanel(tabsheets[1].scrollFrame.scrollChild)
-		ShadowConstructBarColorsAndBehaviorPanel(tabsheets[2].scrollFrame.scrollChild)
-		ShadowConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-		ShadowConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-		ShadowConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild)
+		ShadowConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
+		ShadowConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
+		ShadowConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
+		ShadowConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild)
+		ShadowConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
 	end
 
 	local function ConstructOptionsPanel()
