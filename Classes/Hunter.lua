@@ -39,26 +39,50 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	}
 
 	TRB.Data.spells = {
+        aimedShot = {
+			id = 19434,
+			name = "",
+			icon = "",
+			focus = -35,
+            thresholdId = 1
+        },
 		arcaneShot = {
 			id = 185358,
 			name = "",
 			icon = "",
-			focus = -20
+            focus = -20,
+            thresholdId = 2
         },
-        revivePet = {
-			id = 982,
-			name = "",
-			icon = "",
-			focus = -35
+        killShot = {
+            id = 53351,
+            name = "",
+            icon = "",
+            focus = -10,
+            thresholdId = 5
+        },
+        multiShot = {
+            id = 257620,
+            name = "",
+            icon = "",
+            focus = -20,
+            thresholdId = 6
         },
         scareBeast = {
 			id = 1513,
 			name = "",
 			icon = "",
-			focus = 25
+			focus = -25,
+            thresholdId = 9
         },
-        aimedShot = {
-			id = 19434,
+        burstingShot = {
+			id = 186387,
+			name = "",
+			icon = "",
+			focus = -10,
+            thresholdId = 10
+        },
+        revivePet = {
+			id = 982,
 			name = "",
 			icon = "",
 			focus = -35
@@ -69,12 +93,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			icon = "",
 			focus = 10
         },
-        burstingShot = {
-			id = 186387,
-			name = "",
-			icon = "",
-			focus = -10
-        },
         rapidFire = {
 			id = 257044,
 			name = "",
@@ -83,12 +101,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             shots = 7,
             duration = 2 --On cast then every 1/3 sec?
         },
-        multiShot = {
-            id = 257620,
-            name = "",
-            icon = "",
-            focus = -20
-        },
         trickShots = { --TODO: Do these ricochets generate Focus from Rapid Fire Rank 2?
 			id = 257044,
 			name = "",
@@ -96,36 +108,41 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             shots = 5
         },
 
+        chimaeraShot = {
+			id = 342049,
+			name = "",
+			icon = "",
+            focus = -20,
+            thresholdId = 2
+        },
         serpentSting = {
 			id = 271788,
 			name = "",
 			icon = "",
-            focus = -10
-        },
-        aMurderOfCrows = {
-			id = 131894,
-			name = "",
-			icon = "",
-            focus = -20 -- -30 for non Marksmanship
+            focus = -10,
+            thresholdId = 3
         },
         barrage = {
 			id = 120360,
 			name = "",
 			icon = "",
-            focus = -30 -- -60 for non Marksmanship
+            focus = -30, -- -60 for non Marksmanship,
+            thresholdId = 4
+        },
+        aMurderOfCrows = {
+			id = 131894,
+			name = "",
+			icon = "",
+            focus = -20, -- -30 for non Marksmanship,
+            thresholdId = 7
         },
         explosiveShot = {
 			id = 212431,
 			name = "",
 			icon = "",
-            focus = -20
-        },
-        chimaeraShot = {
-			id = 342049,
-			name = "",
-			icon = "",
-            focus = -20
-        },
+            focus = -20,
+            thresholdId = 8
+        }
     }
     
 	TRB.Data.snapshotData.audio = {
@@ -138,7 +155,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	local function FillSpellData()
 		TRB.Functions.FillSpellData()
-		
+
 		-- This is done here so that we can get icons for the options menu!
 		TRB.Data.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the focus generating spell you are currently hardcasting", printInSettings = true },
@@ -513,7 +530,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		if TRB.Data.snapshotData.isTracking then
 			TRB.Functions.HideResourceBar()	
 			
-			if TRB.Data.settings.hunter.marksmanship.displayBar.neverShow == false then
+            if TRB.Data.settings.hunter.marksmanship.displayBar.neverShow == false then
+                        
+                for k, v in pairs(TRB.Data.spells) do
+                    if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
+                        TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+                        TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
+                        --print(TRB.Data.spells[k]["name"], TRB.Data.spells[k]["thresholdId"], TRB.Data.settings.hunter.marksmanship.thresholdWidth, TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)
+                    end
+                end
+
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0	

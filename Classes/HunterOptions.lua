@@ -83,16 +83,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			hastePrecision=2,
 			thresholdWidth=2,
 			thresholds = {
-				aimedShot = true,
-				arcaneShot = true, --Also Chimera Shot
-				serpentSting = true,
-				barrage = true,
-				killShot = true,
-				multiShot = true,
-				aMurderOfCrows = true,
-				explosiveShot = true,
-				scareBeast = true,
-				burstingShot = true
+				aimedShot = true, -- 1
+				arcaneShot = true, -- 2 --Also Chimera Shot
+				serpentSting = true, -- 3
+				barrage = true, -- 4
+				killShot = true, -- 5
+				multiShot = true, -- 6
+				aMurderOfCrows = true, -- 7
+				explosiveShot = true, -- 8
+				scareBeast = true, -- 9
+				burstingShot = true -- 10
 			},
 			displayBar = {
 				alwaysShow=false,
