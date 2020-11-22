@@ -81,6 +81,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function BalanceLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
+			astralPowerPrecision=0,
 			thresholdWidth=2,
 			starsurgeThreshold=true,
 			starfallThreshold=true,
@@ -1999,6 +2000,22 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.hastePrecision = value
 		end)
 
+		title = "Astral Power Decimal Precision"
+		controls.astralPowerPrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 1, TRB.Data.settings.druid.balance.astralPowerPrecision, 1, 0,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.astralPowerPrecision:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+	
+			value = TRB.Functions.RoundTo(value, 0)
+			self.EditBox:SetText(value)		
+			TRB.Data.settings.druid.balance.astralPowerPrecision = value
+		end)
+
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrame.controls = controls
 	end
@@ -2516,12 +2533,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local xCoord2 = 325
 		local xOffset1 = 50
 		local xOffset2 = 275
-		interfaceSettingsFrame.shadowDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Balance", UIParent)
-		interfaceSettingsFrame.shadowDisplayPanel.name = "Balance Druid"
-		interfaceSettingsFrame.shadowDisplayPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.shadowDisplayPanel)
+		interfaceSettingsFrame.balanceDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Balance", UIParent)
+		interfaceSettingsFrame.balanceDisplayPanel.name = "Balance Druid"
+		interfaceSettingsFrame.balanceDisplayPanel.parent = parent.name
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.balanceDisplayPanel)
 
-		parent = interfaceSettingsFrame.shadowDisplayPanel
+		parent = interfaceSettingsFrame.balanceDisplayPanel
 				
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Balance Druid", xCoord+xPadding, yCoord)
 
@@ -2530,12 +2547,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Druid_Balance_Tab1", "Reset Defaults", 1, parent, 100)
+		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Druid_Balance_Tab1", "Bar Display", 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Druid_Balance_Tab2", "Bar Display", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Druid_Balance_Tab3", "Font & Text", 3, parent, 85, tabs[2])
-		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Druid_Balance_Tab4", "Audio & Tracking", 4, parent, 120, tabs[3])
-		tabs[5] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Druid_Balance_Tab5", "Bar Text", 5, parent, 60, tabs[4])
+		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Druid_Balance_Tab2", "Font & Text", 2, parent, 85, tabs[1])
+		tabs[3] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Druid_Balance_Tab3", "Audio & Tracking", 3, parent, 120, tabs[2])
+		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Druid_Balance_Tab4", "Bar Text", 4, parent, 60, tabs[3])
+		tabs[5] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Druid_Balance_Tab5", "Reset Defaults", 5, parent, 100, tabs[4])
 
 		PanelTemplates_TabResize(tabs[1], 0)
 		PanelTemplates_TabResize(tabs[2], 0)
@@ -2558,11 +2575,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		parent.tabsheets[1].selected = true
 		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
-		BalanceConstructResetDefaultsPanel(tabsheets[1].scrollFrame.scrollChild)
-		BalanceConstructBarColorsAndBehaviorPanel(tabsheets[2].scrollFrame.scrollChild)
-		BalanceConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-		BalanceConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-		BalanceConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild)
+		BalanceConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
+		BalanceConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
+		BalanceConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
+		BalanceConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild)
+		BalanceConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
 	end
 
 	local function ConstructOptionsPanel()

@@ -135,8 +135,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			id = 202430,
 			name = "",
 			icon = "",
-            astralPower = 1,
-            tickRate = 2
+            astralPower = 0.5,
+            outOfCombatAstralPower = 1.5,
+            tickRate = 1
         },
         warriorOfElune = {
             id = 202425,
@@ -579,8 +580,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw > 0) then
 				valid = true
 			end
-		elseif var == "$overcap" or var == "$insanityOvercap" or var == "$resourceOvercap" then
-			if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.character.maxResource then
+		elseif var == "$overcap" or var == "$astralPowerOvercap" or var == "$resourceOvercap" then
+			if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.character.maxResource then
 				valid = true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$astralPowerPlusPassive" then
@@ -592,7 +593,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				valid = true
 			end
         elseif var == "$passive" then
-            if TRB.Data.character.talents.naturesBalance.isSelected and affectingCombat then
+            if (TRB.Data.character.talents.naturesBalance.isSelected and (affectingCombat or (TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) < 50)) or TRB.Data.snapshotData.furyOfElune.astralPower > 0 then
                 valid = true
             end
 		elseif var == "$sunfireCount" then
@@ -645,6 +646,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function RefreshLookupData()
 		local currentTime = GetTime()
+		local normalizedAstralPower = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
 		local moonkinFormActive = TRB.Data.spells.moonkinForm.isActive
 
@@ -659,32 +661,36 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if TRB.Data.settings.druid.balance.colors.text.overcapEnabled and overcap then 
 			currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap
 			castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap	
-		elseif TRB.Data.settings.druid.balance.colors.text.overThresholdEnabled and TRB.Data.snapshotData.resource >= astralPowerThreshold then
+		elseif TRB.Data.settings.druid.balance.colors.text.overThresholdEnabled and normalizedAstralPower >= astralPowerThreshold then
 			currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overThreshold
 			castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overThreshold	
 		end
 		
 		--$astralPower
-		local currentAstralPower = string.format("|c%s%.0f|r", currentAstralPowerColor, TRB.Data.snapshotData.resource)
+		local astralPowerPrecision = TRB.Data.settings.druid.balance.astralPowerPrecision or 0
+		local currentAstralPower = string.format("|c%s%s|r", currentAstralPowerColor, TRB.Functions.RoundTo(normalizedAstralPower, astralPowerPrecision, "floor"))
 		--$casting
-		local castingAstralPower = string.format("|c%s%.0f|r", castingAstralPowerColor, TRB.Data.snapshotData.casting.resourceFinal)
+		local castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, astralPowerPrecision, "floor"))
 		--$passive
         local _passiveAstralPower = TRB.Data.snapshotData.furyOfElune.astralPower
-        
-        if TRB.Data.character.talents.naturesBalance.isSelected then
-            _passiveAstralPower = _passiveAstralPower + TRB.Data.spells.naturesBalance.astralPower
+		if TRB.Data.character.talents.naturesBalance.isSelected then
+			if UnitAffectingCombat("player") then
+				_passiveAstralPower = _passiveAstralPower + TRB.Data.spells.naturesBalance.astralPower
+			elseif normalizedAstralPower < 50 then
+				_passiveAstralPower = _passiveAstralPower + TRB.Data.spells.naturesBalance.outOfCombatAstralPower
+			end
 		end
 
-		local passiveAstralPower = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.passive, _passiveAstralPower)
+		local passiveAstralPower = string.format("|c%s%s|r", TRB.Data.settings.druid.balance.colors.text.passive, TRB.Functions.RoundTo(_passiveAstralPower, astralPowerPrecision, "ceil"))
 		--$astralPowerTotal
-		local _astralPowerTotal = math.min(_passiveAstralPower + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local astralPowerTotal = string.format("|c%s%.0f|r", currentAstralPowerColor, _astralPowerTotal)
+		local _astralPowerTotal = math.min(_passiveAstralPower + TRB.Data.snapshotData.casting.resourceFinal + normalizedAstralPower, TRB.Data.character.maxResource)
+		local astralPowerTotal = string.format("|c%s%s|r", currentAstralPowerColor, TRB.Functions.RoundTo(_astralPowerTotal, astralPowerPrecision, "floor"))
 		--$astralPowerPlusCasting
-		local _astralPowerPlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local astralPowerPlusCasting = string.format("|c%s%.0f|r", castingAstralPowerColor, _astralPowerPlusCasting)
+		local _astralPowerPlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + normalizedAstralPower, TRB.Data.character.maxResource)
+		local astralPowerPlusCasting = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.RoundTo(_astralPowerPlusCasting, astralPowerPrecision, "floor"))
 		--$astralPowerPlusPassive
-		local _astralPowerPlusPassive = math.min(_passiveAstralPower + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local astralPowerPlusPassive = string.format("|c%s%.0f|r", castingAstralPowerColor, _astralPowerPlusPassive)
+		local _astralPowerPlusPassive = math.min(_passiveAstralPower + normalizedAstralPower, TRB.Data.character.maxResource)
+		local astralPowerPlusPassive = string.format("|c%s%s|r", currentAstralPowerColor, TRB.Functions.RoundTo(_astralPowerPlusPassive, astralPowerPrecision, "floor"))
 
 		----------
 		--$sfCount
@@ -812,7 +818,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$foeTicks"] = foeTicks
 		lookup["$foeTime"] = foeTime
 		lookup["$talentStellarFlare"] = TRB.Data.character.talents.stellarFlare.isSelected
-		TRB.Data.lookup = lookup	
+		TRB.Data.lookup = lookup
 	end
 	TRB.Functions.RefreshLookupData = RefreshLookupData
 
@@ -900,7 +906,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					(not TRB.Data.settings.druid.balance.displayBar.notZeroShow) or
                     (TRB.Data.settings.druid.balance.displayBar.notZeroShow and
                         ((not TRB.Data.character.talents.naturesBalance.isSelected and TRB.Data.snapshotData.resource == 0) or
-                         (TRB.Data.character.talents.naturesBalance.isSelected and TRB.Data.snapshotData.resource >= 50))
+                         (TRB.Data.character.talents.naturesBalance.isSelected and (TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) >= 50))
                     )
 				)
 			 ) then
@@ -930,6 +936,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				local affectingCombat = UnitAffectingCombat("player")
 				local passiveBarValue = 0
 				local castingBarValue = 0
+				local currentResource = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 				local flashBar = false
 
 				if TRB.Data.settings.druid.balance.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
@@ -944,20 +951,30 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Data.snapshotData.audio.overcapCue = false
 				end
 				
-				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, resourceFrame, TRB.Data.snapshotData.resource)
+				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, resourceFrame, currentResource)
 							
 				if CastingSpell() then
-					castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
+					castingBarValue = currentResource + TRB.Data.snapshotData.casting.resourceFinal
 				else
-					castingBarValue = TRB.Data.snapshotData.resource
+					castingBarValue = currentResource
 				end
 				
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, castingFrame, castingBarValue)
+			
+				passiveBarValue = currentResource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower
 
-				if TRB.Data.character.talents.naturesBalance.isSelected and (affectingCombat or (not affectingCombat and TRB.Data.snapshotData.resource < 50)) then
-					passiveBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.naturesBalance.astralPower + TRB.Data.snapshotData.furyOfElune.astralPower
+				if TRB.Data.character.talents.naturesBalance.isSelected then
+					if affectingCombat then
+						passiveBarValue = passiveBarValue + TRB.Data.spells.naturesBalance.astralPower
+					elseif currentResource < 50 then
+						passiveBarValue = passiveBarValue + TRB.Data.spells.naturesBalance.outOfCombatAstralPower
+					end
+				end
+
+				if TRB.Data.character.talents.naturesBalance.isSelected and (affectingCombat or (not affectingCombat and currentResource < 50)) then
+					
 				else
-					passiveBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower
+					passiveBarValue = currentResource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower
 				end
 							
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, passiveFrame, passiveBarValue)
@@ -978,13 +995,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					resourceFrame.threshold2:Hide()
 				end
                
-				if TRB.Data.snapshotData.resource >= TRB.Data.character.starsurgeThreshold then
+				if currentResource >= TRB.Data.character.starsurgeThreshold then
 					resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
 
 					if TRB.Data.spells.onethsClearVision.isActive and RB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
 						TRB.Data.snapshotData.audio.playedOnethsCue = true
 						TRB.Data.snapshotData.audio.playedSfCue = true
-						PlaySoundFile(TRB.Data.settings.priest.shadow.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
+						PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
 					elseif TRB.Data.settings.druid.balance.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
 						TRB.Data.snapshotData.audio.playedSsCue = true
 						PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -995,7 +1012,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Data.snapshotData.audio.playedOnethsCue = false
 				end
 			
-				if TRB.Data.snapshotData.resource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.onethsPerception.isActive then
+				if currentResource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.onethsPerception.isActive then
 					if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > 2.4 then -- 8 * 0.3 = pandemic range
 						resourceFrame.threshold2.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
 					else
@@ -1005,7 +1022,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if TRB.Data.spells.onethsPerception.isActive and RB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
 						TRB.Data.snapshotData.audio.playedOnethsCue = true
 						TRB.Data.snapshotData.audio.playedSfCue = true
-						PlaySoundFile(TRB.Data.settings.priest.shadow.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
+						PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
 					elseif TRB.Data.settings.druid.balance.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
 						TRB.Data.snapshotData.audio.playedSfCue = true
 						PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1016,7 +1033,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Data.snapshotData.audio.playedOnethsCue = false
 				end
 								
-				if TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled and TRB.Data.snapshotData.resource >= TRB.Data.character.starsurgeThreshold then
+				if TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled and currentResource >= TRB.Data.character.starsurgeThreshold then
 					flashBar = true
 				end
 
