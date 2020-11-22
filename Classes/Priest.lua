@@ -716,7 +716,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				while (remainingTimeTmpAverage >= vbCooldown or remainingTimeTmp >= vbCooldown)
 				do
 					if remainingTimeTmp >= vbCooldown then					
-						local additionalCasts = TRB.Functions.RoundTo(remainingTimeTmp / vbCooldown, 0)
+						local additionalCasts = math.floor(remainingTimeTmp / vbCooldown)
 						if castGrantsExtension == false then
 							additionalCasts = additionalCasts - 1
 						end
@@ -726,7 +726,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 					
 					if remainingTimeTmpAverage >= vbCooldown then					
-						local additionalCastsAverage = TRB.Functions.RoundTo(remainingTimeTmpAverage / vbCooldown, 0)
+						local additionalCastsAverage = math.floor(remainingTimeTmpAverage / vbCooldown)
 						if castGrantsExtension == false then
 							additionalCastsAverage = additionalCastsAverage - 1
 						end
@@ -944,13 +944,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		--$insanity
-		--local currentInsanity = string.format("|c%s%.0f|r", currentInsanityColor, normalizedInsanity)
-		local currentInsanity = string.format("|c%s%.0f %.2f %.0f|r", currentInsanityColor, TRB.Data.snapshotData.resource, normalizedInsanity, math.floor(normalizedInsanity))
+		local insanityPrecision = TRB.Data.settings.priest.shadow.insanityPrecision or 0
+		local currentInsanity = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.RoundTo(normalizedInsanity, insanityPrecision, "floor"))
 		--$casting
-		local castingInsanity = string.format("|c%s%.0f|r", castingInsanityColor, TRB.Data.snapshotData.casting.resourceFinal)
-		if TRB.Data.snapshotData.casting.resourceFinal > 0 and TRB.Data.character.talents.fotm.isSelected and TRB.Data.settings.priest.shadow.fotmPrecision then
-			castingInsanity = string.format("|c%s%.1f|r", castingInsanityColor, TRB.Data.snapshotData.casting.resourceFinal)
-		end
+		local castingInsanity = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, insanityPrecision, "floor"))
 		--$mbInsanity
 		local mbInsanity = string.format("%.0f", TRB.Data.snapshotData.mindbender.resourceFinal)
 		--$mbGcds
@@ -980,13 +977,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local passiveInsanity = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.passiveInsanity, _passiveInsanity)
 		--$insanityTotal
 		local _insanityTotal = math.min(_passiveInsanity + TRB.Data.snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
-		local insanityTotal = string.format("|c%s%.0f|r", currentInsanityColor, _insanityTotal)
+		local insanityTotal = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.RoundTo(_insanityTotal, insanityPrecision, "floor"))
 		--$insanityPlusCasting
 		local _insanityPlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
-		local insanityPlusCasting = string.format("|c%s%.0f|r", castingInsanityColor, _insanityPlusCasting)
+		local insanityPlusCasting = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.RoundTo(_insanityPlusCasting, insanityPrecision, "floor"))
 		--$insanityPlusPassive
 		local _insanityPlusPassive = math.min(_passiveInsanity + normalizedInsanity, TRB.Data.character.maxResource)
-		local insanityPlusPassive = string.format("|c%s%.0f|r", currentInsanityColor, _insanityPlusPassive)
+		local insanityPlusPassive = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.RoundTo(_insanityPlusPassive, insanityPrecision, "floor"))
 
 
 		----------
