@@ -64,14 +64,18 @@ local function RoundTo(num, numDecimalPlaces, mode)
 	elseif mode == "ceil" then
 		local whole, decimal = strsplit(".", num, 2)
 		
-		if numDecimalPlaces == 0 or decimal == nil or strlen(decimal) == 0 then
+		if numDecimalPlaces == 0 then
 			newNum = whole
+		elseif decimal == nil or strlen(decimal) == 0 then
+			newNum = string.format("%s.%0" .. numDecimalPlaces .. "d", whole, 0)
 		else
 			local chopped = string.sub(decimal, 1, numDecimalPlaces)
+			if tonumber(string.format("0.%s", chopped)) < tonumber(string.format("0.%s", decimal)) then
+				chopped = chopped + 1
+			end
+
 			if strlen(chopped) < numDecimalPlaces then
 				chopped = string.format("%s%0" .. (numDecimalPlaces - strlen(chopped)) .. "d", chopped, 0)
-			elseif tonumber(string.format("0.%s", chopped)) < tonumber(string.format("0.%s", decimal)) then
-				chopped = chopped + 1
 			end
 			newNum = string.format("%s.%s", whole, chopped)
 		end
