@@ -987,7 +987,9 @@ end
 TRB.Functions.CheckCharacter = CheckCharacter
 
 local function UpdateSnapshot()	    
-	TRB.Data.snapshotData.resource = TRB.Functions.RoundTo(UnitPower("player", TRB.Data.resource, true) / TRB.Data.resourceFactor, 0)
+	print(UnitPower("player", TRB.Data.resource, true))
+	--TRB.Data.snapshotData.resource = TRB.Functions.RoundTo(UnitPower("player", TRB.Data.resource, true) / TRB.Data.resourceFactor, 2)
+	TRB.Data.snapshotData.resource = UnitPower("player", TRB.Data.resource, true)
 	TRB.Data.snapshotData.haste = UnitSpellHaste("player")
 	TRB.Data.snapshotData.crit = GetCritChance("player")
 	TRB.Data.snapshotData.mastery = GetMasteryEffect("player")
