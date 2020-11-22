@@ -46,7 +46,7 @@ local function RoundTo(num, numDecimalPlaces, mode)
 	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
 	local newNum = tonumber(num)
 	if mode == "floor" then
-		local whole, decimal = strsplit(".", num, 2)
+		local whole, decimal = strsplit(".", newNum, 2)
 		
 		if numDecimalPlaces == 0 then
 			newNum = whole
@@ -62,9 +62,13 @@ local function RoundTo(num, numDecimalPlaces, mode)
 		
 		return newNum
 	elseif mode == "ceil" then
-		local whole, decimal = strsplit(".", num, 2)
+		local whole, decimal = strsplit(".", newNum, 2)
 		
 		if numDecimalPlaces == 0 then
+			if (tonumber(whole) or 0) < num then
+				whole = (tonumber(whole) or 0) + 1
+			end
+
 			newNum = whole
 		elseif decimal == nil or strlen(decimal) == 0 then
 			newNum = string.format("%s.%0" .. numDecimalPlaces .. "d", whole, 0)
