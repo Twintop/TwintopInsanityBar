@@ -467,8 +467,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			resourceFrame.thresholds[1]:SetHeight(value)
 			resourceFrame.thresholds[2]:SetHeight(value)
 			castingFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			passiveFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			passiveFrame.thresholds[1]:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))		
+			passiveFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))		
 			leftTextFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height * 3.5)
 			middleTextFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height * 3.5)
 			rightTextFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height * 3.5)
@@ -577,7 +576,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.thresholdWidth = value
 			resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
 			resourceFrame.thresholds[2]:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
-			passiveFrame.thresholds[1]:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
 		end)
 
 		yCoord = yCoord - 40

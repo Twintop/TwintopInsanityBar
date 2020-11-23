@@ -439,8 +439,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			resourceFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
 			resourceFrame.thresholds[1]:SetHeight(value)
 			castingFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			passiveFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			passiveFrame.thresholds[1]:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))		
+			passiveFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))	
 			leftTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
 			middleTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
 			rightTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
@@ -547,7 +546,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.thresholdWidth = value
 			resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.shaman.elemental.thresholdWidth)
-			passiveFrame.thresholds[1]:SetWidth(TRB.Data.settings.shaman.elemental.thresholdWidth)
 		end)
 
 		yCoord = yCoord - 40
