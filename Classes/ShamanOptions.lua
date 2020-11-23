@@ -1649,7 +1649,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f = controls.colors.castingMaelstromText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then

@@ -1894,7 +1894,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.colors.castingInsanityText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.currentInsanity, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.castingInsanity, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
