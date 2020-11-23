@@ -2143,12 +2143,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local xCoord2 = 325
 		local xOffset1 = 50
 		local xOffset2 = 275
-		interfaceSettingsFrame.shadowDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Elemental", UIParent)
-		interfaceSettingsFrame.shadowDisplayPanel.name = "Elemental Shaman"
-		interfaceSettingsFrame.shadowDisplayPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.shadowDisplayPanel)
+		interfaceSettingsFrame.elementalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Elemental", UIParent)
+		interfaceSettingsFrame.elementalDisplayPanel.name = "Elemental Shaman"
+		interfaceSettingsFrame.elementalDisplayPanel.parent = parent.name
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.elementalDisplayPanel)
 
-		parent = interfaceSettingsFrame.shadowDisplayPanel
+		parent = interfaceSettingsFrame.elementalDisplayPanel
 				
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Elemental Shaman", xCoord+xPadding, yCoord)
 
@@ -2157,12 +2157,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab1", "Reset Defaults", 1, parent, 100)
+		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab1", "Bar Display", 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab2", "Bar Display", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab3", "Font & Text", 3, parent, 85, tabs[2])
-		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab4", "Audio & Tracking", 4, parent, 120, tabs[3])
-		tabs[5] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab5", "Bar Text", 5, parent, 60, tabs[4])
+		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab2", "Font & Text", 2, parent, 85, tabs[1])
+		tabs[3] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab3", "Audio & Tracking", 3, parent, 120, tabs[2])
+		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab4", "Bar Text", 4, parent, 60, tabs[3])
+		tabs[5] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab5", "Reset Defaults", 5, parent, 100, tabs[4])
 
 		PanelTemplates_TabResize(tabs[1], 0)
 		PanelTemplates_TabResize(tabs[2], 0)
@@ -2185,11 +2185,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		parent.tabsheets[1].selected = true
 		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
-		ElementalConstructResetDefaultsPanel(tabsheets[1].scrollFrame.scrollChild)
-		ElementalConstructBarColorsAndBehaviorPanel(tabsheets[2].scrollFrame.scrollChild)
-		ElementalConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-		ElementalConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-		ElementalConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild)
+		ElementalConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
+		ElementalConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
+		ElementalConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
+		ElementalConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild)
+		ElementalConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
 	end
 
 	local function ConstructOptionsPanel()
