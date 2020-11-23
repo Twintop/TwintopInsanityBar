@@ -278,6 +278,17 @@ local function TargetsCleanup(clearAll)
 end
 TRB.Functions.TargetsCleanup = TargetsCleanup
 
+local function GetUnitHealthPercent(unit)
+	if GetUnitName(unit) then
+		local health = UnitHealth(unit)
+		local maxHealth = UnitHealthMax(unit)
+		return health / maxHealth
+	else
+		return nil
+	end
+end
+TRB.Functions.GetUnitHealthPercent = GetUnitHealthPercent
+
 -- Bar Manipulation Functions
 
 local function RepositionThreshold(settings, thresholdLine, parentFrame, thresholdWidth, resourceThreshold, resourceMax)	

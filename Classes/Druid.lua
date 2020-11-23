@@ -165,8 +165,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			id = 102560,
 			name = "",
 			icon = "",
-			isActive = false,
-			remainingTime = 0
+			isActive = false
         }, 
 
         stellarFlare = {
@@ -247,27 +246,22 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	}
 	TRB.Data.snapshotData.eclipseSolar = {
 		spellId = nil,
-		ticksRemaining = 0,
 		startTime = nil
 	}
 	TRB.Data.snapshotData.eclipseLunar = {
 		spellId = nil,
-		ticksRemaining = 0,
 		startTime = nil
 	}
 	TRB.Data.snapshotData.celestialAlignment = {
 		spellId = nil,
-		ticksRemaining = 0,
 		startTime = nil
 	}
 	TRB.Data.snapshotData.incarnationChosenOfElune = {
 		spellId = nil,
-		ticksRemaining = 0,
 		startTime = nil
 	}
 	TRB.Data.snapshotData.starfall = {
 		spellId = nil,
-		ticksRemaining = 0,
 		endTime = nil
 	}
 	TRB.Data.snapshotData.onethsClearVision = {
