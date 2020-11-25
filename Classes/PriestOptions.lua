@@ -149,6 +149,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					thresholdStacks=10
 				}
 			},
+			wrathfulFaerie={
+				mode="gcd",
+				ticksMax=4,
+				gcdsMax=2,
+				timeMax=3.0,
+				procDelay=0.15,
+				enabled=true
+			},
 			endOfVoidform = {
 				enabled=true,
 				hungeringVoidOnly=false,
