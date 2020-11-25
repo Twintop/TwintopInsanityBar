@@ -440,6 +440,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#mindbender", icon = TRB.Data.spells.mindbender.icon, description = "Mindbender/Shadowfiend", printInSettings = false },
 			{ variable = "#shadowfiend", icon = TRB.Data.spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = false },
 			{ variable = "#sf", icon = TRB.Data.spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = true },
+
+			{ variable = "#wf", icon = TRB.Data.spells.wrathfulFaerie.icon, description = "Wrathful Faerie", printInSettings = true },
+			{ variable = "#wrathfulFaerie", icon = TRB.Data.spells.wrathfulFaerie.icon, description = "Wrathful Faerie", printInSettings = false },
 			
 			{ variable = "#s2m", icon = TRB.Data.spells.s2m.icon, description = "Surrender to Madness", printInSettings = true },
 			{ variable = "#surrenderToMadness", icon = TRB.Data.spells.s2m.icon, description = "Surrender to Madness", printInSettings = false },
@@ -480,6 +483,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$mbGcds", description = "Number of GCDs left on Mindbender/Shadowfiend", printInSettings = true, color = false },
 			{ variable = "$mbSwings", description = "Number of Swings left on Mindbender/Shadowfiend", printInSettings = true, color = false },
 			{ variable = "$mbTime", description = "Time left on Mindbender/Shadowfiend", printInSettings = true, color = false },
+
+			{ variable = "$wfInsanity", description = "Insanity from Wrathful Faerie (per settings)", printInSettings = true, color = false },
+			{ variable = "$wfGcds", description = "Number of GCDs left on Wrathful Faerie", printInSettings = true, color = false },
+			{ variable = "$wfProcs", description = "Number of Procs left on Wrathful Faerie", printInSettings = true, color = false },
+			{ variable = "$wfTime", description = "Time left on Wrathful Faerie", printInSettings = true, color = false },
 			
 			{ variable = "$cttvEquipped", description = "Checks if you have Call of the Void equipped. Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$ecttvCount", description = "Number of active Void Tendrils/Void Lashers", printInSettings = true, color = false },
@@ -881,6 +889,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.snapshotData.mindbender.remaining.time > 0 then
 				valid = true
 			end
+		elseif var == "$wfInsanity" then
+			if TRB.Data.snapshotData.wrathfulFaerie.resourceRaw > 0 then
+				valid = true
+			end
+		elseif var == "$wfGcds" then
+			if TRB.Data.snapshotData.wrathfulFaerie.remaining.gcds > 0 then
+				valid = true
+			end
+		elseif var == "$wfProcs" then
+			if TRB.Data.snapshotData.wrathfulFaerie.remaining.procs > 0 then
+				valid = true
+			end
+		elseif var == "$wfTime" then
+			if TRB.Data.snapshotData.wrathfulFaerie.remaining.time > 0 then
+				valid = true
+			end
 		elseif var == "$loiTicks" then
 			if TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal > 0 then
 				valid = true
@@ -990,6 +1014,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local mbSwings = string.format("%.0f", TRB.Data.snapshotData.mindbender.remaining.swings)
 		--$mbTime
 		local mbTime = string.format("%.1f", TRB.Data.snapshotData.mindbender.remaining.time)
+		--$wfInsanity
+		local wfInsanity = string.format("%.0f", TRB.Data.snapshotData.wrathfulFaerie.resourceFinal)
+		--$wfGcds
+		local wfGcds = string.format("%.0f", TRB.Data.snapshotData.wrathfulFaerie.remaining.gcds)
+		--$wfProcs
+		local wfProcs = string.format("%.0f", TRB.Data.snapshotData.wrathfulFaerie.remaining.procs)
+		--$wfTime
+		local wfTime = string.format("%.1f", TRB.Data.snapshotData.wrathfulFaerie.remaining.time)
 		--$loiInsanity
 		local loiInsanity = string.format("%.0f", TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal)
 		--$loiTicks
@@ -1007,7 +1039,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _asInsanity = CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity, false) * TRB.Data.snapshotData.targetData.auspiciousSpirits
 		local asInsanity = string.format("%.0f", _asInsanity)
 		--$passive
-		local _passiveInsanity = _asInsanity + TRB.Data.snapshotData.mindbender.resourceFinal + _damInsanity + TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal
+		local _passiveInsanity = _asInsanity + TRB.Data.snapshotData.mindbender.resourceFinal + _damInsanity + TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal + TRB.Data.snapshotData.wrathfulFaerie.resourceFinal
 		local passiveInsanity = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.passiveInsanity, _passiveInsanity)
 		--$insanityTotal
 		local _insanityTotal = math.min(_passiveInsanity + TRB.Data.snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
@@ -1181,6 +1213,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#mindSear"] = TRB.Data.spells.mindSear.icon
 		lookup["#mindbender"] = TRB.Data.spells.mindbender.icon
 		lookup["#shadowfiend"] = TRB.Data.spells.shadowfiend.icon
+		lookup["#wf"] = TRB.Data.spells.wrathfulFaerie.icon
+		lookup["#wrathfulFaerie"] = TRB.Data.spells.wrathfulFaerie.icon
 		lookup["#sf"] = TRB.Data.spells.shadowfiend.icon
 		lookup["#ecttv"] = TRB.Data.spells.eternalCallToTheVoid_Tendril.icon
 		lookup["#tb"] = TRB.Data.spells.eternalCallToTheVoid_Tendril.icon
@@ -1229,6 +1263,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$mbGcds"] = mbGcds
 		lookup["$mbSwings"] = mbSwings
 		lookup["$mbTime"] = mbTime
+		lookup["$wfInsanity"] = wfInsanity 
+		lookup["$wfGcds"] = wfGcds
+		lookup["$wfProcs"] = wfProcs
+		lookup["$wfTime"] = wfTime
 		lookup["$loiInsanity"] = loiInsanity
 		lookup["$loiTicks"] = loiTicks
 		lookup["$cttvEquipped"] = ""

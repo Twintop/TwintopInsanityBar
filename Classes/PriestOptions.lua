@@ -71,8 +71,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				fontSize = 13
 			},
 			right = {
-				outVoidformText = "{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$damInsanity}[#dam$damInsanity+]$insanity",
-				inVoidformText = "{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$damInsanity}[#dam$damInsanity+]$insanity",
+				outVoidformText = "{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$wfInsanity}[#wf$wfInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$damInsanity}[#dam$damInsanity+]$insanity",
+				inVoidformText = "{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$wfInsanity}[#wf$wfInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$damInsanity}[#dam$damInsanity+]$insanity",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",			
 				fontSize = 22
@@ -151,7 +151,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			wrathfulFaerie={
 				mode="gcd",
-				ticksMax=4,
+				procsMax=4,
 				gcdsMax=2,
 				timeMax=3.0,
 				procDelay=0.15,
@@ -2666,7 +2666,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.mindbender.mode = "time"
 		end)
 
-		title = "Shadowfiend Time Remaining"
+		title = "Wrathful Faerie Time Remaining"
 		controls.mindbenderTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.priest.shadow.mindbender.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.mindbenderTime:SetScript("OnValueChanged", function(self, value)
@@ -2681,6 +2681,137 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			self.EditBox:SetText(value)		
 			TRB.Data.settings.priest.shadow.mindbender.timeMax = value
 		end)
+
+
+		yCoord = yCoord - 30
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Wrathful Faerie Tracking", 0, yCoord)
+
+		yCoord = yCoord - 30	
+		controls.checkBoxes.wrathfulFaerie = CreateFrame("CheckButton", "TRB_WrathfulFaerieTracking_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.wrathfulFaerie
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Track Wrathful Faerie and Fae Fermata Insanity Gain")
+		f.tooltip = "Show the gain of Insanity over the next serveral procs, GCDs, or fixed length of time. Select which to track from the options below."
+		f:SetChecked(TRB.Data.settings.priest.shadow.wrathfulFaerie.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.shadow.wrathfulFaerie.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 40
+		title = "Proc Delay after ICD Reset"
+		controls.wrathfulFaerieGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0, 0.75, TRB.Data.settings.priest.shadow.wrathfulFaerie.procDelay, 0.05, 2,
+										sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.wrathfulFaerieGCDs:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 2)
+			self.EditBox:SetText(value)		
+			TRB.Data.settings.priest.shadow.wrathfulFaerie.procDelay = value
+		end)
+
+		yCoord = yCoord - 60	
+		controls.checkBoxes.wrathfulFaerieModeGCDs = CreateFrame("CheckButton", "TRB_WrathfulFaerieTracking_1", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.wrathfulFaerieModeGCDs
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Insanity from GCDs remaining")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Shows the amount of Insanity incoming over the up to next X GCDs, based on player's current GCD."
+		if TRB.Data.settings.priest.shadow.wrathfulFaerie.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.wrathfulFaerieModeGCDs:SetChecked(true)
+			controls.checkBoxes.wrathfulFaerieModeProcs:SetChecked(false)
+			controls.checkBoxes.wrathfulFaerieModeTime:SetChecked(false)
+			TRB.Data.settings.priest.shadow.wrathfulFaerie.mode = "gcd"
+		end)
+
+		title = "GCDs - 0.75sec Floor"
+		controls.wrathfulFaerieGCDs = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.priest.shadow.wrathfulFaerie.gcdsMax, 1, 0,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.wrathfulFaerieGCDs:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			self.EditBox:SetText(value)		
+			TRB.Data.settings.priest.shadow.wrathfulFaerie.gcdsMax = value
+		end)
+
+
+		yCoord = yCoord - 60	
+		controls.checkBoxes.wrathfulFaerieModeProcs = CreateFrame("CheckButton", "TRB_WrathfulFaerieTracking_2", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.wrathfulFaerieModeProcs
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Insanity from Procs remaining")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Shows the amount of Insanity incoming over the up to next X procs from Wrathful Faerie/Fae Fermata."
+		if TRB.Data.settings.priest.shadow.wrathfulFaerie.mode == "procs" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.wrathfulFaerieModeGCDs:SetChecked(false)
+			controls.checkBoxes.wrathfulFaerieModeProcs:SetChecked(true)
+			controls.checkBoxes.wrathfulFaerieModeTime:SetChecked(false)
+			TRB.Data.settings.priest.shadow.wrathfulFaerie.mode = "procs"
+		end)
+
+		title = "Wrathful Faerie Procs - No Floor"
+		controls.wrathfulFaerieProcs = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.priest.shadow.wrathfulFaerie.procsMax, 1, 0,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.wrathfulFaerieProcs:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			self.EditBox:SetText(value)		
+			TRB.Data.settings.priest.shadow.wrathfulFaerie.procsMax = value
+		end)
+
+		yCoord = yCoord - 60	
+		controls.checkBoxes.wrathfulFaerieModeTime = CreateFrame("CheckButton", "TRB_WrathfulFaerieTracking_3", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.wrathfulFaerieModeTime
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Insanity from Time remaining")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Shows the amount of Insanity incoming over the up to next X seconds."
+		if TRB.Data.settings.priest.shadow.wrathfulFaerie.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.wrathfulFaerieModeGCDs:SetChecked(false)
+			controls.checkBoxes.wrathfulFaerieModeProcs:SetChecked(false)
+			controls.checkBoxes.wrathfulFaerieModeTime:SetChecked(true)
+			TRB.Data.settings.priest.shadow.wrathfulFaerie.mode = "time"
+		end)
+
+		title = "Wrathful Faerie Time Remaining"
+		controls.wrathfulFaerieTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 20, TRB.Data.settings.priest.shadow.wrathfulFaerie.timeMax, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.wrathfulFaerieTime:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 2)
+			self.EditBox:SetText(value)		
+			TRB.Data.settings.priest.shadow.wrathfulFaerie.timeMax = value
+		end)
+
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrame.controls = controls
