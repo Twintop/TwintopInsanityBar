@@ -1065,6 +1065,41 @@ local function DoesItemLinkMatchMatchIdAndHaveBonus(itemLink, id, bonusId)
 end
 TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus = DoesItemLinkMatchMatchIdAndHaveBonus
 
+local function IsSoulbindActive(id)
+	local soulbindId = C_Soulbinds.GetActiveSoulbindID()
+    local soulbindData = C_Soulbinds.GetSoulbindData(soulbindId)
+    local length = TableLength(soulbindData.tree.nodes)
+    
+	for x = 1, length do
+		if soulbindData.tree.nodes[x].conduitID == id then
+			return true
+		end        
+	end
+	
+	return false
+end
+TRB.Functions.IsSoulbindActive = IsSoulbindActive
+
+local function GetSoulbindItemLevel(id)
+	local conduit = C_Soulbinds.GetConduitCollectionData(id)
+
+	if conduit ~= nil then
+		return conduit.conduitItemLevel
+	end
+	return 0
+end
+TRB.Functions.IsSoulbindActive = GetSoulbindItemLevel
+
+local function GetSoulbindRank(id)
+	local conduit = C_Soulbinds.GetConduitCollectionData(id)
+
+	if conduit ~= nil then
+		return conduit.conduitRank
+	end
+	return 0
+end
+TRB.Functions.GetSoulbindRank = GetSoulbindRank
+
 -- Misc Functions
 
 local function ParseCmdString(msg)
