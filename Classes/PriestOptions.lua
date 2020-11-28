@@ -2666,7 +2666,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.mindbender.mode = "time"
 		end)
 
-		title = "Wrathful Faerie Time Remaining"
+		title = "Shadowfiend Remaining"
 		controls.mindbenderTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.priest.shadow.mindbender.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.mindbenderTime:SetScript("OnValueChanged", function(self, value)

@@ -332,7 +332,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			energizeId = 345456,
 			conduitId = 101,
 			conduitRanks = {}
+		},
+		rabidShadows = {
+			id = 338338,
+			name = "",
+			icon = "",
+			conduitId = 114,
+			conduitRanks = {}
 		}
+
 	}
 
 	TRB.Data.snapshotData.voidform = {
@@ -448,6 +456,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[13] = 8.36
 		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[14] = 8.74
 		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[15] = 9.12
+
+		TRB.Data.spells.rabidShadows.conduitRanks[0] = 0
+		TRB.Data.spells.rabidShadows.conduitRanks[1] = 0.12
+		TRB.Data.spells.rabidShadows.conduitRanks[2] = 0.209
+		TRB.Data.spells.rabidShadows.conduitRanks[3] = 0.228
+		TRB.Data.spells.rabidShadows.conduitRanks[4] = 0.247
+		TRB.Data.spells.rabidShadows.conduitRanks[5] = 0.266
+		TRB.Data.spells.rabidShadows.conduitRanks[6] = 0.285
+		TRB.Data.spells.rabidShadows.conduitRanks[7] = 0.304
+		TRB.Data.spells.rabidShadows.conduitRanks[8] = 0.323
+		TRB.Data.spells.rabidShadows.conduitRanks[9] = 0.342
+		TRB.Data.spells.rabidShadows.conduitRanks[10] = 0.361
+		TRB.Data.spells.rabidShadows.conduitRanks[11] = 0.38
+		TRB.Data.spells.rabidShadows.conduitRanks[12] = 0.399
+		TRB.Data.spells.rabidShadows.conduitRanks[13] = 0.418
+		TRB.Data.spells.rabidShadows.conduitRanks[14] = 0.437
+		TRB.Data.spells.rabidShadows.conduitRanks[15] = 0.456
 
 		-- This is done here so that we can get icons for the options menu!
 		TRB.Data.barTextVariables.icons = {
@@ -1450,8 +1475,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local timeRemaining = startTime+duration-currentTime
 		if TRB.Data.settings.priest.shadow.mindbender.enabled and haveTotem and timeRemaining > 0 then
 			TRB.Data.snapshotData.mindbender.isActive = true
-			if TRB.Data.settings.priest.shadow.mindbender.enabled then
-				local swingSpeed = 1.5 / (1 + (TRB.Data.snapshotData.haste/100))		
+			if TRB.Data.settings.priest.shadow.mindbender.enabled then				
+				local rabidShadowsPercent = 1 + TRB.Data.spells.rabidShadows.conduitRanks[TRB.Functions.GetSoulbindRank(TRB.Data.spells.rabidShadows.conduitId)]
+				local swingSpeed = 1.5 / (1 + (TRB.Data.snapshotData.haste / 100)) / rabidShadowsPercent
+				
 				if swingSpeed > 1.5 then
 					swingSpeed = 1.5
 				end
