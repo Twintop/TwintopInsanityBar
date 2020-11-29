@@ -1378,7 +1378,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Insanity from Auspicious Spirits, Shadowfiend swings, Death and Madness ticks, and Lash of Insanity ticks", TRB.Data.settings.priest.shadow.colors.bar.passive, 550, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Insanity from Auspicious Spirits, Shadowfiend swings, Death and Madness ticks, Lash of Insanity ticks, and Wrathful Faerie procs.", TRB.Data.settings.priest.shadow.colors.bar.passive, 550, 25, xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1920,6 +1920,29 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 		
+		yCoord = yCoord - 30
+		controls.colors.passiveInsanityText = TRB.UiFunctions.BuildColorPicker(parent, "Passive Insanity", TRB.Data.settings.priest.shadow.colors.text.passiveInsanity, 300, 25, xCoord, yCoord)
+		f = controls.colors.passiveInsanityText
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.text.passiveInsanity, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					--Text doesn't care about Alpha, but the color picker does!
+					a = 0.0
+		
+					controls.colors.passiveInsanityText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.text.passiveInsanity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)
+
 		yCoord = yCoord - 30
 		controls.colors.thresholdInsanityText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Insanity to cast Devouring Plague or Searing Nightmare", TRB.Data.settings.priest.shadow.colors.text.overThreshold, 300, 25, xCoord, yCoord)
 		f = controls.colors.thresholdInsanityText
@@ -2666,7 +2689,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.mindbender.mode = "time"
 		end)
 
-		title = "Shadowfiend Remaining"
+		title = "Shadowfiend Remaining (sec)"
 		controls.mindbenderTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.priest.shadow.mindbender.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.mindbenderTime:SetScript("OnValueChanged", function(self, value)
@@ -2796,7 +2819,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.wrathfulFaerie.mode = "time"
 		end)
 
-		title = "Wrathful Faerie Time Remaining"
+		title = "Wrathful Faerie Time Remaining (sec)"
 		controls.wrathfulFaerieTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 20, TRB.Data.settings.priest.shadow.wrathfulFaerie.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.wrathfulFaerieTime:SetScript("OnValueChanged", function(self, value)

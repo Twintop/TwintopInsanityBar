@@ -35,7 +35,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				fontSize=18
 			},
 			middle={
-				text="",
+				text="{$trueshotTime}[$trueshotTime sec]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -56,13 +56,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "$haste% ($gcd)||n{$ttd}[TTD: $ttd]",
+				text = "$haste% ($gcd)||n{$ttd}[TTD: $ttd][ ]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			middle = {
-				text="",
+				text="{$trueshotTime}[#trueshot $trueshotTime #trueshot]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -117,10 +117,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					enabled = false, -- 11
 				}
 			},
+			generation = {
+				mode="gcd",
+				gcds=2,
+				time=3.0,
+			},
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
 				neverShow=false
+			},
+			endOfTrueshot = {
+				enabled=true,
+				mode="gcd",
+				gcdsMax=2,
+				timeMax=3.0
 			},
 			bar = {		
 				width=555,
@@ -150,6 +161,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					background="66000000",
 					base="FFAAD372",
 					trueshot="FF00B60E",
+					trueshotEnding="FFFF0000",
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FF005500",
@@ -1008,9 +1020,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TIBRB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord-15)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Focus > 0")
+		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Focus < 100")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar show out of combat only if Focus > 0, hidden otherwise when out of combat."
+		f.tooltip = "This will make the Resource Bar show out of combat only if Focus < 100, hidden otherwise when out of combat."
 		f:SetChecked(TRB.Data.settings.hunter.marksmanship.displayBar.notZeroShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
@@ -1155,26 +1167,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                     castingFrame:SetStatusBarColor(r, g, b, 1-a)
                 end)
 			end
-		end)	
-			
-		controls.colors.trueshot = TRB.UiFunctions.BuildColorPicker(parent, "Focus while Trueshot is active", TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot, 275, 25, xCoord2, yCoord)
-		f = controls.colors.trueshot
+		end)
+
+		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast builder will overcap Focus", TRB.Data.settings.hunter.marksmanship.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.borderOvercap, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.trueshot.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
-                end)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+		
+					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.hunter.marksmanship.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
 			end
 		end)
 
@@ -1240,13 +1251,36 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                     TRB.Data.settings.hunter.marksmanship.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
-		end)
-
-		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast builder will overcap Focus", TRB.Data.settings.hunter.marksmanship.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
-		f = controls.colors.borderOvercap
+		end)	
+			
+		controls.colors.trueshot = TRB.UiFunctions.BuildColorPicker(parent, "Focus while Trueshot is active", TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot, 275, 25, xCoord2, yCoord)
+		f = controls.colors.trueshot
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.borderOvercap, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.trueshot.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		yCoord = yCoord - 30
+
+		controls.colors.trueshotEnding = TRB.UiFunctions.BuildColorPicker(parent, "Focus when Trueshot is ending", TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding, 275, 25, xCoord2, yCoord)
+		f = controls.colors.trueshotEnding
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1256,8 +1290,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.hunter.marksmanship.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.eclipse1GCD.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1446,6 +1480,85 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.serpentSting.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.marksmanship.thresholds.serpentSting.enabled = self:GetChecked()
+		end)	
+		
+
+		yCoord = yCoord - 30
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of  Configuration", 0, yCoord)
+
+		yCoord = yCoord - 30	
+		controls.checkBoxes.endOfTrueshot = CreateFrame("CheckButton", "TRB_EOT_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfTrueshot
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Trueshot")
+		f.tooltip = "Changes the bar color when Trueshot is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.endOfTrueshot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.endOfTrueshot.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 40	
+		controls.checkBoxes.endOfTrueshotModeGCDs = CreateFrame("CheckButton", "TRB_EOT_M_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfTrueshotModeGCDs
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Trueshot ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many GCDs remain until Trueshot ends."
+		if TRB.Data.settings.hunter.marksmanship.endOfTrueshot.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfTrueshotModeGCDs:SetChecked(true)
+			controls.checkBoxes.endOfTrueshotModeTime:SetChecked(false)
+			TRB.Data.settings.hunter.marksmanship.endOfTrueshot.mode = "gcd"
+		end)
+
+		title = "Trueshot GCDs - 0.75sec Floor"
+		controls.endOfTrueshotGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 20, TRB.Data.settings.hunter.marksmanship.endOfTrueshot.gcdsMax, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.endOfTrueshotGCDs:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.marksmanship.endOfTrueshot.gcdsMax = value
+		end)
+
+
+		yCoord = yCoord - 60	
+		controls.checkBoxes.endOfTrueshotModeTime = CreateFrame("CheckButton", "TRB_EOT_M_TIME", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfTrueshotModeTime
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Time until Trueshot ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many seconds remain until Trueshot ends."
+		if TRB.Data.settings.hunter.marksmanship.endOfTrueshot.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfTrueshotModeGCDs:SetChecked(false)
+			controls.checkBoxes.endOfTrueshotModeTime:SetChecked(true)
+			TRB.Data.settings.hunter.marksmanship.endOfTrueshot.mode = "time"
+		end)
+
+		title = "Trueshot Time Remaining (sec)"
+		controls.endOfTrueshotTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.marksmanship.endOfTrueshot.timeMax, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.endOfTrueshotTime:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 2)
+			self.EditBox:SetText(value)		
+			TRB.Data.settings.hunter.marksmanship.endOfTrueshot.timeMax = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
@@ -1883,8 +1996,29 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 		
+
 		yCoord = yCoord - 30
+		controls.colors.passiveFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Passive Focus", TRB.Data.settings.hunter.marksmanship.colors.text.passive, 300, 25, xCoord, yCoord)
+		f = controls.colors.passiveFocusText
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.passive, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					--Text doesn't care about Alpha, but the color picker does!
+					a = 0.0
 		
+					controls.colors.passiveFocusText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.hunter.marksmanship.colors.text.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)		
 
 		controls.colors.spendingFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.marksmanship.colors.text.spending, 275, 25, xCoord2, yCoord)
 		f = controls.colors.spendingFocusText
@@ -2007,65 +2141,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
-		--[[controls.checkBoxes.esReady = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.esReady
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Earth Shock/EQ is usable")
-		f.tooltip = "Play an audio cue when Earth Shock or Earthquake can be cast."
-		f:SetChecked(TRB.Data.settings.hunter.marksmanship.audio.esReady.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.marksmanship.audio.esReady.enabled = self:GetChecked()
-		end)	
-			
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.esReadyAudio = CreateFrame("FRAME", "TIBesReadyAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.esReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.esReadyAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, TRB.Data.settings.hunter.marksmanship.audio.esReady.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.esReadyAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.esReadyAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.hunter.marksmanship.audio.esReady.sound
-						info.func = self.SetValue			
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.esReadyAudio:SetValue(newValue, newName)
-			TRB.Data.settings.hunter.marksmanship.audio.esReady.sound = newValue
-			TRB.Data.settings.hunter.marksmanship.audio.esReady.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, newName)
-			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
-		yCoord = yCoord - 60]]
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TIBCB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -2130,6 +2205,75 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 60
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Generation", 0, yCoord)
+	
+
+		yCoord = yCoord - 40	
+		controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TRB_PFG_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.focusGenerationModeGCDs
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Focus generation from GCDs")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Shows the amount of Focus generation over the next X GCDs, based on player's current GCD."
+		if TRB.Data.settings.hunter.marksmanship.generation.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.focusGenerationModeGCDs:SetChecked(true)
+			controls.checkBoxes.focusGenerationModeTime:SetChecked(false)
+			TRB.Data.settings.hunter.marksmanship.generation.mode = "gcd"
+		end)
+
+		title = "Focus GCDs - 0.75sec Floor"
+		controls.focusGenerationGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 15, TRB.Data.settings.hunter.marksmanship.generation.gcds, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.marksmanship.generation.gcds = value
+		end)
+
+
+		yCoord = yCoord - 60	
+		controls.checkBoxes.focusGenerationModeTime = CreateFrame("CheckButton", "TRB_PFG_TIME", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.focusGenerationModeTime
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Focus generation over time")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Shows the amount of Focus generation over the next X seconds."
+		if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.focusGenerationModeGCDs:SetChecked(false)
+			controls.checkBoxes.focusGenerationModeTime:SetChecked(true)
+			TRB.Data.settings.hunter.marksmanship.generation.mode = "time"
+		end)
+
+		title = "Focus Over Time (sec)"
+		controls.focusGenerationTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.marksmanship.generation.time, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 2)
+			self.EditBox:SetText(value)		
+			TRB.Data.settings.hunter.marksmanship.generation.time = value
+		end)
+
+
+		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 	
 		yCoord = yCoord - 40
