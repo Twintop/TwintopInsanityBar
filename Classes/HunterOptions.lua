@@ -29,13 +29,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			fontSizeLock=true,
 			fontFaceLock=true,
 			left={
-				text="$haste%",
+				text="{$trueshotTime}[$trueshotTime sec]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
 			},
 			middle={
-				text="{$trueshotTime}[$trueshotTime sec]",
+				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -56,7 +56,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "$haste% ($gcd)||n{$ttd}[TTD: $ttd][ ]",
+				text = "{$serpentSting}[#serpentSting $ssCount   ][       ] $haste% ($gcd)||n{$serpentSting}[           ]{$ttd}[TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13

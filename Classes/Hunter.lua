@@ -241,6 +241,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	TRB.Data.snapshotData.targetData = {
 		ttdIsActive = false,
 		currentTargetGuid = nil,
+		serpentSting = 0,
 		targets = {}
 	}
 
@@ -289,6 +290,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Focus Total", printInSettings = false, color = false },   
 
 			{ variable = "$trueshotTime", description = "Time remaining on Trueshot buff", printInSettings = true, color = false },   
+			{ variable = "$ssCount", description = "Number of Serpent Stings active on targets", printInSettings = true, color = false },
+			{ variable = "$serpentSting", description = "Is Serpent Sting talented? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -463,6 +466,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if GetTrueshotRemainingTime() > 0 then
 				valid = true
 			end
+		elseif var == "$ssCount" then
+			if TRB.Data.snapshotData.targetData.serpentSting > 0 then
+				valid = true
+			end
+		elseif var == "$serpentSting" then
+			if TRB.Data.character.talents.serpentSting.isSelected then
+				valid = true
+			end
 		else
 			valid = false					
 		end
@@ -524,9 +535,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			trueshotTime = string.format("%.1f", _trueshotTime)
 		end
 
+		--$ssCount
+		local serpentStingCount = TRB.Data.snapshotData.targetData.serpentSting or 0
+
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passivefocus
+		Global_TwintopResourceBar.dots = {
+			ssCount = serpentStingCount or 0
+		}
 
 		lookup = TRB.Data.lookup or {}	
 		lookup["#aMurderOfCrows"] = TRB.Data.spells.aMurderOfCrows.icon
@@ -546,8 +563,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#trickShots"] = TRB.Data.spells.trickShots.icon
 		lookup["#trueshot"] = TRB.Data.spells.trueshot.icon
 		lookup["$trueshotTime"] = trueshotTime
+		lookup["$trueshotTime"] = trueshotTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
-		lookup["$focusPlusPassive"] = focusPlusPassive
+		lookup["$ssCount"] = serpentStingCount
 		lookup["$focusTotal"] = focusTotal
 		lookup["$focusMax"] = TRB.Data.character.maxResource
 		lookup["$focus"] = currentfocus
@@ -635,12 +653,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	local function HideResourceBar(force)
 		local affectingCombat = UnitAffectingCombat("player")
-	
+		
 		if force or GetSpecialization() ~= 2 or ((not affectingCombat) and
 			(not UnitInVehicle("player")) and (
 				(not TRB.Data.settings.hunter.marksmanship.displayBar.alwaysShow) and (
 					(not TRB.Data.settings.hunter.marksmanship.displayBar.notZeroShow) or
-					(TRB.Data.settings.hunter.marksmanship.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.resourceMax)
+					(TRB.Data.settings.hunter.marksmanship.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource)
 				)
 			 )) then
 			TRB.Frames.barContainerFrame:Hide()	
@@ -933,7 +951,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						TRB.Data.snapshotData.trueshot.spellId = nil
 						TRB.Data.snapshotData.trueshot.duration = 0
                         TRB.Data.snapshotData.trueshot.endTime = nil
-                    end
+                    end			
+				elseif spellId == TRB.Data.spells.serpentSting.id then
+					InitializeTarget(destGUID)
+					TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+					if type == "SPELL_AURA_APPLIED" then -- SS Applied to Target
+						TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = true
+						TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
+					elseif type == "SPELL_AURA_REMOVED" then
+						TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = false
+						TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting - 1
+					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+					end	
 				end
             end
 			

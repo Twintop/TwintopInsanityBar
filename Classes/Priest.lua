@@ -1086,7 +1086,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$mbTime
 		local mbTime = string.format("%.1f", TRB.Data.snapshotData.mindbender.remaining.time)
 		--$wfInsanity
-		local wfInsanity = string.format("%s", TRB.Functions.RoundTo(TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal + TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceFinal, insanityPrecision, "floor"))
+		local _wfInsanity = TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal + TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceFinal
+		local wfInsanity = string.format("%s", TRB.Functions.RoundTo(_wfInsanity, insanityPrecision, "floor"))
 		--$wfGcds
 		local wfGcds = string.format("%.0f", math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.gcds, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds))
 		--$wfProcs
@@ -1236,6 +1237,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		Global_TwintopResourceBar.resource.mindbender = TRB.Data.snapshotData.mindbender.resourceFinal or 0
 		Global_TwintopResourceBar.resource.deathAndMadness = _damInsanity
 		Global_TwintopResourceBar.resource.ecttv = TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal or 0
+		Global_TwintopResourceBar.resource.wrathfulFaerie = _wfInsanity or 0
 		Global_TwintopResourceBar.auspiciousSpirits = {
 			count = TRB.Data.snapshotData.targetData.auspiciousSpirits or 0,
 			insanity = _asInsanity
@@ -1264,7 +1266,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			count = TRB.Data.snapshotData.eternalCallToTheVoid.numberActive or 0
 		}
 		Global_TwintopResourceBar.wrathfulFaerie = {
-			insanity = (TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal or 0) + (TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceFinal or 0),
+			insanity = _wfInsanity,
 			main = {			
 				insanity = TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal or 0,
 				gcds = TRB.Data.snapshotData.wrathfulFaerie.main.remaining.gcds or 0,
