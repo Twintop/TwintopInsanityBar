@@ -1,6 +1,6 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
-if classIndexId == 7 then --Only do this if we're on a Shaman!
+if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
@@ -17,18 +17,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
 
-	TRB.Options.Shaman = {}
-	TRB.Options.Shaman.Elemental = {}
-	TRB.Options.Shaman.Enhancement = {}
-    TRB.Options.Shaman.Restoration = {}
+	TRB.Options.Hunter = {}
+	TRB.Options.Hunter.Marksmanship = {}
+	TRB.Options.Hunter.Feral = {}
+	TRB.Options.Hunter.Guardian = {}
+	TRB.Options.Hunter.Restoration = {}
     
     
-	local function ElementalLoadDefaultBarTextSimpleSettings()
+	local function MarksmanshipLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
 			fontFaceLock=true,
 			left={
-				text="$haste%",
+				text="{$trueshotTime}[$trueshotTime sec]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -40,7 +41,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				fontSize=18
 			},
 			right={
-				text="{$casting}[$casting + ]{$passive}[$passive + ]$maelstrom",
+				text="{$casting}[$casting + ]{$passive}[$passive + ]$focus",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -50,24 +51,24 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		return textSettings
 	end
     
-    local function ElementalLoadDefaultBarTextAdvancedSettings()
+    local function MarksmanshipLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {		
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "#flameShock $fsCount    $haste% ($gcd)||n{$ifStacks}[#frostShock $ifStacks][       ]    {$ttd}[TTD: $ttd]",
+				text = "{$serpentSting}[#serpentSting $ssCount   ][       ] $haste% ($gcd)||n{$serpentSting}[           ]{$ttd}[TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			middle = {
-				text="",
+				text="{$trueshotTime}[#trueshot $trueshotTime #trueshot]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			right = {
-				text = "{$casting}[#casting$casting+]{$passive}[$passive+]$maelstrom",
+				text = "{$casting}[#casting$casting+]{$passive}[$passive+]$focus",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",			
 				fontSize = 22
@@ -77,15 +78,60 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		return textSettings
 	end
 
-	local function ElementalLoadDefaultSettings()
+	local function MarksmanshipLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
 			thresholdWidth=2,
-			earthShockThreshold=true,
+			thresholds = {
+				aimedShot = {
+					enabled = true, -- 1
+				},
+				arcaneShot = {
+					enabled = false, -- 2 --Also Chimera Shot @ 12
+				},
+				serpentSting = {
+					enabled = false, -- 3
+				},
+				barrage = {
+					enabled = false, -- 4
+				},
+				killShot = {
+					enabled = false, -- 5
+				},
+				multiShot = {
+					enabled = false, -- 6
+				},
+				aMurderOfCrows = {
+					enabled = false, -- 7
+				},
+				explosiveShot = {
+					enabled = false, -- 8
+				},
+				scareBeast = {
+					enabled = false, -- 9
+				},
+				burstingShot = {
+					enabled = false, -- 10
+				},
+				revivePet = {
+					enabled = false, -- 11
+				}
+			},
+			generation = {
+				mode="gcd",
+				gcds=2,
+				time=3.0,
+			},
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
 				neverShow=false
+			},
+			endOfTrueshot = {
+				enabled=true,
+				mode="gcd",
+				gcdsMax=2,
+				timeMax=3.0
 			},
 			bar = {		
 				width=555,
@@ -97,10 +143,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			},
 			colors = {
 				text = {
-					currentMaelstrom="FF6563E0",
-					castingMaelstrom="FFFFFFFF",
-					passiveMaelstrom="FF995BDD",
-					overcapMaelstrom="FFFF0000",
+					current="FFBAE57E",
+					casting="FFFFFFFF",
+					spending="FF555555",
+					passive="FF005500",	
+					overcap="FFFF0000",	
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
 					overcapEnabled=true,
@@ -109,13 +156,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					right="FFFFFFFF"
 				},
 				bar = {
-					border="FF00008D",
+					border="FF698247",
 					borderOvercap="FFFF0000",
 					background="66000000",
-					base="FF0055FF",
+					base="FFAAD372",
+					trueshot="FF00B60E",
+					trueshotEnding="FFFF0000",
 					casting="FFFFFFFF",
-					passive="FF995BDD",
-					earthShock="FF00096A",
+					spending="FF555555",
+					passive="FF005500",
 					flashAlpha=0.70,
 					flashPeriod=0.5,
 					flashEnabled=true,
@@ -123,16 +172,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				},
 				threshold = {
 					under="FFFFFFFF",
-					over="FF00FF00"
+					over="FF00FF00",
+					unusable="FFFF0000"
 				}
 			},
 			displayText = {},
 			audio = {
-				esReady={
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
-					soundName="TRB: Boxing Arena Gong"
-				},
 				overcap={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
@@ -154,25 +199,25 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			}
 		}
 
-		settings.displayText = ElementalLoadDefaultBarTextSimpleSettings()
+		settings.displayText = MarksmanshipLoadDefaultBarTextSimpleSettings()
 		return settings
     end
 
-	local function ElementalResetSettings()
-		local settings = ElementalLoadDefaultSettings()
+	local function MarksmanshipResetSettings()
+		local settings = MarksmanshipLoadDefaultSettings()
 		return settings
 	end
 
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 		local specId = GetSpecialization()
-		settings.shaman.elemental = ElementalLoadDefaultSettings()
+		settings.hunter.marksmanship = MarksmanshipLoadDefaultSettings()
 		return settings
 	end
-    TRB.Options.Shaman.LoadDefaultSettings = LoadDefaultSettings
+    TRB.Options.Hunter.LoadDefaultSettings = LoadDefaultSettings
 
     
-	local function ElementalConstructResetDefaultsPanel(parent)	
+	local function MarksmanshipConstructResetDefaultsPanel(parent)	
 		if parent == nil then
 			return
 		end
@@ -198,11 +243,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local sliderHeight = 20
 
 		StaticPopupDialogs["TwintopResourceBar_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to it's default configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset the Twintop's Resource Bar back to it's default configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.shaman.elemental = ElementalResetSettings()
+				TRB.Data.settings.hunter.marksmanship = MarksmanshipResetSettings()
 				ReloadUI()			
 			end,
 			timeout = 0,
@@ -211,11 +256,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (simple) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (simple) configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.shaman.elemental.displayText = ElementalLoadDefaultBarTextSimpleSettings()
+				TRB.Data.settings.hunter.marksmanship.displayText = MarksmanshipLoadDefaultBarTextSimpleSettings()
 				ReloadUI()			
 			end,
 			timeout = 0,
@@ -224,11 +269,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.shaman.elemental.displayText = ElementalLoadDefaultBarTextAdvancedSettings()
+				TRB.Data.settings.hunter.marksmanship.displayText = MarksmanshipLoadDefaultBarTextAdvancedSettings()
 				ReloadUI()			
 			end,
 			timeout = 0,
@@ -237,11 +282,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			preferredIndex = 3
 		}
 		--[[StaticPopupDialogs["TwintopResourceBar_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.shaman.elemental.displayText = ElementalLoadDefaultBarTextNarrowAdvancedSettings()
+				TRB.Data.settings.hunter.marksmanship.displayText = MarksmanshipLoadDefaultBarTextNarrowAdvancedSettings()
 				ReloadUI()			
 			end,
 			timeout = 0,
@@ -368,7 +413,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Frames.interfaceSettingsFrame.controls = controls
 	end
 
-	local function ElementalConstructBarColorsAndBehaviorPanel(parent)	
+	local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)	
 		if parent == nil then
 			return
 		end
@@ -393,13 +438,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local sliderWidth = 260
 		local sliderHeight = 20
 	
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height/8), math.floor(TRB.Data.settings.shaman.elemental.bar.width/8))
+		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height/8), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width/8))
 
 		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
 		
 		yCoord = yCoord - 40
 		title = "Bar Width"
-		controls.width = TRB.UiFunctions.BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinWidth, TRB.Data.sanityCheckValues.barMaxWidth, TRB.Data.settings.shaman.elemental.bar.width, 1, 2,
+		controls.width = TRB.UiFunctions.BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinWidth, TRB.Data.sanityCheckValues.barMaxWidth, TRB.Data.settings.hunter.marksmanship.bar.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -409,21 +454,28 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.shaman.elemental.bar.width = value
-			barContainerFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			barBorderFrame:SetWidth(TRB.Data.settings.shaman.elemental.bar.width)
-			resourceFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			castingFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			passiveFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.shaman.elemental)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / 8), math.floor(TRB.Data.settings.shaman.elemental.bar.width / 8))
+			TRB.Data.settings.hunter.marksmanship.bar.width = value
+			barContainerFrame:SetWidth(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
+			barBorderFrame:SetWidth(TRB.Data.settings.hunter.marksmanship.bar.width)
+			resourceFrame:SetWidth(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
+			castingFrame:SetWidth(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
+			passiveFrame:SetWidth(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
+			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.marksmanship)
+			
+			for k, v in pairs(TRB.Data.spells) do
+				if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
+					TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+					TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
+				end
+			end
+			
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / 8), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / 8))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
 
 		title = "Bar Height"
-		controls.height = TRB.UiFunctions.BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinHeight, TRB.Data.sanityCheckValues.barMaxHeight, TRB.Data.settings.shaman.elemental.bar.height, 1, 2,
+		controls.height = TRB.UiFunctions.BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinHeight, TRB.Data.sanityCheckValues.barMaxHeight, TRB.Data.settings.hunter.marksmanship.bar.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -433,24 +485,27 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				value = min
 			end		
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.shaman.elemental.bar.height = value
-			barContainerFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			barBorderFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height)
-			resourceFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			resourceFrame.thresholds[1]:SetHeight(value)
-			castingFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			passiveFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))	
-			leftTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
-			middleTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
-			rightTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / 8), math.floor(TRB.Data.settings.shaman.elemental.bar.width / 8))
+			TRB.Data.settings.hunter.marksmanship.bar.height = value
+			barContainerFrame:SetHeight(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
+			barBorderFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height)
+			resourceFrame:SetHeight(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
+			for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
+				resourceFrame.thresholds[x]:SetHeight(value)
+			end
+			
+			castingFrame:SetHeight(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
+			passiveFrame:SetHeight(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
+			leftTextFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height * 3.5)
+			middleTextFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height * 3.5)
+			rightTextFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height * 3.5)
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / 8), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / 8))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
 
 		title = "Bar Horizontal Position"
 		yCoord = yCoord - 60
-		controls.horizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth/2), math.floor(TRB.Data.sanityCheckValues.barMaxWidth/2), TRB.Data.settings.shaman.elemental.bar.xPos, 1, 2,
+		controls.horizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth/2), math.floor(TRB.Data.sanityCheckValues.barMaxWidth/2), TRB.Data.settings.hunter.marksmanship.bar.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -460,14 +515,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				value = min
 			end
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.shaman.elemental.bar.xPos = value
+			TRB.Data.settings.hunter.marksmanship.bar.xPos = value
 			barContainerFrame:ClearAllPoints()
 			barContainerFrame:SetPoint("CENTER", UIParent)
-			barContainerFrame:SetPoint("CENTER", TRB.Data.settings.shaman.elemental.bar.xPos, TRB.Data.settings.shaman.elemental.bar.yPos)
+			barContainerFrame:SetPoint("CENTER", TRB.Data.settings.hunter.marksmanship.bar.xPos, TRB.Data.settings.hunter.marksmanship.bar.yPos)
 		end)
 
 		title = "Bar Vertical Position"
-		controls.vertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxHeight/2), math.floor(TRB.Data.sanityCheckValues.barMaxHeight/2), TRB.Data.settings.shaman.elemental.bar.yPos, 1, 2,
+		controls.vertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxHeight/2), math.floor(TRB.Data.sanityCheckValues.barMaxHeight/2), TRB.Data.settings.hunter.marksmanship.bar.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -477,15 +532,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.shaman.elemental.bar.yPos = value
+			TRB.Data.settings.hunter.marksmanship.bar.yPos = value
 			barContainerFrame:ClearAllPoints()
 			barContainerFrame:SetPoint("CENTER", UIParent)
-			barContainerFrame:SetPoint("CENTER", TRB.Data.settings.shaman.elemental.bar.xPos, TRB.Data.settings.shaman.elemental.bar.yPos)
+			barContainerFrame:SetPoint("CENTER", TRB.Data.settings.hunter.marksmanship.bar.xPos, TRB.Data.settings.hunter.marksmanship.bar.yPos)
 		end)
 
 		title = "Bar Border Width"
 		yCoord = yCoord - 60
-		controls.borderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.shaman.elemental.bar.border, 1, 2,
+		controls.borderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.hunter.marksmanship.bar.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.borderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -495,14 +550,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				value = min
 			end
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.shaman.elemental.bar.border = value
-			barContainerFrame:SetWidth(TRB.Data.settings.shaman.elemental.bar.width-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			barContainerFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			barBorderFrame:SetWidth(TRB.Data.settings.shaman.elemental.bar.width)
-			barBorderFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height)
-			if TRB.Data.settings.shaman.elemental.bar.border < 1 then
+			TRB.Data.settings.hunter.marksmanship.bar.border = value
+			barContainerFrame:SetWidth(TRB.Data.settings.hunter.marksmanship.bar.width-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
+			barContainerFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
+			barBorderFrame:SetWidth(TRB.Data.settings.hunter.marksmanship.bar.width)
+			barBorderFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height)
+			if TRB.Data.settings.hunter.marksmanship.bar.border < 1 then
 				barBorderFrame:SetBackdrop({
-					edgeFile = TRB.Data.settings.shaman.elemental.textures.border,
+					edgeFile = TRB.Data.settings.hunter.marksmanship.textures.border,
 					tile = true,
 					tileSize = 4,
 					edgeSize = 1,
@@ -511,22 +566,28 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				barBorderFrame:Hide()
 			else
 				barBorderFrame:SetBackdrop({ 
-					edgeFile = TRB.Data.settings.shaman.elemental.textures.border,
+					edgeFile = TRB.Data.settings.hunter.marksmanship.textures.border,
 					tile = true,
 					tileSize=4,
-					edgeSize=TRB.Data.settings.shaman.elemental.bar.border,								
+					edgeSize=TRB.Data.settings.hunter.marksmanship.bar.border,								
 					insets = {0, 0, 0, 0}
 				})
 				barBorderFrame:Show()
 			end
 			barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.border, true))
+			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.border, true))
 
-			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.shaman.elemental)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.marksmanship)
+			
+			for k, v in pairs(TRB.Data.spells) do
+				if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
+					TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+					TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
+				end
+			end
 
-			local minsliderWidth = math.max(TRB.Data.settings.shaman.elemental.bar.border*2, 120)
-			local minsliderHeight = math.max(TRB.Data.settings.shaman.elemental.bar.border*2, 1)
+			local minsliderWidth = math.max(TRB.Data.settings.hunter.marksmanship.bar.border*2, 120)
+			local minsliderHeight = math.max(TRB.Data.settings.hunter.marksmanship.bar.border*2, 1)
 			controls.height:SetMinMaxValues(minsliderHeight, TRB.Data.sanityCheckValues.barMaxHeight)
 			controls.height.MinLabel:SetText(minsliderHeight)
 			controls.width:SetMinMaxValues(minsliderWidth, TRB.Data.sanityCheckValues.barMaxWidth)
@@ -534,7 +595,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.shaman.elemental.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.marksmanship.thresholdWidth, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -544,8 +605,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.shaman.elemental.thresholdWidth = value
-			resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.shaman.elemental.thresholdWidth)
+			TRB.Data.settings.hunter.marksmanship.thresholdWidth = value
+			for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
+				resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.hunter.marksmanship.thresholdWidth)
+			end
 		end)
 
 		yCoord = yCoord - 40
@@ -555,26 +618,26 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
 		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.bar.dragAndDrop)
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.elemental.bar.dragAndDrop = self:GetChecked()
-			barContainerFrame:SetMovable(TRB.Data.settings.shaman.elemental.bar.dragAndDrop)
-			barContainerFrame:EnableMouse(TRB.Data.settings.shaman.elemental.bar.dragAndDrop)
+			TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop = self:GetChecked()
+			barContainerFrame:SetMovable(TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
+			barContainerFrame:EnableMouse(TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
 		end)
 
 
 
 		yCoord = yCoord - 30
-		controls.textBarTexturesSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Textures", xCoord+xPadding, yCoord)
+		controls.textBarTexturesSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Textures", 0, yCoord)
 		yCoord = yCoord - 30
 		
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TIBMaelstromBarTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TIBFocusBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, TRB.Data.settings.shaman.elemental.textures.resourceBarName)
+		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, TRB.Data.settings.hunter.marksmanship.textures.resourceBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.resourceBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -599,7 +662,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.shaman.elemental.textures.resourceBar
+						info.checked = textures[v] == TRB.Data.settings.hunter.marksmanship.textures.resourceBar
 						info.func = self.SetValue			
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -612,18 +675,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.resourceBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.shaman.elemental.textures.resourceBar = newValue
-			TRB.Data.settings.shaman.elemental.textures.resourceBarName = newName
-			resourceFrame:SetStatusBarTexture(TRB.Data.settings.shaman.elemental.textures.resourceBar)
+			TRB.Data.settings.hunter.marksmanship.textures.resourceBar = newValue
+			TRB.Data.settings.hunter.marksmanship.textures.resourceBarName = newName
+			resourceFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.resourceBar)
 			UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-			if TRB.Data.settings.shaman.elemental.textures.textureLock then
-				TRB.Data.settings.shaman.elemental.textures.castingBar = newValue
-				TRB.Data.settings.shaman.elemental.textures.castingBarName = newName
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.shaman.elemental.textures.castingBar)
+			if TRB.Data.settings.hunter.marksmanship.textures.textureLock then
+				TRB.Data.settings.hunter.marksmanship.textures.castingBar = newValue
+				TRB.Data.settings.hunter.marksmanship.textures.castingBarName = newName
+				castingFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.castingBar)
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
-				TRB.Data.settings.shaman.elemental.textures.passiveBar = newValue
-				TRB.Data.settings.shaman.elemental.textures.passiveBarName = newName
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.shaman.elemental.textures.passiveBar)
+				TRB.Data.settings.hunter.marksmanship.textures.passiveBar = newValue
+				TRB.Data.settings.hunter.marksmanship.textures.passiveBarName = newName
+				passiveFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.passiveBar)
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
 			end
 			CloseDropDownMenus()
@@ -635,7 +698,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.shaman.elemental.textures.castingBarName)
+		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.hunter.marksmanship.textures.castingBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -660,7 +723,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.shaman.elemental.textures.castingBar
+						info.checked = textures[v] == TRB.Data.settings.hunter.marksmanship.textures.castingBar
 						info.func = self.SetValue			
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -673,18 +736,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.castingBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.shaman.elemental.textures.castingBar = newValue
-			TRB.Data.settings.shaman.elemental.textures.castingBarName = newName
-			castingFrame:SetStatusBarTexture(TRB.Data.settings.shaman.elemental.textures.castingBar)
+			TRB.Data.settings.hunter.marksmanship.textures.castingBar = newValue
+			TRB.Data.settings.hunter.marksmanship.textures.castingBarName = newName
+			castingFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.castingBar)
 			UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
-			if TRB.Data.settings.shaman.elemental.textures.textureLock then
-				TRB.Data.settings.shaman.elemental.textures.resourceBar = newValue
-				TRB.Data.settings.shaman.elemental.textures.resourceBarName = newName
-				resourceFrame:SetStatusBarTexture(TRB.Data.settings.shaman.elemental.textures.resourceBar)
+			if TRB.Data.settings.hunter.marksmanship.textures.textureLock then
+				TRB.Data.settings.hunter.marksmanship.textures.resourceBar = newValue
+				TRB.Data.settings.hunter.marksmanship.textures.resourceBarName = newName
+				resourceFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.resourceBar)
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-				TRB.Data.settings.shaman.elemental.textures.passiveBar = newValue
-				TRB.Data.settings.shaman.elemental.textures.passiveBarName = newName
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.shaman.elemental.textures.passiveBar)
+				TRB.Data.settings.hunter.marksmanship.textures.passiveBar = newValue
+				TRB.Data.settings.hunter.marksmanship.textures.passiveBarName = newName
+				passiveFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.passiveBar)
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
 			end
 			CloseDropDownMenus()
@@ -699,7 +762,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, TRB.Data.settings.shaman.elemental.textures.passiveBarName)
+		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, TRB.Data.settings.hunter.marksmanship.textures.passiveBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -724,7 +787,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.shaman.elemental.textures.passiveBar
+						info.checked = textures[v] == TRB.Data.settings.hunter.marksmanship.textures.passiveBar
 						info.func = self.SetValue			
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -737,18 +800,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.passiveBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.shaman.elemental.textures.passiveBar = newValue
-			TRB.Data.settings.shaman.elemental.textures.passiveBarName = newName
-			passiveFrame:SetStatusBarTexture(TRB.Data.settings.shaman.elemental.textures.passiveBar)
+			TRB.Data.settings.hunter.marksmanship.textures.passiveBar = newValue
+			TRB.Data.settings.hunter.marksmanship.textures.passiveBarName = newName
+			passiveFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.passiveBar)
 			UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
-			if TRB.Data.settings.shaman.elemental.textures.textureLock then
-				TRB.Data.settings.shaman.elemental.textures.resourceBar = newValue
-				TRB.Data.settings.shaman.elemental.textures.resourceBarName = newName
-				resourceFrame:SetStatusBarTexture(TRB.Data.settings.shaman.elemental.textures.resourceBar)
+			if TRB.Data.settings.hunter.marksmanship.textures.textureLock then
+				TRB.Data.settings.hunter.marksmanship.textures.resourceBar = newValue
+				TRB.Data.settings.hunter.marksmanship.textures.resourceBarName = newName
+				resourceFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.resourceBar)
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-				TRB.Data.settings.shaman.elemental.textures.castingBar = newValue
-				TRB.Data.settings.shaman.elemental.textures.castingBarName = newName
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.shaman.elemental.textures.castingBar)
+				TRB.Data.settings.hunter.marksmanship.textures.castingBar = newValue
+				TRB.Data.settings.hunter.marksmanship.textures.castingBarName = newName
+				castingFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.castingBar)
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
 			end
 			CloseDropDownMenus()
@@ -759,18 +822,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
 		f.tooltip = "This will lock the texture for each part of the bar to be the same."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.textures.textureLock)
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.textures.textureLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.elemental.textures.textureLock = self:GetChecked()
-			if TRB.Data.settings.shaman.elemental.textures.textureLock then
-				TRB.Data.settings.shaman.elemental.textures.passiveBar = TRB.Data.settings.shaman.elemental.textures.resourceBar
-				TRB.Data.settings.shaman.elemental.textures.passiveBarName = TRB.Data.settings.shaman.elemental.textures.resourceBarName
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.shaman.elemental.textures.passiveBar)
-				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, TRB.Data.settings.shaman.elemental.textures.passiveBarName)
-				TRB.Data.settings.shaman.elemental.textures.castingBar = TRB.Data.settings.shaman.elemental.textures.resourceBar
-				TRB.Data.settings.shaman.elemental.textures.castingBarName = TRB.Data.settings.shaman.elemental.textures.resourceBarName
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.shaman.elemental.textures.castingBar)
-				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.shaman.elemental.textures.castingBarName)
+			TRB.Data.settings.hunter.marksmanship.textures.textureLock = self:GetChecked()
+			if TRB.Data.settings.hunter.marksmanship.textures.textureLock then
+				TRB.Data.settings.hunter.marksmanship.textures.passiveBar = TRB.Data.settings.hunter.marksmanship.textures.resourceBar
+				TRB.Data.settings.hunter.marksmanship.textures.passiveBarName = TRB.Data.settings.hunter.marksmanship.textures.resourceBarName
+				passiveFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.passiveBar)
+				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, TRB.Data.settings.hunter.marksmanship.textures.passiveBarName)
+				TRB.Data.settings.hunter.marksmanship.textures.castingBar = TRB.Data.settings.hunter.marksmanship.textures.resourceBar
+				TRB.Data.settings.hunter.marksmanship.textures.castingBarName = TRB.Data.settings.hunter.marksmanship.textures.resourceBarName
+				castingFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.castingBar)
+				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.hunter.marksmanship.textures.castingBarName)
 			end
 		end)
 
@@ -783,7 +846,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.borderTexture, TRB.Data.settings.shaman.elemental.textures.borderName)
+		UIDropDownMenu_SetText(controls.dropDown.borderTexture, TRB.Data.settings.hunter.marksmanship.textures.borderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -808,7 +871,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.shaman.elemental.textures.border
+						info.checked = textures[v] == TRB.Data.settings.hunter.marksmanship.textures.border
 						info.func = self.SetValue			
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -821,20 +884,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.borderTexture:SetValue(newValue, newName)
-			TRB.Data.settings.shaman.elemental.textures.border = newValue
-			TRB.Data.settings.shaman.elemental.textures.borderName = newName
-			if TRB.Data.settings.shaman.elemental.bar.border < 1 then
+			TRB.Data.settings.hunter.marksmanship.textures.border = newValue
+			TRB.Data.settings.hunter.marksmanship.textures.borderName = newName
+			if TRB.Data.settings.hunter.marksmanship.bar.border < 1 then
 				barBorderFrame:SetBackdrop({ })
 			else
-				barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.shaman.elemental.textures.border,
+				barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.hunter.marksmanship.textures.border,
 											tile = true,
 											tileSize=4,
-											edgeSize=TRB.Data.settings.shaman.elemental.bar.border,							
+											edgeSize=TRB.Data.settings.hunter.marksmanship.bar.border,							
 											insets = {0, 0, 0, 0}
 											})
 			end
 			barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.border, true))
+			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.border, true))
 			UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
 			CloseDropDownMenus()
 		end
@@ -845,7 +908,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, TRB.Data.settings.shaman.elemental.textures.backgroundName)
+		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, TRB.Data.settings.hunter.marksmanship.textures.backgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -870,7 +933,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.shaman.elemental.textures.background
+						info.checked = textures[v] == TRB.Data.settings.hunter.marksmanship.textures.background
 						info.func = self.SetValue			
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -883,16 +946,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
-			TRB.Data.settings.shaman.elemental.textures.background = newValue
-			TRB.Data.settings.shaman.elemental.textures.backgroundName = newName
+			TRB.Data.settings.hunter.marksmanship.textures.background = newValue
+			TRB.Data.settings.hunter.marksmanship.textures.backgroundName = newName
 			barContainerFrame:SetBackdrop({ 
-				bgFile = TRB.Data.settings.shaman.elemental.textures.background,		
+				bgFile = TRB.Data.settings.hunter.marksmanship.textures.background,		
 				tile = true,
-				tileSize = TRB.Data.settings.shaman.elemental.bar.width,
+				tileSize = TRB.Data.settings.hunter.marksmanship.bar.width,
 				edgeSize = 1,
 				insets = {0, 0, 0, 0}
 			})
-			barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.background, true))
+			barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.background, true))
 			UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, newName)
 			CloseDropDownMenus()
 		end
@@ -901,10 +964,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = yCoord - 70
 		controls.barDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display", 0, yCoord)
 
-		yCoord = yCoord - 50
+		--[[yCoord = yCoord - 50
 
 		title = "Earth Shock/EQ Flash Alpha"
-		controls.flashAlpha = TRB.UiFunctions.BuildSlider(parent, title, 0, 1, TRB.Data.settings.shaman.elemental.colors.bar.flashAlpha, 0.01, 2,
+		controls.flashAlpha = TRB.UiFunctions.BuildSlider(parent, title, 0, 1, TRB.Data.settings.hunter.marksmanship.colors.bar.flashAlpha, 0.01, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -916,11 +979,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.shaman.elemental.colors.bar.flashAlpha = value
+			TRB.Data.settings.hunter.marksmanship.colors.bar.flashAlpha = value
 		end)
 
 		title = "Earth Shock/EQ Flash Period (sec)"
-		controls.flashPeriod = TRB.UiFunctions.BuildSlider(parent, title, 0, 2, TRB.Data.settings.shaman.elemental.colors.bar.flashPeriod, 0.05, 2,
+		controls.flashPeriod = TRB.UiFunctions.BuildSlider(parent, title, 0, 2, TRB.Data.settings.hunter.marksmanship.colors.bar.flashPeriod, 0.05, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -932,8 +995,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.shaman.elemental.colors.bar.flashPeriod = value
-		end)
+			TRB.Data.settings.hunter.marksmanship.colors.bar.flashPeriod = value
+		end)]]
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TIBRB1_2", parent, "UIRadioButtonTemplate")
@@ -942,33 +1005,33 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.displayBar.alwaysShow)
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.displayBar.alwaysShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(true)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.shaman.elemental.displayBar.alwaysShow = true
-			TRB.Data.settings.shaman.elemental.displayBar.notZeroShow = false
-			TRB.Data.settings.shaman.elemental.displayBar.neverShow = false
+			TRB.Data.settings.hunter.marksmanship.displayBar.alwaysShow = true
+			TRB.Data.settings.hunter.marksmanship.displayBar.notZeroShow = false
+			TRB.Data.settings.hunter.marksmanship.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
 		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TIBRB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord-15)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Maelstrom > 0")
+		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Focus < 100")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar show out of combat only if Maelstrom > 0, hidden otherwise when out of combat."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.displayBar.notZeroShow)
+		f.tooltip = "This will make the Resource Bar show out of combat only if Focus < 100, hidden otherwise when out of combat."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.displayBar.notZeroShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(true)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.shaman.elemental.displayBar.alwaysShow = false
-			TRB.Data.settings.shaman.elemental.displayBar.notZeroShow = true
-			TRB.Data.settings.shaman.elemental.displayBar.neverShow = false
+			TRB.Data.settings.hunter.marksmanship.displayBar.alwaysShow = false
+			TRB.Data.settings.hunter.marksmanship.displayBar.notZeroShow = true
+			TRB.Data.settings.hunter.marksmanship.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -978,15 +1041,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
-		f:SetChecked((not TRB.Data.settings.shaman.elemental.displayBar.alwaysShow) and (not TRB.Data.settings.shaman.elemental.displayBar.notZeroShow))
+		f:SetChecked((not TRB.Data.settings.hunter.marksmanship.displayBar.alwaysShow) and (not TRB.Data.settings.hunter.marksmanship.displayBar.notZeroShow))
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(true)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.shaman.elemental.displayBar.alwaysShow = false
-			TRB.Data.settings.shaman.elemental.displayBar.notZeroShow = false
-			TRB.Data.settings.shaman.elemental.displayBar.neverShow = false
+			TRB.Data.settings.hunter.marksmanship.displayBar.alwaysShow = false
+			TRB.Data.settings.hunter.marksmanship.displayBar.notZeroShow = false
+			TRB.Data.settings.hunter.marksmanship.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -996,47 +1059,47 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.displayBar.neverShow)
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.displayBar.neverShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(true)
-			TRB.Data.settings.shaman.elemental.displayBar.alwaysShow = false
-			TRB.Data.settings.shaman.elemental.displayBar.notZeroShow = false
-			TRB.Data.settings.shaman.elemental.displayBar.neverShow = true
+			TRB.Data.settings.hunter.marksmanship.displayBar.alwaysShow = false
+			TRB.Data.settings.hunter.marksmanship.displayBar.notZeroShow = false
+			TRB.Data.settings.hunter.marksmanship.displayBar.neverShow = true
 			TRB.Functions.HideResourceBar()
 		end)
 
-
+		--[[
 		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TIBCB1_5", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Earth Shock/EQ is Usable")
 		f.tooltip = "This will flash the bar when Earth Shock/EQ can be cast."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.colors.bar.flashEnabled)
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.colors.bar.flashEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.elemental.colors.bar.flashEnabled = self:GetChecked()
+			TRB.Data.settings.hunter.marksmanship.colors.bar.flashEnabled = self:GetChecked()
 		end)
 
 		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.esThresholdShow
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Earth Shock/EQ Threshold Line")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Maelstrom is required to cast Earth Shock/EQ."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.earthShockThreshold)
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to cast Earth Shock/EQ."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.earthShockThreshold)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.elemental.earthShockThreshold = self:GetChecked()
-		end)
+			TRB.Data.settings.hunter.marksmanship.earthShockThreshold = self:GetChecked()
+		end)]]
 
 		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TIBCB1_8", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord)---40)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
-		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Maelstrom."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.colors.bar.overcapEnabled)
+		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Focus."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.colors.bar.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.elemental.colors.bar.overcapEnabled = self:GetChecked()
+			TRB.Data.settings.hunter.marksmanship.colors.bar.overcapEnabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 60
@@ -1044,11 +1107,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom", TRB.Data.settings.shaman.elemental.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Focus", TRB.Data.settings.hunter.marksmanship.colors.bar.base, 300, 25, xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-                local r1, g1, b1, a1 = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.base, true)
+                local r1, g1, b1, a1 = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.base, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -1058,16 +1121,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
                     controls.colors.base.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
 
-		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.shaman.elemental.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.hunter.marksmanship.colors.bar.border, 225, 25, xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.border, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.border, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -1078,60 +1141,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     end
         
                     controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
                 end)
 			end
 		end)
 
-		yCoord = yCoord - 30
-		controls.colors.earthShock = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom when you can cast Earth Shock/Earthquake", TRB.Data.settings.shaman.elemental.colors.bar.earthShock, 300, 25, xCoord, yCoord)
-		f = controls.colors.earthShock
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.earthShock, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.earthShock.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.earthShock = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)	
-			
-		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.shaman.elemental.colors.bar.background, 275, 25, xCoord2, yCoord)
-		f = controls.colors.background
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.background, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
-                end)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom from hardcasting spells", TRB.Data.settings.shaman.elemental.colors.bar.casting, 525, 25, xCoord, yCoord)
+		yCoord = yCoord - 30		
+		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", TRB.Data.settings.hunter.marksmanship.colors.bar.casting, 275, 25, xCoord, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.casting, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.casting, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -1142,17 +1163,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     end
         
                     controls.colors.casting.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     castingFrame:SetStatusBarColor(r, g, b, 1-a)
                 end)
 			end
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Maelstrom", TRB.Data.settings.shaman.elemental.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast builder will overcap Focus", TRB.Data.settings.hunter.marksmanship.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.borderOvercap, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.borderOvercap, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1163,17 +1184,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					end
 		
 					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.shaman.elemental.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					TRB.Data.settings.hunter.marksmanship.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
 
-		yCoord = yCoord - 30
-		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under min. req. Maelstrom to cast Earth Shock/Earthquake Threshold Line", TRB.Data.settings.shaman.elemental.colors.threshold.under, 525, 25, xCoord, yCoord)
-		f = controls.colors.thresholdUnder
+		yCoord = yCoord - 30		
+		controls.colors.spending = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.marksmanship.colors.bar.spending, 275, 25, xCoord, yCoord)
+		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.under, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.spending, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -1183,18 +1204,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.shaman.elemental.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    controls.colors.spending.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.bar.spending = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over min. req. Maelstrom to cast Earth Shock/Earthquake Threshold Line", TRB.Data.settings.shaman.elemental.colors.threshold.over, 525, 25, xCoord, yCoord)
-		f = controls.colors.thresholdOver
+		end)	
+			
+		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.hunter.marksmanship.colors.bar.background, 275, 25, xCoord2, yCoord)
+		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.over, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.background, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -1204,18 +1224,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.shaman.elemental.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
                 end)
 			end
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom from Passive Sources", TRB.Data.settings.shaman.elemental.colors.bar.passive, 550, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from Passive Sources", TRB.Data.settings.hunter.marksmanship.colors.bar.passive, 525, 25, xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.passive, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.passive, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -1227,16 +1248,324 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     
 					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
 					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
-                    TRB.Data.settings.shaman.elemental.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
+		end)	
+			
+		controls.colors.trueshot = TRB.UiFunctions.BuildColorPicker(parent, "Focus while Trueshot is active", TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot, 275, 25, xCoord2, yCoord)
+		f = controls.colors.trueshot
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.trueshot.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		yCoord = yCoord - 30
+
+		controls.colors.trueshotEnding = TRB.UiFunctions.BuildColorPicker(parent, "Focus when Trueshot is ending", TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding, 275, 25, xCoord2, yCoord)
+		f = controls.colors.trueshotEnding
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+		
+					controls.colors.eclipse1GCD.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)
+		
+		yCoord = yCoord - 40
+
+		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+
+		yCoord = yCoord - 25
+
+		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under minimum required Focus threshold line", TRB.Data.settings.hunter.marksmanship.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		f = controls.colors.thresholdUnder
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.threshold.under, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over minimum required Focus threshold line", TRB.Data.settings.hunter.marksmanship.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		f = controls.colors.thresholdOver
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.threshold.over, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		controls.colors.thresholdUnusable = TRB.UiFunctions.BuildColorPicker(parent, "Ability is unusable threshold line", TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
+		f = controls.colors.thresholdUnusable
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.thresholdUnusable.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		controls.checkBoxes.aimedShotThresholdShow = CreateFrame("CheckButton", "TRB_Threshold_Option_aimedShot", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.aimedShotThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Aimed Shot")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Aimed Shot. If there are 0 charges available, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.aimedShot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.thresholds.aimedShot.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TRB_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.arcaneShotThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Arcane Shot/Chimera Shot")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Arcane Shot or Chimera Shot."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.arcaneShot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.thresholds.arcaneShot.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.aMurderOfCrowsThresholdShow = CreateFrame("CheckButton", "TRB_Threshold_Option_aMurderOfCrows", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.aMurderOfCrowsThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("A Murder of Crows (if spec'd)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use A Murder of Crows. Only visible if spec'd in to A Murder of Crows. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.aMurderOfCrows.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.thresholds.aMurderOfCrows.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.barrageThresholdShow = CreateFrame("CheckButton", "TRB_Threshold_Option_barrage", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.barrageThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Barrage (if spec'd)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Barrage. Only visible if spec'd in to Barrage. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.barrage.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.thresholds.barrage.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.burstingShotThresholdShow = CreateFrame("CheckButton", "TRB_Threshold_Option_burstingShot", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.burstingShotThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Bursting Shot")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Bursting Shot. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.burstingShot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.thresholds.burstingShot.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.explosiveShotThresholdShow = CreateFrame("CheckButton", "TRB_Threshold_Option_explosiveShot", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.explosiveShotThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Explosive Shot (if spec'd)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot. Only visible if spec'd in to Explosive Shot. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.explosiveShot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.thresholds.explosiveShot.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.killShotThresholdShow = CreateFrame("CheckButton", "TRB_Threshold_Option_killShot", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.killShotThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Kill Shot (if usable)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Kill Shot. Only visible when the current target is in Kill Shot health range. If on cooldown or has 0 charges available, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.killShot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.thresholds.killShot.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.multiShotThresholdShow = CreateFrame("CheckButton", "TRB_Threshold_Option_multiShot", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.multiShotThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Multi-Shot")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Multi-Shot."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.multiShot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.thresholds.multiShot.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.revivePetThresholdShow = CreateFrame("CheckButton", "TRB_Threshold_Option_revivePet", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.revivePetThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Revive Pet")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Revive Pet."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.revivePet.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.thresholds.revivePet.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.scareBeastThresholdShow = CreateFrame("CheckButton", "TRB_Threshold_Option_scareBeast", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.scareBeastThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Scare Beast")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Scare Beast."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.scareBeast.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.thresholds.scareBeast.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.serpentStingThresholdShow = CreateFrame("CheckButton", "TRB_Threshold_Option_serpentSting", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.serpentStingThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Serpent Sting (if spec'd)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Serpent Sting. Only visible if spec'd in to Serpent Sting."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.serpentSting.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.thresholds.serpentSting.enabled = self:GetChecked()
+		end)	
+		
+
+		yCoord = yCoord - 30
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of  Configuration", 0, yCoord)
+
+		yCoord = yCoord - 30	
+		controls.checkBoxes.endOfTrueshot = CreateFrame("CheckButton", "TRB_EOT_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfTrueshot
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Trueshot")
+		f.tooltip = "Changes the bar color when Trueshot is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.endOfTrueshot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.endOfTrueshot.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 40	
+		controls.checkBoxes.endOfTrueshotModeGCDs = CreateFrame("CheckButton", "TRB_EOT_M_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfTrueshotModeGCDs
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Trueshot ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many GCDs remain until Trueshot ends."
+		if TRB.Data.settings.hunter.marksmanship.endOfTrueshot.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfTrueshotModeGCDs:SetChecked(true)
+			controls.checkBoxes.endOfTrueshotModeTime:SetChecked(false)
+			TRB.Data.settings.hunter.marksmanship.endOfTrueshot.mode = "gcd"
+		end)
+
+		title = "Trueshot GCDs - 0.75sec Floor"
+		controls.endOfTrueshotGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 20, TRB.Data.settings.hunter.marksmanship.endOfTrueshot.gcdsMax, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.endOfTrueshotGCDs:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.marksmanship.endOfTrueshot.gcdsMax = value
+		end)
+
+
+		yCoord = yCoord - 60	
+		controls.checkBoxes.endOfTrueshotModeTime = CreateFrame("CheckButton", "TRB_EOT_M_TIME", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfTrueshotModeTime
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Time until Trueshot ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many seconds remain until Trueshot ends."
+		if TRB.Data.settings.hunter.marksmanship.endOfTrueshot.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfTrueshotModeGCDs:SetChecked(false)
+			controls.checkBoxes.endOfTrueshotModeTime:SetChecked(true)
+			TRB.Data.settings.hunter.marksmanship.endOfTrueshot.mode = "time"
+		end)
+
+		title = "Trueshot Time Remaining (sec)"
+		controls.endOfTrueshotTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.marksmanship.endOfTrueshot.timeMax, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.endOfTrueshotTime:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 2)
+			self.EditBox:SetText(value)		
+			TRB.Data.settings.hunter.marksmanship.endOfTrueshot.timeMax = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrame.controls = controls
 	end
 
-	local function ElementalConstructFontAndTextPanel(parent)	
+	local function MarksmanshipConstructFontAndTextPanel(parent)	
 		if parent == nil then
 			return
 		end
@@ -1270,7 +1599,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontLeft, TRB.Data.settings.shaman.elemental.displayText.left.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontLeft, TRB.Data.settings.hunter.marksmanship.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -1295,7 +1624,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.shaman.elemental.displayText.left.fontFace
+						info.checked = fonts[v] == TRB.Data.settings.hunter.marksmanship.displayText.left.fontFace
 						info.func = self.SetValue			
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -1309,18 +1638,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		-- Implement the function to change the favoriteNumber
 		function controls.dropDown.fontLeft:SetValue(newValue, newName)
-			TRB.Data.settings.shaman.elemental.displayText.left.fontFace = newValue
-			TRB.Data.settings.shaman.elemental.displayText.left.fontFaceName = newName
-			leftTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.left.fontFace, TRB.Data.settings.shaman.elemental.displayText.left.fontSize, "OUTLINE")
+			TRB.Data.settings.hunter.marksmanship.displayText.left.fontFace = newValue
+			TRB.Data.settings.hunter.marksmanship.displayText.left.fontFaceName = newName
+			leftTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.left.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.left.fontSize, "OUTLINE")
 			UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-			if TRB.Data.settings.shaman.elemental.displayText.fontFaceLock then
-				TRB.Data.settings.shaman.elemental.displayText.middle.fontFace = newValue
-				TRB.Data.settings.shaman.elemental.displayText.middle.fontFaceName = newName
-				middleTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.middle.fontFace, TRB.Data.settings.shaman.elemental.displayText.middle.fontSize, "OUTLINE")
+			if TRB.Data.settings.hunter.marksmanship.displayText.fontFaceLock then
+				TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFace = newValue
+				TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFaceName = newName
+				middleTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.middle.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-				TRB.Data.settings.shaman.elemental.displayText.right.fontFace = newValue
-				TRB.Data.settings.shaman.elemental.displayText.right.fontFaceName = newName
-				rightTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.right.fontFace, TRB.Data.settings.shaman.elemental.displayText.right.fontSize, "OUTLINE")
+				TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace = newValue
+				TRB.Data.settings.hunter.marksmanship.displayText.right.fontFaceName = newName
+				rightTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.right.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
 			CloseDropDownMenus()
@@ -1332,7 +1661,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.shaman.elemental.displayText.middle.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -1357,7 +1686,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.shaman.elemental.displayText.middle.fontFace
+						info.checked = fonts[v] == TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFace
 						info.func = self.SetValue			
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -1371,18 +1700,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		-- Implement the function to change the favoriteNumber
 		function controls.dropDown.fontMiddle:SetValue(newValue, newName)
-			TRB.Data.settings.shaman.elemental.displayText.middle.fontFace = newValue
-			TRB.Data.settings.shaman.elemental.displayText.middle.fontFaceName = newName
-			middleTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.middle.fontFace, TRB.Data.settings.shaman.elemental.displayText.middle.fontSize, "OUTLINE")
+			TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFace = newValue
+			TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFaceName = newName
+			middleTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.middle.fontSize, "OUTLINE")
 			UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-			if TRB.Data.settings.shaman.elemental.displayText.fontFaceLock then
-				TRB.Data.settings.shaman.elemental.displayText.left.fontFace = newValue
-				TRB.Data.settings.shaman.elemental.displayText.left.fontFaceName = newName
-				leftTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.left.fontFace, TRB.Data.settings.shaman.elemental.displayText.left.fontSize, "OUTLINE")
+			if TRB.Data.settings.hunter.marksmanship.displayText.fontFaceLock then
+				TRB.Data.settings.hunter.marksmanship.displayText.left.fontFace = newValue
+				TRB.Data.settings.hunter.marksmanship.displayText.left.fontFaceName = newName
+				leftTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.left.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.left.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)			
-				TRB.Data.settings.shaman.elemental.displayText.right.fontFace = newValue
-				TRB.Data.settings.shaman.elemental.displayText.right.fontFaceName = newName
-				rightTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.right.fontFace, TRB.Data.settings.shaman.elemental.displayText.right.fontSize, "OUTLINE")
+				TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace = newValue
+				TRB.Data.settings.hunter.marksmanship.displayText.right.fontFaceName = newName
+				rightTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.right.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
 			CloseDropDownMenus()
@@ -1396,7 +1725,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.shaman.elemental.displayText.right.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.hunter.marksmanship.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -1421,7 +1750,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.shaman.elemental.displayText.right.fontFace
+						info.checked = fonts[v] == TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace
 						info.func = self.SetValue			
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -1435,18 +1764,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		-- Implement the function to change the favoriteNumber
 		function controls.dropDown.fontRight:SetValue(newValue, newName)		
-			TRB.Data.settings.shaman.elemental.displayText.right.fontFace = newValue
-			TRB.Data.settings.shaman.elemental.displayText.right.fontFaceName = newName
-			rightTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.right.fontFace, TRB.Data.settings.shaman.elemental.displayText.right.fontSize, "OUTLINE")
+			TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace = newValue
+			TRB.Data.settings.hunter.marksmanship.displayText.right.fontFaceName = newName
+			rightTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.right.fontSize, "OUTLINE")
 			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-			if TRB.Data.settings.shaman.elemental.displayText.fontFaceLock then
-				TRB.Data.settings.shaman.elemental.displayText.left.fontFace = newValue
-				TRB.Data.settings.shaman.elemental.displayText.left.fontFaceName = newName
-				leftTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.left.fontFace, TRB.Data.settings.shaman.elemental.displayText.left.fontSize, "OUTLINE")
+			if TRB.Data.settings.hunter.marksmanship.displayText.fontFaceLock then
+				TRB.Data.settings.hunter.marksmanship.displayText.left.fontFace = newValue
+				TRB.Data.settings.hunter.marksmanship.displayText.left.fontFaceName = newName
+				leftTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.left.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.left.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				TRB.Data.settings.shaman.elemental.displayText.middle.fontFace = newValue
-				TRB.Data.settings.shaman.elemental.displayText.middle.fontFaceName = newName
-				middleTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.middle.fontFace, TRB.Data.settings.shaman.elemental.displayText.middle.fontSize, "OUTLINE")
+				TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFace = newValue
+				TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFaceName = newName
+				middleTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.middle.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 			end
 			CloseDropDownMenus()
@@ -1457,18 +1786,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
 		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.displayText.fontFaceLock)
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.displayText.fontFaceLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.elemental.displayText.fontFaceLock = self:GetChecked()
-			if TRB.Data.settings.shaman.elemental.displayText.fontFaceLock then
-				TRB.Data.settings.shaman.elemental.displayText.middle.fontFace = TRB.Data.settings.shaman.elemental.displayText.left.fontFace
-				TRB.Data.settings.shaman.elemental.displayText.middle.fontFaceName = TRB.Data.settings.shaman.elemental.displayText.left.fontFaceName
-				middleTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.middle.fontFace, TRB.Data.settings.shaman.elemental.displayText.middle.fontSize, "OUTLINE")
-				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.shaman.elemental.displayText.middle.fontFaceName)
-				TRB.Data.settings.shaman.elemental.displayText.right.fontFace = TRB.Data.settings.shaman.elemental.displayText.left.fontFace
-				TRB.Data.settings.shaman.elemental.displayText.right.fontFaceName = TRB.Data.settings.shaman.elemental.displayText.left.fontFaceName
-				rightTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.right.fontFace, TRB.Data.settings.shaman.elemental.displayText.right.fontSize, "OUTLINE")
-				UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.shaman.elemental.displayText.right.fontFaceName)
+			TRB.Data.settings.hunter.marksmanship.displayText.fontFaceLock = self:GetChecked()
+			if TRB.Data.settings.hunter.marksmanship.displayText.fontFaceLock then
+				TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFace = TRB.Data.settings.hunter.marksmanship.displayText.left.fontFace
+				TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFaceName = TRB.Data.settings.hunter.marksmanship.displayText.left.fontFaceName
+				middleTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.middle.fontSize, "OUTLINE")
+				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFaceName)
+				TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace = TRB.Data.settings.hunter.marksmanship.displayText.left.fontFace
+				TRB.Data.settings.hunter.marksmanship.displayText.right.fontFaceName = TRB.Data.settings.hunter.marksmanship.displayText.left.fontFaceName
+				rightTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.right.fontSize, "OUTLINE")
+				UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.hunter.marksmanship.displayText.right.fontFaceName)
 			end
 		end)
 
@@ -1478,7 +1807,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
-		controls.fontSizeLeft = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.shaman.elemental.displayText.left.fontSize, 1, 0,
+		controls.fontSizeLeft = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.marksmanship.displayText.left.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1488,9 +1817,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				value = min
 			end
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.shaman.elemental.displayText.left.fontSize = value
-			leftTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.left.fontFace, TRB.Data.settings.shaman.elemental.displayText.left.fontSize, "OUTLINE")
-			if TRB.Data.settings.shaman.elemental.displayText.fontSizeLock then
+			TRB.Data.settings.hunter.marksmanship.displayText.left.fontSize = value
+			leftTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.left.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.left.fontSize, "OUTLINE")
+			if TRB.Data.settings.hunter.marksmanship.displayText.fontSizeLock then
 				controls.fontSizeMiddle:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
@@ -1501,21 +1830,21 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.displayText.fontSizeLock)
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.displayText.fontSizeLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.elemental.displayText.fontSizeLock = self:GetChecked()
-			if TRB.Data.settings.shaman.elemental.displayText.fontSizeLock then
-				controls.fontSizeMiddle:SetValue(TRB.Data.settings.shaman.elemental.displayText.left.fontSize)
-				controls.fontSizeRight:SetValue(TRB.Data.settings.shaman.elemental.displayText.left.fontSize)
+			TRB.Data.settings.hunter.marksmanship.displayText.fontSizeLock = self:GetChecked()
+			if TRB.Data.settings.hunter.marksmanship.displayText.fontSizeLock then
+				controls.fontSizeMiddle:SetValue(TRB.Data.settings.hunter.marksmanship.displayText.left.fontSize)
+				controls.fontSizeRight:SetValue(TRB.Data.settings.hunter.marksmanship.displayText.left.fontSize)
 			end
 		end)
 
-		controls.colors.leftText = TRB.UiFunctions.BuildColorPicker(parent, "Left Text", TRB.Data.settings.shaman.elemental.colors.text.left,
+		controls.colors.leftText = TRB.UiFunctions.BuildColorPicker(parent, "Left Text", TRB.Data.settings.hunter.marksmanship.colors.text.left,
 														250, 25, xCoord2, yCoord-30)
 		f = controls.colors.leftText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.left, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.left, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -1528,17 +1857,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     a = 0.0
         
                     controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.shaman.elemental.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
 
-		controls.colors.middleText = TRB.UiFunctions.BuildColorPicker(parent, "Middle Text", TRB.Data.settings.shaman.elemental.colors.text.middle,
+		controls.colors.middleText = TRB.UiFunctions.BuildColorPicker(parent, "Middle Text", TRB.Data.settings.hunter.marksmanship.colors.text.middle,
 														225, 25, xCoord2, yCoord-70)
 		f = controls.colors.middleText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.middle, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.middle, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -1551,17 +1880,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     a = 0.0
         
                     controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.shaman.elemental.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
 
-		controls.colors.rightText = TRB.UiFunctions.BuildColorPicker(parent, "Right Text", TRB.Data.settings.shaman.elemental.colors.text.right,
+		controls.colors.rightText = TRB.UiFunctions.BuildColorPicker(parent, "Right Text", TRB.Data.settings.hunter.marksmanship.colors.text.right,
 														225, 25, xCoord2, yCoord-110)
 		f = controls.colors.rightText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.right, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.right, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -1574,14 +1903,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     a = 0.0
         
                     controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.shaman.elemental.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
 		
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeMiddle = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.shaman.elemental.displayText.middle.fontSize, 1, 0,
+		controls.fontSizeMiddle = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.marksmanship.displayText.middle.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1591,9 +1920,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				value = min
 			end
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.shaman.elemental.displayText.middle.fontSize = value
-			middleTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.middle.fontFace, TRB.Data.settings.shaman.elemental.displayText.middle.fontSize, "OUTLINE")
-			if TRB.Data.settings.shaman.elemental.displayText.fontSizeLock then
+			TRB.Data.settings.hunter.marksmanship.displayText.middle.fontSize = value
+			middleTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.middle.fontSize, "OUTLINE")
+			if TRB.Data.settings.hunter.marksmanship.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
@@ -1601,7 +1930,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeRight = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.shaman.elemental.displayText.right.fontSize, 1, 0,
+		controls.fontSizeRight = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.marksmanship.displayText.right.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1611,23 +1940,23 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				value = min
 			end
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.shaman.elemental.displayText.right.fontSize = value
-			rightTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.right.fontFace, TRB.Data.settings.shaman.elemental.displayText.right.fontSize, "OUTLINE")
-			if TRB.Data.settings.shaman.elemental.displayText.fontSizeLock then
+			TRB.Data.settings.hunter.marksmanship.displayText.right.fontSize = value
+			rightTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.right.fontSize, "OUTLINE")
+			if TRB.Data.settings.hunter.marksmanship.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeMiddle:SetValue(value)
 			end
 		end)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Maelstrom Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Focus Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Current Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, 300, 25, xCoord, yCoord)
-		f = controls.colors.currentMaelstromText
+		controls.colors.currentFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Current Focus", TRB.Data.settings.hunter.marksmanship.colors.text.current, 300, 25, xCoord, yCoord)
+		f = controls.colors.currentFocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.current, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -1639,17 +1968,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
         
-                    controls.colors.currentMaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    controls.colors.currentFocusText.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.text.current = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
 
-		controls.colors.castingMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom from hardcasting spells", TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom, 275, 25, xCoord2, yCoord)
-		f = controls.colors.castingMaelstromText
+		controls.colors.castingFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", TRB.Data.settings.hunter.marksmanship.colors.text.casting, 275, 25, xCoord2, yCoord)
+		f = controls.colors.castingFocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.casting, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -1661,18 +1990,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
         
-                    controls.colors.castingMaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    controls.colors.castingFocusText.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.text.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
 		
+
 		yCoord = yCoord - 30
-		controls.colors.passiveMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Passive Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.passiveMaelstrom, 300, 25, xCoord, yCoord)
-		f = controls.colors.passiveMaelstromText
+		controls.colors.passiveFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Passive Focus", TRB.Data.settings.hunter.marksmanship.colors.text.passive, 300, 25, xCoord, yCoord)
+		f = controls.colors.passiveFocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.passiveMaelstrom, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.passive, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1684,18 +2014,40 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 0.0
 		
-					controls.colors.passiveMaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.shaman.elemental.colors.text.passiveMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.passiveFocusText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.hunter.marksmanship.colors.text.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
-		end)
-		
-		yCoord = yCoord - 30
-		controls.colors.thresholdmaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Maelstrom to cast Earth Shock or Earthquake", TRB.Data.settings.shaman.elemental.colors.text.overThreshold, 300, 25, xCoord, yCoord)
-		f = controls.colors.thresholdmaelstromText
+		end)		
+
+		controls.colors.spendingFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.marksmanship.colors.text.spending, 275, 25, xCoord2, yCoord)
+		f = controls.colors.spendingFocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.overThreshold, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.spending, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+                    --Text doesn't care about Alpha, but the color picker does!
+                    a = 0.0
+        
+                    controls.colors.spendingFocusText.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.text.spending = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.thresholdfocusText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", TRB.Data.settings.hunter.marksmanship.colors.text.overThreshold, 300, 25, xCoord, yCoord)
+		f = controls.colors.thresholdfocusText
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.overThreshold, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1707,17 +2059,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 0.0
 		
-					controls.colors.thresholdmaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.shaman.elemental.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.thresholdfocusText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.hunter.marksmanship.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
 
-		controls.colors.overcapmaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Cast will overcap Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom, 300, 25, xCoord2, yCoord)
-		f = controls.colors.overcapmaelstromText
+		controls.colors.overcapfocusText = TRB.UiFunctions.BuildColorPicker(parent, "Hardcasting builder ability will overcap Focus", TRB.Data.settings.hunter.marksmanship.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		f = controls.colors.overcapfocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.overcap, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1729,8 +2081,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 0.0
 		
-					controls.colors.overcapmaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.overcapfocusText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.hunter.marksmanship.colors.text.overcap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1741,27 +2093,27 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
-		f.tooltip = "This will change the Maelstrom text color when you are able to cast Earth Shock or Earthquake."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.colors.text.overThresholdEnabled)
+		f.tooltip = "This will change the Focus text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.colors.text.overThresholdEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.elemental.colors.text.overThresholdEnabled = self:GetChecked()
+			TRB.Data.settings.hunter.marksmanship.colors.text.overThresholdEnabled = self:GetChecked()
 		end)
 		
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TRB_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
-		f.tooltip = "This will change the Maelstrom text color when your current hardcast spell will result in overcapping maximum Maelstrom."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.colors.text.overcapEnabled)
+		f.tooltip = "This will change the Focus text color when your current hardcast spell will result in overcapping maximum Focus."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.elemental.colors.text.overcapEnabled = self:GetChecked()
+			TRB.Data.settings.hunter.marksmanship.colors.text.overcapEnabled = self:GetChecked()
 		end)
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrame.controls = controls
 	end
 
-	local function ElementalConstructAudioAndTrackingPanel(parent)	
+	local function MarksmanshipConstructAudioAndTrackingPanel(parent)	
 		if parent == nil then
 			return
 		end
@@ -1789,78 +2141,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.esReady = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.esReady
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Earth Shock/EQ is usable")
-		f.tooltip = "Play an audio cue when Earth Shock or Earthquake can be cast."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.audio.esReady.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.elemental.audio.esReady.enabled = self:GetChecked()
-		end)	
-			
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.esReadyAudio = CreateFrame("FRAME", "TIBesReadyAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.esReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.esReadyAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, TRB.Data.settings.shaman.elemental.audio.esReady.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.esReadyAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.esReadyAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.shaman.elemental.audio.esReady.sound
-						info.func = self.SetValue			
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.esReadyAudio:SetValue(newValue, newName)
-			TRB.Data.settings.shaman.elemental.audio.esReady.sound = newValue
-			TRB.Data.settings.shaman.elemental.audio.esReady.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, newName)
-			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
-
-		
-		yCoord = yCoord - 60
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TIBCB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Maelstrom")
-		f.tooltip = "Play an audio cue when your hardcast spell will overcap Maelstrom."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.audio.overcap.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Focus")
+		f.tooltip = "Play an audio cue when your hardcast spell will overcap Focus."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.audio.overcap.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.elemental.audio.overcap.enabled = self:GetChecked()
+			TRB.Data.settings.hunter.marksmanship.audio.overcap.enabled = self:GetChecked()
 
-			if TRB.Data.settings.shaman.elemental.audio.overcap.enabled then
-				PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+			if TRB.Data.settings.hunter.marksmanship.audio.overcap.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)	
 			
@@ -1868,7 +2159,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TIBovercapAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.shaman.elemental.audio.overcap.soundName)
+		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.hunter.marksmanship.audio.overcap.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -1893,7 +2184,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.shaman.elemental.audio.overcap.sound
+						info.checked = sounds[v] == TRB.Data.settings.hunter.marksmanship.audio.overcap.sound
 						info.func = self.SetValue			
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -1905,20 +2196,89 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-			TRB.Data.settings.shaman.elemental.audio.overcap.sound = newValue
-			TRB.Data.settings.shaman.elemental.audio.overcap.soundName = newName
+			TRB.Data.settings.hunter.marksmanship.audio.overcap.sound = newValue
+			TRB.Data.settings.hunter.marksmanship.audio.overcap.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
 		yCoord = yCoord - 60
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Generation", 0, yCoord)
+	
+
+		yCoord = yCoord - 40	
+		controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TRB_PFG_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.focusGenerationModeGCDs
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Focus generation from GCDs")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Shows the amount of Focus generation over the next X GCDs, based on player's current GCD."
+		if TRB.Data.settings.hunter.marksmanship.generation.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.focusGenerationModeGCDs:SetChecked(true)
+			controls.checkBoxes.focusGenerationModeTime:SetChecked(false)
+			TRB.Data.settings.hunter.marksmanship.generation.mode = "gcd"
+		end)
+
+		title = "Focus GCDs - 0.75sec Floor"
+		controls.focusGenerationGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 15, TRB.Data.settings.hunter.marksmanship.generation.gcds, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.marksmanship.generation.gcds = value
+		end)
+
+
+		yCoord = yCoord - 60	
+		controls.checkBoxes.focusGenerationModeTime = CreateFrame("CheckButton", "TRB_PFG_TIME", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.focusGenerationModeTime
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Focus generation over time")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Shows the amount of Focus generation over the next X seconds."
+		if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.focusGenerationModeGCDs:SetChecked(false)
+			controls.checkBoxes.focusGenerationModeTime:SetChecked(true)
+			TRB.Data.settings.hunter.marksmanship.generation.mode = "time"
+		end)
+
+		title = "Focus Over Time (sec)"
+		controls.focusGenerationTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.marksmanship.generation.time, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 2)
+			self.EditBox:SetText(value)		
+			TRB.Data.settings.hunter.marksmanship.generation.time = value
+		end)
+
+
+		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 	
 		yCoord = yCoord - 40
-		title = "Haste / Crit / Mastery Decimals to Show"
-		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.shaman.elemental.hastePrecision, 1, 0,
+		title = "Haste / Crit / Mastery Decimal Precision"
+		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.marksmanship.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1930,14 +2290,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	
 			value = TRB.Functions.RoundTo(value, 0)
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.shaman.elemental.hastePrecision = value
+			TRB.Data.settings.hunter.marksmanship.hastePrecision = value
 		end)
 		
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrame.controls = controls
 	end
     
-	local function ElementalConstructBarTextDisplayPanel(parent)	
+	local function MarksmanshipConstructBarTextDisplayPanel(parent)	
 		if parent == nil then
 			return
 		end
@@ -1974,11 +2334,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f.font:SetSize(90, 20)
 		f.font:SetText("Left Text")
 
-		controls.textbox.left = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.shaman.elemental.displayText.left.text,
+		controls.textbox.left = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.hunter.marksmanship.displayText.left.text,
 														500, 440, 24, xCoord+100, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.shaman.elemental.displayText.left.text = self:GetText()
+			TRB.Data.settings.hunter.marksmanship.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive()
 		end)
@@ -1999,11 +2359,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f.font:SetSize(90, 20)
 		f.font:SetText("Middle Text")
 
-		controls.textbox.middle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.shaman.elemental.displayText.middle.text,
+		controls.textbox.middle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.hunter.marksmanship.displayText.middle.text,
 														500, 450, 24, xCoord+100, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.shaman.elemental.displayText.middle.text = self:GetText()
+			TRB.Data.settings.hunter.marksmanship.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive()
 		end)
@@ -2024,11 +2384,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f.font:SetSize(90, 20)
 		f.font:SetText("Right Text")
 
-		controls.textbox.right = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.shaman.elemental.displayText.right.text,
+		controls.textbox.right = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.hunter.marksmanship.displayText.right.text,
 														500, 450, 24, xCoord+100, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.shaman.elemental.displayText.right.text = self:GetText()
+			TRB.Data.settings.hunter.marksmanship.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive()
 		end)
@@ -2151,7 +2511,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 	end
 
-	local function ElementalConstructOptionsPanel()		
+	local function MarksmanshipConstructOptionsPanel()		
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local parent = interfaceSettingsFrame.panel		
 		local controls = interfaceSettingsFrame.controls
@@ -2164,26 +2524,26 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local xCoord2 = 325
 		local xOffset1 = 50
 		local xOffset2 = 275
-		interfaceSettingsFrame.elementalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Elemental", UIParent)
-		interfaceSettingsFrame.elementalDisplayPanel.name = "Elemental Shaman"
-		interfaceSettingsFrame.elementalDisplayPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.elementalDisplayPanel)
+		interfaceSettingsFrame.shadowDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Marksmanship", UIParent)
+		interfaceSettingsFrame.shadowDisplayPanel.name = "Marksmanship Hunter"
+		interfaceSettingsFrame.shadowDisplayPanel.parent = parent.name
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.shadowDisplayPanel)
 
-		parent = interfaceSettingsFrame.elementalDisplayPanel
+		parent = interfaceSettingsFrame.shadowDisplayPanel
 				
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Elemental Shaman", xCoord+xPadding, yCoord)
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Marksmanship Hunter", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 42	
 
 		local tabs = {}
 		local tabsheets = {}
-
-		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab1", "Bar Display", 1, parent, 85)
+		
+		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab2", "Bar Display", 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab2", "Font & Text", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab3", "Audio & Tracking", 3, parent, 120, tabs[2])
-		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab4", "Bar Text", 4, parent, 60, tabs[3])
-		tabs[5] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab5", "Reset Defaults", 5, parent, 100, tabs[4])
+		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab3", "Font & Text", 2, parent, 85, tabs[1])
+		tabs[3] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab4", "Audio & Tracking", 3, parent, 120, tabs[2])
+		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab5", "Bar Text", 4, parent, 60, tabs[3])
+		tabs[5] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
 
 		PanelTemplates_TabResize(tabs[1], 0)
 		PanelTemplates_TabResize(tabs[2], 0)
@@ -2193,7 +2553,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = yCoord - 15
 
 		for i = 1, 5 do 
-			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Shaman_Elemental_LayoutPanel" .. i, parent)
+			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Hunter_Marksmanship_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
 		end
@@ -2206,16 +2566,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		parent.tabsheets[1].selected = true
 		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
-		ElementalConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-		ElementalConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
-		ElementalConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
-		ElementalConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild)
-		ElementalConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
+		MarksmanshipConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
+		MarksmanshipConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
+		MarksmanshipConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
+		MarksmanshipConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild)
+		MarksmanshipConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
 	end
 
 	local function ConstructOptionsPanel()
 		TRB.Options.ConstructOptionsPanel()
-		ElementalConstructOptionsPanel()
+		MarksmanshipConstructOptionsPanel()
 	end
-	TRB.Options.Shaman.ConstructOptionsPanel = ConstructOptionsPanel
+	TRB.Options.Hunter.ConstructOptionsPanel = ConstructOptionsPanel
 end

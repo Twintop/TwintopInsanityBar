@@ -1,6 +1,8 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 7 then --Only do this if we're on a Shaman!
+	TRB.Frames.resourceFrame.thresholds[1] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
@@ -256,10 +258,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Data.character.earthShockThreshold = 60
 		
 		if TRB.Data.settings.shaman ~= nil and TRB.Data.settings.shaman.elemental ~= nil and TRB.Data.settings.shaman.elemental.earthShockThreshold and TRB.Data.character.earthShockThreshold < TRB.Data.character.maxResource then
-			resourceFrame.threshold1:Show()
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+			resourceFrame.thresholds[1]:Show()
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 		else
-			resourceFrame.threshold1:Hide()
+			resourceFrame.thresholds[1]:Hide()
 		end
 	end
 	
@@ -666,27 +668,24 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 				
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.elemental, castingFrame, castingBarValue)
-				
-				-- Elemental doesn't use the passive threshold line right now. Hide it
-				
+								
 				if TRB.Data.snapshotData.echoingShock.spell ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom > 0 then
 					passiveBarValue = TRB.Data.snapshotData.echoingShock.spell.maelstrom + castingBarValue
 				else
 					passiveBarValue = castingBarValue
 				end
-				passiveFrame.threshold1.texture:Hide()
 				
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.elemental, passiveFrame, passiveBarValue)
 
 				if TRB.Data.settings.shaman.elemental.earthShockThreshold then
-					resourceFrame.threshold1:Show()
+					resourceFrame.thresholds[1]:Show()
 				else
-					resourceFrame.threshold1:Hide()
+					resourceFrame.thresholds[1]:Hide()
 				end
 				
 				if TRB.Data.snapshotData.resource >= TRB.Data.character.earthShockThreshold then				
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.earthShock, true))
-					resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.over, true))
+					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.over, true))
 					if TRB.Data.settings.shaman.elemental.colors.bar.flashEnabled then
 						TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.shaman.elemental.colors.bar.flashAlpha, TRB.Data.settings.shaman.elemental.colors.bar.flashPeriod)
 					else
@@ -698,7 +697,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
 					end
 				else
-					resourceFrame.threshold1.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.under, true))
+					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.under, true))
 					barContainerFrame:SetAlpha(1.0)
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.base, true))
 					TRB.Data.snapshotData.audio.playedEsCue = false

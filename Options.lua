@@ -39,7 +39,12 @@ local function LoadDefaultSettings()
             feral = {},
             guardian = {},
             restoration = {}
-        },        
+        },
+        hunter = {
+            beastMastery = {},
+            marksmanship = {},
+            survival = {}
+        },
         priest = {
             discipline = {},
             holy = {},
@@ -210,9 +215,9 @@ local function ConstructAddonOptionsPanel()
         TRB.Frames.resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         TRB.Frames.castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         TRB.Frames.passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        TRB.Frames.passiveFrame.threshold1:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        TRB.Frames.resourceFrame.threshold1:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        TRB.Frames.resourceFrame.threshold2:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.passiveFrame.thresholds[1]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.resourceFrame.thresholds[1]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.resourceFrame.thresholds[2]:SetFrameStrata(TRB.Data.settings.core.strata.level)
         TRB.Frames.leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         TRB.Frames.middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         TRB.Frames.rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)

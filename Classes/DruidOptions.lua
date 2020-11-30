@@ -442,8 +442,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			castingFrame:SetWidth(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			passiveFrame:SetWidth(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.druid.balance)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold2, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / 8), math.floor(TRB.Data.settings.druid.balance.bar.width / 8))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -464,11 +464,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			barContainerFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
 			barBorderFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height)
 			resourceFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			resourceFrame.threshold1:SetHeight(value)
-			resourceFrame.threshold2:SetHeight(value)
+			resourceFrame.thresholds[1]:SetHeight(value)
+			resourceFrame.thresholds[2]:SetHeight(value)
 			castingFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			passiveFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			passiveFrame.threshold1:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))		
+			passiveFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))		
 			leftTextFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height * 3.5)
 			middleTextFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height * 3.5)
 			rightTextFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height * 3.5)
@@ -552,8 +551,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.border, true))
 
 			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.druid.balance)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold1, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.threshold2, resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 
 			local minsliderWidth = math.max(TRB.Data.settings.druid.balance.bar.border*2, 120)
 			local minsliderHeight = math.max(TRB.Data.settings.druid.balance.bar.border*2, 1)
@@ -575,9 +574,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.druid.balance.thresholdWidth = value
-			resourceFrame.threshold1:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
-			resourceFrame.threshold2:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
-			passiveFrame.threshold1:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
+			resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
+			resourceFrame.thresholds[2]:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
 		end)
 
 		yCoord = yCoord - 40
@@ -1240,7 +1238,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		end)
 
-		controls.colors.eclipse1GCD = TRB.UiFunctions.BuildColorPicker(parent, "Under 1 GCD left in Eclipse", TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD, 275, 25, xCoord2, yCoord)
+		controls.colors.eclipse1GCD = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power when Eclipse is ending", TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD, 275, 25, xCoord2, yCoord)
 		f = controls.colors.eclipse1GCD
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1386,7 +1384,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end)
 			end
 		end)
-
 		
 
 		yCoord = yCoord - 30
@@ -1405,7 +1402,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 20	
 		controls.checkBoxes.endOfEclipseOnly = CreateFrame("CheckButton", "TRB_EOE_CB_CAO", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfEclipseOnly
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Only change the bar color when in Celestial Alignment")
 		f.tooltip = "Only changes the bar color when you are exiting an Eclipse from Celestial Alignment or Incarnation: Chosen of Elune."
 		f:SetChecked(TRB.Data.settings.druid.balance.endOfEclipse.celestialAlignmentOnly)
@@ -1461,7 +1458,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.endOfEclipse.mode = "time"
 		end)
 
-		title = "Eclipse Time Remaining"
+		title = "Eclipse Time Remaining (sec)"
 		controls.endOfEclipseTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 20, TRB.Data.settings.druid.balance.endOfEclipse.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfEclipseTime:SetScript("OnValueChanged", function(self, value)
@@ -1908,6 +1905,29 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 					controls.colors.castingAstralPowerText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.druid.balance.colors.text.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)
+		
+		yCoord = yCoord - 30
+		controls.colors.passiveAstralPowerText = TRB.UiFunctions.BuildColorPicker(parent, "Passive Astral Power", TRB.Data.settings.druid.balance.colors.text.passive, 300, 25, xCoord, yCoord)
+		f = controls.colors.passiveAstralPowerText
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.passive, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					--Text doesn't care about Alpha, but the color picker does!
+					a = 0.0
+		
+					controls.colors.passiveAstralPowerText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.text.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
