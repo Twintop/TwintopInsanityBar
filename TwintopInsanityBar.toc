@@ -5,6 +5,10 @@
 ## SavedVariables: TwintopInsanityBarSettings
 ## DefaultState: enabled
 ## Notes: Multi-class Resource Bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
+## X-Category: Interface Enhancements
+## X-Website: https://github.com/Twintop/TwintopInsanityBar
+## X-Curse-Project-ID: 293075
+## X-WoWI-ID: 24628
 
 Libs\LibStub.lua
 Libs\CallbackHandler-1.0.lua
