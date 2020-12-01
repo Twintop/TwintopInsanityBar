@@ -1031,6 +1031,36 @@ local function FindDebuffById(spellId, onWhom)
 	end
 end
 TRB.Functions.FindDebuffById = FindDebuffById
+    
+local function FindAuraByName(spellName, onWhom, filter)
+	if onWhom == nil then
+		onWhom = "player"
+	end
+	for i = 1, 40 do
+		local unitSpellName = UnitAura(onWhom, i, filter)
+		if not unitSpellName then
+			return
+		elseif spellName == unitSpellName then
+			return UnitAura(onWhom, i, filter)
+		end
+	end
+end
+TRB.Functions.FindAuraByName = FindAuraByName
+    
+local function FindAuraById(spellId, onWhom, filter)
+	if onWhom == nil then
+		onWhom = "player"
+	end
+	for i = 1, 40 do
+		local unitSpellId = select(10, UnitAura(onWhom, i, filter))
+		if not unitSpellId then
+			return
+		elseif spellId == unitSpellId then
+			return UnitAura(onWhom, i, filter)
+		end
+	end
+end
+TRB.Functions.FindAuraById = FindAuraById
 
 local function CheckCharacter()
 	TRB.Data.character.guid = UnitGUID("player")

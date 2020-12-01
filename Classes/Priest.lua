@@ -126,6 +126,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		},
 		items = {
 			callToTheVoid = false
+		},
+		torghast = {
+			dreamspunMushroomsModifier = 1
 		}
 	}
 
@@ -339,8 +342,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			icon = "",
 			conduitId = 114,
 			conduitRanks = {}
-		}
+		},
 
+		dreamspunMushrooms = {
+			id = 342409,
+			name = "",
+			icon = ""
+		}
 	}
 
 	TRB.Data.snapshotData.voidform = {
@@ -602,6 +610,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.character.searingNightmareThreshold = 30
 		
 		if TRB.Data.settings.priest ~= nil and TRB.Data.settings.priest.shadow ~= nil then
+			-- Threshold lines
 			if TRB.Data.settings.priest.shadow.devouringPlagueThreshold and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
 				resourceFrame.thresholds[1]:Show()
 				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
@@ -616,6 +625,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				resourceFrame.thresholds[2]:Hide()
 			end
 
+			-- Legendaries
 			local wristItemLink = GetInventoryItemLink("player", 9)
 			local handsItemLink = GetInventoryItemLink("player", 10)
 
@@ -628,6 +638,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				callToTheVoid = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(handsItemLink, 173244, TRB.Data.spells.eternalCallToTheVoid_Tendril.idLegendaryBonus)
 			end
 			TRB.Data.character.items.callToTheVoid = callToTheVoid
+
+			-- Torghast
+			if IsInJailersTower() then
+				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1 + ((select(16, TRB.Functions.FindAuraById(TRB.Data.spells.dreamspunMushrooms.id, "player", "MAW")) or 0) / 100)
+			else
+				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1
+			end
 		end
 	end
 	
@@ -2171,7 +2188,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						if type == "SPELL_AURA_APPLIED" then -- Gained buff
 							if TRB.Data.snapshotData.wrathfulFaerie.main.isActive == false then
 								TRB.Data.snapshotData.wrathfulFaerie.main.isActive = true
-								TRB.Data.snapshotData.wrathfulFaerie.main.endTime = currentTime + TRB.Data.spells.wrathfulFaerie.duration
+								TRB.Data.snapshotData.wrathfulFaerie.main.endTime = currentTime + (TRB.Data.spells.wrathfulFaerie.duration * TRB.Data.character.torghast.dreamspunMushroomsModifier)
 							end
 							TRB.Data.snapshotData.targetData.wrathfulFaerieGuid = destGUID
 						-- We're not doing much in these case because it could have been moved or refreshed via SWP on a new target.
@@ -2182,9 +2199,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.wrathfulFaerie.main.procTime = currentTime
 					elseif spellId == TRB.Data.spells.wrathfulFaerieFermata.id then
 						if type == "SPELL_AURA_APPLIED" then -- Gained buff
-							if TRB.Data.snapshotData.wrathfulFaerie.fermata.isActive == false then
+							if TRB.Data.snapshotData.wrathfulFaerie.fermata.isActive == false or TRB.Data.snapshotData.targetData.wrathfulFaerieFermataGuid ~= destGUID then
 								TRB.Data.snapshotData.wrathfulFaerie.fermata.isActive = true
-								local duration = TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[TRB.Functions.GetSoulbindRank(TRB.Data.spells.wrathfulFaerieFermata.conduitId)]
+								local duration = TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[TRB.Functions.GetSoulbindRank(TRB.Data.spells.wrathfulFaerieFermata.conduitId)] * TRB.Data.character.torghast.dreamspunMushroomsModifier
 								TRB.Data.snapshotData.wrathfulFaerie.fermata.endTime = currentTime + duration
 							end
 							TRB.Data.snapshotData.targetData.wrathfulFaerieFermataGuid = destGUID
