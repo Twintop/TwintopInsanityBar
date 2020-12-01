@@ -1162,6 +1162,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$ttd
 		local _ttd = ""
 		local ttd = ""
+		local ttdTotalSeconds = 0
 
 		if TRB.Data.snapshotData.targetData.ttdIsActive and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd ~= 0 then
 			local target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
@@ -1182,11 +1183,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 				
 				ttd = string.format("|c%s%d:%0.2d|c%s", _ttdColor, ttdMinutes, ttdSeconds, TRB.Data.settings.priest.shadow.colors.text.left)
+				ttdTotalSeconds = string.format("|c%s%s|c%s", _ttdColor, TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor"), TRB.Data.settings.priest.shadow.colors.text.left)
 			else
-				ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
+				ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)			
+				ttdTotalSeconds = string.format("%s", TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor"))
 			end
 		else
 			ttd = "--"
+			ttdTotalSeconds = string.format("%s", TRB.Functions.RoundTo(0, TRB.Data.settings.core.ttd.precision or 1, "floor"))
 		end
 
 		--#castingIcon
@@ -1375,6 +1379,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$asCount"] = asCount
 		lookup["$asInsanity"] = asInsanity
 		lookup["$ttd"] = ttd --Custom TTD for Shadow
+		lookup["$ttdSeconds"] = ttdTotalSeconds
 		lookup["$s2m"] = ""
 		lookup["$surrenderToMadness"] = ""
 		TRB.Data.lookup = lookup

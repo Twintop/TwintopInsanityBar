@@ -21,7 +21,8 @@ local function LoadDefaultSettings()
             dataRefreshRate = 5.0,
             ttd = {
                 sampleRate = 0.2,
-                numEntries = 50
+                numEntries = 50,
+                precision = 1
             },
             audio = {            
                 channel={
@@ -133,6 +134,23 @@ local function ConstructAddonOptionsPanel()
 
         self.EditBox:SetText(value)		
         TRB.Data.settings.core.ttd.numEntries = value
+    end)
+
+    yCoord = yCoord - 60 
+    title = "Time To Die Precision (ms)"
+    controls.ttdPrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.ttd.precision, 1, 0,
+                                    sliderWidth, sliderHeight, xCoord, yCoord)
+    controls.ttdPrecision:SetScript("OnValueChanged", function(self, value)
+        local min, max = self:GetMinMaxValues()
+        if value > max then
+            value = max
+        elseif value < min then
+            value = min
+        end
+
+        value = TRB.Functions.RoundTo(value, 0)
+        self.EditBox:SetText(value)		
+        TRB.Data.settings.core.ttd.precision = value
     end)
 
     yCoord = yCoord - 40

@@ -797,16 +797,17 @@ local function RefreshLookupDataBase(settings)
 	--$ttd
 	local _ttd = ""
 	local ttd = ""
-	local ttdTotalSeconds = nil
+	local ttdTotalSeconds = ""
 
 	if TRB.Data.snapshotData.targetData.ttdIsActive and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd ~= 0 then
 		local target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
 		local ttdMinutes = math.floor(target.ttd / 60)
 		local ttdSeconds = target.ttd % 60
-		ttdTotalSeconds = target.ttd
+		ttdTotalSeconds = string.format("%s", TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor"))
 		ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
 	else
 		ttd = "--"
+		ttdTotalSeconds = TRB.Functions.RoundTo(0, TRB.Data.settings.core.ttd.precision or 1, "floor")
 	end
 
 	--#castingIcon
@@ -819,7 +820,7 @@ local function RefreshLookupDataBase(settings)
 	lookup["$mastery"] = masteryPercent
 	lookup["$gcd"] = gcd
 	lookup["$ttd"] = ttd
-	lookup["$ttdSeconds"] = ttdTotalSeconds or 0
+	lookup["$ttdSeconds"] = ttdTotalSeconds
 	lookup["||n"] = string.format("\n")
 	lookup["||c"] = string.format("%s", "|c")
 	lookup["||r"] = string.format("%s", "|r")
