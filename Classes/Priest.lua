@@ -102,7 +102,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specGroup = GetActiveSpecGroup(),
 		maxResource = 100,
 		devouringPlagueThreshold = 50,
-		searingNightmareThreshold = 35,
+		searingNightmareThreshold = 30,
 		talents = {
 			fotm = {
 				isSelected = false,
