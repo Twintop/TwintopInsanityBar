@@ -940,7 +940,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				elseif spellId == TRB.Data.spells.aMurderOfCrows.id then
                     TRB.Data.snapshotData.aMurderOfCrows.startTime, TRB.Data.snapshotData.aMurderOfCrows.duration, _, _ = GetSpellCooldown(TRB.Data.spells.aMurderOfCrows.id)
                 elseif spellId == TRB.Data.spells.explosiveShot.id then
-                    print("BOOM")
                     TRB.Data.snapshotData.explosiveShot.startTime, TRB.Data.snapshotData.explosiveShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.explosiveShot.id)
                 elseif spellId == TRB.Data.spells.trueshot.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
