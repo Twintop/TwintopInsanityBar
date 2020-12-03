@@ -610,7 +610,6 @@ local function AddToBarTextCache(input)
 		c, c1 = string.find(input, "|", p)
 		d, d1 = string.find(input, "%%", p)
 		if a ~= nil and (b == nil or a < b) and (c == nil or a < c) and (d == nil or a < d) then
-			print(string.sub(input, a+1, a+6))
 			if string.sub(input, a+1, a+6) == "spell_" then
 				z, z1 = string.find(input, "_", a+7)
 				if z ~= nil then
