@@ -847,10 +847,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		if self.sinceLastUpdate >= 0.05 then -- in seconds
 			TriggerResourceBarUpdates()
 			self.sinceLastUpdate = 0
-			--[[if TRB.Data.snapshotData.chainLightning.hitTime ~= nil and currentTime > (TRB.Data.snapshotData.chainLightning.hitTime + 6) then
-				TRB.Data.snapshotData.chainLightning.hitTime = nil
-				TRB.Data.snapshotData.chainLightning.targetsHit = 0
-			end]]
 		end
 
 		if self.characterCheckSinceLastUpdate >= TRB.Data.settings.core.dataRefreshRate then -- in seconds

@@ -603,27 +603,50 @@ local function AddToBarTextCache(input)
 		end)
 	while p <= string.len(input) and infinity < 20 do
 		infinity = infinity + 1
-		local a, b, c, a1, b1, c1
+		local a, b, c, d, z, a1, b1, c1, d1, z1
 		local match = false
 		a, a1 = string.find(input, "#", p)
 		b, b1 = string.find(input, "%$", p)
 		c, c1 = string.find(input, "|", p)
 		d, d1 = string.find(input, "%%", p)
 		if a ~= nil and (b == nil or a < b) and (c == nil or a < c) and (d == nil or a < d) then
-			for x = 1, iconEntries do
-				local len = string.len(barTextVariables.icons[x].variable)
-				z, z1 = string.find(input, barTextVariables.icons[x].variable, a-1)
-				if z ~= nil and z == a then
-					match = true
-					if p ~= a then
-						returnText = returnText .. string.sub(input, p, a-1)
+			print(string.sub(input, a+1, a+6))
+			if string.sub(input, a+1, a+6) == "spell_" then
+				z, z1 = string.find(input, "_", a+7)
+				if z ~= nil then
+					local iconName = string.sub(input, a, z)
+					local spellId = string.sub(input, a+7, z-1)
+					local _, name, icon
+					name, _, icon = GetSpellInfo(spellId)
+
+					if icon ~= nil then					
+						match = true
+						if p ~= a then
+							returnText = returnText .. string.sub(input, p, a-1)
+						end
+
+						returnText = returnText .. "%s"
+						TRB.Data.lookup[iconName] = string.format("|T%s:0|t", icon)
+						table.insert(returnVariables, iconName)
+						p = z1 + 1
 					end
+				end
+			else
+				for x = 1, iconEntries do
+					local len = string.len(barTextVariables.icons[x].variable)
+					z, z1 = string.find(input, barTextVariables.icons[x].variable, a-1)
+					if z ~= nil and z == a then
+						match = true
+						if p ~= a then
+							returnText = returnText .. string.sub(input, p, a-1)
+						end
 
-					returnText = returnText .. "%s"
-					table.insert(returnVariables, barTextVariables.icons[x].variable)
+						returnText = returnText .. "%s"
+						table.insert(returnVariables, barTextVariables.icons[x].variable)
 
-					p = z1 + 1
-					break
+						p = z1 + 1
+						break
+					end
 				end
 			end
 		elseif b ~= nil and (c == nil or b < c) and (d == nil or b < d) then
@@ -687,7 +710,7 @@ local function AddToBarTextCache(input)
 		end
 
 		if match == false then
-			returnText = returnText .. string.sub(input, p+1, p+1)
+			returnText = returnText .. string.sub(input, p, p)
 			p = p + 1
 		end
 	end
@@ -825,6 +848,8 @@ local function RefreshLookupDataBase(settings)
 	lookup["||c"] = string.format("%s", "|c")
 	lookup["||r"] = string.format("%s", "|r")
 	lookup["%%"] = "%"
+
+
 	TRB.Data.lookup = lookup
 	
 	Global_TwintopResourceBar = {

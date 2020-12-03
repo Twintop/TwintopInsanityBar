@@ -449,7 +449,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 		-- Conduit Ranks
 		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[0] = 0
-		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[1] = 3.8
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[1] = 3.8		
 		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[2] = 4.18
 		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[3] = 4.56
 		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[4] = 4.94
