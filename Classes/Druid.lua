@@ -287,6 +287,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		-- This is done here so that we can get icons for the options menu!
 		TRB.Data.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Astral Power generating spell you are currently hardcasting", printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#moonkinForm", icon = TRB.Data.spells.moonkinForm.icon, description = "Moonkin Form", printInSettings = true },
 			

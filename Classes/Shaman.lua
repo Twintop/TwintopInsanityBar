@@ -203,6 +203,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		-- This is done here so that we can get icons for the options menu!
 		TRB.Data.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Maelstrom generating spell you are currently hardcasting", printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
 	
 			{ variable = "#lightningBolt", icon = TRB.Data.spells.lightningBolt.icon, description = "Lightning Bolt", printInSettings = true },
 			{ variable = "#lavaBurst", icon = TRB.Data.spells.lavaBurst.icon, description = "Lava Burst", printInSettings = true },
