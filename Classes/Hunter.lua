@@ -28,6 +28,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		guid = UnitGUID("player"),
 		specGroup = GetActiveSpecGroup(),
 		maxResource = 100,
+		covenantId = 0,
 		talents = {
             serpentSting = {
                 isSelected = false
@@ -190,10 +191,26 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			icon = "",
             focus = -20,
             isTalent = true--[[,
-            thresholdId = 12,
+            thresholdId = 13,
             settingKey = "arcaneShot"]] --Commenting out for now since it is the same focus as Arcane Shot
-        },
-
+		},
+		
+		flayedShot = {
+			id = 324149,
+			name = "",
+			icon = "",
+			focus = -10,
+			thresholdId = 12,
+            settingKey = "flayedShot",
+			hasCooldown = true,
+			isSnowflake = true
+		},
+		flayersMark = {
+			id = 324156,
+			name = "",
+			icon = "",
+			isActive = false
+		}
     }
 	
 	TRB.Data.snapshotData.focusRegen = 0
@@ -204,6 +221,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
         spell = nil
     }
 	TRB.Data.snapshotData.trueshot = {
+        spellId = nil,
+        duration = 0,
+		endTime = nil
+    }
+	TRB.Data.snapshotData.flayersMark = {
         spellId = nil,
         duration = 0,
 		endTime = nil
@@ -238,6 +260,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
         duration = 0,
         enabled = false
     }
+    TRB.Data.snapshotData.flayedShot = {
+        startTime = nil,
+        duration = 0,
+        enabled = false
+    }
 	TRB.Data.snapshotData.targetData = {
 		ttdIsActive = false,
 		currentTargetGuid = nil,
@@ -260,6 +287,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#burstingShot", icon = TRB.Data.spells.burstingShot.icon, description = "Bursting Shot", printInSettings = true },
 			{ variable = "#chimaeraShot", icon = TRB.Data.spells.chimaeraShot.icon, description = "Chimaera Shot", printInSettings = true },
 			{ variable = "#explosiveShot", icon = TRB.Data.spells.explosiveShot.icon, description = "Explosive Shot", printInSettings = true },
+			{ variable = "#flayedShot", icon = TRB.Data.spells.flayedShot.icon, description = "Flayed Shot", printInSettings = true },
+			{ variable = "#flayersMark", icon = TRB.Data.spells.flayersMark.icon, description = "Flayer's Mark", printInSettings = true },
 			{ variable = "#killShot", icon = TRB.Data.spells.killShot.icon, description = "Kill Shot", printInSettings = true },
 			{ variable = "#multiShot", icon = TRB.Data.spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
 			{ variable = "#rapidFire", icon = TRB.Data.spells.rapidFire.icon, description = "Rapid Fire", printInSettings = true },
@@ -294,6 +323,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$ssCount", description = "Number of Serpent Stings active on targets", printInSettings = true, color = false },
 			{ variable = "$serpentSting", description = "Is Serpent Sting talented? Logic variable only!", printInSettings = true, color = false },
 
+			{ variable = "$flayersMarkTime", description = "Time remaining on Flayer's Mark buff", printInSettings = true, color = false },
+
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
@@ -309,6 +340,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Data.character.talents.chimaeraShot.isSelected = select(4, GetTalentInfo(4, 3, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.deadEye.isSelected = select(4, GetTalentInfo(6, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.doubleTap.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
+
+		TRB.Data.character.covenantId = C_Covenants.GetActiveCovenantID()
 	end
 	
 	local function IsTtdActive()
@@ -373,6 +406,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		return remainingTime
 	end
 
+	local function GetFlayersMarkRemainingTime()		
+		local currentTime = GetTime()
+		local remainingTime = 0
+
+		if TRB.Data.spells.flayersMark.isActive then
+			remainingTime = TRB.Data.snapshotData.flayersMark.endTime - currentTime
+		end
+
+		return remainingTime
+	end
+	
     local function CalculateResourceGain(resource)
         local modifier = 1.0
                 
@@ -467,6 +511,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if GetTrueshotRemainingTime() > 0 then
 				valid = true
 			end
+		elseif var == "$flayersMark" then
+			if GetFlayersMarkRemainingTime() > 0 then
+				valid = true
+			end
 		elseif var == "$ssCount" then
 			if TRB.Data.snapshotData.targetData.serpentSting > 0 then
 				valid = true
@@ -530,10 +578,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local _focusPlusPassive = math.min(_passivefocus + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
 		local focusPlusPassive = string.format("|c%s%.0f|r", currentFocusColor, _focusPlusPassive)
 
+		--$trueshotTime
 		local _trueshotTime = GetTrueshotRemainingTime()
 		local trueshotTime = 0
 		if _trueshotTime ~= nil then
 			trueshotTime = string.format("%.1f", _trueshotTime)
+		end
+		
+		--$flayersMarkTime
+		local _flayersMarkTime = GetFlayersMarkRemainingTime()
+		local flayersMarkTime = 0
+		if _flayersMarkTime ~= nil then
+			flayersMarkTime = string.format("%.1f", _flayersMarkTime)
 		end
 
 		--$ssCount
@@ -554,6 +610,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#burstingShot"] = TRB.Data.spells.burstingShot.icon
 		lookup["#chimaeraShot"] = TRB.Data.spells.chimaeraShot.icon
 		lookup["#explosiveShot"] = TRB.Data.spells.explosiveShot.icon
+		lookup["#flayedShot"] = TRB.Data.spells.flayedShot.icon
+		lookup["#flayersMark"] = TRB.Data.spells.flayersMark.icon
 		lookup["#killShot"] = TRB.Data.spells.killShot.icon
 		lookup["#multiShot"] = TRB.Data.spells.multiShot.icon
 		lookup["#rapidFire"] = TRB.Data.spells.rapidFire.icon
@@ -564,7 +622,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#trickShots"] = TRB.Data.spells.trickShots.icon
 		lookup["#trueshot"] = TRB.Data.spells.trueshot.icon
 		lookup["$trueshotTime"] = trueshotTime
-		lookup["$trueshotTime"] = trueshotTime
+		lookup["$flayersMarkTime"] = flayersMarkTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$focusTotal"] = focusTotal
@@ -649,6 +707,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
         if TRB.Data.snapshotData.explosiveShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.explosiveShot.startTime + TRB.Data.snapshotData.explosiveShot.duration) then
             TRB.Data.snapshotData.explosiveShot.startTime = nil
             TRB.Data.snapshotData.explosiveShot.duration = 0
+        end
+
+        if TRB.Data.snapshotData.flayedShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.flayedShot.startTime + TRB.Data.snapshotData.flayedShot.duration) then
+            TRB.Data.snapshotData.flayedShot.startTime = nil
+            TRB.Data.snapshotData.flayedShot.duration = 0
         end
 	end    
 
@@ -756,16 +819,30 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                                     thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
                                 end
                             elseif spell.id == TRB.Data.spells.killShot.id then
-                                local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
-                                if targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum then
+								local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
+								local flayersMarkTime = GetFlayersMarkRemainingTime()
+                                if (targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum) and flayersMarkTime == 0 then
                                     showThreshold = false
-                                elseif TRB.Data.snapshotData.killShot.charges == 0 then
+                                elseif TRB.Data.snapshotData.killShot.charges == 0 and flayersMarkTime == 0 then
                                     thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
-                                elseif TRB.Data.snapshotData.resource >= -spell.focus then
+                                elseif TRB.Data.snapshotData.resource >= -spell.focus or flayersMarkTime > 0 then
                                     thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
                                 else
                                     thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
-                                end
+								end
+							elseif spell.id == TRB.Data.spells.flayedShot.id then
+								local flayersMarkTime = GetFlayersMarkRemainingTime() -- Change this to layer stacking if the cost of Kill Shot or Flayed Shot changes from 10 Focus!
+								if TRB.Data.character.covenantId == 2 and flayersMarkTime == 0 then -- Venthyr and Flayer's Mark buff isn't up
+									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
+									elseif TRB.Data.snapshotData.resource >= -spell.focus then
+										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
+									end
+								else
+									showThreshold = false
+								end
                             end
                         elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
                             showThreshold = false
@@ -938,6 +1015,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                     TRB.Data.snapshotData.aMurderOfCrows.startTime, TRB.Data.snapshotData.aMurderOfCrows.duration, _, _ = GetSpellCooldown(TRB.Data.spells.aMurderOfCrows.id)
                 elseif spellId == TRB.Data.spells.explosiveShot.id then
                     TRB.Data.snapshotData.explosiveShot.startTime, TRB.Data.snapshotData.explosiveShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.explosiveShot.id)
+                elseif spellId == TRB.Data.spells.flayedShot.id then
+                    TRB.Data.snapshotData.flayedShot.startTime, TRB.Data.snapshotData.flayedShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.flayedShot.id)
                 elseif spellId == TRB.Data.spells.trueshot.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 						TRB.Data.spells.trueshot.isActive = true
@@ -947,6 +1026,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						TRB.Data.snapshotData.trueshot.spellId = nil
 						TRB.Data.snapshotData.trueshot.duration = 0
                         TRB.Data.snapshotData.trueshot.endTime = nil
+                    end	
+                elseif spellId == TRB.Data.spells.flayersMark.id then
+					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						TRB.Data.spells.flayersMark.isActive = true
+						_, _, _, _, TRB.Data.snapshotData.flayersMark.duration, TRB.Data.snapshotData.flayersMark.endTime, _, _, _, TRB.Data.snapshotData.flayersMark.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.flayersMark.id)
+					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						TRB.Data.spells.flayersMark.isActive = false
+						TRB.Data.snapshotData.flayersMark.spellId = nil
+						TRB.Data.snapshotData.flayersMark.duration = 0
+                        TRB.Data.snapshotData.flayersMark.endTime = nil
                     end			
 				elseif spellId == TRB.Data.spells.serpentSting.id then
 					InitializeTarget(destGUID)

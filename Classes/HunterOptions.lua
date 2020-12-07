@@ -87,7 +87,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					enabled = true, -- 1
 				},
 				arcaneShot = {
-					enabled = false, -- 2 --Also Chimera Shot @ 12
+					enabled = false, -- 2 --Also Chimera Shot @ 13
 				},
 				serpentSting = {
 					enabled = false, -- 3
@@ -115,6 +115,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				},
 				revivePet = {
 					enabled = false, -- 11
+				},
+				flayedShot = {
+					enabled = false, -- 12
 				}
 			},
 			generation = {
@@ -1428,11 +1431,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 25
+		controls.checkBoxes.flayedShotThresholdShow = CreateFrame("CheckButton", "TRB_Threshold_Option_flayedShot", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.flayedShotThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Flayed Shot (if Venthyr)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Flayed Shot. Only visible if you are a member of the Venthyr covenant. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.flayedShot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.thresholds.flayedShot.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
 		controls.checkBoxes.killShotThresholdShow = CreateFrame("CheckButton", "TRB_Threshold_Option_killShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killShotThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Kill Shot (if usable)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Kill Shot. Only visible when the current target is in Kill Shot health range. If on cooldown or has 0 charges available, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Kill Shot. Only visible when the current target is in Kill Shot health range or Flayer's Mark (Venthyr) buff is active. If on cooldown or has 0 charges available, will be colored as 'unusable'."
 		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.killShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.marksmanship.thresholds.killShot.enabled = self:GetChecked()
