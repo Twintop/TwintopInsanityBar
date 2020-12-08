@@ -807,16 +807,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                         TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholdWidth, -spell.focus, TRB.Data.character.maxResource)
                         
                         local showThreshold = true
-                        local thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
+						local thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
+						local frameLevel = 129
 
                         if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
                             if spell.id == TRB.Data.spells.aimedShot.id then
                                 if TRB.Data.snapshotData.aimedShot.charges == 0 then
-                                    thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
+									thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
+									frameLevel = 127
                                 elseif TRB.Data.snapshotData.resource >= -spell.focus then
                                     thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
                                 else
                                     thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
+									frameLevel = 128
                                 end
                             elseif spell.id == TRB.Data.spells.killShot.id then
 								local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
@@ -824,21 +827,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                                 if (targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum) and flayersMarkTime == 0 then
                                     showThreshold = false
                                 elseif TRB.Data.snapshotData.killShot.charges == 0 and flayersMarkTime == 0 then
-                                    thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
+									thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
+									frameLevel = 127
                                 elseif TRB.Data.snapshotData.resource >= -spell.focus or flayersMarkTime > 0 then
                                     thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
                                 else
                                     thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
+									frameLevel = 128
 								end
 							elseif spell.id == TRB.Data.spells.flayedShot.id then
 								local flayersMarkTime = GetFlayersMarkRemainingTime() -- Change this to layer stacking if the cost of Kill Shot or Flayed Shot changes from 10 Focus!
 								if TRB.Data.character.covenantId == 2 and flayersMarkTime == 0 then -- Venthyr and Flayer's Mark buff isn't up
 									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
+										frameLevel = 127
 									elseif TRB.Data.snapshotData.resource >= -spell.focus then
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
+										frameLevel = 128
 									end
 								else
 									showThreshold = false
@@ -848,22 +855,26 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                             showThreshold = false
                         elseif spell.hasCooldown then
                             if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-                                thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
+								thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
+								frameLevel = 127
                             elseif TRB.Data.snapshotData.resource >= -spell.focus then
                                 thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
                             else
                                 thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
+								frameLevel = 128
                             end
                         else -- This is an active/available/normal spell threshold
                             if TRB.Data.snapshotData.resource >= -spell.focus then
                                 thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
                             else
                                 thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
+								frameLevel = 128
                             end
                         end                        
 
                         if TRB.Data.settings.hunter.marksmanship.thresholds[spell.settingKey].enabled and showThreshold then
-                            TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()                            
+							TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
+							resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
                             resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
                         else
                             TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
