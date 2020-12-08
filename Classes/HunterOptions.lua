@@ -1105,7 +1105,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-                local r1, g1, b1, a1 = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.base, true)
+                local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.base, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
