@@ -490,7 +490,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				valid = true
 			end
 		elseif var == "$overcap" or var == "$focusOvercap" or var == "$resourceOvercap" then
-			if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.character.maxResource then
+			if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.hunter.marksmanship.overcapThreshold then
 				valid = true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$focusPlusPassive" then

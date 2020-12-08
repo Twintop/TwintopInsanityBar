@@ -381,7 +381,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				valid = true
 			end
 		elseif var == "$overcap" or var == "$insanityOvercap" or var == "$resourceOvercap" then
-			if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.character.maxResource then
+			if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.shaman.elemental.overcapThreshold then
 				valid = true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$maelstromPlusPassive" then

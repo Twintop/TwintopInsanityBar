@@ -946,7 +946,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				valid = true
 			end
 		elseif var == "$overcap" or var == "$insanityOvercap" or var == "$resourceOvercap" then
-			if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.character.maxResource then
+			if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.priest.shadow.overcapThreshold then
 				valid = true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$insanityPlusPassive" then

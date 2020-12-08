@@ -83,6 +83,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			hastePrecision=2,
 			astralPowerPrecision=0,
 			thresholdWidth=2,
+			overcapThreshold=100,
 			starsurgeThreshold=true,
 			starfallThreshold=true,
 			displayBar = {
@@ -1068,7 +1069,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.starsurgeThreshold = self:GetChecked()
 		end)
 
-		controls.checkBoxes.sfThresholdShow = CreateFrame("CheckButton", "TIBCB1_8", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.sfThresholdShow = CreateFrame("CheckButton", "TIBCB1_7a", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sfThresholdShow
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Starfall threshold line")
@@ -1078,17 +1079,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.starfallThreshold = self:GetChecked()
 		end)
 
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TIBCB1_9", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-80)
-		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
-		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Astral Power."
-		f:SetChecked(TRB.Data.settings.druid.balance.colors.bar.overcapEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.colors.bar.overcapEnabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 100
+		yCoord = yCoord - 70
 
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
@@ -1402,7 +1393,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 20	
 		controls.checkBoxes.endOfEclipseOnly = CreateFrame("CheckButton", "TRB_EOE_CB_CAO", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfEclipseOnly
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Only change the bar color when in Celestial Alignment")
 		f.tooltip = "Only changes the bar color when you are exiting an Eclipse from Celestial Alignment or Incarnation: Chosen of Elune."
 		f:SetChecked(TRB.Data.settings.druid.balance.endOfEclipse.celestialAlignmentOnly)
@@ -1472,6 +1463,38 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)		
 			TRB.Data.settings.druid.balance.endOfEclipse.timeMax = value
+		end)
+
+		yCoord = yCoord - 40
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TIBCB1_8", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapEnabled
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
+		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Astral Power."
+		f:SetChecked(TRB.Data.settings.druid.balance.colors.bar.overcapEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.colors.bar.overcapEnabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 40
+
+		title = "Show Overcap Notification Above"
+		controls.overcapAt = TRB.UiFunctions.BuildSlider(parent, title, 0, 100, TRB.Data.settings.druid.balance.overcapThreshold, 0.5, 1,
+										sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 1)
+			self.EditBox:SetText(value)		
+			TRB.Data.settings.druid.balance.overcapThreshold = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame

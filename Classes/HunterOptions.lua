@@ -82,6 +82,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local settings = {
 			hastePrecision=2,
 			thresholdWidth=2,
+			overcapThreshold=100,
 			thresholds = {
 				aimedShot = {
 					enabled = true, -- 1
@@ -1095,16 +1096,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.earthShockThreshold = self:GetChecked()
 		end)]]
 
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TIBCB1_8", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)---40)
-		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
-		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Focus."
-		f:SetChecked(TRB.Data.settings.hunter.marksmanship.colors.bar.overcapEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.marksmanship.colors.bar.overcapEnabled = self:GetChecked()
-		end)
-
 		yCoord = yCoord - 60
 
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
@@ -1573,6 +1564,38 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)		
 			TRB.Data.settings.hunter.marksmanship.endOfTrueshot.timeMax = value
+		end)
+
+		yCoord = yCoord - 40
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TIBCB1_8", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapEnabled
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
+		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Focus."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.colors.bar.overcapEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.colors.bar.overcapEnabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 40
+
+		title = "Show Overcap Notification Above"
+		controls.overcapAt = TRB.UiFunctions.BuildSlider(parent, title, 0, 100, TRB.Data.settings.hunter.marksmanship.overcapThreshold, 1, 1,
+										sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 1)
+			self.EditBox:SetText(value)		
+			TRB.Data.settings.hunter.marksmanship.overcapThreshold = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
