@@ -504,7 +504,7 @@ local function ConstructResourceBar(settings)
 				resourceFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
 				resourceFrame.thresholds[x]:SetFrameStrata(TRB.Data.settings.core.strata.level)
 				resourceFrame.thresholds[x]:SetFrameLevel(127)
-				resourceFrame.thresholds[x]:Show()
+				resourceFrame.thresholds[x]:Hide()
 			end
 		end
         

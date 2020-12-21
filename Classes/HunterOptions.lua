@@ -18,10 +18,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local combatFrame = TRB.Frames.combatFrame
 
 	TRB.Options.Hunter = {}
+	TRB.Options.Hunter.BeastMastery = {}
 	TRB.Options.Hunter.Marksmanship = {}
-	TRB.Options.Hunter.Feral = {}
-	TRB.Options.Hunter.Guardian = {}
-	TRB.Options.Hunter.Restoration = {}
+	TRB.Options.Hunter.Survival = {}
     
     
 	local function MarksmanshipLoadDefaultBarTextSimpleSettings()
@@ -212,10 +211,202 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		return settings
 	end
 
+
+	
+	local function SurvivalLoadDefaultBarTextSimpleSettings()
+		local textSettings = {
+			fontSizeLock=true,
+			fontFaceLock=true,
+			left={
+				text="{$trueshotTime}[$trueshotTime sec]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
+			},
+			middle={
+				text="",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
+			},
+			right={
+				text="{$casting}[$casting + ]{$passive}[$passive + ]$focus",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
+			}
+		}
+
+		return textSettings
+	end
+    
+    local function SurvivalLoadDefaultBarTextAdvancedSettings()
+		local textSettings = {		
+			fontSizeLock = false,
+			fontFaceLock = true,
+			left = {
+				text = "#serpentSting $ssCount   $haste% ($gcd)||n          {$ttd}[TTD: $ttd][ ]",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 13
+			},
+			middle = {
+				text="{$flayersMark}[#flayersMark $flayersMarkTime #flayersMark||n]{$trueshotTime}[#trueshot $trueshotTime #trueshot]",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 13
+			},
+			right = {
+				text = "{$casting}[#casting$casting+]{$passive}[$passive+]$focus",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",			
+				fontSize = 22
+			}
+		}
+
+		return textSettings
+	end
+
+	local function SurvivalLoadDefaultSettings()
+		local settings = {
+			hastePrecision=2,
+			thresholdWidth=2,
+			overcapThreshold=100,
+			thresholds = {
+				arcaneShot = {
+					enabled = false, -- 1
+				},
+				killShot = {
+					enabled = true, -- 2
+				},
+				scareBeast = {
+					enabled = false, -- 3
+				},
+				revivePet = {
+					enabled = false, -- 4
+				},
+				wingClip = {
+					enabled = false, -- 5
+				},
+				carve = {
+					enabled = true, -- 6
+				},
+				butchery = {
+					enabled = true, -- 7
+				},
+				raptorStrike = {
+					enabled = true, -- 8
+				},
+				serpentSting = {
+					enabled = false, -- 9
+				},
+				aMurderOfCrows = {
+					enabled = true, -- 10
+				},
+				chakrams = {
+					enabled = true, -- 11
+				},
+				flayedShot = {
+					enabled = true, -- 12
+				}
+			},
+			generation = {
+				mode="gcd",
+				gcds=2,
+				time=3.0,
+			},
+			displayBar = {
+				alwaysShow=false,
+				notZeroShow=true,
+				neverShow=false
+			},
+			endOfCoordinatedAssault = {
+				enabled=true,
+				mode="gcd",
+				gcdsMax=2,
+				timeMax=3.0
+			},
+			bar = {		
+				width=555,
+				height=34,
+				xPos=0,
+				yPos=-200,
+				border=4,
+				dragAndDrop=false
+			},
+			colors = {
+				text = {
+					current="FFBAE57E",
+					casting="FFFFFFFF",
+					spending="FF555555",
+					passive="FF005500",	
+					overcap="FFFF0000",	
+					overThreshold="FF00FF00",
+					overThresholdEnabled=false,
+					overcapEnabled=true,
+					left="FFFFFFFF",
+					middle="FFFFFFFF",
+					right="FFFFFFFF"
+				},
+				bar = {
+					border="FF698247",
+					borderOvercap="FFFF0000",
+					background="66000000",
+					base="FFAAD372",
+					coordinatedAssault="FF00B60E",
+					coordinatedAssaultEnding="FFFF0000",
+					casting="FFFFFFFF",
+					spending="FF555555",
+					passive="FF005500",
+					flashAlpha=0.70,
+					flashPeriod=0.5,
+					flashEnabled=true,
+					overcapEnabled=true
+				},
+				threshold = {
+					under="FFFFFFFF",
+					over="FF00FF00",
+					unusable="FFFF0000"
+				}
+			},
+			displayText = {},
+			audio = {
+				overcap={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				}
+            },
+			textures = {
+				background="Interface\\Tooltips\\UI-Tooltip-Background",
+				backgroundName="Blizzard Tooltip",
+				border="Interface\\Buttons\\WHITE8X8",
+				borderName="1 Pixel",
+				resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
+				resourceBarName="Blizzard",
+				passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
+				passiveBarName="Blizzard",
+				castingBar="Interface\\TargetingFrame\\UI-StatusBar",
+				castingBarName="Blizzard",
+				textureLock=true
+			}
+		}
+
+		settings.displayText = SurvivalLoadDefaultBarTextSimpleSettings()
+		return settings
+    end
+
+	local function SurvivalResetSettings()
+		local settings = SurvivalLoadDefaultSettings()
+		return settings
+	end
+
+
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
-		local specId = GetSpecialization()
+		
 		settings.hunter.marksmanship = MarksmanshipLoadDefaultSettings()
+		settings.hunter.survival = SurvivalLoadDefaultSettings()
 		return settings
 	end
     TRB.Options.Hunter.LoadDefaultSettings = LoadDefaultSettings
