@@ -347,7 +347,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 2,
 				settingKey = "killShot",
 				healthMinimum = 0.2,
-				isSnowflake = true
+				isSnowflake = true,
+				hasCooldown = true
 			},
 			scareBeast = {
 				id = 1513,
@@ -386,7 +387,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				focus = -35,
 				thresholdId = 6,
 				settingKey = "carve",
-				isSnowflake = true
+				isSnowflake = true,
+				hasCooldown = true
 			},
 			butchery = {
 				id = 212436,
@@ -397,7 +399,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				hasCooldown = true,
 				isSnowflake = true,
 				thresholdId = 7,
-				settingKey = "butchery"
+				settingKey = "carve"
 			},
 			raptorStrike = {
 				id = 186270,
@@ -494,10 +496,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Data.snapshotData.focusRegen = 0
 		TRB.Data.snapshotData.audio = {
 		}
-		TRB.Data.snapshotData.trueshot = {
-			spellId = nil,
+		TRB.Data.snapshotData.carve = {
+			startTime = nil,
 			duration = 0,
-			endTime = nil
+			enabled = false
 		}
 		TRB.Data.snapshotData.flayersMark = {
 			spellId = nil,
@@ -510,11 +512,26 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			enabled = false
 		}
 		TRB.Data.snapshotData.killShot = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		TRB.Data.snapshotData.aMurderOfCrows = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		TRB.Data.snapshotData.butchery = {
 			charges = 0,
 			startTime = nil,
 			duration = 0
 		}
-		TRB.Data.snapshotData.aMurderOfCrows = {
+		TRB.Data.snapshotData.chakrams = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		TRB.Data.snapshotData.flankingStrike = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
@@ -1157,10 +1174,26 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 	end
 
-	local function UpdateSnapshot_Marksmanship()
-        TRB.Functions.UpdateSnapshot()
+	local function UpdateSnapshot()
 		local currentTime = GetTime()
-        local _
+
+        if TRB.Data.snapshotData.aMurderOfCrows.startTime ~= nil and currentTime > (TRB.Data.snapshotData.aMurderOfCrows.startTime + TRB.Data.snapshotData.aMurderOfCrows.duration) then
+            TRB.Data.snapshotData.aMurderOfCrows.startTime = nil
+            TRB.Data.snapshotData.aMurderOfCrows.duration = 0
+        end
+
+        if TRB.Data.snapshotData.flayedShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.flayedShot.startTime + TRB.Data.snapshotData.flayedShot.duration) then
+            TRB.Data.snapshotData.flayedShot.startTime = nil
+            TRB.Data.snapshotData.flayedShot.duration = 0
+        end
+	end
+
+	local function UpdateSnapshot_Marksmanship()
+		TRB.Functions.UpdateSnapshot()
+		UpdateSnapshot()
+		local currentTime = GetTime()
+		local _
+		
         TRB.Data.snapshotData.aimedShot.charges, _, TRB.Data.snapshotData.aimedShot.startTime, TRB.Data.snapshotData.aimedShot.duration, _ = GetSpellCharges(TRB.Data.spells.aimedShot.id)
         TRB.Data.snapshotData.killShot.charges, _, TRB.Data.snapshotData.killShot.startTime, TRB.Data.snapshotData.killShot.duration, _ = GetSpellCharges(TRB.Data.spells.killShot.id)
 
@@ -1174,35 +1207,38 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             TRB.Data.snapshotData.barrage.duration = 0
         end
 
-        if TRB.Data.snapshotData.aMurderOfCrows.startTime ~= nil and currentTime > (TRB.Data.snapshotData.aMurderOfCrows.startTime + TRB.Data.snapshotData.aMurderOfCrows.duration) then
-            TRB.Data.snapshotData.aMurderOfCrows.startTime = nil
-            TRB.Data.snapshotData.aMurderOfCrows.duration = 0
-        end
-
         if TRB.Data.snapshotData.explosiveShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.explosiveShot.startTime + TRB.Data.snapshotData.explosiveShot.duration) then
             TRB.Data.snapshotData.explosiveShot.startTime = nil
             TRB.Data.snapshotData.explosiveShot.duration = 0
-        end
-
-        if TRB.Data.snapshotData.flayedShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.flayedShot.startTime + TRB.Data.snapshotData.flayedShot.duration) then
-            TRB.Data.snapshotData.flayedShot.startTime = nil
-            TRB.Data.snapshotData.flayedShot.duration = 0
         end
 	end    
 
 	local function UpdateSnapshot_Survival()
         TRB.Functions.UpdateSnapshot()
+		UpdateSnapshot()
 		local currentTime = GetTime()
         local _
+		
+		TRB.Data.snapshotData.butchery.charges, _, TRB.Data.snapshotData.butchery.startTime, TRB.Data.snapshotData.butchery.duration, _ = GetSpellCharges(TRB.Data.spells.butchery.id)
 
-        if TRB.Data.snapshotData.aMurderOfCrows.startTime ~= nil and currentTime > (TRB.Data.snapshotData.aMurderOfCrows.startTime + TRB.Data.snapshotData.aMurderOfCrows.duration) then
-            TRB.Data.snapshotData.aMurderOfCrows.startTime = nil
-            TRB.Data.snapshotData.aMurderOfCrows.duration = 0
+		if TRB.Data.snapshotData.carve.startTime ~= nil and currentTime > (TRB.Data.snapshotData.carve.startTime + TRB.Data.snapshotData.carve.duration) then
+            TRB.Data.snapshotData.carve.startTime = nil
+            TRB.Data.snapshotData.carve.duration = 0
         end
 
-        if TRB.Data.snapshotData.flayedShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.flayedShot.startTime + TRB.Data.snapshotData.flayedShot.duration) then
-            TRB.Data.snapshotData.flayedShot.startTime = nil
-            TRB.Data.snapshotData.flayedShot.duration = 0
+		if TRB.Data.snapshotData.chakrams.startTime ~= nil and currentTime > (TRB.Data.snapshotData.chakrams.startTime + TRB.Data.snapshotData.chakrams.duration) then
+            TRB.Data.snapshotData.chakrams.startTime = nil
+            TRB.Data.snapshotData.chakrams.duration = 0
+        end
+
+		if TRB.Data.snapshotData.flankingStrike.startTime ~= nil and currentTime > (TRB.Data.snapshotData.flankingStrike.startTime + TRB.Data.snapshotData.flankingStrike.duration) then
+            TRB.Data.snapshotData.flankingStrike.startTime = nil
+            TRB.Data.snapshotData.flankingStrike.duration = 0
+        end
+
+		if TRB.Data.snapshotData.killShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.killShot.startTime + TRB.Data.snapshotData.killShot.duration) then
+            TRB.Data.snapshotData.killShot.startTime = nil
+            TRB.Data.snapshotData.killShot.duration = 0
         end
 	end   
 
@@ -1490,8 +1526,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.hunter.survival.thresholdWidth, -spell.focus, TRB.Data.character.maxResource)
-							
 							local showThreshold = true
 							local thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.over
 							local frameLevel = 129
@@ -1502,7 +1536,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									local flayersMarkTime = GetFlayersMarkRemainingTime()
 									if (targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum) and flayersMarkTime == 0 then
 										showThreshold = false
-									elseif flayersMarkTime == 0 then
+									elseif flayersMarkTime == 0 and (TRB.Data.snapshotData.killShot.startTime ~= nil and currentTime < (TRB.Data.snapshotData.killShot.startTime + TRB.Data.snapshotData.killShot.duration)) then
 										thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.unusable
 										frameLevel = 127
 									elseif TRB.Data.snapshotData.resource >= -spell.focus or flayersMarkTime > 0 then
@@ -1526,6 +1560,34 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									else
 										showThreshold = false
 									end
+								elseif spell.id == TRB.Data.spells.carve.id then
+									if TRB.Data.character.talents.butchery.isSelected then
+										showThreshold = false
+									else
+										if TRB.Data.snapshotData.carve.startTime ~= nil and currentTime < (TRB.Data.snapshotData.carve.startTime + TRB.Data.snapshotData.carve.duration) then
+											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.unusable
+											frameLevel = 127
+										elseif TRB.Data.snapshotData.resource >= -spell.focus then
+											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.under
+											frameLevel = 128
+										end
+									end
+								elseif spell.id == TRB.Data.spells.butchery.id then
+									if not TRB.Data.character.talents.butchery.isSelected then
+										showThreshold = false
+									else
+										if TRB.Data.snapshotData.butchery.charges == 0 then
+											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.unusable
+											frameLevel = 127
+										elseif TRB.Data.snapshotData.resource >= -spell.focus then
+											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.under
+											frameLevel = 128
+										end
+									end
 								end
 							elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
 								showThreshold = false
@@ -1546,9 +1608,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.under
 									frameLevel = 128
 								end
-							end                        
+							end
 
 							if TRB.Data.settings.hunter.survival.thresholds[spell.settingKey].enabled and showThreshold then
+								TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.hunter.survival.thresholdWidth, -spell.focus, TRB.Data.character.maxResource)
 								--print(spell.settingKey, frameLevel, spell.focus)
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
@@ -1716,6 +1779,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						end
 					end
 				elseif specId == 3 then --Survival
+					if spellId == TRB.Data.spells.carve.id then
+						TRB.Data.snapshotData.carve.startTime, TRB.Data.snapshotData.carve.duration, _, _ = GetSpellCooldown(TRB.Data.spells.carve.id)
+					elseif spellId == TRB.Data.spells.chakrams.id then
+						TRB.Data.snapshotData.chakrams.startTime, TRB.Data.snapshotData.chakrams.duration, _, _ = GetSpellCooldown(TRB.Data.spells.chakrams.id)
+					elseif spellId == TRB.Data.spells.flankingStrike.id then
+						TRB.Data.snapshotData.flankingStrike.startTime, TRB.Data.snapshotData.flankingStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.flankingStrike.id)
+					end
 				end
 
 				-- Spec agnostic		
@@ -1804,8 +1874,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					else
 						TRB.Data.settings = settings
 					end	
-
-					TRB.Options.Hunter.ConstructOptionsPanel()
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"

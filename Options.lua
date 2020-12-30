@@ -330,8 +330,6 @@ local function ConstructOptionsPanel()
 
     interfaceSettingsFrame.panel.yCoord = yCoord
     InterfaceOptions_AddCategory(interfaceSettingsFrame.panel)
-    --interfaceSettingsFrame.optionsPanel.scrollChild = parent
-    --TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 
     ConstructAddonOptionsPanel()
 end
