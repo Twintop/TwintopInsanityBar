@@ -3752,6 +3752,29 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
+		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.hunter.survival.colors.bar.background, 275, 25, xCoord2, yCoord)
+		f = controls.colors.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.background, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.survival.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		yCoord = yCoord - 30
+
 		controls.colors.spending = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.survival.colors.bar.spending, 275, 25, xCoord, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -3770,9 +3793,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                     TRB.Data.settings.hunter.survival.colors.bar.spending = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
-		end)
+		end)		
 
-		yCoord = yCoord - 30		
 		--[[
 		yCoord = yCoord - 30
 		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", TRB.Data.settings.hunter.survival.colors.bar.casting, 275, 25, xCoord, yCoord)
@@ -3795,7 +3817,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                 end)
 			end
 		end)
-		]]	
 
 		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast builder will overcap Focus", TRB.Data.settings.hunter.survival.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
 		f = controls.colors.borderOvercap
@@ -3817,28 +3838,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 		
-		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.hunter.survival.colors.bar.background, 275, 25, xCoord2, yCoord)
-		f = controls.colors.background
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.background, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.hunter.survival.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
-                end)
-			end
-		end)
-
-		--[[	
 		controls.colors.trueshot = TRB.UiFunctions.BuildColorPicker(parent, "Focus while Trueshot is active", TRB.Data.settings.hunter.survival.colors.bar.trueshot, 275, 25, xCoord2, yCoord)
 		f = controls.colors.trueshot
 		f:SetScript("OnMouseDown", function(self, button, ...)
