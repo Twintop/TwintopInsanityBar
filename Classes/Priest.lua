@@ -807,11 +807,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 				local targetDebuffId = select(10, TRB.Functions.FindDebuffById(TRB.Data.spells.hungeringVoid.idDebuff, "target"))
 				
+				local castGrantsExtension = true
+				--[[
+				Issue #107 - Twintop 2021-01-03
+					Hungering Void doesn't require the target to actually be debuffed to grant extensions.
+					Change back to the code below once this is fixed by Blizz.
+				----
 				local castGrantsExtension = false
 
 				if targetDebuffId ~= nil then
 					castGrantsExtension = true
 				end
+				]]
 
 				local remainingTimeTmp = remainingTime
 				local remainingTimeTotal = remainingTime
