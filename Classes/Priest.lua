@@ -1094,7 +1094,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overcapInsanity	
 		elseif TRB.Data.settings.priest.shadow.colors.text.overThresholdEnabled and normalizedInsanity >= insanityThreshold then
 			currentInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overThreshold
-			castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overThreshold	
+			castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overThreshold
 		end
 
 		--$insanity

@@ -3730,7 +3730,51 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
+		yCoord = yCoord - 30
+		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from Passive Sources", TRB.Data.settings.hunter.survival.colors.bar.passive, 525, 25, xCoord, yCoord)
+		f = controls.colors.passive
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.passive, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+                    
+					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
+					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.survival.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		controls.colors.spending = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.survival.colors.bar.spending, 275, 25, xCoord, yCoord)
+		f = controls.colors.spending
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.spending, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.spending.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.survival.colors.bar.spending = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
 		yCoord = yCoord - 30		
+		--[[
+		yCoord = yCoord - 30
 		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", TRB.Data.settings.hunter.survival.colors.bar.casting, 275, 25, xCoord, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -3751,6 +3795,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                 end)
 			end
 		end)
+		]]	
 
 		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast builder will overcap Focus", TRB.Data.settings.hunter.survival.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
 		f = controls.colors.borderOvercap
@@ -3771,28 +3816,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				end)
 			end
 		end)
-
-		yCoord = yCoord - 30		
-		controls.colors.spending = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.survival.colors.bar.spending, 275, 25, xCoord, yCoord)
-		f = controls.colors.spending
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.spending, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.spending.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.hunter.survival.colors.bar.spending = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)	
-			
+		
 		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.hunter.survival.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -3810,28 +3834,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                     controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.hunter.survival.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barContainerFrame:SetBackdropColor(r, g, b, 1-a)
-                end)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from Passive Sources", TRB.Data.settings.hunter.survival.colors.bar.passive, 525, 25, xCoord, yCoord)
-		f = controls.colors.passive
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.passive, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    
-					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
-					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
-                    TRB.Data.settings.hunter.survival.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -3946,7 +3948,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		yCoord = yCoord - 25
 		controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.arcaneShotThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -4145,7 +4146,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			self.EditBox:SetText(value)		
 			TRB.Data.settings.hunter.survival.endOfTrueshot.timeMax = value
 		end)
-		]]
 
 		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
@@ -4178,6 +4178,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			self.EditBox:SetText(value)		
 			TRB.Data.settings.hunter.survival.overcapThreshold = value
 		end)
+		]]
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrame.controls = controls
@@ -4592,11 +4593,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.castingFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", TRB.Data.settings.hunter.survival.colors.text.casting, 275, 25, xCoord2, yCoord)
-		f = controls.colors.castingFocusText
+		controls.colors.spendingFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.survival.colors.text.spending, 275, 25, xCoord2, yCoord)
+		f = controls.colors.spendingFocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.text.casting, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.text.spending, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -4608,12 +4609,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
         
-                    controls.colors.castingFocusText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.hunter.survival.colors.text.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    controls.colors.spendingFocusText.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.survival.colors.text.spending = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
-		
 
 		yCoord = yCoord - 30
 		controls.colors.passiveFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Passive Focus", TRB.Data.settings.hunter.survival.colors.text.passive, 300, 25, xCoord, yCoord)
@@ -4636,13 +4636,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					TRB.Data.settings.hunter.survival.colors.text.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
-		end)		
+		end)
 
-		controls.colors.spendingFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.survival.colors.text.spending, 275, 25, xCoord2, yCoord)
-		f = controls.colors.spendingFocusText
+		--[[
+		controls.colors.castingFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", TRB.Data.settings.hunter.survival.colors.text.casting, 275, 25, xCoord2, yCoord)
+		f = controls.colors.castingFocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.text.spending, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.text.casting, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -4654,11 +4655,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
         
-                    controls.colors.spendingFocusText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.hunter.survival.colors.text.spending = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    controls.colors.castingFocusText.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.survival.colors.text.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
+		]]
 
 		yCoord = yCoord - 30
 		controls.colors.thresholdfocusText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", TRB.Data.settings.hunter.survival.colors.text.overThreshold, 300, 25, xCoord, yCoord)
@@ -4683,6 +4685,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
+		--[[
 		controls.colors.overcapfocusText = TRB.UiFunctions.BuildColorPicker(parent, "Hardcasting builder ability will overcap Focus", TRB.Data.settings.hunter.survival.colors.text.overcap, 300, 25, xCoord2, yCoord)
 		f = controls.colors.overcapfocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -4703,7 +4706,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					TRB.Data.settings.hunter.survival.colors.text.overcap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
-		end)
+		end)]]
 
 		yCoord = yCoord - 30
 		
@@ -4717,6 +4720,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.survival.colors.text.overThresholdEnabled = self:GetChecked()
 		end)
 		
+		--[[
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
@@ -4726,6 +4730,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.survival.colors.text.overcapEnabled = self:GetChecked()
 		end)
+		]]
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrame.controls = controls

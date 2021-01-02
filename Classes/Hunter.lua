@@ -72,7 +72,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				focus = -35,
 				thresholdId = 1,
 				settingKey = "aimedShot",
-				isSnowflake = true
+				isSnowflake = true,
+				thresholdUsable = false
 			},
 			arcaneShot = {
 				id = 185358,
@@ -80,7 +81,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				focus = -20,
 				thresholdId = 2,
-				settingKey = "arcaneShot"
+				settingKey = "arcaneShot",
+				thresholdUsable = false
 			},
 			killShot = {
 				id = 53351,
@@ -90,7 +92,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 5,
 				settingKey = "killShot",
 				healthMinimum = 0.2,
-				isSnowflake = true
+				isSnowflake = true,
+				thresholdUsable = false
 			},
 			multiShot = {
 				id = 257620,
@@ -98,7 +101,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				focus = -20,
 				thresholdId = 6,
-				settingKey = "multiShot"
+				settingKey = "multiShot",
+				thresholdUsable = false
 			},
 			scareBeast = {
 				id = 1513,
@@ -106,7 +110,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				focus = -25,
 				thresholdId = 9,
-				settingKey = "scareBeast"
+				settingKey = "scareBeast",
+				thresholdUsable = false
 			},
 			burstingShot = {
 				id = 186387,
@@ -115,7 +120,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				focus = -10,
 				thresholdId = 10,
 				settingKey = "burstingShot",
-				hasCooldown = true
+				hasCooldown = true,
+				thresholdUsable = false
 			},
 			revivePet = {
 				id = 982,
@@ -123,7 +129,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				focus = -35,
 				thresholdId = 11,
-				settingKey = "revivePet"
+				settingKey = "revivePet",
+				thresholdUsable = false
 			},
 
 			steadyShot = {
@@ -161,7 +168,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				focus = -10,
 				thresholdId = 3,
 				settingKey = "serpentSting",
-				isTalent = true
+				isTalent = true,
+				thresholdUsable = false
 			},
 			barrage = {
 				id = 120360,
@@ -171,7 +179,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 4,
 				settingKey = "barrage",
 				isTalent = true,
-				hasCooldown = true
+				hasCooldown = true,
+				thresholdUsable = false
 			},
 			aMurderOfCrows = {
 				id = 131894,
@@ -181,7 +190,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 7,
 				settingKey = "aMurderOfCrows",
 				isTalent = true,
-				hasCooldown = true
+				hasCooldown = true,
+				thresholdUsable = false
 			},
 			explosiveShot = {
 				id = 212431,
@@ -191,7 +201,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 8,
 				settingKey = "explosiveShot",
 				isTalent = true,
-				hasCooldown = true
+				hasCooldown = true,
+				thresholdUsable = false
 			},
 			chimaeraShot = {
 				id = 342049,
@@ -200,7 +211,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				focus = -20,
 				isTalent = true--[[,
 				thresholdId = 13,
-				settingKey = "arcaneShot"]] --Commenting out for now since it is the same focus as Arcane Shot
+				settingKey = "arcaneShot",
+				thresholdUsable = false]] --Commenting out for now since it is the same focus as Arcane Shot
 			},
 			
 			flayedShot = {
@@ -211,7 +223,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 12,
 				settingKey = "flayedShot",
 				hasCooldown = true,
-				isSnowflake = true
+				isSnowflake = true,
+				thresholdUsable = false
 			},
 			flayersMark = {
 				id = 324156,
@@ -337,7 +350,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				focus = -40,
 				thresholdId = 1,
-				settingKey = "arcaneShot"
+				settingKey = "arcaneShot",
+				thresholdUsable = false
 			},
 			killShot = {
 				id = 320976,
@@ -348,7 +362,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "killShot",
 				healthMinimum = 0.2,
 				isSnowflake = true,
-				hasCooldown = true
+				hasCooldown = true,
+				thresholdUsable = false
 			},
 			scareBeast = {
 				id = 1513,
@@ -356,7 +371,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				focus = -25,
 				thresholdId = 3,
-				settingKey = "scareBeast"
+				settingKey = "scareBeast",
+				thresholdUsable = false
 			},
 			revivePet = {
 				id = 982,
@@ -364,7 +380,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				focus = -10,
 				thresholdId = 4,
-				settingKey = "revivePet"
+				settingKey = "revivePet",
+				thresholdUsable = false
 			},
 			wingClip = {
 				id = 195645,
@@ -372,7 +389,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				focus = -20,
 				thresholdId = 5,
-				settingKey = "wingClip"
+				settingKey = "wingClip",
+				thresholdUsable = false
 			},
 
 			steadyShot = {
@@ -388,7 +406,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 6,
 				settingKey = "carve",
 				isSnowflake = true,
-				hasCooldown = true
+				hasCooldown = true,
+				thresholdUsable = false
 			},
 			butchery = {
 				id = 212436,
@@ -399,7 +418,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				hasCooldown = true,
 				isSnowflake = true,
 				thresholdId = 7,
-				settingKey = "carve"
+				settingKey = "carve",
+				thresholdUsable = false
 			},
 			raptorStrike = {
 				id = 186270,
@@ -407,7 +427,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				focus = -30,
 				thresholdId = 8,
-				settingKey = "raptorStrike"
+				settingKey = "raptorStrike",
+				thresholdUsable = false
 			},
 			mongooseBite = {
 				id = 259387,
@@ -416,7 +437,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				focus = -30,
 				isTalent = true--[[,
 				thresholdId = 8,
-				settingKey = "raptorStrike"]] --Commenting out for now since it is the same focus as Raptor Strike
+				settingKey = "raptorStrike",
+				thresholdUsable = false]] --Commenting out for now since it is the same focus as Raptor Strike
 			},
 			harpoon = {
 				id = 190925,
@@ -445,6 +467,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				focus = -20,
 				thresholdId = 9,
 				settingKey = "serpentSting",
+				thresholdUsable = false
 			},
 			flankingStrike = {
 				id = 269751,
@@ -452,7 +475,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				focus = 30,
 				isTalent = true,
-				hasCooldown = true
+				hasCooldown = true,
+				thresholdUsable = false
 			},
 			aMurderOfCrows = {
 				id = 131894,
@@ -462,7 +486,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 10,
 				settingKey = "aMurderOfCrows",
 				isTalent = true,
-				hasCooldown = true
+				hasCooldown = true,
+				thresholdUsable = false
 			},
 			chakrams = {
 				id = 259391,
@@ -472,7 +497,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 11,
 				settingKey = "chakrams",
 				isTalent = true,
-				hasCooldown = true
+				hasCooldown = true,
+				thresholdUsable = false
 			},
 
 			flayedShot = {
@@ -483,7 +509,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 12,
 				settingKey = "flayedShot",
 				hasCooldown = true,
-				isSnowflake = true
+				isSnowflake = true,
+				thresholdUsable = false
 			},
 			flayersMark = {
 				id = 324156,
@@ -931,8 +958,24 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		if TRB.Data.settings.hunter.marksmanship.colors.text.overcapEnabled and overcap then 
 			currentFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.overcap
             castingFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.overcap
-        elseif TRB.Data.snapshotData.casting.resourceFinal < 0 then
-            castingFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.spending
+		elseif TRB.Data.settings.hunter.marksmanship.colors.text.overThresholdEnabled then
+			local _overThreshold = false
+			for k, v in pairs(TRB.Data.spells) do
+				local spell = TRB.Data.spells[k]
+				if	spell ~= nil and spell.thresholdUsable == true then
+					_overThreshold = true
+					break
+				end	
+			end
+
+			if _overThreshold then
+				currentFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.overThreshold
+				castingFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.overThreshold
+			end
+		end
+		
+		if TRB.Data.snapshotData.casting.resourceFinal < 0 then
+			castingFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.spending
 		end
         
 		--$focus
@@ -1041,8 +1084,24 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		if TRB.Data.settings.hunter.survival.colors.text.overcapEnabled and overcap then 
 			currentFocusColor = TRB.Data.settings.hunter.survival.colors.text.overcap
             castingFocusColor = TRB.Data.settings.hunter.survival.colors.text.overcap
-        elseif TRB.Data.snapshotData.casting.resourceFinal < 0 then
-            castingFocusColor = TRB.Data.settings.hunter.survival.colors.text.spending
+		elseif TRB.Data.settings.hunter.survival.colors.text.overThresholdEnabled then
+			local _overThreshold = false
+			for k, v in pairs(TRB.Data.spells) do
+				local spell = TRB.Data.spells[k]
+				if	spell ~= nil and spell.thresholdUsable == true then
+					_overThreshold = true
+					break
+				end	
+			end
+
+			if _overThreshold then
+				currentFocusColor = TRB.Data.settings.hunter.survival.colors.text.overThreshold
+				castingFocusColor = TRB.Data.settings.hunter.survival.colors.text.overThreshold
+			end
+		end
+		
+		if TRB.Data.snapshotData.casting.resourceFinal < 0 then
+			castingFocusColor = TRB.Data.settings.hunter.survival.colors.text.spending
 		end
         
 		--$focus
@@ -1144,6 +1203,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
     end
 
 	local function CastingSpell()
+		local specId = GetSpecialization()
 		local currentSpell = UnitCastingInfo("player")
 		local currentChannel = UnitChannelInfo("player")
 		
@@ -1151,26 +1211,42 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.ResetCastingSnapshotData()
 			return false
 		else
-			if currentSpell == nil then
-                local spellName = select(1, currentChannel)
-                --See Priest implementation for handling channeled spells
-			else	
-                local spellName = select(1, currentSpell)
-				if spellName == TRB.Data.spells.aimedShot.name then
-                    FillSnapshotDataCasting(TRB.Data.spells.aimedShot)
-				elseif spellName == TRB.Data.spells.steadyShot.name then
-                    FillSnapshotDataCasting(TRB.Data.spells.steadyShot)
-				elseif spellName == TRB.Data.spells.scareBeast.name then
-                    FillSnapshotDataCasting(TRB.Data.spells.scareBeast)
-				elseif spellName == TRB.Data.spells.revivePet.name then
-                    FillSnapshotDataCasting(TRB.Data.spells.revivePet)
+			if specId == 2 then
+				if currentSpell == nil then
+					local spellName = select(1, currentChannel)
+					--See Priest implementation for handling channeled spells
 				else
-					TRB.Functions.ResetCastingSnapshotData()
-					return false				
-                end
-                UpdateCastingResourceFinal()
+					local spellName = select(1, currentSpell)
+					if spellName == TRB.Data.spells.aimedShot.name then
+						FillSnapshotDataCasting(TRB.Data.spells.aimedShot)
+					elseif spellName == TRB.Data.spells.steadyShot.name then
+						FillSnapshotDataCasting(TRB.Data.spells.steadyShot)
+					elseif spellName == TRB.Data.spells.scareBeast.name then
+						FillSnapshotDataCasting(TRB.Data.spells.scareBeast)
+					elseif spellName == TRB.Data.spells.revivePet.name then
+						FillSnapshotDataCasting(TRB.Data.spells.revivePet)
+					else
+						TRB.Functions.ResetCastingSnapshotData()
+						return false				
+					end
+					UpdateCastingResourceFinal()
+				end
+				return true
+			elseif specId == 3 then
+				if currentSpell == nil then
+					local spellName = select(1, currentChannel)
+					--See Priest implementation for handling channeled spells
+				else
+					if spellName == TRB.Data.spells.scareBeast.name then
+						FillSnapshotDataCasting(TRB.Data.spells.scareBeast)
+					elseif spellName == TRB.Data.spells.revivePet.name then
+						FillSnapshotDataCasting(TRB.Data.spells.revivePet)
+					else
+						return false
+					end
+				end
 			end
-			return true
+			return false
 		end
 	end
 
@@ -1430,8 +1506,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
 								resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+								if frameLevel == 129 then
+									spell.thresholdUsable = true
+								else
+									spell.thresholdUsable = false
+								end
 							else
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
+								spell.thresholdUsable = false
 							end
 						end
 					end
@@ -1612,12 +1694,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 							if TRB.Data.settings.hunter.survival.thresholds[spell.settingKey].enabled and showThreshold then
 								TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.hunter.survival.thresholdWidth, -spell.focus, TRB.Data.character.maxResource)
-								--print(spell.settingKey, frameLevel, spell.focus)
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
 								resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+								if frameLevel == 129 then
+									spell.thresholdUsable = true
+								else
+									spell.thresholdUsable = false
+								end
 							else
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
+								spell.thresholdUsable = false
 							end
 						end
 					end
