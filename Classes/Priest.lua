@@ -589,8 +589,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$hvAvgTime", description = "Duration of VF w/max VB casts in Hungering Void, includes crits", printInSettings = true, color = false },
 			{ variable = "$vbAvgCasts", description = "Max Void Bolt casts remaining in Hungering Void, includes crits", printInSettings = true, color = false },
 
-			{ variable = "$s2m", description = "Is Surrender to Madness currently spec'd. Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$surrenderToMadness", description = "Is Surrender to Madness currently spec'd. Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$s2m", description = "Is Surrender to Madness currently talented. Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$surrenderToMadness", description = "Is Surrender to Madness currently talented. Logic variable only!", printInSettings = true, color = false },
 				
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }

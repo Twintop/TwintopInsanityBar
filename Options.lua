@@ -224,7 +224,6 @@ local function ConstructAddonOptionsPanel()
         end
     end)
 
-    -- Implement the function to change the texture
     function controls.dropDown.strata:SetValue(newValue, newName)
         TRB.Data.settings.core.strata.level = newValue
         TRB.Data.settings.core.strata.name = newName
@@ -281,17 +280,12 @@ local function ConstructAddonOptionsPanel()
         end
     end)
 
-    -- Implement the function to change the texture
     function controls.dropDown.audioChannel:SetValue(newValue, newName)
         TRB.Data.settings.core.audio.channel.channel = newValue
         TRB.Data.settings.core.audio.channel.name = newName
         UIDropDownMenu_SetText(controls.dropDown.audioChannel, newName)
         CloseDropDownMenus()
     end
-    
-    --interfaceSettingsFrame.panel = parent
-    --interfaceSettingsFrame.controls = controls
-    --TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 end 
 
 local function ConstructOptionsPanel()

@@ -48,6 +48,7 @@ TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 TRB.Frames.combatFrame = CreateFrame("Frame")
 
 TRB.Frames.interfaceSettingsFrameContainer = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls = {}
 
 -- Working data
 TRB.Data = {}
@@ -87,27 +88,7 @@ TRB.Data.spells = {}
 TRB.Data.lookup = {}
 
 -- This is here for reference/what every implementation should use as a minimum
-TRB.Data.snapshotData = {
-	resource = 0,
-	haste = 0,
-	crit = 0,
-	mastery = 0,
-	isTracking = false,
-	casting = {
-		spellId = nil,
-		startTime = nil,
-        endTime = nil,
-        resourceRaw = 0,
-        resourceFinal = 0,
-        icon = ""
-	},
-	targetData = {
-		ttdIsActive = false,
-		currentTargetGuid = nil,
-		targets = {}
-    },
-	audio = {}	
-}
+TRB.Functions.ResetSnapshotData()
 
 TRB.Data.sanityCheckValues = {
 	barMaxWidth = 0,

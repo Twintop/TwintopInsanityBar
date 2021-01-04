@@ -1128,7 +1128,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.snThresholdShow
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Searing Nightmare threshold Line")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Searing Nightmare. Only visibile if spec'd in to Searing Nightmare and channeling Mind Sear."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Searing Nightmare. Only visibile if talented in to Searing Nightmare and channeling Mind Sear."
 		f:SetChecked(TRB.Data.settings.priest.shadow.searingNightmareThreshold)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.priest.shadow.searingNightmareThreshold = self:GetChecked()
@@ -1408,7 +1408,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.endOfVoidformHungeringVoidOnly
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Only change the bar color when using Hungering Void")
-		f.tooltip = "Only changes the bar color when you are spec'd in to Hungering Void."
+		f.tooltip = "Only changes the bar color when you are talented in to Hungering Void."
 		f:SetChecked(TRB.Data.settings.priest.shadow.endOfVoidform.hungeringVoidOnly)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.priest.shadow.endOfVoidform.hungeringVoidOnly = self:GetChecked()

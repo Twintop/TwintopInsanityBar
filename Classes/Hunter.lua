@@ -11,16 +11,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local timerFrame = TRB.Frames.timerFrame
     local combatFrame = TRB.Frames.combatFrame
     
-    local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
 
-	local function Setup_Marksmanship()	
-		if TRB.Data.character.specId == GetSpecialization() then
-			return
-		end
+	local specCache = {
+		marksmanship = {
+			snapshotData = {},
+			barTextVariables = {}
+		},
+		survival = {
+			snapshotData = {},
+			barTextVariables = {}
+		}
+	}
 
-		Global_TwintopResourceBar = {
+	local function FillSpecCache()
+		-- Marksmanship
+		
+		specCache.marksmanship.Global_TwintopResourceBar = {
 			ttd = 0,
 			resource = {
 				resource = 0,
@@ -31,10 +40,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			}
 		}
 		
-		TRB.Data.character = {
+		specCache.marksmanship.character = {
 			guid = UnitGUID("player"),
 			specGroup = GetActiveSpecGroup(),
-			specId = GetSpecialization(),
+			specId = 2,
 			maxResource = 100,
 			covenantId = 0,
 			talents = {
@@ -64,7 +73,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			}
 		}
 
-		TRB.Data.spells = {
+		specCache.marksmanship.spells = {
 			aimedShot = {
 				id = 19434,
 				name = "",
@@ -234,72 +243,72 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			}
 		}
 
-		TRB.Data.snapshotData.focusRegen = 0
-		TRB.Data.snapshotData.audio = {
+		specCache.marksmanship.snapshotData.focusRegen = 0
+		specCache.marksmanship.snapshotData.audio = {
 		}
-		TRB.Data.snapshotData.doubleTap = {
+		specCache.marksmanship.snapshotData.doubleTap = {
 			isActive = false,
 			spell = nil
 		}
-		TRB.Data.snapshotData.trueshot = {
+		specCache.marksmanship.snapshotData.trueshot = {
 			spellId = nil,
 			duration = 0,
 			endTime = nil
 		}
-		TRB.Data.snapshotData.flayersMark = {
+		specCache.marksmanship.snapshotData.flayersMark = {
 			spellId = nil,
 			duration = 0,
 			endTime = nil
 		}
-		TRB.Data.snapshotData.aimedShot = {
+		specCache.marksmanship.snapshotData.aimedShot = {
 			charges = 0,
 			startTime = nil,
 			duration = 0
 		}
-		TRB.Data.snapshotData.killShot = {
+		specCache.marksmanship.snapshotData.killShot = {
 			charges = 0,
 			startTime = nil,
 			duration = 0
 		}
-		TRB.Data.snapshotData.burstingShot = {
+		specCache.marksmanship.snapshotData.burstingShot = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		TRB.Data.snapshotData.barrage = {
+		specCache.marksmanship.snapshotData.barrage = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		TRB.Data.snapshotData.aMurderOfCrows = {
+		specCache.marksmanship.snapshotData.aMurderOfCrows = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		TRB.Data.snapshotData.explosiveShot = {
+		specCache.marksmanship.snapshotData.explosiveShot = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		TRB.Data.snapshotData.flayedShot = {
+		specCache.marksmanship.snapshotData.flayedShot = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		TRB.Data.snapshotData.targetData = {
+		specCache.marksmanship.snapshotData.targetData = {
 			ttdIsActive = false,
 			currentTargetGuid = nil,
 			serpentSting = 0,
 			targets = {}
 		}
-	end
 
-	local function Setup_Survival()
-		if TRB.Data.character.specId == GetSpecialization() then
-			return
-		end
+		specCache.marksmanship.barTextVariables = {
+			icons = {},
+			values = {}
+		}
 
-		Global_TwintopResourceBar = {
+		-- Survival
+		specCache.survival.Global_TwintopResourceBar = {
 			ttd = 0,
 			resource = {
 				resource = 0,
@@ -307,13 +316,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				passive = 0
 			},
 			dots = {
+				serpentSting = 0
 			}
 		}
 		
-		TRB.Data.character = {
+		specCache.survival.character = {
 			guid = UnitGUID("player"),
 			specGroup = GetActiveSpecGroup(),
-			specId = GetSpecialization(),
+			specId = 3,
 			maxResource = 100,
 			covenantId = 0,
 			talents = {
@@ -343,7 +353,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			}
 		}
 
-		TRB.Data.spells = {
+		specCache.survival.spells = {
 			arcaneShot = {
 				id = 185358,
 				name = "",
@@ -520,86 +530,107 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			}
 		}
 
-		TRB.Data.snapshotData.focusRegen = 0
-		TRB.Data.snapshotData.audio = {
+		specCache.survival.snapshotData.focusRegen = 0
+		specCache.survival.snapshotData.audio = {
 		}
-		TRB.Data.snapshotData.carve = {
+		specCache.survival.snapshotData.carve = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		TRB.Data.snapshotData.flayersMark = {
+		specCache.survival.snapshotData.flayersMark = {
 			spellId = nil,
 			duration = 0,
 			endTime = nil
 		}
-		TRB.Data.snapshotData.flayedShot = {
+		specCache.survival.snapshotData.flayedShot = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		TRB.Data.snapshotData.killShot = {
+		specCache.survival.snapshotData.killShot = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		TRB.Data.snapshotData.aMurderOfCrows = {
+		specCache.survival.snapshotData.aMurderOfCrows = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		TRB.Data.snapshotData.butchery = {
+		specCache.survival.snapshotData.butchery = {
 			charges = 0,
 			startTime = nil,
 			duration = 0
 		}
-		TRB.Data.snapshotData.chakrams = {
+		specCache.survival.snapshotData.chakrams = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		TRB.Data.snapshotData.flankingStrike = {
+		specCache.survival.snapshotData.flankingStrike = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		TRB.Data.snapshotData.targetData = {
+		specCache.survival.snapshotData.targetData = {
 			ttdIsActive = false,
 			currentTargetGuid = nil,
 			serpentSting = 0,
 			targets = {}
 		}
+
+		specCache.survival.barTextVariables = {
+			icons = {},
+			values = {}
+		}
 	end
 
-	local function FillSpellData_Marksmanship()		
+	local function Setup_Marksmanship()	
+		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
+			return
+		end
+
+		TRB.Functions.LoadFromSpecCache(specCache.marksmanship)
+	end
+
+	local function Setup_Survival()
+		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
+			return
+		end		
+
+		TRB.Functions.LoadFromSpecCache(specCache.survival)
+	end
+
+	local function FillSpellData_Marksmanship()
 		Setup_Marksmanship()
-		TRB.Functions.FillSpellData()
+		local spells = TRB.Functions.FillSpellData(specCache.marksmanship.spells)
 
 		-- This is done here so that we can get icons for the options menu!
-		TRB.Data.barTextVariables.icons = {
+		specCache.marksmanship.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the focus generating spell you are currently hardcasting", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-			{ variable = "#aMurderOfCrows", icon = TRB.Data.spells.aMurderOfCrows.icon, description = "A Murder of Crows", printInSettings = true },
-			{ variable = "#aimedShot", icon = TRB.Data.spells.aimedShot.icon, description = "Aimed Shot", printInSettings = true },
-			{ variable = "#arcaneShot", icon = TRB.Data.spells.arcaneShot.icon, description = "Arcane Shot", printInSettings = true },
-			{ variable = "#barrage", icon = TRB.Data.spells.barrage.icon, description = "Barrage", printInSettings = true },
-			{ variable = "#burstingShot", icon = TRB.Data.spells.burstingShot.icon, description = "Bursting Shot", printInSettings = true },
-			{ variable = "#chimaeraShot", icon = TRB.Data.spells.chimaeraShot.icon, description = "Chimaera Shot", printInSettings = true },
-			{ variable = "#explosiveShot", icon = TRB.Data.spells.explosiveShot.icon, description = "Explosive Shot", printInSettings = true },
-			{ variable = "#flayedShot", icon = TRB.Data.spells.flayedShot.icon, description = "Flayed Shot", printInSettings = true },
-			{ variable = "#flayersMark", icon = TRB.Data.spells.flayersMark.icon, description = "Flayer's Mark", printInSettings = true },
-			{ variable = "#killShot", icon = TRB.Data.spells.killShot.icon, description = "Kill Shot", printInSettings = true },
-			{ variable = "#multiShot", icon = TRB.Data.spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
-			{ variable = "#rapidFire", icon = TRB.Data.spells.rapidFire.icon, description = "Rapid Fire", printInSettings = true },
-			{ variable = "#revivePet", icon = TRB.Data.spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
-			{ variable = "#scareBeast", icon = TRB.Data.spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
-			{ variable = "#serpentSting", icon = TRB.Data.spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
-			{ variable = "#steadyShot", icon = TRB.Data.spells.steadyShot.icon, description = "Steady Shot", printInSettings = true },
-			{ variable = "#trickShots", icon = TRB.Data.spells.trickShots.icon, description = "Trick Shots", printInSettings = true },
-			{ variable = "#trueshot", icon = TRB.Data.spells.trueshot.icon, description = "Trueshot", printInSettings = true },
+			{ variable = "#aMurderOfCrows", icon = spells.aMurderOfCrows.icon, description = "A Murder of Crows", printInSettings = true },
+			{ variable = "#aimedShot", icon = spells.aimedShot.icon, description = "Aimed Shot", printInSettings = true },
+			{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = "Arcane Shot", printInSettings = true },
+			{ variable = "#barrage", icon = spells.barrage.icon, description = "Barrage", printInSettings = true },
+			{ variable = "#burstingShot", icon = spells.burstingShot.icon, description = "Bursting Shot", printInSettings = true },
+			{ variable = "#chimaeraShot", icon = spells.chimaeraShot.icon, description = "Chimaera Shot", printInSettings = true },
+			{ variable = "#explosiveShot", icon = spells.explosiveShot.icon, description = "Explosive Shot", printInSettings = true },
+			{ variable = "#flayedShot", icon = spells.flayedShot.icon, description = "Flayed Shot", printInSettings = true },
+			{ variable = "#flayersMark", icon = spells.flayersMark.icon, description = "Flayer's Mark", printInSettings = true },
+			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
+			{ variable = "#multiShot", icon = spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
+			{ variable = "#rapidFire", icon = spells.rapidFire.icon, description = "Rapid Fire", printInSettings = true },
+			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
+			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
+			{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
+			{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = "Steady Shot", printInSettings = true },
+			{ variable = "#trickShots", icon = spells.trickShots.icon, description = "Trick Shots", printInSettings = true },
+			{ variable = "#trueshot", icon = spells.trueshot.icon, description = "Trueshot", printInSettings = true },
         }
-		TRB.Data.barTextVariables.values = {
+		specCache.marksmanship.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
 			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
@@ -628,37 +659,39 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
+
+		specCache.marksmanship.spells = spells
 	end
 
 	local function FillSpellData_Survival()
 		Setup_Survival()
-		TRB.Functions.FillSpellData()
+		local spells = TRB.Functions.FillSpellData(specCache.survival.spells)
 
 		-- This is done here so that we can get icons for the options menu!
-		TRB.Data.barTextVariables.icons = {
+		specCache.survival.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the focus generating spell you are currently hardcasting", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-			{ variable = "#aMurderOfCrows", icon = TRB.Data.spells.aMurderOfCrows.icon, description = "A Murder of Crows", printInSettings = true },
-			--{ variable = "#aimedShot", icon = TRB.Data.spells.aimedShot.icon, description = "Aimed Shot", printInSettings = true },
-			{ variable = "#arcaneShot", icon = TRB.Data.spells.arcaneShot.icon, description = "Arcane Shot", printInSettings = true },
-			--{ variable = "#barrage", icon = TRB.Data.spells.barrage.icon, description = "Barrage", printInSettings = true },
-			--{ variable = "#burstingShot", icon = TRB.Data.spells.burstingShot.icon, description = "Bursting Shot", printInSettings = true },
-			--{ variable = "#chimaeraShot", icon = TRB.Data.spells.chimaeraShot.icon, description = "Chimaera Shot", printInSettings = true },
-			--{ variable = "#explosiveShot", icon = TRB.Data.spells.explosiveShot.icon, description = "Explosive Shot", printInSettings = true },
-			{ variable = "#flayedShot", icon = TRB.Data.spells.flayedShot.icon, description = "Flayed Shot", printInSettings = true },
-			{ variable = "#flayersMark", icon = TRB.Data.spells.flayersMark.icon, description = "Flayer's Mark", printInSettings = true },
-			{ variable = "#killShot", icon = TRB.Data.spells.killShot.icon, description = "Kill Shot", printInSettings = true },
-			--{ variable = "#multiShot", icon = TRB.Data.spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
-			--{ variable = "#rapidFire", icon = TRB.Data.spells.rapidFire.icon, description = "Rapid Fire", printInSettings = true },
-			{ variable = "#revivePet", icon = TRB.Data.spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
-			{ variable = "#scareBeast", icon = TRB.Data.spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
-			{ variable = "#serpentSting", icon = TRB.Data.spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
-			--{ variable = "#steadyShot", icon = TRB.Data.spells.steadyShot.icon, description = "Steady Shot", printInSettings = true },
-			--{ variable = "#trickShots", icon = TRB.Data.spells.trickShots.icon, description = "Trick Shots", printInSettings = true },
-			--{ variable = "#trueshot", icon = TRB.Data.spells.trueshot.icon, description = "Trueshot", printInSettings = true },
+			{ variable = "#aMurderOfCrows", icon = spells.aMurderOfCrows.icon, description = "A Murder of Crows", printInSettings = true },
+			--{ variable = "#aimedShot", icon = spells.aimedShot.icon, description = "Aimed Shot", printInSettings = true },
+			{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = "Arcane Shot", printInSettings = true },
+			--{ variable = "#barrage", icon = spells.barrage.icon, description = "Barrage", printInSettings = true },
+			--{ variable = "#burstingShot", icon = spells.burstingShot.icon, description = "Bursting Shot", printInSettings = true },
+			--{ variable = "#chimaeraShot", icon = spells.chimaeraShot.icon, description = "Chimaera Shot", printInSettings = true },
+			--{ variable = "#explosiveShot", icon = spells.explosiveShot.icon, description = "Explosive Shot", printInSettings = true },
+			{ variable = "#flayedShot", icon = spells.flayedShot.icon, description = "Flayed Shot", printInSettings = true },
+			{ variable = "#flayersMark", icon = spells.flayersMark.icon, description = "Flayer's Mark", printInSettings = true },
+			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
+			--{ variable = "#multiShot", icon = spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
+			--{ variable = "#rapidFire", icon = spells.rapidFire.icon, description = "Rapid Fire", printInSettings = true },
+			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
+			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
+			{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
+			--{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = "Steady Shot", printInSettings = true },
+			--{ variable = "#trickShots", icon = spells.trickShots.icon, description = "Trick Shots", printInSettings = true },
+			--{ variable = "#trueshot", icon = spells.trueshot.icon, description = "Trueshot", printInSettings = true },
         }
-		TRB.Data.barTextVariables.values = {
+		specCache.survival.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
 			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
@@ -687,6 +720,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
+
+		specCache.survival.spells = spells
 	end
 
 	local function CheckCharacter()
@@ -1961,6 +1996,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					else
 						TRB.Data.settings = settings
 					end	
+					FillSpecCache()
+					FillSpellData_Marksmanship()
+					FillSpellData_Survival()
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"
@@ -1981,24 +2019,24 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			if TRB.Details.addonData.loaded and specId > 0 then	
 				if not TRB.Details.addonData.optionsPanel then
-					TRB.Options.Hunter.ConstructOptionsPanel()
 					TRB.Details.addonData.optionsPanel = true
+					TRB.Options.Hunter.ConstructOptionsPanel(specCache)
 				end
 						
 				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
 					if specId == 1 then
 					elseif specId == 2 then
-						Setup_Marksmanship()
 						TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.hunter.marksmanship)
 						TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.marksmanship)
 						FillSpellData_Marksmanship()
+						TRB.Functions.LoadFromSpecCache(specCache.marksmanship)
 						TRB.Functions.RefreshLookupData = RefreshLookupData_Marksmanship
 						ConstructResourceBar(TRB.Data.settings.hunter.marksmanship)
 					elseif specId == 3 then
-						Setup_Survival()
 						TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.hunter.survival)
 						TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.survival)
 						FillSpellData_Survival()
+						TRB.Functions.LoadFromSpecCache(specCache.survival)
 						TRB.Functions.RefreshLookupData = RefreshLookupData_Survival
 						ConstructResourceBar(TRB.Data.settings.hunter.survival)
 					end

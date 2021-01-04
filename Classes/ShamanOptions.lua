@@ -1330,7 +1330,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)
 
-		-- Implement the function to change the favoriteNumber
 		function controls.dropDown.fontLeft:SetValue(newValue, newName)
 			TRB.Data.settings.shaman.elemental.displayText.left.fontFace = newValue
 			TRB.Data.settings.shaman.elemental.displayText.left.fontFaceName = newName
@@ -1392,7 +1391,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)
 
-		-- Implement the function to change the favoriteNumber
 		function controls.dropDown.fontMiddle:SetValue(newValue, newName)
 			TRB.Data.settings.shaman.elemental.displayText.middle.fontFace = newValue
 			TRB.Data.settings.shaman.elemental.displayText.middle.fontFaceName = newName
@@ -1456,7 +1454,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)
 
-		-- Implement the function to change the favoriteNumber
 		function controls.dropDown.fontRight:SetValue(newValue, newName)		
 			TRB.Data.settings.shaman.elemental.displayText.right.fontFace = newValue
 			TRB.Data.settings.shaman.elemental.displayText.right.fontFaceName = newName

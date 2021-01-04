@@ -1572,7 +1572,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		end)
 
-		-- Implement the function to change the favoriteNumber
 		function controls.dropDown.fontLeft:SetValue(newValue, newName)
 			TRB.Data.settings.druid.balance.displayText.left.fontFace = newValue
 			TRB.Data.settings.druid.balance.displayText.left.fontFaceName = newName
@@ -1634,7 +1633,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		end)
 
-		-- Implement the function to change the favoriteNumber
 		function controls.dropDown.fontMiddle:SetValue(newValue, newName)
 			TRB.Data.settings.druid.balance.displayText.middle.fontFace = newValue
 			TRB.Data.settings.druid.balance.displayText.middle.fontFaceName = newName
@@ -1698,7 +1696,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		end)
 
-		-- Implement the function to change the favoriteNumber
 		function controls.dropDown.fontRight:SetValue(newValue, newName)		
 			TRB.Data.settings.druid.balance.displayText.right.fontFace = newValue
 			TRB.Data.settings.druid.balance.displayText.right.fontFaceName = newName

@@ -15,9 +15,9 @@ Libs\LibStub.lua
 Libs\CallbackHandler-1.0.lua
 Libs\LibSharedMedia-3.0.lua
 
-Init.lua
 Functions.lua
 UiFunctions.lua
+Init.lua
 
 Options.lua
 
