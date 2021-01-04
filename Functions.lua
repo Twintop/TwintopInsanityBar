@@ -204,9 +204,9 @@ TRB.Functions.GetLatency = GetLatency
 local function UpdateSanityCheckValues(settings)
     if settings ~= nil and settings.bar ~= nil then
         TRB.Data.sanityCheckValues.barMaxWidth = math.floor(GetScreenWidth())
-        TRB.Data.sanityCheckValues.barMinWidth = math.max(math.ceil(settings.bar.border * 8), 120)	
+        TRB.Data.sanityCheckValues.barMinWidth = math.max(math.ceil(settings.bar.border * 2), 120)	
         TRB.Data.sanityCheckValues.barMaxHeight = math.floor(GetScreenHeight())
-        TRB.Data.sanityCheckValues.barMinHeight = math.max(math.ceil(settings.bar.border * 8), 1)
+        TRB.Data.sanityCheckValues.barMinHeight = math.max(math.ceil(settings.bar.border * 2), 1)
     end
 end
 TRB.Functions.UpdateSanityCheckValues = UpdateSanityCheckValues
