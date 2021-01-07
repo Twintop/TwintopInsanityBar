@@ -1059,7 +1059,7 @@ local function FindBuffByName(spellName, onWhom)
 	if onWhom == nil then
 		onWhom = "player"
 	end
-	for i = 1, 40 do
+	for i = 1, 1000 do
 		local unitSpellName = UnitBuff(onWhom, i)
 		if not unitSpellName then
 			return
@@ -1074,7 +1074,7 @@ local function FindBuffById(spellId, onWhom)
 	if onWhom == nil then
 		onWhom = "player"
 	end
-	for i = 1, 40 do
+	for i = 1, 1000 do
 		local unitSpellId = select(10, UnitBuff(onWhom, i))
 		if not unitSpellId then
 			return
@@ -1089,7 +1089,7 @@ local function FindDebuffByName(spellName, onWhom)
 	if onWhom == nil then
 		onWhom = "player"
 	end
-	for i = 1, 40 do
+	for i = 1, 1000 do
 		local unitSpellName = UnitDebuff(onWhom, i)
 		if not unitSpellName then
 			return
@@ -1105,7 +1105,7 @@ local function FindDebuffById(spellId, onWhom)
 		onWhom = "player"
 	end
 
-	for i = 1, 40 do
+	for i = 1, 1000 do
 		local unitSpellId = select(10, UnitDebuff(onWhom, i))
 		if not unitSpellId then
 			return
@@ -1120,7 +1120,7 @@ local function FindAuraByName(spellName, onWhom, filter)
 	if onWhom == nil then
 		onWhom = "player"
 	end
-	for i = 1, 40 do
+	for i = 1, 1000 do
 		local unitSpellName = UnitAura(onWhom, i, filter)
 		if not unitSpellName then
 			return
@@ -1135,7 +1135,8 @@ local function FindAuraById(spellId, onWhom, filter)
 	if onWhom == nil then
 		onWhom = "player"
 	end
-	for i = 1, 40 do
+	
+	for i = 1, 1000 do
 		local unitSpellId = select(10, UnitAura(onWhom, i, filter))
 		if not unitSpellId then
 			return

@@ -219,7 +219,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			fontSizeLock=true,
 			fontFaceLock=true,
 			left={
-				text="{$trueshotTime}[$trueshotTime sec]",
+				text="{$coordinatedAssaultTime}[$coordinatedAssaultTime sec]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -252,13 +252,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				fontSize = 13
 			},
 			middle = {
-				text="{$flayersMark}[#flayersMark $flayersMarkTime #flayersMark||n]{$trueshotTime}[#trueshot $trueshotTime #trueshot]",
+				text="{$flayersMark}[#flayersMark $flayersMarkTime #flayersMark||n]{$coordinatedAssaultTime}[#coordinatedAssault $coordinatedAssaultTime #coordinatedAssault]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			right = {
-				text = "{$casting}[#casting$casting+]{$passive}[$passive+]$focus",
+				text = "{$casting}[#casting$casting+]{$toeFocus}[#termsOfEngagement$toeFocus+]{$regen}[$regen+]$focus",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",			
 				fontSize = 22
@@ -3986,12 +3986,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				end)
 			end
 		end)
+		]]
 		
-		controls.colors.trueshot = TRB.UiFunctions.BuildColorPicker(parent, "Focus while Trueshot is active", TRB.Data.settings.hunter.survival.colors.bar.trueshot, 275, 25, xCoord2, yCoord)
-		f = controls.colors.trueshot
+		controls.colors.coordinatedAssault = TRB.UiFunctions.BuildColorPicker(parent, "Focus while Coordinated Assault is active", TRB.Data.settings.hunter.survival.colors.bar.coordinatedAssault, 275, 25, xCoord2, yCoord)
+		f = controls.colors.coordinatedAssault
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.trueshot, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.coordinatedAssault, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -4001,19 +4002,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.trueshot.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.hunter.survival.colors.bar.trueshot = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    controls.colors.coordinatedAssault.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.survival.colors.bar.coordinatedAssault = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barContainerFrame:SetBackdropColor(r, g, b, 1-a)
                 end)
 			end
 		end)
 		
 		yCoord = yCoord - 30
-		controls.colors.trueshotEnding = TRB.UiFunctions.BuildColorPicker(parent, "Focus when Trueshot is ending", TRB.Data.settings.hunter.survival.colors.bar.trueshotEnding, 275, 25, xCoord2, yCoord)
-		f = controls.colors.trueshotEnding
+		controls.colors.coordinatedAssaultEnding = TRB.UiFunctions.BuildColorPicker(parent, "Focus when Coordinated Assault is ending", TRB.Data.settings.hunter.survival.colors.bar.coordinatedAssaultEnding, 275, 25, xCoord2, yCoord)
+		f = controls.colors.coordinatedAssaultEnding
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.trueshotEnding, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.coordinatedAssaultEnding, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -4024,11 +4025,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 		
 					controls.colors.eclipse1GCD.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.hunter.survival.colors.bar.trueshotEnding = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					TRB.Data.settings.hunter.survival.colors.bar.coordinatedAssaultEnding = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
-		]]
 		
 		yCoord = yCoord - 40
 
@@ -4216,41 +4216,40 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.survival.thresholds.wingClip.enabled = self:GetChecked()
 		end)	
 		
-		--[[
 		yCoord = yCoord - 30
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30	
-		controls.checkBoxes.endOfTrueshot = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOT_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfTrueshot
+		controls.checkBoxes.endOfCoordinatedAssault = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfCoordinatedAssault
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Trueshot")
-		f.tooltip = "Changes the bar color when Trueshot is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(TRB.Data.settings.hunter.survival.endOfTrueshot.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Coordinated Assault")
+		f.tooltip = "Changes the bar color when Coordinated Assault is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(TRB.Data.settings.hunter.survival.endOfCoordinatedAssault.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.survival.endOfTrueshot.enabled = self:GetChecked()
+			TRB.Data.settings.hunter.survival.endOfCoordinatedAssault.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40	
-		controls.checkBoxes.endOfTrueshotModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOT_M_GCD", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.endOfTrueshotModeGCDs
+		controls.checkBoxes.endOfCoordinatedAssaultModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_M_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfCoordinatedAssaultModeGCDs
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Trueshot ends")
+		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Coordinated Assault ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many GCDs remain until Trueshot ends."
-		if TRB.Data.settings.hunter.survival.endOfTrueshot.mode == "gcd" then
+		f.tooltip = "Change the bar color based on how many GCDs remain until Coordinated Assault ends."
+		if TRB.Data.settings.hunter.survival.endOfCoordinatedAssault.mode == "gcd" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.endOfTrueshotModeGCDs:SetChecked(true)
-			controls.checkBoxes.endOfTrueshotModeTime:SetChecked(false)
-			TRB.Data.settings.hunter.survival.endOfTrueshot.mode = "gcd"
+			controls.checkBoxes.endOfCoordinatedAssaultModeGCDs:SetChecked(true)
+			controls.checkBoxes.endOfCoordinatedAssaultModeTime:SetChecked(false)
+			TRB.Data.settings.hunter.survival.endOfCoordinatedAssault.mode = "gcd"
 		end)
 
-		title = "Trueshot GCDs - 0.75sec Floor"
-		controls.endOfTrueshotGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 20, TRB.Data.settings.hunter.survival.endOfTrueshot.gcdsMax, 0.25, 2,
+		title = "Coordinated Assault GCDs - 0.75sec Floor"
+		controls.endOfCoordinatedAssaultGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 20, TRB.Data.settings.hunter.survival.endOfCoordinatedAssault.gcdsMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.endOfTrueshotGCDs:SetScript("OnValueChanged", function(self, value)
+		controls.endOfCoordinatedAssaultGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
 				value = max
@@ -4259,30 +4258,30 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 
 			self.EditBox:SetText(value)
-			TRB.Data.settings.hunter.survival.endOfTrueshot.gcdsMax = value
+			TRB.Data.settings.hunter.survival.endOfCoordinatedAssault.gcdsMax = value
 		end)
 
 
 		yCoord = yCoord - 60	
-		controls.checkBoxes.endOfTrueshotModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOT_M_TIME", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.endOfTrueshotModeTime
+		controls.checkBoxes.endOfCoordinatedAssaultModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_M_TIME", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfCoordinatedAssaultModeTime
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time until Trueshot ends")
+		getglobal(f:GetName() .. 'Text'):SetText("Time until Coordinated Assault ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many seconds remain until Trueshot ends."
-		if TRB.Data.settings.hunter.survival.endOfTrueshot.mode == "time" then
+		f.tooltip = "Change the bar color based on how many seconds remain until Coordinated Assault ends."
+		if TRB.Data.settings.hunter.survival.endOfCoordinatedAssault.mode == "time" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.endOfTrueshotModeGCDs:SetChecked(false)
-			controls.checkBoxes.endOfTrueshotModeTime:SetChecked(true)
-			TRB.Data.settings.hunter.survival.endOfTrueshot.mode = "time"
+			controls.checkBoxes.endOfCoordinatedAssaultModeGCDs:SetChecked(false)
+			controls.checkBoxes.endOfCoordinatedAssaultModeTime:SetChecked(true)
+			TRB.Data.settings.hunter.survival.endOfCoordinatedAssault.mode = "time"
 		end)
 
-		title = "Trueshot Time Remaining (sec)"
-		controls.endOfTrueshotTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.survival.endOfTrueshot.timeMax, 0.25, 2,
+		title = "Coordinated Assault Time Remaining (sec)"
+		controls.endOfCoordinatedAssaultTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.survival.endOfCoordinatedAssault.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.endOfTrueshotTime:SetScript("OnValueChanged", function(self, value)
+		controls.endOfCoordinatedAssaultTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
 				value = max
@@ -4292,9 +4291,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)		
-			TRB.Data.settings.hunter.survival.endOfTrueshot.timeMax = value
+			TRB.Data.settings.hunter.survival.endOfCoordinatedAssault.timeMax = value
 		end)
 
+		--[[
 		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 

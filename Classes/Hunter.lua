@@ -527,11 +527,33 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				isActive = false
-			}
+			},
+
+			termsOfEngagement = {
+				id = 265898,
+				name = "",
+				icon = "",
+				focus = 2,
+				ticks = 10,
+				duration = 10,
+				fotm = false
+			},
 		}
 
 		specCache.survival.snapshotData.focusRegen = 0
 		specCache.survival.snapshotData.audio = {
+		}
+		specCache.survival.snapshotData.coordinatedAssault = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil
+		}
+		specCache.survival.snapshotData.termsOfEngagement = {
+			isActive = false,
+			ticksRemaining = 0,
+			focus = 0,
+			endTime = nil,
+			lastTick = nil
 		}
 		specCache.survival.snapshotData.carve = {
 			startTime = nil,
@@ -642,7 +664,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$resourceMax", description = "Maximum Focus", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Builder Focus from Hardcasting Spells", printInSettings = true, color = false },
 			{ variable = "$casting", description = "Spender Focus from Hardcasting Spells", printInSettings = true, color = false },
-			{ variable = "$passive", description = "Focus from Passive Sources", printInSettings = true, color = false },
+			{ variable = "$passive", description = "Focus from Passive Sources including Regen", printInSettings = true, color = false },
+			{ variable = "$regen", description = "Focus from Passive Regen", printInSettings = true, color = false },
+			{ variable = "$regenFocus", description = "Focus from Passive Regen", printInSettings = false, color = false },
+			{ variable = "$focusRegen", description = "Focus from Passive Regen", printInSettings = false, color = false },
 			{ variable = "$focusPlusCasting", description = "Current + Casting Focus Total", printInSettings = true, color = false },
 			{ variable = "$resourcePlusCasting", description = "Current + Casting Focus Total", printInSettings = false, color = false },
 			{ variable = "$focusPlusPassive", description = "Current + Passive Focus Total", printInSettings = true, color = false },
@@ -673,23 +698,26 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#aMurderOfCrows", icon = spells.aMurderOfCrows.icon, description = "A Murder of Crows", printInSettings = true },
-			--{ variable = "#aimedShot", icon = spells.aimedShot.icon, description = "Aimed Shot", printInSettings = true },
 			{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = "Arcane Shot", printInSettings = true },
-			--{ variable = "#barrage", icon = spells.barrage.icon, description = "Barrage", printInSettings = true },
-			--{ variable = "#burstingShot", icon = spells.burstingShot.icon, description = "Bursting Shot", printInSettings = true },
-			--{ variable = "#chimaeraShot", icon = spells.chimaeraShot.icon, description = "Chimaera Shot", printInSettings = true },
-			--{ variable = "#explosiveShot", icon = spells.explosiveShot.icon, description = "Explosive Shot", printInSettings = true },
+			{ variable = "#butchery", icon = spells.butchery.icon, description = "Butchery", printInSettings = true },
+			{ variable = "#carve", icon = spells.carve.icon, description = "Carve", printInSettings = true },
+			{ variable = "#chakrams", icon = spells.chakrams.icon, description = "Chakrams", printInSettings = true },
+			{ variable = "#coordinatedAssault", icon = spells.coordinatedAssault.icon, description = "Coordinated Assault", printInSettings = true },
+			{ variable = "#ca", icon = spells.coordinatedAssault.icon, description = "Coordinated Assault", printInSettings = false },
+			{ variable = "#flankingStrike", icon = spells.flankingStrike.icon, description = "Flanking Strike", printInSettings = true },
 			{ variable = "#flayedShot", icon = spells.flayedShot.icon, description = "Flayed Shot", printInSettings = true },
 			{ variable = "#flayersMark", icon = spells.flayersMark.icon, description = "Flayer's Mark", printInSettings = true },
+			{ variable = "#harpoon", icon = spells.harpoon.icon, description = "Harpoon", printInSettings = true },
+			{ variable = "#killCommand", icon = spells.killCommand.icon, description = "Kill Command", printInSettings = true },
 			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
-			--{ variable = "#multiShot", icon = spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
-			--{ variable = "#rapidFire", icon = spells.rapidFire.icon, description = "Rapid Fire", printInSettings = true },
+			{ variable = "#mongooseBite", icon = spells.mongooseBite.icon, description = "Mongoose Bite", printInSettings = true },
+			{ variable = "#raptorStrike", icon = spells.raptorStrike.icon, description = "Raptor Strike", printInSettings = true },
 			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
 			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
 			{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
-			--{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = "Steady Shot", printInSettings = true },
-			--{ variable = "#trickShots", icon = spells.trickShots.icon, description = "Trick Shots", printInSettings = true },
-			--{ variable = "#trueshot", icon = spells.trueshot.icon, description = "Trueshot", printInSettings = true },
+			{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = "Steady Shot", printInSettings = true },
+			{ variable = "#termsOfEngagement", icon = spells.termsOfEngagement.icon, description = "Terms of Engagement", printInSettings = true },
+			{ variable = "#wingClip", icon = spells.wingClip.icon, description = "Wing Clip", printInSettings = true },			
         }
 		specCache.survival.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -703,7 +731,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$resourceMax", description = "Maximum Focus", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Builder Focus from Hardcasting Spells", printInSettings = true, color = false },
 			{ variable = "$casting", description = "Spender Focus from Hardcasting Spells", printInSettings = true, color = false },
-			{ variable = "$passive", description = "Focus from Passive Sources", printInSettings = true, color = false },
+			{ variable = "$passive", description = "Focus from Passive Sources including Regen", printInSettings = true, color = false },
+			{ variable = "$regen", description = "Focus from Passive Regen", printInSettings = true, color = false },
+			{ variable = "$regenFocus", description = "Focus from Passive Regen", printInSettings = false, color = false },
+			{ variable = "$focusRegen", description = "Focus from Passive Regen", printInSettings = false, color = false },
 			{ variable = "$focusPlusCasting", description = "Current + Casting Focus Total", printInSettings = true, color = false },
 			{ variable = "$resourcePlusCasting", description = "Current + Casting Focus Total", printInSettings = false, color = false },
 			{ variable = "$focusPlusPassive", description = "Current + Passive Focus Total", printInSettings = true, color = false },
@@ -711,9 +742,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$focusTotal", description = "Current + Passive + Casting Focus Total", printInSettings = true, color = false },   
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Focus Total", printInSettings = false, color = false },   
 
-			--{ variable = "$trueshotTime", description = "Time remaining on Trueshot buff", printInSettings = true, color = false },   
+			{ variable = "$coordinatedAssaultTime", description = "Time remaining on Coordinated Assault buff", printInSettings = true, color = false },   
 			{ variable = "$ssCount", description = "Number of Serpent Stings active on targets", printInSettings = true, color = false },
 			{ variable = "$serpentSting", description = "Is Serpent Sting talented? Logic variable only!", printInSettings = true, color = false },
+
+			{ variable = "$toeFocus", description = "Focus from Terms of Engagement", printInSettings = true, color = false },
+			{ variable = "$toeTicks", description = "Number of ticks left on Terms of Engagement", printInSettings = true, color = false },
 
 			{ variable = "$flayersMarkTime", description = "Time remaining on Flayer's Mark buff", printInSettings = true, color = false },
 
@@ -832,8 +866,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local currentTime = GetTime()
 		local remainingTime = 0
 
-		if TRB.Data.spells.trueshot.isActive then
-			remainingTime = TRB.Data.snapshotData.trueshot.endTime - currentTime
+		if TRB.Data.spells.coordinatedAssault.isActive then
+			remainingTime = TRB.Data.snapshotData.coordinatedAssault.endTime - currentTime
 		end
 
 		return remainingTime
@@ -853,7 +887,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
     local function CalculateResourceGain(resource)
         local modifier = 1.0
                 
-        if resource > 0 and TRB.Data.spells.trueshot.isActive then
+        if resource > 0 and GetSpecialization() == 2 and TRB.Data.spells.trueshot.isActive then
             modifier = modifier * TRB.Data.spells.trueshot.modifier
         end
 
@@ -911,7 +945,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		elseif specId == 3 then
 			settings = TRB.Data.settings.hunter.survival
 		end
-		
+
 		if specId == 2 then --Marksmanship
 			if var == "$trueshotTime" then
 				if GetTrueshotRemainingTime() > 0 then
@@ -923,6 +957,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				end
 			end
 		elseif specId == 3 then --Survivial
+			if var == "$coordinatedAssaultTime" then
+				if GetCoordinatedAssaultRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$toeFocus" then
+				if TRB.Data.snapshotData.termsOfEngagement.focus > 0 then
+					valid = true
+				end
+			elseif var == "$toeTicks" then
+				if TRB.Data.snapshotData.termsOfEngagement.ticksRemaining > 0 then
+					valid = true
+				end
+			end
 		end
 
 		if var == "$resource" or var == "$focus" then
@@ -959,6 +1006,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				((settings.generation.mode == "time" and settings.generation.time > 0) or
 				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 				valid = true
+			elseif specId == 3 and TRB.Data.snapshotData.termsOfEngagement.focus > 0 then
+				valid = true
+			end
+		elseif var == "$regen" or var == "$regenFocus" or var == "$focusRegen" then
+			if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
+				((settings.generation.mode == "time" and settings.generation.time > 0) or
+				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+				valid = true
 			end
 		elseif var == "$flayersMark" then
 			if GetFlayersMarkRemainingTime() > 0 then
@@ -967,9 +1022,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		elseif var == "$ssCount" then
 			if TRB.Data.snapshotData.targetData.serpentSting > 0 then
 				valid = true
-			end
-		else
-			valid = false					
+			end				
 		end
 
 		return valid
@@ -1014,29 +1067,34 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
         
 		--$focus
-		local currentfocus = string.format("|c%s%.0f|r", currentFocusColor, TRB.Data.snapshotData.resource)
+		local currentFocus = string.format("|c%s%.0f|r", currentFocusColor, TRB.Data.snapshotData.resource)
 		--$casting
-		local castingfocus = string.format("|c%s%.0f|r", castingFocusColor, TRB.Data.snapshotData.casting.resourceFinal)
+		local castingFocus = string.format("|c%s%.0f|r", castingFocusColor, TRB.Data.snapshotData.casting.resourceFinal)
 		--$passive
-		local _passivefocus = TRB.Data.snapshotData.focusRegen
+		local _regenFocus = TRB.Data.snapshotData.focusRegen
+		local _passiveFocus
 		
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
 		if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
-			_passivefocus = _passivefocus * (TRB.Data.settings.hunter.marksmanship.generation.time or 3.0)
+			_regenFocus = _regenFocus * (TRB.Data.settings.hunter.marksmanship.generation.time or 3.0)
 		else
-			_passivefocus = _passivefocus * ((TRB.Data.settings.hunter.marksmanship.generation.gcds or 2) * _gcd)
+			_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.marksmanship.generation.gcds or 2) * _gcd)
 		end
 
-		local passivefocus = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.marksmanship.colors.text.passive, _passivefocus)
+		--$reginFocus
+		local regenFocus = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.survival.colors.text.passive, _regenFocus)
+		_passiveFocus = _regenFocus
+
+		local passiveFocus = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.marksmanship.colors.text.passive, _passiveFocus)
 		--$focusTotal
-		local _focusTotal = math.min(_passivefocus + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
+		local _focusTotal = math.min(_passiveFocus + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
 		local focusTotal = string.format("|c%s%.0f|r", currentFocusColor, _focusTotal)
 		--$focusPlusCasting
 		local _focusPlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
 		local focusPlusCasting = string.format("|c%s%.0f|r", castingFocusColor, _focusPlusCasting)
 		--$focusPlusPassive
-		local _focusPlusPassive = math.min(_passivefocus + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
+		local _focusPlusPassive = math.min(_passiveFocus + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
 		local focusPlusPassive = string.format("|c%s%.0f|r", currentFocusColor, _focusPlusPassive)
 
 		--$trueshotTime
@@ -1058,7 +1116,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		----------------------------
 
-		Global_TwintopResourceBar.resource.passive = _passivefocus
+		Global_TwintopResourceBar.resource.passive = _passiveFocus
 		Global_TwintopResourceBar.dots = {
 			ssCount = serpentStingCount or 0
 		}
@@ -1088,14 +1146,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$focusTotal"] = focusTotal
 		lookup["$focusMax"] = TRB.Data.character.maxResource
-		lookup["$focus"] = currentfocus
+		lookup["$focus"] = currentFocus
 		lookup["$resourcePlusCasting"] = focusPlusCasting
 		lookup["$resourcePlusPassive"] = focusPlusPassive
 		lookup["$resourceTotal"] = focusTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
-		lookup["$resource"] = currentfocus
-		lookup["$casting"] = castingfocus
-		lookup["$passive"] = passivefocus
+		lookup["$resource"] = currentFocus
+		lookup["$casting"] = castingFocus
+		lookup["$passive"] = passiveFocus
+		lookup["$regen"] = regenFocus
+		lookup["$regenFocus"] = regenFocus
+		lookup["$focusRegen"] = regenFocus
 		lookup["$overcap"] = overcap
 		lookup["$resourceOvercap"] = overcap
 		lookup["$focusOvercap"] = overcap
@@ -1140,37 +1201,49 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
         
 		--$focus
-		local currentfocus = string.format("|c%s%.0f|r", currentFocusColor, TRB.Data.snapshotData.resource)
+		local currentFocus = string.format("|c%s%.0f|r", currentFocusColor, TRB.Data.snapshotData.resource)
 		--$casting
-		local castingfocus = string.format("|c%s%.0f|r", castingFocusColor, TRB.Data.snapshotData.casting.resourceFinal)
-		--$passive
-		local _passivefocus = TRB.Data.snapshotData.focusRegen
+		local castingFocus = string.format("|c%s%.0f|r", castingFocusColor, TRB.Data.snapshotData.casting.resourceFinal)
+
+		--$toeFocus
+		local _toeFocus = TRB.Data.snapshotData.termsOfEngagement.focus
+		local toeFocus = string.format("%.0f", _toeFocus)
+		--$toeTicks 
+		local toeTicks = string.format("%.0f", TRB.Data.snapshotData.termsOfEngagement.ticksRemaining)
+
+		local _regenFocus = TRB.Data.snapshotData.focusRegen
+		local _passiveFocus
 		
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
 		if TRB.Data.settings.hunter.survival.generation.mode == "time" then
-			_passivefocus = _passivefocus * (TRB.Data.settings.hunter.survival.generation.time or 3.0)
+			_regenFocus = _regenFocus * (TRB.Data.settings.hunter.survival.generation.time or 3.0)
 		else
-			_passivefocus = _passivefocus * ((TRB.Data.settings.hunter.survival.generation.gcds or 2) * _gcd)
+			_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.survival.generation.gcds or 2) * _gcd)
 		end
 
-		local passivefocus = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.survival.colors.text.passive, _passivefocus)
+		--$reginFocus
+		local regenFocus = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.survival.colors.text.passive, _regenFocus)
+		_passiveFocus = _regenFocus + _toeFocus
+
+		--$passive
+		local passiveFocus = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.survival.colors.text.passive, _passiveFocus)
 		--$focusTotal
-		local _focusTotal = math.min(_passivefocus + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
+		local _focusTotal = math.min(_passiveFocus + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
 		local focusTotal = string.format("|c%s%.0f|r", currentFocusColor, _focusTotal)
 		--$focusPlusCasting
 		local _focusPlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
 		local focusPlusCasting = string.format("|c%s%.0f|r", castingFocusColor, _focusPlusCasting)
 		--$focusPlusPassive
-		local _focusPlusPassive = math.min(_passivefocus + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
+		local _focusPlusPassive = math.min(_passiveFocus + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
 		local focusPlusPassive = string.format("|c%s%.0f|r", currentFocusColor, _focusPlusPassive)
 
-		--$trueshotTime
-		--[[local _trueshotTime = GetTrueshotRemainingTime()
-		local trueshotTime = 0
-		if _trueshotTime ~= nil then
-			trueshotTime = string.format("%.1f", _trueshotTime)
-		end]]
+		--$coordinatedAssaultTime
+		local _coordinatedAssaultTime = GetCoordinatedAssaultRemainingTime()
+		local coordinatedAssaultTime = 0
+		if _coordinatedAssaultTime ~= nil then
+			coordinatedAssaultTime = string.format("%.1f", _coordinatedAssaultTime)
+		end
 		
 		--$flayersMarkTime
 		local _flayersMarkTime = GetFlayersMarkRemainingTime()
@@ -1184,47 +1257,55 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		----------------------------
 
-		Global_TwintopResourceBar.resource.passive = _passivefocus
+		Global_TwintopResourceBar.resource.passive = _passiveFocus
 		Global_TwintopResourceBar.dots = {
 			ssCount = serpentStingCount or 0
 		}
 
-		lookup = TRB.Data.lookup or {}	
+		lookup = TRB.Data.lookup or {}
 		lookup["#aMurderOfCrows"] = TRB.Data.spells.aMurderOfCrows.icon
-		--lookup["#aimedShot"] = TRB.Data.spells.aimedShot.icon
 		lookup["#arcaneShot"] = TRB.Data.spells.arcaneShot.icon
-		--lookup["#barrage"] = TRB.Data.spells.barrage.icon
-		--lookup["#burstingShot"] = TRB.Data.spells.burstingShot.icon
-		--lookup["#chimaeraShot"] = TRB.Data.spells.chimaeraShot.icon
-		--lookup["#explosiveShot"] = TRB.Data.spells.explosiveShot.icon
+		lookup["#butchery"] = TRB.Data.spells.butchery.icon
+		lookup["#carve"] = TRB.Data.spells.carve.icon
+		lookup["#chakrams"] = TRB.Data.spells.chakrams.icon
+		lookup["#coordinatedAssault"] = TRB.Data.spells.coordinatedAssault.icon
+		lookup["#ca"] = TRB.Data.spells.coordinatedAssault.icon
+		lookup["#flankingStrike"] = TRB.Data.spells.flankingStrike.icon
 		lookup["#flayedShot"] = TRB.Data.spells.flayedShot.icon
 		lookup["#flayersMark"] = TRB.Data.spells.flayersMark.icon
+		lookup["#harpoon"] = TRB.Data.spells.harpoon.icon
+		lookup["#killCommand"] = TRB.Data.spells.killCommand.icon
 		lookup["#killShot"] = TRB.Data.spells.killShot.icon
-		--lookup["#multiShot"] = TRB.Data.spells.multiShot.icon
-		--lookup["#rapidFire"] = TRB.Data.spells.rapidFire.icon
+		lookup["#mongooseBite"] = TRB.Data.spells.mongooseBite.icon
+		lookup["#raptorStrike"] = TRB.Data.spells.raptorStrike.icon
 		lookup["#revivePet"] = TRB.Data.spells.revivePet.icon
 		lookup["#scareBeast"] = TRB.Data.spells.scareBeast.icon
 		lookup["#serpentSting"] = TRB.Data.spells.serpentSting.icon
-		--lookup["#steadyShot"] = TRB.Data.spells.steadyShot.icon
-		--lookup["#trickShots"] = TRB.Data.spells.trickShots.icon
-		--lookup["#trueshot"] = TRB.Data.spells.trueshot.icon
-		--lookup["$trueshotTime"] = trueshotTime
+		lookup["#steadyShot"] = TRB.Data.spells.steadyShot.icon
+		lookup["#termsOfEngagement"] = TRB.Data.spells.termsOfEngagement.icon
+		lookup["#wingClip"] = TRB.Data.spells.wingClip.icon
+		lookup["$coordinatedAssaultTime"] = coordinatedAssaultTime
 		lookup["$flayersMarkTime"] = flayersMarkTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$focusTotal"] = focusTotal
 		lookup["$focusMax"] = TRB.Data.character.maxResource
-		lookup["$focus"] = currentfocus
+		lookup["$focus"] = currentFocus
 		lookup["$resourcePlusCasting"] = focusPlusCasting
 		lookup["$resourcePlusPassive"] = focusPlusPassive
 		lookup["$resourceTotal"] = focusTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
-		lookup["$resource"] = currentfocus
-		lookup["$casting"] = castingfocus
-		lookup["$passive"] = passivefocus
+		lookup["$resource"] = currentFocus
+		lookup["$casting"] = castingFocus
+		lookup["$passive"] = passiveFocus		
+		lookup["$regen"] = regenFocus
+		lookup["$regenFocus"] = regenFocus
+		lookup["$focusRegen"] = regenFocus
 		lookup["$overcap"] = overcap
 		lookup["$resourceOvercap"] = overcap
 		lookup["$focusOvercap"] = overcap
+		lookup["$toeFocus"] = toeFocus
+		lookup["$toeTicks"] = toeTicks
 		TRB.Data.lookup = lookup
 	end
 
@@ -1285,6 +1366,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 	end
 
+	local function UpdateTermsOfEngagement()
+		if TRB.Data.snapshotData.termsOfEngagement.isActive then
+			local currentTime = GetTime()
+			if TRB.Data.snapshotData.termsOfEngagement.endTime == nil or currentTime > TRB.Data.snapshotData.termsOfEngagement.endTime then
+				TRB.Data.snapshotData.termsOfEngagement.ticksRemaining = 0
+				TRB.Data.snapshotData.termsOfEngagement.endTime = nil
+				TRB.Data.snapshotData.termsOfEngagement.focus = 0			
+				TRB.Data.snapshotData.termsOfEngagement.isActive = false
+			else
+				TRB.Data.snapshotData.termsOfEngagement.ticksRemaining = math.ceil(TRB.Data.snapshotData.termsOfEngagement.endTime - currentTime) / (TRB.Data.spells.termsOfEngagement.duration / TRB.Data.spells.termsOfEngagement.ticks)
+				TRB.Data.snapshotData.termsOfEngagement.focus = TRB.Data.snapshotData.termsOfEngagement.ticksRemaining * TRB.Data.spells.termsOfEngagement.focus
+			end
+		end
+	end
+
 	local function UpdateSnapshot()
 		local currentTime = GetTime()
 
@@ -1327,6 +1423,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local function UpdateSnapshot_Survival()
         TRB.Functions.UpdateSnapshot()
 		UpdateSnapshot()
+		UpdateTermsOfEngagement()
 		local currentTime = GetTime()
         local _
 		
@@ -1907,6 +2004,39 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						TRB.Data.snapshotData.chakrams.startTime, TRB.Data.snapshotData.chakrams.duration, _, _ = GetSpellCooldown(TRB.Data.spells.chakrams.id)
 					elseif spellId == TRB.Data.spells.flankingStrike.id then
 						TRB.Data.snapshotData.flankingStrike.startTime, TRB.Data.snapshotData.flankingStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.flankingStrike.id)
+					elseif spellId == TRB.Data.spells.termsOfEngagement.id then
+						if type == "SPELL_AURA_APPLIED" then -- Gain Terms of Engagement
+							TRB.Data.snapshotData.termsOfEngagement.isActive = true
+							TRB.Data.snapshotData.termsOfEngagement.ticksRemaining = TRB.Data.spells.termsOfEngagement.ticks
+							TRB.Data.snapshotData.termsOfEngagement.focus = TRB.Data.snapshotData.termsOfEngagement.ticksRemaining * TRB.Data.spells.termsOfEngagement.focus
+							TRB.Data.snapshotData.termsOfEngagement.endTime = currentTime + TRB.Data.spells.termsOfEngagement.duration
+							TRB.Data.snapshotData.termsOfEngagement.lastTick = currentTime
+						elseif type == "SPELL_AURA_REFRESH" then
+							TRB.Data.snapshotData.termsOfEngagement.ticksRemaining = TRB.Data.spells.termsOfEngagement.ticks + 1
+							TRB.Data.snapshotData.termsOfEngagement.focus = TRB.Data.snapshotData.termsOfEngagement.ticksRemaining * TRB.Data.spells.termsOfEngagement.focus
+							TRB.Data.snapshotData.termsOfEngagement.endTime = currentTime + TRB.Data.spells.termsOfEngagement.duration + ((TRB.Data.spells.termsOfEngagement.duration / TRB.Data.spells.termsOfEngagement.ticks) - (currentTime - TRB.Data.snapshotData.termsOfEngagement.lastTick))
+							TRB.Data.snapshotData.termsOfEngagement.lastTick = currentTime
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.termsOfEngagement.isActive = false
+							TRB.Data.snapshotData.termsOfEngagement.ticksRemaining = 0
+							TRB.Data.snapshotData.termsOfEngagement.focus = 0
+							TRB.Data.snapshotData.termsOfEngagement.endTime = nil
+							TRB.Data.snapshotData.termsOfEngagement.lastTick = nil
+						elseif type == "SPELL_PERIODIC_ENERGIZE" then
+							TRB.Data.snapshotData.termsOfEngagement.ticksRemaining = TRB.Data.snapshotData.termsOfEngagement.ticksRemaining - 1
+							TRB.Data.snapshotData.termsOfEngagement.focus = TRB.Data.snapshotData.termsOfEngagement.ticksRemaining * TRB.Data.spells.termsOfEngagement.focus
+							TRB.Data.snapshotData.termsOfEngagement.lastTick = currentTime
+						end	
+					elseif spellId == TRB.Data.spells.coordinatedAssault.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.coordinatedAssault.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.coordinatedAssault.duration, TRB.Data.snapshotData.coordinatedAssault.endTime, _, _, _, TRB.Data.snapshotData.coordinatedAssault.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.coordinatedAssault.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.coordinatedAssault.isActive = false
+							TRB.Data.snapshotData.coordinatedAssault.spellId = nil
+							TRB.Data.snapshotData.coordinatedAssault.duration = 0
+							TRB.Data.snapshotData.coordinatedAssault.endTime = nil
+						end
 					end
 				end
 
