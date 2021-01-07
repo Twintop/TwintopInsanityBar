@@ -4,7 +4,7 @@ A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insan
 Currently supported specs:
 - Balance Druid
 - Elemental Shaman
-- Marksmanship Hunter
+- Marksmanship Hunter, Survival Hunter
 - Shadow Priest
 
 This is a fully customizable resource bar for multiple classes and specs to use to track their primary resource while in combat. Features include:
