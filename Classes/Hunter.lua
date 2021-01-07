@@ -34,7 +34,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			resource = {
 				resource = 0,
 				casting = 0,
-				passive = 0
+				passive = 0,
+				regen = 0
 			},
 			dots = {
 			}
@@ -313,10 +314,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			resource = {
 				resource = 0,
 				casting = 0,
-				passive = 0
+				passive = 0,
+				regen = 0,
+				termsOfEngagement = 0
 			},
 			dots = {
 				serpentSting = 0
+			},
+			termsOfEngagement = {
+				focus = 0,
+				ticks = 0
 			}
 		}
 		
@@ -1117,6 +1124,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveFocus
+		Global_TwintopResourceBar.resource.regen = _regenFocus
 		Global_TwintopResourceBar.dots = {
 			ssCount = serpentStingCount or 0
 		}
@@ -1258,8 +1266,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveFocus
+		Global_TwintopResourceBar.resource.regen = _regenFocus
+		Global_TwintopResourceBar.resource.termsOfEngagement = _toeFocus
 		Global_TwintopResourceBar.dots = {
 			ssCount = serpentStingCount or 0
+		}		
+		Global_TwintopResourceBar.termsOfEngagement = {
+			focus = _toeFocus,
+			ticks = TRB.Data.snapshotData.termsOfEngagement.ticksRemaining or 0
 		}
 
 		lookup = TRB.Data.lookup or {}
