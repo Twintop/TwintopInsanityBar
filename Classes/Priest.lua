@@ -589,8 +589,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$hvAvgTime", description = "Duration of VF w/max VB casts in Hungering Void, includes crits", printInSettings = true, color = false },
 			{ variable = "$vbAvgCasts", description = "Max Void Bolt casts remaining in Hungering Void, includes crits", printInSettings = true, color = false },
 
-			{ variable = "$s2m", description = "Is Surrender to Madness currently spec'd. Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$surrenderToMadness", description = "Is Surrender to Madness currently spec'd. Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$s2m", description = "Is Surrender to Madness currently talented. Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$surrenderToMadness", description = "Is Surrender to Madness currently talented. Logic variable only!", printInSettings = true, color = false },
 				
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -807,11 +807,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 				local targetDebuffId = select(10, TRB.Functions.FindDebuffById(TRB.Data.spells.hungeringVoid.idDebuff, "target"))
 				
+				local castGrantsExtension = true
+				--[[
+				Issue #107 - Twintop 2021-01-03
+					Hungering Void doesn't require the target to actually be debuffed to grant extensions.
+					Change back to the code below once this is fixed by Blizz.
+				----
 				local castGrantsExtension = false
 
 				if targetDebuffId ~= nil then
 					castGrantsExtension = true
 				end
+				]]
 
 				local remainingTimeTmp = remainingTime
 				local remainingTimeTotal = remainingTime
@@ -1087,7 +1094,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overcapInsanity	
 		elseif TRB.Data.settings.priest.shadow.colors.text.overThresholdEnabled and normalizedInsanity >= insanityThreshold then
 			currentInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overThreshold
-			castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overThreshold	
+			castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overThreshold
 		end
 
 		--$insanity
@@ -1622,7 +1629,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.deathAndMadness.insanity = 0			
 				TRB.Data.snapshotData.deathAndMadness.isActive = false
 			else
-				TRB.Data.snapshotData.deathAndMadness.ticksRemaining = math.ceil(TRB.Data.snapshotData.deathAndMadness.endTime - currentTime)
+				TRB.Data.snapshotData.deathAndMadness.ticksRemaining = math.ceil(TRB.Data.snapshotData.deathAndMadness.endTime - currentTime) / (TRB.Data.spells.deathAndMadness.duration / TRB.Data.spells.deathAndMadness.ticks)
 				TRB.Data.snapshotData.deathAndMadness.insanity = TRB.Data.snapshotData.deathAndMadness.ticksRemaining * TRB.Data.spells.deathAndMadness.insanity
 			end
 		end

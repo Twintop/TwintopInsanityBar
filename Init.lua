@@ -2,9 +2,9 @@ local _, TRB = ...
 
 -- Addon details data
 TRB.Details = {}
-TRB.Details.addonVersion = "9.0.2.32"
-TRB.Details.addonReleaseDate = "December 09, 2020"
-TRB.Details.supportedSpecs = "Shadow Priest, Elemental Shaman, Balance Druid, Marksmanship Hunter"
+TRB.Details.addonVersion = "9.0.2.33"
+TRB.Details.addonReleaseDate = "January 08, 2021"
+TRB.Details.supportedSpecs = "Shadow Priest, Elemental Shaman, Balance Druid, Marksmanship Hunter, Survival Hunter"
 
 local addonData = {
 	loaded = false,
@@ -48,6 +48,7 @@ TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 TRB.Frames.combatFrame = CreateFrame("Frame")
 
 TRB.Frames.interfaceSettingsFrameContainer = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls = {}
 
 -- Working data
 TRB.Data = {}
@@ -87,27 +88,7 @@ TRB.Data.spells = {}
 TRB.Data.lookup = {}
 
 -- This is here for reference/what every implementation should use as a minimum
-TRB.Data.snapshotData = {
-	resource = 0,
-	haste = 0,
-	crit = 0,
-	mastery = 0,
-	isTracking = false,
-	casting = {
-		spellId = nil,
-		startTime = nil,
-        endTime = nil,
-        resourceRaw = 0,
-        resourceFinal = 0,
-        icon = ""
-	},
-	targetData = {
-		ttdIsActive = false,
-		currentTargetGuid = nil,
-		targets = {}
-    },
-	audio = {}	
-}
+TRB.Functions.ResetSnapshotData()
 
 TRB.Data.sanityCheckValues = {
 	barMaxWidth = 0,

@@ -201,12 +201,25 @@ TRB.Functions.GetLatency = GetLatency
 
 -- Addon Maintenance Functions
 
-local function UpdateSanityCheckValues(settings)
+local function GetSanityCheckValues(settings)
+	local sc = {}
     if settings ~= nil and settings.bar ~= nil then
-        TRB.Data.sanityCheckValues.barMaxWidth = math.floor(GetScreenWidth())
-        TRB.Data.sanityCheckValues.barMinWidth = math.max(math.ceil(settings.bar.border * 8), 120)	
-        TRB.Data.sanityCheckValues.barMaxHeight = math.floor(GetScreenHeight())
-        TRB.Data.sanityCheckValues.barMinHeight = math.max(math.ceil(settings.bar.border * 8), 1)
+        sc.barMaxWidth = math.floor(GetScreenWidth())
+        sc.barMinWidth = math.max(math.ceil(settings.bar.border * 2), 120)	
+        sc.barMaxHeight = math.floor(GetScreenHeight())
+        sc.barMinHeight = math.max(math.ceil(settings.bar.border * 2), 1)
+	end
+	return sc
+end
+TRB.Functions.GetSanityCheckValues = GetSanityCheckValues
+
+local function UpdateSanityCheckValues(settings)
+	local sc = TRB.Functions.GetSanityCheckValues(settings)
+    if settings ~= nil and settings.bar ~= nil then
+        TRB.Data.sanityCheckValues.barMaxWidth = sc.barMaxWidth
+        TRB.Data.sanityCheckValues.barMinWidth = sc.barMinWidth
+        TRB.Data.sanityCheckValues.barMaxHeight = sc.barMaxHeight
+        TRB.Data.sanityCheckValues.barMinHeight = sc.barMinHeight
     end
 end
 TRB.Functions.UpdateSanityCheckValues = UpdateSanityCheckValues
@@ -223,19 +236,65 @@ local function MergeSettings(settings, user)
 end
 TRB.Functions.MergeSettings = MergeSettings
 
-local function FillSpellData()
+local function FillSpellData(spells)
+	if spells == nil then
+		spells = TRB.Data.spells
+	end
+
 	local toc = select(4, GetBuildInfo())
 
-	for k, v in pairs(TRB.Data.spells) do
-		if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and (TRB.Data.spells[k]["tocMinVersion"] == nil or toc >= TRB.Data.spells[k]["tocMinVersion"]) then
+	for k, v in pairs(spells) do
+		if spells[k] ~= nil and spells[k]["id"] ~= nil and (spells[k]["tocMinVersion"] == nil or toc >= spells[k]["tocMinVersion"]) then
 			local _, name, icon
-			name, _, icon = GetSpellInfo(TRB.Data.spells[k]["id"])			
-			TRB.Data.spells[k]["icon"] = string.format("|T%s:0|t", icon)
-			TRB.Data.spells[k]["name"] = name
+			name, _, icon = GetSpellInfo(spells[k]["id"])			
+			spells[k]["icon"] = string.format("|T%s:0|t", icon)
+			spells[k]["name"] = name
 		end
 	end
+
+	return spells
 end
 TRB.Functions.FillSpellData = FillSpellData
+
+local function ResetSnapshotData()
+	TRB.Data.snapshotData = {
+		resource = 0,
+		haste = 0,
+		crit = 0,
+		mastery = 0,
+		isTracking = false,
+		casting = {
+			spellId = nil,
+			startTime = nil,
+			endTime = nil,
+			resourceRaw = 0,
+			resourceFinal = 0,
+			icon = ""
+		},
+		targetData = {
+			ttdIsActive = false,
+			currentTargetGuid = nil,
+			targets = {}
+		},
+		audio = {}	
+	}
+end
+TRB.Functions.ResetSnapshotData = ResetSnapshotData
+
+local function LoadFromSpecCache(cache)
+	Global_TwintopResourceBar = cache.Global_TwintopResourceBar
+
+	TRB.Data.character = cache.character
+	TRB.Data.spells = cache.spells
+	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons
+	TRB.Data.barTextVariables.values = cache.barTextVariables.values
+
+	TRB.Functions.ResetSnapshotData()
+	TRB.Data.snapshotData = TRB.Functions.MergeSettings(TRB.Data.snapshotData, cache.snapshotData)
+
+	TRB.Data.character.specGroup = GetActiveSpecGroup()
+end
+TRB.Functions.LoadFromSpecCache = LoadFromSpecCache
 
 -- Target Functions
 
@@ -504,7 +563,7 @@ local function ConstructResourceBar(settings)
 				resourceFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
 				resourceFrame.thresholds[x]:SetFrameStrata(TRB.Data.settings.core.strata.level)
 				resourceFrame.thresholds[x]:SetFrameLevel(127)
-				resourceFrame.thresholds[x]:Show()
+				resourceFrame.thresholds[x]:Hide()
 			end
 		end
         
@@ -1000,7 +1059,7 @@ local function FindBuffByName(spellName, onWhom)
 	if onWhom == nil then
 		onWhom = "player"
 	end
-	for i = 1, 40 do
+	for i = 1, 1000 do
 		local unitSpellName = UnitBuff(onWhom, i)
 		if not unitSpellName then
 			return
@@ -1015,7 +1074,7 @@ local function FindBuffById(spellId, onWhom)
 	if onWhom == nil then
 		onWhom = "player"
 	end
-	for i = 1, 40 do
+	for i = 1, 1000 do
 		local unitSpellId = select(10, UnitBuff(onWhom, i))
 		if not unitSpellId then
 			return
@@ -1030,7 +1089,7 @@ local function FindDebuffByName(spellName, onWhom)
 	if onWhom == nil then
 		onWhom = "player"
 	end
-	for i = 1, 40 do
+	for i = 1, 1000 do
 		local unitSpellName = UnitDebuff(onWhom, i)
 		if not unitSpellName then
 			return
@@ -1046,7 +1105,7 @@ local function FindDebuffById(spellId, onWhom)
 		onWhom = "player"
 	end
 
-	for i = 1, 40 do
+	for i = 1, 1000 do
 		local unitSpellId = select(10, UnitDebuff(onWhom, i))
 		if not unitSpellId then
 			return
@@ -1061,7 +1120,7 @@ local function FindAuraByName(spellName, onWhom, filter)
 	if onWhom == nil then
 		onWhom = "player"
 	end
-	for i = 1, 40 do
+	for i = 1, 1000 do
 		local unitSpellName = UnitAura(onWhom, i, filter)
 		if not unitSpellName then
 			return
@@ -1076,7 +1135,8 @@ local function FindAuraById(spellId, onWhom, filter)
 	if onWhom == nil then
 		onWhom = "player"
 	end
-	for i = 1, 40 do
+	
+	for i = 1, 1000 do
 		local unitSpellId = select(10, UnitAura(onWhom, i, filter))
 		if not unitSpellId then
 			return

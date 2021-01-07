@@ -224,7 +224,6 @@ local function ConstructAddonOptionsPanel()
         end
     end)
 
-    -- Implement the function to change the texture
     function controls.dropDown.strata:SetValue(newValue, newName)
         TRB.Data.settings.core.strata.level = newValue
         TRB.Data.settings.core.strata.name = newName
@@ -281,17 +280,12 @@ local function ConstructAddonOptionsPanel()
         end
     end)
 
-    -- Implement the function to change the texture
     function controls.dropDown.audioChannel:SetValue(newValue, newName)
         TRB.Data.settings.core.audio.channel.channel = newValue
         TRB.Data.settings.core.audio.channel.name = newName
         UIDropDownMenu_SetText(controls.dropDown.audioChannel, newName)
         CloseDropDownMenus()
     end
-    
-    --interfaceSettingsFrame.panel = parent
-    --interfaceSettingsFrame.controls = controls
-    --TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 end 
 
 local function ConstructOptionsPanel()
@@ -319,19 +313,17 @@ local function ConstructOptionsPanel()
 
     interfaceSettingsFrame.controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Twintop's Resource Bar", xCoord+xPadding, yCoord)
     yCoord = yCoord - 40
-    interfaceSettingsFrame.controls.labels.infoAuthor = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Author:", "Twintop - Frostmourne-US/OCE", xCoord+xPadding*2, yCoord, 100, 200)
+    interfaceSettingsFrame.controls.labels.infoAuthor = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Author:", "Twintop - Frostmourne-US/OCE", xCoord+xPadding*2, yCoord, 100, 500)
     yCoord = yCoord - 20
-    interfaceSettingsFrame.controls.labels.infoVersion = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Version:", TRB.Details.addonVersion, xCoord+xPadding*2, yCoord, 100, 200)
+    interfaceSettingsFrame.controls.labels.infoVersion = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Version:", TRB.Details.addonVersion, xCoord+xPadding*2, yCoord, 100, 500)
     yCoord = yCoord - 20
-    interfaceSettingsFrame.controls.labels.infoReleased = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Released:", TRB.Details.addonReleaseDate, xCoord+xPadding*2, yCoord, 100, 200)
+    interfaceSettingsFrame.controls.labels.infoReleased = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Released:", TRB.Details.addonReleaseDate, xCoord+xPadding*2, yCoord, 100, 500)
     yCoord = yCoord - 20
-    interfaceSettingsFrame.controls.labels.infoReleased = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Supported Specs:", TRB.Details.supportedSpecs, xCoord+xPadding*2, yCoord, 100, 200)
+    interfaceSettingsFrame.controls.labels.infoReleased = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Supported Specs:", TRB.Details.supportedSpecs, xCoord+xPadding*2, yCoord, 100, 500)
     
 
     interfaceSettingsFrame.panel.yCoord = yCoord
     InterfaceOptions_AddCategory(interfaceSettingsFrame.panel)
-    --interfaceSettingsFrame.optionsPanel.scrollChild = parent
-    --TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 
     ConstructAddonOptionsPanel()
 end
