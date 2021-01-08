@@ -932,7 +932,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
         for k, v in pairs(TRB.Data.spells) do
             local spell = TRB.Data.spells[k]
             if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-                TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] = TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] or CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] = TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] or CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:Show()
+				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:SetFrameLevel(0)
+				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:Hide()
                 resourceFrameCounter = resourceFrameCounter + 1
             end
         end

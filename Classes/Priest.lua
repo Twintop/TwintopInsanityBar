@@ -349,7 +349,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			icon = "",
 			conduitId = 123,
 			conduitRanks = {}
-		}
+		},
 
 		dreamspunMushrooms = {
 			id = 342409,
