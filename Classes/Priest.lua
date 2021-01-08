@@ -343,6 +343,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			conduitId = 114,
 			conduitRanks = {}
 		},
+		dissonantEchoes = {
+			id = 338342,
+			name = "",
+			icon = "",
+			conduitId = 123,
+			conduitRanks = {}
+		}
 
 		dreamspunMushrooms = {
 			id = 342409,
@@ -482,6 +489,25 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.spells.rabidShadows.conduitRanks[13] = 0.418
 		TRB.Data.spells.rabidShadows.conduitRanks[14] = 0.437
 		TRB.Data.spells.rabidShadows.conduitRanks[15] = 0.456
+		
+		TRB.Data.spells.dissonantEchoes.conduitRanks[0] = 0
+		TRB.Data.spells.dissonantEchoes.conduitRanks[1] = 0.031
+		TRB.Data.spells.dissonantEchoes.conduitRanks[2] = 0.034
+		TRB.Data.spells.dissonantEchoes.conduitRanks[3] = 0.037
+		TRB.Data.spells.dissonantEchoes.conduitRanks[4] = 0.04
+		TRB.Data.spells.dissonantEchoes.conduitRanks[5] = 0.043
+		TRB.Data.spells.dissonantEchoes.conduitRanks[6] = 0.047
+		TRB.Data.spells.dissonantEchoes.conduitRanks[7] = 0.05
+		TRB.Data.spells.dissonantEchoes.conduitRanks[8] = 0.053
+		TRB.Data.spells.dissonantEchoes.conduitRanks[9] = 0.056
+		TRB.Data.spells.dissonantEchoes.conduitRanks[10] = 0.059
+		TRB.Data.spells.dissonantEchoes.conduitRanks[11] = 0.062
+		TRB.Data.spells.dissonantEchoes.conduitRanks[12] = 0.065
+		TRB.Data.spells.dissonantEchoes.conduitRanks[13] = 0.068
+		TRB.Data.spells.dissonantEchoes.conduitRanks[14] = 0.071
+		TRB.Data.spells.dissonantEchoes.conduitRanks[15] = 0.074
+		-- TODO: Add these conduits to the bar icon variables too!
+
 
 		-- This is done here so that we can get icons for the options menu!
 		TRB.Data.barTextVariables.icons = {
