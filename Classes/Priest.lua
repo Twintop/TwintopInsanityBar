@@ -128,7 +128,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			callToTheVoid = false
 		},
 		torghast = {
-			dreamspunMushroomsModifier = 1
+			dreamspunMushroomsModifier = 1,
+			elethiumMuzzleModifier = 1,
 		}
 	}
 
@@ -347,12 +348,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			id = 338342,
 			name = "",
 			icon = "",
-			conduitId = 123,
+			conduitId = 72,
 			conduitRanks = {}
 		},
 
 		dreamspunMushrooms = {
 			id = 342409,
+			name = "",
+			icon = ""
+		},
+		elethiumMuzzle = {
+			id = 319276,
 			name = "",
 			icon = ""
 		}
@@ -670,8 +676,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			-- Torghast
 			if IsInJailersTower() then
 				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1 + ((select(16, TRB.Functions.FindAuraById(TRB.Data.spells.dreamspunMushrooms.id, "player", "MAW")) or 0) / 100)
+				if TRB.Functions.FindAuraById(TRB.Data.spells.elethiumMuzzle.id, "player", "MAW") then
+					TRB.Data.character.torghast.elethiumMuzzleModifier = 0.75
+				else
+					TRB.Data.character.torghast.elethiumMuzzleModifier = 1
+				end
 			else
 				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1
+				TRB.Data.character.torghast.elethiumMuzzleModifier = 1
 			end
 		end
 	end
@@ -833,7 +845,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				local latency = TRB.Functions.GetLatency()
 				local vbStart, vbDuration, _, _ = GetSpellCooldown(TRB.Data.spells.voidBolt.id)
 				local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(TRB.Data.spells.voidBolt.id)
-				local vbCooldown = math.max((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)), 0.75) + latency
+				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier), 0.75) + latency
 
 				local targetDebuffId = select(10, TRB.Functions.FindDebuffById(TRB.Data.spells.hungeringVoid.idDebuff, "target"))
 				
