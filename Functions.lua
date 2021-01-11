@@ -982,7 +982,7 @@ local function RemoveInvalidVariablesFromBarText(input)
     --{$liStacks}[$liStacks - $liTime sec][No LI]
     local returnText = ""
     local p = 0
-    while p < string.len(input) do
+    while p <= string.len(input) do
         local a, b, c, d, a1, b1, c1, d1
         a, a1 = string.find(input, "{", p)
         if a ~= nil then
@@ -1018,7 +1018,7 @@ local function RemoveInvalidVariablesFromBarText(input)
 
                     if useNot == true then
                         valid = not valid
-                    end					
+                    end
 
                     if valid == true then						
                         returnText = returnText .. string.sub(input, b+2, c-1)
@@ -1028,7 +1028,7 @@ local function RemoveInvalidVariablesFromBarText(input)
                     
                     if hasOr == true then
                         p = d+1
-                    else						
+                    else
                         p = c+1
                     end
                 else
@@ -1045,7 +1045,8 @@ local function RemoveInvalidVariablesFromBarText(input)
             end
         else
             returnText = returnText .. string.sub(input, p)
-            p = string.len(input)
+			p = string.len(input)
+			break
         end
     end
     return returnText
