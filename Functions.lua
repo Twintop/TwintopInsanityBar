@@ -165,6 +165,12 @@ TRB.Functions.PulseFrame = PulseFrame
 
 -- Casting, Time, and GCD Functions
 
+local function GetCurrentGCDLockRemaining()
+	local startTime, duration, enabled = GetSpellCooldown(61304);
+	return (startTime + duration - GetTime())
+end
+TRB.Functions.GetCurrentGCDLockRemaining = GetCurrentGCDLockRemaining
+
 local function GetCurrentGCDTime(floor)	
 	if floor == nil then
 		floor = false

@@ -850,7 +850,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				local vbStart, vbDuration, _, _ = GetSpellCooldown(TRB.Data.spells.voidBolt.id)
 				local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(TRB.Data.spells.voidBolt.id)
 				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier), 0.75) + latency
-
+				local gcdLockRemaining = TRB.Functions.GetCurrentGCDLockRemaining()
 				local targetDebuffId = select(10, TRB.Functions.FindDebuffById(TRB.Data.spells.hungeringVoid.idDebuff, "target"))
 				
 				local castGrantsExtension = true
@@ -874,20 +874,29 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				local moreCastsAverage = 0
 				local critValue = math.min((1.0 + (TRB.Data.snapshotData.crit / 100)), 2)
 
-				if vbDuration > 0 then
+				if vbDuration > 0 or gcdLockRemaining > 0 then
 					local vbRemaining = vbStart + vbDuration - currentTime
-					if remainingTimeTmp > (vbRemaining + latency) then
+					local castDelay = vbRemaining
+
+					if gcdLockRemaining > vbRemaining then
+						castDelay = gcdLockRemaining
+					end
+
+					castDelay = castDelay + latency
+
+					if remainingTimeTmp > castDelay then
 						if castGrantsExtension == true then
 							moreCasts = moreCasts + 1
-							remainingTimeTmp = remainingTimeTmp + 1.0 - (vbRemaining + latency)
+							remainingTimeTmp = remainingTimeTmp + 1.0 - castDelay
 							remainingTimeTotal = remainingTimeTotal + 1.0
 
 							moreCastsAverage = moreCastsAverage + 1
-							remainingTimeTmpAverage = remainingTimeTmpAverage + critValue - (vbRemaining + latency)
+							remainingTimeTmpAverage = remainingTimeTmpAverage + critValue - castDelay
 							remainingTimeTotalAverage = remainingTimeTotalAverage + critValue
 						else
-							remainingTimeTmp = remainingTimeTmp + 1.0 - (vbRemaining + latency)
-							remainingTimeTmpAverage = remainingTimeTmpAverage + critValue - (vbRemaining + latency)
+							remainingTimeTmp = remainingTimeTmp - castDelay
+
+							remainingTimeTmpAverage = remainingTimeTmpAverage - castDelay
 							castGrantsExtension = true
 						end
 					end
