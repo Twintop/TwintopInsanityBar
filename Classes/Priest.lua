@@ -903,12 +903,25 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 
 				-- With extremely high Haste and Crit it is possible to remain in Voidform for literally forever.
+
+				local infiniteExtensions = false
+				if vbCooldown <= 1 or ((vbCooldown - 1) * 100) < TRB.Data.snapshotData.haste then
+					infiniteExtensions = true
+				end
+
+				local infiniteAverageExtensions = false
+				if ((2 - (2 / (vbCooldown))) * 100) < TRB.Data.snapshotData.crit then
+					infiniteAverageExtensions = true
+				end
+
+				local infinityHasteRequired = vbBaseCooldown - 1
+
 				local infinityCounter = 0
 				local infinityAverageCounter = 0
 				local maxCounter = 25
-				while (remainingTimeTmpAverage >= vbCooldown or remainingTimeTmp >= vbCooldown) and infinityCounter < maxCounter and infinityAverageCounter < maxCounter
+				while (not (infiniteExtensions and infiniteAverageExtensions)) and (remainingTimeTmpAverage >= vbCooldown or remainingTimeTmp >= vbCooldown) and infinityCounter < maxCounter and infinityAverageCounter < maxCounter
 				do
-					if remainingTimeTmp >= vbCooldown then
+					if not infiniteExtensions and remainingTimeTmp >= vbCooldown then
 						infinityCounter = infinityCounter + 1					
 						local additionalCasts = math.floor(remainingTimeTmp / vbCooldown)
 						if castGrantsExtension == false then
@@ -919,7 +932,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						remainingTimeTotal = remainingTimeTotal + additionalCasts
 					end
 					
-					if remainingTimeTmpAverage >= vbCooldown then
+					if not infiniteAverageExtensions and remainingTimeTmpAverage >= vbCooldown then
 						infinityAverageCounter = infinityAverageCounter + 1					
 						local additionalCastsAverage = math.floor(remainingTimeTmpAverage / vbCooldown)
 						if castGrantsExtension == false then
@@ -939,11 +952,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.voidform.remainingHvAvgTime = remainingTimeTotalAverage
 				TRB.Data.snapshotData.voidform.additionalVbAvgCasts = moreCastsAverage
 				
-				if infinityCounter == maxCounter then
+				if infiniteExtensions or infinityCounter == maxCounter then
 					TRB.Data.snapshotData.voidform.isInfinite = true
 				end
 				
-				if infinityAverageCounter == maxCounter then
+				if infiniteAverageExtensions or infinityAverageCounter == maxCounter then
 					TRB.Data.snapshotData.voidform.isAverageInfinite = true
 				end
 			else
