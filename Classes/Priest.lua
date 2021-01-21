@@ -292,25 +292,25 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			tocMinVersion = 90002
 		},
 		lashOfInsanity_Tendril = {
-			id = 240843,
-			name = "",
-			icon = "",
-			insanity = 3,
-			fotm = false,
-			duration = 15,
-			ticks = 14,
-			tickDuration = 1,
-			tocMinVersion = 90001
-		},
-		lashOfInsanity_Lasher = {
 			id = 344838,
 			name = "",
 			icon = "",
 			insanity = 3,
 			fotm = false,
 			duration = 15,
-			ticks = 14,
-			tickDuration = 1,
+			ticks = 15,
+			tickDuration = 1, --This is NOT hasted
+			tocMinVersion = 90001
+		},
+		lashOfInsanity_Lasher = {
+			id = 344838, --Doesn't actually exist / unused? 
+			name = "",
+			icon = "",
+			insanity = 1,
+			fotm = false,
+			duration = 15,
+			ticks = 15,
+			tickDuration = 1, --This is hasted
 			tocMinVersion = 90002
 		},
 
@@ -756,6 +756,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].startTime = nil
 			TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].tickTime = nil
 			TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].type = nil
+			TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].targetsHit = 0
+			TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].hasStruckTargets = false
 		end	
 	end
 
@@ -1639,7 +1641,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function UpdateExternalCallToTheVoidValues()
 		local currentTime = GetTime()
-		local totalTicksRemaining = 0
+		local totalTicksRemaining_Lasher = 0
+		local totalTicksRemaining_Tendril = 0
+		local totalInsanity_Lasher = 0
+		local totalInsanity_Tendril = 0
 		local totalActive = 0
 
 		-- TODO: Add separate counts for Tendril vs Lasher?
@@ -1651,28 +1656,48 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					if timeRemaining < 0 then
 						RemoveVoidTendril(vtGuid)
-					else
-						local nextTick = TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].tickTime + TRB.Data.spells.lashOfInsanity_Tendril.tickDuration
+					else						
+						if TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].type == "Lasher" then
+							if TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].tickTime ~= nil and currentTime > (TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].tickTime + 5) then
+								TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].targetsHit = 0
+							end
+							
+							local nextTick = TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].tickTime + (TRB.Data.spells.lashOfInsanity_Lasher.tickDuration / ((TRB.Data.snapshotData.haste / 100) + 1))
 
-						if nextTick < currentTime then
-							nextTick = currentTime --There should be a tick. ANY second now. Maybe.
+							if nextTick < currentTime then
+								nextTick = currentTime --There should be a tick. ANY second now. Maybe.
+								totalTicksRemaining_Lasher = totalTicksRemaining_Lasher + 1
+							end
+							-- NOTE: Might need to be math.floor()
+							local ticksRemaining = math.ceil((endTime - nextTick) / TRB.Data.spells.lashOfInsanity_Lasher.tickDuration / ((TRB.Data.snapshotData.haste / 100) + 1)) -- This is hasted
+
+							totalInsanity_Lasher = totalInsanity_Lasher + (ticksRemaining * TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].targetsHit * TRB.Data.spells.lashOfInsanity_Lasher.insanity)
+							totalTicksRemaining_Lasher = totalTicksRemaining_Lasher + ticksRemaining
+						else							
+							local nextTick = TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].tickTime + TRB.Data.spells.lashOfInsanity_Tendril.tickDuration
+
+							if nextTick < currentTime then
+								nextTick = currentTime --There should be a tick. ANY second now. Maybe.
+								totalTicksRemaining_Tendril = totalTicksRemaining_Tendril + 1
+							end
+							
+							-- NOTE: Might need to be math.floor()
+							local ticksRemaining = math.ceil((endTime - nextTick) / TRB.Data.spells.lashOfInsanity_Tendril.tickDuration) --Not needed as it is 1sec, but adding in case it changes
+
+							totalInsanity_Tendril = totalInsanity_Tendril + (ticksRemaining * TRB.Data.spells.lashOfInsanity_Tendril.insanity)
+							totalTicksRemaining_Tendril = totalTicksRemaining_Tendril + ticksRemaining
 						end
-						
-						-- NOTE: Might need to be math.floor()
-						local ticksRemaining = math.ceil((endTime - nextTick) / TRB.Data.spells.lashOfInsanity_Tendril.tickDuration) --Not needed as it is 1sec, but adding in case it changes
 
-						totalTicksRemaining = totalTicksRemaining + ticksRemaining;
 						totalActive = totalActive + 1
 					end
 				end		
 			end
 		end
 
-		TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining = totalTicksRemaining
+		TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining = totalTicksRemaining_Tendril + totalTicksRemaining_Lasher
 		TRB.Data.snapshotData.eternalCallToTheVoid.numberActive = totalActive
-		TRB.Data.snapshotData.eternalCallToTheVoid.resourceRaw = totalTicksRemaining * TRB.Data.spells.lashOfInsanity_Tendril.insanity
-		-- TODO: Need to verify that Tentacle Bro's insanity generation via Lash of Insanity doesn't get affected by the Priest's insanity generation modifiers
-		-- TODO: If they do, is Fortress of the Mind applied as well?
+		TRB.Data.snapshotData.eternalCallToTheVoid.resourceRaw = totalInsanity_Tendril + totalInsanity_Lasher
+		-- Fortress of the Mind does not apply but other Insanity boosting effects do.
 		TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal = CalculateInsanityGain(TRB.Data.snapshotData.eternalCallToTheVoid.resourceRaw, TRB.Data.spells.lashOfInsanity_Tendril.fotm)
 	end
 
@@ -2285,6 +2310,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].type = "Tendril"
 					elseif spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id then
 						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].type = "Lasher"
+						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].targetsHit = 0
+						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].hasStruckTargets = true
 					end
 
 					TRB.Data.snapshotData.eternalCallToTheVoid.numberActive = TRB.Data.snapshotData.eternalCallToTheVoid.numberActive + 1
@@ -2293,7 +2320,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].tickTime = currentTime
 				end
 			elseif TRB.Data.settings.priest.shadow.voidTendrilTracker and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.idTick or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.idTick) and CheckVoidTendrilExists(sourceGUID) then
-				TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].tickTime = currentTime
+				if spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.idTick and type == "SPELL_DAMAGE" then
+					if currentTime > (TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].tickTime + 0.1) then --This is a new tick
+						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].targetsHit = 0
+					end
+					TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].targetsHit = TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].targetsHit + 1
+					TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].tickTime = currentTime					
+					TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].hasStruckTargets = true
+				else
+					TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].tickTime = currentTime
+				end
 			end
 			
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
