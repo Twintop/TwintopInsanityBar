@@ -137,6 +137,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				xPos=0,
 				yPos=-200,
 				border=4,
+				thresholdOverlapBorder=true,
 				dragAndDrop=false
 			},
 			mindbender={
@@ -1114,26 +1115,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.colors.bar.flashEnabled = self:GetChecked()
 		end)
 
-		controls.checkBoxes.dpThresholdShow = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.dpThresholdShow
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Devouring Plague threshold line")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Devouring Plague."
-		f:SetChecked(TRB.Data.settings.priest.shadow.devouringPlagueThreshold)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.priest.shadow.devouringPlagueThreshold = self:GetChecked()
-		end)
-
-		controls.checkBoxes.snThresholdShow = CreateFrame("CheckButton", "TIBCB1_7", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.snThresholdShow
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Searing Nightmare threshold Line")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Searing Nightmare. Only visibile if talented in to Searing Nightmare and channeling Mind Sear."
-		f:SetChecked(TRB.Data.settings.priest.shadow.searingNightmareThreshold)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.priest.shadow.searingNightmareThreshold = self:GetChecked()
-		end)
-
 		yCoord = yCoord - 70
 
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
@@ -1200,11 +1181,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.priest.shadow.colors.bar.border, 225, 25, xCoord2, yCoord)
-		f = controls.colors.border
+		controls.colors.inVoidform1GCD = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while you have less than 1 GCD left in Voidform (if enabled)", TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, 275, 25, xCoord2, yCoord)
+		f = controls.colors.inVoidform1GCD
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.border, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1214,9 +1195,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.shadow.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
+					controls.colors.inVoidform1GCD.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1242,12 +1222,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end)
 			end
 		end)	
-			
-		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.priest.shadow.colors.bar.background, 275, 25, xCoord2, yCoord)
-		f = controls.colors.background
+		
+		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.priest.shadow.colors.bar.border, 275, 25, xCoord2, yCoord)
+		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.background, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.border, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1257,76 +1237,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.shadow.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					barContainerFrame:SetBackdropColor(r, g, b, 1-a)
+					controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
 				end)
 			end
 		end)
 
-		yCoord = yCoord - 30
-		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under min. req. Insanity to cast Devouring Plague Threshold Line", TRB.Data.settings.priest.shadow.colors.threshold.under, 260, 25, xCoord, yCoord)
-		f = controls.colors.thresholdUnder
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-		
-					controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.shadow.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-
-		controls.colors.inVoidform1GCD = TRB.UiFunctions.BuildColorPicker(parent, "Insanity while you have less than 1 GCD left in Voidform (if enabled)", TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, 275, 25, xCoord2, yCoord)
-		f = controls.colors.inVoidform1GCD
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-		
-					controls.colors.inVoidform1GCD.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over min. req. Insanity to cast Devouring Plague Threshold Line", TRB.Data.settings.priest.shadow.colors.threshold.over, 300, 25, xCoord, yCoord)
-		f = controls.colors.thresholdOver
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-		
-					controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.shadow.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-
-		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Insanity", TRB.Data.settings.priest.shadow.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		yCoord = yCoord - 30		
+		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Insanity", TRB.Data.settings.priest.shadow.colors.bar.borderOvercap, 300, 25, xCoord, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1346,12 +1265,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		yCoord = yCoord - 30
-		controls.colors.mindbenderThreshold = TRB.UiFunctions.BuildColorPicker(parent, "Shadowfiend Insanity Gain Threshold Line", TRB.Data.settings.priest.shadow.colors.threshold.mindbender, 300, 25, xCoord, yCoord)
-		f = controls.colors.mindbenderThreshold
+		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.priest.shadow.colors.bar.background, 275, 25, xCoord2, yCoord)
+		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.mindbender, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.background, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1360,10 +1278,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						r, g, b = ColorPickerFrame:GetColorRGB()
 						a = OpacitySliderFrame:GetValue()
 					end
-					
-					controls.colors.mindbenderThreshold.Texture:SetColorTexture(r, g, b, 1-a)
-					passiveFrame.thresholds[1].texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.shadow.colors.threshold.mindbender = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+		
+					controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					barContainerFrame:SetBackdropColor(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1389,6 +1307,111 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end)
 			end
 		end)
+
+		
+		yCoord = yCoord - 40
+		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+
+		yCoord = yCoord - 25
+
+		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under minimum required Insanity", TRB.Data.settings.hunter.marksmanship.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		f = controls.colors.thresholdUnder
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.priest.shadow.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over minimum required Insanity", TRB.Data.settings.hunter.marksmanship.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		f = controls.colors.thresholdOver
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.priest.shadow.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		controls.colors.mindbenderThreshold = TRB.UiFunctions.BuildColorPicker(parent, "Shadowfiend / Wrathful Faerie Insanity Gain", TRB.Data.settings.priest.shadow.colors.threshold.mindbender, 275, 25, xCoord2, yCoord-60)
+		f = controls.colors.mindbenderThreshold
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.mindbender, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					
+					controls.colors.mindbenderThreshold.Texture:SetColorTexture(r, g, b, 1-a)
+					passiveFrame.thresholds[1].texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.threshold.mindbender = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)
+
+		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdOverlapBorder
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
+		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
+		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
+		f:SetChecked(TRB.Data.settings.priest.shadow.bar.thresholdOverlapBorder)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.shadow.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.shadow)
+		end)
+
+
+		controls.checkBoxes.dpThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.dpThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Devouring Plague")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Devouring Plague."
+		f:SetChecked(TRB.Data.settings.priest.shadow.devouringPlagueThreshold)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.shadow.devouringPlagueThreshold = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.snThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_searingNightmare", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.snThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Searing Nightmare (if talented)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Searing Nightmare. Only visibile if talented in to Searing Nightmare and channeling Mind Sear."
+		f:SetChecked(TRB.Data.settings.priest.shadow.searingNightmareThreshold)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.shadow.searingNightmareThreshold = self:GetChecked()
+		end)
+
+
+		yCoord = yCoord - 25
+		yCoord = yCoord - 25
+		yCoord = yCoord - 25
 
 		yCoord = yCoord - 30
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Voidform Configuration", 0, yCoord)

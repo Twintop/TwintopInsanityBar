@@ -104,6 +104,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				xPos=0,
 				yPos=-200,
 				border=4,
+				thresholdOverlapBorder=true,
 				dragAndDrop=false
 			},
 			colors = {
@@ -1059,26 +1060,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled = self:GetChecked()
 		end)
 
-		controls.checkBoxes.ssThresholdShow = CreateFrame("CheckButton", "TIBCB1_7", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.ssThresholdShow
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Starsurge threshold line")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast Starsurge."
-		f:SetChecked(TRB.Data.settings.druid.balance.starsurgeThreshold)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.starsurgeThreshold = self:GetChecked()
-		end)
-
-		controls.checkBoxes.sfThresholdShow = CreateFrame("CheckButton", "TIBCB1_7a", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.sfThresholdShow
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Starfall threshold line")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast Starfall."
-		f:SetChecked(TRB.Data.settings.druid.balance.starfallThreshold)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.starfallThreshold = self:GetChecked()
-		end)
-
 		yCoord = yCoord - 70
 
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
@@ -1209,11 +1190,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under min. req. Astral Power to cast Starsurge/Starfall Threshold Line", TRB.Data.settings.druid.balance.colors.threshold.under, 260, 25, xCoord, yCoord)
-		f = controls.colors.thresholdUnder
+
+		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Astral Power", TRB.Data.settings.druid.balance.colors.bar.borderOvercap, 300, 25, xCoord, yCoord)
+		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.borderOvercap, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1223,8 +1205,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1250,69 +1232,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over min. req. Astral Power to cast Starsurge/Starfall Threshold Line", TRB.Data.settings.druid.balance.colors.threshold.over, 300, 25, xCoord, yCoord)
-		f = controls.colors.thresholdOver
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
 		
-					controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-
-		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Astral Power", TRB.Data.settings.druid.balance.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
-		f = controls.colors.borderOvercap
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.borderOvercap, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-		
-					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-
-
-		yCoord = yCoord - 30
-		controls.colors.starfallPandemic = TRB.UiFunctions.BuildColorPicker(parent, "Starfall Threshold Line when outside Pandemic refresh range", TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, 300, 25, xCoord, yCoord)
-		f = controls.colors.starfallPandemic
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					
-					controls.colors.starfallPandemic.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-		
-		controls.colors.moonkinFormMissing = TRB.UiFunctions.BuildColorPicker(parent, "Moonkin Form missing when in combat", TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing, 275, 25, xCoord2, yCoord)
+		controls.colors.moonkinFormMissing = TRB.UiFunctions.BuildColorPicker(parent, "Moonkin Form missing when in combat", TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing, 300, 25, xCoord, yCoord)
 		f = controls.colors.moonkinFormMissing
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1331,7 +1252,27 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end)
 			end
 		end)
+
+		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.druid.balance.colors.bar.background, 275, 25, xCoord2, yCoord)
+		f = controls.colors.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.background, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
 		
+					controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					barContainerFrame:SetBackdropColor(r, g, b, 1-a)
+				end)
+			end
+		end)		
 
 		yCoord = yCoord - 30
 		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Astral Power from Fury of Elune and Nature's Balance", TRB.Data.settings.druid.balance.colors.bar.passive, 300, 25, xCoord, yCoord)
@@ -1353,13 +1294,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Data.settings.druid.balance.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
-		end)		
+		end)
+
+
 		
-		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.druid.balance.colors.bar.background, 275, 25, xCoord2, yCoord)
-		f = controls.colors.background
+		yCoord = yCoord - 40
+		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+
+		yCoord = yCoord - 25
+
+		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under minimum required Astral Power", TRB.Data.settings.druid.balance.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		f = controls.colors.thresholdUnder
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.background, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1369,13 +1317,89 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 		
-					controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					barContainerFrame:SetBackdropColor(r, g, b, 1-a)
+					controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
+
+		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over minimum required Astral Power", TRB.Data.settings.druid.balance.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		f = controls.colors.thresholdOver
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
 		
+					controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)
+
+		controls.colors.starfallPandemic = TRB.UiFunctions.BuildColorPicker(parent, "Starfall outside Pandemic refresh range", TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, 275, 25, xCoord2, yCoord-60)
+		f = controls.colors.starfallPandemic
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					
+					controls.colors.starfallPandemic.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)
+
+		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdOverlapBorder
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
+		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
+		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
+		f:SetChecked(TRB.Data.settings.druid.balance.bar.thresholdOverlapBorder)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.balance)
+		end)
+		
+
+		controls.checkBoxes.ssThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurgeEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.ssThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show Starsurge threshold line")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast Starsurge."
+		f:SetChecked(TRB.Data.settings.druid.balance.starsurgeThreshold)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.starsurgeThreshold = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.sfThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starfallEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.sfThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show Starfall threshold line")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast Starfall."
+		f:SetChecked(TRB.Data.settings.druid.balance.starfallThreshold)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.starfallThreshold = self:GetChecked()
+		end)
+
+
+		yCoord = yCoord - 25
+		yCoord = yCoord - 25
+		yCoord = yCoord - 25
 
 		yCoord = yCoord - 30
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Eclipse Configuration", 0, yCoord)

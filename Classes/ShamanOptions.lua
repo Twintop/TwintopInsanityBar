@@ -94,6 +94,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				xPos=0,
 				yPos=-200,
 				border=4,
+				thresholdOverlapBorder=true,
 				dragAndDrop=false
 			},
 			colors = {
@@ -1020,16 +1021,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.elemental.colors.bar.flashEnabled = self:GetChecked()
 		end)
 
-		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.esThresholdShow
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Earth Shock/EQ Threshold Line")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Maelstrom is required to cast Earth Shock/EQ."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.earthShockThreshold)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.elemental.earthShockThreshold = self:GetChecked()
-		end)
-
 		yCoord = yCoord - 70
 
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
@@ -1160,48 +1151,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under min. req. Maelstrom to cast Earth Shock/Earthquake Threshold Line", TRB.Data.settings.shaman.elemental.colors.threshold.under, 525, 25, xCoord, yCoord)
-		f = controls.colors.thresholdUnder
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.under, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.shaman.elemental.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over min. req. Maelstrom to cast Earth Shock/Earthquake Threshold Line", TRB.Data.settings.shaman.elemental.colors.threshold.over, 525, 25, xCoord, yCoord)
-		f = controls.colors.thresholdOver
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.over, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.shaman.elemental.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)
-
-		yCoord = yCoord - 30
 		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Maelstrom from Passive Sources", TRB.Data.settings.shaman.elemental.colors.bar.passive, 550, 25, xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1222,6 +1171,78 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                 end)
 			end
 		end)
+
+		
+		yCoord = yCoord - 40
+		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+
+		yCoord = yCoord - 25
+
+		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under minimum required Maelstrom", TRB.Data.settings.shaman.elemental.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		f = controls.colors.thresholdUnder
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.under, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over minimum required Maelstrom", TRB.Data.settings.shaman.elemental.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		f = controls.colors.thresholdOver
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.over, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdOverlapBorder
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
+		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
+		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
+		f:SetChecked(TRB.Data.settings.shaman.elemental.bar.thresholdOverlapBorder)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.shaman.elemental.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.shaman.elemental)
+		end)
+
+		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Threshold_Option_earthShock", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.esThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Earth Shock/Earthquake")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Maelstrom is required to cast Earth Shock/Earthquake."
+		f:SetChecked(TRB.Data.settings.shaman.elemental.earthShockThreshold)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.shaman.elemental.earthShockThreshold = self:GetChecked()
+		end)
+
+
+		yCoord = yCoord - 25
+		yCoord = yCoord - 25
+		yCoord = yCoord - 25
 
 		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)

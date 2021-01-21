@@ -462,6 +462,48 @@ local function SetBarMinMaxValues(settings)
 end
 TRB.Functions.SetBarMinMaxValues = SetBarMinMaxValues
 
+local function RedrawThresholdLines(settings)	
+	local resourceFrame = TRB.Frames.resourceFrame
+	local passiveFrame = TRB.Frames.passiveFrame	
+	local borderSubtraction = 0
+
+	if not settings.bar.thresholdOverlapBorder then
+		borderSubtraction = settings.bar.border * 2
+	end
+
+	local entries = TRB.Functions.TableLength(resourceFrame.thresholds)
+	if entries > 0 then
+
+		for x = 1, entries do
+			resourceFrame.thresholds[x]:SetWidth(settings.thresholdWidth)
+			resourceFrame.thresholds[x]:SetHeight(settings.bar.height - borderSubtraction)
+			resourceFrame.thresholds[x].texture = resourceFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
+			resourceFrame.thresholds[x].texture:SetAllPoints(resourceFrame.thresholds[x])
+			resourceFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
+			resourceFrame.thresholds[x]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+			resourceFrame.thresholds[x]:SetFrameLevel(127)
+			resourceFrame.thresholds[x]:Hide()
+		end
+	end
+
+	entries = TRB.Functions.TableLength(passiveFrame.thresholds)
+	if entries > 0 then
+		for x = 1, entries do
+			passiveFrame.thresholds[x]:SetWidth(settings.thresholdWidth)
+			passiveFrame.thresholds[x]:SetHeight(settings.bar.height - borderSubtraction)
+			passiveFrame.thresholds[x].texture = passiveFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
+			passiveFrame.thresholds[x].texture:SetAllPoints(passiveFrame.thresholds[x])
+			passiveFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
+			passiveFrame.thresholds[x]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+			passiveFrame.thresholds[x]:SetFrameLevel(127)
+			passiveFrame.thresholds[x]:Show()
+		end
+	end
+
+	return thresholds
+end
+TRB.Functions.RedrawThresholdLines = RedrawThresholdLines
+
 local function ConstructResourceBar(settings)    
     if settings ~= nil and settings.bar ~= nil then
         local barContainerFrame = TRB.Frames.barContainerFrame
@@ -557,22 +599,8 @@ local function ConstructResourceBar(settings)
         resourceFrame:SetStatusBarTexture(settings.textures.resourceBar)
         resourceFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
         resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        resourceFrame:SetFrameLevel(125)
-
-		local entries = TRB.Functions.TableLength(resourceFrame.thresholds)
-		if entries > 0 then
-			for x = 1, entries do
-				resourceFrame.thresholds[x]:SetWidth(settings.thresholdWidth)
-				resourceFrame.thresholds[x]:SetHeight(settings.bar.height)
-				resourceFrame.thresholds[x].texture = resourceFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
-				resourceFrame.thresholds[x].texture:SetAllPoints(resourceFrame.thresholds[x])
-				resourceFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
-				resourceFrame.thresholds[x]:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				resourceFrame.thresholds[x]:SetFrameLevel(127)
-				resourceFrame.thresholds[x]:Hide()
-			end
-		end
-        
+		resourceFrame:SetFrameLevel(125)
+		        
         castingFrame:Show()
         castingFrame:SetMinMaxValues(0, settings.bar.width)
         castingFrame:SetHeight(settings.bar.height)
@@ -593,19 +621,8 @@ local function ConstructResourceBar(settings)
         passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		passiveFrame:SetFrameLevel(80)
 
-		entries = TRB.Functions.TableLength(passiveFrame.thresholds)
-		if entries > 0 then
-			for x = 1, entries do
-				passiveFrame.thresholds[x]:SetWidth(settings.thresholdWidth)
-				passiveFrame.thresholds[x]:SetHeight(settings.bar.height)
-				passiveFrame.thresholds[x].texture = passiveFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
-				passiveFrame.thresholds[x].texture:SetAllPoints(passiveFrame.thresholds[x])
-				passiveFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
-				passiveFrame.thresholds[x]:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				passiveFrame.thresholds[x]:SetFrameLevel(127)
-				passiveFrame.thresholds[x]:Show()
-			end
-		end
+
+		TRB.Functions.RedrawThresholdLines(settings)
 		
 		SetBarMinMaxValues(settings)
 		

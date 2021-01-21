@@ -143,6 +143,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				xPos=0,
 				yPos=-200,
 				border=4,
+				thresholdOverlapBorder=true,
 				dragAndDrop=false
 			},
 			colors = {
@@ -330,6 +331,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				xPos=0,
 				yPos=-200,
 				border=4,
+				thresholdOverlapBorder=true,
 				dragAndDrop=false
 			},
 			colors = {
@@ -1608,6 +1610,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                     TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
+		end)
+
+		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdOverlapBorder
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
+		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
+		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.bar.thresholdOverlapBorder)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.marksmanship)
 		end)
 
 		controls.checkBoxes.aimedShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_aimedShot", parent, "ChatConfigCheckButtonTemplate")
@@ -4095,6 +4108,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                 end)
 			end
 		end)
+
+		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdOverlapBorder
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
+		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
+		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
+		f:SetChecked(TRB.Data.settings.hunter.survival.bar.thresholdOverlapBorder)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.survival.bar.thresholdOverlapBorder = self:GetChecked()			
+			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.survival)
+		end)
+
+
 
 		controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.arcaneShotThresholdShow
