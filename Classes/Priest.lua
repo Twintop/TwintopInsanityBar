@@ -1048,7 +1048,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time > 0 then
 				valid = true
 			end
-		elseif var == "$loiTicks" then
+		elseif var == "$loiInsanity" then
 			if TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal > 0 then
 				valid = true
 			end
@@ -2252,40 +2252,38 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.mindDevourer.duration = 0
 						TRB.Data.snapshotData.mindDevourer.endTime = nil
 					end
-				elseif TRB.Data.settings.priest.shadow.wrathfulFaerie.enabled then	
-					if spellId == TRB.Data.spells.wrathfulFaerie.id then
-						if type == "SPELL_AURA_APPLIED" then -- Gained buff
-							if TRB.Data.snapshotData.wrathfulFaerie.main.isActive == false then
-								TRB.Data.snapshotData.wrathfulFaerie.main.isActive = true
-								TRB.Data.snapshotData.wrathfulFaerie.main.endTime = currentTime + (TRB.Data.spells.wrathfulFaerie.duration * TRB.Data.character.torghast.dreamspunMushroomsModifier)
-							end
-							TRB.Data.snapshotData.targetData.wrathfulFaerieGuid = destGUID
-						-- We're not doing much in these case because it could have been moved or refreshed via SWP on a new target.
-						--elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-						--elseif type == "SPELL_AURA_REFRESH" then -- Refreshed buff
-						end	
-					elseif spellId == TRB.Data.spells.wrathfulFaerie.energizeId and type == "SPELL_ENERGIZE" then
-						TRB.Data.snapshotData.wrathfulFaerie.main.procTime = currentTime
-					elseif spellId == TRB.Data.spells.wrathfulFaerieFermata.id then
-						if type == "SPELL_AURA_APPLIED" then -- Gained buff
-							if TRB.Data.snapshotData.wrathfulFaerie.fermata.isActive == false or TRB.Data.snapshotData.targetData.wrathfulFaerieFermataGuid ~= destGUID then
-								TRB.Data.snapshotData.wrathfulFaerie.fermata.isActive = true
-								local duration = TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[TRB.Functions.GetSoulbindRank(TRB.Data.spells.wrathfulFaerieFermata.conduitId)] * TRB.Data.character.torghast.dreamspunMushroomsModifier
-								TRB.Data.snapshotData.wrathfulFaerie.fermata.endTime = currentTime + duration
-							end
-							TRB.Data.snapshotData.targetData.wrathfulFaerieFermataGuid = destGUID
-						-- We're not doing much in these case because it could have been moved or refreshed via SWP on a new target.
-						--elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-						--elseif type == "SPELL_AURA_REFRESH" then -- Refreshed buff
+				elseif TRB.Data.settings.priest.shadow.wrathfulFaerie.enabled and spellId == TRB.Data.spells.wrathfulFaerie.id then
+					if type == "SPELL_AURA_APPLIED" then -- Gained buff
+						if TRB.Data.snapshotData.wrathfulFaerie.main.isActive == false then
+							TRB.Data.snapshotData.wrathfulFaerie.main.isActive = true
+							TRB.Data.snapshotData.wrathfulFaerie.main.endTime = currentTime + (TRB.Data.spells.wrathfulFaerie.duration * TRB.Data.character.torghast.dreamspunMushroomsModifier)
 						end
-					elseif spellId == TRB.Data.spells.wrathfulFaerieFermata.energizeId and type == "SPELL_ENERGIZE" then
-						TRB.Data.snapshotData.wrathfulFaerie.fermata.procTime = currentTime--]]
+						TRB.Data.snapshotData.targetData.wrathfulFaerieGuid = destGUID
+					-- We're not doing much in these case because it could have been moved or refreshed via SWP on a new target.
+					--elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+					--elseif type == "SPELL_AURA_REFRESH" then -- Refreshed buff
+					end	
+				elseif TRB.Data.settings.priest.shadow.wrathfulFaerie.enabled and spellId == TRB.Data.spells.wrathfulFaerie.energizeId and type == "SPELL_ENERGIZE" then
+					TRB.Data.snapshotData.wrathfulFaerie.main.procTime = currentTime
+				elseif TRB.Data.settings.priest.shadow.wrathfulFaerie.enabled and spellId == TRB.Data.spells.wrathfulFaerieFermata.id then
+					if type == "SPELL_AURA_APPLIED" then -- Gained buff
+						if TRB.Data.snapshotData.wrathfulFaerie.fermata.isActive == false or TRB.Data.snapshotData.targetData.wrathfulFaerieFermataGuid ~= destGUID then
+							TRB.Data.snapshotData.wrathfulFaerie.fermata.isActive = true
+							local duration = TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[TRB.Functions.GetSoulbindRank(TRB.Data.spells.wrathfulFaerieFermata.conduitId)] * TRB.Data.character.torghast.dreamspunMushroomsModifier
+							TRB.Data.snapshotData.wrathfulFaerie.fermata.endTime = currentTime + duration
+						end
+						TRB.Data.snapshotData.targetData.wrathfulFaerieFermataGuid = destGUID
+					-- We're not doing much in these case because it could have been moved or refreshed via SWP on a new target.
+					--elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+					--elseif type == "SPELL_AURA_REFRESH" then -- Refreshed buff
 					end
+				elseif TRB.Data.settings.priest.shadow.wrathfulFaerie.enabled and spellId == TRB.Data.spells.wrathfulFaerieFermata.energizeId and type == "SPELL_ENERGIZE" then
+					TRB.Data.snapshotData.wrathfulFaerie.fermata.procTime = currentTime
 				elseif type == "SPELL_SUMMON" and TRB.Data.settings.priest.shadow.voidTendrilTracker and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.id or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id) then
 					InitializeVoidTendril(destGUID)
 					if spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.id then
 						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].type = "Tendril"
-					elseif spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id then							
+					elseif spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id then
 						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].type = "Lasher"
 					end
 
