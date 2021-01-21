@@ -372,6 +372,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		remainingHvAvgTime = 0,
 		additionalVbAvgCasts = 0,
 		isInfinite = false,
+		isAverageInfinite = false,
 		s2m = {
 			startTime = nil,
 			active = false
@@ -840,6 +841,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.snapshotData.voidform.remainingHvAvgTime = 0	
 			TRB.Data.snapshotData.voidform.additionalVbAvgCasts = 0
 			TRB.Data.snapshotData.voidform.isInfinite = false
+			TRB.Data.snapshotData.voidform.isAverageInfinite = false
 		else
 			local remainingTime = (expirationTime - currentTime) or 0
 
@@ -893,11 +895,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 				-- With extremely high Haste and Crit it is possible to remain in Voidform for literally forever.
 				local infinityCounter = 0
+				local infinityAverageCounter = 0
 				local maxCounter = 25
-				while (remainingTimeTmpAverage >= vbCooldown or remainingTimeTmp >= vbCooldown) and infinityCounter < maxCounter
+				while (remainingTimeTmpAverage >= vbCooldown or remainingTimeTmp >= vbCooldown) and infinityCounter < maxCounter and infinityAverageCounter < maxCounter
 				do
-					infinityCounter = infinityCounter + 1
-					if remainingTimeTmp >= vbCooldown then					
+					if remainingTimeTmp >= vbCooldown then
+						infinityCounter = infinityCounter + 1					
 						local additionalCasts = math.floor(remainingTimeTmp / vbCooldown)
 						if castGrantsExtension == false then
 							additionalCasts = additionalCasts - 1
@@ -907,7 +910,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						remainingTimeTotal = remainingTimeTotal + additionalCasts
 					end
 					
-					if remainingTimeTmpAverage >= vbCooldown then					
+					if remainingTimeTmpAverage >= vbCooldown then
+						infinityAverageCounter = infinityAverageCounter + 1					
 						local additionalCastsAverage = math.floor(remainingTimeTmpAverage / vbCooldown)
 						if castGrantsExtension == false then
 							additionalCastsAverage = additionalCastsAverage - 1
@@ -925,9 +929,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.voidform.additionalVbCasts = moreCasts
 				TRB.Data.snapshotData.voidform.remainingHvAvgTime = remainingTimeTotalAverage
 				TRB.Data.snapshotData.voidform.additionalVbAvgCasts = moreCastsAverage
-
+				
 				if infinityCounter == maxCounter then
 					TRB.Data.snapshotData.voidform.isInfinite = true
+				end
+				
+				if infinityAverageCounter == maxCounter then
+					TRB.Data.snapshotData.voidform.isAverageInfinite = true
 				end
 			else
 				TRB.Data.snapshotData.voidform.remainingTime = remainingTime or 0
@@ -936,6 +944,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.voidform.remainingHvAvgTime = 0	
 				TRB.Data.snapshotData.voidform.additionalVbAvgCasts = 0
 				TRB.Data.snapshotData.voidform.isInfinite = false
+				TRB.Data.snapshotData.voidform.isAverageInfinite = false
 			end		
 		end  
 	end
@@ -965,15 +974,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		if var == "$vfTime" then
-			if TRB.Data.snapshotData.voidform.remainingTime ~= nil and (TRB.Data.snapshotData.voidform.remainingTime > 0 or TRB.Data.snapshotData.voidform.isInfinite) then
+			if TRB.Data.snapshotData.voidform.remainingTime ~= nil and TRB.Data.snapshotData.voidform.remainingTime > 0 then
 				valid = true
 			end
 		elseif var == "$hvAvgTime" then
-			if TRB.Data.character.talents.hungeringVoid.isSelected and TRB.Data.snapshotData.voidform.remainingHvAvgTime ~= nil and (TRB.Data.snapshotData.voidform.remainingHvAvgTime > 0 or TRB.Data.snapshotData.voidform.isInfinite) then
+			if TRB.Data.character.talents.hungeringVoid.isSelected and TRB.Data.snapshotData.voidform.remainingHvAvgTime ~= nil and (TRB.Data.snapshotData.voidform.remainingHvAvgTime > 0 or TRB.Data.snapshotData.voidform.isAverageInfinite) then
 				valid = true
 			end
 		elseif var == "$vbAvgCasts" then
-			if TRB.Data.character.talents.hungeringVoid.isSelected and TRB.Data.snapshotData.voidform.remainingHvAvgTime ~= nil and (TRB.Data.snapshotData.voidform.remainingHvAvgTime > 0 or TRB.Data.snapshotData.voidform.isInfinite) then
+			if TRB.Data.character.talents.hungeringVoid.isSelected and TRB.Data.snapshotData.voidform.remainingHvAvgTime ~= nil and (TRB.Data.snapshotData.voidform.remainingHvAvgTime > 0 or TRB.Data.snapshotData.voidform.isAverageInfinite) then
 				valid = true
 			end
 		elseif var == "$hvTime" then
@@ -1125,9 +1134,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local voidBoltCastsAvg = string.format("%.0f", TRB.Data.snapshotData.voidform.additionalVbAvgCasts)
 
 		if TRB.Data.snapshotData.voidform.isInfinite then
-			voidformTime = "∞"
 			hungeringVoidTime = "∞"
 			voidBoltCasts = "∞"
+		end
+		
+		if TRB.Data.snapshotData.voidform.isAverageInfinite then
 			hungeringVoidTimeAvg = "∞"
 			voidBoltCastsAvg = "∞"
 		end
@@ -1316,7 +1327,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				voidBoltCasts = TRB.Data.snapshotData.voidform.additionalVbCasts,
 				TimeRemainingAverage = TRB.Data.snapshotData.voidform.remainingHvAvgTime,
 				voidBoltCastsAverage = TRB.Data.snapshotData.voidform.additionalVbAvgCasts,
-				isInfinite = TRB.Data.snapshotData.voidform.isInfinite
+				isInfinite = TRB.Data.snapshotData.voidform.isInfinite,
+				isAverageInfinite = TRB.Data.snapshotData.voidform.isAverageInfinite
 			}
 		}
 		Global_TwintopResourceBar.resource.passive = _passiveInsanity
