@@ -905,7 +905,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				-- With extremely high Haste and Crit it is possible to remain in Voidform for literally forever.
 
 				local infiniteExtensions = false
-				if vbCooldown <= 1 or ((vbCooldown - 1) * 100) < TRB.Data.snapshotData.haste then
+				if vbCooldown <= 1 then
 					infiniteExtensions = true
 				end
 
@@ -916,30 +916,40 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 				local infinityHasteRequired = vbBaseCooldown - 1
 
+				local sanityCheckCounter = 0
 				local infinityCounter = 0
 				local infinityAverageCounter = 0
 				local maxCounter = 25
-				while (not (infiniteExtensions and infiniteAverageExtensions)) and (remainingTimeTmpAverage >= vbCooldown or remainingTimeTmp >= vbCooldown) and infinityCounter < maxCounter and infinityAverageCounter < maxCounter
+				while (not (infiniteExtensions and infiniteAverageExtensions)) and 
+					  (remainingTimeTmpAverage >= vbCooldown or remainingTimeTmp >= vbCooldown) and
+					  infinityCounter < maxCounter and
+					  infinityAverageCounter < maxCounter and 
+					  sanityCheckCounter < maxCounter
 				do
+					sanityCheckCounter = sanityCheckCounter + 1
 					if not infiniteExtensions and remainingTimeTmp >= vbCooldown then
 						infinityCounter = infinityCounter + 1					
-						local additionalCasts = math.floor(remainingTimeTmp / vbCooldown)
+						local castsRaw = math.floor(remainingTimeTmp / vbCooldown)
+						local additionalCasts = castsRaw
+
 						if castGrantsExtension == false then
-							additionalCasts = additionalCasts - 1
+							additionalCasts = math.max(additionalCasts - 1, 0)
 						end
 						moreCasts = moreCasts + additionalCasts
-						remainingTimeTmp = remainingTimeTmp + additionalCasts - (additionalCasts * vbCooldown)
+						remainingTimeTmp = remainingTimeTmp + additionalCasts - (castsRaw * vbCooldown)
 						remainingTimeTotal = remainingTimeTotal + additionalCasts
 					end
 					
 					if not infiniteAverageExtensions and remainingTimeTmpAverage >= vbCooldown then
 						infinityAverageCounter = infinityAverageCounter + 1					
-						local additionalCastsAverage = math.floor(remainingTimeTmpAverage / vbCooldown)
+						local castsAverageRaw =  math.floor(remainingTimeTmpAverage / vbCooldown)
+						local additionalCastsAverage = castsAverageRaw
+						
 						if castGrantsExtension == false then
-							additionalCastsAverage = additionalCastsAverage - 1
+							additionalCastsAverage = math.max(additionalCastsAverage - 1, 0)
 						end
 						moreCastsAverage = moreCastsAverage + additionalCastsAverage
-						remainingTimeTmpAverage = remainingTimeTmpAverage + (critValue * additionalCastsAverage) - (additionalCastsAverage * vbCooldown)
+						remainingTimeTmpAverage = remainingTimeTmpAverage + (critValue * additionalCastsAverage) - (castsAverageRaw * vbCooldown)
 						remainingTimeTotalAverage = remainingTimeTotalAverage + (critValue * additionalCastsAverage)
 					end
 
@@ -952,6 +962,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.voidform.remainingHvAvgTime = remainingTimeTotalAverage
 				TRB.Data.snapshotData.voidform.additionalVbAvgCasts = moreCastsAverage
 				
+				if sanityCheckCounter == maxCounter and sanityCheckCounter ~= infinityCounter and sanityCheckCounter ~= infinityAverageCounter then
+					TRB.Data.snapshotData.voidform.isInfinite = true
+					TRB.Data.snapshotData.voidform.isAverageInfinite = true
+				end
+
 				if infiniteExtensions or infinityCounter == maxCounter then
 					TRB.Data.snapshotData.voidform.isInfinite = true
 				end
