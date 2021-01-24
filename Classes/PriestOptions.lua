@@ -1314,7 +1314,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = yCoord - 25
 
-		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under minimum required Insanity", TRB.Data.settings.hunter.marksmanship.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under minimum required Insanity", TRB.Data.settings.priest.shadow.colors.threshold.under, 275, 25, xCoord2, yCoord)
 		f = controls.colors.thresholdUnder
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1334,7 +1334,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over minimum required Insanity", TRB.Data.settings.hunter.marksmanship.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over minimum required Insanity", TRB.Data.settings.priest.shadow.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
 		f = controls.colors.thresholdOver
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
