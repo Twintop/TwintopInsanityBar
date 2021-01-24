@@ -62,7 +62,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				fontSize = 13
 			},
 			middle = {
-				text="{$flayersMark}[#flayersMark $flayersMarkTime #flayersMark||n]{$trueshotTime}[#trueshot $trueshotTime #trueshot]",
+				text="{$flayersMarkTime}[#flayersMark $flayersMarkTime #flayersMark||n]{$trueshotTime}[#trueshot $trueshotTime #trueshot]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -193,6 +193,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
+				nesingwarysTrappingApparatus={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
 				flayersMark={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
@@ -263,7 +268,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				fontSize = 13
 			},
 			middle = {
-				text="{$flayersMark}[#flayersMark $flayersMarkTime #flayersMark||n]{$coordinatedAssaultTime}[#coordinatedAssault $coordinatedAssaultTime #coordinatedAssault]",
+				text="{$flayersMarkTime}[#flayersMark $flayersMarkTime #flayersMark||n]{$coordinatedAssaultTime}[#coordinatedAssault $coordinatedAssaultTime #coordinatedAssault]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -387,6 +392,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					soundName="TRB: Air Horn"
 				},
 				flayersMark={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+				nesingwarysTrappingApparatus={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -2613,6 +2623,70 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
+		
+		
+		yCoord = yCoord - 60
+		controls.checkBoxes.nesingwarysTrappingApparatusAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_nesingwarysTrappingApparatus_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.nesingwarysTrappingApparatusAudio
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Nesingwary's Trapping Apparatus proc")
+		f.tooltip = "Play an audio cue when you get a Nesingwary's Trapping Apparatus proc that allows your next Aimed Shot to cost 0 Focus."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.enabled = self:GetChecked()
+
+			if TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)	
+			
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.nesingwarysTrappingApparatusAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_nesingwarysTrappingApparatusAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.nesingwarysTrappingApparatusAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.nesingwarysTrappingApparatusAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.sound
+						info.func = self.SetValue			
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+			TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.sound = newValue
+			TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
 
 
 		
@@ -5231,6 +5305,73 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
+
+			
+		
+		yCoord = yCoord - 60
+		controls.checkBoxes.nesingwarysTrappingApparatusAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_nesingwarysTrappingApparatus_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.nesingwarysTrappingApparatusAudio
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Nesingwary's Trapping Apparatus proc")
+		f.tooltip = "Play an audio cue when you get a Nesingwary's Trapping Apparatus proc that allows your next Aimed Shot to cost 0 Focus."
+		f:SetChecked(TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.enabled = self:GetChecked()
+
+			if TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)	
+			
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.nesingwarysTrappingApparatusAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_nesingwarysTrappingApparatusAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.nesingwarysTrappingApparatusAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.nesingwarysTrappingApparatusAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.sound
+						info.func = self.SetValue			
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+			TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.sound = newValue
+			TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
 
 
 		yCoord = yCoord - 60

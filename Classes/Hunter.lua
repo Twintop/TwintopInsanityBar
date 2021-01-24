@@ -243,12 +243,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				isActive = false
 			},
 
+			nesingwarysTrappingApparatus = {
+				id = 336744,
+				name = "",
+				icon = "",
+				isActive = false,
+				modifier = 2.0
+			},
+
 			secretsOfTheUnblinkingVigil = {
 				id = 336892,
 				name = "", 
 				icon = "",
 				isActive = false
-			}
+			},
+
 		}
 
 		specCache.marksmanship.snapshotData.focusRegen = 0
@@ -304,7 +313,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		}
 		specCache.marksmanship.snapshotData.secretsOfTheUnblinkingVigil = {
 			spellId = nil,
-			duration = 0
+			duration = 0,
+			endTime = nil
+		}
+		specCache.marksmanship.snapshotData.nesingwarysTrappingApparatus = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil
 		}
 		specCache.marksmanship.snapshotData.targetData = {
 			ttdIsActive = false,
@@ -552,8 +567,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				focus = 2,
 				ticks = 10,
-				duration = 10,
-				fotm = false
+				duration = 10
+			},
+
+			nesingwarysTrappingApparatus = {
+				id = 336744,
+				name = "",
+				icon = "",
+				isActive = false,
+				modifier = 2.0
 			},
 		}
 
@@ -612,6 +634,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			duration = 0,
 			enabled = false
 		}
+		specCache.survival.snapshotData.nesingwarysTrappingApparatus = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil
+		}
 		specCache.survival.snapshotData.targetData = {
 			ttdIsActive = false,
 			currentTargetGuid = nil,
@@ -661,6 +688,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#flayersMark", icon = spells.flayersMark.icon, description = "Flayer's Mark", printInSettings = true },
 			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
 			{ variable = "#multiShot", icon = spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
+			{ variable = "#nesingwarys", icon = spells.nesingwarysTrappingApparatus.icon, description = "Nesingwary'ss Trapping Apparatus", printInSettings = true },
 			{ variable = "#rapidFire", icon = spells.rapidFire.icon, description = "Rapid Fire", printInSettings = true },
 			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
 			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
@@ -668,6 +696,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = "Steady Shot", printInSettings = true },
 			{ variable = "#trickShots", icon = spells.trickShots.icon, description = "Trick Shots", printInSettings = true },
 			{ variable = "#trueshot", icon = spells.trueshot.icon, description = "Trueshot", printInSettings = true },
+			{ variable = "#vigil", icon = spells.secretsOfTheUnblinkingVigil.icon, description = "Secrets of the Unblinking Vigil", printInSettings = true },
         }
 		specCache.marksmanship.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -697,6 +726,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$serpentSting", description = "Is Serpent Sting talented? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$flayersMarkTime", description = "Time remaining on Flayer's Mark buff", printInSettings = true, color = false },
+
+			{ variable = "$vigilTime", description = "Time remaining on Secrets of the Unblinking Vigil buff", printInSettings = true, color = false },
+			{ variable = "$nesingwarysTime", description = "Time remaining on Nesingwary's Trapping Apparatus buff", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -728,6 +760,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#killCommand", icon = spells.killCommand.icon, description = "Kill Command", printInSettings = true },
 			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
 			{ variable = "#mongooseBite", icon = spells.mongooseBite.icon, description = "Mongoose Bite", printInSettings = true },
+			{ variable = "#nesingwarys", icon = spells.nesingwarysTrappingApparatus.icon, description = "Nesingwary'ss Trapping Apparatus", printInSettings = true },
 			{ variable = "#raptorStrike", icon = spells.raptorStrike.icon, description = "Raptor Strike", printInSettings = true },
 			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
 			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
@@ -767,6 +800,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$toeTicks", description = "Number of ticks left on Terms of Engagement", printInSettings = true, color = false },
 
 			{ variable = "$flayersMarkTime", description = "Time remaining on Flayer's Mark buff", printInSettings = true, color = false },
+
+			{ variable = "$nesingwarysTime", description = "Time remaining on Nesingwary's Trapping Apparatus buff", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -867,6 +902,28 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.snapshotData.targetData.targets[guid].serpentSting = false
 		end	
 	end
+	
+	local function GetNesingwarysRemainingTime()
+		local currentTime = GetTime()
+		local remainingTime = 0
+
+		if TRB.Data.spells.nesingwarysTrappingApparatus.isActive then
+			remainingTime = TRB.Data.snapshotData.nesingwarysTrappingApparatus.endTime - currentTime
+		end
+
+		return remainingTime
+	end
+	
+	local function GetVigilRemainingTime()
+		local currentTime = GetTime()
+		local remainingTime = 0
+
+		if TRB.Data.spells.secretsOfTheUnblinkingVigil.isActive then
+			remainingTime = TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.endTime - currentTime
+		end
+
+		return remainingTime
+	end
 
 	local function GetTrueshotRemainingTime()		
 		local currentTime = GetTime()
@@ -904,9 +961,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
     local function CalculateResourceGain(resource)
         local modifier = 1.0
                 
-        if resource > 0 and GetSpecialization() == 2 and TRB.Data.spells.trueshot.isActive then
-            modifier = modifier * TRB.Data.spells.trueshot.modifier
-        end
+		if resource > 0 then
+			if GetSpecialization() == 2 and TRB.Data.spells.trueshot.isActive then
+				modifier = modifier * TRB.Data.spells.trueshot.modifier
+			end
+
+			if TRB.Data.spells.nesingwarysTrappingApparatus.isActive then
+				modifier = modifier * TRB.Data.spells.nesingwarysTrappingApparatus.modifier
+			end
+		end
 
         return resource * modifier
     end
@@ -971,6 +1034,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				if GetTrueshotRemainingTime() > 0 then
 					valid = true
 				end		
+			elseif var == "$vigilTime" then
+					if GetVigilRemainingTime() > 0 then
+						valid = true
+					end	
 			elseif var == "$serpentSting" then
 				if TRB.Data.character.talents.serpentSting.isSelected then
 					valid = true
@@ -1035,14 +1102,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 				valid = true
 			end
-		elseif var == "$flayersMark" then
+		elseif var == "$flayersMarkTime" or var == "$flayersMark" then
 			if GetFlayersMarkRemainingTime() > 0 then
+				valid = true
+			end
+		elseif var == "$nesingwarysTime" then
+			if GetNesingwarysRemainingTime() > 0 then
 				valid = true
 			end
 		elseif var == "$ssCount" then
 			if TRB.Data.snapshotData.targetData.serpentSting > 0 then
 				valid = true
-			end				
+			end
 		end
 
 		return valid
@@ -1131,6 +1202,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			flayersMarkTime = string.format("%.1f", _flayersMarkTime)
 		end
 
+		--$nesingwarysTime
+		local _nesingwarysTime = GetNesingwarysRemainingTime()
+		local nesingwarysTime = 0
+		if _nesingwarysTime ~= nil then
+			nesingwarysTime = string.format("%.1f", _nesingwarysTime)
+		end
+
+		--$vigilTime
+		local _vigilTime = GetVigilRemainingTime()
+		local vigilTime = 0
+		if _vigilTime ~= nil then
+			vigilTime = string.format("%.1f", _vigilTime)
+		end
+
 		--$ssCount
 		local serpentStingCount = TRB.Data.snapshotData.targetData.serpentSting or 0
 
@@ -1154,6 +1239,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#flayersMark"] = TRB.Data.spells.flayersMark.icon
 		lookup["#killShot"] = TRB.Data.spells.killShot.icon
 		lookup["#multiShot"] = TRB.Data.spells.multiShot.icon
+		lookup["#nesingwarys"] = TRB.Data.spells.nesingwarysTrappingApparatus.icon
 		lookup["#rapidFire"] = TRB.Data.spells.rapidFire.icon
 		lookup["#revivePet"] = TRB.Data.spells.revivePet.icon
 		lookup["#scareBeast"] = TRB.Data.spells.scareBeast.icon
@@ -1161,7 +1247,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#steadyShot"] = TRB.Data.spells.steadyShot.icon
 		lookup["#trickShots"] = TRB.Data.spells.trickShots.icon
 		lookup["#trueshot"] = TRB.Data.spells.trueshot.icon
+		lookup["#vigil"] = TRB.Data.spells.secretsOfTheUnblinkingVigil.icon
 		lookup["$trueshotTime"] = trueshotTime
+		lookup["$vigilTime"] = vigilTime
+		lookup["$nesingwarysTime"] = nesingwarysTime
 		lookup["$flayersMarkTime"] = flayersMarkTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
 		lookup["$ssCount"] = serpentStingCount
@@ -1273,6 +1362,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			flayersMarkTime = string.format("%.1f", _flayersMarkTime)
 		end
 
+		--$nesingwarysTime
+		local _nesingwarysTime = GetNesingwarysRemainingTime()
+		local nesingwarysTime = 0
+		if _nesingwarysTime ~= nil then
+			nesingwarysTime = string.format("%.1f", _nesingwarysTime)
+		end
+
 		--$ssCount
 		local serpentStingCount = TRB.Data.snapshotData.targetData.serpentSting or 0
 
@@ -1304,6 +1400,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#killCommand"] = TRB.Data.spells.killCommand.icon
 		lookup["#killShot"] = TRB.Data.spells.killShot.icon
 		lookup["#mongooseBite"] = TRB.Data.spells.mongooseBite.icon
+		lookup["#nesingwarys"] = TRB.Data.spells.nesingwarysTrappingApparatus.icon
 		lookup["#raptorStrike"] = TRB.Data.spells.raptorStrike.icon
 		lookup["#revivePet"] = TRB.Data.spells.revivePet.icon
 		lookup["#scareBeast"] = TRB.Data.spells.scareBeast.icon
@@ -1313,6 +1410,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#wingClip"] = TRB.Data.spells.wingClip.icon
 		lookup["$coordinatedAssaultTime"] = coordinatedAssaultTime
 		lookup["$flayersMarkTime"] = flayersMarkTime
+		lookup["$nesingwarysTime"] = nesingwarysTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$focusTotal"] = focusTotal
@@ -2116,6 +2214,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = false
 						TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting - 1
 					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+					end	
+				elseif spellId == TRB.Data.spells.nesingwarysTrappingApparatus.id then
+					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						TRB.Data.spells.nesingwarysTrappingApparatus.isActive = true
+						_, _, _, _, TRB.Data.snapshotData.nesingwarysTrappingApparatus.duration, TRB.Data.snapshotData.nesingwarysTrappingApparatus.endTime, _, _, _, TRB.Data.snapshotData.nesingwarysTrappingApparatus.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.nesingwarysTrappingApparatus.id)
+						
+						if specId == 2 and TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.enabled then
+							PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
+						elseif specId == 3 and TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.enabled then
+							PlaySoundFile(TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
+						end
+					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						TRB.Data.spells.nesingwarysTrappingApparatus.isActive = false
+						TRB.Data.snapshotData.nesingwarysTrappingApparatus.spellId = nil
+						TRB.Data.snapshotData.nesingwarysTrappingApparatus.duration = 0
+						TRB.Data.snapshotData.nesingwarysTrappingApparatus.endTime = nil
 					end	
 				end
             end
