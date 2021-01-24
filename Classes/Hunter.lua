@@ -241,6 +241,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				isActive = false
+			},
+
+			secretsOfTheUnblinkingVigil = {
+				id = 336892,
+				name = "", 
+				icon = "",
+				isActive = false
 			}
 		}
 
@@ -293,8 +300,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		}
 		specCache.marksmanship.snapshotData.flayedShot = {
 			startTime = nil,
-			duration = 0,
-			enabled = false
+			duration = 0
+		}
+		specCache.marksmanship.snapshotData.secretsOfTheUnblinkingVigil = {
+			spellId = nil,
+			duration = 0
 		}
 		specCache.marksmanship.snapshotData.targetData = {
 			ttdIsActive = false,
@@ -1435,6 +1445,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             TRB.Data.snapshotData.explosiveShot.startTime = nil
             TRB.Data.snapshotData.explosiveShot.duration = 0
         end
+
+        if TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.startTime ~= nil and currentTime > (TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.startTime + TRB.Data.snapshotData.flayedShot.duration) then
+            TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.startTime = nil
+            TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration = 0
+        end
 	end    
 
 	local function UpdateSnapshot_Survival()
@@ -1594,7 +1609,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									if TRB.Data.snapshotData.aimedShot.charges == 0 then
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
 										frameLevel = 127
-									elseif TRB.Data.snapshotData.resource >= -spell.focus then
+									elseif TRB.Data.snapshotData.resource >= -spell.focus or TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration > 0 then
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
@@ -2013,6 +2028,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.trueshot.duration = 0
 							TRB.Data.snapshotData.trueshot.endTime = nil
 						end
+					elseif spellId == TRB.Data.spells.secretsOfTheUnblinkingVigil.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.startTime, TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration, _, _ = GetSpellCooldown(TRB.Data.spells.secretsOfTheUnblinkingVigil.id)
+							
+							if TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.enabled then
+								PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.secretsOfTheUnblinkingVigil.isActive = false
+							TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.spellId = nil
+							TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration = 0
+							TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.endTime = nil
+						end
 					end
 				elseif specId == 3 then --Survival
 					if spellId == TRB.Data.spells.carve.id then
@@ -2066,6 +2094,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 						TRB.Data.spells.flayersMark.isActive = true
 						_, _, _, _, TRB.Data.snapshotData.flayersMark.duration, TRB.Data.snapshotData.flayersMark.endTime, _, _, _, TRB.Data.snapshotData.flayersMark.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.flayersMark.id)
+						
+						if specId == 2 and TRB.Data.settings.hunter.marksmanship.audio.flayersMark.enabled then
+							PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
+						elseif specId == 3 and TRB.Data.settings.hunter.survival.audio.flayersMark.enabled then
+							PlaySoundFile(TRB.Data.settings.hunter.survival.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
+						end
 					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 						TRB.Data.spells.flayersMark.isActive = false
 						TRB.Data.snapshotData.flayersMark.spellId = nil

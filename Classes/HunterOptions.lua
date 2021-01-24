@@ -187,6 +187,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
+				},
+				secretsOfTheUnblinkingVigil={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+				flayersMark={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
 				}
             },
 			textures = {
@@ -372,6 +382,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			displayText = {},
 			audio = {
 				overcap={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+				flayersMark={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -2532,6 +2547,136 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+		
+		yCoord = yCoord - 60
+		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.flayersMarkAudio
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if Venthyr)")
+		f.tooltip = "Play an audio cue when you get a Flayer's Mark proc that allows you to cast Kill Shot for 0 Focus and above normal execute range enemy health."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.audio.flayersMark.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.audio.flayersMark.enabled = self:GetChecked()
+
+			if TRB.Data.settings.hunter.marksmanship.audio.flayersMark.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)	
+			
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.flayersMarkAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_flayersMark_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, TRB.Data.settings.hunter.marksmanship.audio.flayersMark.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.flayersMarkAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound
+						info.func = self.SetValue			
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+			TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound = newValue
+			TRB.Data.settings.hunter.marksmanship.audio.flayersMark.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+
+		
+		yCoord = yCoord - 60
+		controls.checkBoxes.secretsOfTheUnblinkingVigilAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_secretsOfTheUnblinkingVigil_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.secretsOfTheUnblinkingVigilAudio
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Secrets of the Unblinking Vigil proc")
+		f.tooltip = "Play an audio cue when you get a Secrets of the Unblinking Vigil proc that allows your next Aimed Shot to cost 0 Focus."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.enabled = self:GetChecked()
+
+			if TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)	
+			
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.secretsOfTheUnblinkingVigilAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_secretsOfTheUnblinkingVigilAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.secretsOfTheUnblinkingVigilAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.secretsOfTheUnblinkingVigilAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.secretsOfTheUnblinkingVigilAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.sound
+						info.func = self.SetValue			
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+			TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.sound = newValue
+			TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
@@ -5020,6 +5165,71 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+	
+
+		
+		yCoord = yCoord - 60
+		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.flayersMarkAudio
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if Venthyr)")
+		f.tooltip = "Play an audio cue when you get a Flayer's Mark proc that allows you to cast Kill Shot for 0 Focus and above normal execute range enemy health."
+		f:SetChecked(TRB.Data.settings.hunter.survival.audio.flayersMark.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.survival.audio.flayersMark.enabled = self:GetChecked()
+
+			if TRB.Data.settings.hunter.survival.audio.flayersMark.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.survival.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)	
+			
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.flayersMarkAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_flayersMark_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, TRB.Data.settings.hunter.survival.audio.flayersMark.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.flayersMarkAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.hunter.survival.audio.flayersMark.sound
+						info.func = self.SetValue			
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+			TRB.Data.settings.hunter.survival.audio.flayersMark.sound = newValue
+			TRB.Data.settings.hunter.survival.audio.flayersMark.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
