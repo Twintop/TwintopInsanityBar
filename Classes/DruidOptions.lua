@@ -1375,17 +1375,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 		
 
-		controls.checkBoxes.ssThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurgeEnabled", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.ssThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Starsurge threshold line")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast Starsurge."
-		f:SetChecked(TRB.Data.settings.druid.balance.starsurgeThreshold)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.starsurgeThreshold = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
 		controls.checkBoxes.sfThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starfallEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sfThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -1396,10 +1385,48 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.starfallThreshold = self:GetChecked()
 		end)
 
+		yCoord = yCoord - 25
+		controls.checkBoxes.ssThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurgeEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.ssThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show Starsurge threshold line (30 AP)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast Starsurge."
+		f:SetChecked(TRB.Data.settings.druid.balance.starsurgeThreshold)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.starsurgeThreshold = self:GetChecked()
+		end)
 
-		yCoord = yCoord - 25
-		yCoord = yCoord - 25
-		yCoord = yCoord - 25
+		yCoord = yCoord - 20
+		controls.checkBoxes.ssThreshold2Show = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurge2Enabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.ssThreshold2Show
+		f:SetPoint("TOPLEFT", xCoord+20, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show 2x Starsurge threshold line")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast two Starsurges in a row."
+		f:SetChecked(TRB.Data.settings.druid.balance.starsurge2Threshold)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.starsurge2Threshold = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 20
+		controls.checkBoxes.ssThreshold3Show = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurge3Enabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.ssThreshold3Show
+		f:SetPoint("TOPLEFT", xCoord+20, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show 3x Starsurge threshold line")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast three Starsurges in a row."
+		f:SetChecked(TRB.Data.settings.druid.balance.starsurge3Threshold)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.starsurge3Threshold = self:GetChecked()
+		end)
+		yCoord = yCoord - 20
+		controls.checkBoxes.ssThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurgeOnlyOver", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.ssThresholdOnlyOverShow
+		f:SetPoint("TOPLEFT", xCoord+20, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Only show current + next threshold line?")
+		f.tooltip = "This will only show Starsurge threshold lines if you already have enough Astral Power to cast it, or, if it is the next threshold you're approaching. Only triggers the next after the previous threshold line has been reached, even if it is not checked above!"
+		f:SetChecked(TRB.Data.settings.druid.balance.starsurgeThresholdOnlyOverShow)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.starsurgeThresholdOnlyOverShow = self:GetChecked()
+		end)
 
 		yCoord = yCoord - 30
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Eclipse Configuration", 0, yCoord)
