@@ -1519,7 +1519,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
         
                     controls.colors.trueshot.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -4017,7 +4016,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
         
                     controls.colors.coordinatedAssault.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.hunter.survival.colors.bar.coordinatedAssault = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
                 end)
 			end
 		end)
