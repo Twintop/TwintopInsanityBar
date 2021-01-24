@@ -257,6 +257,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				isActive = false
 			},
+			eagletalonsTrueFocus = {
+				id = 336851,
+				name = "", 
+				icon = "",
+				isActive = false,
+				modifier = 0.5
+			},
 
 		}
 
@@ -958,16 +965,24 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		return remainingTime
 	end
 	
-    local function CalculateResourceGain(resource)
+    local function CalculateAbilityResourceValue(resource)
         local modifier = 1.0
                 
 		if resource > 0 then
-			if GetSpecialization() == 2 and TRB.Data.spells.trueshot.isActive then
-				modifier = modifier * TRB.Data.spells.trueshot.modifier
+			if GetSpecialization() == 2 then				
+				if TRB.Data.spells.trueshot.isActive then
+					modifier = modifier * TRB.Data.spells.trueshot.modifier
+				end
 			end
-
+			
 			if TRB.Data.spells.nesingwarysTrappingApparatus.isActive then
 				modifier = modifier * TRB.Data.spells.nesingwarysTrappingApparatus.modifier
+			end			
+		else
+			if GetSpecialization() == 2 then
+				if TRB.Data.spells.eagletalonsTrueFocus.isActive then
+					modifier = modifier * TRB.Data.spells.eagletalonsTrueFocus.modifier
+				end
 			end
 		end
 
@@ -975,7 +990,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
     end
 
 	local function UpdateCastingResourceFinal()	
-		TRB.Data.snapshotData.casting.resourceFinal = CalculateResourceGain(TRB.Data.snapshotData.casting.resourceRaw)
+		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
 	end
 
 	local function RefreshTargetTracking()
@@ -1696,7 +1711,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholdWidth, -spell.focus, TRB.Data.character.maxResource)
+							local focusAmount = CalculateAbilityResourceValue(spell.focus)
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholdWidth, -focusAmount, TRB.Data.character.maxResource)
 							
 							local showThreshold = true
 							local thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
@@ -1707,7 +1723,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									if TRB.Data.snapshotData.aimedShot.charges == 0 then
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
 										frameLevel = 127
-									elseif TRB.Data.snapshotData.resource >= -spell.focus or TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration > 0 then
+									elseif TRB.Data.snapshotData.resource >= -focusAmount or TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration > 0 then
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
@@ -1721,7 +1737,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									elseif TRB.Data.snapshotData.killShot.charges == 0 and flayersMarkTime == 0 then
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
 										frameLevel = 127
-									elseif TRB.Data.snapshotData.resource >= -spell.focus or flayersMarkTime > 0 then
+									elseif TRB.Data.snapshotData.resource >= -focusAmount or flayersMarkTime > 0 then
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
@@ -1733,7 +1749,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 											thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
 											frameLevel = 127
-										elseif TRB.Data.snapshotData.resource >= -spell.focus then
+										elseif TRB.Data.snapshotData.resource >= -focusAmount then
 											thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
 										else
 											thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
@@ -1749,14 +1765,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 									thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
 									frameLevel = 127
-								elseif TRB.Data.snapshotData.resource >= -spell.focus then
+								elseif TRB.Data.snapshotData.resource >= -focusAmount then
 									thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
 								else
 									thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
 									frameLevel = 128
 								end
 							else -- This is an active/available/normal spell threshold
-								if TRB.Data.snapshotData.resource >= -spell.focus then
+								if TRB.Data.snapshotData.resource >= -focusAmount then
 									thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
 								else
 									thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
@@ -1870,6 +1886,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+							local focusAmount = CalculateAbilityResourceValue(spell.focus)
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.hunter.survival.thresholdWidth, -focusAmount, TRB.Data.character.maxResource)
+
 							local showThreshold = true
 							local thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.over
 							local frameLevel = 129
@@ -1883,7 +1902,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									elseif flayersMarkTime == 0 and (TRB.Data.snapshotData.killShot.startTime ~= nil and currentTime < (TRB.Data.snapshotData.killShot.startTime + TRB.Data.snapshotData.killShot.duration)) then
 										thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.unusable
 										frameLevel = 127
-									elseif TRB.Data.snapshotData.resource >= -spell.focus or flayersMarkTime > 0 then
+									elseif TRB.Data.snapshotData.resource >= -focusAmount or flayersMarkTime > 0 then
 										thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.under
@@ -1895,7 +1914,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.unusable
 											frameLevel = 127
-										elseif TRB.Data.snapshotData.resource >= -spell.focus then
+										elseif TRB.Data.snapshotData.resource >= -focusAmount then
 											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.over
 										else
 											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.under
@@ -1911,7 +1930,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										if TRB.Data.snapshotData.carve.startTime ~= nil and currentTime < (TRB.Data.snapshotData.carve.startTime + TRB.Data.snapshotData.carve.duration) then
 											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.unusable
 											frameLevel = 127
-										elseif TRB.Data.snapshotData.resource >= -spell.focus then
+										elseif TRB.Data.snapshotData.resource >= -focusAmount then
 											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.over
 										else
 											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.under
@@ -1925,7 +1944,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										if TRB.Data.snapshotData.butchery.charges == 0 then
 											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.unusable
 											frameLevel = 127
-										elseif TRB.Data.snapshotData.resource >= -spell.focus then
+										elseif TRB.Data.snapshotData.resource >= -focusAmount then
 											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.over
 										else
 											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.under
@@ -1939,14 +1958,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 									thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.unusable
 									frameLevel = 127
-								elseif TRB.Data.snapshotData.resource >= -spell.focus then
+								elseif TRB.Data.snapshotData.resource >= -focusAmount then
 									thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.over
 								else
 									thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.under
 									frameLevel = 128
 								end
 							else -- This is an active/available/normal spell threshold
-								if TRB.Data.snapshotData.resource >= -spell.focus then
+								if TRB.Data.snapshotData.resource >= -focusAmount then
 									thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.over
 								else
 									thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.under
@@ -1954,8 +1973,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								end
 							end
 
-							if TRB.Data.settings.hunter.survival.thresholds[spell.settingKey].enabled and showThreshold then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.hunter.survival.thresholdWidth, -spell.focus, TRB.Data.character.maxResource)
+							if TRB.Data.settings.hunter.survival.thresholds[spell.settingKey].enabled and showThreshold then								
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
 								resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
@@ -2126,6 +2144,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.trueshot.duration = 0
 							TRB.Data.snapshotData.trueshot.endTime = nil
 						end
+					elseif spellId == TRB.Data.spells.eagletalonsTrueFocus.id then
+							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+								TRB.Data.spells.eagletalonsTrueFocus.isActive = true
+							elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+								TRB.Data.spells.eagletalonsTrueFocus.isActive = false
+							end
 					elseif spellId == TRB.Data.spells.secretsOfTheUnblinkingVigil.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.startTime, TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration, _, _ = GetSpellCooldown(TRB.Data.spells.secretsOfTheUnblinkingVigil.id)
