@@ -2041,7 +2041,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f.font:SetText("Middle Text")
 
 		controls.textbox.middle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.shaman.elemental.displayText.middle.text,
-														500, 450, 24, xCoord+100, yCoord)
+														500, 440, 24, xCoord+100, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.shaman.elemental.displayText.middle.text = self:GetText()
@@ -2066,7 +2066,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f.font:SetText("Right Text")
 
 		controls.textbox.right = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.shaman.elemental.displayText.right.text,
-														500, 450, 24, xCoord+100, yCoord)
+														500, 440, 24, xCoord+100, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.shaman.elemental.displayText.right.text = self:GetText()

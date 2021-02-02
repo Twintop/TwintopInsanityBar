@@ -2995,6 +2995,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						TRB.Data.settings = settings
 					end	
 					FillSpecCache()
+					FillSpellData_BeastMastery()
 					FillSpellData_Marksmanship()
 					FillSpellData_Survival()
 
