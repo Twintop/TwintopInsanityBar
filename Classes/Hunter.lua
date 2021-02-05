@@ -52,33 +52,35 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			maxResource = 100,
 			covenantId = 0,
 			talents = {
-				serpentSting = {
-					isSelected = false
-				},
-				barrage = {
-					isSelected = false
-				},
-				aMurderOfCrows = {
-					isSelected = false
-				},
-				explosiveShot = {
+				scentOfBlood = {
 					isSelected = false
 				},
 				chimaeraShot = {
 					isSelected = false
 				},
-				deadEye = {
+				aMurderOfCrows = {
 					isSelected = false
 				},
-				doubleTap = {
+				barrage = {
 					isSelected = false
-				}            
+				}           
 			},
 			items = {
 			}
 		}
 
 		specCache.beastMastery.spells = {
+			killShot = {
+				id = 53351,
+				name = "",
+				icon = "",
+				focus = -10,
+				thresholdId = 1,--5,
+				settingKey = "killShot",
+				healthMinimum = 0.2,
+				isSnowflake = true,
+				thresholdUsable = false
+			},
 			killShot = {
 				id = 53351,
 				name = "",
@@ -108,17 +110,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "revivePet",
 				thresholdUsable = false
 			},
-
-			serpentSting = {
-				id = 271788,
-				name = "",
-				icon = "",
-				focus = -10,
-				thresholdId = 4,--3,
-				settingKey = "serpentSting",
-				isTalent = true,
-				thresholdUsable = false
-			},
+			
 			barrage = {
 				id = 120360,
 				name = "",
