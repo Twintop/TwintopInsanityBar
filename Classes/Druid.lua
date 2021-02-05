@@ -1344,7 +1344,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				elseif spellId == TRB.Data.spells.timewornDreambinder.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 						TRB.Data.spells.timewornDreambinder.isActive = true
-						_, _, TRB.Data.snapshotData.timewornDreambinder.stacks, _, TRB.Data.snapshotData.timewornDreambinder.duration, TRB.Data.snapshotData.timewornDreambinder.endTime, _, _, _, TRB.Data.snapshotData.onethsClearVision.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.onethsClearVision.id)
+						_, _, TRB.Data.snapshotData.timewornDreambinder.stacks, _, TRB.Data.snapshotData.timewornDreambinder.duration, TRB.Data.snapshotData.timewornDreambinder.endTime, _, _, _, TRB.Data.snapshotData.timewornDreambinder.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.timewornDreambinder.id)
 					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 						TRB.Data.spells.timewornDreambinder.isActive = false
 						TRB.Data.snapshotData.timewornDreambinder.spellId = nil
