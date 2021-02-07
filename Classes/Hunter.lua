@@ -1015,7 +1015,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 	end
 
-    local function ConstructResourceBar(settings)
+	local function ConstructResourceBar(settings)
+		TRB.Frames.resourceFrame.thresholds = nil
+		TRB.Frames.resourceFrame.thresholds = {}
 		local resourceFrameCounter = 1
         for k, v in pairs(TRB.Data.spells) do
             local spell = TRB.Data.spells[k]
