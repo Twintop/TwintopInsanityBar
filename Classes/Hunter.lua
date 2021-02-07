@@ -116,7 +116,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -60,
-				thresholdId = 5,--4,
+				thresholdId = 4,
 				settingKey = "barrage",
 				isTalent = true,
 				hasCooldown = true,
@@ -127,7 +127,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -30,
-				thresholdId = 6,--7,
+				thresholdId = 5,--7,
 				settingKey = "aMurderOfCrows",
 				isTalent = true,
 				hasCooldown = true,
@@ -148,7 +148,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -10,
-				thresholdId = 7,--12,
+				thresholdId = 6,--12,
 				settingKey = "flayedShot",
 				hasCooldown = true,
 				isSnowflake = true,
@@ -896,7 +896,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			--{ variable = "#rapidFire", icon = spells.rapidFire.icon, description = "Rapid Fire", printInSettings = true },
 			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
 			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
-			{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
+			--{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
 			--{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = "Steady Shot", printInSettings = true },
 			--{ variable = "#trickShots", icon = spells.trickShots.icon, description = "Trick Shots", printInSettings = true },
 			--{ variable = "#trueshot", icon = spells.trueshot.icon, description = "Trueshot", printInSettings = true },
@@ -1541,7 +1541,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		--lookup["#rapidFire"] = TRB.Data.spells.rapidFire.icon
 		lookup["#revivePet"] = TRB.Data.spells.revivePet.icon
 		lookup["#scareBeast"] = TRB.Data.spells.scareBeast.icon
-		lookup["#serpentSting"] = TRB.Data.spells.serpentSting.icon
+		--lookup["#serpentSting"] = TRB.Data.spells.serpentSting.icon
 		--lookup["#steadyShot"] = TRB.Data.spells.steadyShot.icon
 		--lookup["#trickShots"] = TRB.Data.spells.trickShots.icon
 		--lookup["#trueshot"] = TRB.Data.spells.trueshot.icon
@@ -1551,7 +1551,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$nesingwarysTime"] = nesingwarysTime
 		lookup["$flayersMarkTime"] = flayersMarkTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
-		lookup["$ssCount"] = serpentStingCount
+		--lookup["$ssCount"] = serpentStingCount
 		lookup["$focusTotal"] = focusTotal
 		lookup["$focusMax"] = TRB.Data.character.maxResource
 		lookup["$focus"] = currentFocus
