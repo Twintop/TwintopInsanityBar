@@ -2,7 +2,7 @@ local _, TRB = ...
 
 -- Addon details data
 TRB.Details = {}
-TRB.Details.addonVersion = "9.0.2.40"
+TRB.Details.addonVersion = "9.0.2.41"
 TRB.Details.addonReleaseDate = "February 07, 2021"
 TRB.Details.supportedSpecs = "Shadow Priest, Elemental Shaman, Balance Druid, Marksmanship Hunter, Survival Hunter"
 
