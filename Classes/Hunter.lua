@@ -1296,7 +1296,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 	end
 
-    local function ConstructResourceBar(settings)
+	local function ConstructResourceBar(settings)
+		TRB.Frames.resourceFrame.thresholds = nil
+		TRB.Frames.resourceFrame.thresholds = {}
 		local resourceFrameCounter = 1
         for k, v in pairs(TRB.Data.spells) do
             local spell = TRB.Data.spells[k]
@@ -1919,6 +1921,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif specId == 2 then
 				if currentSpell == nil then
 					local spellName = select(1, currentChannel)
+					TRB.Functions.ResetCastingSnapshotData()
+					return false
 					--See Priest implementation for handling channeled spells
 				else
 					local spellName = select(1, currentSpell)
@@ -1940,6 +1944,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif specId == 3 then
 				if currentSpell == nil then
 					local spellName = select(1, currentChannel)
+					TRB.Functions.ResetCastingSnapshotData()
 					--See Priest implementation for handling channeled spells
 				else
 					if spellName == TRB.Data.spells.scareBeast.name then
@@ -1947,10 +1952,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					elseif spellName == TRB.Data.spells.revivePet.name then
 						FillSnapshotDataCasting(TRB.Data.spells.revivePet)
 					else
+						TRB.Functions.ResetCastingSnapshotData()
 						return false
 					end
 				end
 			end
+			TRB.Functions.ResetCastingSnapshotData()
 			return false
 		end
 	end
