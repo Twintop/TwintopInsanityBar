@@ -775,7 +775,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "chakrams",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				cooldown = 20
 			},
 
 			flayedShot = {
@@ -2902,7 +2903,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					if spellId == TRB.Data.spells.carve.id then
 						TRB.Data.snapshotData.carve.startTime, TRB.Data.snapshotData.carve.duration, _, _ = GetSpellCooldown(TRB.Data.spells.carve.id)
 					elseif spellId == TRB.Data.spells.chakrams.id then
-						TRB.Data.snapshotData.chakrams.startTime, TRB.Data.snapshotData.chakrams.duration, _, _ = GetSpellCooldown(TRB.Data.spells.chakrams.id)
+						TRB.Data.snapshotData.chakrams.startTime = currentTime
+						TRB.Data.snapshotData.chakrams.duration = TRB.Data.spells.chakrams.cooldown
 					elseif spellId == TRB.Data.spells.flankingStrike.id then
 						TRB.Data.snapshotData.flankingStrike.startTime, TRB.Data.snapshotData.flankingStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.flankingStrike.id)
 					elseif spellId == TRB.Data.spells.termsOfEngagement.id then
