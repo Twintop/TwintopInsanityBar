@@ -1015,14 +1015,24 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 	end
 
-	local function ConstructResourceBar(settings)
-		TRB.Frames.resourceFrame.thresholds = nil
-		TRB.Frames.resourceFrame.thresholds = {}
+	local function ConstructResourceBar(settings)		
+		local entries = TRB.Functions.TableLength(resourceFrame.thresholds)
+		if entries > 0 then
+			for x = 1, entries do
+				resourceFrame.thresholds[x]:Hide()
+			end
+		end
+
+		--TRB.Frames.resourceFrame.thresholds = nil
+		--TRB.Frames.resourceFrame.thresholds = {}
 		local resourceFrameCounter = 1
         for k, v in pairs(TRB.Data.spells) do
             local spell = TRB.Data.spells[k]
             if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] = TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] or CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+				if TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] == nil then
+					TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+				end
+				
 				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:Show()
 				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:SetFrameLevel(0)
 				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:Hide()
