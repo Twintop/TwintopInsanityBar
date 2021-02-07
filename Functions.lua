@@ -464,7 +464,7 @@ TRB.Functions.SetBarMinMaxValues = SetBarMinMaxValues
 
 local function RedrawThresholdLines(settings)	
 	local resourceFrame = TRB.Frames.resourceFrame
-	local passiveFrame = TRB.Frames.passiveFrame	
+	local passiveFrame = TRB.Frames.passiveFrame
 	local borderSubtraction = 0
 
 	if not settings.bar.thresholdOverlapBorder then
@@ -473,7 +473,6 @@ local function RedrawThresholdLines(settings)
 
 	local entries = TRB.Functions.TableLength(resourceFrame.thresholds)
 	if entries > 0 then
-
 		for x = 1, entries do
 			resourceFrame.thresholds[x]:SetWidth(settings.thresholdWidth)
 			resourceFrame.thresholds[x]:SetHeight(settings.bar.height - borderSubtraction)
@@ -496,7 +495,7 @@ local function RedrawThresholdLines(settings)
 			passiveFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
 			passiveFrame.thresholds[x]:SetFrameStrata(TRB.Data.settings.core.strata.level)
 			passiveFrame.thresholds[x]:SetFrameLevel(127)
-			passiveFrame.thresholds[x]:Show()
+			passiveFrame.thresholds[x]:hide()
 		end
 	end
 
