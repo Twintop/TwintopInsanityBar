@@ -154,7 +154,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "aMurderOfCrows",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				cooldown = 60
 			},			
 			barrage = {
 				id = 120360,
@@ -165,7 +166,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "barrage",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				cooldown = 20
 			},
 			
 			
@@ -413,18 +415,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "barrage",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				cooldown = 20
 			},
 			aMurderOfCrows = {
 				id = 131894,
 				name = "",
 				icon = "",
-				focus = -20, -- -30 for non Marksmanship,
+				focus = -20,
 				thresholdId = 7,
 				settingKey = "aMurderOfCrows",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				cooldown = 60
 			},
 			explosiveShot = {
 				id = 212431,
@@ -759,7 +763,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "aMurderOfCrows",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				cooldown = 60
 			},
 			chakrams = {
 				id = 259391,
@@ -1954,6 +1959,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if specId == 1 then
 				if currentSpell == nil then
 					local spellName = select(1, currentChannel)
+					if spellName == TRB.Data.spells.barrage.name then
+						TRB.Data.spells.barrage.thresholdUsable = false
+					else							
+						TRB.Functions.ResetCastingSnapshotData()
+						return false
+					end
 					--See Priest implementation for handling channeled spells
 				else
 					if spellName == TRB.Data.spells.scareBeast.name then
@@ -1991,6 +2002,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				if currentSpell == nil then
 					local spellName = select(1, currentChannel)
 					TRB.Functions.ResetCastingSnapshotData()
+					return false
 					--See Priest implementation for handling channeled spells
 				else
 					if spellName == TRB.Data.spells.scareBeast.name then
@@ -2042,31 +2054,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		UpdateSnapshot()
 		local currentTime = GetTime()
 		local _
-		--[[
-        TRB.Data.snapshotData.aimedShot.charges, _, TRB.Data.snapshotData.aimedShot.startTime, TRB.Data.snapshotData.aimedShot.duration, _ = GetSpellCharges(TRB.Data.spells.aimedShot.id)
-        TRB.Data.snapshotData.killShot.charges, _, TRB.Data.snapshotData.killShot.startTime, TRB.Data.snapshotData.killShot.duration, _ = GetSpellCharges(TRB.Data.spells.killShot.id)
-
-        if TRB.Data.snapshotData.burstingShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.burstingShot.startTime + TRB.Data.snapshotData.burstingShot.duration) then
-            TRB.Data.snapshotData.burstingShot.startTime = nil
-            TRB.Data.snapshotData.burstingShot.duration = 0
-        end
 
         if TRB.Data.snapshotData.barrage.startTime ~= nil and currentTime > (TRB.Data.snapshotData.barrage.startTime + TRB.Data.snapshotData.barrage.duration) then
-            TRB.Data.snapshotData.barrage.startTime = nil
+			TRB.Data.snapshotData.barrage.startTime = nil
             TRB.Data.snapshotData.barrage.duration = 0
-        end
-
-        if TRB.Data.snapshotData.explosiveShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.explosiveShot.startTime + TRB.Data.snapshotData.explosiveShot.duration) then
-            TRB.Data.snapshotData.explosiveShot.startTime = nil
-            TRB.Data.snapshotData.explosiveShot.duration = 0
-        end
-
-        if TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.startTime ~= nil and currentTime > (TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.startTime + TRB.Data.snapshotData.flayedShot.duration) then
-            TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.startTime = nil
-            TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration = 0
 		end
-		]]
-
+		
 		if TRB.Data.snapshotData.killShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.killShot.startTime + TRB.Data.snapshotData.killShot.duration) then
             TRB.Data.snapshotData.killShot.startTime = nil
             TRB.Data.snapshotData.killShot.duration = 0
@@ -2849,13 +2842,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if sourceGUID == TRB.Data.character.guid then 
 				if specId == 1 then --Beast Mastery
 					if spellId == TRB.Data.spells.barrage.id then
-						TRB.Data.snapshotData.barrage.startTime, TRB.Data.snapshotData.barrage.duration, _, _ = GetSpellCooldown(TRB.Data.spells.barrage.id)
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.barrage.startTime = currentTime
+							TRB.Data.snapshotData.barrage.duration = TRB.Data.spells.barrage.cooldown
+						end
 					end
 				elseif specId == 2 then --Marksmanship
 					if spellId == TRB.Data.spells.burstingShot.id then
 						TRB.Data.snapshotData.burstingShot.startTime, TRB.Data.snapshotData.burstingShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.burstingShot.id)
 					elseif spellId == TRB.Data.spells.barrage.id then
-						TRB.Data.snapshotData.barrage.startTime, TRB.Data.snapshotData.barrage.duration, _, _ = GetSpellCooldown(TRB.Data.spells.barrage.id)
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.barrage.startTime = currentTime
+							TRB.Data.snapshotData.barrage.duration = TRB.Data.spells.barrage.cooldown
+						end
 					elseif spellId == TRB.Data.spells.explosiveShot.id then
 						TRB.Data.snapshotData.explosiveShot.startTime, TRB.Data.snapshotData.explosiveShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.explosiveShot.id)
 					elseif spellId == TRB.Data.spells.trueshot.id then
@@ -2957,7 +2956,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				if spellId == TRB.Data.spells.flayedShot.id then
 					TRB.Data.snapshotData.flayedShot.startTime, TRB.Data.snapshotData.flayedShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.flayedShot.id)
 				elseif spellId == TRB.Data.spells.aMurderOfCrows.id then
-					TRB.Data.snapshotData.aMurderOfCrows.startTime, TRB.Data.snapshotData.aMurderOfCrows.duration, _, _ = GetSpellCooldown(TRB.Data.spells.aMurderOfCrows.id)
+					if type == "SPELL_CAST_SUCCESS" then
+						TRB.Data.snapshotData.aMurderOfCrows.startTime = currentTime
+						TRB.Data.snapshotData.aMurderOfCrows.duration = TRB.Data.spells.aMurderOfCrows.cooldown
+					end
 				elseif spellId == TRB.Data.spells.flayersMark.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 						TRB.Data.spells.flayersMark.isActive = true
