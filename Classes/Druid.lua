@@ -843,6 +843,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		else
 			if currentSpell == nil then
                 local spellName = select(1, currentChannel)
+				TRB.Functions.ResetCastingSnapshotData()
+				return false
                 --See Priest implementation for handling channeled spells
 			else	
 				local spellName = select(1, currentSpell)
