@@ -70,35 +70,51 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		}
 
 		specCache.beastMastery.spells = {
-			killShot = {
+			arcaneShot = {
+				id = 185358,
+				name = "",
+				icon = "",
+				focus = -20,
+				thresholdId = 1,
+				settingKey = "arcaneShot",
+				thresholdUsable = false
+			},
+			cobaraShot = {
+				id = 193455,
+				name = "",
+				icon = "",
+				focus = -35,
+				thresholdId = 4,
+				settingKey = "cobraShot",
+				isSnowflake = false,
+				thresholdUsable = false
+			},
+			killCommand = {
 				id = 53351,
 				name = "",
 				icon = "",
-				focus = -10,
-				thresholdId = 1,--5,
-				settingKey = "killShot",
-				healthMinimum = 0.2,
-				isSnowflake = true,
-				thresholdUsable = false
+				focus = -30,
+				thresholdId = 6,
+				settingKey = "killCommand"
 			},
 			killShot = {
 				id = 53351,
 				name = "",
 				icon = "",
 				focus = -10,
-				thresholdId = 1,--5,
+				thresholdId = 7,
 				settingKey = "killShot",
 				healthMinimum = 0.2,
 				isSnowflake = true,
 				thresholdUsable = false
 			},
-			scareBeast = {
-				id = 1513,
+			multiShot = {
+				id = 2643,
 				name = "",
 				icon = "",
-				focus = -25,
-				thresholdId = 2,--9,
-				settingKey = "scareBeast",
+				focus = -40,
+				thresholdId = 8,
+				settingKey = "multiShot",
 				thresholdUsable = false
 			},
 			revivePet = {
@@ -106,29 +122,47 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -35,
-				thresholdId = 3,--11,
+				thresholdId = 9,
 				settingKey = "revivePet",
 				thresholdUsable = false
 			},
-			
-			barrage = {
-				id = 120360,
+			scareBeast = {
+				id = 1513,
 				name = "",
 				icon = "",
-				focus = -60,
-				thresholdId = 4,
-				settingKey = "barrage",
-				isTalent = true,
-				hasCooldown = true,
+				focus = -25,
+				thresholdId = 10,
+				settingKey = "scareBeast",
 				thresholdUsable = false
 			},
+
+			barbedShot = {
+				id = 217200,
+				name = "",
+				icon = "",
+				focus = 5,
+				ticks = 4,
+				duration = 8
+			},
+
 			aMurderOfCrows = {
 				id = 131894,
 				name = "",
 				icon = "",
 				focus = -30,
-				thresholdId = 5,--7,
+				thresholdId = 2,
 				settingKey = "aMurderOfCrows",
+				isTalent = true,
+				hasCooldown = true,
+				thresholdUsable = false
+			},			
+			barrage = {
+				id = 120360,
+				name = "",
+				icon = "",
+				focus = -60,
+				thresholdId = 3,
+				settingKey = "barrage",
 				isTalent = true,
 				hasCooldown = true,
 				thresholdUsable = false
@@ -148,7 +182,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -10,
-				thresholdId = 6,--12,
+				thresholdId = 5,
 				settingKey = "flayedShot",
 				hasCooldown = true,
 				isSnowflake = true,
@@ -1089,6 +1123,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Data.character.covenantId = C_Covenants.GetActiveCovenantID()
 		
 		if GetSpecialization() == 1 then
+			TRB.Data.character.talents.scentOfBlood.isSelected = select(4, GetTalentInfo(2, 1, TRB.Data.character.specGroup))
+			TRB.Data.character.talents.chimaeraShot.isSelected = select(4, GetTalentInfo(2, 3, TRB.Data.character.specGroup))
+			TRB.Data.character.talents.aMurderOfCrows.isSelected = select(4, GetTalentInfo(4, 3, TRB.Data.character.specGroup))
+			TRB.Data.character.talents.barrage.isSelected = select(4, GetTalentInfo(6, 2, TRB.Data.character.specGroup))
 		elseif GetSpecialization() == 2 then
 			TRB.Data.character.talents.serpentSting.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.aMurderOfCrows.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
@@ -1304,8 +1342,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end
 
-		--TRB.Frames.resourceFrame.thresholds = nil
-		--TRB.Frames.resourceFrame.thresholds = {}
 		local resourceFrameCounter = 1
         for k, v in pairs(TRB.Data.spells) do
             local spell = TRB.Data.spells[k]
@@ -2850,7 +2886,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.spellId = nil
 							TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration = 0
 							TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.endTime = nil
-						end
+						end		
+					elseif spellId == TRB.Data.spells.serpentSting.id then
+						InitializeTarget(destGUID)
+						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+						if type == "SPELL_AURA_APPLIED" then -- SS Applied to Target
+							TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = true
+							TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = false
+							TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting - 1
+						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						end	
 					end
 				elseif specId == 3 then --Survival
 					if spellId == TRB.Data.spells.carve.id then
@@ -2891,7 +2938,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.coordinatedAssault.spellId = nil
 							TRB.Data.snapshotData.coordinatedAssault.duration = 0
 							TRB.Data.snapshotData.coordinatedAssault.endTime = nil
-						end
+						end		
+					elseif spellId == TRB.Data.spells.serpentSting.id then
+						InitializeTarget(destGUID)
+						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+						if type == "SPELL_AURA_APPLIED" then -- SS Applied to Target
+							TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = true
+							TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = false
+							TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting - 1
+						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						end	
 					end
 				end
 
@@ -2915,17 +2973,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						TRB.Data.snapshotData.flayersMark.spellId = nil
 						TRB.Data.snapshotData.flayersMark.duration = 0
 						TRB.Data.snapshotData.flayersMark.endTime = nil
-					end			
-				elseif spellId == TRB.Data.spells.serpentSting.id then
-					InitializeTarget(destGUID)
-					TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-					if type == "SPELL_AURA_APPLIED" then -- SS Applied to Target
-						TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = true
-						TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
-					elseif type == "SPELL_AURA_REMOVED" then
-						TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = false
-						TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting - 1
-					--elseif type == "SPELL_PERIODIC_DAMAGE" then
 					end	
 				elseif spellId == TRB.Data.spells.nesingwarysTrappingApparatus.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed

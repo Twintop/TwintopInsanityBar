@@ -85,26 +85,35 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			thresholdWidth=2,
 			overcapThreshold=120,
 			thresholds = {
-					killShot = {
-						enabled = true, -- 2
-					},
-					scareBeast = {
-						enabled = false, -- 3
-					},
-					revivePet = {
-						enabled = false, -- 4
-					},
-					serpentSting = {
-						enabled = false, -- 9
-					},
-					barrage = {
-						enabled = true, -- 11
+					arcaneShot = {
+						enabled = false, -- 1
 					},
 					aMurderOfCrows = {
-						enabled = true, -- 10
+						enabled = true, -- 2
+					},
+					barrage = {
+						enabled = true, -- 3
+					},
+					cobraShot = {
+						enabled = true, -- 4
 					},
 					flayedShot = {
-						enabled = true, -- 12
+						enabled = true, -- 5
+					},
+					killCommand = {
+						enabled = true, -- 6
+					},
+					killShot = {
+						enabled = true, -- 7
+					},
+					multiShot = {
+						enabled = true, -- 8
+					},
+					revivePet = {
+						enabled = false, -- 9
+					},
+					scareBeast = {
+						enabled = false, -- 10
 					}
 			},
 			generation = {
@@ -1837,23 +1846,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.beastMastery)
 		end)
 
-		--[[
-		controls.checkBoxes.aimedShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_aimedShot", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.aimedShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Aimed Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Aimed Shot. If there are 0 charges available, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.aimedShot.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.beastMastery.thresholds.aimedShot.enabled = self:GetChecked()
-		end)
-
 		yCoord = yCoord - 25
 		controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.arcaneShotThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Arcane Shot/Chimera Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Arcane Shot or Chimera Shot."
+		getglobal(f:GetName() .. 'Text'):SetText("Arcane Shot")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Arcane Shot."
 		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.arcaneShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.beastMastery.thresholds.arcaneShot.enabled = self:GetChecked()
@@ -1882,25 +1880,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.burstingShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_burstingShot", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.burstingShotThresholdShow
+		controls.checkBoxes.cobraShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_cobraShot", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.cobraShotThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Bursting Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Bursting Shot. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.burstingShot.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Cobra Shot")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Cobra Shot."
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.cobraShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.beastMastery.thresholds.burstingShot.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.explosiveShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_explosiveShot", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.explosiveShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Explosive Shot (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot. Only visible if talented in to Explosive Shot. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.explosiveShot.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.beastMastery.thresholds.explosiveShot.enabled = self:GetChecked()
+			TRB.Data.settings.hunter.beastMastery.thresholds.cobraShot.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -1912,6 +1899,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.flayedShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.beastMastery.thresholds.flayedShot.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.killCommandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_killCommand", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.killCommandThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Kill Command")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Kill Command."
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.killCommand.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.beastMastery.thresholds.killCommand.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -1958,6 +1956,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.thresholds.scareBeast.enabled = self:GetChecked()
 		end)
 
+		--[[
 		yCoord = yCoord - 25
 		controls.checkBoxes.serpentStingThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_serpentSting", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.serpentStingThresholdShow
