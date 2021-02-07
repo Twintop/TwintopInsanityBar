@@ -245,6 +245,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			serpentSting = 0,
 			targets = {}
 		}
+		specCache.beastMastery.snapshotData.barbedShot = {
+			isActive = false,
+			ticksRemaining = 0,
+			focus = 0,
+			endTime = nil,
+			lastTick = nil
+		}
 
 		specCache.beastMastery.barTextVariables = {
 			icons = {},
@@ -2030,8 +2037,23 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.snapshotData.termsOfEngagement.focus = 0			
 				TRB.Data.snapshotData.termsOfEngagement.isActive = false
 			else
-				TRB.Data.snapshotData.termsOfEngagement.ticksRemaining = math.ceil(TRB.Data.snapshotData.termsOfEngagement.endTime - currentTime) / (TRB.Data.spells.termsOfEngagement.duration / TRB.Data.spells.termsOfEngagement.ticks)
+				TRB.Data.snapshotData.termsOfEngagement.ticksRemaining = math.ceil((TRB.Data.snapshotData.termsOfEngagement.endTime - currentTime) / (TRB.Data.spells.termsOfEngagement.duration / TRB.Data.spells.termsOfEngagement.ticks))
 				TRB.Data.snapshotData.termsOfEngagement.focus = TRB.Data.snapshotData.termsOfEngagement.ticksRemaining * TRB.Data.spells.termsOfEngagement.focus
+			end
+		end
+	end	
+
+	local function UpdateBarbedShot()
+		if TRB.Data.snapshotData.barbedShot.isActive then
+			local currentTime = GetTime()
+			if TRB.Data.snapshotData.barbedShot.endTime == nil or currentTime > TRB.Data.snapshotData.barbedShot.endTime then
+				TRB.Data.snapshotData.barbedShot.ticksRemaining = 0
+				TRB.Data.snapshotData.barbedShot.endTime = nil
+				TRB.Data.snapshotData.barbedShot.focus = 0
+				TRB.Data.snapshotData.barbedShot.isActive = false
+			else
+				TRB.Data.snapshotData.barbedShot.ticksRemaining = math.ceil((TRB.Data.snapshotData.barbedShot.endTime - currentTime) / (TRB.Data.spells.barbedShot.duration / TRB.Data.spells.barbedShot.ticks))
+				TRB.Data.snapshotData.barbedShot.focus = TRB.Data.snapshotData.barbedShot.ticksRemaining * TRB.Data.spells.barbedShot.focus
 			end
 		end
 	end
@@ -2053,6 +2075,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	local function UpdateSnapshot_BeastMastery()
 		UpdateSnapshot()
+		UpdateBarbedShot()
 		local currentTime = GetTime()
 		local _
 
@@ -2847,6 +2870,30 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.barrage.startTime = currentTime
 							TRB.Data.snapshotData.barrage.duration = TRB.Data.spells.barrage.cooldown
 						end
+					elseif spellId == TRB.Data.spells.barbedShot.id then
+						-- TODO: Make a list of active Barbed Shots to track each one separately.
+						if type == "SPELL_AURA_APPLIED" then -- Gain Barbed Shot
+							TRB.Data.snapshotData.barbedShot.isActive = true
+							TRB.Data.snapshotData.barbedShot.ticksRemaining = TRB.Data.spells.barbedShot.ticks
+							TRB.Data.snapshotData.barbedShot.focus = TRB.Data.snapshotData.barbedShot.ticksRemaining * TRB.Data.spells.barbedShot.focus
+							TRB.Data.snapshotData.barbedShot.endTime = currentTime + TRB.Data.spells.barbedShot.duration
+							TRB.Data.snapshotData.barbedShot.lastTick = currentTime
+						elseif type == "SPELL_AURA_REFRESH" then
+							TRB.Data.snapshotData.barbedShot.ticksRemaining = TRB.Data.spells.barbedShot.ticks + 1
+							TRB.Data.snapshotData.barbedShot.focus = TRB.Data.snapshotData.barbedShot.ticksRemaining * TRB.Data.spells.barbedShot.focus
+							TRB.Data.snapshotData.barbedShot.endTime = currentTime + TRB.Data.spells.barbedShot.duration + ((TRB.Data.spells.barbedShot.duration / TRB.Data.spells.barbedShot.ticks) - (currentTime - TRB.Data.snapshotData.barbedShot.lastTick))
+							TRB.Data.snapshotData.barbedShot.lastTick = currentTime
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.barbedShot.isActive = false
+							TRB.Data.snapshotData.barbedShot.ticksRemaining = 0
+							TRB.Data.snapshotData.barbedShot.focus = 0
+							TRB.Data.snapshotData.barbedShot.endTime = nil
+							TRB.Data.snapshotData.barbedShot.lastTick = nil
+						elseif type == "SPELL_PERIODIC_ENERGIZE" then
+							TRB.Data.snapshotData.barbedShot.ticksRemaining = TRB.Data.snapshotData.barbedShot.ticksRemaining - 1
+							TRB.Data.snapshotData.barbedShot.focus = TRB.Data.snapshotData.barbedShot.ticksRemaining * TRB.Data.spells.barbedShot.focus
+							TRB.Data.snapshotData.barbedShot.lastTick = currentTime
+						end	
 					end
 				elseif specId == 2 then --Marksmanship
 					if spellId == TRB.Data.spells.burstingShot.id then
