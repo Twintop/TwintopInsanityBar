@@ -495,7 +495,7 @@ local function RedrawThresholdLines(settings)
 			passiveFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
 			passiveFrame.thresholds[x]:SetFrameStrata(TRB.Data.settings.core.strata.level)
 			passiveFrame.thresholds[x]:SetFrameLevel(127)
-			passiveFrame.thresholds[x]:hide()
+			passiveFrame.thresholds[x]:Show()
 		end
 	end
 
