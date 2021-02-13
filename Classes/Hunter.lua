@@ -2093,7 +2093,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.snapshotData.termsOfEngagement.isActive = false
 			else
 				TRB.Data.snapshotData.termsOfEngagement.ticksRemaining = math.ceil((TRB.Data.snapshotData.termsOfEngagement.endTime - currentTime) / (TRB.Data.spells.termsOfEngagement.duration / TRB.Data.spells.termsOfEngagement.ticks))
-				TRB.Data.snapshotData.termsOfEngagement.focus = TRB.Data.snapshotData.termsOfEngagement.ticksRemaining * TRB.Data.spells.termsOfEngagement.focus
+				TRB.Data.snapshotData.termsOfEngagement.focus = CalculateAbilityResourceValue(TRB.Data.snapshotData.termsOfEngagement.ticksRemaining * TRB.Data.spells.termsOfEngagement.focus)
 			end
 		end
 	end
@@ -2115,7 +2115,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					activeCount = activeCount + 1
 					TRB.Data.snapshotData.barbedShot.isActive = true
 					TRB.Data.snapshotData.barbedShot.list[x].ticksRemaining = math.ceil((TRB.Data.snapshotData.barbedShot.list[x].endTime - currentTime) / (TRB.Data.spells.barbedShot.duration / TRB.Data.spells.barbedShot.ticks))
-					TRB.Data.snapshotData.barbedShot.list[x].focus = TRB.Data.snapshotData.barbedShot.list[x].ticksRemaining * TRB.Data.spells.barbedShot.focus
+					TRB.Data.snapshotData.barbedShot.list[x].focus = CalculateAbilityResourceValue(TRB.Data.snapshotData.barbedShot.list[x].ticksRemaining * TRB.Data.spells.barbedShot.focus)
 					totalFocus = totalFocus + TRB.Data.snapshotData.barbedShot.list[x].focus
 					totalTicksRemaining = totalTicksRemaining + TRB.Data.snapshotData.barbedShot.list[x].ticksRemaining
 
