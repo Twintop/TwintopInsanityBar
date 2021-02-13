@@ -79,7 +79,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "arcaneShot",
 				thresholdUsable = false
 			},
-			cobaraShot = {
+			cobraShot = {
 				id = 193455,
 				name = "",
 				icon = "",
@@ -937,18 +937,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#aMurderOfCrows", icon = spells.aMurderOfCrows.icon, description = "A Murder of Crows", printInSettings = true },
-			--{ variable = "#aimedShot", icon = spells.aimedShot.icon, description = "Aimed Shot", printInSettings = true },
-			--{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = "Arcane Shot", printInSettings = true },
+			{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = "Arcane Shot", printInSettings = true },
+			{ variable = "#barbedShot", icon = spells.barbedShot.icon, description = "Barbed Shot", printInSettings = true },
 			{ variable = "#barrage", icon = spells.barrage.icon, description = "Barrage", printInSettings = true },
-			--{ variable = "#burstingShot", icon = spells.burstingShot.icon, description = "Bursting Shot", printInSettings = true },
 			{ variable = "#chimaeraShot", icon = spells.chimaeraShot.icon, description = "Chimaera Shot", printInSettings = true },
-			--{ variable = "#explosiveShot", icon = spells.explosiveShot.icon, description = "Explosive Shot", printInSettings = true },
+			{ variable = "#cobraShot", icon = spells.cobraShot.icon, description = "Cobra Shot", printInSettings = true },
 			{ variable = "#flayedShot", icon = spells.flayedShot.icon, description = "Flayed Shot", printInSettings = true },
 			{ variable = "#flayersMark", icon = spells.flayersMark.icon, description = "Flayer's Mark", printInSettings = true },
+			{ variable = "#killCommand", icon = spells.killCommand.icon, description = "Kill Command", printInSettings = true },
 			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
-			--{ variable = "#multiShot", icon = spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
+			{ variable = "#multiShot", icon = spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
 			{ variable = "#nesingwarys", icon = spells.nesingwarysTrappingApparatus.icon, description = "Nesingwary'ss Trapping Apparatus", printInSettings = true },
-			--{ variable = "#rapidFire", icon = spells.rapidFire.icon, description = "Rapid Fire", printInSettings = true },
 			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
 			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
 			--{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
@@ -982,9 +981,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Focus Total", printInSettings = false, color = false },   
 
 			--{ variable = "$trueshotTime", description = "Time remaining on Trueshot buff", printInSettings = true, color = false },   
-			{ variable = "$ssCount", description = "Number of Serpent Stings active on targets", printInSettings = true, color = false },
-			{ variable = "$serpentSting", description = "Is Serpent Sting talented? Logic variable only!", printInSettings = true, color = false },
 
+			{ variable = "$barbedShotTicks", description = "Total number of Barbed Shot buff ticks remaining", printInSettings = true, color = false },			
+			{ variable = "$barbedShotTime", description = "Time remaining until the most recent Barbed Shot buff expires", printInSettings = true, color = false },
+			
 			{ variable = "$flayersMarkTime", description = "Time remaining on Flayer's Mark buff", printInSettings = true, color = false },
 
 			--{ variable = "$vigilTime", description = "Time remaining on Secrets of the Unblinking Vigil buff", printInSettings = true, color = false },
@@ -1402,6 +1402,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				if TRB.Data.snapshotData.barbedShot.isActive or TRB.Data.snapshotData.barbedShot.count > 0 or TRB.Data.snapshotData.barbedShot.focus > 0 then
 					valid = true
 				end
+			elseif var == "$barbedShotTicks" then
+				if TRB.Data.snapshotData.barbedShot.isActive or TRB.Data.snapshotData.barbedShot.count > 0 or TRB.Data.snapshotData.barbedShot.focus > 0 then
+					valid = true
+				end
+			elseif var == "$barbedShotTime" then
+				if TRB.Data.snapshotData.barbedShot.isActive or TRB.Data.snapshotData.barbedShot.count > 0 or TRB.Data.snapshotData.barbedShot.focus > 0 then
+					valid = true
+				end
 			end
 		elseif specId == 2 then --Marksmanship
 			if var == "$trueshotTime" then
@@ -1540,6 +1548,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		--$passive
 		local _regenFocus = TRB.Data.snapshotData.focusRegen
 		local _passiveFocus
+		local _passiveFocusMinusRegen
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
@@ -1557,9 +1566,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local _barbedShotFocus = TRB.Data.snapshotData.barbedShot.focus
 		local barbedShotFocus = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.beastMastery.colors.text.passive, _barbedShotFocus)
 
+		--$barbedShotTicks
+		local barbedShotTicks = string.format("%.0f", TRB.Data.snapshotData.barbedShot.ticksRemaining)
+
+		--$barbedShotTime
+		local barbedShotTime = 0
+		local _barbedShotTime = (TRB.Data.snapshotData.barbedShot.endTime or 0) - currentTime
+		if _barbedShotTime > 0 then
+			barbedShotTime = string.format("%.1f", _barbedShotTime)
+		end
+
 		_passiveFocus = _regenFocus + _barbedShotFocus
+		_passiveFocusMinusRegen = _passiveFocus - _regenFocus
 
 		local passiveFocus = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.beastMastery.colors.text.passive, _passiveFocus)
+		local passiveFocusMinusRegen = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.beastMastery.colors.text.passive, _passiveFocusMinusRegen)
 		--$focusTotal
 		local _focusTotal = math.min(_passiveFocus + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
 		local focusTotal = string.format("|c%s%.0f|r", currentFocusColor, _focusTotal)
@@ -1605,24 +1626,26 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		Global_TwintopResourceBar.resource.passive = _passiveFocus
 		Global_TwintopResourceBar.resource.regen = _regenFocus
-		Global_TwintopResourceBar.dots = {
-			ssCount = serpentStingCount or 0
+		Global_TwintopResourceBar.barbedShot = {
+			count = TRB.Data.snapshotData.barbedShot.count,
+			focus = TRB.Data.snapshotData.barbedShot.focus,
+			ticks = TRB.Data.snapshotData.barbedShot.ticksRemaining,
+			remaining = _barbedShotTime
 		}
 
 		lookup = TRB.Data.lookup or {}
 		lookup["#aMurderOfCrows"] = TRB.Data.spells.aMurderOfCrows.icon
-		--lookup["#aimedShot"] = TRB.Data.spells.aimedShot.icon
-		--lookup["#arcaneShot"] = TRB.Data.spells.arcaneShot.icon
+		lookup["#arcaneShot"] = TRB.Data.spells.arcaneShot.icon
+		lookup["#barbedShot"] = TRB.Data.spells.barbedShot.icon
 		lookup["#barrage"] = TRB.Data.spells.barrage.icon
-		--lookup["#burstingShot"] = TRB.Data.spells.burstingShot.icon
-		--lookup["#chimaeraShot"] = TRB.Data.spells.chimaeraShot.icon
-		--lookup["#explosiveShot"] = TRB.Data.spells.explosiveShot.icon
+		lookup["#chimaeraShot"] = TRB.Data.spells.chimaeraShot.icon
+		lookup["#cobraShot"] = TRB.Data.spells.cobraShot.icon
 		lookup["#flayedShot"] = TRB.Data.spells.flayedShot.icon
 		lookup["#flayersMark"] = TRB.Data.spells.flayersMark.icon
+		lookup["#killCommand"] = TRB.Data.spells.killCommand.icon
 		lookup["#killShot"] = TRB.Data.spells.killShot.icon
-		--lookup["#multiShot"] = TRB.Data.spells.multiShot.icon
+		lookup["#multiShot"] = TRB.Data.spells.multiShot.icon
 		lookup["#nesingwarys"] = TRB.Data.spells.nesingwarysTrappingApparatus.icon
-		--lookup["#rapidFire"] = TRB.Data.spells.rapidFire.icon
 		lookup["#revivePet"] = TRB.Data.spells.revivePet.icon
 		lookup["#scareBeast"] = TRB.Data.spells.scareBeast.icon
 		--lookup["#serpentSting"] = TRB.Data.spells.serpentSting.icon
@@ -1645,8 +1668,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentFocus
 		lookup["$casting"] = castingFocus
-		lookup["$passive"] = passiveFocus
+
+		if TRB.Data.character.maxResource == TRB.Data.snapshotData.resource then
+			lookup["$passive"] = passiveFocusMinusRegen
+		else
+			lookup["$passive"] = passiveFocus
+		end		
+		
 		lookup["$barbedShotFocus"] = barbedShotFocus
+		lookup["$barbedShotTicks"] = barbedShotTicks
+		lookup["$barbedShotTime"] = barbedShotTime
 		lookup["$regen"] = regenFocus
 		lookup["$regenFocus"] = regenFocus
 		lookup["$focusRegen"] = regenFocus
@@ -2093,6 +2124,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 				end
 			end
+		end
+
+		if activeCount > 0 then
+			TRB.Data.snapshotData.barbedShot.isActive = true
+		else
+			TRB.Data.snapshotData.barbedShot.isActive = false
 		end
 		TRB.Data.snapshotData.barbedShot.count = activeCount
 		TRB.Data.snapshotData.barbedShot.focus = totalFocus
@@ -2913,7 +2950,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.barrage.duration = TRB.Data.spells.barrage.cooldown
 						end
 					elseif spellId == TRB.Data.spells.barbedShot.buffId[1] or spellId == TRB.Data.spells.barbedShot.buffId[2] or spellId == TRB.Data.spells.barbedShot.buffId[3] or spellId == TRB.Data.spells.barbedShot.buffId[4] or spellId == TRB.Data.spells.barbedShot.buffId[5] then
-						if type == "SPELL_AURA_APPLIED" then -- Gain Barbed Shot
+						if type == "SPELL_AURA_APPLIED" then -- Gain Barbed Shot buff
 							table.insert(TRB.Data.snapshotData.barbedShot.list, {
 								ticksRemaining = TRB.Data.spells.barbedShot.ticks,
 								focus = TRB.Data.snapshotData.barbedShot.ticksRemaining * TRB.Data.spells.barbedShot.focus,

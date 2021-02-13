@@ -69,7 +69,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				fontSize = 13
 			},
 			right = {
-				text = "{$casting}[#casting$casting+]{$regen}[$regen+]$focus",
+				text = "{$casting}[#casting$casting+]{$barbedShotFocus}[#barbedShot$barbedShotFocus+]{$regen}[$regen+]$focus",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
