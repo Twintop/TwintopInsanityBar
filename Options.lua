@@ -64,7 +64,7 @@ TRB.Options.LoadDefaultSettings = LoadDefaultSettings
 
 local function ConstructAddonOptionsPanel()
     local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-    local parent = interfaceSettingsFrame.panel		
+    local parent = interfaceSettingsFrame.panel
     local controls = interfaceSettingsFrame.controls
     local yCoord = -5
     local f = nil
@@ -117,7 +117,7 @@ local function ConstructAddonOptionsPanel()
             value = TRB.Functions.RoundTo(value, 2)
         end
 
-        self.EditBox:SetText(value)		
+        self.EditBox:SetText(value)
         TRB.Data.settings.core.ttd.sampleRate = value
     end)
 
@@ -132,7 +132,7 @@ local function ConstructAddonOptionsPanel()
             value = min
         end
 
-        self.EditBox:SetText(value)		
+        self.EditBox:SetText(value)
         TRB.Data.settings.core.ttd.numEntries = value
     end)
 
@@ -149,7 +149,7 @@ local function ConstructAddonOptionsPanel()
         end
 
         value = TRB.Functions.RoundTo(value, 0)
-        self.EditBox:SetText(value)		
+        self.EditBox:SetText(value)
         TRB.Data.settings.core.ttd.precision = value
     end)
 
@@ -171,7 +171,7 @@ local function ConstructAddonOptionsPanel()
             value = TRB.Functions.RoundTo(value, 2)
         end
 
-        self.EditBox:SetText(value)		
+        self.EditBox:SetText(value)
         TRB.Data.settings.core.dataRefreshRate = value
     end)
     
@@ -200,7 +200,7 @@ local function ConstructAddonOptionsPanel()
         strata["High"] = "HIGH"
         strata["Dialog"] = "DIALOG"
         strata["Fullscreen"] = "FULLSCREEN"
-        strata["Fullscreen Dialog"] = "FULLSCREEN_DIALOG"		
+        strata["Fullscreen Dialog"] = "FULLSCREEN_DIALOG"
         strata["Tooltip"] = "TOOLTIP"
         local strataList = {
             "Background",
@@ -217,7 +217,7 @@ local function ConstructAddonOptionsPanel()
             info.text = v
             info.value = strata[v]
             info.checked = strata[v] == TRB.Data.settings.core.strata.level
-            info.func = self.SetValue			
+            info.func = self.SetValue
             info.arg1 = strata[v]
             info.arg2 = v
             UIDropDownMenu_AddButton(info, level)
@@ -273,7 +273,7 @@ local function ConstructAddonOptionsPanel()
             info.text = v
             info.value = channel[v]
             info.checked = channel[v] == TRB.Data.settings.core.audio.channel.channel
-            info.func = self.SetValue			
+            info.func = self.SetValue
             info.arg1 = channel[v]
             info.arg2 = v
             UIDropDownMenu_AddButton(info, level)
@@ -329,13 +329,13 @@ local function ConstructOptionsPanel()
 end
 TRB.Options.ConstructOptionsPanel = ConstructOptionsPanel
 
-local function PortForwardPriestSettings()		
+local function PortForwardPriestSettings()
     if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.priest == nil and TwintopInsanityBarSettings.bar ~= nil then
         local tempSettings = TwintopInsanityBarSettings
         TwintopInsanityBarSettings.priest = {}
         TwintopInsanityBarSettings.priest.discipline = {}
         TwintopInsanityBarSettings.priest.holy = {}
-        TwintopInsanityBarSettings.priest.shadow = tempSettings			
+        TwintopInsanityBarSettings.priest.shadow = tempSettings
         TwintopInsanityBarSettings.priest.shadow.textures.resourceBar = TwintopInsanityBarSettings.priest.shadow.textures.insanityBar
         TwintopInsanityBarSettings.priest.shadow.textures.resourceBarName = TwintopInsanityBarSettings.priest.shadow.textures.insanityBarName
         TwintopInsanityBarSettings.core = {}
@@ -348,8 +348,8 @@ local function PortForwardPriestSettings()
 end
 TRB.Options.PortForwardPriestSettings = PortForwardPriestSettings
 
-local function CleanupSettings(oldSettings)	
-    local newSettings = {}	
+local function CleanupSettings(oldSettings)
+    local newSettings = {}
     if oldSettings ~= nil then
         for k, v in pairs(oldSettings) do
             if  k == "core" or

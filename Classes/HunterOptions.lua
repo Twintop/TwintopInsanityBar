@@ -24,7 +24,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
     TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = {}
     TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = {}
     TRB.Frames.interfaceSettingsFrameContainer.controls.survival = {}
-	
+
 	local function BeastMasteryLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
@@ -53,7 +53,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	end
     
     local function BeastMasteryLoadDefaultBarTextAdvancedSettings()
-		local textSettings = {		
+		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
@@ -71,7 +71,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			right = {
 				text = "{$casting}[#casting$casting+]{$regen}[$regen+]$focus",
 				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",			
+				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
 			}
 		}
@@ -132,7 +132,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				gcdsMax=2,
 				timeMax=3.0
 			},]]
-			bar = {		
+			bar = {
 				width=555,
 				height=34,
 				xPos=0,
@@ -146,8 +146,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					current="FFBAE57E",
 					casting="FFFFFFFF",
 					spending="FF555555",
-					passive="FF005500",	
-					overcap="FFFF0000",	
+					passive="FF005500",
+					overcap="FFFF0000",
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
 					overcapEnabled=true,
@@ -248,7 +248,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	end
     
     local function MarksmanshipLoadDefaultBarTextAdvancedSettings()
-		local textSettings = {		
+		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
@@ -266,7 +266,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			right = {
 				text = "{$casting}[#casting$casting+]{$passive}[$passive+]$focus",
 				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",			
+				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
 			}
 		}
@@ -333,7 +333,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				gcdsMax=2,
 				timeMax=3.0
 			},
-			bar = {		
+			bar = {
 				width=555,
 				height=34,
 				xPos=0,
@@ -347,8 +347,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					current="FFBAE57E",
 					casting="FFFFFFFF",
 					spending="FF555555",
-					passive="FF005500",	
-					overcap="FFFF0000",	
+					passive="FF005500",
+					overcap="FFFF0000",
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
 					overcapEnabled=true,
@@ -425,7 +425,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	end
 
 
-	
+
 	local function SurvivalLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
@@ -454,7 +454,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	end
     
     local function SurvivalLoadDefaultBarTextAdvancedSettings()
-		local textSettings = {		
+		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
@@ -472,7 +472,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			right = {
 				text = "{$casting}[#casting$casting+]{$toeFocus}[#termsOfEngagement$toeFocus+]{$regen}[$regen+]$focus",
 				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",			
+				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
 			}
 		}
@@ -536,7 +536,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				gcdsMax=2,
 				timeMax=3.0
 			},
-			bar = {		
+			bar = {
 				width=555,
 				height=34,
 				xPos=0,
@@ -550,8 +550,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					current="FFBAE57E",
 					casting="FFFFFFFF",
 					spending="FF555555",
-					passive="FF005500",	
-					overcap="FFFF0000",	
+					passive="FF005500",
+					overcap="FFFF0000",
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
 					overcapEnabled=true,
@@ -625,7 +625,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
-		
+
 		settings.hunter.beastMastery = BeastMasteryLoadDefaultSettings()
 		settings.hunter.marksmanship = MarksmanshipLoadDefaultSettings()
 		settings.hunter.survival = SurvivalLoadDefaultSettings()
@@ -634,12 +634,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
     TRB.Options.Hunter.LoadDefaultSettings = LoadDefaultSettings
 
 	--[[
-	
+
 	Beast Mastery Option Menus
-	
+
 	]]
 
-	local function BeastMasteryConstructResetDefaultsPanel(parent)	
+	local function BeastMasteryConstructResetDefaultsPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -670,7 +670,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				TRB.Data.settings.hunter.beastMastery = BeastMasteryResetSettings()
-				ReloadUI()			
+				ReloadUI()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -683,7 +683,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				TRB.Data.settings.hunter.beastMastery.displayText = BeastMasteryLoadDefaultBarTextSimpleSettings()
-				ReloadUI()			
+				ReloadUI()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -696,7 +696,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				TRB.Data.settings.hunter.beastMastery.displayText = BeastMasteryLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()			
+				ReloadUI()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -709,7 +709,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				TRB.Data.settings.hunter.beastMastery.displayText = BeastMasteryLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()			
+				ReloadUI()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -730,13 +730,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f.ntex = f:CreateTexture()
 		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()	
+		f.ntex:SetAllPoints()
 		f:SetNormalTexture(f.ntex)
 		f.htex = f:CreateTexture()
 		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
 		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)	
+		f:SetHighlightTexture(f.htex)
 		f.ptex = f:CreateTexture()
 		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -746,7 +746,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_Reset")
 		end)
 
-		yCoord = yCoord - 40		
+		yCoord = yCoord - 40
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -760,13 +760,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f.ntex = f:CreateTexture()
 		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()	
+		f.ntex:SetAllPoints()
 		f:SetNormalTexture(f.ntex)
 		f.htex = f:CreateTexture()
 		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
 		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)	
+		f:SetHighlightTexture(f.htex)
 		f.ptex = f:CreateTexture()
 		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -776,7 +776,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
-		
+
 		--[[
 		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Hunter_BeastMastery_ResetBarTextNarrowAdvancedButton", parent)
 		f = controls.resetButton
@@ -788,13 +788,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f.ntex = f:CreateTexture()
 		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()	
+		f.ntex:SetAllPoints()
 		f:SetNormalTexture(f.ntex)
 		f.htex = f:CreateTexture()
 		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
 		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)	
+		f:SetHighlightTexture(f.htex)
 		f.ptex = f:CreateTexture()
 		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -815,13 +815,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f.ntex = f:CreateTexture()
 		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()	
+		f.ntex:SetAllPoints()
 		f:SetNormalTexture(f.ntex)
 		f.htex = f:CreateTexture()
 		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
 		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)	
+		f:SetHighlightTexture(f.htex)
 		f.ptex = f:CreateTexture()
 		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -834,7 +834,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = controls
 	end
 
-	local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)	
+	local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -858,13 +858,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local dropdownWidth = 225
 		local sliderWidth = 260
 		local sliderHeight = 20
-	
+
 		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height/8), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width/8))
-		
+
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.beastMastery)
 
 		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
-		
+
 		yCoord = yCoord - 40
 		title = "Bar Width"
 		controls.width = TRB.UiFunctions.BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, TRB.Data.settings.hunter.beastMastery.bar.width, 1, 2,
@@ -878,7 +878,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.bar.width = value
-			
+
 			if GetSpecialization() == 1 then
 				barContainerFrame:SetWidth(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
 				barBorderFrame:SetWidth(TRB.Data.settings.hunter.beastMastery.bar.width)
@@ -886,7 +886,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				castingFrame:SetWidth(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
 				passiveFrame:SetWidth(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
 				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.beastMastery)
-				
+
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
 						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.beastMastery, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.beastMastery.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
@@ -909,8 +909,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				value = max
 			elseif value < min then
 				value = min
-			end		
-			self.EditBox:SetText(value)		
+			end
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.bar.height = value
 
 			if GetSpecialization() == 1 then
@@ -920,7 +920,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
 					resourceFrame.thresholds[x]:SetHeight(value)
 				end
-				
+
 				castingFrame:SetHeight(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
 				passiveFrame:SetHeight(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
 				leftTextFrame:SetHeight(TRB.Data.settings.hunter.beastMastery.bar.height * 3.5)
@@ -944,10 +944,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.bar.xPos = value
-			
-			if GetSpecialization() == 1 then			
+
+			if GetSpecialization() == 1 then
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
 				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.hunter.beastMastery.bar.xPos, TRB.Data.settings.hunter.beastMastery.bar.yPos)
@@ -966,7 +966,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.bar.yPos = value
-			
+
 			if GetSpecialization() == 1 then
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
@@ -985,9 +985,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.bar.border = value
-			
+
 			if GetSpecialization() == 1 then
 				barContainerFrame:SetWidth(TRB.Data.settings.hunter.beastMastery.bar.width-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
 				barContainerFrame:SetHeight(TRB.Data.settings.hunter.beastMastery.bar.height-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
@@ -1007,7 +1007,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						edgeFile = TRB.Data.settings.hunter.beastMastery.textures.border,
 						tile = true,
 						tileSize=4,
-						edgeSize=TRB.Data.settings.hunter.beastMastery.bar.border,								
+						edgeSize=TRB.Data.settings.hunter.beastMastery.bar.border,
 						insets = {0, 0, 0, 0}
 					})
 					barBorderFrame:Show()
@@ -1016,7 +1016,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.border, true))
 
 				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.beastMastery)
-				
+
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
 						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.beastMastery, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.beastMastery.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
@@ -1027,7 +1027,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			local minsliderWidth = math.max(TRB.Data.settings.hunter.beastMastery.bar.border*2, 120)
 			local minsliderHeight = math.max(TRB.Data.settings.hunter.beastMastery.bar.border*2, 1)
-			
+
 			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.beastMastery)
 			controls.height:SetMinMaxValues(minsliderHeight, scValues.barMaxHeight)
 			controls.height.MinLabel:SetText(minsliderHeight)
@@ -1047,7 +1047,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.thresholdWidth = value
-			
+
 			if GetSpecialization() == 1 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
 					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.hunter.beastMastery.thresholdWidth)
@@ -1065,7 +1065,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop = self:GetChecked()
-			
+
 			if GetSpecialization() == 1 then
 				barContainerFrame:SetMovable(TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop)
 				barContainerFrame:EnableMouse(TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop)
@@ -1077,7 +1077,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		controls.textBarTexturesSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Textures", 0, yCoord)
 		yCoord = yCoord - 30
-		
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_FocusBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
@@ -1110,7 +1110,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.hunter.beastMastery.textures.resourceBar
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -1133,7 +1133,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.settings.hunter.beastMastery.textures.passiveBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
 			end
-			
+
 			if GetSpecialization() == 1 then
 				resourceFrame:SetStatusBarTexture(TRB.Data.settings.hunter.beastMastery.textures.resourceBar)
 				if TRB.Data.settings.hunter.beastMastery.textures.textureLock then
@@ -1144,7 +1144,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			CloseDropDownMenus()
 		end
-			
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_CastBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.castingBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
@@ -1177,7 +1177,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.hunter.beastMastery.textures.castingBar
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -1203,7 +1203,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				passiveFrame:SetStatusBarTexture(TRB.Data.settings.hunter.beastMastery.textures.passiveBar)
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
 			end
-			
+
 			if GetSpecialization() == 1 then
 				castingFrame:SetStatusBarTexture(TRB.Data.settings.hunter.beastMastery.textures.castingBar)
 				if TRB.Data.settings.hunter.beastMastery.textures.textureLock then
@@ -1215,9 +1215,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			CloseDropDownMenus()
 		end
 
-		
+
 		yCoord = yCoord - 60
-			
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
@@ -1250,7 +1250,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.hunter.beastMastery.textures.passiveBar
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -1276,7 +1276,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				castingFrame:SetStatusBarTexture(TRB.Data.settings.hunter.beastMastery.textures.castingBar)
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
 			end
-			
+
 			if GetSpecialization() == 1 then
 				passiveFrame:SetStatusBarTexture(TRB.Data.settings.hunter.beastMastery.textures.passiveBar)
 				if TRB.Data.settings.hunter.beastMastery.textures.textureLock then
@@ -1286,7 +1286,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 
 			CloseDropDownMenus()
-		end	
+		end
 
 		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
@@ -1303,7 +1303,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.settings.hunter.beastMastery.textures.castingBar = TRB.Data.settings.hunter.beastMastery.textures.resourceBar
 				TRB.Data.settings.hunter.beastMastery.textures.castingBarName = TRB.Data.settings.hunter.beastMastery.textures.resourceBarName
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.hunter.beastMastery.textures.castingBarName)
-			
+
 				if GetSpecialization() == 1 then
 					passiveFrame:SetStatusBarTexture(TRB.Data.settings.hunter.beastMastery.textures.passiveBar)
 					castingFrame:SetStatusBarTexture(TRB.Data.settings.hunter.beastMastery.textures.castingBar)
@@ -1313,7 +1313,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 60
-		
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_BorderTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.borderTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
@@ -1346,7 +1346,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.hunter.beastMastery.textures.border
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -1368,7 +1368,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.hunter.beastMastery.textures.border,
 												tile = true,
 												tileSize=4,
-												edgeSize=TRB.Data.settings.hunter.beastMastery.bar.border,							
+												edgeSize=TRB.Data.settings.hunter.beastMastery.bar.border,
 												insets = {0, 0, 0, 0}
 												})
 				end
@@ -1379,7 +1379,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
 			CloseDropDownMenus()
 		end
-		
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_BackgroundTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.backgroundTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
@@ -1412,7 +1412,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.hunter.beastMastery.textures.background
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -1426,10 +1426,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.beastMastery.textures.background = newValue
 			TRB.Data.settings.hunter.beastMastery.textures.backgroundName = newName
-			
+
 			if GetSpecialization() == 1 then
 				barContainerFrame:SetBackdrop({ 
-					bgFile = TRB.Data.settings.hunter.beastMastery.textures.background,		
+					bgFile = TRB.Data.settings.hunter.beastMastery.textures.background,
 					tile = true,
 					tileSize = TRB.Data.settings.hunter.beastMastery.bar.width,
 					edgeSize = 1,
@@ -1442,7 +1442,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			CloseDropDownMenus()
 		end
 
-		
+
 		yCoord = yCoord - 70
 		controls.barDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display", 0, yCoord)
 
@@ -1457,7 +1457,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				value = max
 			elseif value < min then
 				value = min
-			end	
+			end
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
@@ -1476,7 +1476,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 
 			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.colors.bar.flashPeriod = value
 		end)]]
 
@@ -1619,7 +1619,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		yCoord = yCoord - 30		
+		yCoord = yCoord - 30
 		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", TRB.Data.settings.hunter.beastMastery.colors.bar.casting, 275, 25, xCoord, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1654,14 +1654,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						r, g, b = ColorPickerFrame:GetColorRGB()
 						a = OpacitySliderFrame:GetValue()
 					end
-		
+
 					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.hunter.beastMastery.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
 
-		yCoord = yCoord - 30		
+		yCoord = yCoord - 30
 		controls.colors.spending = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.beastMastery.colors.bar.spending, 275, 25, xCoord, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1680,8 +1680,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                     TRB.Data.settings.hunter.beastMastery.colors.bar.spending = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
-		end)	
-			
+		end)
+
 		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.hunter.beastMastery.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1723,8 +1723,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                     TRB.Data.settings.hunter.beastMastery.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
-		end)	
-		
+		end)
+
 		--[[
 		controls.colors.trueshot = TRB.UiFunctions.BuildColorPicker(parent, "Focus while Trueshot is active", TRB.Data.settings.hunter.beastMastery.colors.bar.trueshot, 275, 25, xCoord2, yCoord)
 		f = controls.colors.trueshot
@@ -1761,14 +1761,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						r, g, b = ColorPickerFrame:GetColorRGB()
 						a = OpacitySliderFrame:GetValue()
 					end
-		
+
 					controls.colors.eclipse1GCD.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.hunter.beastMastery.colors.bar.trueshotEnding = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
 		]]
-		
+
 		yCoord = yCoord - 40
 
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
@@ -1966,14 +1966,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.serpentSting.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.beastMastery.thresholds.serpentSting.enabled = self:GetChecked()
-		end)	
+		end)
 		]]
 
 		--[[
 		yCoord = yCoord - 30
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Trueshot Configuration", 0, yCoord)
 
-		yCoord = yCoord - 30	
+		yCoord = yCoord - 30
 		controls.checkBoxes.endOfTrueshot = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_EOT_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfTrueshot
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -1984,7 +1984,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.endOfTrueshot.enabled = self:GetChecked()
 		end)
 
-		yCoord = yCoord - 40	
+		yCoord = yCoord - 40
 		controls.checkBoxes.endOfTrueshotModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_EOT_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfTrueshotModeGCDs
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -2016,7 +2016,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 
-		yCoord = yCoord - 60	
+		yCoord = yCoord - 60
 		controls.checkBoxes.endOfTrueshotModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_EOT_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfTrueshotModeTime
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -2044,7 +2044,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 
 			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.endOfTrueshot.timeMax = value
 		end)
 		]]
@@ -2077,14 +2077,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 
 			value = TRB.Functions.RoundTo(value, 1)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.overcapThreshold = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = controls
 	end
 
-	local function BeastMasteryConstructFontAndTextPanel(parent)	
+	local function BeastMasteryConstructFontAndTextPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -2144,7 +2144,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = fonts[v]
 						info.checked = fonts[v] == TRB.Data.settings.hunter.beastMastery.displayText.left.fontFace
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
 						info.fontObject = CreateFont(v)
@@ -2167,7 +2167,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.settings.hunter.beastMastery.displayText.right.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
-			
+
 			if GetSpecialization() == 1 then
 				leftTextFrame.font:SetFont(TRB.Data.settings.hunter.beastMastery.displayText.left.fontFace, TRB.Data.settings.hunter.beastMastery.displayText.left.fontSize, "OUTLINE")
 				if TRB.Data.settings.hunter.beastMastery.displayText.fontFaceLock then
@@ -2178,7 +2178,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			CloseDropDownMenus()
 		end
-			
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_fFontMiddle", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontMiddle.label = TRB.UiFunctions.BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
@@ -2211,7 +2211,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = fonts[v]
 						info.checked = fonts[v] == TRB.Data.settings.hunter.beastMastery.displayText.middle.fontFace
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
 						info.fontObject = CreateFont(v)
@@ -2229,12 +2229,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Data.settings.hunter.beastMastery.displayText.fontFaceLock then
 				TRB.Data.settings.hunter.beastMastery.displayText.left.fontFace = newValue
 				TRB.Data.settings.hunter.beastMastery.displayText.left.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)			
+				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
 				TRB.Data.settings.hunter.beastMastery.displayText.right.fontFace = newValue
 				TRB.Data.settings.hunter.beastMastery.displayText.right.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
-			
+
 			if GetSpecialization() == 1 then
 				middleTextFrame.font:SetFont(TRB.Data.settings.hunter.beastMastery.displayText.middle.fontFace, TRB.Data.settings.hunter.beastMastery.displayText.middle.fontSize, "OUTLINE")
 				if TRB.Data.settings.hunter.beastMastery.displayText.fontFaceLock then
@@ -2247,7 +2247,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 		yCoord = yCoord - 40 - 20
-			
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_FontRight", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontRight.label = TRB.UiFunctions.BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
@@ -2280,7 +2280,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = fonts[v]
 						info.checked = fonts[v] == TRB.Data.settings.hunter.beastMastery.displayText.right.fontFace
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
 						info.fontObject = CreateFont(v)
@@ -2291,7 +2291,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		function controls.dropDown.fontRight:SetValue(newValue, newName)		
+		function controls.dropDown.fontRight:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.beastMastery.displayText.right.fontFace = newValue
 			TRB.Data.settings.hunter.beastMastery.displayText.right.fontFaceName = newName
 			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
@@ -2303,7 +2303,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.settings.hunter.beastMastery.displayText.middle.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 			end
-			
+
 			if GetSpecialization() == 1 then
 				rightTextFrame.font:SetFont(TRB.Data.settings.hunter.beastMastery.displayText.right.fontFace, TRB.Data.settings.hunter.beastMastery.displayText.right.fontSize, "OUTLINE")
 				if TRB.Data.settings.hunter.beastMastery.displayText.fontFaceLock then
@@ -2314,7 +2314,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			CloseDropDownMenus()
 		end
-		
+
 		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -2330,7 +2330,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.settings.hunter.beastMastery.displayText.right.fontFace = TRB.Data.settings.hunter.beastMastery.displayText.left.fontFace
 				TRB.Data.settings.hunter.beastMastery.displayText.right.fontFaceName = TRB.Data.settings.hunter.beastMastery.displayText.left.fontFaceName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.hunter.beastMastery.displayText.right.fontFaceName)
-				
+
 				if GetSpecialization() == 1 then
 					middleTextFrame.font:SetFont(TRB.Data.settings.hunter.beastMastery.displayText.middle.fontFace, TRB.Data.settings.hunter.beastMastery.displayText.middle.fontSize, "OUTLINE")
 					rightTextFrame.font:SetFont(TRB.Data.settings.hunter.beastMastery.displayText.right.fontFace, TRB.Data.settings.hunter.beastMastery.displayText.right.fontSize, "OUTLINE")
@@ -2353,19 +2353,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.displayText.left.fontSize = value
-			
+
 			if GetSpecialization() == 1 then
 				leftTextFrame.font:SetFont(TRB.Data.settings.hunter.beastMastery.displayText.left.fontFace, TRB.Data.settings.hunter.beastMastery.displayText.left.fontSize, "OUTLINE")
 			end
-			
+
 			if TRB.Data.settings.hunter.beastMastery.displayText.fontSizeLock then
 				controls.fontSizeMiddle:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
 		end)
-		
+
 		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontSizeLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
@@ -2448,7 +2448,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                 end)
 			end
 		end)
-		
+
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeMiddle = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.beastMastery.displayText.middle.fontSize, 1, 0,
@@ -2460,9 +2460,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.displayText.middle.fontSize = value
-			
+
 			if GetSpecialization() == 1 then
 				middleTextFrame.font:SetFont(TRB.Data.settings.hunter.beastMastery.displayText.middle.fontFace, TRB.Data.settings.hunter.beastMastery.displayText.middle.fontSize, "OUTLINE")
 			end
@@ -2472,7 +2472,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				controls.fontSizeRight:SetValue(value)
 			end
 		end)
-		
+
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeRight = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.beastMastery.displayText.right.fontSize, 1, 0,
@@ -2484,9 +2484,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.displayText.right.fontSize = value
-			
+
 			if GetSpecialization() == 1 then
 				rightTextFrame.font:SetFont(TRB.Data.settings.hunter.beastMastery.displayText.right.fontFace, TRB.Data.settings.hunter.beastMastery.displayText.right.fontSize, "OUTLINE")
 			end
@@ -2544,7 +2544,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                 end)
 			end
 		end)
-		
+
 
 		yCoord = yCoord - 30
 		controls.colors.passiveFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Passive Focus", TRB.Data.settings.hunter.beastMastery.colors.text.passive, 300, 25, xCoord, yCoord)
@@ -2562,12 +2562,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 0.0
-		
+
 					controls.colors.passiveFocusText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.hunter.beastMastery.colors.text.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
-		end)		
+		end)
 
 		controls.colors.spendingFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.beastMastery.colors.text.spending, 275, 25, xCoord2, yCoord)
 		f = controls.colors.spendingFocusText
@@ -2607,7 +2607,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 0.0
-		
+
 					controls.colors.thresholdfocusText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.hunter.beastMastery.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
@@ -2629,7 +2629,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 0.0
-		
+
 					controls.colors.overcapfocusText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.hunter.beastMastery.colors.text.overcap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
@@ -2637,7 +2637,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		
+
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
@@ -2647,7 +2647,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.beastMastery.colors.text.overThresholdEnabled = self:GetChecked()
 		end)
-		
+
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
@@ -2661,7 +2661,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = controls
 	end
 
-	local function BeastMasteryConstructAudioAndTrackingPanel(parent)	
+	local function BeastMasteryConstructAudioAndTrackingPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -2701,8 +2701,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Data.settings.hunter.beastMastery.audio.overcap.enabled then
 				PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
-		end)	
-			
+		end)
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_overcapAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
@@ -2733,7 +2733,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = sounds[v]
 						info.checked = sounds[v] == TRB.Data.settings.hunter.beastMastery.audio.overcap.sound
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
 						UIDropDownMenu_AddButton(info, level)
@@ -2751,7 +2751,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
-		
+
 		yCoord = yCoord - 60
 		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flayersMarkAudio
@@ -2765,8 +2765,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Data.settings.hunter.beastMastery.audio.flayersMark.enabled then
 				PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
-		end)	
-			
+		end)
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.flayersMarkAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_flayersMark_Audio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
@@ -2797,7 +2797,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = sounds[v]
 						info.checked = sounds[v] == TRB.Data.settings.hunter.beastMastery.audio.flayersMark.sound
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
 						UIDropDownMenu_AddButton(info, level)
@@ -2815,8 +2815,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
-		
-		
+
+
 		yCoord = yCoord - 60
 		controls.checkBoxes.nesingwarysTrappingApparatusAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_nesingwarysTrappingApparatus_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.nesingwarysTrappingApparatusAudio
@@ -2830,8 +2830,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Data.settings.hunter.beastMastery.audio.nesingwarysTrappingApparatus.enabled then
 				PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
-		end)	
-			
+		end)
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.nesingwarysTrappingApparatusAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_nesingwarysTrappingApparatusAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
@@ -2862,7 +2862,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = sounds[v]
 						info.checked = sounds[v] == TRB.Data.settings.hunter.beastMastery.audio.nesingwarysTrappingApparatus.sound
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
 						UIDropDownMenu_AddButton(info, level)
@@ -2895,8 +2895,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Data.settings.hunter.beastMastery.audio.secretsOfTheUnblinkingVigil.enabled then
 				PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
-		end)	
-			
+		end)
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.secretsOfTheUnblinkingVigilAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_secretsOfTheUnblinkingVigilAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.secretsOfTheUnblinkingVigilAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
@@ -2949,9 +2949,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Generation", 0, yCoord)
-	
 
-		yCoord = yCoord - 40	
+
+		yCoord = yCoord - 40
 		controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_PFG_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeGCDs
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -2983,7 +2983,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 
-		yCoord = yCoord - 60	
+		yCoord = yCoord - 60
 		controls.checkBoxes.focusGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_PFG_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeTime
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -3011,14 +3011,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 
 			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.generation.time = value
 		end)
 
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
-	
+
 		yCoord = yCoord - 40
 		title = "Haste / Crit / Mastery Decimal Precision"
 		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.beastMastery.hastePrecision, 1, 0,
@@ -3030,16 +3030,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-	
+
 			value = TRB.Functions.RoundTo(value, 0)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.hastePrecision = value
 		end)
-		
+
 		TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = controls
 	end
     
-	local function BeastMasteryConstructBarTextDisplayPanel(parent, cache)	
+	local function BeastMasteryConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
 		end
@@ -3166,7 +3166,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f.font:SetJustifyH("LEFT")
 		f.font:SetSize(maxOptionsWidth-xPadding, 20)
 		f.font:SetText("For conditional display (only if $VAR is active/non-zero): {$VAR}[WHAT TO DISPLAY]")
-			
+
 		yCoord = yCoord - 25
 		controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
 		f = controls.labels.instructions2Var
@@ -3253,9 +3253,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 	end
 
-	local function BeastMasteryConstructOptionsPanel(cache)		
+	local function BeastMasteryConstructOptionsPanel(cache)
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local parent = interfaceSettingsFrame.panel		
+		local parent = interfaceSettingsFrame.panel
 		local controls = interfaceSettingsFrame.controls.beastMastery or {}
 		local yCoord = 0
 		local f = nil
@@ -3266,7 +3266,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local xCoord2 = 325
 		local xOffset1 = 50
 		local xOffset2 = 275
-		
+
 		controls.colors = {}
 		controls.labels = {}
 		controls.textbox = {}
@@ -3279,14 +3279,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.beastMasteryDisplayPanel)
 
 		parent = interfaceSettingsFrame.beastMasteryDisplayPanel
-				
+
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Beast Mastery Hunter", xCoord+xPadding, yCoord)
 
-		yCoord = yCoord - 42	
+		yCoord = yCoord - 42
 
 		local tabs = {}
 		local tabsheets = {}
-		
+
 		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_BeastMastery_Tab2", "Bar Display", 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_BeastMastery_Tab3", "Font & Text", 2, parent, 85, tabs[1])
@@ -3326,12 +3326,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	end
 
 	--[[
-	
+
 	Marksmanship Option Menus
-	
+
 	]]
 
-	local function MarksmanshipConstructResetDefaultsPanel(parent)	
+	local function MarksmanshipConstructResetDefaultsPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -3362,7 +3362,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				TRB.Data.settings.hunter.marksmanship = MarksmanshipResetSettings()
-				ReloadUI()			
+				ReloadUI()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -3375,7 +3375,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				TRB.Data.settings.hunter.marksmanship.displayText = MarksmanshipLoadDefaultBarTextSimpleSettings()
-				ReloadUI()			
+				ReloadUI()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -3388,7 +3388,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				TRB.Data.settings.hunter.marksmanship.displayText = MarksmanshipLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()			
+				ReloadUI()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -3401,7 +3401,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				TRB.Data.settings.hunter.marksmanship.displayText = MarksmanshipLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()			
+				ReloadUI()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -3422,13 +3422,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f.ntex = f:CreateTexture()
 		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()	
+		f.ntex:SetAllPoints()
 		f:SetNormalTexture(f.ntex)
 		f.htex = f:CreateTexture()
 		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
 		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)	
+		f:SetHighlightTexture(f.htex)
 		f.ptex = f:CreateTexture()
 		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -3438,7 +3438,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_Reset")
 		end)
 
-		yCoord = yCoord - 40		
+		yCoord = yCoord - 40
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -3452,13 +3452,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f.ntex = f:CreateTexture()
 		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()	
+		f.ntex:SetAllPoints()
 		f:SetNormalTexture(f.ntex)
 		f.htex = f:CreateTexture()
 		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
 		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)	
+		f:SetHighlightTexture(f.htex)
 		f.ptex = f:CreateTexture()
 		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -3468,7 +3468,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
-		
+
 		--[[
 		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Hunter_Marksmanship_ResetBarTextNarrowAdvancedButton", parent)
 		f = controls.resetButton
@@ -3480,13 +3480,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f.ntex = f:CreateTexture()
 		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()	
+		f.ntex:SetAllPoints()
 		f:SetNormalTexture(f.ntex)
 		f.htex = f:CreateTexture()
 		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
 		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)	
+		f:SetHighlightTexture(f.htex)
 		f.ptex = f:CreateTexture()
 		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -3507,13 +3507,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f.ntex = f:CreateTexture()
 		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()	
+		f.ntex:SetAllPoints()
 		f:SetNormalTexture(f.ntex)
 		f.htex = f:CreateTexture()
 		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
 		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)	
+		f:SetHighlightTexture(f.htex)
 		f.ptex = f:CreateTexture()
 		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -3526,7 +3526,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
 	end
 
-	local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)	
+	local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -3550,13 +3550,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local dropdownWidth = 225
 		local sliderWidth = 260
 		local sliderHeight = 20
-	
+
 		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height/8), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width/8))
-		
+
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.marksmanship)
 
 		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
-		
+
 		yCoord = yCoord - 40
 		title = "Bar Width"
 		controls.width = TRB.UiFunctions.BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, TRB.Data.settings.hunter.marksmanship.bar.width, 1, 2,
@@ -3570,7 +3570,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.bar.width = value
-			
+
 			if GetSpecialization() == 2 then
 				barContainerFrame:SetWidth(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
 				barBorderFrame:SetWidth(TRB.Data.settings.hunter.marksmanship.bar.width)
@@ -3578,7 +3578,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				castingFrame:SetWidth(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
 				passiveFrame:SetWidth(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
 				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.marksmanship)
-				
+
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
 						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
@@ -3601,8 +3601,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				value = max
 			elseif value < min then
 				value = min
-			end		
-			self.EditBox:SetText(value)		
+			end
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.bar.height = value
 
 			if GetSpecialization() == 2 then
@@ -3612,7 +3612,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
 					resourceFrame.thresholds[x]:SetHeight(value)
 				end
-				
+
 				castingFrame:SetHeight(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
 				passiveFrame:SetHeight(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
 				leftTextFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height * 3.5)
@@ -3636,10 +3636,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.bar.xPos = value
-			
-			if GetSpecialization() == 2 then			
+
+			if GetSpecialization() == 2 then
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
 				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.hunter.marksmanship.bar.xPos, TRB.Data.settings.hunter.marksmanship.bar.yPos)
@@ -3658,7 +3658,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.bar.yPos = value
-			
+
 			if GetSpecialization() == 2 then
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
@@ -3677,9 +3677,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.bar.border = value
-			
+
 			if GetSpecialization() == 2 then
 				barContainerFrame:SetWidth(TRB.Data.settings.hunter.marksmanship.bar.width-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
 				barContainerFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
@@ -3699,7 +3699,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						edgeFile = TRB.Data.settings.hunter.marksmanship.textures.border,
 						tile = true,
 						tileSize=4,
-						edgeSize=TRB.Data.settings.hunter.marksmanship.bar.border,								
+						edgeSize=TRB.Data.settings.hunter.marksmanship.bar.border,
 						insets = {0, 0, 0, 0}
 					})
 					barBorderFrame:Show()
@@ -3708,7 +3708,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.border, true))
 
 				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.marksmanship)
-				
+
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
 						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
@@ -3719,7 +3719,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			local minsliderWidth = math.max(TRB.Data.settings.hunter.marksmanship.bar.border*2, 120)
 			local minsliderHeight = math.max(TRB.Data.settings.hunter.marksmanship.bar.border*2, 1)
-			
+
 			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.marksmanship)
 			controls.height:SetMinMaxValues(minsliderHeight, scValues.barMaxHeight)
 			controls.height.MinLabel:SetText(minsliderHeight)
@@ -3739,7 +3739,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.thresholdWidth = value
-			
+
 			if GetSpecialization() == 2 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
 					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.hunter.marksmanship.thresholdWidth)
@@ -3757,7 +3757,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop = self:GetChecked()
-			
+
 			if GetSpecialization() == 2 then
 				barContainerFrame:SetMovable(TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
 				barContainerFrame:EnableMouse(TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
@@ -3769,7 +3769,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		controls.textBarTexturesSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Textures", 0, yCoord)
 		yCoord = yCoord - 30
-		
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_FocusBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
@@ -3802,7 +3802,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.hunter.marksmanship.textures.resourceBar
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -3825,7 +3825,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.settings.hunter.marksmanship.textures.passiveBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
 			end
-			
+
 			if GetSpecialization() == 2 then
 				resourceFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.resourceBar)
 				if TRB.Data.settings.hunter.marksmanship.textures.textureLock then
@@ -3836,7 +3836,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			CloseDropDownMenus()
 		end
-			
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_CastBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.castingBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
@@ -3869,7 +3869,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.hunter.marksmanship.textures.castingBar
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -3895,7 +3895,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				passiveFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.passiveBar)
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
 			end
-			
+
 			if GetSpecialization() == 2 then
 				castingFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.castingBar)
 				if TRB.Data.settings.hunter.marksmanship.textures.textureLock then
@@ -3907,9 +3907,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			CloseDropDownMenus()
 		end
 
-		
+
 		yCoord = yCoord - 60
-			
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
@@ -3942,7 +3942,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.hunter.marksmanship.textures.passiveBar
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -3968,7 +3968,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				castingFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.castingBar)
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
 			end
-			
+
 			if GetSpecialization() == 2 then
 				passiveFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.passiveBar)
 				if TRB.Data.settings.hunter.marksmanship.textures.textureLock then
@@ -3978,7 +3978,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 
 			CloseDropDownMenus()
-		end	
+		end
 
 		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
@@ -3995,7 +3995,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.settings.hunter.marksmanship.textures.castingBar = TRB.Data.settings.hunter.marksmanship.textures.resourceBar
 				TRB.Data.settings.hunter.marksmanship.textures.castingBarName = TRB.Data.settings.hunter.marksmanship.textures.resourceBarName
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.hunter.marksmanship.textures.castingBarName)
-			
+
 				if GetSpecialization() == 2 then
 					passiveFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.passiveBar)
 					castingFrame:SetStatusBarTexture(TRB.Data.settings.hunter.marksmanship.textures.castingBar)
@@ -4005,7 +4005,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 60
-		
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_BorderTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.borderTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
@@ -4038,7 +4038,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.hunter.marksmanship.textures.border
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -4060,7 +4060,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.hunter.marksmanship.textures.border,
 												tile = true,
 												tileSize=4,
-												edgeSize=TRB.Data.settings.hunter.marksmanship.bar.border,							
+												edgeSize=TRB.Data.settings.hunter.marksmanship.bar.border,
 												insets = {0, 0, 0, 0}
 												})
 				end
@@ -4071,7 +4071,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
 			CloseDropDownMenus()
 		end
-		
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_BackgroundTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.backgroundTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
@@ -4104,7 +4104,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.hunter.marksmanship.textures.background
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -4118,10 +4118,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.marksmanship.textures.background = newValue
 			TRB.Data.settings.hunter.marksmanship.textures.backgroundName = newName
-			
+
 			if GetSpecialization() == 2 then
 				barContainerFrame:SetBackdrop({ 
-					bgFile = TRB.Data.settings.hunter.marksmanship.textures.background,		
+					bgFile = TRB.Data.settings.hunter.marksmanship.textures.background,
 					tile = true,
 					tileSize = TRB.Data.settings.hunter.marksmanship.bar.width,
 					edgeSize = 1,
@@ -4134,7 +4134,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			CloseDropDownMenus()
 		end
 
-		
+
 		yCoord = yCoord - 70
 		controls.barDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display", 0, yCoord)
 
@@ -4149,7 +4149,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				value = max
 			elseif value < min then
 				value = min
-			end	
+			end
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
@@ -4168,7 +4168,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 
 			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.colors.bar.flashPeriod = value
 		end)]]
 
@@ -4311,7 +4311,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		yCoord = yCoord - 30		
+		yCoord = yCoord - 30
 		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", TRB.Data.settings.hunter.marksmanship.colors.bar.casting, 275, 25, xCoord, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -4346,14 +4346,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						r, g, b = ColorPickerFrame:GetColorRGB()
 						a = OpacitySliderFrame:GetValue()
 					end
-		
+
 					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.hunter.marksmanship.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
 
-		yCoord = yCoord - 30		
+		yCoord = yCoord - 30
 		controls.colors.spending = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.marksmanship.colors.bar.spending, 275, 25, xCoord, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -4372,8 +4372,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                     TRB.Data.settings.hunter.marksmanship.colors.bar.spending = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
-		end)	
-			
+		end)
+
 		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.hunter.marksmanship.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -4415,8 +4415,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                     TRB.Data.settings.hunter.marksmanship.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
-		end)	
-			
+		end)
+
 		controls.colors.trueshot = TRB.UiFunctions.BuildColorPicker(parent, "Focus while Trueshot is active", TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot, 275, 25, xCoord2, yCoord)
 		f = controls.colors.trueshot
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -4452,13 +4452,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						r, g, b = ColorPickerFrame:GetColorRGB()
 						a = OpacitySliderFrame:GetValue()
 					end
-		
+
 					controls.colors.eclipse1GCD.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
-		
+
 		yCoord = yCoord - 40
 
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
@@ -4665,13 +4665,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.serpentSting.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.marksmanship.thresholds.serpentSting.enabled = self:GetChecked()
-		end)	
-		
+		end)
+
 
 		yCoord = yCoord - 30
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Trueshot Configuration", 0, yCoord)
 
-		yCoord = yCoord - 30	
+		yCoord = yCoord - 30
 		controls.checkBoxes.endOfTrueshot = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfTrueshot
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -4682,7 +4682,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.endOfTrueshot.enabled = self:GetChecked()
 		end)
 
-		yCoord = yCoord - 40	
+		yCoord = yCoord - 40
 		controls.checkBoxes.endOfTrueshotModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfTrueshotModeGCDs
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -4714,7 +4714,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 
-		yCoord = yCoord - 60	
+		yCoord = yCoord - 60
 		controls.checkBoxes.endOfTrueshotModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfTrueshotModeTime
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -4742,7 +4742,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 
 			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.endOfTrueshot.timeMax = value
 		end)
 
@@ -4774,14 +4774,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 
 			value = TRB.Functions.RoundTo(value, 1)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.overcapThreshold = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
 	end
 
-	local function MarksmanshipConstructFontAndTextPanel(parent)	
+	local function MarksmanshipConstructFontAndTextPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -4841,7 +4841,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = fonts[v]
 						info.checked = fonts[v] == TRB.Data.settings.hunter.marksmanship.displayText.left.fontFace
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
 						info.fontObject = CreateFont(v)
@@ -4864,7 +4864,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.settings.hunter.marksmanship.displayText.right.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
-			
+
 			if GetSpecialization() == 2 then
 				leftTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.left.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.left.fontSize, "OUTLINE")
 				if TRB.Data.settings.hunter.marksmanship.displayText.fontFaceLock then
@@ -4875,7 +4875,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			CloseDropDownMenus()
 		end
-			
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_fFontMiddle", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontMiddle.label = TRB.UiFunctions.BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
@@ -4908,7 +4908,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = fonts[v]
 						info.checked = fonts[v] == TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFace
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
 						info.fontObject = CreateFont(v)
@@ -4926,12 +4926,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Data.settings.hunter.marksmanship.displayText.fontFaceLock then
 				TRB.Data.settings.hunter.marksmanship.displayText.left.fontFace = newValue
 				TRB.Data.settings.hunter.marksmanship.displayText.left.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)			
+				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
 				TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace = newValue
 				TRB.Data.settings.hunter.marksmanship.displayText.right.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
-			
+
 			if GetSpecialization() == 2 then
 				middleTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.middle.fontSize, "OUTLINE")
 				if TRB.Data.settings.hunter.marksmanship.displayText.fontFaceLock then
@@ -4944,7 +4944,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 		yCoord = yCoord - 40 - 20
-			
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_FontRight", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontRight.label = TRB.UiFunctions.BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
@@ -4977,7 +4977,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = fonts[v]
 						info.checked = fonts[v] == TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
 						info.fontObject = CreateFont(v)
@@ -4988,7 +4988,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		function controls.dropDown.fontRight:SetValue(newValue, newName)		
+		function controls.dropDown.fontRight:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace = newValue
 			TRB.Data.settings.hunter.marksmanship.displayText.right.fontFaceName = newName
 			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
@@ -5000,7 +5000,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 			end
-			
+
 			if GetSpecialization() == 2 then
 				rightTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.right.fontSize, "OUTLINE")
 				if TRB.Data.settings.hunter.marksmanship.displayText.fontFaceLock then
@@ -5011,7 +5011,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			CloseDropDownMenus()
 		end
-		
+
 		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -5027,7 +5027,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace = TRB.Data.settings.hunter.marksmanship.displayText.left.fontFace
 				TRB.Data.settings.hunter.marksmanship.displayText.right.fontFaceName = TRB.Data.settings.hunter.marksmanship.displayText.left.fontFaceName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.hunter.marksmanship.displayText.right.fontFaceName)
-				
+
 				if GetSpecialization() == 2 then
 					middleTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.middle.fontSize, "OUTLINE")
 					rightTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.right.fontSize, "OUTLINE")
@@ -5050,19 +5050,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.displayText.left.fontSize = value
-			
+
 			if GetSpecialization() == 2 then
 				leftTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.left.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.left.fontSize, "OUTLINE")
 			end
-			
+
 			if TRB.Data.settings.hunter.marksmanship.displayText.fontSizeLock then
 				controls.fontSizeMiddle:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
 		end)
-		
+
 		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontSizeLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
@@ -5145,7 +5145,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                 end)
 			end
 		end)
-		
+
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeMiddle = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.marksmanship.displayText.middle.fontSize, 1, 0,
@@ -5157,9 +5157,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.displayText.middle.fontSize = value
-			
+
 			if GetSpecialization() == 2 then
 				middleTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.middle.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.middle.fontSize, "OUTLINE")
 			end
@@ -5169,7 +5169,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				controls.fontSizeRight:SetValue(value)
 			end
 		end)
-		
+
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeRight = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.marksmanship.displayText.right.fontSize, 1, 0,
@@ -5181,9 +5181,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.displayText.right.fontSize = value
-			
+
 			if GetSpecialization() == 2 then
 				rightTextFrame.font:SetFont(TRB.Data.settings.hunter.marksmanship.displayText.right.fontFace, TRB.Data.settings.hunter.marksmanship.displayText.right.fontSize, "OUTLINE")
 			end
@@ -5241,7 +5241,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                 end)
 			end
 		end)
-		
+
 
 		yCoord = yCoord - 30
 		controls.colors.passiveFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Passive Focus", TRB.Data.settings.hunter.marksmanship.colors.text.passive, 300, 25, xCoord, yCoord)
@@ -5259,12 +5259,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 0.0
-		
+
 					controls.colors.passiveFocusText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.hunter.marksmanship.colors.text.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
-		end)		
+		end)
 
 		controls.colors.spendingFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.marksmanship.colors.text.spending, 275, 25, xCoord2, yCoord)
 		f = controls.colors.spendingFocusText
@@ -5304,7 +5304,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 0.0
-		
+
 					controls.colors.thresholdfocusText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.hunter.marksmanship.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
@@ -5326,7 +5326,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 0.0
-		
+
 					controls.colors.overcapfocusText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.hunter.marksmanship.colors.text.overcap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
@@ -5334,7 +5334,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		
+
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
@@ -5344,7 +5344,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.marksmanship.colors.text.overThresholdEnabled = self:GetChecked()
 		end)
-		
+
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
@@ -5358,7 +5358,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
 	end
 
-	local function MarksmanshipConstructAudioAndTrackingPanel(parent)	
+	local function MarksmanshipConstructAudioAndTrackingPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -5398,8 +5398,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Data.settings.hunter.marksmanship.audio.overcap.enabled then
 				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
-		end)	
-			
+		end)
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_overcapAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
@@ -5430,7 +5430,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = sounds[v]
 						info.checked = sounds[v] == TRB.Data.settings.hunter.marksmanship.audio.overcap.sound
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
 						UIDropDownMenu_AddButton(info, level)
@@ -5448,7 +5448,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
-		
+
 		yCoord = yCoord - 60
 		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flayersMarkAudio
@@ -5462,8 +5462,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Data.settings.hunter.marksmanship.audio.flayersMark.enabled then
 				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
-		end)	
-			
+		end)
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.flayersMarkAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_flayersMark_Audio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
@@ -5494,7 +5494,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = sounds[v]
 						info.checked = sounds[v] == TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
 						UIDropDownMenu_AddButton(info, level)
@@ -5512,8 +5512,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
-		
-		
+
+
 		yCoord = yCoord - 60
 		controls.checkBoxes.nesingwarysTrappingApparatusAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_nesingwarysTrappingApparatus_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.nesingwarysTrappingApparatusAudio
@@ -5527,8 +5527,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.enabled then
 				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
-		end)	
-			
+		end)
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.nesingwarysTrappingApparatusAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_nesingwarysTrappingApparatusAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
@@ -5559,7 +5559,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = sounds[v]
 						info.checked = sounds[v] == TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.sound
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
 						UIDropDownMenu_AddButton(info, level)
@@ -5578,7 +5578,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 
-		
+
 		yCoord = yCoord - 60
 		controls.checkBoxes.secretsOfTheUnblinkingVigilAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_secretsOfTheUnblinkingVigil_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.secretsOfTheUnblinkingVigilAudio
@@ -5592,8 +5592,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.enabled then
 				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
-		end)	
-			
+		end)
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.secretsOfTheUnblinkingVigilAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_secretsOfTheUnblinkingVigilAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.secretsOfTheUnblinkingVigilAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
@@ -5624,7 +5624,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = sounds[v]
 						info.checked = sounds[v] == TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.sound
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
 						UIDropDownMenu_AddButton(info, level)
@@ -5645,9 +5645,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Generation", 0, yCoord)
-	
 
-		yCoord = yCoord - 40	
+
+		yCoord = yCoord - 40
 		controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_PFG_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeGCDs
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -5679,7 +5679,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 
-		yCoord = yCoord - 60	
+		yCoord = yCoord - 60
 		controls.checkBoxes.focusGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_PFG_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeTime
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -5707,14 +5707,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 
 			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.generation.time = value
 		end)
 
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
-	
+
 		yCoord = yCoord - 40
 		title = "Haste / Crit / Mastery Decimal Precision"
 		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.marksmanship.hastePrecision, 1, 0,
@@ -5726,16 +5726,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-	
+
 			value = TRB.Functions.RoundTo(value, 0)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.hastePrecision = value
 		end)
-		
+
 		TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
 	end
     
-	local function MarksmanshipConstructBarTextDisplayPanel(parent, cache)	
+	local function MarksmanshipConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
 		end
@@ -5862,7 +5862,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f.font:SetJustifyH("LEFT")
 		f.font:SetSize(maxOptionsWidth-xPadding, 20)
 		f.font:SetText("For conditional display (only if $VAR is active/non-zero): {$VAR}[WHAT TO DISPLAY]")
-			
+
 		yCoord = yCoord - 25
 		controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
 		f = controls.labels.instructions2Var
@@ -5949,9 +5949,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 	end
 
-	local function MarksmanshipConstructOptionsPanel(cache)		
+	local function MarksmanshipConstructOptionsPanel(cache)
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local parent = interfaceSettingsFrame.panel		
+		local parent = interfaceSettingsFrame.panel
 		local controls = interfaceSettingsFrame.controls.marksmanship or {}
 		local yCoord = 0
 		local f = nil
@@ -5962,7 +5962,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local xCoord2 = 325
 		local xOffset1 = 50
 		local xOffset2 = 275
-		
+
 		controls.colors = {}
 		controls.labels = {}
 		controls.textbox = {}
@@ -5975,14 +5975,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.marksmanshipDisplayPanel)
 
 		parent = interfaceSettingsFrame.marksmanshipDisplayPanel
-				
+
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Marksmanship Hunter", xCoord+xPadding, yCoord)
 
-		yCoord = yCoord - 42	
+		yCoord = yCoord - 42
 
 		local tabs = {}
 		local tabsheets = {}
-		
+
 		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab2", "Bar Display", 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab3", "Font & Text", 2, parent, 85, tabs[1])
@@ -6028,7 +6028,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	]]
 
     
-	local function SurvivalConstructResetDefaultsPanel(parent)	
+	local function SurvivalConstructResetDefaultsPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -6059,7 +6059,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				TRB.Data.settings.hunter.survival = SurvivalResetSettings()
-				ReloadUI()			
+				ReloadUI()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -6072,7 +6072,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				TRB.Data.settings.hunter.survival.displayText = SurvivalLoadDefaultBarTextSimpleSettings()
-				ReloadUI()			
+				ReloadUI()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -6085,7 +6085,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				TRB.Data.settings.hunter.survival.displayText = SurvivalLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()			
+				ReloadUI()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -6098,7 +6098,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				TRB.Data.settings.hunter.survival.displayText = SurvivalLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()			
+				ReloadUI()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -6119,13 +6119,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f.ntex = f:CreateTexture()
 		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()	
+		f.ntex:SetAllPoints()
 		f:SetNormalTexture(f.ntex)
 		f.htex = f:CreateTexture()
 		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
 		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)	
+		f:SetHighlightTexture(f.htex)
 		f.ptex = f:CreateTexture()
 		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -6135,7 +6135,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			StaticPopup_Show("TwintopResourceBar_Hunter_Survival_Reset")
 		end)
 
-		yCoord = yCoord - 40		
+		yCoord = yCoord - 40
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -6149,13 +6149,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f.ntex = f:CreateTexture()
 		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()	
+		f.ntex:SetAllPoints()
 		f:SetNormalTexture(f.ntex)
 		f.htex = f:CreateTexture()
 		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
 		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)	
+		f:SetHighlightTexture(f.htex)
 		f.ptex = f:CreateTexture()
 		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -6165,7 +6165,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			StaticPopup_Show("TwintopResourceBar_Hunter_Survival_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
-		
+
 		--[[
 		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Hunter_Survival_ResetBarTextNarrowAdvancedButton", parent)
 		f = controls.resetButton
@@ -6177,13 +6177,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f.ntex = f:CreateTexture()
 		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()	
+		f.ntex:SetAllPoints()
 		f:SetNormalTexture(f.ntex)
 		f.htex = f:CreateTexture()
 		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
 		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)	
+		f:SetHighlightTexture(f.htex)
 		f.ptex = f:CreateTexture()
 		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -6204,13 +6204,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f.ntex = f:CreateTexture()
 		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()	
+		f.ntex:SetAllPoints()
 		f:SetNormalTexture(f.ntex)
 		f.htex = f:CreateTexture()
 		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
 		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)	
+		f:SetHighlightTexture(f.htex)
 		f.ptex = f:CreateTexture()
 		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -6223,7 +6223,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
 	end
 
-	local function SurvivalConstructBarColorsAndBehaviorPanel(parent)	
+	local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -6247,13 +6247,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local dropdownWidth = 225
 		local sliderWidth = 260
 		local sliderHeight = 20
-	
+
 		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height/8), math.floor(TRB.Data.settings.hunter.survival.bar.width/8))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.survival)
 
 		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
-		
+
 		yCoord = yCoord - 40
 		title = "Bar Width"
 		controls.width = TRB.UiFunctions.BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, TRB.Data.settings.hunter.survival.bar.width, 1, 2,
@@ -6267,7 +6267,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.bar.width = value
-			
+
 			if GetSpecialization() == 3 then
 				barContainerFrame:SetWidth(value-(TRB.Data.settings.hunter.survival.bar.border*2))
 				barBorderFrame:SetWidth(TRB.Data.settings.hunter.survival.bar.width)
@@ -6275,7 +6275,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				castingFrame:SetWidth(value-(TRB.Data.settings.hunter.survival.bar.border*2))
 				passiveFrame:SetWidth(value-(TRB.Data.settings.hunter.survival.bar.border*2))
 				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.survival)
-				
+
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
 						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.survival.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
@@ -6283,7 +6283,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 				end
 			end
-			
+
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / 8), math.floor(TRB.Data.settings.hunter.survival.bar.width / 8))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -6298,8 +6298,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				value = max
 			elseif value < min then
 				value = min
-			end		
-			self.EditBox:SetText(value)		
+			end
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.bar.height = value
 
 			if GetSpecialization() == 3 then
@@ -6309,7 +6309,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
 					resourceFrame.thresholds[x]:SetHeight(value)
 				end
-				
+
 				castingFrame:SetHeight(value-(TRB.Data.settings.hunter.survival.bar.border*2))
 				passiveFrame:SetHeight(value-(TRB.Data.settings.hunter.survival.bar.border*2))
 				leftTextFrame:SetHeight(TRB.Data.settings.hunter.survival.bar.height * 3.5)
@@ -6333,9 +6333,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.bar.xPos = value
-			
+
 			if GetSpecialization() == 3 then
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
@@ -6374,9 +6374,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.bar.border = value
-			
+
 			if GetSpecialization() == 3 then
 				barContainerFrame:SetWidth(TRB.Data.settings.hunter.survival.bar.width-(TRB.Data.settings.hunter.survival.bar.border*2))
 				barContainerFrame:SetHeight(TRB.Data.settings.hunter.survival.bar.height-(TRB.Data.settings.hunter.survival.bar.border*2))
@@ -6396,7 +6396,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						edgeFile = TRB.Data.settings.hunter.survival.textures.border,
 						tile = true,
 						tileSize=4,
-						edgeSize=TRB.Data.settings.hunter.survival.bar.border,								
+						edgeSize=TRB.Data.settings.hunter.survival.bar.border,
 						insets = {0, 0, 0, 0}
 					})
 					barBorderFrame:Show()
@@ -6405,7 +6405,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.border, true))
 
 				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.survival)
-				
+
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
 						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.survival.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
@@ -6416,7 +6416,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			local minsliderWidth = math.max(TRB.Data.settings.hunter.survival.bar.border*2, 120)
 			local minsliderHeight = math.max(TRB.Data.settings.hunter.survival.bar.border*2, 1)
-			
+
 			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.survival)
 			controls.height:SetMinMaxValues(minsliderHeight, scValues.barMaxHeight)
 			controls.height.MinLabel:SetText(minsliderHeight)
@@ -6453,7 +6453,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.survival.bar.dragAndDrop)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.survival.bar.dragAndDrop = self:GetChecked()
-			
+
 			if GetSpecialization() == 3 then
 				barContainerFrame:SetMovable(TRB.Data.settings.hunter.survival.bar.dragAndDrop)
 				barContainerFrame:EnableMouse(TRB.Data.settings.hunter.survival.bar.dragAndDrop)
@@ -6465,7 +6465,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		controls.textBarTexturesSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Textures", 0, yCoord)
 		yCoord = yCoord - 30
-		
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_FocusBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
@@ -6498,7 +6498,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.hunter.survival.textures.resourceBar
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -6532,7 +6532,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			CloseDropDownMenus()
 		end
-			
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_CastBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.castingBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
@@ -6565,7 +6565,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.hunter.survival.textures.castingBar
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -6599,9 +6599,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			CloseDropDownMenus()
 		end
 
-		
+
 		yCoord = yCoord - 60
-			
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
@@ -6634,7 +6634,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.hunter.survival.textures.passiveBar
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -6666,7 +6666,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				end
 			end
 			CloseDropDownMenus()
-		end	
+		end
 
 		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
@@ -6683,7 +6683,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.settings.hunter.survival.textures.castingBar = TRB.Data.settings.hunter.survival.textures.resourceBar
 				TRB.Data.settings.hunter.survival.textures.castingBarName = TRB.Data.settings.hunter.survival.textures.resourceBarName
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.hunter.survival.textures.castingBarName)
-				
+
 				if GetSpecialization() == 3 then
 					passiveFrame:SetStatusBarTexture(TRB.Data.settings.hunter.survival.textures.passiveBar)
 					castingFrame:SetStatusBarTexture(TRB.Data.settings.hunter.survival.textures.castingBar)
@@ -6693,7 +6693,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 60
-		
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_BorderTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.borderTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
@@ -6726,7 +6726,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.hunter.survival.textures.border
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -6740,7 +6740,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.borderTexture:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.survival.textures.border = newValue
 			TRB.Data.settings.hunter.survival.textures.borderName = newName
-			
+
 			if GetSpecialization() == 3 then
 				if TRB.Data.settings.hunter.survival.bar.border < 1 then
 					barBorderFrame:SetBackdrop({ })
@@ -6748,7 +6748,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.hunter.survival.textures.border,
 												tile = true,
 												tileSize=4,
-												edgeSize=TRB.Data.settings.hunter.survival.bar.border,							
+												edgeSize=TRB.Data.settings.hunter.survival.bar.border,
 												insets = {0, 0, 0, 0}
 												})
 				end
@@ -6759,7 +6759,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
 			CloseDropDownMenus()
 		end
-		
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_BackgroundTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.backgroundTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
@@ -6792,7 +6792,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.hunter.survival.textures.background
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -6806,10 +6806,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.survival.textures.background = newValue
 			TRB.Data.settings.hunter.survival.textures.backgroundName = newName
-			
+
 			if GetSpecialization() == 3 then
 				barContainerFrame:SetBackdrop({ 
-					bgFile = TRB.Data.settings.hunter.survival.textures.background,		
+					bgFile = TRB.Data.settings.hunter.survival.textures.background,
 					tile = true,
 					tileSize = TRB.Data.settings.hunter.survival.bar.width,
 					edgeSize = 1,
@@ -6817,12 +6817,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				})
 				barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.background, true))
 			end
-			
+
 			UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, newName)
 			CloseDropDownMenus()
 		end
 
-		
+
 		yCoord = yCoord - 70
 		controls.barDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display", 0, yCoord)
 
@@ -6837,7 +6837,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				value = max
 			elseif value < min then
 				value = min
-			end	
+			end
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
@@ -6856,7 +6856,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 
 			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.colors.bar.flashPeriod = value
 		end)]]
 
@@ -7062,7 +7062,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                     TRB.Data.settings.hunter.survival.colors.bar.spending = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
-		end)		
+		end)
 
 		--[[
 		yCoord = yCoord - 30
@@ -7100,14 +7100,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						r, g, b = ColorPickerFrame:GetColorRGB()
 						a = OpacitySliderFrame:GetValue()
 					end
-		
+
 					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.hunter.survival.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
 		]]
-		
+
 		controls.colors.coordinatedAssault = TRB.UiFunctions.BuildColorPicker(parent, "Focus while Coordinated Assault is active", TRB.Data.settings.hunter.survival.colors.bar.coordinatedAssault, 275, 25, xCoord2, yCoord)
 		f = controls.colors.coordinatedAssault
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -7127,7 +7127,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                 end)
 			end
 		end)
-		
+
 		yCoord = yCoord - 30
 		controls.colors.coordinatedAssaultEnding = TRB.UiFunctions.BuildColorPicker(parent, "Focus when Coordinated Assault is ending", TRB.Data.settings.hunter.survival.colors.bar.coordinatedAssaultEnding, 275, 25, xCoord2, yCoord)
 		f = controls.colors.coordinatedAssaultEnding
@@ -7142,13 +7142,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						r, g, b = ColorPickerFrame:GetColorRGB()
 						a = OpacitySliderFrame:GetValue()
 					end
-		
+
 					controls.colors.eclipse1GCD.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.hunter.survival.colors.bar.coordinatedAssaultEnding = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
-		
+
 		yCoord = yCoord - 40
 
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
@@ -7222,7 +7222,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(TRB.Data.settings.hunter.survival.bar.thresholdOverlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.survival.bar.thresholdOverlapBorder = self:GetChecked()			
+			TRB.Data.settings.hunter.survival.bar.thresholdOverlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.survival)
 		end)
 
@@ -7346,12 +7346,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.survival.thresholds.wingClip.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.survival.thresholds.wingClip.enabled = self:GetChecked()
-		end)	
-		
+		end)
+
 		yCoord = yCoord - 30
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Configuration", 0, yCoord)
 
-		yCoord = yCoord - 30	
+		yCoord = yCoord - 30
 		controls.checkBoxes.endOfCoordinatedAssault = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfCoordinatedAssault
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -7362,7 +7362,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.survival.endOfCoordinatedAssault.enabled = self:GetChecked()
 		end)
 
-		yCoord = yCoord - 40	
+		yCoord = yCoord - 40
 		controls.checkBoxes.endOfCoordinatedAssaultModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfCoordinatedAssaultModeGCDs
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -7394,7 +7394,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 
-		yCoord = yCoord - 60	
+		yCoord = yCoord - 60
 		controls.checkBoxes.endOfCoordinatedAssaultModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfCoordinatedAssaultModeTime
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -7422,7 +7422,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 
 			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.endOfCoordinatedAssault.timeMax = value
 		end)
 
@@ -7455,7 +7455,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 
 			value = TRB.Functions.RoundTo(value, 1)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.overcapThreshold = value
 		end)
 		]]
@@ -7463,7 +7463,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
 	end
 
-	local function SurvivalConstructFontAndTextPanel(parent)	
+	local function SurvivalConstructFontAndTextPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -7523,7 +7523,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = fonts[v]
 						info.checked = fonts[v] == TRB.Data.settings.hunter.survival.displayText.left.fontFace
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
 						info.fontObject = CreateFont(v)
@@ -7546,7 +7546,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.settings.hunter.survival.displayText.right.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
-			
+
 			if GetSpecialization() == 3 then
 				leftTextFrame.font:SetFont(TRB.Data.settings.hunter.survival.displayText.left.fontFace, TRB.Data.settings.hunter.survival.displayText.left.fontSize, "OUTLINE")
 				if TRB.Data.settings.hunter.survival.displayText.fontFaceLock then
@@ -7557,7 +7557,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			CloseDropDownMenus()
 		end
-			
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_fFontMiddle", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontMiddle.label = TRB.UiFunctions.BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
@@ -7590,7 +7590,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = fonts[v]
 						info.checked = fonts[v] == TRB.Data.settings.hunter.survival.displayText.middle.fontFace
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
 						info.fontObject = CreateFont(v)
@@ -7608,15 +7608,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Data.settings.hunter.survival.displayText.fontFaceLock then
 				TRB.Data.settings.hunter.survival.displayText.left.fontFace = newValue
 				TRB.Data.settings.hunter.survival.displayText.left.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)			
+				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
 				TRB.Data.settings.hunter.survival.displayText.right.fontFace = newValue
 				TRB.Data.settings.hunter.survival.displayText.right.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
-			
+
 			if GetSpecialization() == 3 then
 				middleTextFrame.font:SetFont(TRB.Data.settings.hunter.survival.displayText.middle.fontFace, TRB.Data.settings.hunter.survival.displayText.middle.fontSize, "OUTLINE")
-				if TRB.Data.settings.hunter.survival.displayText.fontFaceLock then					
+				if TRB.Data.settings.hunter.survival.displayText.fontFaceLock then
 					leftTextFrame.font:SetFont(TRB.Data.settings.hunter.survival.displayText.left.fontFace, TRB.Data.settings.hunter.survival.displayText.left.fontSize, "OUTLINE")
 					rightTextFrame.font:SetFont(TRB.Data.settings.hunter.survival.displayText.right.fontFace, TRB.Data.settings.hunter.survival.displayText.right.fontSize, "OUTLINE")
 				end
@@ -7626,7 +7626,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 		yCoord = yCoord - 40 - 20
-			
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_FontRight", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontRight.label = TRB.UiFunctions.BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
@@ -7659,7 +7659,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = fonts[v]
 						info.checked = fonts[v] == TRB.Data.settings.hunter.survival.displayText.right.fontFace
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
 						info.fontObject = CreateFont(v)
@@ -7670,7 +7670,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		function controls.dropDown.fontRight:SetValue(newValue, newName)		
+		function controls.dropDown.fontRight:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.survival.displayText.right.fontFace = newValue
 			TRB.Data.settings.hunter.survival.displayText.right.fontFaceName = newName
 			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
@@ -7682,10 +7682,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.settings.hunter.survival.displayText.middle.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 			end
-			
+
 			if GetSpecialization() == 3 then
 				rightTextFrame.font:SetFont(TRB.Data.settings.hunter.survival.displayText.right.fontFace, TRB.Data.settings.hunter.survival.displayText.right.fontSize, "OUTLINE")
-				if TRB.Data.settings.hunter.survival.displayText.fontFaceLock then					
+				if TRB.Data.settings.hunter.survival.displayText.fontFaceLock then
 					leftTextFrame.font:SetFont(TRB.Data.settings.hunter.survival.displayText.left.fontFace, TRB.Data.settings.hunter.survival.displayText.left.fontSize, "OUTLINE")
 					middleTextFrame.font:SetFont(TRB.Data.settings.hunter.survival.displayText.middle.fontFace, TRB.Data.settings.hunter.survival.displayText.middle.fontSize, "OUTLINE")
 				end
@@ -7693,7 +7693,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			CloseDropDownMenus()
 		end
-		
+
 		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -7732,7 +7732,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.displayText.left.fontSize = value
 			leftTextFrame.font:SetFont(TRB.Data.settings.hunter.survival.displayText.left.fontFace, TRB.Data.settings.hunter.survival.displayText.left.fontSize, "OUTLINE")
 			if TRB.Data.settings.hunter.survival.displayText.fontSizeLock then
@@ -7740,7 +7740,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				controls.fontSizeRight:SetValue(value)
 			end
 		end)
-		
+
 		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontSizeLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
@@ -7823,7 +7823,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                 end)
 			end
 		end)
-		
+
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeMiddle = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.survival.displayText.middle.fontSize, 1, 0,
@@ -7835,9 +7835,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.displayText.middle.fontSize = value
-			
+
 			if GetSpecialization() == 3 then
 				middleTextFrame.font:SetFont(TRB.Data.settings.hunter.survival.displayText.middle.fontFace, TRB.Data.settings.hunter.survival.displayText.middle.fontSize, "OUTLINE")
 			end
@@ -7847,7 +7847,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				controls.fontSizeRight:SetValue(value)
 			end
 		end)
-		
+
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeRight = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.survival.displayText.right.fontSize, 1, 0,
@@ -7859,9 +7859,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.displayText.right.fontSize = value
-			
+
 			if GetSpecialization() == 3 then
 				rightTextFrame.font:SetFont(TRB.Data.settings.hunter.survival.displayText.right.fontFace, TRB.Data.settings.hunter.survival.displayText.right.fontSize, "OUTLINE")
 			end
@@ -7936,7 +7936,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 0.0
-		
+
 					controls.colors.passiveFocusText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.hunter.survival.colors.text.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
@@ -7983,7 +7983,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 0.0
-		
+
 					controls.colors.thresholdfocusText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.hunter.survival.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
@@ -8006,7 +8006,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 0.0
-		
+
 					controls.colors.overcapfocusText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.hunter.survival.colors.text.overcap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
@@ -8014,7 +8014,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)]]
 
 		yCoord = yCoord - 30
-		
+
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
@@ -8024,7 +8024,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.survival.colors.text.overThresholdEnabled = self:GetChecked()
 		end)
-		
+
 		--[[
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
@@ -8040,7 +8040,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
 	end
 
-	local function SurvivalConstructAudioAndTrackingPanel(parent)	
+	local function SurvivalConstructAudioAndTrackingPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -8080,8 +8080,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Data.settings.hunter.survival.audio.overcap.enabled then
 				PlaySoundFile(TRB.Data.settings.hunter.survival.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
-		end)	
-			
+		end)
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_overcapAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
@@ -8112,7 +8112,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = sounds[v]
 						info.checked = sounds[v] == TRB.Data.settings.hunter.survival.audio.overcap.sound
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
 						UIDropDownMenu_AddButton(info, level)
@@ -8129,9 +8129,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
-	
 
-		
+
+
 		yCoord = yCoord - 60
 		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flayersMarkAudio
@@ -8145,8 +8145,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Data.settings.hunter.survival.audio.flayersMark.enabled then
 				PlaySoundFile(TRB.Data.settings.hunter.survival.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
-		end)	
-			
+		end)
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.flayersMarkAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_flayersMark_Audio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
@@ -8177,7 +8177,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = sounds[v]
 						info.checked = sounds[v] == TRB.Data.settings.hunter.survival.audio.flayersMark.sound
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
 						UIDropDownMenu_AddButton(info, level)
@@ -8195,8 +8195,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
-			
-		
+
+
 		yCoord = yCoord - 60
 		controls.checkBoxes.nesingwarysTrappingApparatusAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_nesingwarysTrappingApparatus_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.nesingwarysTrappingApparatusAudio
@@ -8210,8 +8210,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.enabled then
 				PlaySoundFile(TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
-		end)	
-			
+		end)
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.nesingwarysTrappingApparatusAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_nesingwarysTrappingApparatusAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
@@ -8242,7 +8242,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.text = v
 						info.value = sounds[v]
 						info.checked = sounds[v] == TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.sound
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
 						UIDropDownMenu_AddButton(info, level)
@@ -8265,9 +8265,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Generation", 0, yCoord)
-	
 
-		yCoord = yCoord - 40	
+
+		yCoord = yCoord - 40
 		controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_PFG_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeGCDs
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -8299,7 +8299,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 
-		yCoord = yCoord - 60	
+		yCoord = yCoord - 60
 		controls.checkBoxes.focusGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_PFG_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeTime
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -8327,14 +8327,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 
 			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.generation.time = value
 		end)
 
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
-	
+
 		yCoord = yCoord - 40
 		title = "Haste / Crit / Mastery Decimal Precision"
 		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.survival.hastePrecision, 1, 0,
@@ -8346,16 +8346,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif value < min then
 				value = min
 			end
-	
+
 			value = TRB.Functions.RoundTo(value, 0)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.hastePrecision = value
 		end)
-		
+
 		TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
 	end
     
-	local function SurvivalConstructBarTextDisplayPanel(parent, cache)	
+	local function SurvivalConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
 		end
@@ -8482,7 +8482,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f.font:SetJustifyH("LEFT")
 		f.font:SetSize(maxOptionsWidth-xPadding, 20)
 		f.font:SetText("For conditional display (only if $VAR is active/non-zero): {$VAR}[WHAT TO DISPLAY]")
-			
+
 		yCoord = yCoord - 25
 		controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
 		f = controls.labels.instructions2Var
@@ -8571,7 +8571,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	local function SurvivalConstructOptionsPanel(cache)
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local parent = interfaceSettingsFrame.panel		
+		local parent = interfaceSettingsFrame.panel
 		local controls = interfaceSettingsFrame.controls.survival or {}
 		local yCoord = 0
 		local f = nil
@@ -8582,7 +8582,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local xCoord2 = 325
 		local xOffset1 = 50
 		local xOffset2 = 275
-		
+
 		controls.colors = {}
 		controls.labels = {}
 		controls.textbox = {}
@@ -8595,14 +8595,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.survivalDisplayPanel)
 
 		parent = interfaceSettingsFrame.survivalDisplayPanel
-				
+
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Survival Hunter", xCoord+xPadding, yCoord)
 
-		yCoord = yCoord - 42	
+		yCoord = yCoord - 42
 
 		local tabs = {}
 		local tabsheets = {}
-		
+
 		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Survival_Tab2", "Bar Display", 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Survival_Tab3", "Font & Text", 2, parent, 85, tabs[1])

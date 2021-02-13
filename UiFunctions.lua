@@ -37,7 +37,7 @@ local function BuildSlider(parent, title, minValue, maxValue, defaultValue, step
     end)]]
     f:SetScript("OnValueChanged", function(self, value)
 		self.EditBox:SetText(value)
-	end)	
+	end)
     f.MinLabel = f:CreateFontString(nil, "Overlay")
     f.MinLabel:SetFontObject(GameFontHighlightSmall)
     f.MinLabel:SetSize(0, 14)

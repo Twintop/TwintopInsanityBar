@@ -51,7 +51,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
     
     local function ElementalLoadDefaultBarTextAdvancedSettings()
-		local textSettings = {		
+		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
@@ -69,7 +69,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			right = {
 				text = "{$casting}[#casting$casting+]{$passive}[$passive+]$maelstrom",
 				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",			
+				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
 			}
 		}
@@ -88,7 +88,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				notZeroShow=true,
 				neverShow=false
 			},
-			bar = {		
+			bar = {
 				width=555,
 				height=34,
 				xPos=0,
@@ -174,7 +174,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
     TRB.Options.Shaman.LoadDefaultSettings = LoadDefaultSettings
 
     
-	local function ElementalConstructResetDefaultsPanel(parent)	
+	local function ElementalConstructResetDefaultsPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -205,7 +205,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button2 = "No",
 			OnAccept = function()
 				TRB.Data.settings.shaman.elemental = ElementalResetSettings()
-				ReloadUI()			
+				ReloadUI()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -218,7 +218,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button2 = "No",
 			OnAccept = function()
 				TRB.Data.settings.shaman.elemental.displayText = ElementalLoadDefaultBarTextSimpleSettings()
-				ReloadUI()			
+				ReloadUI()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -231,7 +231,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button2 = "No",
 			OnAccept = function()
 				TRB.Data.settings.shaman.elemental.displayText = ElementalLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()			
+				ReloadUI()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -244,7 +244,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button2 = "No",
 			OnAccept = function()
 				TRB.Data.settings.shaman.elemental.displayText = ElementalLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()			
+				ReloadUI()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -265,13 +265,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f.ntex = f:CreateTexture()
 		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()	
+		f.ntex:SetAllPoints()
 		f:SetNormalTexture(f.ntex)
 		f.htex = f:CreateTexture()
 		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
 		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)	
+		f:SetHighlightTexture(f.htex)
 		f.ptex = f:CreateTexture()
 		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -281,7 +281,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			StaticPopup_Show("TwintopResourceBar_Reset")
 		end)
 
-		yCoord = yCoord - 40		
+		yCoord = yCoord - 40
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -295,13 +295,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f.ntex = f:CreateTexture()
 		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()	
+		f.ntex:SetAllPoints()
 		f:SetNormalTexture(f.ntex)
 		f.htex = f:CreateTexture()
 		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
 		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)	
+		f:SetHighlightTexture(f.htex)
 		f.ptex = f:CreateTexture()
 		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -311,7 +311,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			StaticPopup_Show("TwintopResourceBar_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
-		
+
 		--[[
 		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextNarrowAdvancedButton", parent)
 		f = controls.resetButton
@@ -323,13 +323,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f.ntex = f:CreateTexture()
 		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()	
+		f.ntex:SetAllPoints()
 		f:SetNormalTexture(f.ntex)
 		f.htex = f:CreateTexture()
 		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
 		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)	
+		f:SetHighlightTexture(f.htex)
 		f.ptex = f:CreateTexture()
 		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -350,13 +350,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f.ntex = f:CreateTexture()
 		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()	
+		f.ntex:SetAllPoints()
 		f:SetNormalTexture(f.ntex)
 		f.htex = f:CreateTexture()
 		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
 		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)	
+		f:SetHighlightTexture(f.htex)
 		f.ptex = f:CreateTexture()
 		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -370,7 +370,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Frames.interfaceSettingsFrame.controls = controls
 	end
 
-	local function ElementalConstructBarColorsAndBehaviorPanel(parent)	
+	local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -394,11 +394,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local dropdownWidth = 225
 		local sliderWidth = 260
 		local sliderHeight = 20
-	
+
 		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height/8), math.floor(TRB.Data.settings.shaman.elemental.bar.width/8))
 
 		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
-		
+
 		yCoord = yCoord - 40
 		title = "Bar Width"
 		controls.width = TRB.UiFunctions.BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinWidth, TRB.Data.sanityCheckValues.barMaxWidth, TRB.Data.settings.shaman.elemental.bar.width, 1, 2,
@@ -433,15 +433,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				value = max
 			elseif value < min then
 				value = min
-			end		
-			self.EditBox:SetText(value)		
+			end
+			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.bar.height = value
 			barContainerFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
 			barBorderFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height)
 			resourceFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
 			resourceFrame.thresholds[1]:SetHeight(value)
 			castingFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			passiveFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))	
+			passiveFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
 			leftTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
 			middleTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
 			rightTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
@@ -461,7 +461,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.bar.xPos = value
 			barContainerFrame:ClearAllPoints()
 			barContainerFrame:SetPoint("CENTER", UIParent)
@@ -496,7 +496,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.bar.border = value
 			barContainerFrame:SetWidth(TRB.Data.settings.shaman.elemental.bar.width-(TRB.Data.settings.shaman.elemental.bar.border*2))
 			barContainerFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height-(TRB.Data.settings.shaman.elemental.bar.border*2))
@@ -516,7 +516,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					edgeFile = TRB.Data.settings.shaman.elemental.textures.border,
 					tile = true,
 					tileSize=4,
-					edgeSize=TRB.Data.settings.shaman.elemental.bar.border,								
+					edgeSize=TRB.Data.settings.shaman.elemental.bar.border,
 					insets = {0, 0, 0, 0}
 				})
 				barBorderFrame:Show()
@@ -569,7 +569,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = yCoord - 30
 		controls.textBarTexturesSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Textures", xCoord+xPadding, yCoord)
 		yCoord = yCoord - 30
-		
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TIBMaelstromBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
@@ -602,7 +602,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.shaman.elemental.textures.resourceBar
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -630,7 +630,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			CloseDropDownMenus()
 		end
-			
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TIBCastBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.castingBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
@@ -663,7 +663,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.shaman.elemental.textures.castingBar
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -692,9 +692,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			CloseDropDownMenus()
 		end
 
-		
+
 		yCoord = yCoord - 60
-			
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TIBPassiveBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
@@ -727,7 +727,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.shaman.elemental.textures.passiveBar
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -754,7 +754,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
 			end
 			CloseDropDownMenus()
-		end	
+		end
 
 		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TIBCB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
@@ -778,7 +778,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 
 		yCoord = yCoord - 60
-		
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.borderTexture = CreateFrame("FRAME", "TIBBorderTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.borderTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
@@ -811,7 +811,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.shaman.elemental.textures.border
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -831,7 +831,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.shaman.elemental.textures.border,
 											tile = true,
 											tileSize=4,
-											edgeSize=TRB.Data.settings.shaman.elemental.bar.border,							
+											edgeSize=TRB.Data.settings.shaman.elemental.bar.border,
 											insets = {0, 0, 0, 0}
 											})
 			end
@@ -840,7 +840,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
 			CloseDropDownMenus()
 		end
-		
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TIBBackgroundTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.backgroundTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
@@ -873,7 +873,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						info.text = v
 						info.value = textures[v]
 						info.checked = textures[v] == TRB.Data.settings.shaman.elemental.textures.background
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
 						info.icon = textures[v]
@@ -888,7 +888,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.elemental.textures.background = newValue
 			TRB.Data.settings.shaman.elemental.textures.backgroundName = newName
 			barContainerFrame:SetBackdrop({ 
-				bgFile = TRB.Data.settings.shaman.elemental.textures.background,		
+				bgFile = TRB.Data.settings.shaman.elemental.textures.background,
 				tile = true,
 				tileSize = TRB.Data.settings.shaman.elemental.bar.width,
 				edgeSize = 1,
@@ -899,7 +899,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			CloseDropDownMenus()
 		end
 
-		
+
 		yCoord = yCoord - 70
 		controls.barDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display", 0, yCoord)
 
@@ -914,7 +914,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				value = max
 			elseif value < min then
 				value = min
-			end	
+			end
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
@@ -933,7 +933,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 
 			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.colors.bar.flashPeriod = value
 		end)
 
@@ -1085,8 +1085,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     TRB.Data.settings.shaman.elemental.colors.bar.earthShock = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
-		end)	
-			
+		end)
+
 		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.shaman.elemental.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1143,7 +1143,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						r, g, b = ColorPickerFrame:GetColorRGB()
 						a = OpacitySliderFrame:GetValue()
 					end
-		
+
 					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.shaman.elemental.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
@@ -1172,7 +1172,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)
 
-		
+
 		yCoord = yCoord - 40
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
 
@@ -1272,7 +1272,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 
 			value = TRB.Functions.RoundTo(value, 1)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.overcapThreshold = value
 		end)
 
@@ -1280,7 +1280,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Frames.interfaceSettingsFrame.controls = controls
 	end
 
-	local function ElementalConstructFontAndTextPanel(parent)	
+	local function ElementalConstructFontAndTextPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -1340,7 +1340,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						info.text = v
 						info.value = fonts[v]
 						info.checked = fonts[v] == TRB.Data.settings.shaman.elemental.displayText.left.fontFace
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
 						info.fontObject = CreateFont(v)
@@ -1368,7 +1368,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			CloseDropDownMenus()
 		end
-			
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TIBfFontMiddle", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontMiddle.label = TRB.UiFunctions.BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
@@ -1401,7 +1401,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						info.text = v
 						info.value = fonts[v]
 						info.checked = fonts[v] == TRB.Data.settings.shaman.elemental.displayText.middle.fontFace
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
 						info.fontObject = CreateFont(v)
@@ -1421,7 +1421,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Data.settings.shaman.elemental.displayText.left.fontFace = newValue
 				TRB.Data.settings.shaman.elemental.displayText.left.fontFaceName = newName
 				leftTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.left.fontFace, TRB.Data.settings.shaman.elemental.displayText.left.fontSize, "OUTLINE")
-				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)			
+				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
 				TRB.Data.settings.shaman.elemental.displayText.right.fontFace = newValue
 				TRB.Data.settings.shaman.elemental.displayText.right.fontFaceName = newName
 				rightTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.right.fontFace, TRB.Data.settings.shaman.elemental.displayText.right.fontSize, "OUTLINE")
@@ -1431,7 +1431,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		yCoord = yCoord - 40 - 20
-			
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TIBFontRight", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontRight.label = TRB.UiFunctions.BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
@@ -1464,7 +1464,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						info.text = v
 						info.value = fonts[v]
 						info.checked = fonts[v] == TRB.Data.settings.shaman.elemental.displayText.right.fontFace
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
 						info.fontObject = CreateFont(v)
@@ -1475,7 +1475,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)
 
-		function controls.dropDown.fontRight:SetValue(newValue, newName)		
+		function controls.dropDown.fontRight:SetValue(newValue, newName)
 			TRB.Data.settings.shaman.elemental.displayText.right.fontFace = newValue
 			TRB.Data.settings.shaman.elemental.displayText.right.fontFaceName = newName
 			rightTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.right.fontFace, TRB.Data.settings.shaman.elemental.displayText.right.fontSize, "OUTLINE")
@@ -1492,7 +1492,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			CloseDropDownMenus()
 		end
-		
+
 		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TIBCB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -1528,7 +1528,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.displayText.left.fontSize = value
 			leftTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.left.fontFace, TRB.Data.settings.shaman.elemental.displayText.left.fontSize, "OUTLINE")
 			if TRB.Data.settings.shaman.elemental.displayText.fontSizeLock then
@@ -1536,7 +1536,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				controls.fontSizeRight:SetValue(value)
 			end
 		end)
-		
+
 		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TIBCB2_F1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontSizeLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
@@ -1619,7 +1619,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                 end)
 			end
 		end)
-		
+
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeMiddle = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.shaman.elemental.displayText.middle.fontSize, 1, 0,
@@ -1631,7 +1631,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.displayText.middle.fontSize = value
 			middleTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.middle.fontFace, TRB.Data.settings.shaman.elemental.displayText.middle.fontSize, "OUTLINE")
 			if TRB.Data.settings.shaman.elemental.displayText.fontSizeLock then
@@ -1639,7 +1639,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				controls.fontSizeRight:SetValue(value)
 			end
 		end)
-		
+
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeRight = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.shaman.elemental.displayText.right.fontSize, 1, 0,
@@ -1651,7 +1651,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			elseif value < min then
 				value = min
 			end
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.displayText.right.fontSize = value
 			rightTextFrame.font:SetFont(TRB.Data.settings.shaman.elemental.displayText.right.fontFace, TRB.Data.settings.shaman.elemental.displayText.right.fontSize, "OUTLINE")
 			if TRB.Data.settings.shaman.elemental.displayText.fontSizeLock then
@@ -1707,7 +1707,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                 end)
 			end
 		end)
-		
+
 		yCoord = yCoord - 30
 		controls.colors.passiveMaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Passive Maelstrom", TRB.Data.settings.shaman.elemental.colors.text.passiveMaelstrom, 300, 25, xCoord, yCoord)
 		f = controls.colors.passiveMaelstromText
@@ -1724,13 +1724,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					end
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 0.0
-		
+
 					controls.colors.passiveMaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.shaman.elemental.colors.text.passiveMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
-		
+
 		yCoord = yCoord - 30
 		controls.colors.thresholdmaelstromText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Maelstrom to cast Earth Shock or Earthquake", TRB.Data.settings.shaman.elemental.colors.text.overThreshold, 300, 25, xCoord, yCoord)
 		f = controls.colors.thresholdmaelstromText
@@ -1747,7 +1747,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					end
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 0.0
-		
+
 					controls.colors.thresholdmaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.shaman.elemental.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
@@ -1769,7 +1769,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					end
 					--Text doesn't care about Alpha, but the color picker does!
 					a = 0.0
-		
+
 					controls.colors.overcapmaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
@@ -1777,7 +1777,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		
+
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TRB_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
@@ -1787,7 +1787,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.shaman.elemental.colors.text.overThresholdEnabled = self:GetChecked()
 		end)
-		
+
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TRB_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
@@ -1802,7 +1802,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Frames.interfaceSettingsFrame.controls = controls
 	end
 
-	local function ElementalConstructAudioAndTrackingPanel(parent)	
+	local function ElementalConstructAudioAndTrackingPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -1838,8 +1838,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetChecked(TRB.Data.settings.shaman.elemental.audio.esReady.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.shaman.elemental.audio.esReady.enabled = self:GetChecked()
-		end)	
-			
+		end)
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.esReadyAudio = CreateFrame("FRAME", "TIBesReadyAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.esReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
@@ -1870,7 +1870,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						info.text = v
 						info.value = sounds[v]
 						info.checked = sounds[v] == TRB.Data.settings.shaman.elemental.audio.esReady.sound
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
 						UIDropDownMenu_AddButton(info, level)
@@ -1889,7 +1889,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 
-		
+
 		yCoord = yCoord - 60
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TIBCB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
@@ -1903,8 +1903,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			if TRB.Data.settings.shaman.elemental.audio.overcap.enabled then
 				PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
-		end)	
-			
+		end)
+
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TIBovercapAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
@@ -1935,7 +1935,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						info.text = v
 						info.value = sounds[v]
 						info.checked = sounds[v] == TRB.Data.settings.shaman.elemental.audio.overcap.sound
-						info.func = self.SetValue			
+						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
 						UIDropDownMenu_AddButton(info, level)
@@ -1956,7 +1956,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
-	
+
 		yCoord = yCoord - 40
 		title = "Haste / Crit / Mastery Decimals to Show"
 		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.shaman.elemental.hastePrecision, 1, 0,
@@ -1968,17 +1968,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			elseif value < min then
 				value = min
 			end
-	
+
 			value = TRB.Functions.RoundTo(value, 0)
-			self.EditBox:SetText(value)		
+			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.hastePrecision = value
 		end)
-		
+
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrame.controls = controls
 	end
     
-	local function ElementalConstructBarTextDisplayPanel(parent)	
+	local function ElementalConstructBarTextDisplayPanel(parent)
 		if parent == nil then
 			return
 		end
@@ -2105,7 +2105,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f.font:SetJustifyH("LEFT")
 		f.font:SetSize(maxOptionsWidth-xPadding, 20)
 		f.font:SetText("For conditional display (only if $VAR is active/non-zero): {$VAR}[WHAT TO DISPLAY]")
-			
+
 		yCoord = yCoord - 25
 		controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
 		f = controls.labels.instructions2Var
@@ -2192,9 +2192,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 	end
 
-	local function ElementalConstructOptionsPanel()		
+	local function ElementalConstructOptionsPanel()
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local parent = interfaceSettingsFrame.panel		
+		local parent = interfaceSettingsFrame.panel
 		local controls = interfaceSettingsFrame.controls
 		local yCoord = 0
 		local f = nil
@@ -2211,10 +2211,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.elementalDisplayPanel)
 
 		parent = interfaceSettingsFrame.elementalDisplayPanel
-				
+
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Elemental Shaman", xCoord+xPadding, yCoord)
 
-		yCoord = yCoord - 42	
+		yCoord = yCoord - 42
 
 		local tabs = {}
 		local tabsheets = {}

@@ -190,7 +190,7 @@ function SlashCmdList.TWINTOP(msg)
             local num = TRB.Functions.RoundTo(subcmd, 0)
             settings.ttd.numEntries = num
         end
-    elseif cmd == "fill" then				
+    elseif cmd == "fill" then
         TRB.Functions.FillSpellData()
     elseif cmd == "move" then
         local x, y = TRB.Functions.ParseCmdString(subcmd)

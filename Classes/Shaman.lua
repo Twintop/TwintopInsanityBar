@@ -94,7 +94,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			overload = 3,
 			echoingShock = false
 		},
-		
+
         flameShock = {
             id = 188389,
             name = "",
@@ -128,8 +128,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			name = "", 
 			icon = ""
 		},
-	
-		
+
+
 		surgeOfPower = {
 			id = 285514,
 			name = "", 
@@ -199,12 +199,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function FillSpellData()
 		TRB.Functions.FillSpellData()
-		
+
 		-- This is done here so that we can get icons for the options menu!
 		TRB.Data.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Maelstrom generating spell you are currently hardcasting", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
-	
+
 			{ variable = "#lightningBolt", icon = TRB.Data.spells.lightningBolt.icon, description = "Lightning Bolt", printInSettings = true },
 			{ variable = "#lavaBurst", icon = TRB.Data.spells.lavaBurst.icon, description = "Lava Burst", printInSettings = true },
 			{ variable = "#elementalBlast", icon = TRB.Data.spells.elementalBlast.icon, description = "Elemental Blast", printInSettings = true },
@@ -222,7 +222,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
-	
+
 			{ variable = "$maelstrom", description = "Current Maelstrom", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Maelstrom", printInSettings = false, color = false },
 			{ variable = "$maelstromMax", description = "Maximum Maelstrom", printInSettings = true, color = false },
@@ -240,7 +240,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$ifStacks", description = "Number of Icefury Frost Shock stacks remaining", printInSettings = true, color = false },
 			{ variable = "$ifMaelstrom", description = "Total Maelstrom from available Icefury Frost Shock stacks", printInSettings = true, color = false },
 			{ variable = "$ifTime", description = "Time remaining on Icefury buff", printInSettings = true, color = false },
-				
+
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
@@ -255,9 +255,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Data.character.talents.icefury.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.stormkeeper.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.ascendance.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
-		
+
 		TRB.Data.character.earthShockThreshold = 60
-		
+
 		if TRB.Data.settings.shaman ~= nil and TRB.Data.settings.shaman.elemental ~= nil and TRB.Data.settings.shaman.elemental.earthShockThreshold and TRB.Data.character.earthShockThreshold < TRB.Data.character.maxResource then
 			resourceFrame.thresholds[1]:Show()
 			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
@@ -265,7 +265,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			resourceFrame.thresholds[1]:Hide()
 		end
 	end
-	
+
 	local function IsTtdActive()
 		if TRB.Data.settings.shaman ~= nil and TRB.Data.settings.shaman.elemental ~= nil and TRB.Data.settings.shaman.elemental.displayText ~= nil then
 			if string.find(TRB.Data.settings.shaman.elemental.displayText.left.text, "$ttd") or
@@ -282,7 +282,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
     TRB.Functions.IsTtdActive = IsTtdActive
 
 	local function EventRegistration()
-		if GetSpecialization() == 1 then		
+		if GetSpecialization() == 1 then
 			TRB.Data.resource = Enum.PowerType.Maelstrom
 			TRB.Data.resourceFactor = 1
 			TRB.Data.specSupported = true
@@ -296,18 +296,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 			TRB.Details.addonData.registered = true
-		else		
+		else
 			--TRB.Data.resource = MANA
 			TRB.Data.specSupported = false
 			targetsTimerFrame:SetScript("OnUpdate", nil)
-			timerFrame:SetScript("OnUpdate", nil)			
+			timerFrame:SetScript("OnUpdate", nil)
 			barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 			barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-			TRB.Details.addonData.registered = false			
+			TRB.Details.addonData.registered = false
 			barContainerFrame:Hide()
-		end	
+		end
 	end
 
 	local function InitializeTarget(guid)
@@ -315,7 +315,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.InitializeTarget(guid)
 			TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
 			TRB.Data.snapshotData.targetData.targets[guid].echoingShockSpell = nil
-		end	
+		end
 	end
 
 	local function RefreshTargetTracking()
@@ -330,7 +330,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if TRB.Data.snapshotData.targetData.targets[guid].flameShock == true then
 					fsTotal = fsTotal + 1
 				end
-				
+
 				if TRB.Data.snapshotData.targetData.targets[guid].echoingShockSpell ~= nil then
 					if currentTime > TRB.Data.snapshotData.targetData.targets[guid].echoingShockExpiration then
 						TRB.Data.snapshotData.targetData.targets[guid].echoingShockSpell = nil
@@ -340,7 +340,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					end
 				end
 			end
-		end	
+		end
 		TRB.Data.snapshotData.targetData.flameShock = fsTotal
 		TRB.Data.snapshotData.echoingShock.spell = echoingShockSpell
 	end
@@ -362,7 +362,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		if valid then
 			return valid
 		end
-		
+
 		if var == "$resource" or var == "$maelstrom" then
 			if TRB.Data.snapshotData.resource > 0 then
 				valid = true
@@ -413,7 +413,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				valid = true
 			end
 		else
-			valid = false					
+			valid = false
 		end
 
 		return valid
@@ -431,7 +431,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom
 
 		local maelstromThreshold = TRB.Data.character.earthShockThreshold
-		
+
 		if TRB.Data.settings.shaman.elemental.colors.text.overcapEnabled and overcap then 
 			currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom
 			castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom
@@ -439,14 +439,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overThreshold
 			castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overThreshold
 		end
-		
+
 		--$maelstrom
 		local currentMaelstrom = string.format("|c%s%.0f|r", currentMaelstromColor, TRB.Data.snapshotData.resource)
 		--$casting
 		local castingMaelstrom = string.format("|c%s%.0f|r", castingMaelstromColor, TRB.Data.snapshotData.casting.resourceFinal)
 		--$passive
 		local _passiveMaelstrom = 0
-		
+
 		if TRB.Data.snapshotData.echoingShock.spell ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom > 0 then
 			_passiveMaelstrom = _passiveMaelstrom + TRB.Data.snapshotData.echoingShock.spell.maelstrom
 		end
@@ -494,7 +494,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			remaining = icefuryTime
 		}
 
-		lookup = TRB.Data.lookup or {}	
+		lookup = TRB.Data.lookup or {}
 		lookup["#lightningBolt"] = TRB.Data.spells.lightningBolt.icon
 		lookup["#lavaBurst"] = TRB.Data.spells.lavaBurst.icon
 		lookup["#elementalBlast"] = TRB.Data.spells.elementalBlast.icon
@@ -541,7 +541,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function CastingSpell()
 		local currentSpell = UnitCastingInfo("player")
 		local currentChannel = UnitChannelInfo("player")
-		
+
 		if currentSpell == nil and currentChannel == nil then
 			TRB.Functions.ResetCastingSnapshotData()
 			return false
@@ -551,11 +551,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Functions.ResetCastingSnapshotData()
 				return false
                 --See Priest implementation for handling channeled spells
-			else	
+			else
 				local spellName = select(1, currentSpell)
 				if spellName == TRB.Data.spells.lightningBolt.name then
 					FillSnapshotDataCasting(TRB.Data.spells.lightningBolt)
-					
+
 					if TRB.Data.spells.surgeOfPower.isActive then
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.snapshotData.casting.resourceRaw + TRB.Data.spells.lightningBolt.overload
 						TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.lightningBolt.overload
@@ -575,7 +575,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     end
                     FillSnapshotDataCasting(spell)
                     
-                    local currentTime = GetTime()				
+                    local currentTime = GetTime()
 					local down, up, lagHome, lagWorld = GetNetStats()
 					local latency = lagWorld / 1000
 
@@ -591,7 +591,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     TRB.Data.snapshotData.casting.resourceFinal = spell.maelstrom * TRB.Data.snapshotData.chainLightning.targetsHit
 				else
 					TRB.Functions.ResetCastingSnapshotData()
-					return false				
+					return false
 				end
 			end
 			return true
@@ -604,7 +604,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			if TRB.Data.snapshotData.icefury.startTime == nil or currentTime > (TRB.Data.snapshotData.icefury.startTime + TRB.Data.spells.icefury.duration) then
 				TRB.Data.snapshotData.icefury.stacksRemaining = 0
 				TRB.Data.snapshotData.icefury.startTime = nil
-				TRB.Data.snapshotData.icefury.astralPower = 0			
+				TRB.Data.snapshotData.icefury.astralPower = 0
 				TRB.Data.snapshotData.icefury.isActive = false
 			end
 		end
@@ -617,7 +617,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function HideResourceBar(force)
 		local affectingCombat = UnitAffectingCombat("player")
-	
+
 		if force or GetSpecialization() ~= 1 or ((not affectingCombat) and
 			(not UnitInVehicle("player")) and (
 				(not TRB.Data.settings.shaman.elemental.displayBar.alwaysShow) and (
@@ -625,14 +625,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					(TRB.Data.settings.shaman.elemental.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0)
 				)
 			 )) then
-			TRB.Frames.barContainerFrame:Hide()	
+			TRB.Frames.barContainerFrame:Hide()
 			TRB.Data.snapshotData.isTracking = false
 		else
 			TRB.Data.snapshotData.isTracking = true
 			if TRB.Data.settings.shaman.elemental.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()	
+				TRB.Frames.barContainerFrame:Hide()
 			else
-				TRB.Frames.barContainerFrame:Show()	
+				TRB.Frames.barContainerFrame:Show()
 			end
 		end
 	end
@@ -643,16 +643,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		UpdateSnapshot()
 
 		if TRB.Data.snapshotData.isTracking then
-			TRB.Functions.HideResourceBar()	
-			
+			TRB.Functions.HideResourceBar()
+
 			if TRB.Data.settings.shaman.elemental.displayBar.neverShow == false then
 				refreshText = true
 				local passiveBarValue = 0
-				local castingBarValue = 0	
-				
+				local castingBarValue = 0
+
 				if TRB.Data.settings.shaman.elemental.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.borderOvercap, true))
-					
+
 					if TRB.Data.settings.shaman.elemental.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 						TRB.Data.snapshotData.audio.overcapCue = true
 						PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -663,21 +663,21 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.elemental, resourceFrame, TRB.Data.snapshotData.resource)
-				
+
 				if CastingSpell() then
 					castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
 				else
 					castingBarValue = TRB.Data.snapshotData.resource
 				end
-				
+
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.elemental, castingFrame, castingBarValue)
-								
+
 				if TRB.Data.snapshotData.echoingShock.spell ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom > 0 then
 					passiveBarValue = TRB.Data.snapshotData.echoingShock.spell.maelstrom + castingBarValue
 				else
 					passiveBarValue = castingBarValue
 				end
-				
+
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.elemental, passiveFrame, passiveBarValue)
 
 				if TRB.Data.settings.shaman.elemental.earthShockThreshold then
@@ -685,16 +685,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				else
 					resourceFrame.thresholds[1]:Hide()
 				end
-				
-				if TRB.Data.snapshotData.resource >= TRB.Data.character.earthShockThreshold then				
+
+				if TRB.Data.snapshotData.resource >= TRB.Data.character.earthShockThreshold then
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.earthShock, true))
 					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.over, true))
 					if TRB.Data.settings.shaman.elemental.colors.bar.flashEnabled then
 						TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.shaman.elemental.colors.bar.flashAlpha, TRB.Data.settings.shaman.elemental.colors.bar.flashPeriod)
 					else
 						barContainerFrame:SetAlpha(1.0)
-					end	
-			
+					end
+
 					if TRB.Data.settings.shaman.elemental.audio.esReady.enabled and TRB.Data.snapshotData.audio.playedEsCue == false then
 						TRB.Data.snapshotData.audio.playedEsCue = true
 						PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -705,7 +705,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.base, true))
 					TRB.Data.snapshotData.audio.playedEsCue = false
 				end
-			end		
+			end
 		end
 		TRB.Functions.UpdateResourceBar(TRB.Data.settings.shaman.elemental, refreshText)
 	end
@@ -717,10 +717,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		if GetSpecialization() ~= 1 then
 			TRB.Functions.HideResourceBar(true)
 			return
-		end	
+		end
 
 		local currentTime = GetTime()
-		
+
 		if updateRateLimit + 0.05 < currentTime then
 			updateRateLimit = currentTime
 			UpdateResourceBar()
@@ -756,7 +756,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			if guid ~= nil then
 				InitializeTarget(guid)
-				
+
 				local isDead = UnitIsDeadOrGhost("target")
 				local currentHealth = UnitHealth("target")
 				local maxHealth = UnitHealthMax("target")
@@ -815,9 +815,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local currentTime = GetTime()
-		local triggerUpdate = false	
+		local triggerUpdate = false
 		local _
-			
+
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
@@ -832,14 +832,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						TRB.Data.snapshotData.targetData.targets[destGUID].flameShock = false
 						TRB.Data.snapshotData.targetData.flameShock = TRB.Data.snapshotData.targetData.flameShock - 1
 					--elseif type == "SPELL_PERIODIC_DAMAGE" then
-					end		
+					end
 				elseif spellId == TRB.Data.spells.chainLightning.id or spellId == TRB.Data.spells.lavaBeam.id then
 					if type == "SPELL_DAMAGE" then
 						if TRB.Data.snapshotData.chainLightning.hitTime == nil or currentTime > (TRB.Data.snapshotData.chainLightning.hitTime + 0.1) then --This is a new hit
 							TRB.Data.snapshotData.chainLightning.targetsHit = 0
 						end
 						TRB.Data.snapshotData.chainLightning.targetsHit = TRB.Data.snapshotData.chainLightning.targetsHit + 1
-						TRB.Data.snapshotData.chainLightning.hitTime = currentTime					
+						TRB.Data.snapshotData.chainLightning.hitTime = currentTime
 						TRB.Data.snapshotData.chainLightning.hasStruckTargets = true
                     end
 				elseif spellId == TRB.Data.spells.icefury.id then
@@ -883,7 +883,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						TRB.Data.snapshotData.echoingShock.isActive = true
 					end
 				end
-				
+
 				if type == "SPELL_CAST_SUCCESS" and TRB.Data.snapshotData.echoingShock.isActive and spellId ~= TRB.Data.spells.echoingShock.id then
 					local spell = nil
 
@@ -900,7 +900,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					elseif spellId == TRB.Data.spells.lavaBeam.id then 
 						spell = TRB.Data.spells.lavaBeam
 					end
-					
+
 					InitializeTarget(destGUID)
 
 					TRB.Data.snapshotData.targetData.targets[destGUID].echoingShockSpell = spell
@@ -909,19 +909,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					TRB.Data.snapshotData.echoingShock.spell = spell
 				end
             end
-			
+
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
 				TRB.Functions.RemoveTarget(guid)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end
-				
+
 			if UnitIsDeadOrGhost("player") then -- We died/are dead go ahead and purge the list
 				TargetsCleanup(true)
 				triggerUpdate = true
-			end			
+			end
 		end
-					
+
 		if triggerUpdate then
 			TriggerResourceBarUpdates()
 		end
@@ -964,10 +964,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
 					else
 						TRB.Data.settings = settings
-					end	
+					end
 
 					TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.shaman.elemental)
-					TRB.Functions.IsTtdActive()		
+					TRB.Functions.IsTtdActive()
 					FillSpellData()
 					ConstructResourceBar()
 					TRB.Options.Shaman.ConstructOptionsPanel()
@@ -982,15 +982,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					SLASH_TWINTOP8 	= "/trt"
 					SLASH_TWINTOP9 	= "/ttrt"
 					SLASH_TWINTOP10 = "/ttrb"
-				end			
-			end	
+				end
+			end
 
 			if event == "PLAYER_LOGOUT" then
 				TwintopInsanityBarSettings = TRB.Data.settings
 			end
-					
+
 			if TRB.Details.addonData.registered == true and event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
-				EventRegistration()				
+				EventRegistration()
 				TRB.Functions.HideResourceBar()
 			end
 		end
