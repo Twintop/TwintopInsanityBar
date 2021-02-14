@@ -48,6 +48,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		specCache.beastMastery.character = {
 			guid = UnitGUID("player"),
 			specGroup = GetActiveSpecGroup(),
+			petGuid = UnitGUID("pet"),
 			specId = 1,
 			maxResource = 100,
 			covenantId = 0,
@@ -212,6 +213,26 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				modifier = 2.0
 			},
 
+			frenzy = {
+				id = 272790,
+				name = "",
+				icon = "",
+				duration = 8,
+				isActive = false
+			},
+
+			bloodletting = {
+				id = 341440,
+				name = "",
+				icon = "",
+				conduitId = 253
+			},
+
+			elethiumMuzzle = {
+				id = 319276,
+				name = "",
+				icon = ""
+			}
 		}
 
 		specCache.beastMastery.snapshotData.focusRegen = 0
@@ -259,6 +280,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			focus = 0,
 			endTime = nil,
 			list = {}
+		}
+
+		specCache.beastMastery.snapshotData.frenzy = {
+			startTime = nil,
+			duration = 0,
+			stacks = 0
 		}
 
 		specCache.beastMastery.barTextVariables = {
@@ -952,6 +979,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#cobraShot", icon = spells.cobraShot.icon, description = "Cobra Shot", printInSettings = true },
 			{ variable = "#flayedShot", icon = spells.flayedShot.icon, description = "Flayed Shot", printInSettings = true },
 			{ variable = "#flayersMark", icon = spells.flayersMark.icon, description = "Flayer's Mark", printInSettings = true },
+			{ variable = "#frenzy", icon = spells.frenzy.icon, description = "Frenzy", printInSettings = true },
 			{ variable = "#killCommand", icon = spells.killCommand.icon, description = "Kill Command", printInSettings = true },
 			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
 			{ variable = "#multiShot", icon = spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
@@ -988,7 +1016,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$focusTotal", description = "Current + Passive + Casting Focus Total", printInSettings = true, color = false },   
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Focus Total", printInSettings = false, color = false },   
 
-			--{ variable = "$trueshotTime", description = "Time remaining on Trueshot buff", printInSettings = true, color = false },   
+			{ variable = "$frenzyTime", description = "Time remaining on your pet's Frenzy buff", printInSettings = true, color = false }, 
+			{ variable = "$frenzyStacks", description = "Current stack count on your pet's Frenzy buff", printInSettings = true, color = false },   
 
 			{ variable = "$barbedShotTicks", description = "Total number of Barbed Shot buff ticks remaining", printInSettings = true, color = false },
 			{ variable = "$barbedShotTime", description = "Time remaining until the most recent Barbed Shot buff expires", printInSettings = true, color = false },
@@ -1270,6 +1299,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		return remainingTime
 	end
 
+	local function GetFrenzyRemainingTime()
+		local currentTime = GetTime()
+		local remainingTime = 0
+
+		if TRB.Data.snapshotData.frenzy.endTime ~= nil then
+			remainingTime = TRB.Data.snapshotData.frenzy.endTime - currentTime
+		end
+
+		return remainingTime
+	end
+
 	local function GetVigilRemainingTime()
 		local currentTime = GetTime()
 		local remainingTime = 0
@@ -1416,6 +1456,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				end
 			elseif var == "$barbedShotTime" then
 				if TRB.Data.snapshotData.barbedShot.isActive or TRB.Data.snapshotData.barbedShot.count > 0 or TRB.Data.snapshotData.barbedShot.focus > 0 then
+					valid = true
+				end
+			elseif var == "$frenzyTime" then
+				if TRB.Data.snapshotData.frenzy.endTime ~= nil then
+					valid = true
+				end
+			elseif var == "$frenzyStacks" then
+				if TRB.Data.snapshotData.frenzy.stacks ~= nil and TRB.Data.snapshotData.frenzy.stacks > 0 then
 					valid = true
 				end
 			end
@@ -1599,12 +1647,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local _focusPlusPassive = math.min(_passiveFocus + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
 		local focusPlusPassive = string.format("|c%s%.0f|r", currentFocusColor, _focusPlusPassive)
 
-		--$trueshotTime
-		--[[local _trueshotTime = GetTrueshotRemainingTime()
-		local trueshotTime = 0
-		if _trueshotTime ~= nil then
-			trueshotTime = string.format("%.1f", _trueshotTime)
-		end]]
+		--$frenzyTime
+		local _frenzyTime = GetFrenzyRemainingTime()
+		local frenzyTime = 0
+		if _frenzyTime ~= nil then
+			frenzyTime = string.format("%.1f", _frenzyTime)
+		end
+
+		--$frenzyStacks
+		local frenzyStacks = TRB.Data.snapshotData.frenzy.stacks or 0
 
 		--$flayersMarkTime
 		local _flayersMarkTime = GetFlayersMarkRemainingTime()
@@ -1650,18 +1701,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#cobraShot"] = TRB.Data.spells.cobraShot.icon
 		lookup["#flayedShot"] = TRB.Data.spells.flayedShot.icon
 		lookup["#flayersMark"] = TRB.Data.spells.flayersMark.icon
+		lookup["#frenzy"] = TRB.Data.spells.frenzy.icon
 		lookup["#killCommand"] = TRB.Data.spells.killCommand.icon
 		lookup["#killShot"] = TRB.Data.spells.killShot.icon
 		lookup["#multiShot"] = TRB.Data.spells.multiShot.icon
 		lookup["#nesingwarys"] = TRB.Data.spells.nesingwarysTrappingApparatus.icon
 		lookup["#revivePet"] = TRB.Data.spells.revivePet.icon
 		lookup["#scareBeast"] = TRB.Data.spells.scareBeast.icon
-		--lookup["#serpentSting"] = TRB.Data.spells.serpentSting.icon
 		--lookup["#steadyShot"] = TRB.Data.spells.steadyShot.icon
 		--lookup["#trickShots"] = TRB.Data.spells.trickShots.icon
 		--lookup["#trueshot"] = TRB.Data.spells.trueshot.icon
 		--lookup["#vigil"] = TRB.Data.spells.secretsOfTheUnblinkingVigil.icon
-		--lookup["$trueshotTime"] = trueshotTime
+		lookup["$frenzyTime"] = frenzyTime
+		lookup["$frenzyStacks"] = frenzyStacks
 		--lookup["$vigilTime"] = vigilTime
 		lookup["$nesingwarysTime"] = nesingwarysTime
 		lookup["$flayersMarkTime"] = flayersMarkTime
@@ -2201,6 +2253,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             TRB.Data.snapshotData.killShot.startTime = nil
             TRB.Data.snapshotData.killShot.duration = 0
         end
+
+		_, _, TRB.Data.snapshotData.frenzy.stacks, _, TRB.Data.snapshotData.frenzy.duration, TRB.Data.snapshotData.frenzy.endTime, _, _, _, TRB.Data.snapshotData.frenzy.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.frenzy.id, "pet")		
 	end  
 
 	local function UpdateSnapshot_Marksmanship()
@@ -2993,6 +3047,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								lastTick = currentTime
 							})
 						end
+					elseif spellId == TRB.Data.spells.frenzy.id and destGUID == TRB.Data.character.petGuid then
+						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
+							_, _, TRB.Data.snapshotData.frenzy.stacks, _, TRB.Data.snapshotData.frenzy.duration, TRB.Data.snapshotData.frenzy.endTime, _, _, _, TRB.Data.snapshotData.frenzy.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.frenzy.id, "pet")
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.frenzy.startTime = nil
+							TRB.Data.snapshotData.frenzy.duration = 0
+							TRB.Data.snapshotData.frenzy.stacks = 0
+							TRB.Data.spells.frenzy.isActive = false
+						end
 					end
 				elseif specId == 2 then --Marksmanship
 					if spellId == TRB.Data.spells.burstingShot.id then
@@ -3153,7 +3216,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						TRB.Data.snapshotData.nesingwarysTrappingApparatus.endTime = nil
 					end
 				end
-            end
+			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
 				TRB.Functions.RemoveTarget(guid)
