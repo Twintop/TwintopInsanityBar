@@ -393,9 +393,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 257044,
 				name = "",
 				icon = "",
+				isActive = false,
 				focus = 1,
 				shots = 7,
-				duration = 2 --On cast then every 1/3 sec?
+				duration = 2 --On cast then every 1/3 sec, hasted
 			},
 			trickShots = { --TODO: Do these ricochets generate Focus from Rapid Fire Rank 2?
 				id = 257044,
@@ -555,6 +556,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			startTime = nil,
 			duration = 0,
 			enabled = false
+		}
+		specCache.marksmanship.snapshotData.rapidFire = {
+			startTime = nil,
+			duration = 0,
+			enabled = false,
+			ticksRemaining = 0,
+			focus = 0
 		}
 		specCache.marksmanship.snapshotData.flayedShot = {
 			startTime = nil,
@@ -982,9 +990,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			--{ variable = "$trueshotTime", description = "Time remaining on Trueshot buff", printInSettings = true, color = false },   
 
-			{ variable = "$barbedShotTicks", description = "Total number of Barbed Shot buff ticks remaining", printInSettings = true, color = false },			
+			{ variable = "$barbedShotTicks", description = "Total number of Barbed Shot buff ticks remaining", printInSettings = true, color = false },
 			{ variable = "$barbedShotTime", description = "Time remaining until the most recent Barbed Shot buff expires", printInSettings = true, color = false },
-			
+
 			{ variable = "$flayersMarkTime", description = "Time remaining on Flayer's Mark buff", printInSettings = true, color = false },
 
 			--{ variable = "$vigilTime", description = "Time remaining on Secrets of the Unblinking Vigil buff", printInSettings = true, color = false },
@@ -1673,8 +1681,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			lookup["$passive"] = passiveFocusMinusRegen
 		else
 			lookup["$passive"] = passiveFocus
-		end		
-		
+		end
+
 		lookup["$barbedShotFocus"] = barbedShotFocus
 		lookup["$barbedShotTicks"] = barbedShotTicks
 		lookup["$barbedShotTime"] = barbedShotTime
@@ -2001,11 +2009,28 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Data.lookup = lookup
 	end
 
+	local function UpdateRapidFire()
+		if TRB.Data.snapshotData.rapidFire.isActive then
+			local currentTime = GetTime()
+			if TRB.Data.snapshotData.rapidFire.endTime == nil or currentTime > TRB.Data.snapshotData.rapidFire.endTime then
+				TRB.Data.snapshotData.rapidFire.ticksRemaining = 0
+				TRB.Data.snapshotData.rapidFire.endTime = nil
+				TRB.Data.snapshotData.rapidFire.focus = 0
+				TRB.Data.snapshotData.rapidFire.isActive = false
+			else
+				TRB.Data.snapshotData.rapidFire.ticksRemaining = math.ceil((TRB.Data.snapshotData.rapidFire.endTime - currentTime) / (TRB.Data.snapshotData.rapidFire.duration / (TRB.Data.spells.rapidFire.shots - 1)))
+				TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.snapshotData.rapidFire.ticksRemaining * TRB.Data.spells.rapidFire.focus
+				TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
+				TRB.Data.snapshotData.rapidFire.focus = TRB.Data.snapshotData.casting.resourceFinal
+			end
+		end
+	end
+
     local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
         TRB.Data.snapshotData.casting.startTime = currentTime
         TRB.Data.snapshotData.casting.resourceRaw = spell.focus
-        TRB.Data.snapshotData.casting.resourceFinal = spell.focus
+        TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.focus)
         TRB.Data.snapshotData.casting.spellId = spell.id
         TRB.Data.snapshotData.casting.icon = spell.icon
     end
@@ -2041,9 +2066,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif specId == 2 then
 				if currentSpell == nil then
 					local spellName = select(1, currentChannel)
-					TRB.Functions.ResetCastingSnapshotData()
-					return false
-					--See Priest implementation for handling channeled spells
+					if spellName == TRB.Data.spells.rapidFire.name then
+						TRB.Data.snapshotData.rapidFire.isActive = true
+						TRB.Data.snapshotData.rapidFire.duration = (select(5, UnitChannelInfo("player")) - select(4, UnitChannelInfo("player"))) / 1000
+						TRB.Data.snapshotData.rapidFire.endTime = select(5, UnitChannelInfo("player")) / 1000
+						TRB.Data.snapshotData.casting.startTime = select(4, UnitChannelInfo("player")) / 1000
+						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.rapidFire.id
+						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.rapidFire.icon
+						UpdateRapidFire()
+					else
+						TRB.Functions.ResetCastingSnapshotData()
+						return false
+					end
 				else
 					local spellName = select(1, currentSpell)
 					if spellName == TRB.Data.spells.aimedShot.name then
@@ -2171,6 +2205,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	local function UpdateSnapshot_Marksmanship()
 		UpdateSnapshot()
+		UpdateRapidFire()
 		local currentTime = GetTime()
 		local _
 
@@ -2978,6 +3013,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.trueshot.spellId = nil
 							TRB.Data.snapshotData.trueshot.duration = 0
 							TRB.Data.snapshotData.trueshot.endTime = nil
+						end
+					elseif spellId == TRB.Data.spells.rapidFire.id then
+						if type == "SPELL_AURA_APPLIED" then -- Gained buff 
+							TRB.Data.snapshotData.rapidFire.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.rapidFire.duration, TRB.Data.snapshotData.rapidFire.endTime, _, _, _, TRB.Data.snapshotData.rapidFire.spellId = TRB.Functions.FindDebuffById(TRB.Data.spells.rapidFire.id, destGUID)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.rapidFire.isActive = false
+							TRB.Data.snapshotData.rapidFire.spellId = nil
+							TRB.Data.snapshotData.rapidFire.duration = 0
+							TRB.Data.snapshotData.rapidFire.endTime = nil
+							TRB.Data.snapshotData.rapidFire.ticksRemaining = 0
+							TRB.Data.snapshotData.rapidFire.focus = 0
 						end
 					elseif spellId == TRB.Data.spells.eagletalonsTrueFocus.id then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
