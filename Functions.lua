@@ -252,7 +252,7 @@ local function FillSpellData(spells)
 	for k, v in pairs(spells) do
 		if spells[k] ~= nil and spells[k]["id"] ~= nil and (spells[k]["tocMinVersion"] == nil or toc >= spells[k]["tocMinVersion"]) then
 			local _, name, icon
-			name, _, icon = GetSpellInfo(spells[k]["id"])			
+			name, _, icon = GetSpellInfo(spells[k]["id"])
 			spells[k]["icon"] = string.format("|T%s:0|t", icon)
 			spells[k]["name"] = name
 		end
@@ -445,7 +445,7 @@ TRB.Functions.CaptureBarPosition = CaptureBarPosition
 
 local function SetBarCurrentValue(settings, bar, value)
 	value = value or 0
-	if settings ~= nil and settings.bar ~= nil and bar ~= nil then
+	if settings ~= nil and settings.bar ~= nil and bar ~= nil and TRB.Data.character.maxResource ~= nil and TRB.Data.character.maxResource > 0 then
 		local min, max = bar:GetMinMaxValues()
 		local factor = max / TRB.Data.character.maxResource
 		bar:SetValue(value * factor)
