@@ -1,4 +1,4 @@
-## Interface: 90002
+## Interface: 90005
 ## Title: Twintop's Resource Bar
 ## Author: Twintop
 ## Version: 9.0.5.2
