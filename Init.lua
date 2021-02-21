@@ -2,9 +2,9 @@ local _, TRB = ...
 
 -- Addon details data
 TRB.Details = {}
-TRB.Details.addonVersion = "9.0.5.0"
-TRB.Details.addonReleaseDate = "February 10, 2021"
-TRB.Details.supportedSpecs = "Shadow Priest, Elemental Shaman, Balance Druid, Marksmanship Hunter, Survival Hunter"
+TRB.Details.addonVersion = "9.0.5.2"
+TRB.Details.addonReleaseDate = "February 22, 2021"
+TRB.Details.supportedSpecs = "|cFFFF7C0ADruid|r - Balance\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFFFFFFFFPriest|r - Shadow\n|cFF0070DDShaman|r - Elemental"
 
 local addonData = {
 	loaded = false,
@@ -190,7 +190,7 @@ function SlashCmdList.TWINTOP(msg)
             local num = TRB.Functions.RoundTo(subcmd, 0)
             settings.ttd.numEntries = num
         end
-    elseif cmd == "fill" then				
+    elseif cmd == "fill" then
         TRB.Functions.FillSpellData()
     elseif cmd == "move" then
         local x, y = TRB.Functions.ParseCmdString(subcmd)

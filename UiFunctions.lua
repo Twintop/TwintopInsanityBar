@@ -37,7 +37,7 @@ local function BuildSlider(parent, title, minValue, maxValue, defaultValue, step
     end)]]
     f:SetScript("OnValueChanged", function(self, value)
 		self.EditBox:SetText(value)
-	end)	
+	end)
     f.MinLabel = f:CreateFontString(nil, "Overlay")
     f.MinLabel:SetFontObject(GameFontHighlightSmall)
     f.MinLabel:SetSize(0, 14)
@@ -255,6 +255,7 @@ local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, 
 	f.font:SetPoint("LEFT", f, "LEFT")
     f.font:SetSize(0, 14)
 	f.font:SetJustifyH("RIGHT")
+    f.font:SetJustifyV("TOP")
 	f.font:SetSize(offset, height or 20)
 	f.font:SetText(var)
 
@@ -270,6 +271,7 @@ local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, 
 	fd.font:SetPoint("LEFT", fd, "LEFT")
     fd.font:SetSize(0, 14)
 	fd.font:SetJustifyH("LEFT")
+    fd.font:SetJustifyV("TOP")
 	fd.font:SetSize(width, height or 20)
 	fd.font:SetText(desc)
 

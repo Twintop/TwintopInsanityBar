@@ -204,7 +204,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             icon = "",
             astralPower = 40
 		}, 
-		
+
 		onethsClearVision = {
 			id = 339797,
 			name = "", 
@@ -231,7 +231,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		playedSfCue = false,
 		playedOnethsCue = false
 	}
-	
+
 	TRB.Data.snapshotData.targetData = {
 		ttdIsActive = false,
         currentTargetGuid = nil,
@@ -285,14 +285,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function FillSpellData()
 		TRB.Functions.FillSpellData()
-		
+
 		-- This is done here so that we can get icons for the options menu!
 		TRB.Data.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Astral Power generating spell you are currently hardcasting", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#moonkinForm", icon = TRB.Data.spells.moonkinForm.icon, description = "Moonkin Form", printInSettings = true },
-			
+
 			{ variable = "#wrath", icon = TRB.Data.spells.wrath.icon, description = "Wrath", printInSettings = true },
 			{ variable = "#starfire", icon = TRB.Data.spells.starfire.icon, description = "Starfire", printInSettings = true },
             
@@ -304,7 +304,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "#oneths", icon = TRB.Data.spells.onethsClearVision.icon .. " or " .. TRB.Data.spells.onethsPerception.icon, description = "Oneth's Clear Vision or Perception, whichever is active", printInSettings = true },
 			{ variable = "#onethsClearVision", icon = TRB.Data.spells.onethsClearVision.icon, description = "Oneth's Clear Vision", printInSettings = true },
 			{ variable = "#onethsPerception", icon = TRB.Data.spells.onethsPerception.icon, description = "Oneth's Perception", printInSettings = true },
-			
+
 			{ variable = "#eclipse", icon = TRB.Data.spells.incarnationChosenOfElune.icon .. TRB.Data.spells.celestialAlignment.icon .. TRB.Data.spells.eclipseSolar.icon .. " or " .. TRB.Data.spells.eclipseLunar.icon, description = "Current active Eclipse", printInSettings = true },
 			{ variable = "#celestialAlignment", icon = TRB.Data.spells.celestialAlignment.icon, description = "Celestial Alignment", printInSettings = true },            
 			{ variable = "#icoe", icon = TRB.Data.spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = true },            
@@ -330,7 +330,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			{ variable = "#foe", icon = TRB.Data.spells.furyOfElune.icon, description = "Fury Of Elune", printInSettings = false },
 			{ variable = "#furyOfElune", icon = TRB.Data.spells.furyOfElune.icon, description = "Fury Of Elune", printInSettings = true },
-			
+
 			{ variable = "#newMoon", icon = TRB.Data.spells.newMoon.icon, description = "New Moon", printInSettings = true },
 			{ variable = "#halfMoon", icon = TRB.Data.spells.halfMoon.icon, description = "Half Moon", printInSettings = true },
 			{ variable = "#fullMoon", icon = TRB.Data.spells.fullMoon.icon, description = "Full Moon", printInSettings = true }
@@ -340,7 +340,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
-	
+
 			{ variable = "$moonkinForm", description = "Currently in Moonkin Form. Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$eclipse", description = "Currently in any kind of Eclipse. Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$eclipseTime", description = "Remaining duration of Eclipse.", printInSettings = true, color = false },
@@ -371,12 +371,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$sunfireCount", description = "Number of Sunfires active on targets", printInSettings = true, color = false },
 			{ variable = "$moonfireCount", description = "Number of Moonfires active on targets", printInSettings = true, color = false },
 			{ variable = "$stellarFlareCount", description = "Number of Stellar Flares active on targets", printInSettings = true, color = false },
-			
+
 			{ variable = "$onethsTime", description = "Time remaining on Oneth's Clear Vision/Perception buff", printInSettings = true, color = false },
 			{ variable = "$oneths", description = "Oneth's Clear Vision/Perception proc is active. Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$onethsClearVision", description = "Oneth's Clear Vision proc is active. Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$onethsPerception", description = "Oneth's Perception proc is active. Logic variable only!", printInSettings = true, color = false },
-				
+
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
@@ -392,10 +392,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Data.character.talents.stellarFlare.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.furyOfElune.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.newMoon.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
-		
+
 		TRB.Data.character.starsurgeThreshold = TRB.Data.spells.starsurge.astralPower
 		TRB.Data.character.starfallThreshold = TRB.Data.spells.starfall.astralPower
-		
+
 		if TRB.Data.settings.druid ~= nil and TRB.Data.settings.druid.balance ~= nil then
 			local currentResource = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 			local timewornModifier = TRB.Data.snapshotData.timewornDreambinder.stacks * TRB.Data.spells.timewornDreambinder.modifier
@@ -406,7 +406,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			else
 				resourceFrame.thresholds[1]:Hide()
         	end
-			
+
 			if TRB.Data.settings.druid.balance.starfallThreshold and TRB.Data.character.starfallThreshold < TRB.Data.character.maxResource then
 				resourceFrame.thresholds[4]:Show()
 				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starfallThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
@@ -415,7 +415,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		end
 	end
-	
+
 	local function IsTtdActive()
 		if TRB.Data.settings.druid ~= nil and TRB.Data.settings.druid.balance ~= nil and TRB.Data.settings.druid.balance.displayText ~= nil then
 			if string.find(TRB.Data.settings.druid.balance.displayText.left.text, "$ttd") or
@@ -432,7 +432,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
     TRB.Functions.IsTtdActive = IsTtdActive
 
 	local function EventRegistration()
-		if GetSpecialization() == 1 then		
+		if GetSpecialization() == 1 then
 			TRB.Data.resource = Enum.PowerType.LunarPower
 			TRB.Data.resourceFactor = 10
 			TRB.Data.specSupported = true
@@ -446,18 +446,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 			TRB.Details.addonData.registered = true
-		else		
+		else
 			--TRB.Data.resource = MANA
 			TRB.Data.specSupported = false
 			targetsTimerFrame:SetScript("OnUpdate", nil)
-			timerFrame:SetScript("OnUpdate", nil)			
+			timerFrame:SetScript("OnUpdate", nil)
 			barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 			barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-			TRB.Details.addonData.registered = false			
+			TRB.Details.addonData.registered = false
 			barContainerFrame:Hide()
-		end	
+		end
 	end
 
 	local function InitializeTarget(guid)
@@ -466,7 +466,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.snapshotData.targetData.targets[guid].sunfire = false
 			TRB.Data.snapshotData.targetData.targets[guid].moonfire = false
 			TRB.Data.snapshotData.targetData.targets[guid].stellarFlare = false
-		end	
+		end
 	end
 
 	local function RefreshTargetTracking()
@@ -512,7 +512,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Functions.ConstructResourceBar(TRB.Data.settings.druid.balance)
 	end
 
-	local function GetEclipseRemainingTime()		
+	local function GetEclipseRemainingTime()
 		local currentTime = GetTime()
 		local remainingTime = 0
 		local icon = nil
@@ -639,7 +639,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				valid = true
 			end
 		else
-			valid = false					
+			valid = false
 		end
 
 		return valid
@@ -657,17 +657,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.current
 		local castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.casting
-		
+
 		local astralPowerThreshold = math.min(TRB.Data.character.starsurgeThreshold, TRB.Data.character.starfallThreshold)
-		
+
 		if TRB.Data.settings.druid.balance.colors.text.overcapEnabled and overcap then 
 			currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap
-			castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap	
+			castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap
 		elseif TRB.Data.settings.druid.balance.colors.text.overThresholdEnabled and normalizedAstralPower >= astralPowerThreshold then
 			currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overThreshold
-			castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overThreshold	
+			castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overThreshold
 		end
-		
+
 		--$astralPower
 		local astralPowerPrecision = TRB.Data.settings.druid.balance.astralPowerPrecision or 0
 		local currentAstralPower = string.format("|c%s%s|r", currentAstralPowerColor, TRB.Functions.RoundTo(normalizedAstralPower, astralPowerPrecision, "floor"))
@@ -749,7 +749,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			ticks = foeTicks or 0,
 			remaining = foeTime or 0
 		}
-		
+
 		local lookup = TRB.Data.lookup or {}
 		lookup["#wrath"] = TRB.Data.spells.wrath.icon
 		lookup["#moonkinForm"] = TRB.Data.spells.moonkinForm.icon
@@ -836,7 +836,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function CastingSpell()
 		local currentSpell = UnitCastingInfo("player")
 		local currentChannel = UnitChannelInfo("player")
-		
+
 		if currentSpell == nil and currentChannel == nil then
 			TRB.Functions.ResetCastingSnapshotData()
 			return false
@@ -846,7 +846,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.Functions.ResetCastingSnapshotData()
 				return false
                 --See Priest implementation for handling channeled spells
-			else	
+			else
 				local spellName = select(1, currentSpell)
 				if spellName == TRB.Data.spells.wrath.name then
                     FillSnapshotDataCasting(TRB.Data.spells.wrath)
@@ -872,7 +872,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                     FillSnapshotDataCasting(TRB.Data.spells.fullMoon)
                 else
 					TRB.Functions.ResetCastingSnapshotData()
-					return false				
+					return false
 				end
 			end
 			return true
@@ -885,7 +885,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if TRB.Data.snapshotData.furyOfElune.startTime == nil or currentTime > (TRB.Data.snapshotData.furyOfElune.startTime + TRB.Data.spells.furyOfElune.duration) then
 				TRB.Data.snapshotData.furyOfElune.ticksRemaining = 0
 				TRB.Data.snapshotData.furyOfElune.startTime = nil
-				TRB.Data.snapshotData.furyOfElune.astralPower = 0			
+				TRB.Data.snapshotData.furyOfElune.astralPower = 0
 				TRB.Data.snapshotData.furyOfElune.isActive = false
 			end
 		end
@@ -896,14 +896,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		--local currentTime = GetTime()
 		--local _
 
-		TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))		
+		TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))
 
         UpdateFuryOfElune()
 	end    
 
 	local function HideResourceBar(force)
 		local affectingCombat = UnitAffectingCombat("player")
-	
+
 		if force or GetSpecialization() ~= 1 or (not affectingCombat) and
 			(not UnitInVehicle("player")) and (
 				(not TRB.Data.settings.druid.balance.displayBar.alwaysShow) and (
@@ -914,14 +914,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                     )
 				)
 			 ) then
-			TRB.Frames.barContainerFrame:Hide()	
+			TRB.Frames.barContainerFrame:Hide()
 			TRB.Data.snapshotData.isTracking = false
 		else
 			TRB.Data.snapshotData.isTracking = true
 			if TRB.Data.settings.druid.balance.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()	
+				TRB.Frames.barContainerFrame:Hide()
 			else
-				TRB.Frames.barContainerFrame:Show()	
+				TRB.Frames.barContainerFrame:Show()
 			end
 		end
 	end
@@ -934,7 +934,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		if TRB.Data.snapshotData.isTracking then
 			TRB.Functions.HideResourceBar()
-			
+
 			if TRB.Data.settings.druid.balance.displayBar.neverShow == false then
 				refreshText = true
 				local affectingCombat = UnitAffectingCombat("player")
@@ -945,7 +945,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 				if TRB.Data.settings.druid.balance.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.borderOvercap, true))
-					
+
 					if TRB.Data.settings.druid.balance.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 						TRB.Data.snapshotData.audio.overcapCue = true
 						PlaySoundFile(TRB.Data.settings.druid.balance.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -954,17 +954,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.border, true))
 					TRB.Data.snapshotData.audio.overcapCue = false
 				end
-				
+
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, resourceFrame, currentResource)
-							
+
 				if CastingSpell() then
 					castingBarValue = currentResource + TRB.Data.snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
 				end
-				
+
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, castingFrame, castingBarValue)
-			
+
 				passiveBarValue = currentResource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower
 
 				if TRB.Data.character.talents.naturesBalance.isSelected then
@@ -976,11 +976,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 
 				if TRB.Data.character.talents.naturesBalance.isSelected and (affectingCombat or (not affectingCombat and currentResource < 50)) then
-					
+
 				else
 					passiveBarValue = currentResource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower
 				end
-							
+
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, passiveFrame, passiveBarValue)
 
 				if TRB.Data.settings.druid.balance.starsurgeThreshold then
@@ -988,7 +988,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				else
 					resourceFrame.thresholds[1]:Hide()
 				end
-				
+
 				if TRB.Data.settings.druid.balance.starfallThreshold then
 					resourceFrame.thresholds[4]:Show()
 				else
@@ -996,7 +996,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			   
 				local timewornModifier = TRB.Data.snapshotData.timewornDreambinder.stacks * TRB.Data.spells.timewornDreambinder.modifier
-				
+
 				if currentResource >= TRB.Data.character.starsurgeThreshold then
 					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
 
@@ -1012,14 +1012,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
 					TRB.Data.snapshotData.audio.playedSsCue = false
 					TRB.Data.snapshotData.audio.playedOnethsCue = false
-				end							
-		
+				end
+
 				if TRB.Data.settings.druid.balance.starsurge2Threshold and
 					(not TRB.Data.settings.druid.balance.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold) and
 					(TRB.Data.character.starsurgeThreshold * 2) < TRB.Data.character.maxResource then
 					resourceFrame.thresholds[2]:Show()
 					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*(1+timewornModifier)*2, TRB.Data.character.maxResource)
-					
+
 					if currentResource >= TRB.Data.character.starsurgeThreshold * 2 then
 						resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
 					else
@@ -1028,13 +1028,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				else
 					resourceFrame.thresholds[2]:Hide()
 				end
-				
+
 				if TRB.Data.settings.druid.balance.starsurge3Threshold and
 					(not TRB.Data.settings.druid.balance.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold*2) and
 					(TRB.Data.character.starsurgeThreshold * 3) < TRB.Data.character.maxResource then
 					resourceFrame.thresholds[3]:Show()
 					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*(1+timewornModifier)*3, TRB.Data.character.maxResource)
-				
+
 					if currentResource >= TRB.Data.character.starsurgeThreshold * 3 then
 						resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
 					else
@@ -1065,7 +1065,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Data.snapshotData.audio.playedSfCue = false
 					TRB.Data.snapshotData.audio.playedOnethsCue = false
 				end
-								
+
 				if TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled and currentResource >= TRB.Data.character.starsurgeThreshold then
 					flashBar = true
 				end
@@ -1090,7 +1090,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							timeThreshold = TRB.Data.settings.druid.balance.endOfEclipse.timeMax
 						end
 					end
-					
+
 					if useEndOfEclipseColor and GetEclipseRemainingTime() <= timeThreshold then
 						barColor = TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD
 					else
@@ -1104,12 +1104,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 				end
 
-				resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))	
+				resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
 				barContainerFrame:SetAlpha(1.0)
 
 				if flashBar then
 					TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.druid.balance.colors.bar.flashAlpha, TRB.Data.settings.druid.balance.colors.bar.flashPeriod)
-				end				
+				end
 			end
 		end
 		TRB.Functions.UpdateResourceBar(TRB.Data.settings.druid.balance, refreshText)
@@ -1122,10 +1122,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if GetSpecialization() ~= 1 then
 			TRB.Functions.HideResourceBar(true)
 			return
-		end	
+		end
 
 		local currentTime = GetTime()
-		
+
 		if updateRateLimit + 0.05 < currentTime then
 			updateRateLimit = currentTime
 			UpdateResourceBar()
@@ -1157,7 +1157,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			if guid ~= nil then
 				InitializeTarget(guid)
-				
+
 				local isDead = UnitIsDeadOrGhost("target")
 				local currentHealth = UnitHealth("target")
 				local maxHealth = UnitHealthMax("target")
@@ -1216,9 +1216,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local currentTime = GetTime()
-		local triggerUpdate = false	
+		local triggerUpdate = false
 		local _
-			
+
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
@@ -1244,7 +1244,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						TRB.Data.snapshotData.targetData.targets[destGUID].moonfire = false
 						TRB.Data.snapshotData.targetData.moonfire = TRB.Data.snapshotData.targetData.moonfire - 1
                     --elseif type == "SPELL_PERIODIC_DAMAGE" then
-					end		
+					end
 				elseif spellId == TRB.Data.spells.stellarFlare.id then
 					InitializeTarget(destGUID)
 					TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
@@ -1255,7 +1255,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						TRB.Data.snapshotData.targetData.targets[destGUID].stellarFlare = false
 						TRB.Data.snapshotData.targetData.stellarFlare = TRB.Data.snapshotData.targetData.stellarFlare - 1
 					--elseif type == "SPELL_PERIODIC_DAMAGE" then
-					end	
+					end
 				elseif spellId == TRB.Data.spells.furyOfElune.id then
 					if type == "SPELL_AURA_APPLIED" then -- Gain Death and Madness
 						TRB.Data.snapshotData.furyOfElune.isActive = true
@@ -1359,19 +1359,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				else
                 end
             end
-			
+
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
 				TRB.Functions.RemoveTarget(guid)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end
-				
+
 			if UnitIsDeadOrGhost("player") then -- We died/are dead go ahead and purge the list
 				TargetsCleanup(true)
 				triggerUpdate = true
-			end			
+			end
 		end
-					
+
 		if triggerUpdate then
 			TriggerResourceBarUpdates()
 		end
@@ -1414,10 +1414,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
 					else
 						TRB.Data.settings = settings
-					end	
+					end
 
 					TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.druid.balance)
-					TRB.Functions.IsTtdActive()		
+					TRB.Functions.IsTtdActive()
 					FillSpellData()
 					ConstructResourceBar()
 					TRB.Options.Druid.ConstructOptionsPanel()
@@ -1432,13 +1432,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					SLASH_TWINTOP8 	= "/trt"
 					SLASH_TWINTOP9 	= "/ttrt"
 					SLASH_TWINTOP10 = "/ttrb"
-				end			
-			end	
+				end
+			end
 
 			if event == "PLAYER_LOGOUT" then
 				TwintopInsanityBarSettings = TRB.Data.settings
 			end
-					
+
 			if TRB.Details.addonData.registered == true and event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
 				EventRegistration()
 				TRB.Functions.HideResourceBar()

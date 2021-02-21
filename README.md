@@ -2,10 +2,10 @@
 A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
 
 Currently supported specs:
-- Balance Druid
-- Elemental Shaman
-- Marksmanship Hunter, Survival Hunter
-- Shadow Priest
+- Druid - Balance
+- Hunter - Beast Mastery, Marksmanship, Survival
+- Priest - Shadow
+- Shaman - Elemental
 
 This is a fully customizable resource bar for multiple classes and specs to use to track their primary resource while in combat. Features include:
 - Full color, font, and texture customization of every part of the bar to make it suit your UI or make certain situations stand out.
