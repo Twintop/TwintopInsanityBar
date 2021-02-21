@@ -36,7 +36,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				fontSize=18
 			},
 			middle={
-				text="",
+				text="{$frenzyStacks}[$frenzyTime ($frenzyStacks)]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -63,7 +63,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				fontSize = 13
 			},
 			middle = {
-				text="{$flayersMarkTime}[#flayersMark $flayersMarkTime #flayersMark]",
+				text="{$frenzyStacks}[#frenzy$frenzyTime - $frenzyStacks#frenzy]||n{$flayersMarkTime}[#flayersMark $flayersMarkTime #flayersMark]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -152,6 +152,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				bar = {
 					border="FF698247",
 					borderOvercap="FFFF0000",
+					borderBeastialWrath="FF005500",
 					background="66000000",
 					base="FFAAD372",
 					frenzyUse="FF00B60E",
@@ -162,7 +163,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					flashAlpha=0.70,
 					flashPeriod=0.5,
 					flashEnabled=true,
-					overcapEnabled=true
+					overcapEnabled=true,
+					beastialWrathEnabled=true
 				},
 				threshold = {
 					under="FFFFFFFF",
@@ -1440,9 +1442,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 70
 		controls.barDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display", 0, yCoord)
 
-		--[[yCoord = yCoord - 50
+		yCoord = yCoord - 50
 
-		title = "Earth Shock/EQ Flash Alpha"
+		title = "Beastial Wrath Flash Alpha"
 		controls.flashAlpha = TRB.UiFunctions.BuildSlider(parent, title, 0, 1, TRB.Data.settings.hunter.beastMastery.colors.bar.flashAlpha, 0.01, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
@@ -1458,8 +1460,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.colors.bar.flashAlpha = value
 		end)
 
-		title = "Earth Shock/EQ Flash Period (sec)"
-		controls.flashPeriod = TRB.UiFunctions.BuildSlider(parent, title, 0, 2, TRB.Data.settings.hunter.beastMastery.colors.bar.flashPeriod, 0.05, 2,
+		title = "Beastial Wrath Flash Period (sec)"
+		controls.flashPeriod = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 2, TRB.Data.settings.hunter.beastMastery.colors.bar.flashPeriod, 0.05, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1472,7 +1474,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.colors.bar.flashPeriod = value
-		end)]]
+		end)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_RB1_2", parent, "UIRadioButtonTemplate")
@@ -1547,12 +1549,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.HideResourceBar()
 		end)
 
-		--[[
 		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_5", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Earth Shock/EQ is Usable")
-		f.tooltip = "This will flash the bar when Earth Shock/EQ can be cast."
+		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Beastial Wrath is usable")
+		f.tooltip = "This will flash the bar when Beastial Wrath can be cast."
 		f:SetChecked(TRB.Data.settings.hunter.beastMastery.colors.bar.flashEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.beastMastery.colors.bar.flashEnabled = self:GetChecked()
@@ -1561,12 +1562,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_6", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.esThresholdShow
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Earth Shock/EQ Threshold Line")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to cast Earth Shock/EQ."
-		f:SetChecked(TRB.Data.settings.hunter.beastMastery.earthShockThreshold)
+		getglobal(f:GetName() .. 'Text'):SetText("Border color when Beastial Wrath is usable")
+		f.tooltip = "This will change the bar's border color (as configured below) when Beastial Wrath is usable."
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.colors.bar.beastialWrathEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.beastMastery.earthShockThreshold = self:GetChecked()
-		end)]]
+			TRB.Data.settings.hunter.beastMastery.colors.bar.beastialWrathEnabled = self:GetChecked()
+		end)
 
 		yCoord = yCoord - 60
 
@@ -1614,11 +1615,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", TRB.Data.settings.hunter.beastMastery.colors.bar.casting, 275, 25, xCoord, yCoord)
-		f = controls.colors.casting
+		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from Passive Sources", TRB.Data.settings.hunter.beastMastery.colors.bar.passive, 275, 25, xCoord, yCoord)
+		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.casting, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.passive, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -1627,10 +1628,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
-                    controls.colors.casting.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.hunter.beastMastery.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    castingFrame:SetStatusBarColor(r, g, b, 1-a)
+                    
+					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
+					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.beastMastery.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -1656,11 +1657,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.spending = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.beastMastery.colors.bar.spending, 275, 25, xCoord, yCoord)
-		f = controls.colors.spending
+		controls.colors.frenzyUse = TRB.UiFunctions.BuildColorPicker(parent, "Focus when Barbed Shot should be used", TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyUse, 275, 25, xCoord, yCoord)
+		f = controls.colors.frenzyUse
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.spending, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyUse, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -1670,9 +1671,51 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.spending.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.hunter.beastMastery.colors.bar.spending = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    controls.colors.frenzyUse.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyUse = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
+			end
+		end)
+
+		controls.colors.borderBeastialWrath = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when you can use Beastial Wrath", TRB.Data.settings.hunter.beastMastery.colors.bar.borderBeastialWrath, 275, 25, xCoord2, yCoord)
+		f = controls.colors.borderBeastialWrath
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.borderBeastialWrath, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.beastMastery.colors.bar.borderBeastialWrath = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.frenzyHold = TRB.UiFunctions.BuildColorPicker(parent, "Focus when Barbed Shot charges should be held", TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyHold, 275, 25, xCoord, yCoord)
+		f = controls.colors.frenzyHold
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyHold, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.frenzyHold.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyHold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
 			end
 		end)
 
@@ -1696,72 +1739,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                 end)
 			end
 		end)
-
-		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from Passive Sources", TRB.Data.settings.hunter.beastMastery.colors.bar.passive, 525, 25, xCoord, yCoord)
-		f = controls.colors.passive
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.passive, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    
-					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
-					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
-                    TRB.Data.settings.hunter.beastMastery.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)
-
-		--[[
-		controls.colors.trueshot = TRB.UiFunctions.BuildColorPicker(parent, "Focus while Trueshot is active", TRB.Data.settings.hunter.beastMastery.colors.bar.trueshot, 275, 25, xCoord2, yCoord)
-		f = controls.colors.trueshot
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.trueshot, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.trueshot.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.hunter.beastMastery.colors.bar.trueshot = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)
-
-		yCoord = yCoord - 30
-
-		controls.colors.trueshotEnding = TRB.UiFunctions.BuildColorPicker(parent, "Focus when Trueshot is ending", TRB.Data.settings.hunter.beastMastery.colors.bar.trueshotEnding, 275, 25, xCoord2, yCoord)
-		f = controls.colors.trueshotEnding
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.trueshotEnding, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.eclipse1GCD.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.hunter.beastMastery.colors.bar.trueshotEnding = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-		]]
 
 		yCoord = yCoord - 40
 
@@ -1840,7 +1817,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.beastMastery)
 		end)
 
-		yCoord = yCoord - 25
 		controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.arcaneShotThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)

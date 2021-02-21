@@ -156,7 +156,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				focus = 5,
 				ticks = 4,
 				duration = 8,
-				beastialWraithCooldownReduction = 12
+				beastialWrathCooldownReduction = 12
 			},
 
 			aMurderOfCrows = {
@@ -232,6 +232,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				conduitId = 253
+			},
+
+			flamewakersCobraSting = {
+				id = 336826,
+				name = "",
+				icon = ""
 			},
 
 			elethiumMuzzle = {
@@ -1002,11 +1008,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#nesingwarys", icon = spells.nesingwarysTrappingApparatus.icon, description = "Nesingwary'ss Trapping Apparatus", printInSettings = true },
 			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
 			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
-			--{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
-			--{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = "Steady Shot", printInSettings = true },
-			--{ variable = "#trickShots", icon = spells.trickShots.icon, description = "Trick Shots", printInSettings = true },
-			--{ variable = "#trueshot", icon = spells.trueshot.icon, description = "Trueshot", printInSettings = true },
-			--{ variable = "#vigil", icon = spells.secretsOfTheUnblinkingVigil.icon, description = "Secrets of the Unblinking Vigil", printInSettings = true },
         }
 		specCache.beastMastery.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -1040,7 +1041,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			{ variable = "$flayersMarkTime", description = "Time remaining on Flayer's Mark buff", printInSettings = true, color = false },
 
-			--{ variable = "$vigilTime", description = "Time remaining on Secrets of the Unblinking Vigil buff", printInSettings = true, color = false },
 			{ variable = "$nesingwarysTime", description = "Time remaining on Nesingwary's Trapping Apparatus buff", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
@@ -1194,6 +1194,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	local function CheckCharacter()
 		TRB.Functions.CheckCharacter()
+		TRB.Data.character.petGuid = UnitGUID("pet")
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Focus)
 		TRB.Data.character.covenantId = C_Covenants.GetActiveCovenantID()
 
@@ -1328,18 +1329,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	local function GetBeastialWrathCooldownRemainingTime()
 		local currentTime = GetTime()
+		local gcd = TRB.Functions.GetCurrentGCDTime(true)
 		local remainingTime = 0
 
-		if TRB.Data.snapshotData.beastialWrath.startTime == 0 or TRB.Data.snapshotData.beastialWrath.duration == 0 then
+		if TRB.Data.snapshotData.beastialWrath.duration == gcd or TRB.Data.snapshotData.beastialWrath.startTime == 0 or TRB.Data.snapshotData.beastialWrath.duration == 0 then
 			remainingTime = 0
 		else
 			remainingTime = (TRB.Data.snapshotData.beastialWrath.startTime + TRB.Data.snapshotData.beastialWrath.duration) - currentTime
 		end
 
 		return remainingTime
-	end
-
-	
+	end	
 
 	local function GetVigilRemainingTime()
 		local currentTime = GetTime()
@@ -1648,7 +1648,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		--$regenFocus
 		local regenFocus = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.beastMastery.colors.text.passive, _regenFocus)
 
-
 		--$barbedShotFocus
 		local _barbedShotFocus = TRB.Data.snapshotData.barbedShot.focus
 		local barbedShotFocus = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.beastMastery.colors.text.passive, _barbedShotFocus)
@@ -1702,13 +1701,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			nesingwarysTime = string.format("%.1f", _nesingwarysTime)
 		end
 
-		--$vigilTime
-		--[[local _vigilTime = GetVigilRemainingTime()
-		local vigilTime = 0
-		if _vigilTime ~= nil then
-			vigilTime = string.format("%.1f", _vigilTime)
-		end]]
-
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveFocus
@@ -1737,13 +1729,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#nesingwarys"] = TRB.Data.spells.nesingwarysTrappingApparatus.icon
 		lookup["#revivePet"] = TRB.Data.spells.revivePet.icon
 		lookup["#scareBeast"] = TRB.Data.spells.scareBeast.icon
-		--lookup["#steadyShot"] = TRB.Data.spells.steadyShot.icon
-		--lookup["#trickShots"] = TRB.Data.spells.trickShots.icon
-		--lookup["#trueshot"] = TRB.Data.spells.trueshot.icon
-		--lookup["#vigil"] = TRB.Data.spells.secretsOfTheUnblinkingVigil.icon
 		lookup["$frenzyTime"] = frenzyTime
 		lookup["$frenzyStacks"] = frenzyStacks
-		--lookup["$vigilTime"] = vigilTime
 		lookup["$nesingwarysTime"] = nesingwarysTime
 		lookup["$flayersMarkTime"] = flayersMarkTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
@@ -2428,17 +2415,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					local passiveBarValue = 0
 					local castingBarValue = 0
 					local gcd = TRB.Functions.GetCurrentGCDTime(true)
-					if TRB.Data.settings.hunter.beastMastery.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.borderOvercap, true))
-
-						if TRB.Data.settings.hunter.beastMastery.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
-							TRB.Data.snapshotData.audio.overcapCue = true
-							PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					else
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.border, true))
-						TRB.Data.snapshotData.audio.overcapCue = false
-					end
 
 					local passiveValue = 0
 					if TRB.Data.settings.hunter.beastMastery.generation.mode == "time" then
@@ -2558,7 +2534,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 					local barColor = TRB.Data.settings.hunter.beastMastery.colors.bar.base
 
-					local gcd = TRB.Functions.GetCurrentGCDTime()
 					local latency = TRB.Functions.GetLatency()
 
 					local barbedShotRechargeRemaining = -(currentTime - (TRB.Data.snapshotData.barbedShot.startTime + TRB.Data.snapshotData.barbedShot.duration))
@@ -2567,64 +2542,64 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					local beastialWrathCooldownRemaining = GetBeastialWrathCooldownRemainingTime()
 					local frenzyRemainingTime = GetFrenzyRemainingTime()
 					local affectingCombat = UnitAffectingCombat("player")
-					local reactionTimeGcds = gcd + 0.5
+					local reactionTimeGcds = math.min(gcd * 1.5, 2)
 
 					if TRB.Data.spells.frenzy.isActive then
-						--print(TRB.Data.snapshotData.barbedShot.charges, barbedShotRechargeRemaining, currentTime, TRB.Data.snapshotData.barbedShot.startTime, TRB.Data.snapshotData.barbedShot.duration)
-						
 						if TRB.Data.snapshotData.barbedShot.charges == 2 then
-							print("1")
 							barColor = TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyUse
 						elseif TRB.Data.snapshotData.barbedShot.charges == 1 and frenzyRemainingTime <= reactionTimeGcds then
-							print("2", beastialWrathCooldownRemaining)
 							barColor = TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyUse
 						elseif barbedShotTotalRechargeRemaining <= reactionTimeGcds and beastialWrathCooldownRemaining > 0 then
-							print("3", beastialWrathCooldownRemaining)
 							barColor = TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyUse
 						elseif barbedShotRechargeRemaining <= reactionTimeGcds and TRB.Data.snapshotData.barbedShot.charges == 1 then
-							print("4", barbedShotRechargeRemaining)
 							barColor = TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyUse
-						elseif TRB.Data.character.talents.scentOfBlood.isSelected and barbedShotTotalRechargeRemaining <= reactionTimeGcds and beastialWrathCooldownRemaining < (TRB.Data.spells.barbedShot.beastialWraithCooldownReduction + reactionTimeGcds) then
-							print("5", barbedShotTotalRechargeRemaining, beastialWrathCooldownRemaining)
+						elseif TRB.Data.character.talents.scentOfBlood.isSelected and barbedShotTotalRechargeRemaining <= reactionTimeGcds and beastialWrathCooldownRemaining < (TRB.Data.spells.barbedShot.beastialWrathCooldownReduction + reactionTimeGcds) then
 							barColor = TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyUse
-						elseif TRB.Data.character.talents.scentOfBlood.isSelected and TRB.Data.snapshotData.barbedShot.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * TRB.Data.spells.barbedShot.beastialWraithCooldownReduction) then
-							print("6", beastialWrathCooldownRemaining, barbedShotPartialCharges)
+						elseif TRB.Data.character.talents.scentOfBlood.isSelected and TRB.Data.snapshotData.barbedShot.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * TRB.Data.spells.barbedShot.beastialWrathCooldownReduction) then
 							barColor = TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyUse
-						else
-							print("10")
-							--Can't do anything, don't change bar color
 						end
-
-						--[[
-						if TRB.Data.settings.hunter.beastMastery.endOfCoordinatedAssault.mode == "gcd" then
-							timeThreshold = gcd * TRB.Data.settings.hunter.beastMastery.endOfCoordinatedAssault.gcdsMax
-						elseif TRB.Data.settings.hunter.beastMastery.endOfCoordinatedAssault.mode == "time" then
-							timeThreshold = TRB.Data.settings.hunter.beastMastery.endOfCoordinatedAssault.timeMax
-						end
-
-						if GetCoordinatedAssaultRemainingTime() <= timeThreshold then
-							barColor = TRB.Data.settings.hunter.beastMastery.colors.bar.coordinatedAssaultEnding
-						else
-							barColor = TRB.Data.settings.hunter.beastMastery.colors.bar.coordinatedAssault
-						end
-						]]
 					else
 						if affectingCombat then
 							if TRB.Data.snapshotData.barbedShot.charges == 2 then
-								print("20")
 								barColor = TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyUse
-							elseif TRB.Data.character.talents.scentOfBlood.isSelected and TRB.Data.snapshotData.barbedShot.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * TRB.Data.spells.barbedShot.beastialWraithCooldownReduction) then
-								print("21")
+							elseif TRB.Data.character.talents.scentOfBlood.isSelected and TRB.Data.snapshotData.barbedShot.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * TRB.Data.spells.barbedShot.beastialWrathCooldownReduction) then
 								barColor = TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyUse
 							elseif barbedShotTotalRechargeRemaining <= reactionTimeGcds then
-								print("22")
 								barColor = TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyUse
 							else
-								print("30 - HODR")
 								barColor = TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyHold
 							end
 						end
 					end
+
+					local barBorderColor = TRB.Data.settings.hunter.beastMastery.colors.bar.border
+					
+					if TRB.Data.settings.hunter.beastMastery.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+						barBorderColor = TRB.Data.settings.hunter.beastMastery.colors.bar.borderOvercap
+
+						if TRB.Data.settings.hunter.beastMastery.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
+							TRB.Data.snapshotData.audio.overcapCue = true
+							PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+						end
+					else
+						TRB.Data.snapshotData.audio.overcapCue = false
+					end
+
+					if beastialWrathCooldownRemaining <= gcd and affectingCombat then
+						if TRB.Data.settings.hunter.beastMastery.bar.beastialWrathEnabled then
+							barBorderColor = TRB.Data.settings.hunter.beastMastery.colors.bar.borderBeastialWrath
+						end
+
+						if TRB.Data.settings.hunter.beastMastery.colors.bar.flashEnabled then
+							TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.hunter.beastMastery.colors.bar.flashAlpha, TRB.Data.settings.hunter.beastMastery.colors.bar.flashPeriod)
+						else
+							barContainerFrame:SetAlpha(1.0)
+						end
+					else
+						barContainerFrame:SetAlpha(1.0)
+					end
+
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
 				end
