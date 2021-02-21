@@ -1339,7 +1339,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 		return remainingTime
-	end	
+	end
 
 	local function GetVigilRemainingTime()
 		local currentTime = GetTime()
@@ -2272,7 +2272,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             TRB.Data.snapshotData.killShot.duration = 0
         end
 
-		_, _, TRB.Data.snapshotData.frenzy.stacks, _, TRB.Data.snapshotData.frenzy.duration, TRB.Data.snapshotData.frenzy.endTime, _, _, _, TRB.Data.snapshotData.frenzy.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.frenzy.id, "pet")		
+		_, _, TRB.Data.snapshotData.frenzy.stacks, _, TRB.Data.snapshotData.frenzy.duration, TRB.Data.snapshotData.frenzy.endTime, _, _, _, TRB.Data.snapshotData.frenzy.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.frenzy.id, "pet")
 		TRB.Data.snapshotData.beastialWrath.startTime, TRB.Data.snapshotData.beastialWrath.duration, _, _ = GetSpellCooldown(TRB.Data.spells.beastialWrath.id)
 	end  
 
@@ -2573,7 +2573,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					local barBorderColor = TRB.Data.settings.hunter.beastMastery.colors.bar.border
-					
+
 					if TRB.Data.settings.hunter.beastMastery.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
 						barBorderColor = TRB.Data.settings.hunter.beastMastery.colors.bar.borderOvercap
 
