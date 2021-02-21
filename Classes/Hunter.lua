@@ -91,12 +91,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdUsable = false
 			},
 			killCommand = {
-				id = 53351,
+				id = 34026,
 				name = "",
 				icon = "",
 				focus = -30,
 				thresholdId = 6,
-				settingKey = "killCommand"
+				settingKey = "killCommand",
+				isSnowflake = true,
+				hasCooldown = true,
+				thresholdUsable = false
 			},
 			killShot = {
 				id = 53351,
@@ -237,13 +240,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			flamewakersCobraSting = {
 				id = 336826,
 				name = "",
-				icon = ""
-			},
-
-			elethiumMuzzle = {
-				id = 319276,
-				name = "",
-				icon = ""
+				icon = "",
+				isActive = false
 			}
 		}
 
@@ -256,6 +254,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			endTime = nil
 		}
 		specCache.beastMastery.snapshotData.killShot = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		specCache.beastMastery.snapshotData.killCommand = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
@@ -2271,6 +2274,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             TRB.Data.snapshotData.killShot.startTime = nil
             TRB.Data.snapshotData.killShot.duration = 0
         end
+		
+		if TRB.Data.snapshotData.killCommand.startTime ~= nil and currentTime > (TRB.Data.snapshotData.killCommand.startTime + TRB.Data.snapshotData.killCommand.duration) then
+            TRB.Data.snapshotData.killCommand.startTime = nil
+            TRB.Data.snapshotData.killCommand.duration = 0
+		elseif TRB.Data.snapshotData.killCommand.startTime ~= nil then
+			TRB.Data.snapshotData.killCommand.startTime, TRB.Data.snapshotData.killCommand.duration, _, _ = GetSpellCooldown(TRB.Data.spells.killCommand.id)
+        end
 
 		_, _, TRB.Data.snapshotData.frenzy.stacks, _, TRB.Data.snapshotData.frenzy.duration, TRB.Data.snapshotData.frenzy.endTime, _, _, _, TRB.Data.snapshotData.frenzy.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.frenzy.id, "pet")
 		TRB.Data.snapshotData.beastialWrath.startTime, TRB.Data.snapshotData.beastialWrath.duration, _, _ = GetSpellCooldown(TRB.Data.spells.beastialWrath.id)
@@ -2474,6 +2484,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.unusable
 										frameLevel = 127
 									elseif TRB.Data.snapshotData.resource >= -focusAmount or flayersMarkTime > 0 then
+										thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.under
+										frameLevel = 128
+									end
+								elseif spell.id == TRB.Data.spells.killCommand.id then	
+									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+										thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.unusable
+										frameLevel = 127
+									elseif TRB.Data.snapshotData.resource >= -focusAmount or TRB.Data.spells.flamewakersCobraSting.isActive then
 										thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.under
@@ -3114,8 +3134,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.frenzy.stacks = 0
 							TRB.Data.spells.frenzy.isActive = false
 						end
+					elseif spellId == TRB.Data.spells.killCommand.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.killCommand.startTime, TRB.Data.snapshotData.killCommand.duration, _, _ = GetSpellCooldown(TRB.Data.spells.killCommand.id)
+						end
 					elseif spellId == TRB.Data.spells.beastialWrath.id then
 						TRB.Data.snapshotData.beastialWrath.startTime, TRB.Data.snapshotData.beastialWrath.duration, _, _ = GetSpellCooldown(TRB.Data.spells.beastialWrath.id)
+					elseif spellId == TRB.Data.spells.flamewakersCobraSting.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.flamewakersCobraSting.isActive = true
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.flamewakersCobraSting.isActive = false
+						end
 					end
 				elseif specId == 2 then --Marksmanship
 					if spellId == TRB.Data.spells.burstingShot.id then
@@ -3150,11 +3180,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.rapidFire.focus = 0
 						end
 					elseif spellId == TRB.Data.spells.eagletalonsTrueFocus.id then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-								TRB.Data.spells.eagletalonsTrueFocus.isActive = true
-							elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-								TRB.Data.spells.eagletalonsTrueFocus.isActive = false
-							end
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.eagletalonsTrueFocus.isActive = true
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.eagletalonsTrueFocus.isActive = false
+						end
 					elseif spellId == TRB.Data.spells.secretsOfTheUnblinkingVigil.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.startTime, TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration, _, _ = GetSpellCooldown(TRB.Data.spells.secretsOfTheUnblinkingVigil.id)
