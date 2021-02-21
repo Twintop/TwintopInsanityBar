@@ -19,7 +19,7 @@ TRB.Functions.TableLength = TableLength
 
 -- Generic Frame Functions
 
-local function TryUpdateText(frame, text)	
+local function TryUpdateText(frame, text)
 	frame.font:SetText(text)
 end
 TRB.Functions.TryUpdateText = TryUpdateText
@@ -47,7 +47,7 @@ local function RoundTo(num, numDecimalPlaces, mode)
 	local newNum = tonumber(num)
 	if mode == "floor" then
 		local whole, decimal = strsplit(".", newNum, 2)
-		
+
 		if numDecimalPlaces == 0 then
 			newNum = whole
 		elseif decimal == nil or strlen(decimal) == 0 then
@@ -59,11 +59,11 @@ local function RoundTo(num, numDecimalPlaces, mode)
 			end
 			newNum = string.format("%s.%s", whole, chopped)
 		end
-		
+
 		return newNum
 	elseif mode == "ceil" then
 		local whole, decimal = strsplit(".", newNum, 2)
-		
+
 		if numDecimalPlaces == 0 then
 			if (tonumber(whole) or 0) < num then
 				whole = (tonumber(whole) or 0) + 1
@@ -83,7 +83,7 @@ local function RoundTo(num, numDecimalPlaces, mode)
 			end
 			newNum = string.format("%s.%s", whole, chopped)
 		end
-		
+
 		return newNum
 	end
 
@@ -99,7 +99,7 @@ local function GetRGBAFromString(s, normalize)
     local _r = 0
     local _g = 1
     local _b = 0
-		
+
     if not (s == nil) then        
         _a = min(255, tonumber(string.sub(s, 1, 2), 16))
         _r = min(255, tonumber(string.sub(s, 3, 4), 16))
@@ -134,7 +134,7 @@ local function ConvertColorDecimalToHex(r, g, b, a)
 			_g = "0" .. _g
 		end
 	end
-	
+
 	if b == 0 or b == nil then
 		_b = "00"
 	else
@@ -148,7 +148,7 @@ local function ConvertColorDecimalToHex(r, g, b, a)
 		_a = "00"
 	else
 		_a = string.format("%x", math.ceil(a * 255))
-		if string.len(_a) == 1 then	
+		if string.len(_a) == 1 then
 			_a = "0" .. _a
 		end
 	end
@@ -171,19 +171,19 @@ local function GetCurrentGCDLockRemaining()
 end
 TRB.Functions.GetCurrentGCDLockRemaining = GetCurrentGCDLockRemaining
 
-local function GetCurrentGCDTime(floor)	
+local function GetCurrentGCDTime(floor)
 	if floor == nil then
 		floor = false
 	end
 
 	local haste = UnitSpellHaste("player") / 100
-	
+
 	local gcd = 1.5 / (1 + haste)
-	
+
 	if not floor and gcd < 0.75 then
-		gcd = 0.75		
+		gcd = 0.75
 	end
-	
+
 	return gcd
 end
 TRB.Functions.GetCurrentGCDTime = GetCurrentGCDTime
@@ -198,7 +198,7 @@ local function ResetCastingSnapshotData()
 end
 TRB.Functions.ResetCastingSnapshotData = ResetCastingSnapshotData
 
-local function GetLatency()	
+local function GetLatency()
 	local down, up, lagHome, lagWorld = GetNetStats()
 	local latency = lagWorld / 1000
 	return latency
@@ -211,7 +211,7 @@ local function GetSanityCheckValues(settings)
 	local sc = {}
     if settings ~= nil and settings.bar ~= nil then
         sc.barMaxWidth = math.floor(GetScreenWidth())
-        sc.barMinWidth = math.max(math.ceil(settings.bar.border * 2), 120)	
+        sc.barMinWidth = math.max(math.ceil(settings.bar.border * 2), 120)
         sc.barMaxHeight = math.floor(GetScreenHeight())
         sc.barMinHeight = math.max(math.ceil(settings.bar.border * 2), 1)
 	end
@@ -252,7 +252,7 @@ local function FillSpellData(spells)
 	for k, v in pairs(spells) do
 		if spells[k] ~= nil and spells[k]["id"] ~= nil and (spells[k]["tocMinVersion"] == nil or toc >= spells[k]["tocMinVersion"]) then
 			local _, name, icon
-			name, _, icon = GetSpellInfo(spells[k]["id"])			
+			name, _, icon = GetSpellInfo(spells[k]["id"])
 			spells[k]["icon"] = string.format("|T%s:0|t", icon)
 			spells[k]["name"] = name
 		end
@@ -282,7 +282,7 @@ local function ResetSnapshotData()
 			currentTargetGuid = nil,
 			targets = {}
 		},
-		audio = {}	
+		audio = {}
 	}
 end
 TRB.Functions.ResetSnapshotData = ResetSnapshotData
@@ -322,10 +322,10 @@ TRB.Functions.RemoveTarget = RemoveTarget
 local function InitializeTarget(guid)
 	if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
 		TRB.Data.snapshotData.targetData.targets[guid] = {}
-		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = 0		
+		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = 0
 		TRB.Data.snapshotData.targetData.targets[guid].snapshot = {}
 		TRB.Data.snapshotData.targetData.targets[guid].ttd = 0
-	end	
+	end
 end
 TRB.Functions.InitializeTarget = InitializeTarget
 
@@ -356,11 +356,11 @@ TRB.Functions.GetUnitHealthPercent = GetUnitHealthPercent
 
 -- Bar Manipulation Functions
 
-local function RepositionThreshold(settings, thresholdLine, parentFrame, thresholdWidth, resourceThreshold, resourceMax)	
+local function RepositionThreshold(settings, thresholdLine, parentFrame, thresholdWidth, resourceThreshold, resourceMax)
 	if resourceMax == nil or resourceMax == 0 then
         resourceMax = TRB.Data.character.maxResource or 100
     end
-		
+
 	local min, max = parentFrame:GetMinMaxValues()
 	local factor = (max - (settings.bar.border * 2)) / resourceMax
 
@@ -378,7 +378,7 @@ local function ShowResourceBar()
 	if TRB.Details.addonData.registered == false then
 		EventRegistration()
 	end
-	
+
 	TRB.Data.snapshotData.isTracking = true
 	TRB.Frames.barContainerFrame:Show()
 end
@@ -407,7 +407,7 @@ local function UpdateBarPosition(xOfs, yOfs)
 		TRB.Frames.interfaceSettingsFrame.controls.horizontal:SetValue(xOfs)
 		TRB.Frames.interfaceSettingsFrame.controls.horizontal.EditBox:SetText(RoundTo(xOfs, 0))
 		TRB.Frames.interfaceSettingsFrame.controls.vertical:SetValue(yOfs)
-		TRB.Frames.interfaceSettingsFrame.controls.vertical.EditBox:SetText(RoundTo(yOfs, 0))	
+		TRB.Frames.interfaceSettingsFrame.controls.vertical.EditBox:SetText(RoundTo(yOfs, 0))
 	end
 end
 TRB.Functions.UpdateBarPosition = UpdateBarPosition
@@ -432,7 +432,7 @@ local function CaptureBarPosition(settings)
 	elseif relativePoint == "BOTTOMLEFT" then
 		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (settings.bar.width/2))
 		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight/2) - yOfs - (settings.bar.height/2))
-	elseif relativePoint == "LEFT" then				
+	elseif relativePoint == "LEFT" then
 		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (settings.bar.width/2))
 	elseif relativePoint == "TOPLEFT" then
 		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (settings.bar.width/2))
@@ -462,7 +462,7 @@ local function SetBarMinMaxValues(settings)
 end
 TRB.Functions.SetBarMinMaxValues = SetBarMinMaxValues
 
-local function RedrawThresholdLines(settings)	
+local function RedrawThresholdLines(settings)
 	local resourceFrame = TRB.Frames.resourceFrame
 	local passiveFrame = TRB.Frames.passiveFrame
 	local borderSubtraction = 0
@@ -536,7 +536,7 @@ local function ConstructResourceBar(settings)
                 self:StartMoving()
                 self.isMoving = true
             end
-        end)	
+        end)
 
         barContainerFrame:SetScript("OnMouseUp", function(self, button)
             if button == "LeftButton" and self.isMoving and settings.bar.dragAndDrop then
@@ -592,7 +592,7 @@ local function ConstructResourceBar(settings)
 
         resourceFrame:Show()
         resourceFrame:SetMinMaxValues(0, settings.bar.width)
-        resourceFrame:SetHeight(settings.bar.height)	
+        resourceFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
         resourceFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         resourceFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         resourceFrame:SetStatusBarTexture(settings.textures.resourceBar)
@@ -602,7 +602,7 @@ local function ConstructResourceBar(settings)
 		        
         castingFrame:Show()
         castingFrame:SetMinMaxValues(0, settings.bar.width)
-        castingFrame:SetHeight(settings.bar.height)
+        castingFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
         castingFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         castingFrame:SetStatusBarTexture(settings.textures.castingBar)
@@ -612,7 +612,7 @@ local function ConstructResourceBar(settings)
         
         passiveFrame:Show()
         passiveFrame:SetMinMaxValues(0, settings.bar.width)
-        passiveFrame:SetHeight(settings.bar.height)
+        passiveFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
         passiveFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
@@ -622,9 +622,9 @@ local function ConstructResourceBar(settings)
 
 
 		TRB.Functions.RedrawThresholdLines(settings)
-		
+
 		SetBarMinMaxValues(settings)
-		
+
         leftTextFrame:Show()
         leftTextFrame:SetWidth(settings.bar.width)
         leftTextFrame:SetHeight(settings.bar.height * 3.5)
@@ -669,9 +669,9 @@ TRB.Functions.ConstructResourceBar = ConstructResourceBar
 
 local function AddToBarTextCache(input)
     local barTextVariables = TRB.Data.barTextVariables
-	local iconEntries = TableLength(barTextVariables.icons)		
-	local valueEntries = TableLength(barTextVariables.values)	
-	local pipeEntries = TableLength(barTextVariables.pipe)	
+	local iconEntries = TableLength(barTextVariables.icons)
+	local valueEntries = TableLength(barTextVariables.values)
+	local pipeEntries = TableLength(barTextVariables.pipe)
 	local percentEntries = TableLength(barTextVariables.percent)
 	local returnText = ""
 	local returnVariables = {}
@@ -699,7 +699,7 @@ local function AddToBarTextCache(input)
 					local _, name, icon
 					name, _, icon = GetSpellInfo(spellId)
 
-					if icon ~= nil then					
+					if icon ~= nil then
 						match = true
 						if p ~= a then
 							returnText = returnText .. string.sub(input, p, a-1)
@@ -746,7 +746,7 @@ local function AddToBarTextCache(input)
 						returnText = returnText .. "%s"
 						table.insert(returnVariables, "color")
 					end
-					
+
 					p = z1 + 1
 					break
 				end
@@ -778,7 +778,7 @@ local function AddToBarTextCache(input)
 
 					returnText = returnText .. "%s"
 					table.insert(returnVariables, barTextVariables.percent[x].variable)
-					
+
 					p = z1 + 1
 					break
 				end
@@ -794,26 +794,26 @@ local function AddToBarTextCache(input)
 			p = p + 1
 		end
 	end
-	
+
 	local barTextCacheEntry = {}
 	barTextCacheEntry.cleanedText = input
 	barTextCacheEntry.stringFormat = returnText
 	barTextCacheEntry.variables = returnVariables
 
-	table.insert(TRB.Data.barTextCache, barTextCacheEntry)	
+	table.insert(TRB.Data.barTextCache, barTextCacheEntry)
 	return barTextCacheEntry
 end
 TRB.Functions.AddToBarTextCache = AddToBarTextCache
 
 local function GetFromBarTextCache(barText)
 	local entries = TableLength(TRB.Data.barTextCache)
-	
+
 	if entries > 0 then
 		for x = 1, entries do
 			if TRB.Data.barTextCache[x].cleanedText == barText then
 				return TRB.Data.barTextCache[x]
 			end
-		end	
+		end
 	end
 
 	return AddToBarTextCache(barText)
@@ -835,7 +835,7 @@ local function GetReturnText(inputText)
         end
     end
 
-    if TRB.Functions.TableLength(mapping) > 0 then	
+    if TRB.Functions.TableLength(mapping) > 0 then
 		local result
 		result, inputText.text = pcall(string.format, cache.stringFormat, unpack(mapping))
     elseif string.len(cache.stringFormat) > 0 then
@@ -853,9 +853,9 @@ local function IsTtdActive()
 end
 TRB.Functions.IsTtdActive = IsTtdActive
 
-local function BarText(settings)	
+local function BarText(settings)
 	if settings ~= nil and settings.colors ~= nil and settings.colors.text ~= nil and settings.displayText ~= nil and
-		settings.displayText.left ~= nil and settings.displayText.middle ~= nil and settings.displayText.right ~= nil then	
+		settings.displayText.left ~= nil and settings.displayText.middle ~= nil and settings.displayText.right ~= nil then
 		local returnText = {}
 		returnText[0] = {}
 		returnText[1] = {}
@@ -883,7 +883,7 @@ local function RefreshLookupDataBase(settings)
 
 	--$mastery
 	local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.mastery, settings.hastePrecision))
-	
+
 	--$haste
 
 	--$gcd
@@ -896,7 +896,7 @@ local function RefreshLookupDataBase(settings)
 	local gcd = string.format("%.2f", _gcd)
 
 	local hastePercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.haste, settings.hastePrecision))
-		
+
 	--$ttd
 	local _ttd = ""
 	local ttd = ""
@@ -915,7 +915,7 @@ local function RefreshLookupDataBase(settings)
 
 	--#castingIcon
 	local castingIcon = TRB.Data.snapshotData.casting.icon or ""
-	
+
 	local lookup = TRB.Data.lookup or {}
 	lookup["#casting"] = castingIcon
 	lookup["$haste"] = hastePercent
@@ -931,7 +931,7 @@ local function RefreshLookupDataBase(settings)
 
 
 	TRB.Data.lookup = lookup
-	
+
 	Global_TwintopResourceBar = {
 		ttd = {
 			ttd = ttd or "--",
@@ -961,7 +961,7 @@ local function UpdateResourceBarText(settings, leftText, middleText, rightText)
 		local leftTextFrame = TRB.Frames.leftTextFrame
 		local middleTextFrame = TRB.Frames.middleTextFrame
 		local rightTextFrame = TRB.Frames.rightTextFrame
-		
+
 		if not pcall(TRB.Functions.TryUpdateText, leftTextFrame, leftText) then
 			leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
 		end
@@ -1028,7 +1028,7 @@ local function RemoveInvalidVariablesFromBarText(input)
                     
                     local valid = false
                     local useNot = false
-                    local var = string.sub(input, a+1, b-1)					
+                    local var = string.sub(input, a+1, b-1)
                     local notVar = string.sub(var, 1, 1)
 
                     if notVar == "!" then
@@ -1042,11 +1042,11 @@ local function RemoveInvalidVariablesFromBarText(input)
                         valid = not valid
                     end
 
-                    if valid == true then						
+                    if valid == true then
                         returnText = returnText .. string.sub(input, b+2, c-1)
                     elseif hasOr == true then
                         returnText = returnText .. string.sub(input, c+2, d-1)
-                    end	
+                    end
                     
                     if hasOr == true then
                         p = d+1
@@ -1060,7 +1060,7 @@ local function RemoveInvalidVariablesFromBarText(input)
             else
                 if b ~= nil then
                     p = b + 1
-                else					
+                else
                     returnText = returnText .. string.sub(input, p)
                     p = string.len(input)
                 end
@@ -1158,7 +1158,7 @@ local function FindAuraById(spellId, onWhom, filter)
 	if onWhom == nil then
 		onWhom = "player"
 	end
-	
+
 	for i = 1, 1000 do
 		local unitSpellId = select(10, UnitAura(onWhom, i, filter))
 		if not unitSpellId then
@@ -1196,7 +1196,7 @@ local function DoesItemLinkMatchMatchIdAndHaveBonus(itemLink, id, bonusId)
 		for x = 1, tonumber(parts[14]) do
 			if tonumber(parts[14+x]) == bonusId then
 				return true
-			end			
+			end
 		end
 	end
 	return false
@@ -1213,7 +1213,7 @@ local function IsSoulbindActive(id)
 			return true
 		end        
 	end
-	
+
 	return false
 end
 TRB.Functions.IsSoulbindActive = IsSoulbindActive
@@ -1248,7 +1248,7 @@ local function ParseCmdString(msg)
 		local a,b,c=strfind(msg,"(%S+)")
 		if a then
 			return c,strsub(msg,b+2)
-		else	
+		else
 			return "";
 		end
 	end
