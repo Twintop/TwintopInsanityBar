@@ -238,10 +238,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			icon = ""
 		},
 		shadowCrash = {
-			id = 342834,
+			id = 205385,
 			name = "",
 			icon = "",
-			insanity = 20,
+			insanity = 15,
 			fotm = false
 		},
 		hungeringVoid = {
