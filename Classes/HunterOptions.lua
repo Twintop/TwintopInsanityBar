@@ -126,12 +126,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				notZeroShow=true,
 				neverShow=false
 			},
-			--[[endOfCoordinatedAssault = {
-				enabled=true,
-				mode="gcd",
-				gcdsMax=2,
-				timeMax=3.0
-			},]]
 			bar = {
 				width=555,
 				height=34,
@@ -160,8 +154,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					borderOvercap="FFFF0000",
 					background="66000000",
 					base="FFAAD372",
-					--coordinatedAssault="FF00B60E",
-					--coordinatedAssaultEnding="FFFF0000",
+					frenzyUse="FF00B60E",
+					frenzyHold="FFFF0000",
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FF005500",
