@@ -55,6 +55,10 @@ local function LoadDefaultSettings()
             elemental = {},
             enhancement = {},
             restoration = {}
+        },
+        warrior = {
+            arms = {},
+            fury = {}
         }
     }
     

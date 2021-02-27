@@ -1708,6 +1708,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		Global_TwintopResourceBar.resource.passive = _passiveFocus
 		Global_TwintopResourceBar.resource.regen = _regenFocus
+		Global_TwintopResourceBar.resource.barbedShot = _barbedShotFocus
 		Global_TwintopResourceBar.barbedShot = {
 			count = TRB.Data.snapshotData.barbedShot.count,
 			focus = TRB.Data.snapshotData.barbedShot.focus,

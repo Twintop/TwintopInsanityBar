@@ -1,6 +1,6 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
-if classIndexId == 999 then --Only do this if we're on a Warrior!
+if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
@@ -36,7 +36,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 				fontSize=18
 			},
 			middle={
-				text="{$frenzyStacks}[$frenzyTime ($frenzyStacks)]",
+				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -63,13 +63,13 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 				fontSize = 13
 			},
 			middle = {
-				text="{$frenzyStacks}[#frenzy$frenzyTime - $frenzyStacks#frenzy]||n{$flayersMarkTime}[#flayersMark $flayersMarkTime #flayersMark]",
+				text="",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			right = {
-				text = "{$casting}[#casting$casting+]{$barbedShotRage}[#barbedShot$barbedShotRage+]{$regen}[$regen+]$rage",
+				text = "{$casting}[#casting$casting+]$rage",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
@@ -85,42 +85,17 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 			thresholdWidth=2,
 			overcapThreshold=120,
 			thresholds = {
-					arcaneShot = {
-						enabled = false, -- 1
-					},
-					aMurderOfCrows = {
-						enabled = true, -- 2
-					},
-					barrage = {
-						enabled = true, -- 3
-					},
-					cobraShot = {
-						enabled = true, -- 4
-					},
-					flayedShot = {
-						enabled = true, -- 5
-					},
-					killCommand = {
-						enabled = true, -- 6
-					},
-					killShot = {
-						enabled = true, -- 7
-					},
-					multiShot = {
-						enabled = true, -- 8
-					},
-					revivePet = {
-						enabled = false, -- 9
-					},
-					scareBeast = {
-						enabled = false, -- 10
-					}
+				arcaneShot = {
+					enabled = false, -- 1
+				},
 			},
+			--[[
 			generation = {
 				mode="gcd",
 				gcds=2,
 				time=3.0,
 			},
+			]]
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
@@ -137,11 +112,11 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 			},
 			colors = {
 				text = {
-					current="FFBAE57E",
+					current="FFFF0000",
 					casting="FFFFFFFF",
 					spending="FF555555",
-					passive="FF005500",
-					overcap="FFFF0000",
+					passive="FFEA3C53",
+					overcap="FF800000",
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
 					overcapEnabled=true,
@@ -150,21 +125,21 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 					right="FFFFFFFF"
 				},
 				bar = {
-					border="FF698247",
-					borderOvercap="FFFF0000",
-					borderBeastialWrath="FF005500",
+					border="FFC21807",
+					borderOvercap="FF800000",
+					--borderBeastialWrath="FF005500",
 					background="66000000",
-					base="FFAAD372",
-					frenzyUse="FF00B60E",
-					frenzyHold="FFFF0000",
+					base="FFFF0000",
+					--frenzyUse="FF00B60E",
+					--frenzyHold="FFFF0000",
 					casting="FFFFFFFF",
 					spending="FF555555",
-					passive="FF005500",
-					flashAlpha=0.70,
-					flashPeriod=0.5,
-					flashEnabled=true,
+					passive="FFEA3C53",
+					--flashAlpha=0.70,
+					--flashPeriod=0.5,
+					--flashEnabled=true,
 					overcapEnabled=true,
-					beastialWrathEnabled=true
+					--beastialWrathEnabled=true
 				},
 				threshold = {
 					under="FFFFFFFF",
@@ -221,7 +196,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 			fontSizeLock=true,
 			fontFaceLock=true,
 			left={
-				text="{$trueshotTime}[$trueshotTime sec]",
+				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -248,13 +223,13 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "{$serpentSting}[#serpentSting $ssCount   ]$haste% ($gcd)||n{$serpentSting}[          ]{$ttd}[TTD: $ttd][ ]",
+				text = "$haste% ($gcd)||n{$ttd}[TTD: $ttd][ ]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			middle = {
-				text="{$flayersMarkTime}[#flayersMark $flayersMarkTime #flayersMark||n]{$trueshotTime}[#trueshot $trueshotTime #trueshot]",
+				text="",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -279,56 +254,23 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 				aimedShot = {
 					enabled = true, -- 1
 				},
-				arcaneShot = {
-					enabled = false, -- 2 --Also Chimera Shot @ 13
-				},
-				serpentSting = {
-					enabled = false, -- 3
-				},
-				barrage = {
-					enabled = false, -- 4
-				},
-				killShot = {
-					enabled = false, -- 5
-				},
-				multiShot = {
-					enabled = false, -- 6
-				},
-				aMurderOfCrows = {
-					enabled = false, -- 7
-				},
-				explosiveShot = {
-					enabled = false, -- 8
-				},
-				scareBeast = {
-					enabled = false, -- 9
-				},
-				burstingShot = {
-					enabled = false, -- 10
-				},
-				revivePet = {
-					enabled = false, -- 11
-				},
-				flayedShot = {
-					enabled = false, -- 12
-				}
 			},
-			generation = {
+			--[[generation = {
 				mode="gcd",
 				gcds=2,
 				time=3.0,
-			},
+			},]]
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
 				neverShow=false
 			},
-			endOfTrueshot = {
+			--[[endOfTrueshot = {
 				enabled=true,
 				mode="gcd",
 				gcdsMax=2,
 				timeMax=3.0
-			},
+			},]]
 			bar = {
 				width=555,
 				height=34,
@@ -340,11 +282,11 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 			},
 			colors = {
 				text = {
-					current="FFBAE57E",
+					current="FFFF0000",
 					casting="FFFFFFFF",
 					spending="FF555555",
-					passive="FF005500",
-					overcap="FFFF0000",
+					passive="FFEA3C53",
+					overcap="FF800000",
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
 					overcapEnabled=true,
@@ -353,24 +295,24 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 					right="FFFFFFFF"
 				},
 				bar = {
-					border="FF698247",
-					borderOvercap="FFFF0000",
+					border="FFC21807",
+					borderOvercap="FF800000",
 					background="66000000",
-					base="FFAAD372",
-					trueshot="FF00B60E",
-					trueshotEnding="FFFF0000",
+					base="FFFF0000",
+					--trueshot="FF00B60E",
+					--trueshotEnding="FFFF0000",
 					casting="FFFFFFFF",
 					spending="FF555555",
-					passive="FF005500",
-					flashAlpha=0.70,
-					flashPeriod=0.5,
-					flashEnabled=true,
+					passive="FFEA3C53",
+					--flashAlpha=0.70,
+					--flashPeriod=0.5,
+					--flashEnabled=true,
 					overcapEnabled=true
 				},
 				threshold = {
 					under="FFFFFFFF",
 					over="FF00FF00",
-					unusable="FFFF0000"
+					unusable="FFE0115F"
 				}
 			},
 			displayText = {},
@@ -1244,7 +1186,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 		controls.barDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display", 0, yCoord)
 
 		yCoord = yCoord - 50
-
+		--[[
 		title = "Beastial Wrath Flash Alpha"
 		controls.flashAlpha = TRB.UiFunctions.BuildSlider(parent, title, 0, 1, TRB.Data.settings.warrior.arms.colors.bar.flashAlpha, 0.01, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
@@ -1276,6 +1218,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.warrior.arms.colors.bar.flashPeriod = value
 		end)
+		]]
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_RB1_2", parent, "UIRadioButtonTemplate")
@@ -1360,6 +1303,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.arms.colors.bar.flashEnabled = self:GetChecked()
 		end)
 
+		--[[
 		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_CB1_6", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.esThresholdShow
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
@@ -1369,6 +1313,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.warrior.arms.colors.bar.beastialWrathEnabled = self:GetChecked()
 		end)
+		]]
 
 		yCoord = yCoord - 60
 
@@ -1458,6 +1403,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 		end)
 
 		yCoord = yCoord - 30
+		--[[
 		controls.colors.frenzyUse = TRB.UiFunctions.BuildColorPicker(parent, "Rage when Barbed Shot should be used", TRB.Data.settings.warrior.arms.colors.bar.frenzyUse, 275, 25, xCoord, yCoord)
 		f = controls.colors.frenzyUse
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1519,6 +1465,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 				end)
 			end
 		end)
+		]]
 
 		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.warrior.arms.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
@@ -1618,6 +1565,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.warrior.arms)
 		end)
 
+		--[[
 		controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.arcaneShotThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -1726,6 +1674,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.warrior.arms.thresholds.scareBeast.enabled = self:GetChecked()
 		end)
+		]]
 
 		--[[
 		yCoord = yCoord - 25
@@ -2717,7 +2666,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 		end
 		]]
 
-
+		--[[
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Rage Generation", 0, yCoord)
 
@@ -2785,7 +2734,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.warrior.arms.generation.time = value
 		end)
-
+		]]
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
@@ -4188,6 +4137,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 			end
 		end)
 
+		--[[
 		controls.colors.trueshot = TRB.UiFunctions.BuildColorPicker(parent, "Rage while Trueshot is active", TRB.Data.settings.warrior.fury.colors.bar.trueshot, 275, 25, xCoord2, yCoord)
 		f = controls.colors.trueshot
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -4229,7 +4179,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 				end)
 			end
 		end)
-
+		]]
 		yCoord = yCoord - 40
 
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
@@ -4307,6 +4257,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.warrior.fury)
 		end)
 
+		--[[
 		controls.checkBoxes.aimedShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_aimedShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.aimedShotThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -4437,8 +4388,9 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.warrior.fury.thresholds.serpentSting.enabled = self:GetChecked()
 		end)
+		]]
 
-
+		--[[
 		yCoord = yCoord - 30
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Trueshot Configuration", 0, yCoord)
 
@@ -4516,6 +4468,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.warrior.fury.endOfTrueshot.timeMax = value
 		end)
+		]]
 
 		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
@@ -5413,7 +5366,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 			PlaySoundFile(TRB.Data.settings.warrior.fury.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
-
+		--[[
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Rage Generation", 0, yCoord)
 
@@ -5481,7 +5434,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.warrior.fury.generation.time = value
 		end)
-
+		]]
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)

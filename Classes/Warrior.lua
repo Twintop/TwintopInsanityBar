@@ -1,6 +1,6 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
-if classIndexId == 999 then --Only do this if we're on a Warrior!
+if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
@@ -153,14 +153,6 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 		end
 
 		TRB.Functions.LoadFromSpecCache(specCache.fury)
-	end
-
-	local function Setup_Protection()
-		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-			return
-		end
-
-		TRB.Functions.LoadFromSpecCache(specCache.protection)
 	end
 
 	local function FillSpellData_Arms()
@@ -342,7 +334,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 		if specId == 1 then
 			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
 			TRB.Data.resource = Enum.PowerType.Rage
-			TRB.Data.resourceFactor = 1
+			TRB.Data.resourceFactor = 10
 			TRB.Data.specSupported = true
             CheckCharacter()
             
@@ -357,7 +349,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 		elseif specId == 2 then
 			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.fury)
 			TRB.Data.resource = Enum.PowerType.Rage
-			TRB.Data.resourceFactor = 1
+			TRB.Data.resourceFactor = 10
 			TRB.Data.specSupported = true
             CheckCharacter()
             
@@ -534,7 +526,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 				valid = true
 			end
 		elseif var == "$overcap" or var == "$rageOvercap" or var == "$resourceOvercap" then
-			if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
+			if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
 				valid = true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
@@ -546,9 +538,9 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 				valid = true
 			end
 		elseif var == "$passive" then
-			if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
+			if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource--[[and
 				((settings.generation.mode == "time" and settings.generation.time > 0) or
-				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+				(settings.generation.mode == "gcd" and settings.generation.gcds > 0))]] then
 				valid = true
 			end
 		end
@@ -559,6 +551,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 
 	local function RefreshLookupData_Arms()
 		local _
+		local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 		--Spec specific implementation
 		local currentTime = GetTime()
 
@@ -592,7 +585,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 		end
         
 		--$rage
-		local currentRage = string.format("|c%s%.0f|r", currentRageColor, TRB.Data.snapshotData.resource)
+		local currentRage = string.format("|c%s%.0f|r", currentRageColor, normalizedRage)
 		--$casting
 		local castingRage = string.format("|c%s%.0f|r", castingRageColor, TRB.Data.snapshotData.casting.resourceFinal)
 		--$passive
@@ -605,13 +598,13 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 		local passiveRage = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.passive, _passiveRage)
 		
 		--$rageTotal
-		local _rageTotal = math.min(_passiveRage + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
+		local _rageTotal = math.min(_passiveRage + TRB.Data.snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
 		local rageTotal = string.format("|c%s%.0f|r", currentRageColor, _rageTotal)
 		--$ragePlusCasting
-		local _ragePlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
+		local _ragePlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
 		local ragePlusCasting = string.format("|c%s%.0f|r", castingRageColor, _ragePlusCasting)
 		--$ragePlusPassive
-		local _ragePlusPassive = math.min(_passiveRage + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
+		local _ragePlusPassive = math.min(_passiveRage + normalizedRage, TRB.Data.character.maxResource)
 		local ragePlusPassive = string.format("|c%s%.0f|r", currentRageColor, _ragePlusPassive)
 
 		----------------------------
@@ -654,6 +647,7 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 
 	local function RefreshLookupData_Fury()
 		local _
+		local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 		--Spec specific implementation
 		local currentTime = GetTime()
 
@@ -687,24 +681,23 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 		end
         
 		--$rage
-		local currentRage = string.format("|c%s%.0f|r", currentRageColor, TRB.Data.snapshotData.resource)
+		local currentRage = string.format("|c%s%.0f|r", currentRageColor, normalizedRage)
 		--$casting
 		local castingRage = string.format("|c%s%.0f|r", castingRageColor, TRB.Data.snapshotData.casting.resourceFinal)
 		--$passive
-		local _regenRage = TRB.Data.snapshotData.rageRegen
 		local _passiveRage = 0
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
 		local passiveRage = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.fury.colors.text.passive, _passiveRage)
 		--$rageTotal
-		local _rageTotal = math.min(_passiveRage + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
+		local _rageTotal = math.min(_passiveRage + TRB.Data.snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
 		local rageTotal = string.format("|c%s%.0f|r", currentRageColor, _rageTotal)
 		--$ragePlusCasting
-		local _ragePlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
+		local _ragePlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
 		local ragePlusCasting = string.format("|c%s%.0f|r", castingRageColor, _ragePlusCasting)
 		--$ragePlusPassive
-		local _ragePlusPassive = math.min(_passiveRage + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
+		local _ragePlusPassive = math.min(_passiveRage + normalizedRage, TRB.Data.character.maxResource)
 		local ragePlusPassive = string.format("|c%s%.0f|r", currentRageColor, _ragePlusPassive)
 
 		----------------------------
@@ -983,34 +976,35 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 					local passiveBarValue = 0
 					local castingBarValue = 0
 					local gcd = TRB.Functions.GetCurrentGCDTime(true)
+					local currentRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor	
 
 					local passiveValue = 0
 
 					if CastingSpell() then
-						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
+						castingBarValue = currentRage + TRB.Data.snapshotData.casting.resourceFinal
 					else
-						castingBarValue = TRB.Data.snapshotData.resource
+						castingBarValue = currentRage
 					end
 
-					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
+					if castingBarValue < currentRage then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, resourceFrame, castingBarValue) 
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, passiveFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, passiveFrame, currentRage)
 							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, castingFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, castingFrame, currentRage)
 							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, resourceFrame, TRB.Data.snapshotData.resource)
+						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, resourceFrame, currentRage)
 						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, passiveFrame, passiveBarValue)
 						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.bar.casting, true))
@@ -1193,6 +1187,8 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 					local passiveBarValue = 0
 					local castingBarValue = 0
 					local gcd = TRB.Functions.GetCurrentGCDTime(true)
+					local currentRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
+
 					if TRB.Data.settings.warrior.fury.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
 						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.borderOvercap, true))
 
@@ -1208,30 +1204,30 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 					local passiveValue = 0
 
 					if CastingSpell() then
-						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
+						castingBarValue = currentRage + TRB.Data.snapshotData.casting.resourceFinal
 					else
-						castingBarValue = TRB.Data.snapshotData.resource
+						castingBarValue = currentRage
 					end
 
-					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
+					if castingBarValue < currentRage then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, resourceFrame, castingBarValue) 
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, passiveFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, passiveFrame, currentRage)
 							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, castingFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, castingFrame, currentRage)
 							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, resourceFrame, TRB.Data.snapshotData.resource)
+						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, resourceFrame, currentRage)
 						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, passiveFrame, passiveBarValue)
 						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.casting, true))
@@ -1660,10 +1656,10 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 	resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
-	resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+	resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)		
 		local _, _, classIndex = UnitClass("player")
 		local specId = GetSpecialization() or 0
-		if classIndex == 3 then
+		if classIndex == 1 then
 			if (event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar") then
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
@@ -1679,7 +1675,6 @@ if classIndexId == 999 then --Only do this if we're on a Warrior!
 					FillSpecCache()
 					FillSpellData_Arms()
 					FillSpellData_Fury()
-					FillSpellData_Protection()
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"
