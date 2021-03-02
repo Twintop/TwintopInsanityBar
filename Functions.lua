@@ -390,6 +390,33 @@ local function HideResourceBar()
 end
 TRB.Functions.HideResourceBar = HideResourceBar
 
+local function UpdateBarHeight(settings)
+	local value = settings.bar.height
+
+	TRB.Frames.barContainerFrame:SetHeight(value-(settings.bar.border*2))
+	TRB.Frames.barBorderFrame:SetHeight(settings.bar.height)
+	TRB.Frames.resourceFrame:SetHeight(value-(settings.bar.border*2))
+	TRB.Frames.castingFrame:SetHeight(value-(settings.bar.border*2))
+	TRB.Frames.passiveFrame:SetHeight(value-(settings.bar.border*2))
+	TRB.Frames.leftTextFrame:SetHeight(settings.bar.height * 3.5)
+	TRB.Frames.middleTextFrame:SetHeight(settings.bar.height * 3.5)
+	TRB.Frames.rightTextFrame:SetHeight(settings.bar.height * 3.5)
+	TRB.Functions.RedrawThresholdLines(settings)
+end
+TRB.Functions.UpdateBarHeight = UpdateBarHeight
+
+local function UpdateBarWidth(settings)
+	local value = settings.bar.width
+
+	TRB.Frames.barContainerFrame:SetWidth(value-(settings.bar.border*2))
+	TRB.Frames.barBorderFrame:SetWidth(settings.bar.width)
+	TRB.Frames.resourceFrame:SetWidth(value-(settings.bar.border*2))
+	TRB.Frames.castingFrame:SetWidth(value-(settings.bar.border*2))
+	TRB.Frames.passiveFrame:SetWidth(value-(settings.bar.border*2))
+	TRB.Functions.SetBarMinMaxValues(settings)
+end
+TRB.Functions.UpdateBarWidth = UpdateBarWidth
+
 local function UpdateBarPosition(xOfs, yOfs)
 	if IsNumeric(xOfs) and IsNumeric(yOfs) then
 		if xOfs < math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth/2) then

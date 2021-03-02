@@ -875,13 +875,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.bar.width = value
 
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / TRB.Data.constants.borderWidthFactor))
+			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
 			if GetSpecialization() == 1 then
-				barContainerFrame:SetWidth(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
-				barBorderFrame:SetWidth(TRB.Data.settings.hunter.beastMastery.bar.width)
-				resourceFrame:SetWidth(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
-				castingFrame:SetWidth(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
-				passiveFrame:SetWidth(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.beastMastery)
+				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.Beastmastery)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
@@ -890,10 +889,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 				end
 			end
-
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / TRB.Data.constants.borderWidthFactor))
-			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
-			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
 
 		title = "Bar Height"
@@ -909,24 +904,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.bar.height = value
 
-			if GetSpecialization() == 1 then
-				barContainerFrame:SetHeight(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
-				barBorderFrame:SetHeight(TRB.Data.settings.hunter.beastMastery.bar.height)
-				resourceFrame:SetHeight(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
-				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetHeight(value)
-				end
-
-				castingFrame:SetHeight(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
-				passiveFrame:SetHeight(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
-				leftTextFrame:SetHeight(TRB.Data.settings.hunter.beastMastery.bar.height * 3.5)
-				middleTextFrame:SetHeight(TRB.Data.settings.hunter.beastMastery.bar.height * 3.5)
-				rightTextFrame:SetHeight(TRB.Data.settings.hunter.beastMastery.bar.height * 3.5)
-			end
-
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.UpdateBarHeight(TRB.Data.settings.hunter.beastMastery)
+			end
 		end)
 
 		title = "Bar Horizontal Position"
@@ -3541,13 +3525,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.bar.width = value
 
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / TRB.Data.constants.borderWidthFactor))
+			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
 			if GetSpecialization() == 2 then
-				barContainerFrame:SetWidth(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
-				barBorderFrame:SetWidth(TRB.Data.settings.hunter.marksmanship.bar.width)
-				resourceFrame:SetWidth(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
-				castingFrame:SetWidth(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
-				passiveFrame:SetWidth(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.marksmanship)
+				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.marksmanship)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
@@ -3556,10 +3539,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 				end
 			end
-
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / TRB.Data.constants.borderWidthFactor))
-			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
-			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
 
 		title = "Bar Height"
@@ -3575,24 +3554,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.bar.height = value
 
-			if GetSpecialization() == 2 then
-				barContainerFrame:SetHeight(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
-				barBorderFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height)
-				resourceFrame:SetHeight(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
-				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetHeight(value)
-				end
-
-				castingFrame:SetHeight(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
-				passiveFrame:SetHeight(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
-				leftTextFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height * 3.5)
-				middleTextFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height * 3.5)
-				rightTextFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height * 3.5)
-			end
-
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
+			if GetSpecialization() == 2 then				
+				TRB.Functions.UpdateBarHeight(TRB.Data.settings.hunter.marksmanship)
+			end
 		end)
 
 		title = "Bar Horizontal Position"
@@ -6238,13 +6206,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.bar.width = value
 
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.bar.width / TRB.Data.constants.borderWidthFactor))
+			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
 			if GetSpecialization() == 3 then
-				barContainerFrame:SetWidth(value-(TRB.Data.settings.hunter.survival.bar.border*2))
-				barBorderFrame:SetWidth(TRB.Data.settings.hunter.survival.bar.width)
-				resourceFrame:SetWidth(value-(TRB.Data.settings.hunter.survival.bar.border*2))
-				castingFrame:SetWidth(value-(TRB.Data.settings.hunter.survival.bar.border*2))
-				passiveFrame:SetWidth(value-(TRB.Data.settings.hunter.survival.bar.border*2))
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.survival)
+				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.survival)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
@@ -6253,10 +6220,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 				end
 			end
-
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.bar.width / TRB.Data.constants.borderWidthFactor))
-			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
-			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
 
 		title = "Bar Height"
@@ -6272,24 +6235,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.bar.height = value
 
-			if GetSpecialization() == 3 then
-				barContainerFrame:SetHeight(value-(TRB.Data.settings.hunter.survival.bar.border*2))
-				barBorderFrame:SetHeight(TRB.Data.settings.hunter.survival.bar.height)
-				resourceFrame:SetHeight(value-(TRB.Data.settings.hunter.survival.bar.border*2))
-				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetHeight(value)
-				end
-
-				castingFrame:SetHeight(value-(TRB.Data.settings.hunter.survival.bar.border*2))
-				passiveFrame:SetHeight(value-(TRB.Data.settings.hunter.survival.bar.border*2))
-				leftTextFrame:SetHeight(TRB.Data.settings.hunter.survival.bar.height * 3.5)
-				middleTextFrame:SetHeight(TRB.Data.settings.hunter.survival.bar.height * 3.5)
-				rightTextFrame:SetHeight(TRB.Data.settings.hunter.survival.bar.height * 3.5)
-			end
-
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
+			if GetSpecialization() == 3 then
+				TRB.Functions.UpdateBarHeight(TRB.Data.settings.hunter.survival)
+			end
 		end)
 
 		title = "Bar Horizontal Position"

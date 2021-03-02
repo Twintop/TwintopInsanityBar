@@ -412,16 +412,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.bar.width = value
-			barContainerFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			barBorderFrame:SetWidth(TRB.Data.settings.shaman.elemental.bar.width)
-			resourceFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			castingFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			passiveFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.shaman.elemental)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+			
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.shaman.elemental.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			
+			TRB.Functions.UpdateBarWidth(TTRB.Data.settings.shaman.elemental)
+
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 		end)
 
 		title = "Bar Height"
@@ -436,18 +434,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.bar.height = value
-			barContainerFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			barBorderFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height)
-			resourceFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			resourceFrame.thresholds[1]:SetHeight(value)
-			castingFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			passiveFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			leftTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
-			middleTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
-			rightTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
+			
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.shaman.elemental.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
+			TRB.Functions.UpdateBarHeight(TRB.Data.settings.shaman.elemental)
 		end)
 
 		title = "Bar Horizontal Position"

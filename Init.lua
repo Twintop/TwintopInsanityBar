@@ -2,8 +2,8 @@ local _, TRB = ...
 
 -- Addon details data
 TRB.Details = {}
-TRB.Details.addonVersion = "9.0.2.44"
-TRB.Details.addonReleaseDate = "February 22, 2021"
+TRB.Details.addonVersion = "9.0.2.45"
+TRB.Details.addonReleaseDate = "March 02, 2021"
 TRB.Details.supportedSpecs = "|cFFFF7C0ADruid|r - Balance\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFFFFFFFFPriest|r - Shadow\n|cFF0070DDShaman|r - Elemental"
 
 local addonData = {

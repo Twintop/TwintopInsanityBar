@@ -501,17 +501,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.shadow.bar.width = value
-			barContainerFrame:SetWidth(value-(TRB.Data.settings.priest.shadow.bar.border*2))
-			barBorderFrame:SetWidth(TRB.Data.settings.priest.shadow.bar.width)
-			resourceFrame:SetWidth(value-(TRB.Data.settings.priest.shadow.bar.border*2))
-			castingFrame:SetWidth(value-(TRB.Data.settings.priest.shadow.bar.border*2))
-			passiveFrame:SetWidth(value-(TRB.Data.settings.priest.shadow.bar.border*2))
-			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.priest.shadow)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.shadow.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
+			TRB.Functions.UpdateBarWidth(TRB.Data.settings.priest.shadow)
+
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 		end)
 
 		title = "Bar Height"
@@ -526,20 +524,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.shadow.bar.height = value
-			barContainerFrame:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
-			barBorderFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height)
-			resourceFrame:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
-			resourceFrame.thresholds[1]:SetHeight(value)
-			resourceFrame.thresholds[2]:SetHeight(value)
-			castingFrame:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
-			passiveFrame:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
-			passiveFrame.thresholds[1]:SetHeight(value-(TRB.Data.settings.priest.shadow.bar.border*2))
-			leftTextFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height * 3.5)
-			middleTextFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height * 3.5)
-			rightTextFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height * 3.5)
+
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.shadow.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
+			TRB.Functions.UpdateBarHeight(TRB.Data.settings.priest.shadow)
 		end)
 
 		title = "Bar Horizontal Position"
