@@ -417,7 +417,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 			
-			TRB.Functions.UpdateBarWidth(TTRB.Data.settings.shaman.elemental)
+			TRB.Functions.UpdateBarWidth(TRB.Data.settings.shaman.elemental)
 
 			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 		end)
