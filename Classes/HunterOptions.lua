@@ -880,7 +880,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.Beastmastery)
+				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.beastMastery)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
