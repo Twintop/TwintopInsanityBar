@@ -53,10 +53,12 @@ TRB.Frames.interfaceSettingsFrameContainer.controls = {}
 -- Working data
 TRB.Data = {}
 
+TRB.Data.constants = {
+	borderWidthFactor = 4
+}
+
 TRB.Data.settings = {}
 
-TRB.Data.className = ""
-TRB.Data.specName = ""
 TRB.Data.specSupported = false
 TRB.Data.resource = nil 
 TRB.Data.resourceFactor = 1

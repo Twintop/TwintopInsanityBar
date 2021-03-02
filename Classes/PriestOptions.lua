@@ -484,7 +484,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height/8), math.floor(TRB.Data.settings.priest.shadow.bar.width/8))
+		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.shadow.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
 
@@ -509,7 +509,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.priest.shadow)
 			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
 			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height / 8), math.floor(TRB.Data.settings.priest.shadow.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.shadow.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
@@ -537,7 +537,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			leftTextFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height * 3.5)
 			middleTextFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height * 3.5)
 			rightTextFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height * 3.5)
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height / 8), math.floor(TRB.Data.settings.priest.shadow.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.shadow.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)

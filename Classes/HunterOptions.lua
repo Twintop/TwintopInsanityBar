@@ -855,7 +855,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height/8), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width/8))
+		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.beastMastery)
 
@@ -891,7 +891,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				end
 			end
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / 8), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
@@ -924,7 +924,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				rightTextFrame:SetHeight(TRB.Data.settings.hunter.beastMastery.bar.height * 3.5)
 			end
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / 8), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
@@ -3521,7 +3521,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height/8), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width/8))
+		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.marksmanship)
 
@@ -3557,7 +3557,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				end
 			end
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / 8), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
@@ -3590,7 +3590,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				rightTextFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height * 3.5)
 			end
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / 8), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
@@ -6218,7 +6218,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height/8), math.floor(TRB.Data.settings.hunter.survival.bar.width/8))
+		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.survival)
 
@@ -6254,7 +6254,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				end
 			end
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / 8), math.floor(TRB.Data.settings.hunter.survival.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
@@ -6287,7 +6287,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				rightTextFrame:SetHeight(TRB.Data.settings.hunter.survival.bar.height * 3.5)
 			end
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / 8), math.floor(TRB.Data.settings.hunter.survival.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)

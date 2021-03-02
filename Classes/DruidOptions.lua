@@ -421,7 +421,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height/8), math.floor(TRB.Data.settings.druid.balance.bar.width/8))
+		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
 
@@ -446,7 +446,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.druid.balance)
 			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
 			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / 8), math.floor(TRB.Data.settings.druid.balance.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
@@ -473,7 +473,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			leftTextFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height * 3.5)
 			middleTextFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height * 3.5)
 			rightTextFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height * 3.5)
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / 8), math.floor(TRB.Data.settings.druid.balance.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
