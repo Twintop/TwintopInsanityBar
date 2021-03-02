@@ -55,6 +55,8 @@ TRB.Data = {}
 
 TRB.Data.settings = {}
 
+TRB.Data.className = ""
+TRB.Data.specName = ""
 TRB.Data.specSupported = false
 TRB.Data.resource = nil 
 TRB.Data.resourceFactor = 1
@@ -77,6 +79,8 @@ TRB.Data.barTextCache = {}
 -- This is here for reference/what every implementation should use as a minimum
 TRB.Data.character = {
 	guid = UnitGUID("player"),
+	className = "",
+	specName = "",
 	specGroup = GetActiveSpecGroup(),
     maxResource = 100,
     talents = {},

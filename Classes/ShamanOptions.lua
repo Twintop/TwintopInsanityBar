@@ -180,7 +180,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.elemental
 		local yCoord = 5
 		local f = nil
 
@@ -366,8 +366,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			StaticPopup_Show("TwintopResourceBar_ResetBarTextAdvanced")
 		end)
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
 
 	local function ElementalConstructBarColorsAndBehaviorPanel(parent)
@@ -376,7 +376,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.elemental
 		local yCoord = 5
 		local f = nil
 
@@ -1276,8 +1276,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.elemental.overcapThreshold = value
 		end)
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
 
 	local function ElementalConstructFontAndTextPanel(parent)
@@ -1286,7 +1286,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.elemental
 		local yCoord = 5
 		local f = nil
 
@@ -1798,8 +1798,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.elemental.colors.text.overcapEnabled = self:GetChecked()
 		end)
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
 
 	local function ElementalConstructAudioAndTrackingPanel(parent)
@@ -1808,7 +1808,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.elemental
 		local yCoord = 5
 		local f = nil
 
@@ -1974,8 +1974,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.elemental.hastePrecision = value
 		end)
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
     
 	local function ElementalConstructBarTextDisplayPanel(parent)
@@ -1984,7 +1984,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.elemental
 		local yCoord = 5
 		local f = nil
 
@@ -2246,6 +2246,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		parent.lastTabId = 1
 		parent.tabsheets[1].selected = true
 		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+		
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 
 		ElementalConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 		ElementalConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)

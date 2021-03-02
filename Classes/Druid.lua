@@ -384,6 +384,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function CheckCharacter()
 		TRB.Functions.CheckCharacter()
+		
+		TRB.Data.character.className = "druid"
+		TRB.Data.character.specName = "balance"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.LunarPower)
 		TRB.Data.character.talents.naturesBalance.isSelected = select(4, GetTalentInfo(1, 1, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.warriorOfElune.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))

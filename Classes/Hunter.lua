@@ -1197,16 +1197,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	local function CheckCharacter()
 		TRB.Functions.CheckCharacter()
+		TRB.Data.character.className = "hunter"
 		TRB.Data.character.petGuid = UnitGUID("pet")
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Focus)
 		TRB.Data.character.covenantId = C_Covenants.GetActiveCovenantID()
 
-		if GetSpecialization() == 1 then
+
+		if GetSpecialization() == 1 then		
+			TRB.Data.character.specName = "beastMastery"
 			TRB.Data.character.talents.scentOfBlood.isSelected = select(4, GetTalentInfo(2, 1, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.chimaeraShot.isSelected = select(4, GetTalentInfo(2, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.aMurderOfCrows.isSelected = select(4, GetTalentInfo(4, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.barrage.isSelected = select(4, GetTalentInfo(6, 2, TRB.Data.character.specGroup))
 		elseif GetSpecialization() == 2 then
+			TRB.Data.character.specName = "marksmanship"
 			TRB.Data.character.talents.serpentSting.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.aMurderOfCrows.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.barrage.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
@@ -1215,6 +1219,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.character.talents.deadEye.isSelected = select(4, GetTalentInfo(6, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.doubleTap.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
 		elseif GetSpecialization() == 3 then
+			TRB.Data.character.specName = "survival"
 			TRB.Data.character.talents.vipersVenom.isSelected = select(4, GetTalentInfo(1, 1, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.termsOfEngagement.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.butchery.isSelected = select(4, GetTalentInfo(2, 3, TRB.Data.character.specGroup))

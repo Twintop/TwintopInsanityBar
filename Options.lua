@@ -286,6 +286,9 @@ local function ConstructAddonOptionsPanel()
         UIDropDownMenu_SetText(controls.dropDown.audioChannel, newName)
         CloseDropDownMenus()
     end
+
+    TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+    TRB.Frames.interfaceSettingsFrameContainer.controls = controls
 end 
 
 local function ConstructOptionsPanel()

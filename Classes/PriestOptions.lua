@@ -270,7 +270,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.shadow
 		local yCoord = 5
 		local f = nil
 
@@ -456,7 +456,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrame.controls.shadow = controls
 	end
 
 	local function ShadowConstructBarColorsAndBehaviorPanel(parent)
@@ -465,7 +465,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.shadow
 		local yCoord = 5
 		local f = nil
 
@@ -1534,8 +1534,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls
 	end
 
 	local function ShadowConstructFontAndTextPanel(parent)
@@ -1544,7 +1544,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.shadow
 		local yCoord = 5
 		local f = nil
 
@@ -2313,8 +2313,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.insanityPrecision = value
 		end)
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls
 	end
 
 	local function ShadowConstructAudioAndTrackingPanel(parent)
@@ -2323,7 +2323,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.shadow
 		local yCoord = 5
 		local f = nil
 
@@ -2883,8 +2883,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls
 	end
 
 	local function ShadowConstructBarTextDisplayPanel(parent)
@@ -2893,7 +2893,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.shadow
 		local yCoord = 5
 		local f = nil
 
@@ -3180,7 +3180,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		parent = interfaceSettingsFrame.shadowDisplayPanel
 
-
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Shadow Priest", xCoord+xPadding, yCoord)
 
 		yCoord = yCoord - 42
@@ -3215,6 +3214,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		parent.lastTabId = 1
 		parent.tabsheets[1].selected = true
 		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls
 
 		ShadowConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 		ShadowConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)

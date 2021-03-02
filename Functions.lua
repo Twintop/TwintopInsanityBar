@@ -404,10 +404,10 @@ local function UpdateBarPosition(xOfs, yOfs)
 			yOfs = math.floor(TRB.Data.sanityCheckValues.barMaxHeight/2)
 		end
 
-		TRB.Frames.interfaceSettingsFrame.controls.horizontal:SetValue(xOfs)
-		TRB.Frames.interfaceSettingsFrame.controls.horizontal.EditBox:SetText(RoundTo(xOfs, 0))
-		TRB.Frames.interfaceSettingsFrame.controls.vertical:SetValue(yOfs)
-		TRB.Frames.interfaceSettingsFrame.controls.vertical.EditBox:SetText(RoundTo(yOfs, 0))
+		TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].horizontal:SetValue(xOfs)
+		TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].horizontal.EditBox:SetText(RoundTo(xOfs, 0))
+		TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].vertical:SetValue(yOfs)
+		TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].vertical.EditBox:SetText(RoundTo(yOfs, 0))
 	end
 end
 TRB.Functions.UpdateBarPosition = UpdateBarPosition

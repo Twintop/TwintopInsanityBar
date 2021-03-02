@@ -248,6 +248,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function CheckCharacter()
 		TRB.Functions.CheckCharacter()
+		
+		TRB.Data.character.className = "shaman"
+		TRB.Data.character.specName = "elemental"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom)
 		TRB.Data.character.talents.echoingShock.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.elementalBlast.isSelected = select(4, GetTalentInfo(2, 3, TRB.Data.character.specGroup))

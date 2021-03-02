@@ -206,7 +206,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.balance
 		local yCoord = 5
 		local f = nil
 
@@ -392,8 +392,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			StaticPopup_Show("TwintopResourceBar_ResetBarTextAdvanced")
 		end)
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
 	end
 
 	local function BalanceConstructBarColorsAndBehaviorPanel(parent)
@@ -402,7 +402,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.balance
 		local yCoord = 5
 		local f = nil
 
@@ -1548,8 +1548,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.overcapThreshold = value
 		end)
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
 	end
 
 	local function BalanceConstructFontAndTextPanel(parent)
@@ -1558,7 +1558,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.balance
 		local yCoord = 5
 		local f = nil
 
@@ -2108,7 +2108,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrame.controls.balance = controls
 	end
 
 	local function BalanceConstructAudioAndTrackingPanel(parent)
@@ -2117,7 +2117,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.balance
 		local yCoord = 5
 		local f = nil
 
@@ -2393,8 +2393,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			PlaySoundFile(TRB.Data.settings.druid.balance.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
 	end
     
 	local function BalanceConstructBarTextDisplayPanel(parent)
@@ -2403,7 +2403,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.balance
 		local yCoord = 5
 		local f = nil
 
@@ -2665,6 +2665,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		parent.lastTabId = 1
 		parent.tabsheets[1].selected = true
 		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
 
 		BalanceConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 		BalanceConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
