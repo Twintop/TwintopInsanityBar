@@ -206,7 +206,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.balance
 		local yCoord = 5
 		local f = nil
 
@@ -392,8 +392,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			StaticPopup_Show("TwintopResourceBar_ResetBarTextAdvanced")
 		end)
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
 	end
 
 	local function BalanceConstructBarColorsAndBehaviorPanel(parent)
@@ -402,7 +402,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.balance
 		local yCoord = 5
 		local f = nil
 
@@ -421,7 +421,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height/8), math.floor(TRB.Data.settings.druid.balance.bar.width/8))
+		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
 
@@ -438,17 +438,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.druid.balance.bar.width = value
-			barContainerFrame:SetWidth(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			barBorderFrame:SetWidth(TRB.Data.settings.druid.balance.bar.width)
-			resourceFrame:SetWidth(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			castingFrame:SetWidth(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			passiveFrame:SetWidth(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.druid.balance)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / 8), math.floor(TRB.Data.settings.druid.balance.bar.width / 8))
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
+			TRB.Functions.UpdateBarWidth(TRB.Data.settings.druid.balance)
+
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*2, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*3, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
 		end)
 
 		title = "Bar Height"
@@ -463,19 +463,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.druid.balance.bar.height = value
-			barContainerFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			barBorderFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height)
-			resourceFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			resourceFrame.thresholds[1]:SetHeight(value)
-			resourceFrame.thresholds[2]:SetHeight(value)
-			castingFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			passiveFrame:SetHeight(value-(TRB.Data.settings.druid.balance.bar.border*2))
-			leftTextFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height * 3.5)
-			middleTextFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height * 3.5)
-			rightTextFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height * 3.5)
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / 8), math.floor(TRB.Data.settings.druid.balance.bar.width / 8))
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
+			TRB.Functions.UpdateBarHeight(TRB.Data.settings.druid.balance)
 		end)
 
 		title = "Bar Horizontal Position"
@@ -553,8 +546,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.border, true))
 
 			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.druid.balance)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*2, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*3, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
 
 			local minsliderWidth = math.max(TRB.Data.settings.druid.balance.bar.border*2, 120)
 			local minsliderHeight = math.max(TRB.Data.settings.druid.balance.bar.border*2, 1)
@@ -578,6 +573,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.thresholdWidth = value
 			resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
 			resourceFrame.thresholds[2]:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
+			resourceFrame.thresholds[3]:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
+			resourceFrame.thresholds[4]:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
 		end)
 
 		yCoord = yCoord - 40
@@ -1548,8 +1545,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.overcapThreshold = value
 		end)
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
 	end
 
 	local function BalanceConstructFontAndTextPanel(parent)
@@ -1558,7 +1555,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.balance
 		local yCoord = 5
 		local f = nil
 
@@ -2108,7 +2105,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrame.controls.balance = controls
 	end
 
 	local function BalanceConstructAudioAndTrackingPanel(parent)
@@ -2117,7 +2114,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.balance
 		local yCoord = 5
 		local f = nil
 
@@ -2142,7 +2139,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f = controls.checkBoxes.ssReady
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Starsurge is usable")
-		f.tooltip = "Play an audio cue when Devouring Plague can be cast."
+		f.tooltip = "Play an audio cue when Starsurge can be cast."
 		f:SetChecked(TRB.Data.settings.druid.balance.audio.ssReady.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.balance.audio.ssReady.enabled = self:GetChecked()
@@ -2393,8 +2390,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			PlaySoundFile(TRB.Data.settings.druid.balance.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
 	end
     
 	local function BalanceConstructBarTextDisplayPanel(parent)
@@ -2403,7 +2400,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.balance
 		local yCoord = 5
 		local f = nil
 
@@ -2665,6 +2662,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		parent.lastTabId = 1
 		parent.tabsheets[1].selected = true
 		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
 
 		BalanceConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 		BalanceConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)

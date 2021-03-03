@@ -633,6 +633,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function CheckCharacter()
 		TRB.Functions.CheckCharacter()
+		
+		TRB.Data.character.className = "priest"
+		TRB.Data.character.specName = "shadow"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Insanity)
 		TRB.Data.character.talents.searingNightmare.isSelected = select(4, GetTalentInfo(3, 3, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.fotm.isSelected = select(4, GetTalentInfo(1, 1, TRB.Data.character.specGroup))

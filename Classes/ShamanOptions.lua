@@ -180,7 +180,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.elemental
 		local yCoord = 5
 		local f = nil
 
@@ -366,8 +366,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			StaticPopup_Show("TwintopResourceBar_ResetBarTextAdvanced")
 		end)
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
 
 	local function ElementalConstructBarColorsAndBehaviorPanel(parent)
@@ -376,7 +376,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.elemental
 		local yCoord = 5
 		local f = nil
 
@@ -395,7 +395,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height/8), math.floor(TRB.Data.settings.shaman.elemental.bar.width/8))
+		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.shaman.elemental.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
 
@@ -412,16 +412,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.bar.width = value
-			barContainerFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			barBorderFrame:SetWidth(TRB.Data.settings.shaman.elemental.bar.width)
-			resourceFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			castingFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			passiveFrame:SetWidth(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.shaman.elemental)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / 8), math.floor(TRB.Data.settings.shaman.elemental.bar.width / 8))
+			
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.shaman.elemental.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			
+			TRB.Functions.UpdateBarWidth(TRB.Data.settings.shaman.elemental)
+
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 		end)
 
 		title = "Bar Height"
@@ -436,18 +434,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.bar.height = value
-			barContainerFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			barBorderFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height)
-			resourceFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			resourceFrame.thresholds[1]:SetHeight(value)
-			castingFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			passiveFrame:SetHeight(value-(TRB.Data.settings.shaman.elemental.bar.border*2))
-			leftTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
-			middleTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
-			rightTextFrame:SetHeight(TRB.Data.settings.shaman.elemental.bar.height * 3.5)
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / 8), math.floor(TRB.Data.settings.shaman.elemental.bar.width / 8))
+			
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.shaman.elemental.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
+			TRB.Functions.UpdateBarHeight(TRB.Data.settings.shaman.elemental)
 		end)
 
 		title = "Bar Horizontal Position"
@@ -1276,8 +1268,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.elemental.overcapThreshold = value
 		end)
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
 
 	local function ElementalConstructFontAndTextPanel(parent)
@@ -1286,7 +1278,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.elemental
 		local yCoord = 5
 		local f = nil
 
@@ -1798,8 +1790,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.elemental.colors.text.overcapEnabled = self:GetChecked()
 		end)
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
 
 	local function ElementalConstructAudioAndTrackingPanel(parent)
@@ -1808,7 +1800,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.elemental
 		local yCoord = 5
 		local f = nil
 
@@ -1974,8 +1966,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.elemental.hastePrecision = value
 		end)
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls = controls
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
     
 	local function ElementalConstructBarTextDisplayPanel(parent)
@@ -1984,7 +1976,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.elemental
 		local yCoord = 5
 		local f = nil
 
@@ -2246,6 +2238,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		parent.lastTabId = 1
 		parent.tabsheets[1].selected = true
 		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+		
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 
 		ElementalConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 		ElementalConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
