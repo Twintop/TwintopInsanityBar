@@ -544,7 +544,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "", 
 				icon = "",
 				isActive = false,
-				modifier = 0.5
+				modifier = 0.25
 			},
 
 		}
@@ -1372,22 +1372,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
     local function CalculateAbilityResourceValue(resource)
         local modifier = 1.0
-                
-		if resource > 0 then
-			if GetSpecialization() == 2 then
-				if TRB.Data.spells.trueshot.isActive then
-					modifier = modifier * TRB.Data.spells.trueshot.modifier
-				end
+		if GetSpecialization() == 2 then
+			if TRB.Data.spells.trueshot.isActive then
+				modifier = modifier * TRB.Data.spells.trueshot.modifier
 			end
+		end
 
+		if resource > 0 then
 			if TRB.Data.spells.nesingwarysTrappingApparatus.isActive then
 				modifier = modifier * TRB.Data.spells.nesingwarysTrappingApparatus.modifier
-			end
-		else
-			if GetSpecialization() == 2 then
-				if TRB.Data.spells.eagletalonsTrueFocus.isActive then
-					modifier = modifier * TRB.Data.spells.eagletalonsTrueFocus.modifier
-				end
 			end
 		end
 
