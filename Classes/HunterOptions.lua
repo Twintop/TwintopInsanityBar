@@ -118,8 +118,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			},
 			generation = {
 				mode="gcd",
-				gcds=2,
-				time=3.0,
+				gcds=1,
+				time=1.5,
+				enabled=true
 			},
 			displayBar = {
 				alwaysShow=false,
@@ -315,8 +316,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			},
 			generation = {
 				mode="gcd",
-				gcds=2,
-				time=3.0,
+				gcds=1,
+				time=1.5,
+				enabled=true
 			},
 			displayBar = {
 				alwaysShow=false,
@@ -518,8 +520,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			},
 			generation = {
 				mode="gcd",
-				gcds=2,
-				time=3.0,
+				gcds=1,
+				time=1.5,
+				enabled=true
 			},
 			displayBar = {
 				alwaysShow=false,
@@ -2902,16 +2905,26 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Generation", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
 
+		yCoord = yCoord - 20
+		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.trackFocusRegen
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Track focus regen")
+		f.tooltip = "Include focus regen in the passive bar and passive variables. Unchecking this will cause the following Passive Focus Generation options to have no effect."
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.generation.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.beastMastery.generation.enabled = self:GetChecked()
+		end)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_PFG_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeGCDs
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Focus generation from GCDs")
+		getglobal(f:GetName() .. 'Text'):SetText("Focus generation over GCDs")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Focus generation over the next X GCDs, based on player's current GCD."
+		f.tooltip = "Shows the amount of Focus generation over the next X GCDs, based on player's current GCD length."
 		if TRB.Data.settings.hunter.beastMastery.generation.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -5582,14 +5595,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Generation", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
+
+		yCoord = yCoord - 20
+		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.trackFocusRegen
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Track focus regen")
+		f.tooltip = "Include focus regen in the passive bar and passive variables. Unchecking this will cause the following Passive Focus Generation options to have no effect."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.generation.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.generation.enabled = self:GetChecked()
+		end)
 
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_PFG_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeGCDs
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Focus generation from GCDs")
+		getglobal(f:GetName() .. 'Text'):SetText("Focus generation over GCDs")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Focus generation over the next X GCDs, based on player's current GCD."
 		if TRB.Data.settings.hunter.marksmanship.generation.mode == "gcd" then
@@ -8183,10 +8207,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 
-
-
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Generation", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
+
+		yCoord = yCoord - 20
+		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.trackFocusRegen
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Track focus regen")
+		f.tooltip = "Include focus regen in the passive bar and passive variables. Unchecking this will cause the following Passive Focus Generation options to have no effect."
+		f:SetChecked(TRB.Data.settings.hunter.survival.generation.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.survival.generation.enabled = self:GetChecked()
+		end)
 
 
 		yCoord = yCoord - 40

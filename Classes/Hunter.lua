@@ -1567,6 +1567,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		elseif var == "$passive" then
 			if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
+				settings.generation.enabled and
 				((settings.generation.mode == "time" and settings.generation.time > 0) or
 				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 				valid = true
@@ -1647,10 +1648,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
-		if TRB.Data.settings.hunter.beastMastery.generation.mode == "time" then
-			_regenFocus = _regenFocus * (TRB.Data.settings.hunter.beastMastery.generation.time or 3.0)
+		if TRB.Data.settings.hunter.beastMastery.generation.enabled then
+			if TRB.Data.settings.hunter.beastMastery.generation.mode == "time" then
+				_regenFocus = _regenFocus * (TRB.Data.settings.hunter.beastMastery.generation.time or 3.0)
+			else
+				_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.beastMastery.generation.gcds or 2) * _gcd)
+			end
 		else
-			_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.beastMastery.generation.gcds or 2) * _gcd)
+			_regenFocus = 0
 		end
 
 		--$regenFocus
@@ -1817,10 +1822,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
-		if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
-			_regenFocus = _regenFocus * (TRB.Data.settings.hunter.marksmanship.generation.time or 3.0)
+		if TRB.Data.settings.hunter.marksmanship.generation.enabled then
+			if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
+				_regenFocus = _regenFocus * (TRB.Data.settings.hunter.marksmanship.generation.time or 3.0)
+			else
+				_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.marksmanship.generation.gcds or 2) * _gcd)
+			end
 		else
-			_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.marksmanship.generation.gcds or 2) * _gcd)
+			_regenFocus = 0
 		end
 
 		--$regenFocus
@@ -1976,10 +1985,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
-		if TRB.Data.settings.hunter.survival.generation.mode == "time" then
-			_regenFocus = _regenFocus * (TRB.Data.settings.hunter.survival.generation.time or 3.0)
+		if TRB.Data.settings.hunter.survival.generation.enabled then
+			if TRB.Data.settings.hunter.survival.generation.mode == "time" then
+				_regenFocus = _regenFocus * (TRB.Data.settings.hunter.survival.generation.time or 3.0)
+			else
+				_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.survival.generation.gcds or 2) * _gcd)
+			end
 		else
-			_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.survival.generation.gcds or 2) * _gcd)
+			_regenFocus = 0
 		end
 
 		--$regenFocus
@@ -2432,10 +2445,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					local gcd = TRB.Functions.GetCurrentGCDTime(true)
 
 					local passiveValue = 0
-					if TRB.Data.settings.hunter.beastMastery.generation.mode == "time" then
-						passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.beastMastery.generation.time or 3.0))
-					else
-						passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.beastMastery.generation.gcds or 2) * gcd))
+					if TRB.Data.settings.hunter.beastMastery.generation.enabled then
+						if TRB.Data.settings.hunter.beastMastery.generation.mode == "time" then
+							passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.beastMastery.generation.time or 3.0))
+						else
+							passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.beastMastery.generation.gcds or 2) * gcd))
+						end
 					end
 
 					if CastingSpell() then
@@ -2654,10 +2669,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					local passiveValue = 0
-					if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
-						passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.marksmanship.generation.time or 3.0))
-					else
-						passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.marksmanship.generation.gcds or 2) * gcd))
+					if TRB.Data.settings.hunter.marksmanship.generation.enabled then
+						if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
+							passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.marksmanship.generation.time or 3.0))
+						else
+							passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.marksmanship.generation.gcds or 2) * gcd))
+						end
 					end
 
 					if CastingSpell() then
@@ -2829,11 +2846,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					local passiveValue = 0
-					if TRB.Data.settings.hunter.survival.generation.mode == "time" then
-						passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.survival.generation.time or 3.0))
-					else
-						passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.survival.generation.gcds or 2) * gcd))
+					if TRB.Data.settings.hunter.survival.generation.enabled then
+						if TRB.Data.settings.hunter.survival.generation.mode == "time" then
+							passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.survival.generation.time or 3.0))
+						else
+							passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.survival.generation.gcds or 2) * gcd))
+						end
 					end
+
+					passiveValue = passiveValue + TRB.Data.snapshotData.termsOfEngagement.focus
 
 					if CastingSpell() then
 						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
