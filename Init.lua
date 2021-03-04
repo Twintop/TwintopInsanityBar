@@ -2,8 +2,8 @@ local _, TRB = ...
 
 -- Addon details data
 TRB.Details = {}
-TRB.Details.addonVersion = "9.0.2.44"
-TRB.Details.addonReleaseDate = "February 22, 2021"
+TRB.Details.addonVersion = "9.0.2.45"
+TRB.Details.addonReleaseDate = "March 05, 2021"
 TRB.Details.supportedSpecs = "|cFFFF7C0ADruid|r - Balance\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFFFFFFFFPriest|r - Shadow\n|cFF0070DDShaman|r - Elemental"
 
 local addonData = {
@@ -53,6 +53,10 @@ TRB.Frames.interfaceSettingsFrameContainer.controls = {}
 -- Working data
 TRB.Data = {}
 
+TRB.Data.constants = {
+	borderWidthFactor = 4
+}
+
 TRB.Data.settings = {}
 
 TRB.Data.specSupported = false
@@ -77,6 +81,8 @@ TRB.Data.barTextCache = {}
 -- This is here for reference/what every implementation should use as a minimum
 TRB.Data.character = {
 	guid = UnitGUID("player"),
+	className = "",
+	specName = "",
 	specGroup = GetActiveSpecGroup(),
     maxResource = 100,
     talents = {},

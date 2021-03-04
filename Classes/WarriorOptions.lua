@@ -598,7 +598,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.warrior.arms.bar.height/8), math.floor(TRB.Data.settings.warrior.arms.bar.width/8))
+		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.warrior.arms.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.warrior.arms.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.warrior.arms)
 
@@ -634,7 +634,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				end
 			end
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.warrior.arms.bar.height / 8), math.floor(TRB.Data.settings.warrior.arms.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.warrior.arms.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.warrior.arms.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
@@ -667,7 +667,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				rightTextFrame:SetHeight(TRB.Data.settings.warrior.arms.bar.height * 3.5)
 			end
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.warrior.arms.bar.height / 8), math.floor(TRB.Data.settings.warrior.arms.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.warrior.arms.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.warrior.arms.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
@@ -3271,7 +3271,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.warrior.fury.bar.height/8), math.floor(TRB.Data.settings.warrior.fury.bar.width/8))
+		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.warrior.fury.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.warrior.fury.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.warrior.fury)
 
@@ -3307,7 +3307,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				end
 			end
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.warrior.fury.bar.height / 8), math.floor(TRB.Data.settings.warrior.fury.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.warrior.fury.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.warrior.fury.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
@@ -3340,7 +3340,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				rightTextFrame:SetHeight(TRB.Data.settings.warrior.fury.bar.height * 3.5)
 			end
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.warrior.fury.bar.height / 8), math.floor(TRB.Data.settings.warrior.fury.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.warrior.fury.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.warrior.fury.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)

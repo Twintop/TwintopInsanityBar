@@ -290,10 +290,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function CheckCharacter()
 		TRB.Functions.CheckCharacter()
+		TRB.Data.character.className = "warrior"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Rage)
 		TRB.Data.character.covenantId = C_Covenants.GetActiveCovenantID()
 
-        if GetSpecialization() == 1 then
+        if GetSpecialization() == 1 then		
+			TRB.Data.character.specName = "arms"
             --[[
 			TRB.Data.character.talents.scentOfBlood.isSelected = select(4, GetTalentInfo(2, 1, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.chimaeraShot.isSelected = select(4, GetTalentInfo(2, 3, TRB.Data.character.specGroup))
@@ -301,6 +303,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
             TRB.Data.character.talents.barrage.isSelected = select(4, GetTalentInfo(6, 2, TRB.Data.character.specGroup))
             ]]
         elseif GetSpecialization() == 2 then
+			TRB.Data.character.specName = "fury"
             --[[
 			TRB.Data.character.talents.serpentSting.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.aMurderOfCrows.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))

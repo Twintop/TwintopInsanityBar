@@ -118,8 +118,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			},
 			generation = {
 				mode="gcd",
-				gcds=2,
-				time=3.0,
+				gcds=1,
+				time=1.5,
+				enabled=true
 			},
 			displayBar = {
 				alwaysShow=false,
@@ -175,6 +176,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			displayText = {},
 			audio = {
 				overcap={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+				killShot={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -315,8 +321,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			},
 			generation = {
 				mode="gcd",
-				gcds=2,
-				time=3.0,
+				gcds=1,
+				time=1.5,
+				enabled=true
 			},
 			displayBar = {
 				alwaysShow=false,
@@ -386,6 +393,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					soundName="TRB: Air Horn"
 				},
 				nesingwarysTrappingApparatus={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+				killShot={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -518,8 +530,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			},
 			generation = {
 				mode="gcd",
-				gcds=2,
-				time=3.0,
+				gcds=1,
+				time=1.5,
+				enabled=true
 			},
 			displayBar = {
 				alwaysShow=false,
@@ -579,6 +592,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			displayText = {},
 			audio = {
 				overcap={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+				killShot={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -855,7 +873,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height/8), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width/8))
+		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.beastMastery)
 
@@ -875,13 +893,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.bar.width = value
 
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / TRB.Data.constants.borderWidthFactor))
+			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
 			if GetSpecialization() == 1 then
-				barContainerFrame:SetWidth(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
-				barBorderFrame:SetWidth(TRB.Data.settings.hunter.beastMastery.bar.width)
-				resourceFrame:SetWidth(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
-				castingFrame:SetWidth(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
-				passiveFrame:SetWidth(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.beastMastery)
+				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.beastMastery)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
@@ -890,10 +907,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 				end
 			end
-
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / 8), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / 8))
-			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
-			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
 
 		title = "Bar Height"
@@ -909,24 +922,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.bar.height = value
 
-			if GetSpecialization() == 1 then
-				barContainerFrame:SetHeight(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
-				barBorderFrame:SetHeight(TRB.Data.settings.hunter.beastMastery.bar.height)
-				resourceFrame:SetHeight(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
-				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetHeight(value)
-				end
-
-				castingFrame:SetHeight(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
-				passiveFrame:SetHeight(value-(TRB.Data.settings.hunter.beastMastery.bar.border*2))
-				leftTextFrame:SetHeight(TRB.Data.settings.hunter.beastMastery.bar.height * 3.5)
-				middleTextFrame:SetHeight(TRB.Data.settings.hunter.beastMastery.bar.height * 3.5)
-				rightTextFrame:SetHeight(TRB.Data.settings.hunter.beastMastery.bar.height * 3.5)
-			end
-
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / 8), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.UpdateBarHeight(TRB.Data.settings.hunter.beastMastery)
+			end
 		end)
 
 		title = "Bar Horizontal Position"
@@ -2722,6 +2724,71 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.killShotAudio
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Kill Shot is usable")
+		f.tooltip = "Play an audio cue when Kill Shot is usable and off of cooldown. If you also have Flayer's Mark proc audio enabled, that sound takes priority when a proc occurs."
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.audio.killShot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.beastMastery.audio.killShot.enabled = self:GetChecked()
+
+			if TRB.Data.settings.hunter.beastMastery.audio.killShot.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.killShotAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_killShot_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.killShotAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.killShotAudio, TRB.Data.settings.hunter.beastMastery.audio.killShot.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.killShotAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.hunter.beastMastery.audio.killShot.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.killShotAudio:SetValue(newValue, newName)
+			TRB.Data.settings.hunter.beastMastery.audio.killShot.sound = newValue
+			TRB.Data.settings.hunter.beastMastery.audio.killShot.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
 		yCoord = yCoord - 60
 		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flayersMarkAudio
@@ -2759,7 +2826,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.menuList = i
 					UIDropDownMenu_AddButton(info)
 				end
-			else
+			else  
 				local start = entries * menuList
 
 				for k, v in pairs(soundsList) do
@@ -2777,10 +2844,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+		function controls.dropDown.flayersMarkAudio:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.beastMastery.audio.flayersMark.sound = newValue
 			TRB.Data.settings.hunter.beastMastery.audio.flayersMark.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
@@ -2842,10 +2909,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+		function controls.dropDown.nesingwarysTrappingApparatusAudio:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.beastMastery.audio.nesingwarysTrappingApparatus.sound = newValue
 			TRB.Data.settings.hunter.beastMastery.audio.nesingwarysTrappingApparatus.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
@@ -2918,16 +2985,26 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Generation", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
 
+		yCoord = yCoord - 30
+		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.trackFocusRegen
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Track focus regen")
+		f.tooltip = "Include focus regen in the passive bar and passive variables. Unchecking this will cause the following Passive Focus Generation options to have no effect."
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.generation.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.beastMastery.generation.enabled = self:GetChecked()
+		end)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_PFG_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeGCDs
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Focus generation from GCDs")
+		getglobal(f:GetName() .. 'Text'):SetText("Focus generation over GCDs")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Focus generation over the next X GCDs, based on player's current GCD."
+		f.tooltip = "Shows the amount of Focus generation over the next X GCDs, based on player's current GCD length."
 		if TRB.Data.settings.hunter.beastMastery.generation.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -3521,7 +3598,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height/8), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width/8))
+		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.marksmanship)
 
@@ -3541,13 +3618,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.bar.width = value
 
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / TRB.Data.constants.borderWidthFactor))
+			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
 			if GetSpecialization() == 2 then
-				barContainerFrame:SetWidth(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
-				barBorderFrame:SetWidth(TRB.Data.settings.hunter.marksmanship.bar.width)
-				resourceFrame:SetWidth(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
-				castingFrame:SetWidth(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
-				passiveFrame:SetWidth(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.marksmanship)
+				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.marksmanship)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
@@ -3556,10 +3632,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 				end
 			end
-
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / 8), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / 8))
-			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
-			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
 
 		title = "Bar Height"
@@ -3575,24 +3647,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.bar.height = value
 
-			if GetSpecialization() == 2 then
-				barContainerFrame:SetHeight(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
-				barBorderFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height)
-				resourceFrame:SetHeight(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
-				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetHeight(value)
-				end
-
-				castingFrame:SetHeight(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
-				passiveFrame:SetHeight(value-(TRB.Data.settings.hunter.marksmanship.bar.border*2))
-				leftTextFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height * 3.5)
-				middleTextFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height * 3.5)
-				rightTextFrame:SetHeight(TRB.Data.settings.hunter.marksmanship.bar.height * 3.5)
-			end
-
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / 8), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
+			if GetSpecialization() == 2 then				
+				TRB.Functions.UpdateBarHeight(TRB.Data.settings.hunter.marksmanship)
+			end
 		end)
 
 		title = "Bar Horizontal Position"
@@ -5419,6 +5480,71 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.killShotAudio
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Kill Shot is usable")
+		f.tooltip = "Play an audio cue when Kill Shot is usable and off of cooldown. If you also have Flayer's Mark proc audio enabled, that sound takes priority when a proc occurs."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.audio.killShot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.audio.killShot.enabled = self:GetChecked()
+
+			if TRB.Data.settings.hunter.marksmanship.audio.killShot.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.killShotAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_killShot_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.killShotAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.killShotAudio, TRB.Data.settings.hunter.marksmanship.audio.killShot.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.killShotAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.hunter.marksmanship.audio.killShot.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.killShotAudio:SetValue(newValue, newName)
+			TRB.Data.settings.hunter.marksmanship.audio.killShot.sound = newValue
+			TRB.Data.settings.hunter.marksmanship.audio.killShot.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
 		yCoord = yCoord - 60
 		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flayersMarkAudio
@@ -5474,10 +5600,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+		function controls.dropDown.flayersMarkAudio:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound = newValue
 			TRB.Data.settings.hunter.marksmanship.audio.flayersMark.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
@@ -5539,10 +5665,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+		function controls.dropDown.nesingwarysTrappingApparatusAudio:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.sound = newValue
 			TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
@@ -5604,24 +5730,35 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+		function controls.dropDown.secretsOfTheUnblinkingVigilAudio:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.sound = newValue
 			TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			UIDropDownMenu_SetText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Generation", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.trackFocusRegen
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Track focus regen")
+		f.tooltip = "Include focus regen in the passive bar and passive variables. Unchecking this will cause the following Passive Focus Generation options to have no effect."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.generation.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.generation.enabled = self:GetChecked()
+		end)
 
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_PFG_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeGCDs
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Focus generation from GCDs")
+		getglobal(f:GetName() .. 'Text'):SetText("Focus generation over GCDs")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Focus generation over the next X GCDs, based on player's current GCD."
 		if TRB.Data.settings.hunter.marksmanship.generation.mode == "gcd" then
@@ -6218,7 +6355,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height/8), math.floor(TRB.Data.settings.hunter.survival.bar.width/8))
+		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.survival)
 
@@ -6238,13 +6375,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.bar.width = value
 
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.bar.width / TRB.Data.constants.borderWidthFactor))
+			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
 			if GetSpecialization() == 3 then
-				barContainerFrame:SetWidth(value-(TRB.Data.settings.hunter.survival.bar.border*2))
-				barBorderFrame:SetWidth(TRB.Data.settings.hunter.survival.bar.width)
-				resourceFrame:SetWidth(value-(TRB.Data.settings.hunter.survival.bar.border*2))
-				castingFrame:SetWidth(value-(TRB.Data.settings.hunter.survival.bar.border*2))
-				passiveFrame:SetWidth(value-(TRB.Data.settings.hunter.survival.bar.border*2))
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.survival)
+				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.survival)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
@@ -6253,10 +6389,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 				end
 			end
-
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / 8), math.floor(TRB.Data.settings.hunter.survival.bar.width / 8))
-			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
-			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 		end)
 
 		title = "Bar Height"
@@ -6272,24 +6404,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.bar.height = value
 
-			if GetSpecialization() == 3 then
-				barContainerFrame:SetHeight(value-(TRB.Data.settings.hunter.survival.bar.border*2))
-				barBorderFrame:SetHeight(TRB.Data.settings.hunter.survival.bar.height)
-				resourceFrame:SetHeight(value-(TRB.Data.settings.hunter.survival.bar.border*2))
-				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetHeight(value)
-				end
-
-				castingFrame:SetHeight(value-(TRB.Data.settings.hunter.survival.bar.border*2))
-				passiveFrame:SetHeight(value-(TRB.Data.settings.hunter.survival.bar.border*2))
-				leftTextFrame:SetHeight(TRB.Data.settings.hunter.survival.bar.height * 3.5)
-				middleTextFrame:SetHeight(TRB.Data.settings.hunter.survival.bar.height * 3.5)
-				rightTextFrame:SetHeight(TRB.Data.settings.hunter.survival.bar.height * 3.5)
-			end
-
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / 8), math.floor(TRB.Data.settings.hunter.survival.bar.width / 8))
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
+			if GetSpecialization() == 3 then
+				TRB.Functions.UpdateBarHeight(TRB.Data.settings.hunter.survival)
+			end
 		end)
 
 		title = "Bar Horizontal Position"
@@ -8103,6 +8224,71 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 60
+		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.killShotAudio
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Kill Shot is usable")
+		f.tooltip = "Play an audio cue when Kill Shot is usable and off of cooldown. If you also have Flayer's Mark proc audio enabled, that sound takes priority when a proc occurs."
+		f:SetChecked(TRB.Data.settings.hunter.survival.audio.killShot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.survival.audio.killShot.enabled = self:GetChecked()
+
+			if TRB.Data.settings.hunter.survival.audio.killShot.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.survival.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.killShotAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_killShot_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.killShotAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.killShotAudio, TRB.Data.settings.hunter.survival.audio.killShot.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.killShotAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.hunter.survival.audio.killShot.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.killShotAudio:SetValue(newValue, newName)
+			TRB.Data.settings.hunter.survival.audio.killShot.sound = newValue
+			TRB.Data.settings.hunter.survival.audio.killShot.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+
+		yCoord = yCoord - 60
 		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flayersMarkAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -8157,10 +8343,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+		function controls.dropDown.flayersMarkAudio:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.survival.audio.flayersMark.sound = newValue
 			TRB.Data.settings.hunter.survival.audio.flayersMark.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
@@ -8222,19 +8408,28 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+		function controls.dropDown.nesingwarysTrappingApparatusAudio:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.sound = newValue
 			TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
-
-
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Generation", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.trackFocusRegen
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Track focus regen")
+		f.tooltip = "Include focus regen in the passive bar and passive variables. Unchecking this will cause the following Passive Focus Generation options to have no effect."
+		f:SetChecked(TRB.Data.settings.hunter.survival.generation.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.survival.generation.enabled = self:GetChecked()
+		end)
 
 
 		yCoord = yCoord - 40
