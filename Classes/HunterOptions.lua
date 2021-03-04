@@ -2764,10 +2764,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+		function controls.dropDown.flayersMarkAudio:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.beastMastery.audio.flayersMark.sound = newValue
 			TRB.Data.settings.hunter.beastMastery.audio.flayersMark.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
@@ -2829,10 +2829,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+		function controls.dropDown.nesingwarysTrappingApparatusAudio:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.beastMastery.audio.nesingwarysTrappingApparatus.sound = newValue
 			TRB.Data.settings.hunter.beastMastery.audio.nesingwarysTrappingApparatus.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
@@ -2907,7 +2907,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
 
-		yCoord = yCoord - 20
+		yCoord = yCoord - 30
 		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.trackFocusRegen
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -5455,10 +5455,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+		function controls.dropDown.flayersMarkAudio:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound = newValue
 			TRB.Data.settings.hunter.marksmanship.audio.flayersMark.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
@@ -5520,10 +5520,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+		function controls.dropDown.nesingwarysTrappingApparatusAudio:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.sound = newValue
 			TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
@@ -5585,10 +5585,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+		function controls.dropDown.secretsOfTheUnblinkingVigilAudio:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.sound = newValue
 			TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			UIDropDownMenu_SetText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
@@ -5597,7 +5597,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
 
-		yCoord = yCoord - 20
+		yCoord = yCoord - 30
 		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.trackFocusRegen
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -8133,10 +8133,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+		function controls.dropDown.flayersMarkAudio:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.survival.audio.flayersMark.sound = newValue
 			TRB.Data.settings.hunter.survival.audio.flayersMark.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
@@ -8198,10 +8198,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+		function controls.dropDown.nesingwarysTrappingApparatusAudio:SetValue(newValue, newName)
 			TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.sound = newValue
 			TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
@@ -8210,7 +8210,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
 
-		yCoord = yCoord - 20
+		yCoord = yCoord - 30
 		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.trackFocusRegen
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
