@@ -32,7 +32,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	local function FillSpecCache()
 		-- Beast Mastery
-
 		specCache.beastMastery.Global_TwintopResourceBar = {
 			ttd = 0,
 			resource = {
@@ -241,6 +240,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		specCache.beastMastery.snapshotData.focusRegen = 0
 		specCache.beastMastery.snapshotData.audio = {
+			overcapCue = false,
+			playedKillShotCue = false
 		}
 		specCache.beastMastery.snapshotData.flayersMark = {
 			spellId = nil,
@@ -551,6 +552,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		specCache.marksmanship.snapshotData.focusRegen = 0
 		specCache.marksmanship.snapshotData.audio = {
+			overcapCue = false,
+			playedKillShotCue = false
 		}
 		specCache.marksmanship.snapshotData.doubleTap = {
 			isActive = false,
@@ -873,6 +876,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		specCache.survival.snapshotData.focusRegen = 0
 		specCache.survival.snapshotData.audio = {
+			overcapCue = false,
+			playedKillShotCue = false
 		}
 		specCache.survival.snapshotData.coordinatedAssault = {
 			spellId = nil,
@@ -1542,6 +1547,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		elseif var == "$passive" then
 			if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
+				settings.generation.enabled and
 				((settings.generation.mode == "time" and settings.generation.time > 0) or
 				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 				valid = true
@@ -1622,10 +1628,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
-		if TRB.Data.settings.hunter.beastMastery.generation.mode == "time" then
-			_regenFocus = _regenFocus * (TRB.Data.settings.hunter.beastMastery.generation.time or 3.0)
+		if TRB.Data.settings.hunter.beastMastery.generation.enabled then 
+			if TRB.Data.settings.hunter.beastMastery.generation.mode == "time" then
+				_regenFocus = _regenFocus * (TRB.Data.settings.hunter.beastMastery.generation.time or 3.0)
+			else
+				_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.beastMastery.generation.gcds or 2) * _gcd)
+			end
 		else
-			_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.beastMastery.generation.gcds or 2) * _gcd)
+			_regenFocus = 0
 		end
 
 		--$regenFocus
@@ -1792,10 +1802,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
-		if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
-			_regenFocus = _regenFocus * (TRB.Data.settings.hunter.marksmanship.generation.time or 3.0)
+		if TRB.Data.settings.hunter.marksmanship.generation.enabled then
+			if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
+				_regenFocus = _regenFocus * (TRB.Data.settings.hunter.marksmanship.generation.time or 3.0)
+			else
+				_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.marksmanship.generation.gcds or 2) * _gcd)
+			end
 		else
-			_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.marksmanship.generation.gcds or 2) * _gcd)
+			_regenFocus = 0
 		end
 
 		--$regenFocus
@@ -1951,10 +1965,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
-		if TRB.Data.settings.hunter.survival.generation.mode == "time" then
-			_regenFocus = _regenFocus * (TRB.Data.settings.hunter.survival.generation.time or 3.0)
+		if TRB.Data.settings.hunter.survival.generation.enabled then
+			if TRB.Data.settings.hunter.survival.generation.mode == "time" then
+				_regenFocus = _regenFocus * (TRB.Data.settings.hunter.survival.generation.time or 3.0)
+			else
+				_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.survival.generation.gcds or 2) * _gcd)
+			end
 		else
-			_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.survival.generation.gcds or 2) * _gcd)
+			_regenFocus = 0
 		end
 
 		--$regenFocus
@@ -2407,10 +2425,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					local gcd = TRB.Functions.GetCurrentGCDTime(true)
 
 					local passiveValue = 0
-					if TRB.Data.settings.hunter.beastMastery.generation.mode == "time" then
-						passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.beastMastery.generation.time or 3.0))
-					else
-						passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.beastMastery.generation.gcds or 2) * gcd))
+					if TRB.Data.settings.hunter.beastMastery.generation.enabled then
+						if TRB.Data.settings.hunter.beastMastery.generation.mode == "time" then
+							passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.beastMastery.generation.time or 3.0))
+						else
+							passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.beastMastery.generation.gcds or 2) * gcd))
+						end
 					end
 
 					if CastingSpell() then
@@ -2458,16 +2478,23 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								if spell.id == TRB.Data.spells.killShot.id then
 									local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
 									local flayersMarkTime = GetFlayersMarkRemainingTime()
-									if (targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum) and flayersMarkTime == 0 then
+									if (UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum) and flayersMarkTime == 0 then
 										showThreshold = false
+										TRB.Data.snapshotData.audio.playedKillShotCue = false
 									elseif flayersMarkTime == 0 and (TRB.Data.snapshotData.killShot.startTime ~= nil and currentTime < (TRB.Data.snapshotData.killShot.startTime + TRB.Data.snapshotData.killShot.duration)) then
 										thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.unusable
 										frameLevel = 127
-									elseif TRB.Data.snapshotData.resource >= -focusAmount or flayersMarkTime > 0 then
+										TRB.Data.snapshotData.audio.playedKillShotCue = false
+									elseif TRB.Data.snapshotData.resource >= -focusAmount or flayersMarkTime > 0 then										
+										if TRB.Data.settings.hunter.beastMastery.audio.killShot.enabled and not TRB.Data.snapshotData.audio.playedKillShotCue then
+											TRB.Data.snapshotData.audio.playedKillShotCue = true
+											PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+										end
 										thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.under
 										frameLevel = 128
+										TRB.Data.snapshotData.audio.playedKillShotCue = false
 									end
 								elseif spell.id == TRB.Data.spells.killCommand.id then	
 									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
@@ -2614,10 +2641,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					local passiveValue = 0
-					if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
-						passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.marksmanship.generation.time or 3.0))
-					else
-						passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.marksmanship.generation.gcds or 2) * gcd))
+					if TRB.Data.settings.hunter.marksmanship.generation.enabled then
+						if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
+							passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.marksmanship.generation.time or 3.0))
+						else
+							passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.marksmanship.generation.gcds or 2) * gcd))
+						end
 					end
 
 					if CastingSpell() then
@@ -2675,16 +2704,23 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								elseif spell.id == TRB.Data.spells.killShot.id then
 									local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
 									local flayersMarkTime = GetFlayersMarkRemainingTime()
-									if (targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum) and flayersMarkTime == 0 then
+									if (UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum) and flayersMarkTime == 0 then
 										showThreshold = false
+										TRB.Data.snapshotData.audio.playedKillShotCue = false
 									elseif TRB.Data.snapshotData.killShot.charges == 0 and flayersMarkTime == 0 then
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
 										frameLevel = 127
+										TRB.Data.snapshotData.audio.playedKillShotCue = false
 									elseif TRB.Data.snapshotData.resource >= -focusAmount or flayersMarkTime > 0 then
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
+										if TRB.Data.settings.hunter.marksmanship.audio.killShot.enabled and not TRB.Data.snapshotData.audio.playedKillShotCue then
+											TRB.Data.snapshotData.audio.playedKillShotCue = true
+											PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+										end
 									else
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
 										frameLevel = 128
+										TRB.Data.snapshotData.audio.playedKillShotCue = false
 									end
 								end
 							elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
@@ -2774,11 +2810,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					local passiveValue = 0
-					if TRB.Data.settings.hunter.survival.generation.mode == "time" then
-						passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.survival.generation.time or 3.0))
-					else
-						passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.survival.generation.gcds or 2) * gcd))
+					if TRB.Data.settings.hunter.survival.generation.enabled then
+						if TRB.Data.settings.hunter.survival.generation.mode == "time" then
+							passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.survival.generation.time or 3.0))
+						else
+							passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.survival.generation.gcds or 2) * gcd))
+						end
 					end
+
+					passiveValue = passiveValue + TRB.Data.snapshotData.termsOfEngagement.focus
 
 					if CastingSpell() then
 						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
@@ -2825,16 +2865,23 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								if spell.id == TRB.Data.spells.killShot.id then
 									local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
 									local flayersMarkTime = GetFlayersMarkRemainingTime()
-									if (targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum) and flayersMarkTime == 0 then
+									if (UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum) and flayersMarkTime == 0 then
 										showThreshold = false
+										TRB.Data.snapshotData.audio.playedKillShotCue = false
 									elseif flayersMarkTime == 0 and (TRB.Data.snapshotData.killShot.startTime ~= nil and currentTime < (TRB.Data.snapshotData.killShot.startTime + TRB.Data.snapshotData.killShot.duration)) then
 										thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.unusable
 										frameLevel = 127
+										TRB.Data.snapshotData.audio.playedKillShotCue = false
 									elseif TRB.Data.snapshotData.resource >= -focusAmount or flayersMarkTime > 0 then
+										if TRB.Data.settings.hunter.survival.audio.killShot.enabled and not TRB.Data.snapshotData.audio.playedKillShotCue then
+											TRB.Data.snapshotData.audio.playedKillShotCue = true
+											PlaySoundFile(TRB.Data.settings.hunter.survival.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+										end
 										thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.under
 										frameLevel = 128
+										TRB.Data.snapshotData.audio.playedKillShotCue = false
 									end
 								elseif spell.id == TRB.Data.spells.carve.id then
 									if TRB.Data.character.talents.butchery.isSelected then
@@ -3203,6 +3250,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				-- Spec agnostic
 				if spellId == TRB.Data.spells.flayedShot.id then
 					TRB.Data.snapshotData.flayedShot.startTime, TRB.Data.snapshotData.flayedShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.flayedShot.id)
+				elseif spellId == TRB.Data.spells.killShot.id then					
+					TRB.Data.snapshotData.audio.playedKillShotCue = false
 				elseif spellId == TRB.Data.spells.aMurderOfCrows.id then
 					if type == "SPELL_CAST_SUCCESS" then
 						TRB.Data.snapshotData.aMurderOfCrows.startTime = currentTime
@@ -3211,12 +3260,29 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				elseif spellId == TRB.Data.spells.flayersMark.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 						TRB.Data.spells.flayersMark.isActive = true
+						TRB.Data.snapshotData.audio.playedKillShotCue = false
 						_, _, _, _, TRB.Data.snapshotData.flayersMark.duration, TRB.Data.snapshotData.flayersMark.endTime, _, _, _, TRB.Data.snapshotData.flayersMark.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.flayersMark.id)
 
-						if specId == 2 and TRB.Data.settings.hunter.marksmanship.audio.flayersMark.enabled then
+						if specId == 1 and TRB.Data.settings.hunter.beastMastery.audio.flayersMark.enabled then
+							TRB.Data.snapshotData.audio.playedKillShotCue = true
+							PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
+						elseif specId == 2 and TRB.Data.settings.hunter.marksmanship.audio.flayersMark.enabled then
+							TRB.Data.snapshotData.audio.playedKillShotCue = true
 							PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 						elseif specId == 3 and TRB.Data.settings.hunter.survival.audio.flayersMark.enabled then
+							TRB.Data.snapshotData.audio.playedKillShotCue = true
 							PlaySoundFile(TRB.Data.settings.hunter.survival.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
+						end
+
+						if specId == 1 and not TRB.Data.snapshotData.audio.playedKillShotCue and TRB.Data.settings.hunter.beastMastery.audio.killShot.enabled then
+							TRB.Data.snapshotData.audio.playedKillShotCue = true
+							PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+						elseif specId == 2 and not TRB.Data.snapshotData.audio.playedKillShotCue and TRB.Data.settings.hunter.marksmanship.audio.killShot.enabled then
+							TRB.Data.snapshotData.audio.playedKillShotCue = true
+							PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+						elseif specId == 3 and not TRB.Data.snapshotData.audio.playedKillShotCue and TRB.Data.settings.hunter.survival.audio.killShot.enabled then
+							TRB.Data.snapshotData.audio.playedKillShotCue = true
+							PlaySoundFile(TRB.Data.settings.hunter.survival.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 						TRB.Data.spells.flayersMark.isActive = false
