@@ -180,6 +180,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
+				killShot={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
 				flayersMark={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
@@ -392,6 +397,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
+				killShot={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
 				flayersMark={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
@@ -582,6 +592,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			displayText = {},
 			audio = {
 				overcap={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+				killShot={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -2709,6 +2724,71 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.killShotAudio
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Kill Shot is usable")
+		f.tooltip = "Play an audio cue when Kill Shot is usable and off of cooldown. If you also have Flayer's Mark proc audio enabled, that sound takes priority when a proc occurs."
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.audio.killShot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.beastMastery.audio.killShot.enabled = self:GetChecked()
+
+			if TRB.Data.settings.hunter.beastMastery.audio.killShot.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.killShotAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_killShot_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.killShotAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.killShotAudio, TRB.Data.settings.hunter.beastMastery.audio.killShot.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.killShotAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.hunter.beastMastery.audio.killShot.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.killShotAudio:SetValue(newValue, newName)
+			TRB.Data.settings.hunter.beastMastery.audio.killShot.sound = newValue
+			TRB.Data.settings.hunter.beastMastery.audio.killShot.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
 		yCoord = yCoord - 60
 		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flayersMarkAudio
@@ -2746,7 +2826,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.menuList = i
 					UIDropDownMenu_AddButton(info)
 				end
-			else
+			else  
 				local start = entries * menuList
 
 				for k, v in pairs(soundsList) do
@@ -5397,6 +5477,71 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.killShotAudio
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Kill Shot is usable")
+		f.tooltip = "Play an audio cue when Kill Shot is usable and off of cooldown. If you also have Flayer's Mark proc audio enabled, that sound takes priority when a proc occurs."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.audio.killShot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.audio.killShot.enabled = self:GetChecked()
+
+			if TRB.Data.settings.hunter.marksmanship.audio.killShot.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.killShotAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_killShot_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.killShotAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.killShotAudio, TRB.Data.settings.hunter.marksmanship.audio.killShot.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.killShotAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.hunter.marksmanship.audio.killShot.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.killShotAudio:SetValue(newValue, newName)
+			TRB.Data.settings.hunter.marksmanship.audio.killShot.sound = newValue
+			TRB.Data.settings.hunter.marksmanship.audio.killShot.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
@@ -8074,6 +8219,71 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.killShotAudio
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Kill Shot is usable")
+		f.tooltip = "Play an audio cue when Kill Shot is usable and off of cooldown. If you also have Flayer's Mark proc audio enabled, that sound takes priority when a proc occurs."
+		f:SetChecked(TRB.Data.settings.hunter.survival.audio.killShot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.survival.audio.killShot.enabled = self:GetChecked()
+
+			if TRB.Data.settings.hunter.survival.audio.killShot.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.survival.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.killShotAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_killShot_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.killShotAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.killShotAudio, TRB.Data.settings.hunter.survival.audio.killShot.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.killShotAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.hunter.survival.audio.killShot.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.killShotAudio:SetValue(newValue, newName)
+			TRB.Data.settings.hunter.survival.audio.killShot.sound = newValue
+			TRB.Data.settings.hunter.survival.audio.killShot.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
