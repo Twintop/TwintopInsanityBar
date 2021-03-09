@@ -238,10 +238,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			icon = ""
 		},
 		shadowCrash = {
-			id = 342834,
+			id = 205385,
 			name = "",
 			icon = "",
-			insanity = 20,
+			insanity = 15,
 			fotm = false
 		},
 		hungeringVoid = {
@@ -331,7 +331,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			icon = "",
 			insanity = 0, -- We'll use modifier against wrathfulFaerie instead
 			fotm = false,
-			modifier = 0.6,
+			modifier = 0.8,
 			icd = 0.75,
 			energizeId = 345456,
 			conduitId = 101,

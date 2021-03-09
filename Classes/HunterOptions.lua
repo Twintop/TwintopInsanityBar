@@ -97,23 +97,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					cobraShot = {
 						enabled = true, -- 4
 					},
-					flayedShot = {
+					killCommand = {
 						enabled = true, -- 5
 					},
-					killCommand = {
+					killShot = {
 						enabled = true, -- 6
 					},
-					killShot = {
+					multiShot = {
 						enabled = true, -- 7
 					},
-					multiShot = {
-						enabled = true, -- 8
-					},
 					revivePet = {
-						enabled = false, -- 9
+						enabled = false, -- 8
 					},
 					scareBeast = {
-						enabled = false, -- 10
+						enabled = false, -- 9
 					}
 			},
 			generation = {
@@ -314,9 +311,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				},
 				revivePet = {
 					enabled = false, -- 11
-				},
-				flayedShot = {
-					enabled = false, -- 12
 				}
 			},
 			generation = {
@@ -523,9 +517,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					},
 					chakrams = {
 						enabled = true, -- 11
-					},
-					flayedShot = {
-						enabled = true, -- 12
 					}
 			},
 			generation = {
@@ -1860,17 +1851,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.cobraShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.beastMastery.thresholds.cobraShot.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.flayedShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_flayedShot", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flayedShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Flayed Shot (if Venthyr)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Flayed Shot. Only visible if you are a member of the Venthyr covenant. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.flayedShot.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.beastMastery.thresholds.flayedShot.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -4633,17 +4613,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.flayedShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_flayedShot", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flayedShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Flayed Shot (if Venthyr)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Flayed Shot. Only visible if you are a member of the Venthyr covenant. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.flayedShot.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.marksmanship.thresholds.flayedShot.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
 		controls.checkBoxes.killShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_killShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killShotThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -7360,17 +7329,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.survival.thresholds.chakrams.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.survival.thresholds.chakrams.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.flayedShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_flayedShot", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flayedShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Flayed Shot (if Venthyr)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Flayed Shot. Only visible if you are a member of the Venthyr covenant. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.hunter.survival.thresholds.flayedShot.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.survival.thresholds.flayedShot.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
