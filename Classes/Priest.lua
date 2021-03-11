@@ -238,10 +238,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			icon = ""
 		},
 		shadowCrash = {
-			id = 342834,
+			id = 205385,
 			name = "",
 			icon = "",
-			insanity = 20,
+			insanity = 15,
 			fotm = false
 		},
 		hungeringVoid = {
@@ -331,7 +331,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			icon = "",
 			insanity = 0, -- We'll use modifier against wrathfulFaerie instead
 			fotm = false,
-			modifier = 0.6,
+			modifier = 0.8,
 			icd = 0.75,
 			energizeId = 345456,
 			conduitId = 101,
@@ -1969,7 +1969,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.shadow, castingFrame, castingBarValue)
 
-				if TRB.Data.character.talents.as.isSelected or TRB.Data.snapshotData.mindbender.resourceFinal > 0 or TRB.Data.snapshotData.deathAndMadness.isActive or TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal > 0 then
+				if TRB.Data.character.talents.as.isSelected or
+					TRB.Data.snapshotData.mindbender.resourceFinal > 0 or
+					TRB.Data.snapshotData.deathAndMadness.isActive or
+					TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal > 0 or
+					TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal > 0 then
 					passiveBarValue = castingBarValue + ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity, false) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.mindbender.resourceFinal + TRB.Data.snapshotData.deathAndMadness.insanity + TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal + TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal)
 					if TRB.Data.snapshotData.mindbender.resourceFinal > 0 and (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal) < TRB.Data.character.maxResource then
 						TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, passiveFrame.thresholds[1], passiveFrame, TRB.Data.settings.priest.shadow.thresholdWidth, (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal), TRB.Data.character.maxResource)

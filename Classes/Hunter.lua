@@ -94,7 +94,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -30,
-				thresholdId = 6,
+				thresholdId = 5,
 				settingKey = "killCommand",
 				isSnowflake = true,
 				hasCooldown = true,
@@ -105,7 +105,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -10,
-				thresholdId = 7,
+				thresholdId = 6,
 				settingKey = "killShot",
 				healthMinimum = 0.2,
 				isSnowflake = true,
@@ -116,7 +116,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -40,
-				thresholdId = 8,
+				thresholdId = 7,
 				settingKey = "multiShot",
 				thresholdUsable = false
 			},
@@ -125,7 +125,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -35,
-				thresholdId = 9,
+				thresholdId = 8,
 				settingKey = "revivePet",
 				thresholdUsable = false
 			},
@@ -134,7 +134,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -25,
-				thresholdId = 10,
+				thresholdId = 9,
 				settingKey = "scareBeast",
 				thresholdUsable = false
 			},
@@ -199,12 +199,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 324149,
 				name = "",
 				icon = "",
-				focus = -10,
-				thresholdId = 5,
-				settingKey = "flayedShot",
-				hasCooldown = true,
-				isSnowflake = true,
-				thresholdUsable = false
 			},
 			flayersMark = {
 				id = 324156,
@@ -523,13 +517,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			flayedShot = {
 				id = 324149,
 				name = "",
-				icon = "",
-				focus = -10,
-				thresholdId = 12,
-				settingKey = "flayedShot",
-				hasCooldown = true,
-				isSnowflake = true,
-				thresholdUsable = false
+				icon = ""
 			},
 			flayersMark = {
 				id = 324156,
@@ -557,7 +545,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "", 
 				icon = "",
 				isActive = false,
-				modifier = 0.5
+				modifier = 0.25
 			},
 
 		}
@@ -859,13 +847,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			flayedShot = {
 				id = 324149,
 				name = "",
-				icon = "",
-				focus = -10,
-				thresholdId = 12,
-				settingKey = "flayedShot",
-				hasCooldown = true,
-				isSnowflake = true,
-				thresholdUsable = false
+				icon = ""
 			},
 			flayersMark = {
 				id = 324156,
@@ -1400,22 +1382,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
     local function CalculateAbilityResourceValue(resource)
         local modifier = 1.0
-                
-		if resource > 0 then
-			if GetSpecialization() == 2 then
-				if TRB.Data.spells.trueshot.isActive then
-					modifier = modifier * TRB.Data.spells.trueshot.modifier
-				end
+		if GetSpecialization() == 2 then
+			if TRB.Data.spells.trueshot.isActive then
+				modifier = modifier * TRB.Data.spells.trueshot.modifier
 			end
+		end
 
+		if resource > 0 then
 			if TRB.Data.spells.nesingwarysTrappingApparatus.isActive then
 				modifier = modifier * TRB.Data.spells.nesingwarysTrappingApparatus.modifier
-			end
-		else
-			if GetSpecialization() == 2 then
-				if TRB.Data.spells.eagletalonsTrueFocus.isActive then
-					modifier = modifier * TRB.Data.spells.eagletalonsTrueFocus.modifier
-				end
 			end
 		end
 
@@ -2532,21 +2507,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.under
 										frameLevel = 128
 									end
-								elseif spell.id == TRB.Data.spells.flayedShot.id then
-									local flayersMarkTime = GetFlayersMarkRemainingTime() -- Change this to layer stacking if the cost of Kill Shot or Flayed Shot changes from 10 Focus!
-									if TRB.Data.character.covenantId == 2 and flayersMarkTime == 0 then -- Venthyr and Flayer's Mark buff isn't up
-										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-											thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.unusable
-											frameLevel = 127
-										elseif TRB.Data.snapshotData.resource >= -focusAmount then
-											thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.over
-										else
-											thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.under
-											frameLevel = 128
-										end
-									else
-										showThreshold = false
-									end
 								end
 							elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
 								showThreshold = false
@@ -2763,21 +2723,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										frameLevel = 128
 										TRB.Data.snapshotData.audio.playedKillShotCue = false
 									end
-								elseif spell.id == TRB.Data.spells.flayedShot.id then
-									local flayersMarkTime = GetFlayersMarkRemainingTime() -- Change this to layer stacking if the cost of Kill Shot or Flayed Shot changes from 10 Focus!
-									if TRB.Data.character.covenantId == 2 and flayersMarkTime == 0 then -- Venthyr and Flayer's Mark buff isn't up
-										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-											thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
-											frameLevel = 127
-										elseif TRB.Data.snapshotData.resource >= -focusAmount then
-											thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
-										else
-											thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
-											frameLevel = 128
-										end
-									else
-										showThreshold = false
-									end
 								end
 							elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
 								showThreshold = false
@@ -2938,21 +2883,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.under
 										frameLevel = 128
 										TRB.Data.snapshotData.audio.playedKillShotCue = false
-									end
-								elseif spell.id == TRB.Data.spells.flayedShot.id then
-									local flayersMarkTime = GetFlayersMarkRemainingTime() -- Change this to layer stacking if the cost of Kill Shot or Flayed Shot changes from 10 Focus!
-									if TRB.Data.character.covenantId == 2 and flayersMarkTime == 0 then -- Venthyr and Flayer's Mark buff isn't up
-										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.unusable
-											frameLevel = 127
-										elseif TRB.Data.snapshotData.resource >= -focusAmount then
-											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.over
-										else
-											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.under
-											frameLevel = 128
-										end
-									else
-										showThreshold = false
 									end
 								elseif spell.id == TRB.Data.spells.carve.id then
 									if TRB.Data.character.talents.butchery.isSelected then
