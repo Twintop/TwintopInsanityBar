@@ -2714,7 +2714,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										end
 
 										timeThreshold = timeThreshold + castTime
-										print(TRB.Data.snapshotData.aimedShot.charges, timeThreshold, remainingCd)
 
 										if TRB.Data.snapshotData.aimedShot.charges == 2 or timeThreshold >= remainingCd then
 											TRB.Data.snapshotData.audio.playedAimedShotCue = true
