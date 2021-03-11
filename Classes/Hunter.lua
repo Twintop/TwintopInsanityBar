@@ -553,7 +553,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		specCache.marksmanship.snapshotData.focusRegen = 0
 		specCache.marksmanship.snapshotData.audio = {
 			overcapCue = false,
-			playedKillShotCue = false
+			playedKillShotCue = false,
+			playedAimedShotCue = true
 		}
 		specCache.marksmanship.snapshotData.doubleTap = {
 			isActive = false,
@@ -2701,6 +2702,27 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
 										frameLevel = 128
 									end
+									
+									if TRB.Data.settings.hunter.marksmanship.audio.aimedShot.enabled and (not TRB.Data.snapshotData.audio.playedAimedShotCue) and TRB.Data.snapshotData.aimedShot.charges >= 1 then
+										local remainingCd = ((TRB.Data.snapshotData.aimedShot.startTime + TRB.Data.snapshotData.aimedShot.duration) - currentTime)
+										local timeThreshold = 0
+										local castTime = select(4, GetSpellInfo(spell.id)) / 1000
+										if TRB.Data.settings.hunter.marksmanship.audio.aimedShot.mode == "gcd" then
+											timeThreshold = gcd * TRB.Data.settings.hunter.marksmanship.audio.aimedShot.gcds
+										elseif TRB.Data.settings.hunter.marksmanship.audio.aimedShot.mode == "time" then
+											timeThreshold = TRB.Data.settings.hunter.marksmanship.audio.aimedShot.time
+										end
+
+										timeThreshold = timeThreshold + castTime
+										print(TRB.Data.snapshotData.aimedShot.charges, timeThreshold, remainingCd)
+
+										if TRB.Data.snapshotData.aimedShot.charges == 2 or timeThreshold >= remainingCd then
+											TRB.Data.snapshotData.audio.playedAimedShotCue = true
+											PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.aimedShot.sound, TRB.Data.settings.core.audio.channel.channel)
+										end
+									elseif TRB.Data.snapshotData.aimedShot.charges == 2 then
+										TRB.Data.snapshotData.audio.playedAimedShotCue = true
+									end
 								elseif spell.id == TRB.Data.spells.killShot.id then
 									local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
 									local flayersMarkTime = GetFlayersMarkRemainingTime()
@@ -3132,6 +3154,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				elseif specId == 2 then --Marksmanship
 					if spellId == TRB.Data.spells.burstingShot.id then
 						TRB.Data.snapshotData.burstingShot.startTime, TRB.Data.snapshotData.burstingShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.burstingShot.id)
+					elseif spellId == TRB.Data.spells.aimedShot.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.aimedShot.charges, _, TRB.Data.snapshotData.aimedShot.startTime, TRB.Data.snapshotData.aimedShot.duration, _ = GetSpellCharges(TRB.Data.spells.aimedShot.id)
+							TRB.Data.snapshotData.audio.playedAimedShotCue = false
+						end
 					elseif spellId == TRB.Data.spells.barrage.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.barrage.startTime = currentTime
