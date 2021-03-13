@@ -302,6 +302,19 @@ local function LoadFromSpecCache(cache)
 end
 TRB.Functions.LoadFromSpecCache = LoadFromSpecCache
 
+local function GetSpellRemainingTime(snapshotSpell)
+	-- For snapshotData objects that contain .isActive or .endTime
+	local currentTime = GetTime()
+	local remainingTime = 0
+
+	if snapshotSpell.endTime ~= nil and (snapshotSpell.isActive or snapshotSpell.endTime > currentTime) then
+		remainingTime = snapshotSpell.endTime - currentTime
+	end
+
+	return remainingTime
+end
+TRB.Functions.GetSpellRemainingTime = GetSpellRemainingTime
+
 -- Target Functions
 
 local function CheckTargetExists(guid)
