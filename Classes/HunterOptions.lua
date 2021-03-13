@@ -131,7 +131,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				yPos=-200,
 				border=4,
 				thresholdOverlapBorder=true,
-				dragAndDrop=false
+				dragAndDrop=false,
+				showPassive=true,
+				showCasting=true
 			},
 			colors = {
 				text = {
@@ -337,7 +339,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				yPos=-200,
 				border=4,
 				thresholdOverlapBorder=true,
-				dragAndDrop=false
+				dragAndDrop=false,
+				showPassive=true,
+				showCasting=true
 			},
 			colors = {
 				text = {
@@ -376,6 +380,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			},
 			displayText = {},
 			audio = {
+				aimedShot={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn",
+					mode="gcd",
+					gcds=1,
+					time=1.5
+				},
+				lockAndLoad={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
 				overcap={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
@@ -543,7 +560,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				yPos=-200,
 				border=4,
 				thresholdOverlapBorder=true,
-				dragAndDrop=false
+				dragAndDrop=false,
+				showPassive=true,
+				showCasting=true
 			},
 			colors = {
 				text = {
@@ -1542,9 +1561,29 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.HideResourceBar()
 		end)
 
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.beastMastery.bar.showCasting = self:GetChecked()
+		end)
+
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.beastMastery.bar.showPassive = self:GetChecked()
+		end)
+
 		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_5", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Beastial Wrath is usable")
 		f.tooltip = "This will flash the bar when Beastial Wrath can be cast."
 		f:SetChecked(TRB.Data.settings.hunter.beastMastery.colors.bar.flashEnabled)
@@ -1554,7 +1593,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_6", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.esThresholdShow
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
 		getglobal(f:GetName() .. 'Text'):SetText("Border color when Beastial Wrath is usable")
 		f.tooltip = "This will change the bar's border color (as configured below) when Beastial Wrath is usable."
 		f:SetChecked(TRB.Data.settings.hunter.beastMastery.colors.bar.beastialWrathEnabled)
@@ -2641,71 +2680,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Focus")
-		f.tooltip = "Play an audio cue when your hardcast spell will overcap Focus."
-		f:SetChecked(TRB.Data.settings.hunter.beastMastery.audio.overcap.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.beastMastery.audio.overcap.enabled = self:GetChecked()
-
-			if TRB.Data.settings.hunter.beastMastery.audio.overcap.enabled then
-				PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_overcapAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.hunter.beastMastery.audio.overcap.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.hunter.beastMastery.audio.overcap.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-			TRB.Data.settings.hunter.beastMastery.audio.overcap.sound = newValue
-			TRB.Data.settings.hunter.beastMastery.audio.overcap.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
-			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
-
-
-		yCoord = yCoord - 60
 		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killShotAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -2766,6 +2740,70 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapAudio
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Focus")
+		f.tooltip = "Play an audio cue when your hardcast spell will overcap Focus."
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.audio.overcap.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.beastMastery.audio.overcap.enabled = self:GetChecked()
+
+			if TRB.Data.settings.hunter.beastMastery.audio.overcap.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_overcapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.hunter.beastMastery.audio.overcap.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.hunter.beastMastery.audio.overcap.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+			TRB.Data.settings.hunter.beastMastery.audio.overcap.sound = newValue
+			TRB.Data.settings.hunter.beastMastery.audio.overcap.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
@@ -2995,7 +3033,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Focus GCDs - 0.75sec Floor"
-		controls.focusGenerationGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 15, TRB.Data.settings.hunter.beastMastery.generation.gcds, 0.25, 2,
+		controls.focusGenerationGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.hunter.beastMastery.generation.gcds, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4256,26 +4294,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.HideResourceBar()
 		end)
 
-		--[[
-		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB1_5", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashEnabled
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Earth Shock/EQ is Usable")
-		f.tooltip = "This will flash the bar when Earth Shock/EQ can be cast."
-		f:SetChecked(TRB.Data.settings.hunter.marksmanship.colors.bar.flashEnabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.bar.showCasting)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.marksmanship.colors.bar.flashEnabled = self:GetChecked()
+			TRB.Data.settings.hunter.marksmanship.bar.showCasting = self:GetChecked()
 		end)
 
-		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB1_6", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.esThresholdShow
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Earth Shock/EQ Threshold Line")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to cast Earth Shock/EQ."
-		f:SetChecked(TRB.Data.settings.hunter.marksmanship.earthShockThreshold)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.marksmanship.earthShockThreshold = self:GetChecked()
-		end)]]
+			TRB.Data.settings.hunter.marksmanship.bar.showPassive = self:GetChecked()
+		end)
 
 		yCoord = yCoord - 60
 
@@ -5386,29 +5423,29 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapAudio
+		controls.checkBoxes.aimedShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_aimedShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.aimedShotAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Focus")
-		f.tooltip = "Play an audio cue when your hardcast spell will overcap Focus."
-		f:SetChecked(TRB.Data.settings.hunter.marksmanship.audio.overcap.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Aimed Shot will cap charges")
+		f.tooltip = "Play an audio cue when Aimed Shot will cap charges. The timeframe is the current cast time of Aimed shot plus either GCDs or Time as configured below."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.audio.aimedShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.marksmanship.audio.overcap.enabled = self:GetChecked()
+			TRB.Data.settings.hunter.marksmanship.audio.aimedShot.enabled = self:GetChecked()
 
-			if TRB.Data.settings.hunter.marksmanship.audio.overcap.enabled then
-				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+			if TRB.Data.settings.hunter.marksmanship.audio.aimedShot.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.aimedShot.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_overcapAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.hunter.marksmanship.audio.overcap.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
+		controls.dropDown.aimedShotAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_aimedShot_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.aimedShotAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.aimedShotAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.aimedShotAudio, TRB.Data.settings.hunter.marksmanship.audio.aimedShot.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.aimedShotAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
+		UIDropDownMenu_Initialize(controls.dropDown.aimedShotAudio, function(self, level, menuList)
 			local entries = 25
 			local info = UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
@@ -5429,7 +5466,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.hunter.marksmanship.audio.overcap.sound
+						info.checked = sounds[v] == TRB.Data.settings.hunter.marksmanship.audio.aimedShot.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -5440,14 +5477,141 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-			TRB.Data.settings.hunter.marksmanship.audio.overcap.sound = newValue
-			TRB.Data.settings.hunter.marksmanship.audio.overcap.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+		function controls.dropDown.aimedShotAudio:SetValue(newValue, newName)
+			TRB.Data.settings.hunter.marksmanship.audio.aimedShot.sound = newValue
+			TRB.Data.settings.hunter.marksmanship.audio.aimedShot.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.aimedShotAudio, newName)
 			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.aimedShot.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
+		
+		yCoord = yCoord - 60
+		controls.checkBoxes.aimedShotModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_AS_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.aimedShotModeGCDs
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Number of GCDs before capping")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		if TRB.Data.settings.hunter.marksmanship.audio.aimedShot.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.aimedShotModeGCDs:SetChecked(true)
+			controls.checkBoxes.aimedShotModeTime:SetChecked(false)
+			TRB.Data.settings.hunter.marksmanship.audio.aimedShot.mode = "gcd"
+		end)
+
+		title = "GCDs - 0.75sec Floor"
+		controls.aimedShotGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0, 6, TRB.Data.settings.hunter.marksmanship.audio.aimedShot.gcds, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.aimedShotGCDs:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.marksmanship.audio.aimedShot.gcds = value
+		end)
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.aimedShotModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_AS_TIME", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.aimedShotModeTime
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Number of seconds before capping")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		if TRB.Data.settings.hunter.marksmanship.audio.aimedShot.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.aimedShotModeGCDs:SetChecked(false)
+			controls.checkBoxes.aimedShotModeTime:SetChecked(true)
+			TRB.Data.settings.hunter.marksmanship.audio.aimedShot.mode = "time"
+		end)
+
+		title = "Time (sec)"
+		controls.aimedShotTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 12, TRB.Data.settings.hunter.marksmanship.audio.aimedShot.time, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.aimedShotTime:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 2)
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.marksmanship.audio.aimedShot.time = value
+		end)
+
+
+
+		yCoord = yCoord - 50
+		controls.checkBoxes.lockAndLoadAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_lockAndLoad_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.lockAndLoadAudio
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Lock and Load proc (if talented)")
+		f.tooltip = "Play an audio cue when a Lock and Load proc occurs."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.enabled = self:GetChecked()
+
+			if TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.lockAndLoadAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_lockAndLoad_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.lockAndLoadAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.lockAndLoadAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.lockAndLoadAudio, TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.lockAndLoadAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.lockAndLoadAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.lockAndLoadAudio:SetValue(newValue, newName)
+			TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound = newValue
+			TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.lockAndLoadAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
 
 
 		yCoord = yCoord - 60
@@ -5511,6 +5675,70 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapAudio
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Focus")
+		f.tooltip = "Play an audio cue when your hardcast spell will overcap Focus."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.audio.overcap.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.audio.overcap.enabled = self:GetChecked()
+
+			if TRB.Data.settings.hunter.marksmanship.audio.overcap.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_overcapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.hunter.marksmanship.audio.overcap.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.hunter.marksmanship.audio.overcap.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+			TRB.Data.settings.hunter.marksmanship.audio.overcap.sound = newValue
+			TRB.Data.settings.hunter.marksmanship.audio.overcap.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
@@ -5740,7 +5968,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Focus GCDs - 0.75sec Floor"
-		controls.focusGenerationGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 15, TRB.Data.settings.hunter.marksmanship.generation.gcds, 0.25, 2,
+		controls.focusGenerationGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.hunter.marksmanship.generation.gcds, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6993,26 +7221,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.HideResourceBar()
 		end)
 
-		--[[
-		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB1_5", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashEnabled
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Earth Shock/EQ is Usable")
-		f.tooltip = "This will flash the bar when Earth Shock/EQ can be cast."
-		f:SetChecked(TRB.Data.settings.hunter.survival.colors.bar.flashEnabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(TRB.Data.settings.hunter.survival.bar.showCasting)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.survival.colors.bar.flashEnabled = self:GetChecked()
+			TRB.Data.settings.hunter.survival.bar.showCasting = self:GetChecked()
 		end)
 
-		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB1_6", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.esThresholdShow
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Earth Shock/EQ Threshold Line")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to cast Earth Shock/EQ."
-		f:SetChecked(TRB.Data.settings.hunter.survival.earthShockThreshold)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(TRB.Data.settings.hunter.survival.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.survival.earthShockThreshold = self:GetChecked()
-		end)]]
+			TRB.Data.settings.hunter.survival.bar.showPassive = self:GetChecked()
+		end)
 
 		yCoord = yCoord - 60
 
@@ -8117,71 +8344,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Focus")
-		f.tooltip = "Play an audio cue when your hardcast spell will overcap Focus."
-		f:SetChecked(TRB.Data.settings.hunter.survival.audio.overcap.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.survival.audio.overcap.enabled = self:GetChecked()
-
-			if TRB.Data.settings.hunter.survival.audio.overcap.enabled then
-				PlaySoundFile(TRB.Data.settings.hunter.survival.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_overcapAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.hunter.survival.audio.overcap.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.hunter.survival.audio.overcap.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-			TRB.Data.settings.hunter.survival.audio.overcap.sound = newValue
-			TRB.Data.settings.hunter.survival.audio.overcap.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
-			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
-
-
-		yCoord = yCoord - 60
 		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killShotAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -8242,6 +8404,71 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapAudio
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Focus")
+		f.tooltip = "Play an audio cue when your hardcast spell will overcap Focus."
+		f:SetChecked(TRB.Data.settings.hunter.survival.audio.overcap.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.survival.audio.overcap.enabled = self:GetChecked()
+
+			if TRB.Data.settings.hunter.survival.audio.overcap.enabled then
+				PlaySoundFile(TRB.Data.settings.hunter.survival.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_overcapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.hunter.survival.audio.overcap.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.hunter.survival.audio.overcap.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+			TRB.Data.settings.hunter.survival.audio.overcap.sound = newValue
+			TRB.Data.settings.hunter.survival.audio.overcap.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
@@ -8407,7 +8634,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Focus GCDs - 0.75sec Floor"
-		controls.focusGenerationGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 15, TRB.Data.settings.hunter.survival.generation.gcds, 0.25, 2,
+		controls.focusGenerationGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.hunter.survival.generation.gcds, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()

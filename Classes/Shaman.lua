@@ -667,7 +667,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.elemental, resourceFrame, TRB.Data.snapshotData.resource)
 
-				if CastingSpell() then
+				if CastingSpell() and TRB.Data.settings.shaman.elemental.bar.showCasting then
 					castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
 				else
 					castingBarValue = TRB.Data.snapshotData.resource
@@ -675,8 +675,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.elemental, castingFrame, castingBarValue)
 
-				if TRB.Data.snapshotData.echoingShock.spell ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom > 0 then
-					passiveBarValue = TRB.Data.snapshotData.echoingShock.spell.maelstrom + castingBarValue
+				if TRB.Data.settings.shaman.elemental.bar.showPassive then
+					if TRB.Data.snapshotData.echoingShock.spell ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom > 0 then
+						passiveBarValue = TRB.Data.snapshotData.echoingShock.spell.maelstrom + castingBarValue
+					else
+						passiveBarValue = castingBarValue
+					end
 				else
 					passiveBarValue = castingBarValue
 				end

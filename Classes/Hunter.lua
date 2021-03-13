@@ -352,9 +352,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				deadEye = {
 					isSelected = false
 				},
-				doubleTap = {
+				lockAndLoad = {
 					isSelected = false
-				}            
+				}
 			},
 			items = {
 			}
@@ -513,6 +513,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "arcaneShot",
 				thresholdUsable = false]] --Commenting out for now since it is the same focus as Arcane Shot
 			},
+			lockAndLoad = {
+				id = 194594,
+				name = "",
+				icon = "",
+				isActive = false
+			},
 
 			flayedShot = {
 				id = 324149,
@@ -553,11 +559,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		specCache.marksmanship.snapshotData.focusRegen = 0
 		specCache.marksmanship.snapshotData.audio = {
 			overcapCue = false,
-			playedKillShotCue = false
+			playedKillShotCue = false,
+			playedAimedShotCue = true
 		}
-		specCache.marksmanship.snapshotData.doubleTap = {
-			isActive = false,
-			spell = nil
+		specCache.marksmanship.snapshotData.lockAndLoad = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil
 		}
 		specCache.marksmanship.snapshotData.trueshot = {
 			spellId = nil,
@@ -1059,6 +1067,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#flayedShot", icon = spells.flayedShot.icon, description = "Flayed Shot", printInSettings = true },
 			{ variable = "#flayersMark", icon = spells.flayersMark.icon, description = "Flayer's Mark", printInSettings = true },
 			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
+			{ variable = "#lockAndLoad", icon = spells.lockAndLoad.icon, description = "Lock and Load", printInSettings = true },
 			{ variable = "#multiShot", icon = spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
 			{ variable = "#nesingwarys", icon = spells.nesingwarysTrappingApparatus.icon, description = "Nesingwary'ss Trapping Apparatus", printInSettings = true },
 			{ variable = "#rapidFire", icon = spells.rapidFire.icon, description = "Rapid Fire", printInSettings = true },
@@ -1094,6 +1103,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Focus Total", printInSettings = false, color = false },   
 
 			{ variable = "$trueshotTime", description = "Time remaining on Trueshot buff", printInSettings = true, color = false },   
+			{ variable = "lockAndLoadTime", description = "Time remaining on Lock and Load buff", printInSettings = true, color = false },   
 			{ variable = "$ssCount", description = "Number of Serpent Stings active on targets", printInSettings = true, color = false },
 			{ variable = "$serpentSting", description = "Is Serpent Sting talented? Logic variable only!", printInSettings = true, color = false },
 
@@ -1204,7 +1214,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.character.talents.explosiveShot.isSelected = select(4, GetTalentInfo(2, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.chimaeraShot.isSelected = select(4, GetTalentInfo(4, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.deadEye.isSelected = select(4, GetTalentInfo(6, 2, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.doubleTap.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
+			TRB.Data.character.talents.lockAndLoad.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 		elseif GetSpecialization() == 3 then
 			TRB.Data.character.specName = "survival"
 			TRB.Data.character.talents.vipersVenom.isSelected = select(4, GetTalentInfo(1, 1, TRB.Data.character.specGroup))
@@ -1301,25 +1311,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	end
 
 	local function GetNesingwarysRemainingTime()
-		local currentTime = GetTime()
-		local remainingTime = 0
-
-		if TRB.Data.spells.nesingwarysTrappingApparatus.isActive then
-			remainingTime = TRB.Data.snapshotData.nesingwarysTrappingApparatus.endTime - currentTime
-		end
-
-		return remainingTime
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.nesingwarysTrappingApparatus)
 	end
 
 	local function GetFrenzyRemainingTime()
-		local currentTime = GetTime()
-		local remainingTime = 0
-
-		if TRB.Data.snapshotData.frenzy.endTime ~= nil then
-			remainingTime = TRB.Data.snapshotData.frenzy.endTime - currentTime
-		end
-
-		return remainingTime
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.frenzy)
 	end
 
 	local function GetBeastialWrathCooldownRemainingTime()
@@ -1337,47 +1333,23 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	end
 
 	local function GetVigilRemainingTime()
-		local currentTime = GetTime()
-		local remainingTime = 0
-
-		if TRB.Data.spells.secretsOfTheUnblinkingVigil.isActive then
-			remainingTime = TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.endTime - currentTime
-		end
-
-		return remainingTime
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.secretsOfTheUnblinkingVigil)
 	end
 
 	local function GetTrueshotRemainingTime()
-		local currentTime = GetTime()
-		local remainingTime = 0
-
-		if TRB.Data.spells.trueshot.isActive then
-			remainingTime = TRB.Data.snapshotData.trueshot.endTime - currentTime
-		end
-
-		return remainingTime
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.trueshot)
 	end
 
 	local function GetCoordinatedAssaultRemainingTime()
-		local currentTime = GetTime()
-		local remainingTime = 0
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.coordinatedAssault)
+	end
 
-		if TRB.Data.spells.coordinatedAssault.isActive then
-			remainingTime = TRB.Data.snapshotData.coordinatedAssault.endTime - currentTime
-		end
-
-		return remainingTime
+	local function GetLockAndLoadRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.lockAndLoad)
 	end
 
 	local function GetFlayersMarkRemainingTime()
-		local currentTime = GetTime()
-		local remainingTime = 0
-
-		if TRB.Data.spells.flayersMark.isActive then
-			remainingTime = TRB.Data.snapshotData.flayersMark.endTime - currentTime
-		end
-
-		return remainingTime
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.flayersMark)
 	end
 
     local function CalculateAbilityResourceValue(resource)
@@ -1489,6 +1461,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		elseif specId == 2 then --Marksmanship
 			if var == "$trueshotTime" then
 				if GetTrueshotRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$lockAndLoadTime" then
+				if GetLockAndLoadRemainingTime() > 0 then
 					valid = true
 				end
 			elseif var == "$vigilTime" then
@@ -1834,6 +1810,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		if _trueshotTime ~= nil then
 			trueshotTime = string.format("%.1f", _trueshotTime)
 		end
+		
+		--$lockAndLoadTime
+		local _lockAndLoadTime = GetLockAndLoadRemainingTime()
+		local lockAndLoadTime = 0
+		if _lockAndLoadTime ~= nil then
+			lockAndLoadTime = string.format("%.1f", _lockAndLoadTime)
+		end
 
 		--$flayersMarkTime
 		local _flayersMarkTime = GetFlayersMarkRemainingTime()
@@ -1878,6 +1861,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#flayedShot"] = TRB.Data.spells.flayedShot.icon
 		lookup["#flayersMark"] = TRB.Data.spells.flayersMark.icon
 		lookup["#killShot"] = TRB.Data.spells.killShot.icon
+		lookup["#lockAndLoad"] = TRB.Data.spells.lockAndLoad.icon
 		lookup["#multiShot"] = TRB.Data.spells.multiShot.icon
 		lookup["#nesingwarys"] = TRB.Data.spells.nesingwarysTrappingApparatus.icon
 		lookup["#rapidFire"] = TRB.Data.spells.rapidFire.icon
@@ -1889,6 +1873,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#trueshot"] = TRB.Data.spells.trueshot.icon
 		lookup["#vigil"] = TRB.Data.spells.secretsOfTheUnblinkingVigil.icon
 		lookup["$trueshotTime"] = trueshotTime
+		lookup["$lockAndLoadTime"] = lockAndLoadTime
 		lookup["$vigilTime"] = vigilTime
 		lookup["$nesingwarysTime"] = nesingwarysTime
 		lookup["$flayersMarkTime"] = flayersMarkTime
@@ -2426,15 +2411,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					local gcd = TRB.Functions.GetCurrentGCDTime(true)
 
 					local passiveValue = 0
-					if TRB.Data.settings.hunter.beastMastery.generation.enabled then
-						if TRB.Data.settings.hunter.beastMastery.generation.mode == "time" then
-							passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.beastMastery.generation.time or 3.0))
-						else
-							passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.beastMastery.generation.gcds or 2) * gcd))
+					if TRB.Data.settings.hunter.beastMastery.bar.showPassive then
+						if TRB.Data.settings.hunter.beastMastery.generation.enabled then
+							if TRB.Data.settings.hunter.beastMastery.generation.mode == "time" then
+								passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.beastMastery.generation.time or 3.0))
+							else
+								passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.beastMastery.generation.gcds or 2) * gcd))
+							end
 						end
 					end
 
-					if CastingSpell() then
+					if CastingSpell() and TRB.Data.settings.hunter.beastMastery.bar.showCasting then
 						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = TRB.Data.snapshotData.resource
@@ -2642,15 +2629,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					local passiveValue = 0
-					if TRB.Data.settings.hunter.marksmanship.generation.enabled then
-						if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
-							passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.marksmanship.generation.time or 3.0))
-						else
-							passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.marksmanship.generation.gcds or 2) * gcd))
+					if TRB.Data.settings.hunter.marksmanship.bar.showPassive then
+						if TRB.Data.settings.hunter.marksmanship.generation.enabled then
+							if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
+								passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.marksmanship.generation.time or 3.0))
+							else
+								passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.marksmanship.generation.gcds or 2) * gcd))
+							end
 						end
 					end
 
-					if CastingSpell() then
+					if CastingSpell() and TRB.Data.settings.hunter.marksmanship.bar.showCasting then
 						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = TRB.Data.snapshotData.resource
@@ -2693,14 +2682,34 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.aimedShot.id then
-									if TRB.Data.snapshotData.aimedShot.charges == 0 then
+									if TRB.Data.snapshotData.aimedShot.charges == 0 and not TRB.Data.spells.lockAndLoad.isActive then
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
 										frameLevel = 127
-									elseif TRB.Data.snapshotData.resource >= -focusAmount or TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration > 0 then
+									elseif TRB.Data.spells.lockAndLoad.isActive or TRB.Data.snapshotData.resource >= -focusAmount or TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration > 0 then
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
 										frameLevel = 128
+									end
+									
+									if TRB.Data.settings.hunter.marksmanship.audio.aimedShot.enabled and (not TRB.Data.snapshotData.audio.playedAimedShotCue) and TRB.Data.snapshotData.aimedShot.charges >= 1 then
+										local remainingCd = ((TRB.Data.snapshotData.aimedShot.startTime + TRB.Data.snapshotData.aimedShot.duration) - currentTime)
+										local timeThreshold = 0
+										local castTime = select(4, GetSpellInfo(spell.id)) / 1000
+										if TRB.Data.settings.hunter.marksmanship.audio.aimedShot.mode == "gcd" then
+											timeThreshold = gcd * TRB.Data.settings.hunter.marksmanship.audio.aimedShot.gcds
+										elseif TRB.Data.settings.hunter.marksmanship.audio.aimedShot.mode == "time" then
+											timeThreshold = TRB.Data.settings.hunter.marksmanship.audio.aimedShot.time
+										end
+
+										timeThreshold = timeThreshold + castTime
+
+										if TRB.Data.snapshotData.aimedShot.charges == 2 or timeThreshold >= remainingCd then
+											TRB.Data.snapshotData.audio.playedAimedShotCue = true
+											PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.aimedShot.sound, TRB.Data.settings.core.audio.channel.channel)
+										end
+									elseif TRB.Data.snapshotData.aimedShot.charges == 2 then
+										TRB.Data.snapshotData.audio.playedAimedShotCue = true
 									end
 								elseif spell.id == TRB.Data.spells.killShot.id then
 									local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
@@ -2811,17 +2820,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					local passiveValue = 0
-					if TRB.Data.settings.hunter.survival.generation.enabled then
-						if TRB.Data.settings.hunter.survival.generation.mode == "time" then
-							passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.survival.generation.time or 3.0))
-						else
-							passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.survival.generation.gcds or 2) * gcd))
+					if TRB.Data.settings.hunter.survival.bar.showPassive then
+						if TRB.Data.settings.hunter.survival.generation.enabled then
+							if TRB.Data.settings.hunter.survival.generation.mode == "time" then
+								passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.survival.generation.time or 3.0))
+							else
+								passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.survival.generation.gcds or 2) * gcd))
+							end
 						end
+
+						passiveValue = passiveValue + TRB.Data.snapshotData.termsOfEngagement.focus
 					end
 
-					passiveValue = passiveValue + TRB.Data.snapshotData.termsOfEngagement.focus
-
-					if CastingSpell() then
+					if CastingSpell() and TRB.Data.settings.hunter.survival.bar.showCasting then
 						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = TRB.Data.snapshotData.resource
@@ -3133,6 +3144,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				elseif specId == 2 then --Marksmanship
 					if spellId == TRB.Data.spells.burstingShot.id then
 						TRB.Data.snapshotData.burstingShot.startTime, TRB.Data.snapshotData.burstingShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.burstingShot.id)
+					elseif spellId == TRB.Data.spells.aimedShot.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.aimedShot.charges, _, TRB.Data.snapshotData.aimedShot.startTime, TRB.Data.snapshotData.aimedShot.duration, _ = GetSpellCharges(TRB.Data.spells.aimedShot.id)
+							TRB.Data.snapshotData.audio.playedAimedShotCue = false
+						end
 					elseif spellId == TRB.Data.spells.barrage.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.barrage.startTime = currentTime
@@ -3150,6 +3166,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.trueshot.duration = 0
 							TRB.Data.snapshotData.trueshot.endTime = nil
 						end
+					elseif spellId == TRB.Data.spells.lockAndLoad.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.lockAndLoad.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.lockAndLoad.duration, TRB.Data.snapshotData.lockAndLoad.endTime, _, _, _, TRB.Data.snapshotData.lockAndLoad.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.lockAndLoad.id)
+							
+							if TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.enabled then
+								PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.lockAndLoad.isActive = false
+							TRB.Data.snapshotData.lockAndLoad.spellId = nil
+							TRB.Data.snapshotData.lockAndLoad.duration = 0
+							TRB.Data.snapshotData.lockAndLoad.endTime = nil
+						end					
 					elseif spellId == TRB.Data.spells.rapidFire.id then
 						if type == "SPELL_AURA_APPLIED" then -- Gained buff 
 							TRB.Data.snapshotData.rapidFire.isActive = true
