@@ -105,7 +105,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				yPos=-200,
 				border=4,
 				thresholdOverlapBorder=true,
-				dragAndDrop=false
+				dragAndDrop=false,
+				showPassive=true,
+				showCasting=true
 			},
 			colors = {
 				text = {
@@ -185,6 +187,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		settings.displayText = BalanceLoadDefaultBarTextSimpleSettings()
 		return settings
     end
+
 
 	local function BalanceResetSettings()
 		local settings = BalanceLoadDefaultSettings()
@@ -1036,10 +1039,29 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Functions.HideResourceBar()
 		end)
 
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(TRB.Data.settings.druid.balance.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.bar.showCasting = self:GetChecked()
+		end)
+
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(TRB.Data.settings.druid.balance.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.bar.showPassive = self:GetChecked()
+		end)
 
 		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TIBCB1_5", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash bar when Moonkin Form is missing")
 		f.tooltip = "This will flash the bar when Moonkin Form is missing while in combat."
 		f:SetChecked(TRB.Data.settings.druid.balance.colors.bar.flashEnabled)
@@ -1049,7 +1071,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.checkBoxes.flashSsEnabled = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashSsEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash bar when Starsurge is usable")
 		f.tooltip = "This will flash the bar when Starsurge can be cast."
 		f:SetChecked(TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled)

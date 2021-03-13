@@ -2410,15 +2410,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					local gcd = TRB.Functions.GetCurrentGCDTime(true)
 
 					local passiveValue = 0
-					if TRB.Data.settings.hunter.beastMastery.generation.enabled then
-						if TRB.Data.settings.hunter.beastMastery.generation.mode == "time" then
-							passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.beastMastery.generation.time or 3.0))
-						else
-							passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.beastMastery.generation.gcds or 2) * gcd))
+					if TRB.Data.settings.hunter.beastMastery.bar.showPassive then
+						if TRB.Data.settings.hunter.beastMastery.generation.enabled then
+							if TRB.Data.settings.hunter.beastMastery.generation.mode == "time" then
+								passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.beastMastery.generation.time or 3.0))
+							else
+								passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.beastMastery.generation.gcds or 2) * gcd))
+							end
 						end
 					end
 
-					if CastingSpell() then
+					if CastingSpell() and TRB.Data.settings.hunter.beastMastery.bar.showCasting then
 						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = TRB.Data.snapshotData.resource
@@ -2626,15 +2628,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					local passiveValue = 0
-					if TRB.Data.settings.hunter.marksmanship.generation.enabled then
-						if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
-							passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.marksmanship.generation.time or 3.0))
-						else
-							passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.marksmanship.generation.gcds or 2) * gcd))
+					if TRB.Data.settings.hunter.marksmanship.bar.showPassive then
+						if TRB.Data.settings.hunter.marksmanship.generation.enabled then
+							if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
+								passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.marksmanship.generation.time or 3.0))
+							else
+								passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.marksmanship.generation.gcds or 2) * gcd))
+							end
 						end
 					end
 
-					if CastingSpell() then
+					if CastingSpell() and TRB.Data.settings.hunter.marksmanship.bar.showCasting then
 						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = TRB.Data.snapshotData.resource
@@ -2815,17 +2819,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					local passiveValue = 0
-					if TRB.Data.settings.hunter.survival.generation.enabled then
-						if TRB.Data.settings.hunter.survival.generation.mode == "time" then
-							passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.survival.generation.time or 3.0))
-						else
-							passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.survival.generation.gcds or 2) * gcd))
+					if TRB.Data.settings.hunter.survival.bar.showPassive then
+						if TRB.Data.settings.hunter.survival.generation.enabled then
+							if TRB.Data.settings.hunter.survival.generation.mode == "time" then
+								passiveValue = (TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.survival.generation.time or 3.0))
+							else
+								passiveValue = (TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.survival.generation.gcds or 2) * gcd))
+							end
 						end
+
+						passiveValue = passiveValue + TRB.Data.snapshotData.termsOfEngagement.focus
 					end
 
-					passiveValue = passiveValue + TRB.Data.snapshotData.termsOfEngagement.focus
-
-					if CastingSpell() then
+					if CastingSpell() and TRB.Data.settings.hunter.survival.bar.showCasting then
 						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = TRB.Data.snapshotData.resource

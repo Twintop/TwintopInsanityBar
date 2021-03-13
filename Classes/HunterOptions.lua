@@ -131,7 +131,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				yPos=-200,
 				border=4,
 				thresholdOverlapBorder=true,
-				dragAndDrop=false
+				dragAndDrop=false,
+				showPassive=true,
+				showCasting=true
 			},
 			colors = {
 				text = {
@@ -337,7 +339,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				yPos=-200,
 				border=4,
 				thresholdOverlapBorder=true,
-				dragAndDrop=false
+				dragAndDrop=false,
+				showPassive=true,
+				showCasting=true
 			},
 			colors = {
 				text = {
@@ -556,7 +560,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				yPos=-200,
 				border=4,
 				thresholdOverlapBorder=true,
-				dragAndDrop=false
+				dragAndDrop=false,
+				showPassive=true,
+				showCasting=true
 			},
 			colors = {
 				text = {
@@ -1555,9 +1561,29 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.HideResourceBar()
 		end)
 
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.beastMastery.bar.showCasting = self:GetChecked()
+		end)
+
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.beastMastery.bar.showPassive = self:GetChecked()
+		end)
+
 		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_5", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Beastial Wrath is usable")
 		f.tooltip = "This will flash the bar when Beastial Wrath can be cast."
 		f:SetChecked(TRB.Data.settings.hunter.beastMastery.colors.bar.flashEnabled)
@@ -1567,7 +1593,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_6", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.esThresholdShow
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
 		getglobal(f:GetName() .. 'Text'):SetText("Border color when Beastial Wrath is usable")
 		f.tooltip = "This will change the bar's border color (as configured below) when Beastial Wrath is usable."
 		f:SetChecked(TRB.Data.settings.hunter.beastMastery.colors.bar.beastialWrathEnabled)
@@ -4268,26 +4294,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.HideResourceBar()
 		end)
 
-		--[[
-		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB1_5", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashEnabled
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Earth Shock/EQ is Usable")
-		f.tooltip = "This will flash the bar when Earth Shock/EQ can be cast."
-		f:SetChecked(TRB.Data.settings.hunter.marksmanship.colors.bar.flashEnabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.bar.showCasting)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.marksmanship.colors.bar.flashEnabled = self:GetChecked()
+			TRB.Data.settings.hunter.marksmanship.bar.showCasting = self:GetChecked()
 		end)
 
-		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB1_6", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.esThresholdShow
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Earth Shock/EQ Threshold Line")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to cast Earth Shock/EQ."
-		f:SetChecked(TRB.Data.settings.hunter.marksmanship.earthShockThreshold)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.marksmanship.earthShockThreshold = self:GetChecked()
-		end)]]
+			TRB.Data.settings.hunter.marksmanship.bar.showPassive = self:GetChecked()
+		end)
 
 		yCoord = yCoord - 60
 
@@ -7196,26 +7221,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.HideResourceBar()
 		end)
 
-		--[[
-		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB1_5", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashEnabled
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Earth Shock/EQ is Usable")
-		f.tooltip = "This will flash the bar when Earth Shock/EQ can be cast."
-		f:SetChecked(TRB.Data.settings.hunter.survival.colors.bar.flashEnabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(TRB.Data.settings.hunter.survival.bar.showCasting)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.survival.colors.bar.flashEnabled = self:GetChecked()
+			TRB.Data.settings.hunter.survival.bar.showCasting = self:GetChecked()
 		end)
 
-		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB1_6", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.esThresholdShow
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Earth Shock/EQ Threshold Line")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to cast Earth Shock/EQ."
-		f:SetChecked(TRB.Data.settings.hunter.survival.earthShockThreshold)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(TRB.Data.settings.hunter.survival.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.survival.earthShockThreshold = self:GetChecked()
-		end)]]
+			TRB.Data.settings.hunter.survival.bar.showPassive = self:GetChecked()
+		end)
 
 		yCoord = yCoord - 60
 

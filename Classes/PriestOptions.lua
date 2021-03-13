@@ -138,7 +138,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				yPos=-200,
 				border=4,
 				thresholdOverlapBorder=true,
-				dragAndDrop=false
+				dragAndDrop=false,
+				showPassive=true,
+				showCasting=true
 			},
 			mindbender={
 				mode="gcd",
@@ -1094,10 +1096,29 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.HideResourceBar()
 		end)
 
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(TRB.Data.settings.priest.shadow.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.shadow.bar.showCasting = self:GetChecked()
+		end)
+
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(TRB.Data.settings.priest.shadow.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.shadow.bar.showPassive = self:GetChecked()
+		end)
 
 		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TIBCB1_5", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash bar when DP is usable")
 		f.tooltip = "This will flash the bar when Devouring Plague can be cast."
 		f:SetChecked(TRB.Data.settings.priest.shadow.colors.bar.flashEnabled)

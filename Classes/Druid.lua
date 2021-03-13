@@ -960,7 +960,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, resourceFrame, currentResource)
 
-				if CastingSpell() then
+				if CastingSpell() and TRB.Data.settings.druid.balance.bar.showCasting then
 					castingBarValue = currentResource + TRB.Data.snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -968,20 +968,24 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, castingFrame, castingBarValue)
 
-				passiveBarValue = currentResource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower
-
-				if TRB.Data.character.talents.naturesBalance.isSelected then
-					if affectingCombat then
-						passiveBarValue = passiveBarValue + TRB.Data.spells.naturesBalance.astralPower
-					elseif currentResource < 50 then
-						passiveBarValue = passiveBarValue + TRB.Data.spells.naturesBalance.outOfCombatAstralPower
-					end
-				end
-
-				if TRB.Data.character.talents.naturesBalance.isSelected and (affectingCombat or (not affectingCombat and currentResource < 50)) then
-
-				else
+				if TRB.Data.settings.druid.balance.bar.showPassive then
 					passiveBarValue = currentResource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower
+
+					if TRB.Data.character.talents.naturesBalance.isSelected then
+						if affectingCombat then
+							passiveBarValue = passiveBarValue + TRB.Data.spells.naturesBalance.astralPower
+						elseif currentResource < 50 then
+							passiveBarValue = passiveBarValue + TRB.Data.spells.naturesBalance.outOfCombatAstralPower
+						end
+					end
+
+					if TRB.Data.character.talents.naturesBalance.isSelected and (affectingCombat or (not affectingCombat and currentResource < 50)) then
+
+					else
+						passiveBarValue = currentResource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower
+					end
+				else
+					passiveBarValue = castingBarValue
 				end
 
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, passiveFrame, passiveBarValue)
