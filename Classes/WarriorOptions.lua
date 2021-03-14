@@ -108,7 +108,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				yPos=-200,
 				border=4,
 				thresholdOverlapBorder=true,
-				dragAndDrop=false
+				dragAndDrop=false,
+				showPassive=true,
+				showCasting=true
 			},
 			colors = {
 				text = {
@@ -278,7 +280,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				yPos=-200,
 				border=4,
 				thresholdOverlapBorder=true,
-				dragAndDrop=false
+				dragAndDrop=false,
+				showPassive=true,
+				showCasting=true
 			},
 			colors = {
 				text = {
@@ -1301,6 +1305,26 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetChecked(TRB.Data.settings.warrior.arms.colors.bar.flashEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.warrior.arms.colors.bar.flashEnabled = self:GetChecked()
+		end)
+
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(TRB.Data.settings.warrior.arms.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.warrior.arms.bar.showCasting = self:GetChecked()
+		end)
+
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(TRB.Data.settings.warrior.arms.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.warrior.arms.bar.showPassive = self:GetChecked()
 		end)
 
 		--[[
@@ -3963,6 +3987,26 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.fury.displayBar.notZeroShow = false
 			TRB.Data.settings.warrior.fury.displayBar.neverShow = true
 			TRB.Functions.HideResourceBar()
+		end)
+
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(TRB.Data.settings.warrior.fury.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.warrior.fury.bar.showCasting = self:GetChecked()
+		end)
+
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(TRB.Data.settings.warrior.fury.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.warrior.fury.bar.showPassive = self:GetChecked()
 		end)
 
 		--[[

@@ -982,8 +982,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					local currentRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor	
 
 					local passiveValue = 0
+					if TRB.Data.settings.warrior.arms.bar.showPassive then
 
-					if CastingSpell() then
+					end
+
+					if CastingSpell() and TRB.Data.settings.warrior.arms.bar.showCasting then
 						castingBarValue = currentRage + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = currentRage
@@ -1205,8 +1208,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					end
 
 					local passiveValue = 0
+					if TRB.Data.settings.warrior.fury.bar.showPassive then
 
-					if CastingSpell() then
+					end
+
+					if CastingSpell() and TRB.Data.settings.warrior.fury.bar.showCasting then
 						castingBarValue = currentRage + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = currentRage
