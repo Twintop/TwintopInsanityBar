@@ -2,13 +2,27 @@ local _, TRB = ...
 
 TRB.Options = {}
 
+local f1 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Highlight_Small_Color")
+f1:SetFontObject(GameFontHighlightSmall)
+local f2 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Green_Small_Color")
+f2:SetFontObject(GameFontGreenSmall)
+local f3 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Normal_Small_Color")
+f3:SetFontObject(GameFontNormalSmall)
+
+TRB.Options.fonts = {}
+TRB.Options.fonts.options = {}
+TRB.Options.fonts.options.tabHighlightSmall = f1
+TRB.Options.fonts.options.tabGreenSmall = f2
+TRB.Options.fonts.options.tabNormalSmall = f3
+
 local function LoadDefaultSettings()
     local settings = {
         core = {
             dataRefreshRate = 5.0,
             ttd = {
                 sampleRate = 0.2,
-                numEntries = 50
+                numEntries = 50,
+                precision = 1
             },
             audio = {            
                 channel={
@@ -26,7 +40,12 @@ local function LoadDefaultSettings()
             feral = {},
             guardian = {},
             restoration = {}
-        },        
+        },
+        hunter = {
+            beastMastery = {},
+            marksmanship = {},
+            survival = {}
+        },
         priest = {
             discipline = {},
             holy = {},
@@ -45,36 +64,49 @@ TRB.Options.LoadDefaultSettings = LoadDefaultSettings
 
 local function ConstructAddonOptionsPanel()
     local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-    local parent = interfaceSettingsFrame.panel		
+    local parent = interfaceSettingsFrame.panel
     local controls = interfaceSettingsFrame.controls
     local yCoord = -5
     local f = nil
-    interfaceSettingsFrame.optionsPanel = TRB.UiFunctions.CreateScrollFrameContainer("TwintopResourceBar_Addon_OptionsLayoutPanel", parent)
-    interfaceSettingsFrame.optionsPanel.name = "Global Options"
-    interfaceSettingsFrame.optionsPanel.parent = parent.name
-    InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
 
-    parent = interfaceSettingsFrame.optionsPanel.scrollChild
+    local maxOptionsWidth = 580
 
     local xPadding = 10
     local xPadding2 = 30
-    local xMax = 550
-    local xCoord = 0
-    local xCoord2 = 325
+    local xCoord = 5
+    local xCoord2 = 290
     local xOffset1 = 50
-    local xOffset2 = 275
+    local xOffset2 = xCoord2 + xOffset1
 
-    local barWidth = 250
-    local barHeight = 20
+    local dropdownWidth = 225
+    local sliderWidth = 260
+    local sliderHeight = 20
     local title = ""
 
-    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Time To Die", xCoord+xPadding, yCoord)
+    interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_General", UIParent)
+    interfaceSettingsFrame.optionsPanel.name = "Global Options"
+    interfaceSettingsFrame.optionsPanel.parent = parent.name
+    InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
+    
+    parent = interfaceSettingsFrame.optionsPanel
+    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "General Options", xCoord+xPadding, yCoord)
+
+    yCoord = yCoord - 30
+    parent.panel = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 580, 523)
+    parent.panel:SetPoint("TOPLEFT", 10, yCoord)
+    parent.panel:Show()
+
+    parent = parent.panel.scrollFrame.scrollChild
+
+    yCoord = 5
+
+    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Time To Die", 0, yCoord)
 
     yCoord = yCoord - 60
 
     title = "Sampling Rate (seconds)"
     controls.ttdSamplingRate = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 2, TRB.Data.settings.core.ttd.sampleRate, 0.05, 2,
-                                    barWidth, barHeight, xCoord+xPadding*2, yCoord)
+                                    sliderWidth, sliderHeight, xCoord, yCoord)
     controls.ttdSamplingRate:SetScript("OnValueChanged", function(self, value)
         local min, max = self:GetMinMaxValues()
         if value > max then
@@ -82,16 +114,16 @@ local function ConstructAddonOptionsPanel()
         elseif value < min then
             value = min
         else
-            value = RoundTo(value, 2)
+            value = TRB.Functions.RoundTo(value, 2)
         end
 
-        self.EditBox:SetText(value)		
+        self.EditBox:SetText(value)
         TRB.Data.settings.core.ttd.sampleRate = value
     end)
 
     title = "Sample Size"
     controls.ttdSampleSize = TRB.UiFunctions.BuildSlider(parent, title, 1, 1000, TRB.Data.settings.core.ttd.numEntries, 1, 0,
-                                    barWidth, barHeight, xCoord2, yCoord)
+                                    sliderWidth, sliderHeight, xCoord2, yCoord)
     controls.ttdSampleSize:SetScript("OnValueChanged", function(self, value)
         local min, max = self:GetMinMaxValues()
         if value > max then
@@ -100,43 +132,60 @@ local function ConstructAddonOptionsPanel()
             value = min
         end
 
-        self.EditBox:SetText(value)		
+        self.EditBox:SetText(value)
         TRB.Data.settings.core.ttd.numEntries = value
     end)
 
+    yCoord = yCoord - 60 
+    title = "Time To Die Precision (ms)"
+    controls.ttdPrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.ttd.precision, 1, 0,
+                                    sliderWidth, sliderHeight, xCoord, yCoord)
+    controls.ttdPrecision:SetScript("OnValueChanged", function(self, value)
+        local min, max = self:GetMinMaxValues()
+        if value > max then
+            value = max
+        elseif value < min then
+            value = min
+        end
+
+        value = TRB.Functions.RoundTo(value, 0)
+        self.EditBox:SetText(value)
+        TRB.Data.settings.core.ttd.precision = value
+    end)
+
     yCoord = yCoord - 40
-    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Character Data Refresh Rate", xCoord+xPadding, yCoord)
+    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Character Data Refresh Rate", 0, yCoord)
 
     yCoord = yCoord - 60
 
     title = "Refresh Rate (seconds)"
-    controls.ttdSamplingRate = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 60, TRB.Data.settings.core.dataRefreshRate, 0.05, 2,
-                                    barWidth, barHeight, xCoord+xPadding*2, yCoord)
-    controls.ttdSamplingRate:SetScript("OnValueChanged", function(self, value)
+    controls.characterRefreshRate = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 60, TRB.Data.settings.core.dataRefreshRate, 0.05, 2,
+                                    sliderWidth, sliderHeight, xCoord, yCoord)
+    controls.characterRefreshRate:SetScript("OnValueChanged", function(self, value)
         local min, max = self:GetMinMaxValues()
         if value > max then
             value = max
         elseif value < min then
             value = min
         else
-            value = RoundTo(value, 2)
+            value = TRB.Functions.RoundTo(value, 2)
         end
 
-        self.EditBox:SetText(value)		
+        self.EditBox:SetText(value)
         TRB.Data.settings.core.dataRefreshRate = value
     end)
     
     yCoord = yCoord - 40
-    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Frame Strata", xCoord+xPadding, yCoord)
+    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Frame Strata", 0, yCoord)
 
     yCoord = yCoord - 30
     
     -- Create the dropdown, and configure its appearance
     controls.dropDown.strata = CreateFrame("FRAME", "TIBFrameStrata", parent, "UIDropDownMenuTemplate")
-    controls.dropDown.strata.label = TRB.UiFunctions.BuildSectionHeader(parent, "Frame Strata Level To Draw Bar On", xCoord+xPadding, yCoord)
+    controls.dropDown.strata.label = TRB.UiFunctions.BuildSectionHeader(parent, "Frame Strata Level To Draw Bar On", xCoord, yCoord)
     controls.dropDown.strata.label.font:SetFontObject(GameFontNormal)
-    controls.dropDown.strata:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
-    UIDropDownMenu_SetWidth(controls.dropDown.strata, 250)
+    controls.dropDown.strata:SetPoint("TOPLEFT", xCoord, yCoord-30)
+    UIDropDownMenu_SetWidth(controls.dropDown.strata, dropdownWidth)
     UIDropDownMenu_SetText(controls.dropDown.strata, TRB.Data.settings.core.strata.name)
     UIDropDownMenu_JustifyText(controls.dropDown.strata, "LEFT")
 
@@ -151,7 +200,7 @@ local function ConstructAddonOptionsPanel()
         strata["High"] = "HIGH"
         strata["Dialog"] = "DIALOG"
         strata["Fullscreen"] = "FULLSCREEN"
-        strata["Fullscreen Dialog"] = "FULLSCREEN_DIALOG"		
+        strata["Fullscreen Dialog"] = "FULLSCREEN_DIALOG"
         strata["Tooltip"] = "TOOLTIP"
         local strataList = {
             "Background",
@@ -168,18 +217,27 @@ local function ConstructAddonOptionsPanel()
             info.text = v
             info.value = strata[v]
             info.checked = strata[v] == TRB.Data.settings.core.strata.level
-            info.func = self.SetValue			
+            info.func = self.SetValue
             info.arg1 = strata[v]
             info.arg2 = v
             UIDropDownMenu_AddButton(info, level)
         end
     end)
 
-    -- Implement the function to change the texture
     function controls.dropDown.strata:SetValue(newValue, newName)
         TRB.Data.settings.core.strata.level = newValue
         TRB.Data.settings.core.strata.name = newName
-        barContainerFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.barContainerFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.barBorderFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.passiveFrame.thresholds[1]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.resourceFrame.thresholds[1]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.resourceFrame.thresholds[2]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        TRB.Frames.rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         UIDropDownMenu_SetText(controls.dropDown.strata, newName)
         CloseDropDownMenus()
     end
@@ -187,16 +245,16 @@ local function ConstructAddonOptionsPanel()
 
     
     yCoord = yCoord - 60
-    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Channel", xCoord+xPadding, yCoord)
+    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Channel", 0, yCoord)
 
     yCoord = yCoord - 30
     
     -- Create the dropdown, and configure its appearance
     controls.dropDown.audioChannel = CreateFrame("FRAME", "TIBFrameAudioChannel", parent, "UIDropDownMenuTemplate")
-    controls.dropDown.audioChannel.label = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Channel To Use", xCoord+xPadding, yCoord)
+    controls.dropDown.audioChannel.label = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Channel To Use", xCoord, yCoord)
     controls.dropDown.audioChannel.label.font:SetFontObject(GameFontNormal)
-    controls.dropDown.audioChannel:SetPoint("TOPLEFT", xCoord+xPadding, yCoord-30)
-    UIDropDownMenu_SetWidth(controls.dropDown.audioChannel, 250)
+    controls.dropDown.audioChannel:SetPoint("TOPLEFT", xCoord, yCoord-30)
+    UIDropDownMenu_SetWidth(controls.dropDown.audioChannel, dropdownWidth)
     UIDropDownMenu_SetText(controls.dropDown.audioChannel, TRB.Data.settings.core.audio.channel.name)
     UIDropDownMenu_JustifyText(controls.dropDown.audioChannel, "LEFT")
 
@@ -215,24 +273,22 @@ local function ConstructAddonOptionsPanel()
             info.text = v
             info.value = channel[v]
             info.checked = channel[v] == TRB.Data.settings.core.audio.channel.channel
-            info.func = self.SetValue			
+            info.func = self.SetValue
             info.arg1 = channel[v]
             info.arg2 = v
             UIDropDownMenu_AddButton(info, level)
         end
     end)
 
-    -- Implement the function to change the texture
     function controls.dropDown.audioChannel:SetValue(newValue, newName)
         TRB.Data.settings.core.audio.channel.channel = newValue
         TRB.Data.settings.core.audio.channel.name = newName
         UIDropDownMenu_SetText(controls.dropDown.audioChannel, newName)
         CloseDropDownMenus()
     end
-    
-    --interfaceSettingsFrame.panel = parent
-    --interfaceSettingsFrame.controls = controls
-    --TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+
+    TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+    TRB.Frames.interfaceSettingsFrameContainer.controls = controls
 end 
 
 local function ConstructOptionsPanel()
@@ -260,31 +316,29 @@ local function ConstructOptionsPanel()
 
     interfaceSettingsFrame.controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Twintop's Resource Bar", xCoord+xPadding, yCoord)
     yCoord = yCoord - 40
-    interfaceSettingsFrame.controls.labels.infoAuthor = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Author:", "Twintop - Frostmourne-US/OCE", xCoord+xPadding*2, yCoord, 100, 200)
+    interfaceSettingsFrame.controls.labels.infoAuthor = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Author:", "Twintop - Frostmourne-US/OCE", xCoord+xPadding*2, yCoord, 100, 450)
     yCoord = yCoord - 20
-    interfaceSettingsFrame.controls.labels.infoVersion = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Version:", TRB.Details.addonVersion, xCoord+xPadding*2, yCoord, 100, 200)
+    interfaceSettingsFrame.controls.labels.infoVersion = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Version:", TRB.Details.addonVersion, xCoord+xPadding*2, yCoord, 100, 450)
     yCoord = yCoord - 20
-    interfaceSettingsFrame.controls.labels.infoReleased = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Released:", TRB.Details.addonReleaseDate, xCoord+xPadding*2, yCoord, 100, 200)
+    interfaceSettingsFrame.controls.labels.infoReleased = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Released:", TRB.Details.addonReleaseDate, xCoord+xPadding*2, yCoord, 100, 450)
     yCoord = yCoord - 20
-    interfaceSettingsFrame.controls.labels.infoReleased = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Supported Specs:", TRB.Details.supportedSpecs, xCoord+xPadding*2, yCoord, 100, 200)
+    interfaceSettingsFrame.controls.labels.infoSupport = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Supported Specs:", TRB.Details.supportedSpecs, xCoord+xPadding*2, yCoord, 100, 450, 300)
     
 
     interfaceSettingsFrame.panel.yCoord = yCoord
     InterfaceOptions_AddCategory(interfaceSettingsFrame.panel)
-    --interfaceSettingsFrame.optionsPanel.scrollChild = parent
-    --TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 
     ConstructAddonOptionsPanel()
 end
 TRB.Options.ConstructOptionsPanel = ConstructOptionsPanel
 
-local function PortForwardPriestSettings()		
+local function PortForwardPriestSettings()
     if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.priest == nil and TwintopInsanityBarSettings.bar ~= nil then
         local tempSettings = TwintopInsanityBarSettings
         TwintopInsanityBarSettings.priest = {}
         TwintopInsanityBarSettings.priest.discipline = {}
         TwintopInsanityBarSettings.priest.holy = {}
-        TwintopInsanityBarSettings.priest.shadow = tempSettings			
+        TwintopInsanityBarSettings.priest.shadow = tempSettings
         TwintopInsanityBarSettings.priest.shadow.textures.resourceBar = TwintopInsanityBarSettings.priest.shadow.textures.insanityBar
         TwintopInsanityBarSettings.priest.shadow.textures.resourceBarName = TwintopInsanityBarSettings.priest.shadow.textures.insanityBarName
         TwintopInsanityBarSettings.core = {}
@@ -297,8 +351,8 @@ local function PortForwardPriestSettings()
 end
 TRB.Options.PortForwardPriestSettings = PortForwardPriestSettings
 
-local function CleanupSettings(oldSettings)	
-    local newSettings = {}	
+local function CleanupSettings(oldSettings)
+    local newSettings = {}
     if oldSettings ~= nil then
         for k, v in pairs(oldSettings) do
             if  k == "core" or

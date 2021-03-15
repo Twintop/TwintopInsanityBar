@@ -2,9 +2,9 @@ local _, TRB = ...
 
 -- Addon details data
 TRB.Details = {}
-TRB.Details.addonVersion = "9.0.2.18"
-TRB.Details.addonReleaseDate = "November 03, 2020"
-TRB.Details.supportedSpecs = "Shadow Priest, Elemental Shaman, Balance Druid"
+TRB.Details.addonVersion = "9.0.5.6"
+TRB.Details.addonReleaseDate = "March 13, 2021"
+TRB.Details.supportedSpecs = "|cFFFF7C0ADruid|r - Balance\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFFFFFFFFPriest|r - Shadow\n|cFF0070DDShaman|r - Elemental"
 
 local addonData = {
 	loaded = false,
@@ -26,6 +26,9 @@ TRB.Frames.castingFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerF
 TRB.Frames.passiveFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
 TRB.Frames.barBorderFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
 
+TRB.Frames.passiveFrame.thresholds = {}
+TRB.Frames.resourceFrame.thresholds = {}
+
 TRB.Frames.leftTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
 TRB.Frames.middleTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
 TRB.Frames.rightTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
@@ -45,9 +48,14 @@ TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 TRB.Frames.combatFrame = CreateFrame("Frame")
 
 TRB.Frames.interfaceSettingsFrameContainer = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls = {}
 
 -- Working data
 TRB.Data = {}
+
+TRB.Data.constants = {
+	borderWidthFactor = 4
+}
 
 TRB.Data.settings = {}
 
@@ -73,6 +81,8 @@ TRB.Data.barTextCache = {}
 -- This is here for reference/what every implementation should use as a minimum
 TRB.Data.character = {
 	guid = UnitGUID("player"),
+	className = "",
+	specName = "",
 	specGroup = GetActiveSpecGroup(),
     maxResource = 100,
     talents = {},
@@ -84,26 +94,7 @@ TRB.Data.spells = {}
 TRB.Data.lookup = {}
 
 -- This is here for reference/what every implementation should use as a minimum
-TRB.Data.snapshotData = {
-	resource = 0,
-	haste = 0,
-	crit = 0,
-    mastery = 0,
-	casting = {
-		spellId = nil,
-		startTime = nil,
-        endTime = nil,
-        resourceRaw = 0,
-        resourceFinal = 0,
-        icon = ""
-	},
-	targetData = {
-		ttdIsActive = false,
-		currentTargetGuid = nil,
-		targets = {}
-    },
-    audio = {}
-}
+TRB.Functions.ResetSnapshotData()
 
 TRB.Data.sanityCheckValues = {
 	barMaxWidth = 0,
@@ -205,7 +196,7 @@ function SlashCmdList.TWINTOP(msg)
             local num = TRB.Functions.RoundTo(subcmd, 0)
             settings.ttd.numEntries = num
         end
-    elseif cmd == "fill" then				
+    elseif cmd == "fill" then
         TRB.Functions.FillSpellData()
     elseif cmd == "move" then
         local x, y = TRB.Functions.ParseCmdString(subcmd)

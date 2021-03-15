@@ -1,15 +1,16 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 5 then --Only do this if we're on a Priest!
+	TRB.Frames.passiveFrame.thresholds[1] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
+	TRB.Frames.passiveFrame.thresholds[2] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
+	TRB.Frames.resourceFrame.thresholds[1] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+	TRB.Frames.resourceFrame.thresholds[2] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
 	local passiveFrame = TRB.Frames.passiveFrame
 	local barBorderFrame = TRB.Frames.barBorderFrame
-
-	resourceFrame.thresholdDp = CreateFrame("Frame", nil, resourceFrame)
-	resourceFrame.thresholdSn = CreateFrame("Frame", nil, resourceFrame)
-	passiveFrame.threshold = CreateFrame("Frame", nil, passiveFrame)
 
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
@@ -45,6 +46,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			gcds = 0,
 			swings = 0,
 			time = 0
+		},
+		wrathfulFaerie = {
+			insanity = 0,
+			gcds = 0,
+			ticks = 0,
+			time = 0
 		}
 	}
 
@@ -70,7 +77,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			vtCount = 0,
 			dpCount = 0
 		},
-		mindbender = {			
+		mindbender = {
 			insanity = 0,
 			gcds = 0,
 			swings = 0,
@@ -95,7 +102,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specGroup = GetActiveSpecGroup(),
 		maxResource = 100,
 		devouringPlagueThreshold = 50,
-		searingNightmareThreshold = 35,
+		searingNightmareThreshold = 30,
 		talents = {
 			fotm = {
 				isSelected = false,
@@ -123,7 +130,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		darkThought = {
 			tickCount = 0, --Sum of ticks of Mind Flay * # of DoTs on the target when tick occurred.
 			partialTickCount = 0, --Partial ticks from Mind Sear. Kept separate for tracking purposes.
-			partialTickMax = 3
+			partialTickMax = 2 --1/2 partial tick
+		},
+		torghast = {
+			dreamspunMushroomsModifier = 1,
+			elethiumMuzzleModifier = 1,
 		}
 	}
 
@@ -144,7 +155,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			id = 263165,
 			name = "",
 			icon = "",
-			insanity = 6,
+			insanity = 15,
 			fotm = false
 		},
 		s2m = {
@@ -174,7 +185,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			id = 8092,
 			name = "",
 			icon = "",
-			insanity = 7,
+			insanity = 8,
 			fotm = true
 		},
 		devouringPlague = {
@@ -226,16 +237,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			id = 155271,
 			idSpawn = 147193,
 			idImpact = 148859,
-			insanity = 1,
+			insanity = 2,
 			fotm = false,
 			name = "",
 			icon = ""
 		},
 		shadowCrash = {
-			id = 342834,
+			id = 205385,
 			name = "",
 			icon = "",
-			insanity = 8,
+			insanity = 15,
 			fotm = false
 		},
 		hungeringVoid = {
@@ -247,7 +258,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		shadowyApparition = {
 			id = 78203,
 			name = "",
-			icon = ""		
+			icon = ""
 		},
 		massDispel = {
 			id = 32375,
@@ -286,25 +297,25 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			tocMinVersion = 90002
 		},
 		lashOfInsanity_Tendril = {
-			id = 240843,
-			name = "",
-			icon = "",
-			insanity = 3,
-			fotm = false,
-			duration = 15,
-			ticks = 14,
-			tickDuration = 1,
-			tocMinVersion = 90001
-		},
-		lashOfInsanity_Lasher = {
 			id = 344838,
 			name = "",
 			icon = "",
 			insanity = 3,
 			fotm = false,
 			duration = 15,
-			ticks = 14,
-			tickDuration = 1,
+			ticks = 15,
+			tickDuration = 1, --This is NOT hasted
+			tocMinVersion = 90001
+		},
+		lashOfInsanity_Lasher = {
+			id = 344838, --Doesn't actually exist / unused? 
+			name = "",
+			icon = "",
+			insanity = 1,
+			fotm = false,
+			duration = 15,
+			ticks = 15,
+			tickDuration = 1, --This is hasted
 			tocMinVersion = 90002
 		},
 		darkThought = {
@@ -312,6 +323,55 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			name = "",
 			icon = "",
 			probability = 0.03
+		},
+
+		wrathfulFaerie = {
+			id = 342132,
+			name = "",
+			icon = "",
+			insanity = 3,
+			fotm = false,
+			duration = 20,
+			icd = 0.75,
+			energizeId = 327703
+		},
+
+		wrathfulFaerieFermata = {
+			id = 345452,
+			name = "",
+			icon = "",
+			insanity = 0, -- We'll use modifier against wrathfulFaerie instead
+			fotm = false,
+			modifier = 0.8,
+			icd = 0.75,
+			energizeId = 345456,
+			conduitId = 101,
+			conduitRanks = {}
+		},
+		rabidShadows = {
+			id = 338338,
+			name = "",
+			icon = "",
+			conduitId = 114,
+			conduitRanks = {}
+		},
+		dissonantEchoes = {
+			id = 338342,
+			name = "",
+			icon = "",
+			conduitId = 72,
+			conduitRanks = {}
+		},
+
+		dreamspunMushrooms = {
+			id = 342409,
+			name = "",
+			icon = ""
+		},
+		elethiumMuzzle = {
+			id = 319276,
+			name = "",
+			icon = ""
 		}
 	}
 
@@ -322,6 +382,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		additionalVbCasts = 0,
 		remainingHvAvgTime = 0,
 		additionalVbAvgCasts = 0,
+		isInfinite = false,
+		isAverageInfinite = false,
 		s2m = {
 			startTime = nil,
 			active = false
@@ -344,6 +406,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		shadowWordPain = 0,
 		vampiricTouch = 0,
 		devouringPlague = 0,
+		wrathfulFaerieGuid = nil,
 		targets = {}
 	}
 	TRB.Data.snapshotData.deathAndMadness = {
@@ -369,7 +432,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		numberActive = 0,
 		resourceRaw = 0,
 		resourceFinal = 0,
-		maxTicksRemaining = 0,		
+		maxTicksRemaining = 0,
 		voidTendrils = {}
 	}
 	TRB.Data.snapshotData.mindDevourer = {
@@ -378,7 +441,32 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		duration = 0
 	}
 	TRB.Data.snapshotData.darkThought = {
-
+	}
+	TRB.Data.snapshotData.wrathfulFaerie = {
+		main = {
+			isActive = false,
+			procTime = 0,
+			remaining = {
+				procs = 0,
+				gcds = 0,
+				time = 0
+			},
+			resourceRaw = 0,
+			resourceFinal = 0
+		},
+		fermata = {
+			isActive = false,
+			procTime = 0,
+			remaining = {
+				procs = 0,
+				gcds = 0,
+				time = 0
+			},
+			resourceRaw = 0,
+			resourceFinal = 0
+		},
+		resourceRaw = 0,
+		resourceFinal = 0,
 	}
 
 	local function FillSpellData()
@@ -386,10 +474,65 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.spells.s2m.name = select(2, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 
 		TRB.Functions.FillSpellData()
-		
+
+		-- Conduit Ranks
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[0] = 0
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[1] = 3.8
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[2] = 4.18
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[3] = 4.56
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[4] = 4.94
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[5] = 5.32
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[6] = 5.7
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[7] = 6.08
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[8] = 6.46
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[9] = 6.84
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[10] = 7.22
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[11] = 7.6
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[12] = 7.98
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[13] = 8.36
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[14] = 8.74
+		TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[15] = 9.12
+
+		TRB.Data.spells.rabidShadows.conduitRanks[0] = 0
+		TRB.Data.spells.rabidShadows.conduitRanks[1] = 0.12
+		TRB.Data.spells.rabidShadows.conduitRanks[2] = 0.209
+		TRB.Data.spells.rabidShadows.conduitRanks[3] = 0.228
+		TRB.Data.spells.rabidShadows.conduitRanks[4] = 0.247
+		TRB.Data.spells.rabidShadows.conduitRanks[5] = 0.266
+		TRB.Data.spells.rabidShadows.conduitRanks[6] = 0.285
+		TRB.Data.spells.rabidShadows.conduitRanks[7] = 0.304
+		TRB.Data.spells.rabidShadows.conduitRanks[8] = 0.323
+		TRB.Data.spells.rabidShadows.conduitRanks[9] = 0.342
+		TRB.Data.spells.rabidShadows.conduitRanks[10] = 0.361
+		TRB.Data.spells.rabidShadows.conduitRanks[11] = 0.38
+		TRB.Data.spells.rabidShadows.conduitRanks[12] = 0.399
+		TRB.Data.spells.rabidShadows.conduitRanks[13] = 0.418
+		TRB.Data.spells.rabidShadows.conduitRanks[14] = 0.437
+		TRB.Data.spells.rabidShadows.conduitRanks[15] = 0.456
+
+		TRB.Data.spells.dissonantEchoes.conduitRanks[0] = 0
+		TRB.Data.spells.dissonantEchoes.conduitRanks[1] = 0.031
+		TRB.Data.spells.dissonantEchoes.conduitRanks[2] = 0.034
+		TRB.Data.spells.dissonantEchoes.conduitRanks[3] = 0.037
+		TRB.Data.spells.dissonantEchoes.conduitRanks[4] = 0.04
+		TRB.Data.spells.dissonantEchoes.conduitRanks[5] = 0.043
+		TRB.Data.spells.dissonantEchoes.conduitRanks[6] = 0.047
+		TRB.Data.spells.dissonantEchoes.conduitRanks[7] = 0.05
+		TRB.Data.spells.dissonantEchoes.conduitRanks[8] = 0.053
+		TRB.Data.spells.dissonantEchoes.conduitRanks[9] = 0.056
+		TRB.Data.spells.dissonantEchoes.conduitRanks[10] = 0.059
+		TRB.Data.spells.dissonantEchoes.conduitRanks[11] = 0.062
+		TRB.Data.spells.dissonantEchoes.conduitRanks[12] = 0.065
+		TRB.Data.spells.dissonantEchoes.conduitRanks[13] = 0.068
+		TRB.Data.spells.dissonantEchoes.conduitRanks[14] = 0.071
+		TRB.Data.spells.dissonantEchoes.conduitRanks[15] = 0.074
+		-- TODO: Add these conduits to the bar icon variables too!
+
+
 		-- This is done here so that we can get icons for the options menu!
 		TRB.Data.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Insanity generating spell you are currently hardcasting", printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#vf", icon = TRB.Data.spells.voidform.icon, description = "Voidform", printInSettings = true },
 			{ variable = "#voidform", icon = TRB.Data.spells.voidform.icon, description = "Voidform", printInSettings = false },
@@ -427,7 +570,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#mindbender", icon = TRB.Data.spells.mindbender.icon, description = "Mindbender/Shadowfiend", printInSettings = false },
 			{ variable = "#shadowfiend", icon = TRB.Data.spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = false },
 			{ variable = "#sf", icon = TRB.Data.spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = true },
-			
+
+			{ variable = "#wf", icon = TRB.Data.spells.wrathfulFaerie.icon, description = "Wrathful Faerie", printInSettings = true },
+			{ variable = "#wrathfulFaerie", icon = TRB.Data.spells.wrathfulFaerie.icon, description = "Wrathful Faerie", printInSettings = false },
+
+			{ variable = "#s2m", icon = TRB.Data.spells.s2m.icon, description = "Surrender to Madness", printInSettings = true },
+			{ variable = "#surrenderToMadness", icon = TRB.Data.spells.s2m.icon, description = "Surrender to Madness", printInSettings = false },
+
 			{ variable = "#ecttv", icon = TRB.Data.spells.eternalCallToTheVoid_Tendril.icon, description = "Eternal Call to the Void", printInSettings = true },
 			{ variable = "#tb", icon = TRB.Data.spells.eternalCallToTheVoid_Tendril.icon, description = "Eternal Call to the Void", printInSettings = false },
 			{ variable = "#loi", icon = TRB.Data.spells.lashOfInsanity_Tendril.icon, description = "Lash of Insanity", printInSettings = true },
@@ -469,7 +618,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$mbGcds", description = "Number of GCDs left on Mindbender/Shadowfiend", printInSettings = true, color = false },
 			{ variable = "$mbSwings", description = "Number of Swings left on Mindbender/Shadowfiend", printInSettings = true, color = false },
 			{ variable = "$mbTime", description = "Time left on Mindbender/Shadowfiend", printInSettings = true, color = false },
-			
+
+			{ variable = "$wfInsanity", description = "Insanity from Wrathful Faerie (per settings)", printInSettings = true, color = false },
+			{ variable = "$wfGcds", description = "Number of GCDs left on Wrathful Faerie", printInSettings = true, color = false },
+			{ variable = "$wfProcs", description = "Number of Procs left on Wrathful Faerie", printInSettings = true, color = false },
+			{ variable = "$wfTime", description = "Time left on Wrathful Faerie", printInSettings = true, color = false },
+
 			{ variable = "$cttvEquipped", description = "Checks if you have Call of the Void equipped. Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$ecttvCount", description = "Number of active Void Tendrils/Void Lashers", printInSettings = true, color = false },
 			{ variable = "$loiInsanity", description = "Insanity from all Void Tendrils and Void Lashers", printInSettings = true, color = false },
@@ -485,43 +639,52 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$mdTime", description = "Time remaining on Mind Devourer buff", printInSettings = true, color = false },
 
 			{ variable = "$vfTime", description = "Duration remaining of Voidform", printInSettings = true, color = false },
-			{ variable = "$hvTime", description = "Duration remaining `of Voidform w/max Void Bolt casts in Hungering Void", printInSettings = true, color = false },
+			{ variable = "$hvTime", description = "Duration remaining of VF w/max VB casts in Hungering Void", printInSettings = true, color = false },
 			{ variable = "$vbCasts", description = "Max Void Bolt casts remaining in Hungering Void", printInSettings = true, color = false },
-			{ variable = "$hvAvgTime", description = "Duration of Voidform w/max Void Bolt casts in Hungering Void, includes crits", printInSettings = true, color = false },
+			{ variable = "$hvAvgTime", description = "Duration of VF w/max VB casts in Hungering Void, includes crits", printInSettings = true, color = false },
 			{ variable = "$vbAvgCasts", description = "Max Void Bolt casts remaining in Hungering Void, includes crits", printInSettings = true, color = false },
 
-			{ variable = "$ttd", description = "Time To Die of current target", printInSettings = true, color = true }
+			{ variable = "$s2m", description = "Is Surrender to Madness currently talented. Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$surrenderToMadness", description = "Is Surrender to Madness currently talented. Logic variable only!", printInSettings = true, color = false },
+
+			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
 	end
 
 	local function CheckCharacter()
 		TRB.Functions.CheckCharacter()
+		
+		TRB.Data.character.className = "priest"
+		TRB.Data.character.specName = "shadow"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Insanity)
 		TRB.Data.character.talents.searingNightmare.isSelected = select(4, GetTalentInfo(3, 3, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.fotm.isSelected = select(4, GetTalentInfo(1, 1, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.as.isSelected = select(4, GetTalentInfo(5, 1, TRB.Data.character.specGroup))
-		TRB.Data.character.talents.mindbender.isSelected = select(4, GetTalentInfo(6, 2, TRB.Data.character.specGroup))	
+		TRB.Data.character.talents.mindbender.isSelected = select(4, GetTalentInfo(6, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.hungeringVoid.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.surrenderToMadeness.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
-		
+
 		TRB.Data.character.devouringPlagueThreshold = 50
-		TRB.Data.character.searingNightmareThreshold = 35
-		
+		TRB.Data.character.searingNightmareThreshold = 30
+
 		if TRB.Data.settings.priest ~= nil and TRB.Data.settings.priest.shadow ~= nil then
+			-- Threshold lines
 			if TRB.Data.settings.priest.shadow.devouringPlagueThreshold and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
-				resourceFrame.thresholdDp:Show()
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholdDp, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+				resourceFrame.thresholds[1]:Show()
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
 			else
-				resourceFrame.thresholdDp:Hide()
-			end
-			
-			if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then
-				resourceFrame.thresholdSn:Show()		
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholdSn, resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
-			else
-				resourceFrame.thresholdSn:Hide()
+				resourceFrame.thresholds[1]:Hide()
 			end
 
+			if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then
+				resourceFrame.thresholds[2]:Show()
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			else
+				resourceFrame.thresholds[2]:Hide()
+			end
+
+			-- Legendaries
 			local wristItemLink = GetInventoryItemLink("player", 9)
 			local handsItemLink = GetInventoryItemLink("player", 10)
 
@@ -529,14 +692,27 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if wristItemLink ~= nil then
 				callToTheVoid = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(wristItemLink, 173249, TRB.Data.spells.eternalCallToTheVoid_Tendril.idLegendaryBonus)
 			end
-			
+
 			if callToTheVoid == false and handsItemLink ~= nil then
 				callToTheVoid = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(handsItemLink, 173244, TRB.Data.spells.eternalCallToTheVoid_Tendril.idLegendaryBonus)
 			end
 			TRB.Data.character.items.callToTheVoid = callToTheVoid
+
+			-- Torghast
+			if IsInJailersTower() then
+				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1 + ((select(16, TRB.Functions.FindAuraById(TRB.Data.spells.dreamspunMushrooms.id, "player", "MAW")) or 0) / 100)
+				if TRB.Functions.FindAuraById(TRB.Data.spells.elethiumMuzzle.id, "player", "MAW") then
+					TRB.Data.character.torghast.elethiumMuzzleModifier = 0.75
+				else
+					TRB.Data.character.torghast.elethiumMuzzleModifier = 1
+				end
+			else
+				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1
+				TRB.Data.character.torghast.elethiumMuzzleModifier = 1
+			end
 		end
 	end
-	
+
 	local function IsTtdActive()
 		if TRB.Data.settings.priest ~= nil and TRB.Data.settings.priest.shadow ~= nil and TRB.Data.settings.priest.shadow.displayText ~= nil then
 			if string.find(TRB.Data.settings.priest.shadow.displayText.left.outVoidformText, "$ttd") or
@@ -556,14 +732,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
     TRB.Functions.IsTtdActive = IsTtdActive
 
 	local function EventRegistration()
-		if GetSpecialization() == 3 then		
+		if GetSpecialization() == 3 then
 			TRB.Data.resource = Enum.PowerType.Insanity
 			TRB.Data.resourceFactor = 100
 			TRB.Data.specSupported = true
 			CheckCharacter()
-			
+
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-			
+
 			--[[
 			if TRB.Data.settings.priest.shadow.mindbender.useNotification.enabled then
 				mindbenderAudioCueFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) mindbenderAudioCueFrame:onUpdate(sinceLastUpdate) end)
@@ -577,19 +753,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 			TRB.Details.addonData.registered = true
-		else		
+		else
 			--TRB.Data.resource = MANA
 			TRB.Data.specSupported = false
 			targetsTimerFrame:SetScript("OnUpdate", nil)
 			--mindbenderAudioCueFrame:SetScript("OnUpdate", nil)
-			timerFrame:SetScript("OnUpdate", nil)			
+			timerFrame:SetScript("OnUpdate", nil)
 			barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 			barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-			TRB.Details.addonData.registered = false			
+			TRB.Details.addonData.registered = false
 			barContainerFrame:Hide()
-		end	
+		end
 	end
 
 	local function CheckVoidTendrilExists(guid)
@@ -605,7 +781,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].startTime = nil
 			TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].tickTime = nil
 			TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].type = nil
-		end	
+			TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].targetsHit = 0
+			TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].hasStruckTargets = false
+		end
 	end
 
 	local function RemoveVoidTendril(guid)
@@ -621,7 +799,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.snapshotData.targetData.targets[guid].shadowWordPain = false
 			TRB.Data.snapshotData.targetData.targets[guid].vampiricTouch = false
 			TRB.Data.snapshotData.targetData.targets[guid].devouringPlague = false
-		end	
+		end
 	end
 
 	local function RefreshTargetTracking()
@@ -650,13 +828,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end
 
-		TRB.Data.snapshotData.targetData.auspiciousSpirits = asTotal		
+		TRB.Data.snapshotData.targetData.auspiciousSpirits = asTotal
 		if TRB.Data.snapshotData.targetData.auspiciousSpirits < 0 then
 			TRB.Data.snapshotData.targetData.auspiciousSpirits = 0
 		end
 
-		TRB.Data.snapshotData.targetData.shadowWordPain = swpTotal		
-		TRB.Data.snapshotData.targetData.vampiricTouch = vtTotal		
+		TRB.Data.snapshotData.targetData.shadowWordPain = swpTotal
+		TRB.Data.snapshotData.targetData.vampiricTouch = vtTotal
 		TRB.Data.snapshotData.targetData.devouringPlague = dpTotal
 	end
 
@@ -694,7 +872,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Functions.TargetsCleanup(clearAll)
 		if clearAll == true then
 			TRB.Data.snapshotData.targetData.shadowWordPain = 0
-			TRB.Data.snapshotData.targetData.vampiricTouch = 0		
+			TRB.Data.snapshotData.targetData.vampiricTouch = 0
 			TRB.Data.snapshotData.targetData.devouringPlague = 0
 			TRB.Data.snapshotData.targetData.auspiciousSpirits = 0
 		end
@@ -702,36 +880,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function ConstructResourceBar()
 		TRB.Functions.ConstructResourceBar(TRB.Data.settings.priest.shadow)
-		
-		resourceFrame.thresholdDp:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
-		resourceFrame.thresholdDp:SetHeight(TRB.Data.settings.priest.shadow.bar.height)
-		resourceFrame.thresholdDp.texture = resourceFrame.thresholdDp:CreateTexture(nil, TRB.Data.settings.core.strata.level)
-		resourceFrame.thresholdDp.texture:SetAllPoints(resourceFrame.thresholdDp)
-		resourceFrame.thresholdDp.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
-		resourceFrame.thresholdDp:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		resourceFrame.thresholdDp:SetFrameLevel(128)
-		resourceFrame.thresholdDp:Show()
-		
-		resourceFrame.thresholdSn:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
-		resourceFrame.thresholdSn:SetHeight(TRB.Data.settings.priest.shadow.bar.height)
-		resourceFrame.thresholdSn.texture = resourceFrame.thresholdSn:CreateTexture(nil, TRB.Data.settings.core.strata.level)
-		resourceFrame.thresholdSn.texture:SetAllPoints(resourceFrame.thresholdSn)
-		resourceFrame.thresholdSn.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
-		resourceFrame.thresholdSn:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		resourceFrame.thresholdSn:SetFrameLevel(128)
-		resourceFrame.thresholdSn:Show()
 	end
 
-	local function CalculateRemainingTime()
+	local function CalculateRemainingHungeringVoidTime()
 		local currentTime = GetTime()
 		local _
 		local expirationTime
 		_, _, _, _, TRB.Data.snapshotData.voidform.duration, expirationTime, _, _, _, TRB.Data.snapshotData.voidform.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.voidform.id)
 
-		if TRB.Data.snapshotData.voidform.spellId == nil then		
+		if TRB.Data.snapshotData.voidform.spellId == nil then
 			TRB.Data.snapshotData.voidform.remainingTime = 0
-			TRB.Data.snapshotData.voidform.remainingHvTime = 0	
+			TRB.Data.snapshotData.voidform.remainingHvTime = 0
 			TRB.Data.snapshotData.voidform.additionalVbCasts = 0
+			TRB.Data.snapshotData.voidform.remainingHvAvgTime = 0
+			TRB.Data.snapshotData.voidform.additionalVbAvgCasts = 0
+			TRB.Data.snapshotData.voidform.isInfinite = false
+			TRB.Data.snapshotData.voidform.isAverageInfinite = false
 		else
 			local remainingTime = (expirationTime - currentTime) or 0
 
@@ -739,15 +903,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				local latency = TRB.Functions.GetLatency()
 				local vbStart, vbDuration, _, _ = GetSpellCooldown(TRB.Data.spells.voidBolt.id)
 				local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(TRB.Data.spells.voidBolt.id)
-				local vbCooldown = (vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) + latency
-
+				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier), 0.75) + latency
+				local gcdLockRemaining = TRB.Functions.GetCurrentGCDLockRemaining()
 				local targetDebuffId = select(10, TRB.Functions.FindDebuffById(TRB.Data.spells.hungeringVoid.idDebuff, "target"))
-				
+
+				local castGrantsExtension = true
+				--[[
+				Issue #107 - Twintop 2021-01-03
+					Hungering Void doesn't require the target to actually be debuffed to grant extensions.
+					Change back to the code below once this is fixed by Blizz.
+				----
 				local castGrantsExtension = false
 
 				if targetDebuffId ~= nil then
 					castGrantsExtension = true
 				end
+				]]
 
 				local remainingTimeTmp = remainingTime
 				local remainingTimeTotal = remainingTime
@@ -755,78 +926,127 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				local remainingTimeTotalAverage = remainingTime
 				local moreCasts = 0
 				local moreCastsAverage = 0
-				local critValue = (1.0 + (TRB.Data.snapshotData.crit / 100))
+				local critValue = math.min((1.0 + (TRB.Data.snapshotData.crit / 100)), 2)
 
-				if critValue > 2 then
-					critValue = 2
-				end
-
-				if vbDuration > 0 then
+				if vbDuration > 0 or gcdLockRemaining > 0 then
 					local vbRemaining = vbStart + vbDuration - currentTime
-					if remainingTimeTmp > (vbRemaining + latency) then
+					local castDelay = vbRemaining
+
+					if gcdLockRemaining > vbRemaining then
+						castDelay = gcdLockRemaining
+					end
+
+					castDelay = castDelay + latency
+
+					if remainingTimeTmp > castDelay then
 						if castGrantsExtension == true then
 							moreCasts = moreCasts + 1
-							remainingTimeTmp = remainingTimeTmp + 1.0 - (vbRemaining + latency)
+							remainingTimeTmp = remainingTimeTmp + 1.0 - castDelay
 							remainingTimeTotal = remainingTimeTotal + 1.0
 
 							moreCastsAverage = moreCastsAverage + 1
-							remainingTimeTmpAverage = remainingTimeTmpAverage + critValue - (vbRemaining + latency)
+							remainingTimeTmpAverage = remainingTimeTmpAverage + critValue - castDelay
 							remainingTimeTotalAverage = remainingTimeTotalAverage + critValue
 						else
-							remainingTimeTmp = remainingTimeTmp + 1.0 - (vbRemaining + latency)
-							remainingTimeTmpAverage = remainingTimeTmpAverage + critValue - (vbRemaining + latency)
+							remainingTimeTmp = remainingTimeTmp - castDelay
+
+							remainingTimeTmpAverage = remainingTimeTmpAverage - castDelay
 							castGrantsExtension = true
 						end
 					end
 				end
 
-				while (remainingTimeTmpAverage >= vbCooldown or remainingTimeTmp >= vbCooldown)
+				-- With extremely high Haste and Crit it is possible to remain in Voidform for literally forever.
+
+				local infiniteExtensions = false
+				if vbCooldown <= 1 then
+					infiniteExtensions = true
+				end
+
+				local infiniteAverageExtensions = false
+				if ((2 - (2 / (vbCooldown))) * 100) < TRB.Data.snapshotData.crit then
+					infiniteAverageExtensions = true
+				end
+
+				local infinityHasteRequired = vbBaseCooldown - 1
+
+				local sanityCheckCounter = 0
+				local infinityCounter = 0
+				local infinityAverageCounter = 0
+				local maxCounter = 25
+				while (not (infiniteExtensions and infiniteAverageExtensions)) and 
+					  (remainingTimeTmpAverage >= vbCooldown or remainingTimeTmp >= vbCooldown) and
+					  infinityCounter < maxCounter and
+					  infinityAverageCounter < maxCounter and 
+					  sanityCheckCounter < maxCounter
 				do
-					if remainingTimeTmp >= vbCooldown then					
-						local additionalCasts = TRB.Functions.RoundTo(remainingTimeTmp / vbCooldown, 0)
+					sanityCheckCounter = sanityCheckCounter + 1
+					if not infiniteExtensions and remainingTimeTmp >= vbCooldown then
+						infinityCounter = infinityCounter + 1
+						local castsRaw = math.floor(remainingTimeTmp / vbCooldown)
+						local additionalCasts = castsRaw
+
 						if castGrantsExtension == false then
-							additionalCasts = additionalCasts - 1
+							additionalCasts = math.max(additionalCasts - 1, 0)
 						end
 						moreCasts = moreCasts + additionalCasts
-						remainingTimeTmp = remainingTimeTmp + additionalCasts - (additionalCasts * vbCooldown)
+						remainingTimeTmp = remainingTimeTmp + additionalCasts - (castsRaw * vbCooldown)
 						remainingTimeTotal = remainingTimeTotal + additionalCasts
 					end
-					
-					if remainingTimeTmpAverage >= vbCooldown then					
-						local additionalCastsAverage = TRB.Functions.RoundTo(remainingTimeTmpAverage / vbCooldown, 0)
+
+					if not infiniteAverageExtensions and remainingTimeTmpAverage >= vbCooldown then
+						infinityAverageCounter = infinityAverageCounter + 1
+						local castsAverageRaw =  math.floor(remainingTimeTmpAverage / vbCooldown)
+						local additionalCastsAverage = castsAverageRaw
+
 						if castGrantsExtension == false then
-							additionalCastsAverage = additionalCastsAverage - 1
+							additionalCastsAverage = math.max(additionalCastsAverage - 1, 0)
 						end
 						moreCastsAverage = moreCastsAverage + additionalCastsAverage
-						remainingTimeTmpAverage = remainingTimeTmpAverage + (critValue * additionalCastsAverage) - (additionalCastsAverage * vbCooldown)
+						remainingTimeTmpAverage = remainingTimeTmpAverage + (critValue * additionalCastsAverage) - (castsAverageRaw * vbCooldown)
 						remainingTimeTotalAverage = remainingTimeTotalAverage + (critValue * additionalCastsAverage)
 					end
 
 					castGrantsExtension = true
 				end
-				
+
 				TRB.Data.snapshotData.voidform.remainingTime = remainingTime or 0
-				TRB.Data.snapshotData.voidform.remainingHvTime = remainingTimeTotal	
+				TRB.Data.snapshotData.voidform.remainingHvTime = remainingTimeTotal
 				TRB.Data.snapshotData.voidform.additionalVbCasts = moreCasts
 				TRB.Data.snapshotData.voidform.remainingHvAvgTime = remainingTimeTotalAverage
 				TRB.Data.snapshotData.voidform.additionalVbAvgCasts = moreCastsAverage
+
+				if sanityCheckCounter == maxCounter and sanityCheckCounter ~= infinityCounter and sanityCheckCounter ~= infinityAverageCounter then
+					TRB.Data.snapshotData.voidform.isInfinite = true
+					TRB.Data.snapshotData.voidform.isAverageInfinite = true
+				end
+
+				if infiniteExtensions or infinityCounter == maxCounter then
+					TRB.Data.snapshotData.voidform.isInfinite = true
+				end
+
+				if infiniteAverageExtensions or infinityAverageCounter == maxCounter then
+					TRB.Data.snapshotData.voidform.isAverageInfinite = true
+				end
 			else
 				TRB.Data.snapshotData.voidform.remainingTime = remainingTime or 0
-				TRB.Data.snapshotData.voidform.remainingHvTime = 0	
+				TRB.Data.snapshotData.voidform.remainingHvTime = 0
 				TRB.Data.snapshotData.voidform.additionalVbCasts = 0
-				TRB.Data.snapshotData.voidform.remainingHvAvgTime = 0	
+				TRB.Data.snapshotData.voidform.remainingHvAvgTime = 0
 				TRB.Data.snapshotData.voidform.additionalVbAvgCasts = 0
-			end		
+				TRB.Data.snapshotData.voidform.isInfinite = false
+				TRB.Data.snapshotData.voidform.isAverageInfinite = false
+			end
 		end  
 	end
 
 	local function CalculateInsanityGain(insanity, fotm)
 		local modifier = 1.0
-		
+
 		if fotm and TRB.Data.character.talents.fotm.isSelected then
 			modifier = modifier * TRB.Data.character.talents.fotm.modifier
 		end
-		
+
 		if TRB.Data.spells.memoryOfLucidDreams.isActive then
 			modifier = modifier * TRB.Data.spells.memoryOfLucidDreams.modifier
 		end
@@ -834,39 +1054,34 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		if TRB.Data.spells.s2m.isActive then
 			modifier = modifier * TRB.Data.spells.s2m.modifier
 		end
-		
-		return insanity * modifier	
+
+		return insanity * modifier
 	end
 
 	local function IsValidVariableForSpec(var)
-		local valid = false
+		local valid = TRB.Functions.IsValidVariableBase(var)
+		if valid then
+			return valid
+		end
 
-		if var == "$crit" then
-			valid = true
-		elseif var == "$mastery" then
-			valid = true
-		elseif var == "$haste" then
-			valid = true
-		elseif var == "$gcd" then
-			valid = true
-		elseif var == "$vfTime" then
+		if var == "$vfTime" then
 			if TRB.Data.snapshotData.voidform.remainingTime ~= nil and TRB.Data.snapshotData.voidform.remainingTime > 0 then
 				valid = true
 			end
 		elseif var == "$hvAvgTime" then
-			if TRB.Data.character.talents.hungeringVoid.isSelected and TRB.Data.snapshotData.voidform.remainingHvAvgTime ~= nil and TRB.Data.snapshotData.voidform.remainingHvAvgTime > 0 then
+			if TRB.Data.character.talents.hungeringVoid.isSelected and TRB.Data.snapshotData.voidform.remainingHvAvgTime ~= nil and (TRB.Data.snapshotData.voidform.remainingHvAvgTime > 0 or TRB.Data.snapshotData.voidform.isAverageInfinite) then
 				valid = true
 			end
 		elseif var == "$vbAvgCasts" then
-			if TRB.Data.character.talents.hungeringVoid.isSelected and TRB.Data.snapshotData.voidform.remainingHvAvgTime ~= nil and TRB.Data.snapshotData.voidform.remainingHvAvgTime > 0 then
+			if TRB.Data.character.talents.hungeringVoid.isSelected and TRB.Data.snapshotData.voidform.remainingHvAvgTime ~= nil and (TRB.Data.snapshotData.voidform.remainingHvAvgTime > 0 or TRB.Data.snapshotData.voidform.isAverageInfinite) then
 				valid = true
 			end
 		elseif var == "$hvTime" then
-			if TRB.Data.character.talents.hungeringVoid.isSelected and TRB.Data.snapshotData.voidform.remainingHvTime ~= nil and TRB.Data.snapshotData.voidform.remainingHvTime > 0 then
+			if TRB.Data.character.talents.hungeringVoid.isSelected and TRB.Data.snapshotData.voidform.remainingHvTime ~= nil and (TRB.Data.snapshotData.voidform.remainingHvTime > 0 or TRB.Data.snapshotData.voidform.isInfinite) then
 				valid = true
 			end
 		elseif var == "$vbCasts" then
-			if TRB.Data.character.talents.hungeringVoid.isSelected and TRB.Data.snapshotData.voidform.remainingHvTime ~= nil and TRB.Data.snapshotData.voidform.remainingHvTime > 0 then
+			if TRB.Data.character.talents.hungeringVoid.isSelected and TRB.Data.snapshotData.voidform.remainingHvTime ~= nil and (TRB.Data.snapshotData.voidform.remainingHvTime > 0 or TRB.Data.snapshotData.voidform.isInfinite) then
 				valid = true
 			end
 		elseif var == "$resource" or var == "$insanity" then
@@ -887,7 +1102,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				valid = true
 			end
 		elseif var == "$overcap" or var == "$insanityOvercap" or var == "$resourceOvercap" then
-			if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.character.maxResource then
+			if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.priest.shadow.overcapThreshold then
 				valid = true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$insanityPlusPassive" then
@@ -919,7 +1134,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.snapshotData.mindbender.remaining.time > 0 then
 				valid = true
 			end
-		elseif var == "$loiTicks" then
+		elseif var == "$wfInsanity" then
+			if TRB.Data.snapshotData.wrathfulFaerie.main.resourceRaw > 0 then
+				valid = true
+			end
+		elseif var == "$wfGcds" then
+			if TRB.Data.snapshotData.wrathfulFaerie.main.remaining.gcds > 0 then
+				valid = true
+			end
+		elseif var == "$wfProcs" then
+			if TRB.Data.snapshotData.wrathfulFaerie.main.remaining.procs > 0 then
+				valid = true
+			end
+		elseif var == "$wfTime" then
+			if TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time > 0 then
+				valid = true
+			end
+		elseif var == "$loiInsanity" then
 			if TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal > 0 then
 				valid = true
 			end
@@ -928,11 +1159,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				valid = true
 			end
 		elseif var == "$cttvEquipped" then
-			if TRB.Data.character.items.callToTheVoid == true then
+			if TRB.Data.settings.priest.shadow.voidTendrilTracker and TRB.Data.character.items.callToTheVoid == true then
 				valid = true
 			end
 		elseif var == "$ecttvCount" then
-			if TRB.Data.snapshotData.eternalCallToTheVoid.numberActive > 0 then
+			if TRB.Data.settings.priest.shadow.voidTendrilTracker and TRB.Data.snapshotData.eternalCallToTheVoid.numberActive > 0 then
 				valid = true
 			end
 		elseif var == "$damInsanity" then
@@ -983,51 +1214,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		elseif var == "$ttd" then
 			if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
+		elseif var == "$s2m" or var == "$surrenderToMadness" then
+			if TRB.Data.character.talents.surrenderToMadeness.isSelected then
 				valid = true
 			end
 		else
-			valid = false					
+			valid = false
 		end
 
 		return valid
 	end
 	TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
 
-	local function BarText()
+	local function RefreshLookupData()
 		local currentTime = GetTime()
-		--$crit
-		local critPercent = string.format("%." .. TRB.Data.settings.priest.shadow.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.crit, TRB.Data.settings.priest.shadow.hastePrecision))
-
-		--$mastery
-		local masteryPercent = string.format("%." .. TRB.Data.settings.priest.shadow.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.mastery, TRB.Data.settings.priest.shadow.hastePrecision))
-		
-		--$haste
-		local _hasteColor = TRB.Data.settings.priest.shadow.colors.text.left
-		local _hasteValue = TRB.Functions.RoundTo(TRB.Data.snapshotData.haste, TRB.Data.settings.priest.shadow.hastePrecision)
-		
-		if TRB.Data.snapshotData.voidform.spellId then        
-			if TRB.Data.settings.priest.shadow.hasteThreshold <= TRB.Data.snapshotData.haste then
-				_hasteColor = TRB.Data.settings.priest.shadow.colors.text.hasteAbove    
-			elseif TRB.Data.settings.priest.shadow.hasteApproachingThreshold <= TRB.Data.snapshotData.haste then
-				_hasteColor = TRB.Data.settings.priest.shadow.colors.text.hasteApproaching    
-			else
-				_hasteColor = TRB.Data.settings.priest.shadow.colors.text.hasteBelow
-			end
-		end
-
-		--$gcd
-		local _gcd = 1.5 / (1 + (TRB.Data.snapshotData.haste/100))
-		if _gcd > 1.5 then
-			_gcd = 1.5
-		elseif _gcd < 0.75 then
-			_gcd = 0.75
-		end
-		local gcd = string.format("%.2f", _gcd)
-
-		local hastePercent = string.format("|c%s%." .. TRB.Data.settings.priest.shadow.hastePrecision .. "f|c%s", _hasteColor, TRB.Data.snapshotData.haste, TRB.Data.settings.priest.shadow.colors.text.left)
-		
-		----------
-		
+		local normalizedInsanity = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 		--$vfTime
 		local voidformTime = string.format("%.1f", TRB.Data.snapshotData.voidform.remainingTime)
 		--$hvTime
@@ -1038,6 +1239,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local hungeringVoidTimeAvg = string.format("%.1f", TRB.Data.snapshotData.voidform.remainingHvAvgTime)
 		--$vbAvgCasts
 		local voidBoltCastsAvg = string.format("%.0f", TRB.Data.snapshotData.voidform.additionalVbAvgCasts)
+
+		if TRB.Data.snapshotData.voidform.isInfinite then
+			hungeringVoidTime = "∞"
+			voidBoltCasts = "∞"
+		end
+
+		if TRB.Data.snapshotData.voidform.isAverageInfinite then
+			hungeringVoidTimeAvg = "∞"
+			voidBoltCastsAvg = "∞"
+		end
 
 		----------
 
@@ -1052,21 +1263,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then
 			insanityThreshold = TRB.Data.character.searingNightmareThreshold
 		end
-		
+
 		if TRB.Data.settings.priest.shadow.colors.text.overcapEnabled and overcap then 
 			currentInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overcapInsanity
-			castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overcapInsanity	
-		elseif TRB.Data.settings.priest.shadow.colors.text.overThresholdEnabled and TRB.Data.snapshotData.resource >= insanityThreshold then
+			castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overcapInsanity
+		elseif TRB.Data.settings.priest.shadow.colors.text.overThresholdEnabled and normalizedInsanity >= insanityThreshold then
 			currentInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overThreshold
+			castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overThreshold
 		end
 
 		--$insanity
-		local currentInsanity = string.format("|c%s%.0f|r", currentInsanityColor, TRB.Data.snapshotData.resource)
+		local insanityPrecision = TRB.Data.settings.priest.shadow.insanityPrecision or 0
+		local currentInsanity = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.RoundTo(normalizedInsanity, insanityPrecision, "floor"))
 		--$casting
-		local castingInsanity = string.format("|c%s%.0f|r", castingInsanityColor, TRB.Data.snapshotData.casting.resourceFinal)
-		if TRB.Data.snapshotData.casting.resourceFinal > 0 and TRB.Data.character.talents.fotm.isSelected and TRB.Data.settings.priest.shadow.fotmPrecision then
-			castingInsanity = string.format("|c%s%.1f|r", castingInsanityColor, TRB.Data.snapshotData.casting.resourceFinal)
-		end
+		local castingInsanity = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, insanityPrecision, "floor"))
 		--$mbInsanity
 		local mbInsanity = string.format("%.0f", TRB.Data.snapshotData.mindbender.resourceFinal)
 		--$mbGcds
@@ -1075,6 +1285,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local mbSwings = string.format("%.0f", TRB.Data.snapshotData.mindbender.remaining.swings)
 		--$mbTime
 		local mbTime = string.format("%.1f", TRB.Data.snapshotData.mindbender.remaining.time)
+		--$wfInsanity
+		local _wfInsanity = TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal + TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceFinal
+		local wfInsanity = string.format("%s", TRB.Functions.RoundTo(_wfInsanity, insanityPrecision, "floor"))
+		--$wfGcds
+		local wfGcds = string.format("%.0f", math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.gcds, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds))
+		--$wfProcs
+		local wfProcs = string.format("%.0f", math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.procs, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.procs))
+		--$wfTime
+		local wfTime = string.format("%.1f", math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds))
 		--$loiInsanity
 		local loiInsanity = string.format("%.0f", TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal)
 		--$loiTicks
@@ -1092,17 +1311,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _asInsanity = CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity, false) * TRB.Data.snapshotData.targetData.auspiciousSpirits
 		local asInsanity = string.format("%.0f", _asInsanity)
 		--$passive
-		local _passiveInsanity = _asInsanity + TRB.Data.snapshotData.mindbender.resourceFinal + _damInsanity + TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal
+		local _passiveInsanity = _asInsanity + TRB.Data.snapshotData.mindbender.resourceFinal + _damInsanity + TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal + TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal
 		local passiveInsanity = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.passiveInsanity, _passiveInsanity)
 		--$insanityTotal
-		local _insanityTotal = math.min(_passiveInsanity + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local insanityTotal = string.format("|c%s%.0f|r", currentInsanityColor, _insanityTotal)
+		local _insanityTotal = math.min(_passiveInsanity + TRB.Data.snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
+		local insanityTotal = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.RoundTo(_insanityTotal, insanityPrecision, "floor"))
 		--$insanityPlusCasting
-		local _insanityPlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local insanityPlusCasting = string.format("|c%s%.0f|r", castingInsanityColor, _insanityPlusCasting)
+		local _insanityPlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
+		local insanityPlusCasting = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.RoundTo(_insanityPlusCasting, insanityPrecision, "floor"))
 		--$insanityPlusPassive
-		local _insanityPlusPassive = math.min(_passiveInsanity + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local insanityPlusPassive = string.format("|c%s%.0f|r", currentInsanityColor, _insanityPlusPassive)
+		local _insanityPlusPassive = math.min(_passiveInsanity + normalizedInsanity, TRB.Data.character.maxResource)
+		local insanityPlusPassive = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.RoundTo(_insanityPlusPassive, insanityPrecision, "floor"))
 
 
 		----------
@@ -1110,7 +1329,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local shadowWordPainCount = TRB.Data.snapshotData.targetData.shadowWordPain or 0
 		--$vtCount
 		local vampiricTouchCount = TRB.Data.snapshotData.targetData.vampiricTouch or 0
-		--$dpCount	
+		--$dpCount
 		local devouringPlagueCount = TRB.Data.snapshotData.targetData.devouringPlague or 0
 		--$mdTime
 		local _mdTime = 0
@@ -1142,19 +1361,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		----------
 
+		--We have extra custom stuff we want to do with TTD for Priests
 		--$ttd
 		local _ttd = ""
 		local ttd = ""
+		local ttdTotalSeconds = 0
 
 		if TRB.Data.snapshotData.targetData.ttdIsActive and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd ~= 0 then
 			local target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
 			local ttdMinutes = math.floor(target.ttd / 60)
 			local ttdSeconds = target.ttd % 60
 			_ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
-			
+
 			local _ttdColor = TRB.Data.settings.priest.shadow.colors.text.left
 			local s2mStart, s2mDuration, _, _ = GetSpellCooldown(TRB.Data.spells.s2m.id)
-					
+
 			if TRB.Data.character.talents.surrenderToMadeness.isSelected and not TRB.Data.snapshotData.voidform.s2m.active then
 				if TRB.Data.settings.priest.shadow.s2mThreshold <= target.ttd then
 					_ttdColor = TRB.Data.settings.priest.shadow.colors.text.s2mAbove
@@ -1163,13 +1384,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				else
 					_ttdColor = TRB.Data.settings.priest.shadow.colors.text.s2mBelow
 				end
-				
+
 				ttd = string.format("|c%s%d:%0.2d|c%s", _ttdColor, ttdMinutes, ttdSeconds, TRB.Data.settings.priest.shadow.colors.text.left)
+				ttdTotalSeconds = string.format("|c%s%s|c%s", _ttdColor, TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor"), TRB.Data.settings.priest.shadow.colors.text.left)
 			else
 				ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
+				ttdTotalSeconds = string.format("%s", TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor"))
 			end
 		else
 			ttd = "--"
+			ttdTotalSeconds = string.format("%s", TRB.Functions.RoundTo(0, TRB.Data.settings.core.ttd.precision or 1, "floor"))
 		end
 
 		--#castingIcon
@@ -1183,11 +1407,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					timeRemaining = TRB.Data.snapshotData.voidform.remainingHvTime,
 					voidBoltCasts = TRB.Data.snapshotData.voidform.additionalVbCasts,
 					TimeRemainingAverage = TRB.Data.snapshotData.voidform.remainingHvAvgTime,
-					voidBoltCastsAverage = TRB.Data.snapshotData.voidform.additionalVbAvgCasts,
+					voidBoltCastsAverage = TRB.Data.snapshotData.voidform.additionalVbAvgCasts
 				}
 			},
 			insanity = {
-				insanity = TRB.Data.snapshotData.resource or 0,
+				insanity = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor or 0,
 				casting = TRB.Data.snapshotData.casting.resourceFinal or 0,
 				passive = _passiveInsanity,
 				auspiciousSpirits = _asInsanity,
@@ -1204,55 +1428,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				vtCount = vampiricTouchCount or 0,
 				dpCount = devouringPlagueCount or 0
 			},
-			mindbender = {			
-				insanity = TRB.Data.snapshotData.mindbender.resourceFinal or 0,
-				gcds = TRB.Data.snapshotData.mindbender.remaining.gcds or 0,
-				swings = TRB.Data.snapshotData.mindbender.remaining.swings or 0,
-				time = TRB.Data.snapshotData.mindbender.remaining.time or 0
-			},
-			mindSear = {
-				targetsHit = TRB.Data.snapshotData.mindSear.targetsHit or 0
-			},
-			deathAndMadness = {
-				insanity = _damInsanity,
-				ticks = TRB.Data.snapshotData.deathAndMadness.ticksRemaining or 0
-			},
-			eternalCallToTheVoid = {
-				insanity = TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal or 0,
-				ticks = TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining or 0,
-				count = TRB.Data.snapshotData.eternalCallToTheVoid.numberActive or 0
-			}
-		}
-		
-		Global_TwintopResourceBar = {
-			ttd = ttd or "--",
-			voidform = {
-				hungeringVoid = {
-					timeRemaining = TRB.Data.snapshotData.voidform.remainingHvTime,
-					voidBoltCasts = TRB.Data.snapshotData.voidform.additionalVbCasts,
-					TimeRemainingAverage = TRB.Data.snapshotData.voidform.remainingHvAvgTime,
-					voidBoltCastsAverage = TRB.Data.snapshotData.voidform.additionalVbAvgCasts,
-				}
-			},
-			resource = {
-				resource = TRB.Data.snapshotData.resource or 0,
-				casting = TRB.Data.snapshotData.casting.resourceFinal or 0,
-				passive = _passiveInsanity,
-				auspiciousSpirits = _asInsanity,
-				mindbender = TRB.Data.snapshotData.mindbender.resourceFinal or 0,
-				deathAndMadness = _damInsanity,
-				ecttv = TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal or 0
-			},
-			auspiciousSpirits = {
-				count = TRB.Data.snapshotData.targetData.auspiciousSpirits or 0,
-				insanity = _asInsanity
-			},
-			dots = {
-				swpCount = shadowWordPainCount or 0,
-				vtCount = vampiricTouchCount or 0,
-				dpCount = devouringPlagueCount or 0
-			},
-			mindbender = {			
+			mindbender = {
 				insanity = TRB.Data.snapshotData.mindbender.resourceFinal or 0,
 				gcds = TRB.Data.snapshotData.mindbender.remaining.gcds or 0,
 				swings = TRB.Data.snapshotData.mindbender.remaining.swings or 0,
@@ -1272,8 +1448,67 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			}
 		}
 
-		
-		local lookup = {}
+		Global_TwintopResourceBar.voidform = {
+			hungeringVoid = {
+				timeRemaining = TRB.Data.snapshotData.voidform.remainingHvTime,
+				voidBoltCasts = TRB.Data.snapshotData.voidform.additionalVbCasts,
+				TimeRemainingAverage = TRB.Data.snapshotData.voidform.remainingHvAvgTime,
+				voidBoltCastsAverage = TRB.Data.snapshotData.voidform.additionalVbAvgCasts,
+				isInfinite = TRB.Data.snapshotData.voidform.isInfinite,
+				isAverageInfinite = TRB.Data.snapshotData.voidform.isAverageInfinite
+			}
+		}
+		Global_TwintopResourceBar.resource.passive = _passiveInsanity
+		Global_TwintopResourceBar.resource.auspiciousSpirits = _asInsanity
+		Global_TwintopResourceBar.resource.mindbender = TRB.Data.snapshotData.mindbender.resourceFinal or 0
+		Global_TwintopResourceBar.resource.deathAndMadness = _damInsanity
+		Global_TwintopResourceBar.resource.ecttv = TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal or 0
+		Global_TwintopResourceBar.resource.wrathfulFaerie = _wfInsanity or 0
+		Global_TwintopResourceBar.auspiciousSpirits = {
+			count = TRB.Data.snapshotData.targetData.auspiciousSpirits or 0,
+			insanity = _asInsanity
+		}
+		Global_TwintopResourceBar.dots = {
+			swpCount = shadowWordPainCount or 0,
+			vtCount = vampiricTouchCount or 0,
+			dpCount = devouringPlagueCount or 0
+		}
+		Global_TwintopResourceBar.mindbender = {
+			insanity = TRB.Data.snapshotData.mindbender.resourceFinal or 0,
+			gcds = TRB.Data.snapshotData.mindbender.remaining.gcds or 0,
+			swings = TRB.Data.snapshotData.mindbender.remaining.swings or 0,
+			time = TRB.Data.snapshotData.mindbender.remaining.time or 0
+		}
+		Global_TwintopResourceBar.mindSear = {
+			targetsHit = TRB.Data.snapshotData.mindSear.targetsHit or 0
+		}
+		Global_TwintopResourceBar.deathAndMadness = {
+			insanity = _damInsanity,
+			ticks = TRB.Data.snapshotData.deathAndMadness.ticksRemaining or 0
+		}
+		Global_TwintopResourceBar.eternalCallToTheVoid = {
+			insanity = TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal or 0,
+			ticks = TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining or 0,
+			count = TRB.Data.snapshotData.eternalCallToTheVoid.numberActive or 0
+		}
+		Global_TwintopResourceBar.wrathfulFaerie = {
+			insanity = _wfInsanity,
+			main = {
+				insanity = TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal or 0,
+				gcds = TRB.Data.snapshotData.wrathfulFaerie.main.remaining.gcds or 0,
+				procs = TRB.Data.snapshotData.wrathfulFaerie.main.remaining.procs or 0,
+				time = TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time or 0
+			},
+			fermata = {
+				insanity = TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceFinal or 0,
+				gcds = TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds or 0,
+				procs = TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.procs or 0,
+				time = TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.time or 0
+			}
+		}
+
+
+		local lookup = TRB.Data.lookup or {}
 		lookup["#as"] = TRB.Data.spells.auspiciousSpirits.icon
 		lookup["#auspiciousSpirits"] = TRB.Data.spells.auspiciousSpirits.icon
 		lookup["#sa"] = TRB.Data.spells.shadowyApparition.icon
@@ -1288,6 +1523,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#darkThought"] = TRB.Data.spells.darkThought.icon
 		lookup["#mindbender"] = TRB.Data.spells.mindbender.icon
 		lookup["#shadowfiend"] = TRB.Data.spells.shadowfiend.icon
+		lookup["#wf"] = TRB.Data.spells.wrathfulFaerie.icon
+		lookup["#wrathfulFaerie"] = TRB.Data.spells.wrathfulFaerie.icon
 		lookup["#sf"] = TRB.Data.spells.shadowfiend.icon
 		lookup["#ecttv"] = TRB.Data.spells.eternalCallToTheVoid_Tendril.icon
 		lookup["#tb"] = TRB.Data.spells.eternalCallToTheVoid_Tendril.icon
@@ -1306,13 +1543,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#mindDevourer"] = TRB.Data.spells.mindDevourer.icon
 		lookup["#md"] = TRB.Data.spells.massDispel.icon
 		lookup["#massDispel"] = TRB.Data.spells.massDispel.icon
-		lookup["#casting"] = castingIcon
 		lookup["#dam"] = TRB.Data.spells.deathAndMadness.icon
 		lookup["#deathAndMadness"] = TRB.Data.spells.deathAndMadness.icon
-		lookup["$haste"] = hastePercent
-		lookup["$crit"] = critPercent
-		lookup["$mastery"] = masteryPercent
-		lookup["$gcd"] = gcd
 		lookup["$swpCount"] = shadowWordPainCount
 		lookup["$vtCount"] = vampiricTouchCount
 		lookup["$dpCount"] = devouringPlagueCount
@@ -1341,6 +1573,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$mbGcds"] = mbGcds
 		lookup["$mbSwings"] = mbSwings
 		lookup["$mbTime"] = mbTime
+		lookup["$wfInsanity"] = wfInsanity 
+		lookup["$wfGcds"] = wfGcds
+		lookup["$wfProcs"] = wfProcs
+		lookup["$wfTime"] = wfTime
 		lookup["$loiInsanity"] = loiInsanity
 		lookup["$loiTicks"] = loiTicks
 		lookup["$cttvEquipped"] = ""
@@ -1353,45 +1589,54 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$dtOverThreshold"] = ""
 		lookup["$asCount"] = asCount
 		lookup["$asInsanity"] = asInsanity
-		lookup["$ttd"] = ttd
-		lookup["||n"] = string.format("\n")
-		lookup["||c"] = string.format("%s", "|c")
-		lookup["||r"] = string.format("%s", "|r")
-		lookup["%%"] = "%"
+		lookup["$ttd"] = ttd --Custom TTD for Shadow
+		lookup["$ttdSeconds"] = ttdTotalSeconds
+		lookup["$s2m"] = ""
+		lookup["$surrenderToMadness"] = ""
 		TRB.Data.lookup = lookup
+	end
+	TRB.Functions.RefreshLookupData = RefreshLookupData
 
-		local returnText = {}
-		returnText[0] = {}
-		returnText[1] = {}
-		returnText[2] = {}
-		if TRB.Data.snapshotData.voidform.spellId then
-			returnText[0].text = TRB.Data.settings.priest.shadow.displayText.left.inVoidformText
-			returnText[1].text = TRB.Data.settings.priest.shadow.displayText.middle.inVoidformText
-			returnText[2].text = TRB.Data.settings.priest.shadow.displayText.right.inVoidformText
-		else
-			returnText[0].text = TRB.Data.settings.priest.shadow.displayText.left.outVoidformText
-			returnText[1].text = TRB.Data.settings.priest.shadow.displayText.middle.outVoidformText
-			returnText[2].text = TRB.Data.settings.priest.shadow.displayText.right.outVoidformText
+	local function UpdateResourceBarShadow(settings, refreshText)
+		TRB.Functions.RefreshLookupDataBase(settings)
+		TRB.Functions.RefreshLookupData()
+		local leftText, middleText, rightText = "", "", ""
+
+		if refreshText then
+			local returnText = {}
+			returnText[0] = {}
+			returnText[1] = {}
+			returnText[2] = {}
+			if TRB.Data.snapshotData.voidform.spellId then
+				returnText[0].text = settings.displayText.left.inVoidformText
+				returnText[1].text = settings.displayText.middle.inVoidformText
+				returnText[2].text = settings.displayText.right.inVoidformText
+			else
+				returnText[0].text = settings.displayText.left.outVoidformText
+				returnText[1].text = settings.displayText.middle.outVoidformText
+				returnText[2].text = settings.displayText.right.outVoidformText
+			end
+
+			returnText[0].color = string.format("|c%s", settings.colors.text.left)
+			returnText[1].color = string.format("|c%s", settings.colors.text.middle)
+			returnText[2].color = string.format("|c%s", settings.colors.text.right)
+
+			leftText, middleText, rightText = TRB.Functions.GetReturnText(returnText[0]), TRB.Functions.GetReturnText(returnText[1]), TRB.Functions.GetReturnText(returnText[2])
 		end
 
-		returnText[0].color = string.format("|c%s", TRB.Data.settings.priest.shadow.colors.text.left)
-		returnText[1].color = string.format("|c%s", TRB.Data.settings.priest.shadow.colors.text.middle)
-		returnText[2].color = string.format("|c%s", TRB.Data.settings.priest.shadow.colors.text.right)
-
-		return TRB.Functions.GetReturnText(returnText[0]), TRB.Functions.GetReturnText(returnText[1]), TRB.Functions.GetReturnText(returnText[2])
+		TRB.Functions.UpdateResourceBarText(settings, leftText, middleText, rightText)
 	end
-	TRB.Data.BarText = BarText
 
-	local function UpdateCastingResourceFinal(fotm)	
+	local function UpdateCastingResourceFinal(fotm)
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateInsanityGain(TRB.Data.snapshotData.casting.resourceRaw, fotm)
-		CalculateRemainingTime()
+		CalculateRemainingHungeringVoidTime()
 	end
 
 	local function CastingSpell()
-		local currentTime = GetTime()	
+		local currentTime = GetTime()
 		local currentSpell = UnitCastingInfo("player")
 		local currentChannel = UnitChannelInfo("player")
-		
+
 		if currentSpell == nil and currentChannel == nil then
 			TRB.Functions.ResetCastingSnapshotData()
 			return false
@@ -1416,7 +1661,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 
 					TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.mindSear.id
-					TRB.Data.snapshotData.casting.startTime = currentTime				
+					TRB.Data.snapshotData.casting.startTime = currentTime
 					TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindSear.insanity * TRB.Data.snapshotData.mindSear.targetsHit
 					TRB.Data.snapshotData.casting.icon = TRB.Data.spells.mindSear.icon
 					UpdateCastingResourceFinal(TRB.Data.spells.mindSear.fotm)
@@ -1430,7 +1675,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					TRB.Functions.ResetCastingSnapshotData()
 					return false
 				end
-			else	
+			else
 				local spellName = select(1, currentSpell)
 				if spellName == TRB.Data.spells.mindBlast.name then
 					TRB.Data.snapshotData.casting.startTime = currentTime
@@ -1452,7 +1697,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					UpdateCastingResourceFinal(TRB.Data.spells.massDispel.fotm)
 				else
 					TRB.Functions.ResetCastingSnapshotData()
-					return false				
+					return false
 				end
 			end
 			TRB.Data.snapshotData.casting.targetGuid = UnitGUID("target")
@@ -1467,13 +1712,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		if TRB.Data.settings.priest.shadow.mindbender.enabled and haveTotem and timeRemaining > 0 then
 			TRB.Data.snapshotData.mindbender.isActive = true
 			if TRB.Data.settings.priest.shadow.mindbender.enabled then
-				local swingSpeed = 1.5 / (1 + (TRB.Data.snapshotData.haste/100))		
+				local rabidShadowsPercent = 1 + TRB.Data.spells.rabidShadows.conduitRanks[TRB.Functions.GetSoulbindRank(TRB.Data.spells.rabidShadows.conduitId)]
+				local swingSpeed = 1.5 / (1 + (TRB.Data.snapshotData.haste / 100)) / rabidShadowsPercent
+
 				if swingSpeed > 1.5 then
 					swingSpeed = 1.5
 				end
-				
+
 				local timeToNextSwing = swingSpeed - (currentTime - TRB.Data.snapshotData.mindbender.swingTime)
-				
+
 				if timeToNextSwing < 0 then
 					timeToNextSwing = 0
 				elseif timeToNextSwing > 1.5 then
@@ -1482,20 +1729,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 				TRB.Data.snapshotData.mindbender.remaining.time = timeRemaining
 				TRB.Data.snapshotData.mindbender.remaining.swings = math.ceil((timeRemaining - timeToNextSwing) / swingSpeed)
-				
-				local gcd = swingSpeed				
+
+				local gcd = swingSpeed
 				if gcd < 0.75 then
 					gcd = 0.75
 				end
-				
+
 				if timeRemaining > (gcd * TRB.Data.snapshotData.mindbender.remaining.swings) then
 					TRB.Data.snapshotData.mindbender.remaining.gcds = math.ceil(((gcd * TRB.Data.snapshotData.mindbender.remaining.swings) - timeToNextSwing) / swingSpeed)
 				else
 					TRB.Data.snapshotData.mindbender.remaining.gcds = math.ceil((timeRemaining - timeToNextSwing) / swingSpeed)
-				end	
-					
+				end
+
 				TRB.Data.snapshotData.mindbender.swingTime = currentTime
-				
+
 				local countValue = 0
 
 				if TRB.Data.settings.priest.shadow.mindbender.mode == "swing" then
@@ -1511,7 +1758,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						countValue = math.ceil((TRB.Data.snapshotData.mindbender.remaining.time - timeToNextSwing) / swingSpeed)
 					end
 				else --assume GCD
-					if TRB.Data.snapshotData.mindbender.remaining.swings > TRB.Data.settings.priest.shadow.mindbender.swingsMax then
+					if TRB.Data.snapshotData.mindbender.remaining.gcds > TRB.Data.settings.priest.shadow.mindbender.gcdsMax then
 						countValue = TRB.Data.settings.priest.shadow.mindbender.gcdsMax
 					else
 						countValue = TRB.Data.snapshotData.mindbender.remaining.gcds
@@ -1534,13 +1781,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.snapshotData.mindbender.remaining.gcds = 0
 			TRB.Data.snapshotData.mindbender.remaining.time = 0
 			TRB.Data.snapshotData.mindbender.resourceRaw = 0
-			TRB.Data.snapshotData.mindbender.resourceFinal = 0		
-		end        
+			TRB.Data.snapshotData.mindbender.resourceFinal = 0
+		end
 	end
 
 	local function UpdateExternalCallToTheVoidValues()
 		local currentTime = GetTime()
-		local totalTicksRemaining = 0
+		local totalTicksRemaining_Lasher = 0
+		local totalTicksRemaining_Tendril = 0
+		local totalInsanity_Lasher = 0
+		local totalInsanity_Tendril = 0
 		local totalActive = 0
 
 		-- TODO: Add separate counts for Tendril vs Lasher?
@@ -1553,27 +1803,47 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if timeRemaining < 0 then
 						RemoveVoidTendril(vtGuid)
 					else
-						local nextTick = TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].tickTime + TRB.Data.spells.lashOfInsanity_Tendril.tickDuration
+						if TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].type == "Lasher" then
+							if TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].tickTime ~= nil and currentTime > (TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].tickTime + 5) then
+								TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].targetsHit = 0
+							end
 
-						if nextTick < currentTime then
-							nextTick = currentTime --There should be a tick. ANY second now. Maybe.
+							local nextTick = TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].tickTime + (TRB.Data.spells.lashOfInsanity_Lasher.tickDuration / ((TRB.Data.snapshotData.haste / 100) + 1))
+
+							if nextTick < currentTime then
+								nextTick = currentTime --There should be a tick. ANY second now. Maybe.
+								totalTicksRemaining_Lasher = totalTicksRemaining_Lasher + 1
+							end
+							-- NOTE: Might need to be math.floor()
+							local ticksRemaining = math.ceil((endTime - nextTick) / TRB.Data.spells.lashOfInsanity_Lasher.tickDuration / ((TRB.Data.snapshotData.haste / 100) + 1)) -- This is hasted
+
+							totalInsanity_Lasher = totalInsanity_Lasher + (ticksRemaining * TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].targetsHit * TRB.Data.spells.lashOfInsanity_Lasher.insanity)
+							totalTicksRemaining_Lasher = totalTicksRemaining_Lasher + ticksRemaining
+						else
+							local nextTick = TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[vtGuid].tickTime + TRB.Data.spells.lashOfInsanity_Tendril.tickDuration
+
+							if nextTick < currentTime then
+								nextTick = currentTime --There should be a tick. ANY second now. Maybe.
+								totalTicksRemaining_Tendril = totalTicksRemaining_Tendril + 1
+							end
+
+							-- NOTE: Might need to be math.floor()
+							local ticksRemaining = math.ceil((endTime - nextTick) / TRB.Data.spells.lashOfInsanity_Tendril.tickDuration) --Not needed as it is 1sec, but adding in case it changes
+
+							totalInsanity_Tendril = totalInsanity_Tendril + (ticksRemaining * TRB.Data.spells.lashOfInsanity_Tendril.insanity)
+							totalTicksRemaining_Tendril = totalTicksRemaining_Tendril + ticksRemaining
 						end
-						
-						-- NOTE: Might need to be math.floor()
-						local ticksRemaining = math.ceil((endTime - nextTick) / TRB.Data.spells.lashOfInsanity_Tendril.tickDuration) --Not needed as it is 1sec, but adding in case it changes
 
-						totalTicksRemaining = totalTicksRemaining + ticksRemaining;
 						totalActive = totalActive + 1
 					end
-				end		
+				end
 			end
 		end
 
-		TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining = totalTicksRemaining
+		TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining = totalTicksRemaining_Tendril + totalTicksRemaining_Lasher
 		TRB.Data.snapshotData.eternalCallToTheVoid.numberActive = totalActive
-		TRB.Data.snapshotData.eternalCallToTheVoid.resourceRaw = totalTicksRemaining * TRB.Data.spells.lashOfInsanity_Tendril.insanity
-		-- TODO: Need to verify that Tentacle Bro's insanity generation via Lash of Insanity doesn't get affected by the Priest's insanity generation modifiers
-		-- TODO: If they do, is Fortress of the Mind applied as well?
+		TRB.Data.snapshotData.eternalCallToTheVoid.resourceRaw = totalInsanity_Tendril + totalInsanity_Lasher
+		-- Fortress of the Mind does not apply but other Insanity boosting effects do.
 		TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal = CalculateInsanityGain(TRB.Data.snapshotData.eternalCallToTheVoid.resourceRaw, TRB.Data.spells.lashOfInsanity_Tendril.fotm)
 	end
 
@@ -1583,10 +1853,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.snapshotData.deathAndMadness.endTime == nil or currentTime > TRB.Data.snapshotData.deathAndMadness.endTime then
 				TRB.Data.snapshotData.deathAndMadness.ticksRemaining = 0
 				TRB.Data.snapshotData.deathAndMadness.endTime = nil
-				TRB.Data.snapshotData.deathAndMadness.insanity = 0			
+				TRB.Data.snapshotData.deathAndMadness.insanity = 0
 				TRB.Data.snapshotData.deathAndMadness.isActive = false
 			else
-				TRB.Data.snapshotData.deathAndMadness.ticksRemaining = math.ceil(TRB.Data.snapshotData.deathAndMadness.endTime - currentTime)
+				TRB.Data.snapshotData.deathAndMadness.ticksRemaining = math.ceil((TRB.Data.snapshotData.deathAndMadness.endTime - currentTime) / (TRB.Data.spells.deathAndMadness.duration / TRB.Data.spells.deathAndMadness.ticks))
 				TRB.Data.snapshotData.deathAndMadness.insanity = TRB.Data.snapshotData.deathAndMadness.ticksRemaining * TRB.Data.spells.deathAndMadness.insanity
 			end
 		end
@@ -1596,6 +1866,138 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.snapshotData.darkThought.oneDot = math.max(math.ceil(math.log10(TRB.Data.spells.darkThought.probability * 1)/math.log10(TRB.Data.settings.priest.shadow.darkThought.threshold)), 10)
 		TRB.Data.snapshotData.darkThought.twoDot = math.max(math.ceil(math.log10(TRB.Data.spells.darkThought.probability * 2)/math.log10(TRB.Data.settings.priest.shadow.darkThought.threshold)), 10)
 		TRB.Data.snapshotData.darkThought.threeDot = math.max(math.ceil(math.log10(TRB.Data.spells.darkThought.probability * 3)/math.log10(TRB.Data.settings.priest.shadow.darkThought.threshold)), 10)	
+	end 
+	
+	local function UpdateWrathfulFaerieValues()
+		local currentTime = GetTime()
+		if TRB.Data.settings.priest.shadow.wrathfulFaerie.enabled and TRB.Data.snapshotData.wrathfulFaerie.main.endTime and TRB.Data.snapshotData.wrathfulFaerie.main.endTime > currentTime then
+			local timeRemaining = TRB.Data.snapshotData.wrathfulFaerie.main.endTime - currentTime
+			--TRB.Data.snapshotData.wrathfulFaerie.main.isActive = true
+			if TRB.Data.settings.priest.shadow.wrathfulFaerie.enabled then
+				local tickRate = (TRB.Data.spells.wrathfulFaerie.icd or 0.75) + (TRB.Data.settings.priest.shadow.wrathfulFaerie.procDelay or 0.15)
+
+				local timeToNextProc = tickRate - (currentTime - TRB.Data.snapshotData.wrathfulFaerie.main.procTime)
+
+				if timeToNextProc < 0 then
+					timeToNextProc = 0
+				elseif timeToNextProc > tickRate then
+					timeToNextProc = tickRate
+				end        
+
+				local gcd = TRB.Functions.GetCurrentGCDTime(true)
+
+				TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time = timeRemaining
+				TRB.Data.snapshotData.wrathfulFaerie.main.remaining.procs = math.ceil((timeRemaining - timeToNextProc) / tickRate)
+				TRB.Data.snapshotData.wrathfulFaerie.main.remaining.gcds = math.ceil(timeRemaining / gcd)
+
+				TRB.Data.snapshotData.wrathfulFaerie.main.procTime = currentTime
+
+				local countValue = 0
+
+				if TRB.Data.settings.priest.shadow.wrathfulFaerie.mode == "procs" then
+					if TRB.Data.snapshotData.wrathfulFaerie.main.remaining.procs > TRB.Data.settings.priest.shadow.wrathfulFaerie.procsMax then
+						countValue = TRB.Data.settings.priest.shadow.wrathfulFaerie.procsMax
+					else
+						countValue = TRB.Data.snapshotData.wrathfulFaerie.main.remaining.procs
+					end
+				elseif TRB.Data.settings.priest.shadow.wrathfulFaerie.mode == "time" then
+					if TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time > TRB.Data.settings.priest.shadow.wrathfulFaerie.timeMax then
+						countValue = math.ceil((TRB.Data.settings.priest.shadow.wrathfulFaerie.timeMax - timeToNextProc) / tickRate)                
+					else
+						countValue = math.ceil((TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time - timeToNextProc) / tickRate)
+					end
+				else --assume GCD
+					if TRB.Data.snapshotData.wrathfulFaerie.main.remaining.gcds > TRB.Data.settings.priest.shadow.wrathfulFaerie.gcdsMax then
+						countValue = TRB.Data.settings.priest.shadow.wrathfulFaerie.gcdsMax
+					else
+						countValue = TRB.Data.snapshotData.wrathfulFaerie.main.remaining.gcds
+					end
+				end
+
+				if TRB.Data.snapshotData.targetData.wrathfulFaerieGuid then
+					TRB.Data.snapshotData.wrathfulFaerie.main.resourceRaw = countValue * TRB.Data.spells.wrathfulFaerie.insanity
+					TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal = CalculateInsanityGain(TRB.Data.snapshotData.wrathfulFaerie.main.resourceRaw, false)
+				else
+					TRB.Data.snapshotData.wrathfulFaerie.main.resourceRaw = 0
+					TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal = 0
+				end
+			end
+		else
+			TRB.Data.snapshotData.wrathfulFaerie.main.onCooldown = not (GetSpellCooldown(TRB.Data.spells.wrathfulFaerie.id) == 0)
+			TRB.Data.snapshotData.wrathfulFaerie.main.isActive = false
+			TRB.Data.snapshotData.wrathfulFaerie.main.endTime = nil
+			TRB.Data.snapshotData.wrathfulFaerie.main.procTime = 0
+			TRB.Data.snapshotData.wrathfulFaerie.main.remaining = {}
+			TRB.Data.snapshotData.wrathfulFaerie.main.remaining.procs = 0
+			TRB.Data.snapshotData.wrathfulFaerie.main.remaining.gcds = 0
+			TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time = 0
+			TRB.Data.snapshotData.wrathfulFaerie.main.resourceRaw = 0
+			TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal = 0
+		end
+
+		if TRB.Data.settings.priest.shadow.wrathfulFaerie.enabled and TRB.Data.snapshotData.wrathfulFaerie.fermata.endTime and TRB.Data.snapshotData.wrathfulFaerie.fermata.endTime > currentTime then
+			local timeRemaining = TRB.Data.snapshotData.wrathfulFaerie.fermata.endTime - currentTime
+
+			if TRB.Data.settings.priest.shadow.wrathfulFaerie.enabled then
+				local tickRate = (TRB.Data.spells.wrathfulFaerie.icd or 0.75) + (TRB.Data.settings.priest.shadow.wrathfulFaerie.procDelay or 0.15)
+
+				local timeToNextProc = tickRate - (currentTime - TRB.Data.snapshotData.wrathfulFaerie.fermata.procTime)
+
+				if timeToNextProc < 0 then
+					timeToNextProc = 0
+				elseif timeToNextProc > tickRate then
+					timeToNextProc = tickRate
+				end        
+
+				local gcd = TRB.Functions.GetCurrentGCDTime(true)
+
+				TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.time = timeRemaining
+				TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.procs = math.ceil((timeRemaining - timeToNextProc) / tickRate)
+				TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds = math.ceil(timeRemaining / gcd)
+
+				TRB.Data.snapshotData.wrathfulFaerie.fermata.procTime = currentTime
+
+				local countValue = 0
+
+				if TRB.Data.settings.priest.shadow.wrathfulFaerie.mode == "procs" then
+					if TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.procs > TRB.Data.settings.priest.shadow.wrathfulFaerie.procsMax then
+						countValue = TRB.Data.settings.priest.shadow.wrathfulFaerie.procsMax
+					else
+						countValue = TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.procs
+					end
+				elseif TRB.Data.settings.priest.shadow.wrathfulFaerie.mode == "time" then
+					if TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.time > TRB.Data.settings.priest.shadow.wrathfulFaerie.timeMax then
+						countValue = math.ceil((TRB.Data.settings.priest.shadow.wrathfulFaerie.timeMax - timeToNextProc) / tickRate)                
+					else
+						countValue = math.ceil((TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.time - timeToNextProc) / tickRate)
+					end
+				else --assume GCD
+					if TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds > TRB.Data.settings.priest.shadow.wrathfulFaerie.gcdsMax then
+						countValue = TRB.Data.settings.priest.shadow.wrathfulFaerie.gcdsMax
+					else
+						countValue = TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds
+					end
+				end
+
+				if TRB.Data.snapshotData.targetData.wrathfulFaerieFermataGuid then
+					TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceRaw = countValue * TRB.Data.spells.wrathfulFaerie.insanity * TRB.Data.spells.wrathfulFaerieFermata.modifier
+					TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceFinal = CalculateInsanityGain(TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceRaw, false)
+				else
+					TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceRaw = 0
+					TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceFinal = 0
+				end
+			end
+		else
+			TRB.Data.snapshotData.wrathfulFaerie.fermata.isActive = false
+			TRB.Data.snapshotData.wrathfulFaerie.fermata.endTime = nil
+			TRB.Data.snapshotData.wrathfulFaerie.fermata.procTime = 0
+			TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining = {}
+			TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.procs = 0
+			TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds = 0
+			TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.time = 0
+			TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceRaw = 0
+			TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceFinal = 0
+		end
 	end
 
 	local function UpdateSnapshot()
@@ -1605,11 +2007,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateExternalCallToTheVoidValues()
 		UpdateDeathAndMadness()
 		UpdateDarkThought()
+		UpdateWrathfulFaerieValues()
 	end
 
 	local function HideResourceBar(force)
 		local affectingCombat = UnitAffectingCombat("player")
-	
+
 		if force or GetSpecialization() ~= 3 or ((not affectingCombat) and
 			(not UnitInVehicle("player")) and (
 				(not TRB.Data.settings.priest.shadow.displayBar.alwaysShow) and (
@@ -1617,124 +2020,157 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					(TRB.Data.settings.priest.shadow.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0)
 				)
 			 )) then
-			TRB.Frames.barContainerFrame:Hide()	
+			TRB.Frames.barContainerFrame:Hide()
+			TRB.Data.snapshotData.isTracking = false
 		else
-			TRB.Frames.barContainerFrame:Show()	
+			TRB.Data.snapshotData.isTracking = true
+			if TRB.Data.settings.priest.shadow.displayBar.neverShow == true then
+				TRB.Frames.barContainerFrame:Hide()
+			else
+				TRB.Frames.barContainerFrame:Show()
+			end
 		end
 	end
 	TRB.Functions.HideResourceBar = HideResourceBar
 
 	local function UpdateResourceBar()
+		local refreshText = false
 		UpdateSnapshot()
 
-		if barContainerFrame:IsShown() then
-			local passiveBarValue = 0
-			local castingBarValue = 0
+		if TRB.Data.snapshotData.isTracking then
+			TRB.Functions.HideResourceBar()
 
-			if TRB.Data.snapshotData.resource == 0 then
-				TRB.Functions.HideResourceBar()
-			end
+			CalculateRemainingHungeringVoidTime()
 
-			CalculateRemainingTime()
-			
-			if TRB.Data.settings.priest.shadow.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.borderOvercap, true))
-				
-				if TRB.Data.settings.priest.shadow.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
-					TRB.Data.snapshotData.audio.overcapCue = true
-					PlaySoundFile(TRB.Data.settings.priest.shadow.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-				end
-			else
-				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.border, true))
-				TRB.Data.snapshotData.audio.overcapCue = false
-			end
+			if TRB.Data.settings.priest.shadow.displayBar.neverShow == false then
+				refreshText = true
+				local passiveBarValue = 0
+				local castingBarValue = 0
+				local currentInsanity = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
-			resourceFrame:SetValue(TRB.Data.snapshotData.resource)
-			
-			if CastingSpell() then
-				castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
-			else
-				castingBarValue = TRB.Data.snapshotData.resource
-			end
-			
-			castingFrame:SetValue(castingBarValue)
+				if TRB.Data.settings.priest.shadow.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.borderOvercap, true))
 
-			if TRB.Data.character.talents.as.isSelected or TRB.Data.snapshotData.mindbender.resourceFinal > 0 or TRB.Data.snapshotData.deathAndMadness.isActive then
-				passiveBarValue = castingBarValue + ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity, false) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.mindbender.resourceFinal + TRB.Data.snapshotData.deathAndMadness.insanity + TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal)
-				if TRB.Data.snapshotData.mindbender.resourceFinal > 0 and (castingFrame:GetValue() + TRB.Data.snapshotData.mindbender.resourceFinal) < TRB.Data.character.maxResource then
-					passiveFrame.threshold:SetPoint("CENTER", passiveFrame, "LEFT", ((TRB.Data.settings.priest.shadow.bar.width-(TRB.Data.settings.priest.shadow.bar.border*2)) * ((castingFrame:GetValue() + TRB.Data.snapshotData.mindbender.resourceFinal) / TRB.Data.character.maxResource)), 0)
-					passiveFrame.threshold.texture:Show()
+					if TRB.Data.settings.priest.shadow.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
+						TRB.Data.snapshotData.audio.overcapCue = true
+						PlaySoundFile(TRB.Data.settings.priest.shadow.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+					end
 				else
-					passiveFrame.threshold.texture:Hide()
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.border, true))
+					TRB.Data.snapshotData.audio.overcapCue = false
 				end
-			else
-				passiveFrame.threshold.texture:Hide()
-				passiveBarValue = castingBarValue
-			end
 
-			passiveFrame:SetValue(passiveBarValue)
+				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.shadow, resourceFrame, currentInsanity)
 
-			if TRB.Data.settings.priest.shadow.devouringPlagueThreshold then
-				resourceFrame.thresholdDp:Show()
-			else
-				resourceFrame.thresholdDp:Hide()
-			end
-
-			if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then			
-				if TRB.Data.snapshotData.resource >= TRB.Data.character.searingNightmareThreshold then
-					resourceFrame.thresholdSn.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true))
+				if CastingSpell() and TRB.Data.settings.priest.shadow.bar.showCasting  then
+					castingBarValue = currentInsanity + TRB.Data.snapshotData.casting.resourceFinal
 				else
-					resourceFrame.thresholdSn.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
+					castingBarValue = currentInsanity
 				end
-				resourceFrame.thresholdSn:Show()
-			else
-				resourceFrame.thresholdSn:Hide()
-			end
-			
-			if TRB.Data.snapshotData.resource >= TRB.Data.character.devouringPlagueThreshold or TRB.Data.spells.mindDevourer.isActive then
-				resourceFrame.thresholdDp.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true))
-				if TRB.Data.settings.priest.shadow.colors.bar.flashEnabled then
-					TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.priest.shadow.colors.bar.flashAlpha, TRB.Data.settings.priest.shadow.colors.bar.flashPeriod)
+
+				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.shadow, castingFrame, castingBarValue)
+
+				if TRB.Data.settings.priest.shadow.bar.showPassive and 
+					(TRB.Data.character.talents.as.isSelected or
+					TRB.Data.snapshotData.mindbender.resourceFinal > 0 or
+					TRB.Data.snapshotData.deathAndMadness.isActive or
+					TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal > 0 or
+					TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal > 0) then
+					passiveBarValue = castingBarValue + ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity, false) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.mindbender.resourceFinal + TRB.Data.snapshotData.deathAndMadness.insanity + TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal + TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal)
+					if TRB.Data.snapshotData.mindbender.resourceFinal > 0 and (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal) < TRB.Data.character.maxResource then
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, passiveFrame.thresholds[1], passiveFrame, TRB.Data.settings.priest.shadow.thresholdWidth, (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal), TRB.Data.character.maxResource)
+						passiveFrame.thresholds[1].texture:Show()
+					else
+						passiveFrame.thresholds[1].texture:Hide()
+					end
+
+					if TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal > 0 and (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal + TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal) < TRB.Data.character.maxResource then
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, passiveFrame.thresholds[2], passiveFrame, TRB.Data.settings.priest.shadow.thresholdWidth, (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal + TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal), TRB.Data.character.maxResource)
+						passiveFrame.thresholds[2].texture:Show()
+					else
+						passiveFrame.thresholds[2].texture:Hide()
+					end
 				else
+					passiveFrame.thresholds[1].texture:Hide()
+					passiveFrame.thresholds[2].texture:Hide()
+					passiveBarValue = castingBarValue
+				end
+
+				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.shadow, passiveFrame, passiveBarValue)
+
+				if TRB.Data.settings.priest.shadow.devouringPlagueThreshold then
+					resourceFrame.thresholds[1]:Show()
+				else
+					resourceFrame.thresholds[1]:Hide()
+				end
+
+				if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then
+					if currentInsanity >= TRB.Data.character.searingNightmareThreshold then
+						resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true))
+					else
+						resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
+					end
+					resourceFrame.thresholds[2]:Show()
+				else
+					resourceFrame.thresholds[2]:Hide()
+				end
+
+				if currentInsanity >= TRB.Data.character.devouringPlagueThreshold or TRB.Data.spells.mindDevourer.isActive then
+					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true))
+					if TRB.Data.settings.priest.shadow.colors.bar.flashEnabled then
+						TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.priest.shadow.colors.bar.flashAlpha, TRB.Data.settings.priest.shadow.colors.bar.flashPeriod)
+					else
+						barContainerFrame:SetAlpha(1.0)
+					end
+
+					if TRB.Data.spells.mindDevourer.isActive and TRB.Data.settings.priest.shadow.audio.mdProc.enabled and TRB.Data.snapshotData.audio.playedMdCue == false then
+						TRB.Data.snapshotData.audio.playedDpCue = true
+						TRB.Data.snapshotData.audio.playedMdCue = true
+						PlaySoundFile(TRB.Data.settings.priest.shadow.audio.mdProc.sound, TRB.Data.settings.core.audio.channel.channel)
+					elseif TRB.Data.settings.priest.shadow.audio.dpReady.enabled and TRB.Data.snapshotData.audio.playedDpCue == false then
+						TRB.Data.snapshotData.audio.playedDpCue = true
+						PlaySoundFile(TRB.Data.settings.priest.shadow.audio.dpReady.sound, TRB.Data.settings.core.audio.channel.channel)
+					end
+				else
+					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
 					barContainerFrame:SetAlpha(1.0)
-				end	
-		
-				if TRB.Data.spells.mindDevourer.isActive and TRB.Data.settings.priest.shadow.audio.mdProc.enabled and TRB.Data.snapshotData.audio.playedMdCue == false then				
-					TRB.Data.snapshotData.audio.playedDpCue = true
-					TRB.Data.snapshotData.audio.playedMdCue = true
-					PlaySoundFile(TRB.Data.settings.priest.shadow.audio.mdProc.sound, TRB.Data.settings.core.audio.channel.channel)
-				elseif TRB.Data.settings.priest.shadow.audio.dpReady.enabled and TRB.Data.snapshotData.audio.playedDpCue == false then
-					TRB.Data.snapshotData.audio.playedDpCue = true
-					PlaySoundFile(TRB.Data.settings.priest.shadow.audio.dpReady.sound, TRB.Data.settings.core.audio.channel.channel)
+					TRB.Data.snapshotData.audio.playedDpCue = false
+					TRB.Data.snapshotData.audio.playedMdCue = false
 				end
-			else
-				resourceFrame.thresholdDp.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
-				barContainerFrame:SetAlpha(1.0)
-				TRB.Data.snapshotData.audio.playedDpCue = false
-				TRB.Data.snapshotData.audio.playedMdCue = false
-			end
-			
-			if TRB.Data.snapshotData.voidform.spellId then
-				local gcd = TRB.Functions.GetCurrentGCDTime()
-				if TRB.Data.snapshotData.voidform.remainingTime <= gcd then
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, true))
-				elseif TRB.Data.snapshotData.voidform.remainingTime <= (gcd * 2.0) then
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform2GCD, true))
-				elseif TRB.Data.snapshotData.resource >= TRB.Data.character.devouringPlagueThreshold then
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.enterVoidform, true))
+
+				if TRB.Data.snapshotData.voidform.spellId then
+					local timeThreshold = 0
+					local useEndOfVoidformColor = false
+
+					if TRB.Data.settings.priest.shadow.endOfVoidform.enabled and (not TRB.Data.settings.priest.shadow.endOfVoidform.hungeringVoidOnly or TRB.Data.character.talents.hungeringVoid.isSelected) then
+						useEndOfVoidformColor = true
+						if TRB.Data.settings.priest.shadow.endOfVoidform.mode == "gcd" then
+							local gcd = TRB.Functions.GetCurrentGCDTime()
+							timeThreshold = gcd * TRB.Data.settings.priest.shadow.endOfVoidform.gcdsMax
+						elseif TRB.Data.settings.priest.shadow.endOfVoidform.mode == "time" then
+							timeThreshold = TRB.Data.settings.priest.shadow.endOfVoidform.timeMax
+						end
+					end
+
+					if useEndOfVoidformColor and TRB.Data.snapshotData.voidform.remainingTime <= timeThreshold then
+						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, true))
+					elseif currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
+						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.enterVoidform, true))
+					else
+						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform, true))
+					end
 				else
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform, true))	
-				end
-			else
-				if TRB.Data.snapshotData.resource >= TRB.Data.character.devouringPlagueThreshold then
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.enterVoidform, true))
-				else
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.base, true))
+					if currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
+						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.enterVoidform, true))
+					else
+						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.base, true))
+					end
 				end
 			end
 		end
-
-		TRB.Functions.UpdateResourceBar(TRB.Data.settings.priest.shadow)
+		--Normally we'd just call the base, but Shadow has special dual text output because of Voidform. Make manual calls instead
+		--TRB.Functions.UpdateResourceBar(TRB.Data.settings.priest.shadow, not TRB.Data.settings.priest.shadow.displayBar.neverShow)
+		UpdateResourceBarShadow(TRB.Data.settings.priest.shadow, refreshText)
 	end
 
 	--HACK to fix FPS
@@ -1744,10 +2180,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		if GetSpecialization() ~= 3 then
 			TRB.Functions.HideResourceBar(true)
 			return
-		end	
+		end
 
 		local currentTime = GetTime()
-		
+
 		if updateRateLimit + 0.05 < currentTime then
 			updateRateLimit = currentTime
 			UpdateResourceBar()
@@ -1783,7 +2219,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			if guid ~= nil then
 				InitializeTarget(guid)
-				
+
 				local isDead = UnitIsDeadOrGhost("target")
 				local currentHealth = UnitHealth("target")
 				local maxHealth = UnitHealthMax("target")
@@ -1844,7 +2280,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	function mindbenderAudioCueFrame:onUpdate(sinceLastUpdate)
 		self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 		self.sinceLastPlay = self.sinceLastPlay + sinceLastUpdate
-		if self.sinceLastUpdate >= 0.05 then -- in seconds	
+		if self.sinceLastUpdate >= 0.05 then -- in seconds
 			if self.sinceLastPlay >= 0.75 and not TRB.Data.snapshotData.mindbender.isActive then -- in seconds
 				if TRB.Data.settings.priest.shadow.mindbender.useNotification.useVoidformStacks == true and not TRB.Data.snapshotData.mindbender.onCooldown and TRB.Data.snapshotData.voidform.totalStacks >= TRB.Data.settings.priest.shadow.mindbender.useNotification.thresholdStacks then
 					PlaySoundFile(TRB.Data.settings.priest.shadow.audio.mindbender.sound, TRB.Data.settings.core.audio.channel.channel, false)
@@ -1854,7 +2290,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					self.sinceLastPlay = 0
 				end
 			end
-			
+
 			self.sinceLastUpdate = 0
 		end
 	end
@@ -1862,14 +2298,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local currentTime = GetTime()
-		local triggerUpdate = false	
+		local triggerUpdate = false
 		local _
-			
+
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
 			local s2mDeath = false
-			
+
 			if destGUID == TRB.Data.character.guid then
 				if TRB.Data.settings.priest.shadow.mindbender.enabled and type == "SPELL_ENERGIZE" and
 					((TRB.Data.character.talents.mindbender.isSelected and sourceName == TRB.Data.spells.mindbender.name) or 
@@ -1879,7 +2315,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if TRB.Data.snapshotData.voidform.s2m.active then -- Surrender to Madness ended
 						s2mDeath = true
 					end
-				end	
+				end
 			end
 
 			if sourceGUID == TRB.Data.character.guid then 
@@ -1887,7 +2323,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if type == "SPELL_AURA_APPLIED" then -- Gain Surrender to Madness   
 						TRB.Data.snapshotData.voidform.s2m.active = true
 						TRB.Data.snapshotData.voidform.s2m.startTime = currentTime
-						UpdateCastingResourceFinal()					
+						UpdateCastingResourceFinal()
 						triggerUpdate = true
 					elseif type == "SPELL_AURA_REMOVED" and TRB.Data.snapshotData.voidform.s2m.active then -- Lose Surrender to Madness
 						if destGUID == TRB.Data.character.guid then -- You died
@@ -1927,20 +2363,31 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.character.darkThought.mindSearLast = false
 						UpdateDarkThought()
 					end
+				elseif spellId == TRB.Data.spells.shadowWordPain.id then
+					InitializeTarget(destGUID)
+					TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+					if type == "SPELL_AURA_APPLIED" then -- SWP Applied to Target
+						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = true
+						TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain + 1
+					elseif type == "SPELL_AURA_REMOVED" then
+						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = false
+						TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain - 1
+					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+					end
 				elseif spellId == TRB.Data.spells.mindSear.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_CAST_SUCCESS" then
 						if TRB.Data.snapshotData.mindSear.hitTime == nil then --This is a new cast without target data
 							TRB.Data.snapshotData.mindSear.targetsHit = 1
 						end
 						TRB.Data.snapshotData.mindSear.hitTime = currentTime
-					end		
+					end
 				elseif spellId == TRB.Data.spells.mindSear.idTick then
 					if type == "SPELL_DAMAGE" then
 						if currentTime > (TRB.Data.snapshotData.mindSear.hitTime + 0.1) then --This is a new tick
 							TRB.Data.snapshotData.mindSear.targetsHit = 0
 						end
 						TRB.Data.snapshotData.mindSear.targetsHit = TRB.Data.snapshotData.mindSear.targetsHit + 1
-						TRB.Data.snapshotData.mindSear.hitTime = currentTime					
+						TRB.Data.snapshotData.mindSear.hitTime = currentTime
 						TRB.Data.snapshotData.mindSear.hasStruckTargets = true
 						
 						local partialTicks = TRB.Data.character.darkThought.partialTickCount + GetTargetDotCount(destGUID)
@@ -1968,7 +2415,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if type == "SPELL_AURA_APPLIED" then -- VT Applied to Target
 						TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouch = true
 						TRB.Data.snapshotData.targetData.vampiricTouch = TRB.Data.snapshotData.targetData.vampiricTouch + 1
-					elseif type == "SPELL_AURA_REMOVED" then				
+					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouch = false
 						TRB.Data.snapshotData.targetData.vampiricTouch = TRB.Data.snapshotData.targetData.vampiricTouch - 1
 					--elseif type == "SPELL_PERIODIC_DAMAGE" then
@@ -1979,7 +2426,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if type == "SPELL_AURA_APPLIED" then -- DP Applied to Target
 						TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlague = true
 						TRB.Data.snapshotData.targetData.devouringPlague = TRB.Data.snapshotData.targetData.devouringPlague + 1
-					elseif type == "SPELL_AURA_REMOVED" then				
+					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlague = false
 						TRB.Data.snapshotData.targetData.devouringPlague = TRB.Data.snapshotData.targetData.devouringPlague - 1
 					--elseif type == "SPELL_PERIODIC_DAMAGE" then
@@ -2004,7 +2451,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.spells.memoryOfLucidDreams.isActive = true
 					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 						TRB.Data.spells.memoryOfLucidDreams.isActive = false
-					end	
+					end
 				elseif spellId == TRB.Data.spells.mindDevourer.id then
 					if type == "SPELL_AURA_APPLIED" then -- Gained buff
 						TRB.Data.spells.mindDevourer.isActive = true
@@ -2038,12 +2485,41 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.character.darkThought.flayTickCount = 0
 						TRB.Data.character.darkThought.searTickCount = 0
 					end
+				elseif TRB.Data.settings.priest.shadow.wrathfulFaerie.enabled and spellId == TRB.Data.spells.wrathfulFaerie.id then
+					if type == "SPELL_AURA_APPLIED" then -- Gained buff
+						if TRB.Data.snapshotData.wrathfulFaerie.main.isActive == false then
+							TRB.Data.snapshotData.wrathfulFaerie.main.isActive = true
+							TRB.Data.snapshotData.wrathfulFaerie.main.endTime = currentTime + (TRB.Data.spells.wrathfulFaerie.duration * TRB.Data.character.torghast.dreamspunMushroomsModifier)
+						end
+						TRB.Data.snapshotData.targetData.wrathfulFaerieGuid = destGUID
+					-- We're not doing much in these case because it could have been moved or refreshed via SWP on a new target.
+					--elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+					--elseif type == "SPELL_AURA_REFRESH" then -- Refreshed buff
+					end
+				elseif TRB.Data.settings.priest.shadow.wrathfulFaerie.enabled and spellId == TRB.Data.spells.wrathfulFaerie.energizeId and type == "SPELL_ENERGIZE" then
+					TRB.Data.snapshotData.wrathfulFaerie.main.procTime = currentTime
+				elseif TRB.Data.settings.priest.shadow.wrathfulFaerie.enabled and spellId == TRB.Data.spells.wrathfulFaerieFermata.id then
+					if type == "SPELL_AURA_APPLIED" then -- Gained buff
+						if TRB.Data.snapshotData.wrathfulFaerie.fermata.isActive == false or TRB.Data.snapshotData.targetData.wrathfulFaerieFermataGuid ~= destGUID then
+							TRB.Data.snapshotData.wrathfulFaerie.fermata.isActive = true
+							local duration = TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[TRB.Functions.GetSoulbindRank(TRB.Data.spells.wrathfulFaerieFermata.conduitId)] * TRB.Data.character.torghast.dreamspunMushroomsModifier
+							TRB.Data.snapshotData.wrathfulFaerie.fermata.endTime = currentTime + duration
+						end
+						TRB.Data.snapshotData.targetData.wrathfulFaerieFermataGuid = destGUID
+					-- We're not doing much in these case because it could have been moved or refreshed via SWP on a new target.
+					--elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+					--elseif type == "SPELL_AURA_REFRESH" then -- Refreshed buff
+					end
+				elseif TRB.Data.settings.priest.shadow.wrathfulFaerie.enabled and spellId == TRB.Data.spells.wrathfulFaerieFermata.energizeId and type == "SPELL_ENERGIZE" then
+					TRB.Data.snapshotData.wrathfulFaerie.fermata.procTime = currentTime
 				elseif type == "SPELL_SUMMON" and TRB.Data.settings.priest.shadow.voidTendrilTracker and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.id or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id) then
 					InitializeVoidTendril(destGUID)
 					if spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.id then
-						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].type = "Tendril"
+						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].type = "Tendril"
 					elseif spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id then
-						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid].type = "Lasher"
+						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].type = "Lasher"
+						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].targetsHit = 0
+						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].hasStruckTargets = true
 					end
 
 					TRB.Data.snapshotData.eternalCallToTheVoid.numberActive = TRB.Data.snapshotData.eternalCallToTheVoid.numberActive + 1
@@ -2052,31 +2528,44 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[destGUID].tickTime = currentTime
 				end
 			elseif TRB.Data.settings.priest.shadow.voidTendrilTracker and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.idTick or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.idTick) and CheckVoidTendrilExists(sourceGUID) then
-				TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].tickTime = currentTime
+				if spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.idTick and type == "SPELL_DAMAGE" then
+					if currentTime > (TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].tickTime + 0.1) then --This is a new tick
+						TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].targetsHit = 0
+					end
+					TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].targetsHit = TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].targetsHit + 1
+					TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].tickTime = currentTime
+					TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].hasStruckTargets = true
+				else
+					TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[sourceGUID].tickTime = currentTime
+				end
 			end
-			
+
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.RemoveTarget(guid)
+				TRB.Functions.RemoveTarget(destGUID)
 				RefreshTargetTracking()
+
+				if destGUID == TRB.Data.snapshotData.targetData.wrathfulFaerieGuid then
+					TRB.Data.snapshotData.targetData.wrathfulFaerieGuid = nil
+				end
 				triggerUpdate = true
 			end
-				
+
 			if UnitIsDeadOrGhost("player") then -- We died/are dead go ahead and purge the list
 			--if UnitIsDeadOrGhost("player") or not UnitAffectingCombat("player") or event == "PLAYER_REGEN_ENABLED" then -- We died, or, exited combat, go ahead and purge the list
 				TargetsCleanup(true)
 				triggerUpdate = true
 			end
-			
+
 			if s2mDeath then
 				if TRB.Data.settings.priest.shadow.audio.s2mDeath.enabled then
 					PlaySoundFile(TRB.Data.settings.priest.shadow.audio.s2mDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 				end
 				TRB.Data.snapshotData.voidform.s2m.startTime = nil
-				TRB.Data.snapshotData.voidform.s2m.active = false	
+				TRB.Data.snapshotData.voidform.s2m.active = false
 				triggerUpdate = true
 			end
 		end
-					
+
 		if triggerUpdate then
 			TriggerResourceBarUpdates()
 		end
@@ -2121,7 +2610,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.settings = settings
 					end
 					TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.priest.shadow)
-					TRB.Functions.IsTtdActive()		
+					TRB.Functions.IsTtdActive()
 					FillSpellData()
 					ConstructResourceBar()
 					TRB.Options.Priest.ConstructOptionsPanel()
@@ -2148,8 +2637,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					SLASH_TWINTOP8 	= "/trt"
 					SLASH_TWINTOP9 	= "/ttrt"
 					SLASH_TWINTOP10 = "/ttrb"
-				end			
-			end	
+				end
+			end
 
 			if event == "PLAYER_LOGOUT" then				
 				TRB.Data.settings.priest.shadow.TEMP.tickCount = TRB.Data.character.darkThought.tickCount
@@ -2158,7 +2647,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.settings.priest.shadow.TEMP.searTickCount = TRB.Data.character.darkThought.searTickCount
 				TwintopInsanityBarSettings = TRB.Data.settings
 			end
-					
+
 			if TRB.Details.addonData.registered == true and event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
 				EventRegistration()
 				TRB.Functions.HideResourceBar()
