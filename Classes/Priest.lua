@@ -1212,8 +1212,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.character.darkThought.tickCount > 0 and TRB.Data.character.darkThought.tickCount >= threshold then
 				valid = true
 			end
-		elseif var == "$ttd" then
-			if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
 		elseif var == "$s2m" or var == "$surrenderToMadness" then
 			if TRB.Data.character.talents.surrenderToMadeness.isSelected then
 				valid = true

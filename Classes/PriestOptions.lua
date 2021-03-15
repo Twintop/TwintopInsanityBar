@@ -2333,9 +2333,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	
 		yCoord = yCoord - 40
 		title = "Confidence Level that Proc is \"Due\""
-		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0.75, 0.95, TRB.Data.settings.priest.shadow.darkThought.threshold, 0.005, 3,
-										barWidth, barHeight, xCoord+xPadding2, yCoord)
-		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
+		controls.darkThought = TRB.UiFunctions.BuildSlider(parent, title, 0.75, 0.95, TRB.Data.settings.priest.shadow.darkThought.threshold, 0.005, 3,
+									sliderWidth, sliderHeight, xCoord+xPadding2, yCoord)
+		controls.darkThought:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
 				value = max
@@ -2348,9 +2348,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.darkThought.threshold = value
 		end)
 
-		
-		yCoord = yCoord - 60		
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", xCoord+xPadding, yCoord)
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls
 	end
