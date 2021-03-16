@@ -185,7 +185,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					hasteAbove="FF00FF00",
 					s2mBelow="FF00FF00",
 					s2mApproaching="FFFFFF00",
-					s2mAbove="FFFF0000"
+					s2mAbove="FFFF0000",
+					dots={
+						enabled=true,
+						up="FFFFFFFF",
+						down="FFFF0000"
+					}
 				},
 				bar={
 					border="FF431863",

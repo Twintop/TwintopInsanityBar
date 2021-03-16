@@ -1259,9 +1259,27 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		----------
 		--$swpCount
-		local shadowWordPainCount = TRB.Data.snapshotData.targetData.shadowWordPain or 0
+		local _shadowWordPainCount = TRB.Data.snapshotData.targetData.shadowWordPain or 0
+		local shadowWordPainCount = _shadowWordPainCount
+
 		--$vtCount
-		local vampiricTouchCount = TRB.Data.snapshotData.targetData.vampiricTouch or 0
+		local _vampiricTouchCount = TRB.Data.snapshotData.targetData.vampiricTouch or 0
+		local vampiricTouchCount = _vampiricTouchCount
+
+		if TRB.Data.settings.priest.shadow.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPain then
+				shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.up, _shadowWordPainCount)
+			else
+				shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.down, _shadowWordPainCount)
+			end
+
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouch then
+				vampiricTouchCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.up, _vampiricTouchCount)
+			else
+				vampiricTouchCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.down, _vampiricTouchCount)
+			end
+		end
+
 		--$dpCount
 		local devouringPlagueCount = TRB.Data.snapshotData.targetData.devouringPlague or 0
 
