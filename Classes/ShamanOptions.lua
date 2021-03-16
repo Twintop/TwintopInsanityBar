@@ -110,7 +110,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					overcapEnabled=true,
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
-					right="FFFFFFFF"
+					right="FFFFFFFF",
+					dots={
+						enabled=true,
+						up="FFFFFFFF",
+						down="FFFF0000"
+					}
 				},
 				bar = {
 					border="FF00008D",

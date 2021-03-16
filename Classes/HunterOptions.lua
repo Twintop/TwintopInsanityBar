@@ -355,7 +355,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					overcapEnabled=true,
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
-					right="FFFFFFFF"
+					right="FFFFFFFF",
+					dots={
+						enabled=true,
+						up="FFFFFFFF",
+						down="FFFF0000"
+					}
 				},
 				bar = {
 					border="FF698247",
@@ -576,7 +581,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					overcapEnabled=true,
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
-					right="FFFFFFFF"
+					right="FFFFFFFF",
+					dots={
+						enabled=true,
+						up="FFFFFFFF",
+						down="FFFF0000"
+					}
 				},
 				bar = {
 					border="FF698247",
