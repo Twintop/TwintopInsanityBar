@@ -130,7 +130,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		darkThought = {
 			tickCount = 0, --Sum of ticks of Mind Flay * # of DoTs on the target when tick occurred.
 			partialTickCount = 0, --Partial ticks from Mind Sear. Kept separate for tracking purposes.
-			partialTickMax = 2 --1/2 partial tick
+			partialTickMax = 3 --1/3 partial tick
 		},
 		torghast = {
 			dreamspunMushroomsModifier = 1,
