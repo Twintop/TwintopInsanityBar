@@ -1,10 +1,8 @@
 [![GitHub release](https://img.shields.io/github/release/Twintop/TwintopInsanityBar.svg?maxAge=3600)](https://github.com/Twintop/TwintopInsanityBar/releases)
-
 [![MIT License](https://img.shields.io/github/license/Twintop/TwintopInsanityBar)](https://github.com/Twintop/TwintopInsanityBar/blob/shadowlands/LICENSE)
 
 [![Issues](https://img.shields.io/github/issues-raw/Twintop/TwintopInsanityBar)](https://github.com/Twintop/TwintopInsanityBar/issues)
 [![Issues](https://img.shields.io/github/issues-closed-raw/Twintop/TwintopInsanityBar?color=00CC00)](https://github.com/Twintop/TwintopInsanityBar/issues?q=is%3Aissue+is%3Aclosed)
-
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Core?color=000000&label=Core)](https://github.com/Twintop/TwintopInsanityBar/labels/Core)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Death%20Knight?color=C41E3A&label=Death%20Knight)](https://github.com/Twintop/TwintopInsanityBar/labels/Death%20Knight)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Death%20Knight?color=A330C9&label=Demon%20Hunter)](https://github.com/Twintop/TwintopInsanityBar/labels/Demon%20Hunter)
