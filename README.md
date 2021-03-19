@@ -44,4 +44,5 @@ Bar text can be configured to show the following data in whatever format you'd l
 - Time To Die of enemies you've targeted
 - Spell icons for your current casting spell and many others that are related to Insanity or tracking.
 
+Found an issue? Report it on GitHub (https://github.com/Twintop/TwintopInsanityBar/issues/) or in Discord (https://discord.gg/eThqxM78xm)
 Looking to customize the bar's text? Be sure to check out the wiki! https://github.com/Twintop/TwintopInsanityBar/wiki/Bar-Text-Customization
