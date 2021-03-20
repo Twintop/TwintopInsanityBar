@@ -161,14 +161,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			icon = "",
 			name = "",
 			insanity = 4,
-			fotm = false
+			fotm = false, 
+			baseDuration = 16,
+			pandemic = true,
+			pandemicTime = 16 * 0.3
 		},
 		vampiricTouch = {
 			id = 34914,
 			name = "",
 			icon = "",
 			insanity = 5,
-			fotm = false
+			fotm = false, 
+			baseDuration = 21,
+			pandemic = true,
+			pandemicTime = 21 * 0.3
 		},
 		mindBlast = {
 			id = 8092,
@@ -1266,13 +1272,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		if TRB.Data.settings.priest.shadow.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPain then
-				shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.up, _shadowWordPainCount)
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining > TRB.Data.spells.shadowWordPain.pandemicTime then
+					shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.up, _shadowWordPainCount)
+				else
+					shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.pandemic, _shadowWordPainCount)
+				end				
 			else
 				shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.down, _shadowWordPainCount)
 			end
 
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouch then
-				vampiricTouchCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.up, _vampiricTouchCount)
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouchRemaining > TRB.Data.spells.vampiricTouch.pandemicTime then
+					vampiricTouchCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.up, _vampiricTouchCount)
+				else
+					vampiricTouchCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.pandemic, _vampiricTouchCount)
+				end
 			else
 				vampiricTouchCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.down, _vampiricTouchCount)
 			end
@@ -1917,16 +1931,31 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function UpdateSnapshot()
+		local currentTime = GetTime()
 		TRB.Functions.UpdateSnapshot()
 		TRB.Data.spells.s2m.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.s2m.id))
 		UpdateMindbenderValues()
 		UpdateExternalCallToTheVoidValues()
 		UpdateDeathAndMadness()
 		UpdateWrathfulFaerieValues()
+		
+		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPain then
+				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.shadowWordPain.id, "target", "player"))
+			
+				if expiration ~= nil then
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining = expiration - currentTime
+				end
+			end
 
-		--if TRB.Data.snapshotData.targetData.targets[guid].vampiricTouch then
-		--	TRB.Data.snapshotData.targetData.targets[guid].vampiricTouchRemaining = select()
-		--end
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouch then
+				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.vampiricTouch.id, "target", "player"))
+			
+				if expiration ~= nil then
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouchRemaining = expiration - currentTime
+				end
+			end
+		end
 	end
 
 	local function HideResourceBar(force)
@@ -2281,6 +2310,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain + 1
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = false
+						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPainRemaining = 0
 						TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain - 1
 					--elseif type == "SPELL_PERIODIC_DAMAGE" then
 					end
@@ -2308,6 +2338,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.targetData.vampiricTouch = TRB.Data.snapshotData.targetData.vampiricTouch + 1
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouch = false
+						TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouchRemaining = 0
 						TRB.Data.snapshotData.targetData.vampiricTouch = TRB.Data.snapshotData.targetData.vampiricTouch - 1
 					--elseif type == "SPELL_PERIODIC_DAMAGE" then
 					end
