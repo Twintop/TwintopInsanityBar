@@ -88,28 +88,25 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			id = 194153,
 			name = "",
 			icon = "",
-			astralPower = 8, 
-			--baseDuration = 1
-			--pandemic = true,
-			--pandemicTime = 8 * 0.3
+			astralPower = 8
 		},
 		sunfire = {
 			id = 164815,
 			name = "",
 			icon = "",
 			astralPower = 2, 
-			--baseDuration = 1
-			--pandemic = true,
-			--pandemicTime = 8 * 0.3
+			baseDuration = 18,
+			pandemic = true,
+			pandemicTime = 18 * 0.3
 		},
 		moonfire = {
 			id = 164812,
 			name = "",
 			icon = "",
 			astralPower = 2, 
-			--baseDuration = 1
-			--pandemic = true,
-			--pandemicTime = 8 * 0.3
+			baseDuration = 22,
+			pandemic = true,
+			pandemicTime = 22 * 0.3
         },
 
 		starsurge = {
@@ -186,7 +183,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             id = 202347,
             name = "",
             icon = "",
-            astralPower = 8
+            astralPower = 8, 
+			baseDuration = 24,
+			pandemic = true,
+			pandemicTime = 24 * 0.3
         },
 
         furyOfElune = {
@@ -479,8 +479,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
 			TRB.Functions.InitializeTarget(guid)
 			TRB.Data.snapshotData.targetData.targets[guid].sunfire = false
+			TRB.Data.snapshotData.targetData.targets[guid].sunfireRemaining = 0
 			TRB.Data.snapshotData.targetData.targets[guid].moonfire = false
+			TRB.Data.snapshotData.targetData.targets[guid].moonfireRemaining = 0
 			TRB.Data.snapshotData.targetData.targets[guid].stellarFlare = false
+			TRB.Data.snapshotData.targetData.targets[guid].stellarFlareRemaining = 0
 		end
 	end
 
@@ -492,8 +495,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         for tguid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
             if (currentTime - TRB.Data.snapshotData.targetData.targets[tguid].lastUpdate) > 10 then
                 TRB.Data.snapshotData.targetData.targets[tguid].sunfire = false
+				TRB.Data.snapshotData.targetData.targets[tguid].sunfireRemaining = 0
                 TRB.Data.snapshotData.targetData.targets[tguid].moonfire = false
+				TRB.Data.snapshotData.targetData.targets[tguid].moonfireRemaining = 0
                 TRB.Data.snapshotData.targetData.targets[tguid].stellarFlare = false
+				TRB.Data.snapshotData.targetData.targets[tguid].stellarFlareRemaining = 0
             else
                 if TRB.Data.snapshotData.targetData.targets[tguid].sunfire == true then
                     sunfireTotal = sunfireTotal + 1
@@ -711,11 +717,47 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		----------
 		--$sfCount
-        local sunfireCount = TRB.Data.snapshotData.targetData.sunfire or 0
+        local _sunfireCount = TRB.Data.snapshotData.targetData.sunfire or 0
+		local sunfireCount = _sunfireCount
         --$mfCount
-        local moonfireCount = TRB.Data.snapshotData.targetData.moonfire or 0
+        local _moonfireCount = TRB.Data.snapshotData.targetData.moonfire or 0
+		local moonfireCount = _moonfireCount
         --$sFlareCount
-		local stellarFlareCount = TRB.Data.snapshotData.targetData.stellarFlare or 0
+		local _stellarFlareCount = TRB.Data.snapshotData.targetData.stellarFlare or 0
+		local stellarFlareCount = _stellarFlareCount
+
+		if TRB.Data.settings.druid.balance.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].sunfire then
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].sunfireRemaining > TRB.Data.spells.sunfire.pandemicTime then
+					sunfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.up, _sunfireCount)
+				else
+					sunfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.pandemic, _sunfireCount)
+				end
+			else
+				sunfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.down, _sunfireCount)
+			end
+
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfire then
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireRemaining > TRB.Data.spells.moonfire.pandemicTime then
+					moonfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.up, _moonfireCount)
+				else
+					moonfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.pandemic, _moonfireCount)
+				end
+			else
+				moonfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.down, _moonfireCount)
+			end
+
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].stellarFlare then
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].stellarFlareRemaining > TRB.Data.spells.stellarFlare.pandemicTime then
+					stellarFlareCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.up, _stellarFlareCount)
+				else
+					stellarFlareCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.pandemic, _stellarFlareCount)
+				end
+			else
+				stellarFlareCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.down, _stellarFlareCount)
+			end
+		end
+
 
 		--$mdTime
 		local _onethsTime = 0
@@ -908,12 +950,37 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function UpdateSnapshot()
 		TRB.Functions.UpdateSnapshot()
-		--local currentTime = GetTime()
-		--local _
+		local currentTime = GetTime()
 
 		TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))
 
         UpdateFuryOfElune()
+		
+		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].sunfire then
+				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.sunfire.id, "target", "player"))
+			
+				if expiration ~= nil then
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].sunfireRemaining = expiration - currentTime
+				end
+			end
+
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfire then
+				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.moonfire.id, "target", "player"))
+			
+				if expiration ~= nil then
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireRemaining = expiration - currentTime
+				end
+			end
+
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].stellarFlare then
+				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.stellarFlare.id, "target", "player"))
+			
+				if expiration ~= nil then
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].stellarFlareRemaining = expiration - currentTime
+				end
+			end
+		end
 	end    
 
 	local function HideResourceBar(force)
@@ -1249,6 +1316,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						TRB.Data.snapshotData.targetData.sunfire = TRB.Data.snapshotData.targetData.sunfire + 1
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].sunfire = false
+						TRB.Data.snapshotData.targetData.targets[destGUID].sunfireRemaining = 0
 						TRB.Data.snapshotData.targetData.sunfire = TRB.Data.snapshotData.targetData.sunfire - 1
 					--elseif type == "SPELL_PERIODIC_DAMAGE" then
 					end
@@ -1260,6 +1328,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						TRB.Data.snapshotData.targetData.moonfire = TRB.Data.snapshotData.targetData.moonfire + 1
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].moonfire = false
+						TRB.Data.snapshotData.targetData.targets[destGUID].moonfireRemaining = 0
 						TRB.Data.snapshotData.targetData.moonfire = TRB.Data.snapshotData.targetData.moonfire - 1
                     --elseif type == "SPELL_PERIODIC_DAMAGE" then
 					end
@@ -1271,6 +1340,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						TRB.Data.snapshotData.targetData.stellarFlare = TRB.Data.snapshotData.targetData.stellarFlare + 1
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].stellarFlare = false
+						TRB.Data.snapshotData.targetData.targets[destGUID].stellarFlareRemaining = 0
 						TRB.Data.snapshotData.targetData.stellarFlare = TRB.Data.snapshotData.targetData.stellarFlare - 1
 					--elseif type == "SPELL_PERIODIC_DAMAGE" then
 					end
