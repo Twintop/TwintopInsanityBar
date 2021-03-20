@@ -189,7 +189,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					dots={
 						enabled=true,
 						up="FFFFFFFF",
-						down="FFFF0000"
+						down="FFFF0000",
+						pandemic="FFFFFF00"
 					}
 				},
 				bar={

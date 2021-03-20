@@ -754,12 +754,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			self.characterCheckSinceLastUpdate  = 0
 		end
 
+		local guid = UnitGUID("target")
+		TRB.Data.snapshotData.targetData.currentTargetGuid = guid
+
 		if TRB.Data.snapshotData.targetData.ttdIsActive and self.ttdSinceLastUpdate >= TRB.Data.settings.core.ttd.sampleRate then -- in seconds
 			local currentTime = GetTime()
-			local guid = UnitGUID("target")
-			if TRB.Data.snapshotData.targetData.currentTargetGuid ~= guid then
-				TRB.Data.snapshotData.targetData.currentTargetGuid = guid
-			end
 
 			if guid ~= nil then
 				InitializeTarget(guid)

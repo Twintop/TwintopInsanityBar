@@ -16,12 +16,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
 
-	--[[
-	local mindbenderAudioCueFrame = CreateFrame("Frame")
-	mindbenderAudioCueFrame.sinceLastPlay = 0
-	mindbenderAudioCueFrame.sinceLastUpdate = 0
-	]]--
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 
 	Global_TwintopInsanityBar = {
@@ -776,7 +770,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.InitializeTarget(guid)
 			TRB.Data.snapshotData.targetData.targets[guid].auspiciousSpirits = 0
 			TRB.Data.snapshotData.targetData.targets[guid].shadowWordPain = false
+			TRB.Data.snapshotData.targetData.targets[guid].shadowWordPainRemaining = 0
 			TRB.Data.snapshotData.targetData.targets[guid].vampiricTouch = false
+			TRB.Data.snapshotData.targetData.targets[guid].vampiricTouchRemaining = 0
 			TRB.Data.snapshotData.targetData.targets[guid].devouringPlague = false
 		end
 	end
@@ -791,7 +787,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if (currentTime - TRB.Data.snapshotData.targetData.targets[tguid].lastUpdate) > 10 then
 				TRB.Data.snapshotData.targetData.targets[tguid].auspiciousSpirits = 0
 				TRB.Data.snapshotData.targetData.targets[tguid].shadowWordPain = false
+				TRB.Data.snapshotData.targetData.targets[tguid].shadowWordPainRemaining = 0
 				TRB.Data.snapshotData.targetData.targets[tguid].vampiricTouch = false
+				TRB.Data.snapshotData.targetData.targets[tguid].vampiricTouchRemaining = 0
 				TRB.Data.snapshotData.targetData.targets[tguid].devouringPlague = false
 			else
 				asTotal = asTotal + TRB.Data.snapshotData.targetData.targets[tguid].auspiciousSpirits
@@ -854,7 +852,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(TRB.Data.spells.voidBolt.id)
 				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier), 0.75) + latency
 				local gcdLockRemaining = TRB.Functions.GetCurrentGCDLockRemaining()
-				local targetDebuffId = select(10, TRB.Functions.FindDebuffById(TRB.Data.spells.hungeringVoid.idDebuff, "target"))
+				local targetDebuffId = select(10, TRB.Functions.FindDebuffById(TRB.Data.spells.hungeringVoid.idDebuff, "target", TRB.Data.character.guid))
 
 				local castGrantsExtension = true
 				--[[
@@ -1925,6 +1923,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateExternalCallToTheVoidValues()
 		UpdateDeathAndMadness()
 		UpdateWrathfulFaerieValues()
+
+		--if TRB.Data.snapshotData.targetData.targets[guid].vampiricTouch then
+		--	TRB.Data.snapshotData.targetData.targets[guid].vampiricTouchRemaining = select()
+		--end
 	end
 
 	local function HideResourceBar(force)
@@ -2127,12 +2129,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			self.characterCheckSinceLastUpdate  = 0
 		end
 
+		local guid = UnitGUID("target")
+		TRB.Data.snapshotData.targetData.currentTargetGuid = guid
+
 		if TRB.Data.snapshotData.targetData.ttdIsActive and self.ttdSinceLastUpdate >= TRB.Data.settings.core.ttd.sampleRate then -- in seconds
 			local currentTime = GetTime()
-			local guid = UnitGUID("target")
-			if TRB.Data.snapshotData.targetData.currentTargetGuid ~= guid then
-				TRB.Data.snapshotData.targetData.currentTargetGuid = guid
-			end
 
 			if guid ~= nil then
 				InitializeTarget(guid)

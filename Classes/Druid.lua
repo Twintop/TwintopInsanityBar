@@ -88,19 +88,28 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			id = 194153,
 			name = "",
 			icon = "",
-			astralPower = 8
+			astralPower = 8, 
+			--baseDuration = 1
+			--pandemic = true,
+			--pandemicTime = 8 * 0.3
 		},
 		sunfire = {
 			id = 164815,
 			name = "",
 			icon = "",
-			astralPower = 2
+			astralPower = 2, 
+			--baseDuration = 1
+			--pandemic = true,
+			--pandemicTime = 8 * 0.3
 		},
 		moonfire = {
 			id = 164812,
 			name = "",
 			icon = "",
-			astralPower = 2
+			astralPower = 2, 
+			--baseDuration = 1
+			--pandemic = true,
+			--pandemicTime = 8 * 0.3
         },
 
 		starsurge = {
@@ -114,7 +123,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			name = "",
 			icon = "",
 			astralPower = 50,
-			isActive = false
+			isActive = false, 
+			baseDuration = 8,
+			pandemic = true,
+			pandemicTime = 8 * 0.3
         },
         
         celestialAlignment = {
@@ -1053,7 +1065,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 
 				if currentResource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.onethsPerception.isActive then
-					if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > 2.4 then -- 8 * 0.3 = pandemic range
+					if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > TRB.Data.spells.starfall.pandemicTime then
 						resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
 					else
 						resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
@@ -1155,12 +1167,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			self.characterCheckSinceLastUpdate  = 0
 		end
 
+		local guid = UnitGUID("target")
+		TRB.Data.snapshotData.targetData.currentTargetGuid = guid
+
 		if TRB.Data.snapshotData.targetData.ttdIsActive and self.ttdSinceLastUpdate >= TRB.Data.settings.core.ttd.sampleRate then -- in seconds
 			local currentTime = GetTime()
-			local guid = UnitGUID("target")
-			if TRB.Data.snapshotData.targetData.currentTargetGuid ~= guid then
-				TRB.Data.snapshotData.targetData.currentTargetGuid = guid
-			end
 
 			if guid ~= nil then
 				InitializeTarget(guid)
