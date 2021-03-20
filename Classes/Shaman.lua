@@ -98,7 +98,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
         flameShock = {
             id = 188389,
             name = "",
-            icon = ""
+            icon = "",
+			baseDuration = 18,
+			pandemic = true,
+			pandemicTime = 18 * 0.3
         },
         frostShock = {
             id = 196840,
@@ -317,6 +320,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
 			TRB.Functions.InitializeTarget(guid)
 			TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
+			TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
 			TRB.Data.snapshotData.targetData.targets[guid].echoingShockSpell = nil
 		end
 	end
@@ -328,6 +332,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
 			if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
 				TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
+				TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
 				TRB.Data.snapshotData.targetData.targets[guid].echoingShockSpell = nil
 			else
 				if TRB.Data.snapshotData.targetData.targets[guid].flameShock == true then
@@ -467,7 +472,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		----------
 		--$fsCount
-		local flameShockCount = TRB.Data.snapshotData.targetData.flameShock or 0
+		local _flameShockCount = TRB.Data.snapshotData.targetData.flameShock or 0
+		local flameShockCount = _flameShockCount
+
+		if TRB.Data.settings.shaman.elemental.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShock then
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining > TRB.Data.spells.flameShock.pandemicTime then
+					flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.up, _flameShockCount)
+				else
+					flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.pandemic, _flameShockCount)
+				end
+			else
+				flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.down, _flameShockCount)
+			end
+		end
 
 		----------
 		--Icefury
@@ -614,8 +632,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function UpdateSnapshot()
+		local currentTime = GetTime()
 		TRB.Functions.UpdateSnapshot()
 		UpdateIcefury()
+		
+		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShock then
+			local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.flameShock.id, "target", "player"))
+		
+			if expiration ~= nil then
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining = expiration - currentTime
+			end
+		end
 	end    
 
 	local function HideResourceBar(force)
@@ -836,6 +863,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						TRB.Data.snapshotData.targetData.flameShock = TRB.Data.snapshotData.targetData.flameShock + 1
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.targetData.targets[destGUID].flameShock = false
+						TRB.Data.snapshotData.targetData.targets[destGUID].flameShockRemaining = 0
 						TRB.Data.snapshotData.targetData.flameShock = TRB.Data.snapshotData.targetData.flameShock - 1
 					--elseif type == "SPELL_PERIODIC_DAMAGE" then
 					end
