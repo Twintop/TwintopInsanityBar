@@ -2169,7 +2169,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                 end)
 			end
 		end)
-
+		
 
 		yCoord = yCoord - 130
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)

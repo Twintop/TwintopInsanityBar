@@ -2501,6 +2501,27 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.beastMastery.colors.text.overcapEnabled = self:GetChecked()
 		end)
+		
+
+		yCoord = yCoord - 30
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+
+		yCoord = yCoord - 50
+		title = "Haste / Crit / Mastery Decimals to Show"
+		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.beastMastery.hastePrecision, 1, 0,
+										sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 0)
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.beastMastery.hastePrecision = value
+		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = controls
 	end
@@ -5318,6 +5339,27 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                     TRB.Data.settings.hunter.marksmanship.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
+		end)
+		
+
+		yCoord = yCoord - 130
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+
+		yCoord = yCoord - 50
+		title = "Haste / Crit / Mastery Decimals to Show"
+		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.marksmanship.hastePrecision, 1, 0,
+										sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 0)
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.marksmanship.hastePrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
@@ -8285,6 +8327,27 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                     TRB.Data.settings.hunter.survival.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
+		end)
+		
+
+		yCoord = yCoord - 130
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+
+		yCoord = yCoord - 50
+		title = "Haste / Crit / Mastery Decimals to Show"
+		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.survival.hastePrecision, 1, 0,
+										sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 0)
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.survival.hastePrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
