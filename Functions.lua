@@ -1118,92 +1118,93 @@ TRB.Functions.RemoveInvalidVariablesFromBarText = RemoveInvalidVariablesFromBarT
 
 -- Character Functions
 
-local function FindBuffByName(spellName, onWhom)
+local function FindBuffByName(spellName, onWhom, byWhom)
 	if onWhom == nil then
 		onWhom = "player"
 	end
 	for i = 1, 1000 do
-		local unitSpellName = UnitBuff(onWhom, i)
+		local unitSpellName, _, _, _, _, _, castBy = UnitBuff(onWhom, i)
 		if not unitSpellName then
 			return
-		elseif spellName == unitSpellName then
+		elseif spellName == unitSpellName and (byWhom == nil or byWhom == castBy) then
 			return UnitBuff(onWhom, i)
 		end
 	end
 end
 TRB.Functions.FindBuffByName = FindBuffByName
 
-local function FindBuffById(spellId, onWhom)
+local function FindBuffById(spellId, onWhom, byWhom)
 	if onWhom == nil then
 		onWhom = "player"
 	end
 	for i = 1, 1000 do
-		local unitSpellId = select(10, UnitBuff(onWhom, i))
+		local _, _, _, _, _, _, castBy, _, _, unitSpellId = UnitBuff(onWhom, i)
 		if not unitSpellId then
 			return
-		elseif spellId == unitSpellId then
+		elseif spellId == unitSpellId and (byWhom == nil or byWhom == castBy) then
 			return UnitBuff(onWhom, i)
 		end
 	end
 end
 TRB.Functions.FindBuffById = FindBuffById
 
-local function FindDebuffByName(spellName, onWhom)
+local function FindDebuffByName(spellName, onWhom, byWhom)
 	if onWhom == nil then
 		onWhom = "player"
 	end
+
 	for i = 1, 1000 do
-		local unitSpellName = UnitDebuff(onWhom, i)
+		local unitSpellName, _, _, _, _, _, castBy = UnitDebuff(onWhom, i)
 		if not unitSpellName then
 			return
-		elseif spellName == unitSpellName then
+		elseif spellName == unitSpellName and (byWhom == nil or byWhom == castBy) then
 			return UnitDebuff(onWhom, i)
 		end
 	end
 end
 TRB.Functions.FindDebuffByName = FindDebuffByName
 
-local function FindDebuffById(spellId, onWhom)
+local function FindDebuffById(spellId, onWhom, byWhom)
 	if onWhom == nil then
 		onWhom = "player"
 	end
 
 	for i = 1, 1000 do
-		local unitSpellId = select(10, UnitDebuff(onWhom, i))
+		local _, _, _, _, _, _, castBy, _, _, unitSpellId = UnitDebuff(onWhom, i)
 		if not unitSpellId then
 			return
-		elseif spellId == unitSpellId then
+		elseif spellId == unitSpellId and (byWhom == nil or byWhom == castBy) then
 			return UnitDebuff(onWhom, i)
 		end
 	end
 end
 TRB.Functions.FindDebuffById = FindDebuffById
     
-local function FindAuraByName(spellName, onWhom, filter)
+local function FindAuraByName(spellName, onWhom, filter, byWhom)
 	if onWhom == nil then
 		onWhom = "player"
 	end
 	for i = 1, 1000 do
-		local unitSpellName = UnitAura(onWhom, i, filter)
+		local unitSpellName, _, _, _, _, _, castBy = UnitAura(onWhom, i, filter)
 		if not unitSpellName then
 			return
-		elseif spellName == unitSpellName then
+		elseif spellName == unitSpellName and (byWhom == nil or byWhom == castBy) then
 			return UnitAura(onWhom, i, filter)
 		end
 	end
 end
 TRB.Functions.FindAuraByName = FindAuraByName
-    
-local function FindAuraById(spellId, onWhom, filter)
+
+local function FindAuraById(spellId, onWhom, filter, byWhom)
 	if onWhom == nil then
 		onWhom = "player"
 	end
 
 	for i = 1, 1000 do
-		local unitSpellId = select(10, UnitAura(onWhom, i, filter))
+		local _, _, _, _, _, _, castBy, _, _, unitSpellId = UnitAura(onWhom, i, filter)
 		if not unitSpellId then
 			return
-		elseif spellId == unitSpellId then
+		elseif spellId == unitSpellId and (byWhom == nil or byWhom == castBy) then
 			return UnitAura(onWhom, i, filter)
 		end
 	end

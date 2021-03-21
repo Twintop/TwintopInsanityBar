@@ -280,7 +280,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		specCache.beastMastery.snapshotData.targetData = {
 			ttdIsActive = false,
 			currentTargetGuid = nil,
-			serpentSting = 0,
 			targets = {}
 		}
 		specCache.beastMastery.snapshotData.barbedShot = {
@@ -466,7 +465,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 3,
 				settingKey = "serpentSting",
 				isTalent = true,
-				thresholdUsable = false
+				thresholdUsable = false, 
+				baseDuration = 18,
+				pandemic = true,
+				pandemicTime = 18 * 0.3
 			},
 			barrage = {
 				id = 120360,
@@ -816,7 +818,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				focus = -20,
 				thresholdId = 9,
 				settingKey = "serpentSting",
-				thresholdUsable = false
+				thresholdUsable = false, 
+				baseDuration = 18,
+				pandemic = true,
+				pandemicTime = 18 * 0.3
 			},
 			flankingStrike = {
 				id = 269751,
@@ -1307,6 +1312,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
 			TRB.Functions.InitializeTarget(guid)
 			TRB.Data.snapshotData.targetData.targets[guid].serpentSting = false
+			TRB.Data.snapshotData.targetData.targets[guid].serpentStingRemaining = 0
 		end
 	end
 
@@ -1379,6 +1385,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
 			if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
 				TRB.Data.snapshotData.targetData.targets[guid].serpentSting = false
+				TRB.Data.snapshotData.targetData.targets[guid].serpentStingRemaining = 0
 			else
 				if TRB.Data.snapshotData.targetData.targets[guid].serpentSting == true then
 					ssTotal = ssTotal + 1
@@ -1840,7 +1847,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 		--$ssCount
-		local serpentStingCount = TRB.Data.snapshotData.targetData.serpentSting or 0
+		local _serpentStingCount = TRB.Data.snapshotData.targetData.serpentSting or 0
+		local serpentStingCount = _serpentStingCount
+
+		if TRB.Data.settings.hunter.marksmanship.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentSting then
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining > TRB.Data.spells.serpentSting.pandemicTime then
+					serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.marksmanship.colors.text.dots.up, _serpentStingCount)
+				else
+					serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.marksmanship.colors.text.dots.pandemic, _serpentStingCount)
+				end
+			else
+				serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.marksmanship.colors.text.dots.down, _serpentStingCount)
+			end
+		end
 
 		----------------------------
 
@@ -1999,7 +2019,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 		--$ssCount
-		local serpentStingCount = TRB.Data.snapshotData.targetData.serpentSting or 0
+		local _serpentStingCount = TRB.Data.snapshotData.targetData.serpentSting or 0
+		local serpentStingCount = _serpentStingCount
+
+		if TRB.Data.settings.hunter.survival.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentSting then
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining > TRB.Data.spells.serpentSting.pandemicTime then
+					serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.survival.colors.text.dots.up, _serpentStingCount)
+				else
+					serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.survival.colors.text.dots.pandemic, _serpentStingCount)
+				end
+			else
+				serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.survival.colors.text.dots.down, _serpentStingCount)
+			end
+		end
 
 		----------------------------
 
@@ -2298,6 +2331,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.startTime = nil
             TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration = 0
         end
+		
+		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentSting then
+			local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.serpentSting.id, "target", "player"))
+		
+			if expiration ~= nil then
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining = expiration - currentTime
+			end
+		end
 	end    
 
 	local function UpdateSnapshot_Survival()
@@ -2327,6 +2368,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             TRB.Data.snapshotData.killShot.startTime = nil
             TRB.Data.snapshotData.killShot.duration = 0
         end
+		
+		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentSting then
+			local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.serpentSting.id, "target", "player"))
+		
+			if expiration ~= nil then
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining = expiration - currentTime
+			end
+		end
 	end   
 
 	local function HideResourceBar(force)
@@ -2962,6 +3011,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					local barColor = TRB.Data.settings.hunter.survival.colors.bar.base
+					if TRB.Data.settings.hunter.survival.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+						barBorderColor = TRB.Data.settings.hunter.survival.colors.bar.borderOvercap
+
+						if TRB.Data.settings.hunter.survival.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
+							TRB.Data.snapshotData.audio.overcapCue = true
+							PlaySoundFile(TRB.Data.settings.hunter.survival.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+						end
+					else
+						TRB.Data.snapshotData.audio.overcapCue = false
+					end
 
 					if TRB.Data.spells.coordinatedAssault.isActive then
 						local timeThreshold = 0
@@ -3022,13 +3081,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			CheckCharacter()
 			self.characterCheckSinceLastUpdate  = 0
 		end
+		
+		local guid = UnitGUID("target")
+		TRB.Data.snapshotData.targetData.currentTargetGuid = guid
 
 		if TRB.Data.snapshotData.targetData.ttdIsActive and self.ttdSinceLastUpdate >= TRB.Data.settings.core.ttd.sampleRate then -- in seconds
 			local currentTime = GetTime()
-			local guid = UnitGUID("target")
-			if TRB.Data.snapshotData.targetData.currentTargetGuid ~= guid then
-				TRB.Data.snapshotData.targetData.currentTargetGuid = guid
-			end
 
 			if guid ~= nil then
 				InitializeTarget(guid)
@@ -3183,7 +3241,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					elseif spellId == TRB.Data.spells.rapidFire.id then
 						if type == "SPELL_AURA_APPLIED" then -- Gained buff 
 							TRB.Data.snapshotData.rapidFire.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.rapidFire.duration, TRB.Data.snapshotData.rapidFire.endTime, _, _, _, TRB.Data.snapshotData.rapidFire.spellId = TRB.Functions.FindDebuffById(TRB.Data.spells.rapidFire.id, destGUID)
+							_, _, _, _, TRB.Data.snapshotData.rapidFire.duration, TRB.Data.snapshotData.rapidFire.endTime, _, _, _, TRB.Data.snapshotData.rapidFire.spellId = TRB.Functions.FindDebuffById(TRB.Data.spells.rapidFire.id, destGUID, TRB.Data.character.guid)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.rapidFire.isActive = false
 							TRB.Data.snapshotData.rapidFire.spellId = nil
@@ -3219,6 +3277,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
 						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = false
+							TRB.Data.snapshotData.targetData.targets[destGUID].serpentStingRemaining = 0
 							TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting - 1
 						--elseif type == "SPELL_PERIODIC_DAMAGE" then
 						end
@@ -3272,6 +3331,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
 						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = false
+							TRB.Data.snapshotData.targetData.targets[destGUID].serpentStingRemaining = 0
 							TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting - 1
 						--elseif type == "SPELL_PERIODIC_DAMAGE" then
 						end
