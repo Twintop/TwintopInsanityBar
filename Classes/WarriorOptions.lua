@@ -85,9 +85,24 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			thresholdWidth=2,
 			overcapThreshold=120,
 			thresholds = {
-				arcaneShot = {
-					enabled = false, -- 1
+				slam = {
+					enabled = true, -- 1
 				},
+				whirlwind = {
+					enabled = true, -- 2
+				},
+				mortalStrike = {
+					enabled = true, -- 3
+				},
+				impendingVictory = {
+					enabled = false, -- 4
+				},
+				rend = {
+					enabled = true, -- 5
+				},
+				cleave = {
+					enabled = true, -- 6
+				},	
 			},
 			--[[
 			generation = {
