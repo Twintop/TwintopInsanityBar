@@ -342,6 +342,11 @@ local function InitializeTarget(guid)
 end
 TRB.Functions.InitializeTarget = InitializeTarget
 
+local function InitializeTarget_Class(guid)
+	--To be implemented in each class/spec module
+end
+TRB.Functions.InitializeTarget_Class = InitializeTarget_Class
+
 local function TargetsCleanup(clearAll)
 	if clearAll == true then
 		TRB.Data.snapshotData.targetData.targets = {}
@@ -704,6 +709,10 @@ local function ConstructResourceBar(settings)
 end
 TRB.Functions.ConstructResourceBar = ConstructResourceBar
 
+local function TriggerResourceBarUpdates()
+	--To be implemented in each class/spec module
+end
+TRB.Functions.TriggerResourceBarUpdates = TriggerResourceBarUpdates
 
 -- Bar Text Functions
 
@@ -1217,6 +1226,11 @@ local function CheckCharacter()
 	TRB.Functions.FillSpellData()
 end
 TRB.Functions.CheckCharacter = CheckCharacter
+
+local function CheckCharacter_Class()
+	--To be implemented in each class/spec module
+end
+TRB.Functions.CheckCharacter_Class = CheckCharacter_Class
 
 local function UpdateSnapshot()
 	TRB.Data.snapshotData.resource = UnitPower("player", TRB.Data.resource, true)

@@ -691,6 +691,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end
 	end
+	TRB.Functions.CheckCharacter_Class = CheckCharacter
 
 	local function IsTtdActive()
 		if TRB.Data.settings.priest ~= nil and TRB.Data.settings.priest.shadow ~= nil and TRB.Data.settings.priest.shadow.displayText ~= nil then
@@ -712,31 +713,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function EventRegistration()
 		if GetSpecialization() == 3 then
-			TRB.Data.resource = Enum.PowerType.Insanity
-			TRB.Data.resourceFactor = 100
 			TRB.Data.specSupported = true
-			CheckCharacter()
-
-			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-
-			--[[
-			if TRB.Data.settings.priest.shadow.mindbender.useNotification.enabled then
-				mindbenderAudioCueFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) mindbenderAudioCueFrame:onUpdate(sinceLastUpdate) end)
-			else
-				mindbenderAudioCueFrame:SetScript("OnUpdate", nil)
-			end
-			]]--
-			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-			barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-			TRB.Details.addonData.registered = true
 		else
 			--TRB.Data.resource = MANA
 			TRB.Data.specSupported = false
 			targetsTimerFrame:SetScript("OnUpdate", nil)
-			--mindbenderAudioCueFrame:SetScript("OnUpdate", nil)
 			timerFrame:SetScript("OnUpdate", nil)
 			barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 			barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -744,6 +725,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
 			TRB.Details.addonData.registered = false
 			barContainerFrame:Hide()
+		end
+
+		if TRB.Data.specSupported then
+			TRB.Data.resource = Enum.PowerType.Insanity
+			TRB.Data.resourceFactor = 100
+            CheckCharacter()
+            
+			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
+			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
+			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
+			barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+
+			TRB.Details.addonData.registered = true			
 		end
 	end
 
@@ -782,6 +778,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.snapshotData.targetData.targets[guid].devouringPlague = false
 		end
 	end
+	TRB.Functions.InitializeTarget_Class = InitializeTarget
 
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
@@ -2137,111 +2134,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			UpdateResourceBar()
 		end
 	end
-
-	-- TODO: Combine this in a shared resource!
-	function timerFrame:onUpdate(sinceLastUpdate)
-		local currentTime = GetTime()
-		self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
-		self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate
-		self.characterCheckSinceLastUpdate  = self.characterCheckSinceLastUpdate  + sinceLastUpdate
-		if self.sinceLastUpdate >= 0.05 then -- in seconds
-			TriggerResourceBarUpdates()
-			self.sinceLastUpdate = 0
-			if TRB.Data.snapshotData.mindSear.hitTime ~= nil and currentTime > (TRB.Data.snapshotData.mindSear.hitTime + 5) then
-				TRB.Data.snapshotData.mindSear.hitTime = nil
-				TRB.Data.snapshotData.mindSear.targetsHit = 0
-			end
-		end
-
-		if self.characterCheckSinceLastUpdate >= TRB.Data.settings.core.dataRefreshRate then -- in seconds
-			CheckCharacter()
-			self.characterCheckSinceLastUpdate  = 0
-		end
-
-		local guid = UnitGUID("target")
-		TRB.Data.snapshotData.targetData.currentTargetGuid = guid
-
-		if TRB.Data.snapshotData.targetData.ttdIsActive and self.ttdSinceLastUpdate >= TRB.Data.settings.core.ttd.sampleRate then -- in seconds
-			local currentTime = GetTime()
-
-			if guid ~= nil then
-				InitializeTarget(guid)
-
-				local isDead = UnitIsDeadOrGhost("target")
-				local currentHealth = UnitHealth("target")
-				local maxHealth = UnitHealthMax("target")
-				local healthDelta = 0
-				local timeDelta = 0
-				local dps = 0
-				local ttd = 0
-
-				local count = TRB.Functions.TableLength(TRB.Data.snapshotData.targetData.targets[guid].snapshot)
-				if count > 0 and TRB.Data.snapshotData.targetData.targets[guid].snapshot[1] ~= nil then
-					healthDelta = math.max(TRB.Data.snapshotData.targetData.targets[guid].snapshot[1].health - currentHealth, 0)
-					timeDelta = math.max(currentTime - TRB.Data.snapshotData.targetData.targets[guid].snapshot[1].time, 0)
-				end
-
-				if isDead then
-					TRB.Functions.RemoveTarget(guid)
-				elseif currentHealth <= 0 or maxHealth <= 0 then
-					dps = 0
-					ttd = 0
-				else
-					if count == 0 or TRB.Data.snapshotData.targetData.targets[guid].snapshot[count] == nil or
-						(TRB.Data.snapshotData.targetData.targets[guid].snapshot[1].health == currentHealth and count == TRB.Data.settings.core.ttd.numEntries) then
-						dps = 0
-					elseif healthDelta == 0 or timeDelta == 0 then
-						dps = TRB.Data.snapshotData.targetData.targets[guid].snapshot[count].dps
-					else
-						dps = healthDelta / timeDelta
-					end
-
-					if dps == nil or dps == 0 then
-						ttd = 0
-					else
-						ttd = currentHealth / dps
-					end
-				end
-
-				if not isDead then
-					TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = currentTime
-
-					if count >= TRB.Data.settings.core.ttd.numEntries then
-						table.remove(TRB.Data.snapshotData.targetData.targets[guid].snapshot, 1)
-					end
-
-					table.insert(TRB.Data.snapshotData.targetData.targets[guid].snapshot, {
-						health=currentHealth,
-						time=currentTime,
-						dps=dps
-					})
-
-					TRB.Data.snapshotData.targetData.targets[guid].ttd = ttd
-				end
-			end
-			self.ttdSinceLastUpdate = 0
-		end
-	end
-
-	--[[
-	function mindbenderAudioCueFrame:onUpdate(sinceLastUpdate)
-		self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
-		self.sinceLastPlay = self.sinceLastPlay + sinceLastUpdate
-		if self.sinceLastUpdate >= 0.05 then -- in seconds
-			if self.sinceLastPlay >= 0.75 and not TRB.Data.snapshotData.mindbender.isActive then -- in seconds
-				if TRB.Data.settings.priest.shadow.mindbender.useNotification.useVoidformStacks == true and not TRB.Data.snapshotData.mindbender.onCooldown and TRB.Data.snapshotData.voidform.totalStacks >= TRB.Data.settings.priest.shadow.mindbender.useNotification.thresholdStacks then
-					PlaySoundFile(TRB.Data.settings.priest.shadow.audio.mindbender.sound, TRB.Data.settings.core.audio.channel.channel, false)
-					self.sinceLastPlay = 0
-				elseif TRB.Data.settings.priest.shadow.mindbender.useNotification.useVoidformStacks == false and not TRB.Data.snapshotData.mindbender.onCooldown and TRB.Data.snapshotData.voidform.drainStacks >= TRB.Data.settings.priest.shadow.mindbender.useNotification.thresholdStacks then
-					PlaySoundFile(TRB.Data.settings.priest.shadow.audio.mindbender.sound, TRB.Data.settings.core.audio.channel.channel, false)
-					self.sinceLastPlay = 0
-				end
-			end
-
-			self.sinceLastUpdate = 0
-		end
-	end
-	]]
+	TRB.Functions.TriggerResourceBarUpdates = TriggerResourceBarUpdates
 
 	barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local currentTime = GetTime()
