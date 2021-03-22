@@ -3394,21 +3394,33 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						FillSpellData_BeastMastery()
 						TRB.Functions.LoadFromSpecCache(specCache.beastMastery)
 						TRB.Functions.RefreshLookupData = RefreshLookupData_BeastMastery
-						ConstructResourceBar(TRB.Data.settings.hunter.beastMastery)
+						
+						if TRB.Data.barConstructedForSpec ~= "beastMastery" then
+							TRB.Data.barConstructedForSpec = "beastMastery"
+							ConstructResourceBar(TRB.Data.settings.hunter.beastMastery)
+						end
 					elseif specId == 2 then
 						TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.hunter.marksmanship)
 						TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.marksmanship)
 						FillSpellData_Marksmanship()
 						TRB.Functions.LoadFromSpecCache(specCache.marksmanship)
 						TRB.Functions.RefreshLookupData = RefreshLookupData_Marksmanship
-						ConstructResourceBar(TRB.Data.settings.hunter.marksmanship)
+						
+						if TRB.Data.barConstructedForSpec ~= "marksmanship" then
+							TRB.Data.barConstructedForSpec = "marksmanship"
+							ConstructResourceBar(TRB.Data.settings.hunter.marksmanship)
+						end
 					elseif specId == 3 then
 						TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.hunter.survival)
 						TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.survival)
 						FillSpellData_Survival()
 						TRB.Functions.LoadFromSpecCache(specCache.survival)
 						TRB.Functions.RefreshLookupData = RefreshLookupData_Survival
-						ConstructResourceBar(TRB.Data.settings.hunter.survival)
+						
+						if TRB.Data.barConstructedForSpec ~= "survival" then
+							TRB.Data.barConstructedForSpec = "survival"
+							ConstructResourceBar(TRB.Data.settings.hunter.survival)
+						end
 					end
 					EventRegistration()
 					TRB.Functions.HideResourceBar()

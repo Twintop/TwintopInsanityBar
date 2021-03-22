@@ -570,7 +570,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		end
 
-		local resourceFrameCounter = 1
         for k, v in pairs(TRB.Data.spells) do
             local spell = TRB.Data.spells[k]
             if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
@@ -1735,14 +1734,22 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						FillSpellData_Arms()
 						TRB.Functions.LoadFromSpecCache(specCache.arms)
 						TRB.Functions.RefreshLookupData = RefreshLookupData_Arms
-						ConstructResourceBar(TRB.Data.settings.warrior.arms)
+						
+						if TRB.Data.barConstructedForSpec ~= "arms" then
+							TRB.Data.barConstructedForSpec = "arms"
+							ConstructResourceBar(TRB.Data.settings.warrior.arms)
+						end
 					elseif specId == 2 then
 						TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.warrior.fury)
 						TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.fury)
 						FillSpellData_Fury()
 						TRB.Functions.LoadFromSpecCache(specCache.fury)
 						TRB.Functions.RefreshLookupData = RefreshLookupData_Fury
-						ConstructResourceBar(TRB.Data.settings.warrior.fury)
+
+						if TRB.Data.barConstructedForSpec ~= "fury" then
+							TRB.Data.barConstructedForSpec = "fury"
+							ConstructResourceBar(TRB.Data.settings.warrior.fury)
+						end
 					end
 					EventRegistration()
 					TRB.Functions.HideResourceBar()

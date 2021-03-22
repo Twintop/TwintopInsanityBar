@@ -143,6 +143,7 @@ TRB.Data.settings = {}
 TRB.Data.specSupported = false
 TRB.Data.resource = nil 
 TRB.Data.resourceFactor = 1
+TRB.Data.barConstructedForSpec = nil
 
 TRB.Data.barTextVariables = {
     icons = {},
