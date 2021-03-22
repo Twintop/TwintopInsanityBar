@@ -375,6 +375,11 @@ TRB.Functions.GetUnitHealthPercent = GetUnitHealthPercent
 -- Bar Manipulation Functions
 
 local function RepositionThreshold(settings, thresholdLine, parentFrame, thresholdWidth, resourceThreshold, resourceMax)
+	if thresholdLine == nil then
+		print("|cFFFFFF00TRB Warning: |r RepositionThreshold() called without a valid thresholdLine!")
+		return
+	end
+
 	if resourceMax == nil or resourceMax == 0 then
         resourceMax = TRB.Data.character.maxResource or 100
     end
