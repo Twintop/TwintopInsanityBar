@@ -354,9 +354,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			text = "Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest!",
 			button1 = "Close",			
 			hasEditBox = 1,
-			whileDead = 1,
-			hideOnEscape = 1,
-			timeout = 0,
 			OnShow = function(self)
 				local json = TRB.Functions.GetJsonLibrary()
 				local base64 = TRB.Functions.GetBase64Library()
@@ -373,8 +370,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 				self.editBox:SetText(output)
 			end,
-			OnAccept = function(self)
-			end
+			timeout = 0,
+			whileDead = true,
+			hideOnEscape = true,
+			preferredIndex = 3
 		}
 		
 		StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_Import"] = {
@@ -382,11 +381,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Import",	
 			button2 = "Cancel",		
 			hasEditBox = 1,
-			whileDead = 1,
-			hideOnEscape = 1,
-			timeout = 0,
-			OnShow = function(self)
-			end,
 			OnAccept = function(self)
 				local json = TRB.Functions.GetJsonLibrary()
 				local base64 = TRB.Functions.GetBase64Library()
@@ -400,7 +394,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				local mergedSettings = TRB.Functions.MergeSettings(existingSettings, configuration)
 				TRB.Data.settings = mergedSettings
 				ReloadUI()
-			end
+			end,
+			timeout = 0,
+			whileDead = true,
+			hideOnEscape = true,
+			preferredIndex = 3
 		}
 
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
