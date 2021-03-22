@@ -1,5 +1,5 @@
 local _, TRB = ...
-TRB.Functions = {}
+TRB.Functions = TRB.Functions or {}
 
 
 -- Table Functions

@@ -14,6 +14,8 @@ Libs\TaintLess.xml
 Libs\LibStub.lua
 Libs\CallbackHandler-1.0.lua
 Libs\LibSharedMedia-3.0.lua
+Libs\base64.lua
+Libs\json.lua
 
 Functions.lua
 UiFunctions.lua
