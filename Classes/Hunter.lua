@@ -301,9 +301,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		}
 
 		specCache.beastMastery.snapshotData.frenzy = {
-			startTime = nil,
+			endTime = nil,
 			duration = 0,
-			stacks = 0
+			stacks = 0,
+			spellId = 0
 		}
 
 		specCache.beastMastery.barTextVariables = {
@@ -3083,7 +3084,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							_, _, TRB.Data.snapshotData.frenzy.stacks, _, TRB.Data.snapshotData.frenzy.duration, TRB.Data.snapshotData.frenzy.endTime, _, _, _, TRB.Data.snapshotData.frenzy.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.frenzy.id, "pet")
 							TRB.Data.spells.frenzy.isActive = true
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshotData.frenzy.startTime = nil
+							TRB.Data.snapshotData.frenzy.endTime = nil
 							TRB.Data.snapshotData.frenzy.duration = 0
 							TRB.Data.snapshotData.frenzy.stacks = 0
 							TRB.Data.spells.frenzy.isActive = false

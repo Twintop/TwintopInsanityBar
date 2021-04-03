@@ -49,6 +49,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			maxResource = 100,
 			covenantId = 0,
 			talents = {
+				suddenDeath = {
+					isSelected = false
+				},
 				skullsplitter = {
 					isSelected = false
 				},
@@ -87,14 +90,33 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 163201,
 				name = "",
 				icon = "",
-				ragePercent = 0.2
+				healthMinimum = 0.2,
+				rage = -20,
+				rageMax = -40,
+				thresholdId = 1,
+				settingKey = "execute",
+				isTalent = false,
+				hasCooldown = false,
+				thresholdUsable = false,
+				isSnowflake = true
+			},
+			shieldBlock = {
+				id = 2565,
+				name = "",
+				icon = "",
+				rage = -30,
+				thresholdId = 2,
+				settingKey = "shieldBlock",
+				isTalent = false,
+				hasCooldown = false,
+				thresholdUsable = false			
 			},
 			slam = {
 				id = 1464,
 				name = "",
 				icon = "",
 				rage = -20,
-				thresholdId = 1,
+				thresholdId = 3,
 				settingKey = "slam",
 				isTalent = false,
 				hasCooldown = false,
@@ -104,8 +126,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 1680,
 				name = "",
 				icon = "",
-				rage = -30	,
-				thresholdId = 2,
+				rage = -30,
+				thresholdId = 4,
 				settingKey = "whirlwind",
 				isTalent = false,
 				hasCooldown = false,
@@ -118,7 +140,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -30,
-				thresholdId = 3,
+				thresholdId = 5,
 				settingKey = "mortalStrike",
 				isTalent = false,
 				hasCooldown = true,
@@ -126,6 +148,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			},			
 			
 			--Talents
+			suddenDeath = {
+				id = 52437,
+				name = "",
+				icon = ""				
+			},
 			skullsplitter = {
 				id = 100,
 				name = "",
@@ -137,23 +164,24 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -10,
-				thresholdId = 4,
+				thresholdId = 6,
 				settingKey = "impendingVictory",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false				
+				thresholdUsable = false
 			},
 			massacre = {
 				id = 281001,
 				name = "",
-				icon = ""				
+				icon = "",
+				healthMinimum = 0.35			
 			},
 			rend = {
 				id = 772,
 				name = "",
 				icon = "",
 				rage = -30,
-				thresholdId = 5,
+				thresholdId = 7,
 				settingKey = "rend",
 				isTalent = true,
 				hasCooldown = false,
@@ -164,7 +192,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -20,
-				thresholdId = 6,
+				thresholdId = 8,
 				settingKey = "cleave",
 				isTalent = true,
 				hasCooldown = true,
@@ -175,6 +203,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				abilityCount = 4,
+				modifier = 0, -- 100% for next abilityCount abilities
 				rageIncrease = 30
 			},
 			ravager = {
@@ -207,6 +236,16 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			startTime = nil,
 			duration = 0,
 			enabled = false
+		}
+		specCache.arms.snapshotData.deadlyCalm = {
+			endTime = nil,
+			duration = 0,
+			stacks = 0
+		}
+		specCache.arms.snapshotData.suddenDeath = {
+			endTime = nil,
+			duration = 0,
+			spellId = nil
 		}
 
         specCache.arms.barTextVariables = {
@@ -428,6 +467,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
         if GetSpecialization() == 1 then		
 			TRB.Data.character.specName = "arms"            
+			TRB.Data.character.talents.suddenDeath.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.skullsplitter.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.impendingVictory.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.massacre.isSelected = select(4, GetTalentInfo(3, 1, TRB.Data.character.specGroup))
@@ -511,11 +551,19 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 
-    local function CalculateAbilityResourceValue(resource)
-        local modifier = 1.0
-        --[[
+	local function GetSuddenDeathRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.suddenDeath)
+	end
+
+    local function CalculateAbilityResourceValue(resource, includeDeadlyCalm)
+        if includeDeadlyCalm == nil then
+			includeDeadlyCalm = false
+		end
+
+		local modifier = 1.0
+		
 		if resource > 0 then
-			if GetSpecialization() == 2 then
+			--[[if GetSpecialization() == 1 then
 				if TRB.Data.spells.trueshot.isActive then
 					modifier = modifier * TRB.Data.spells.trueshot.modifier
 				end
@@ -523,15 +571,15 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 			if TRB.Data.spells.nesingwarysTrappingApparatus.isActive then
 				modifier = modifier * TRB.Data.spells.nesingwarysTrappingApparatus.modifier
-			end
+			end]]
 		else
-			if GetSpecialization() == 2 then
-				if TRB.Data.spells.eagletalonsTrueRage.isActive then
-					modifier = modifier * TRB.Data.spells.eagletalonsTrueRage.modifier
+			if GetSpecialization() == 1 then
+				if TRB.Data.spells.deadlyCalm.isActive and includeDeadlyCalm then
+					modifier = modifier * TRB.Data.spells.deadlyCalm.modifier
 				end
 			end
 		end
-        ]]
+
         return resource * modifier
     end
 
@@ -570,6 +618,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		end
 
+		local resourceFrameCounter = 1
         for k, v in pairs(TRB.Data.spells) do
             local spell = TRB.Data.spells[k]
             if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
@@ -720,9 +769,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
         
 		--$rage
-		local currentRage = string.format("|c%s%.0f|r", currentRageColor, normalizedRage)
+		local ragePrecision = TRB.Data.settings.warrior.arms.ragePrecision or 0
+		local currentRage = string.format("|c%s%s|r", currentRageColor, TRB.Functions.RoundTo(normalizedRage, ragePrecision, "floor"))
 		--$casting
-		local castingRage = string.format("|c%s%.0f|r", castingRageColor, TRB.Data.snapshotData.casting.resourceFinal)
+		local castingRage = string.format("|c%s%sf|r", castingRageColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, ragePrecision, "floor"))
 		--$passive
 		local _passiveRage
 
@@ -983,6 +1033,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
             TRB.Data.snapshotData.cleave.startTime = nil
             TRB.Data.snapshotData.cleave.duration = 0
         end
+
+		_, _, TRB.Data.snapshotData.suddenDeath.stacks, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.suddenDeath.id, "player")
+		_, _, TRB.Data.snapshotData.deadlyCalm.stacks, _, TRB.Data.snapshotData.deadlyCalm.duration, TRB.Data.snapshotData.deadlyCalm.endTime, _, _, _, TRB.Data.snapshotData.deadlyCalm.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.deadlyCalm.id, "player")
 	end  
 
 	local function UpdateSnapshot_Fury()
@@ -1120,53 +1173,40 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local rageAmount = CalculateAbilityResourceValue(spell.rage)
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -rageAmount, TRB.Data.character.maxResource)
+							local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
+
+							if spell.id ~= TRB.Data.spells.execute.id then
+								TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -rageAmount, TRB.Data.character.maxResource)
+							end
 
 							local showThreshold = true
 							local thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
 							local frameLevel = 129
 
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-								--[[if spell.id == TRB.Data.spells.killShot.id then
+								if spell.id == TRB.Data.spells.execute.id then
 									local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
-									local flayersMarkTime = GetFlayersMarkRemainingTime()
-									if (targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum) and flayersMarkTime == 0 then
+									local healthThreshold = TRB.Data.spells.execute.healthThreshold
+									
+									if TRB.Data.character.talents.massacre.isSelected then
+										healthThreshold = TRB.Data.spells.massacre.healthThreshold
+									end
+
+									if GetSuddenDeathRemainingTime() > 0 then
+										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -TRB.Data.spells.execute.rageMax, TRB.Data.character.maxResource)
+									else
+										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, math.min(math.max(-rageAmount, normalizedRage), -TRB.Data.spells.execute.rageMax), TRB.Data.character.maxResource)
+									end
+
+									if UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.execute.healthMinimum then
 										showThreshold = false
-									elseif flayersMarkTime == 0 and (TRB.Data.snapshotData.killShot.startTime ~= nil and currentTime < (TRB.Data.snapshotData.killShot.startTime + TRB.Data.snapshotData.killShot.duration)) then
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.unusable
-										frameLevel = 127
-									elseif currentRage >= -rageAmount or flayersMarkTime > 0 then
+									elseif currentRage >= -rageAmount then
 										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
 										frameLevel = 128
 									end
-								elseif spell.id == TRB.Data.spells.killCommand.id then	
-									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.unusable
-										frameLevel = 127
-									elseif currentRage >= -rageAmount or TRB.Data.spells.flamewakersCobraSting.isActive then
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
-									else
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
-										frameLevel = 128
-									end
-								elseif spell.id == TRB.Data.spells.flayedShot.id then
-									local flayersMarkTime = GetFlayersMarkRemainingTime() -- Change this to layer stacking if the cost of Kill Shot or Flayed Shot changes from 10 Rage!
-									if TRB.Data.character.covenantId == 2 and flayersMarkTime == 0 then -- Venthyr and Flayer's Mark buff isn't up
-										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-											thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.unusable
-											frameLevel = 127
-										elseif currentRage >= -rageAmount then
-											thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
-										else
-											thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
-											frameLevel = 128
-										end
-									else
-										showThreshold = false
-									end
-								end]]
+								end
 							elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
 								showThreshold = false
 							elseif spell.hasCooldown then
@@ -1188,7 +1228,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								end
 							end
 
-							if TRB.Data.settings.warrior.arms.thresholds[spell.settingKey].enabled and showThreshold then
+							if TRB.Data.settings.warrior.arms.thresholds[spell.settingKey].enabled and showThreshold then								
+								if TRB.Data.snapshotData.deadlyCalm.stacks ~= nil and TRB.Data.snapshotData.deadlyCalm.stacks > 0 then
+									thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
+									frameLevel = 129
+								end
+
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
 								resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
@@ -1500,6 +1545,26 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					elseif spellId == TRB.Data.spells.cleave.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.cleave.startTime, TRB.Data.snapshotData.cleave.duration, _, _ = GetSpellCooldown(TRB.Data.spells.cleave.id)
+						end
+					elseif spellId == TRB.Data.spells.deadlyCalm.id then
+						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
+							_, _, TRB.Data.snapshotData.deadlyCalm.stacks, _, TRB.Data.snapshotData.deadlyCalm.duration, TRB.Data.snapshotData.deadlyCalm.endTime, _, _, _, TRB.Data.snapshotData.deadlyCalm.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.deadlyCalm.id, "player")
+							TRB.Data.spells.deadlyCalm.isActive = true
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.deadlyCalm.endTime = nil
+							TRB.Data.snapshotData.deadlyCalm.duration = 0
+							TRB.Data.snapshotData.deadlyCalm.stacks = 0
+							TRB.Data.spells.deadlyCalm.isActive = false
+						end
+					elseif spellId == TRB.Data.spells.suddenDeath.id then
+						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
+							_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.suddenDeath.id)
+							TRB.Data.spells.suddenDeath.isActive = true
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.deadlyCalm.endTime = nil
+							TRB.Data.snapshotData.deadlyCalm.duration = 0
+							TRB.Data.snapshotData.deadlyCalm.spellId = nil
+							TRB.Data.spells.suddenDeath.isActive = false
 						end--[[
 					elseif spellId == TRB.Data.spells.barbedShot.buffId[1] or spellId == TRB.Data.spells.barbedShot.buffId[2] or spellId == TRB.Data.spells.barbedShot.buffId[3] or spellId == TRB.Data.spells.barbedShot.buffId[4] or spellId == TRB.Data.spells.barbedShot.buffId[5] then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Barbed Shot buff

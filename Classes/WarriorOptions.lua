@@ -82,26 +82,33 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local function ArmsLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
+			ragePrecision=0,
 			thresholdWidth=2,
-			overcapThreshold=120,
+			overcapThreshold=100,
 			thresholds = {
-				slam = {
+				execute = {
 					enabled = true, -- 1
 				},
-				whirlwind = {
-					enabled = true, -- 2
+				shieldBlock = {
+					enabled = false, -- 2
 				},
-				mortalStrike = {
+				slam = {
 					enabled = true, -- 3
 				},
-				impendingVictory = {
-					enabled = false, -- 4
+				whirlwind = {
+					enabled = true, -- 4
 				},
-				rend = {
+				mortalStrike = {
 					enabled = true, -- 5
 				},
+				impendingVictory = {
+					enabled = false, -- 6
+				},
+				rend = {
+					enabled = true, -- 7
+				},
 				cleave = {
-					enabled = true, -- 6
+					enabled = true, -- 8
 				},	
 			},
 			--[[
@@ -1421,7 +1428,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast builder will overcap Rage", TRB.Data.settings.warrior.arms.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when you are overcapping Rage", TRB.Data.settings.warrior.arms.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1604,129 +1611,92 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.warrior.arms)
 		end)
 
-		--[[
-		controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.arcaneShotThresholdShow
+		controls.checkBoxes.cleaveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_cleave", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.cleaveThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Arcane Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Arcane Shot."
-		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.arcaneShot.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Cleave (if talented)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Cleave. Only visible if talented."
+		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.cleave.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.thresholds.arcaneShot.enabled = self:GetChecked()
+			TRB.Data.settings.warrior.arms.thresholds.cleave.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.aMurderOfCrowsThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_aMurderOfCrows", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.aMurderOfCrowsThresholdShow
+		controls.checkBoxes.executeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_execute", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.executeThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("A Murder of Crows (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use A Murder of Crows. Only visible if talented in to A Murder of Crows. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.aMurderOfCrows.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Execute (Minimum Rage)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute. Only visible when the current target is in Execute health range or available from a Sudden Death proc. Will move along the bar between the current minimum and maximum Rage cost amounts."
+		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.execute.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.thresholds.aMurderOfCrows.enabled = self:GetChecked()
+			TRB.Data.settings.warrior.arms.thresholds.execute.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.barrageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_barrage", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.barrageThresholdShow
+		controls.checkBoxes.impendingVictoryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_impendingVictory", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.impendingVictoryThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Barrage (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Barrage. Only visible if talented in to Barrage. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.barrage.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Impending Victory (if talented)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Impending Victory. Only visible if talented."
+		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.impendingVictory.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.thresholds.barrage.enabled = self:GetChecked()
+			TRB.Data.settings.warrior.arms.thresholds.impendingVictory.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.cobraShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_cobraShot", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.cobraShotThresholdShow
+		controls.checkBoxes.mortalStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_mortalStrike", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.mortalStrikeThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Cobra Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Cobra Shot."
-		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.cobraShot.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Mortal Strike")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Mortal Strike."
+		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.mortalStrike.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.thresholds.cobraShot.enabled = self:GetChecked()
+			TRB.Data.settings.warrior.arms.thresholds.mortalStrike.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.flayedShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_flayedShot", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flayedShotThresholdShow
+		controls.checkBoxes.rendThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_rend", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.rendThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Flayed Shot (if Venthyr)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Flayed Shot. Only visible if you are a member of the Venthyr covenant. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.flayedShot.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Rend (if talented)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Rend. Only visible if talented."
+		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.rend.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.thresholds.flayedShot.enabled = self:GetChecked()
+			TRB.Data.settings.warrior.arms.thresholds.rend.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.killCommandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_killCommand", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.killCommandThresholdShow
+		controls.checkBoxes.shieldBlockThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_shieldBlock", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.shieldBlockThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Kill Command")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Kill Command."
-		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.killCommand.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Shield Block")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Shield Block. This does not check to see if you have a shield equipped!"
+		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.shieldBlock.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.thresholds.killCommand.enabled = self:GetChecked()
+			TRB.Data.settings.warrior.arms.thresholds.shieldBlock.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.killShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_killShot", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.killShotThresholdShow
+		controls.checkBoxes.slamThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_slam", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.slamThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Kill Shot (if usable)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Kill Shot. Only visible when the current target is in Kill Shot health range or Flayer's Mark (Venthyr) buff is active. If on cooldown or has 0 charges available, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.killShot.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Slam")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Slam."
+		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.slam.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.thresholds.killShot.enabled = self:GetChecked()
+			TRB.Data.settings.warrior.arms.thresholds.slam.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.multiShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_multiShot", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.multiShotThresholdShow
+		controls.checkBoxes.whirlwindThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_whirlwind", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.whirlwindThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Multi-Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Multi-Shot."
-		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.multiShot.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Whirlwind")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Whirlwind."
+		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.whirlwind.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.thresholds.multiShot.enabled = self:GetChecked()
+			TRB.Data.settings.warrior.arms.thresholds.whirlwind.enabled = self:GetChecked()
 		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.revivePetThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_revivePet", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.revivePetThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Revive Pet")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Revive Pet."
-		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.revivePet.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.thresholds.revivePet.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.scareBeastThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_scareBeast", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.scareBeastThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Scare Beast")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Scare Beast."
-		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.scareBeast.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.thresholds.scareBeast.enabled = self:GetChecked()
-		end)
-		]]
-
-		--[[
-		yCoord = yCoord - 25
-		controls.checkBoxes.serpentStingThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_serpentSting", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.serpentStingThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Serpent Sting (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Serpent Sting. Only visible if talented in to Serpent Sting."
-		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.serpentSting.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.thresholds.serpentSting.enabled = self:GetChecked()
-		end)
-		]]
 
 		--[[
 		yCoord = yCoord - 30
@@ -2282,6 +2252,29 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		end)
 
+		controls.colors.passiveRageText = TRB.UiFunctions.BuildColorPicker(parent, "Passive Rage", TRB.Data.settings.warrior.arms.colors.text.passive, 275, 25, xCoord2, yCoord)
+		f = controls.colors.passiveRageText
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.text.passive, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+					--Text doesn't care about Alpha, but the color picker does!
+					a = 0.0
+
+					controls.colors.passiveRageText.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.warrior.arms.colors.text.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)
+
+		--[[
 		controls.colors.castingRageText = TRB.UiFunctions.BuildColorPicker(parent, "Rage gain from hardcasting builder abilities", TRB.Data.settings.warrior.arms.colors.text.casting, 275, 25, xCoord2, yCoord)
 		f = controls.colors.castingRageText
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2306,28 +2299,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 
 		yCoord = yCoord - 30
-		controls.colors.passiveRageText = TRB.UiFunctions.BuildColorPicker(parent, "Passive Rage", TRB.Data.settings.warrior.arms.colors.text.passive, 300, 25, xCoord, yCoord)
-		f = controls.colors.passiveRageText
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.text.passive, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.passiveRageText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.warrior.arms.colors.text.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-
 		controls.colors.spendingRageText = TRB.UiFunctions.BuildColorPicker(parent, "Rage loss from hardcasting spender abilities", TRB.Data.settings.warrior.arms.colors.text.spending, 275, 25, xCoord2, yCoord)
 		f = controls.colors.spendingRageText
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2349,6 +2320,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                 end)
 			end
 		end)
+		]]
 
 		yCoord = yCoord - 30
 		controls.colors.thresholdrageText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Rage to use any enabled threshold ability", TRB.Data.settings.warrior.arms.colors.text.overThreshold, 300, 25, xCoord, yCoord)
@@ -2373,7 +2345,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		end)
 
-		controls.colors.overcaprageText = TRB.UiFunctions.BuildColorPicker(parent, "Hardcasting builder ability will overcap Rage", TRB.Data.settings.warrior.arms.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		controls.colors.overcaprageText = TRB.UiFunctions.BuildColorPicker(parent, "Overcapping Rage", TRB.Data.settings.warrior.arms.colors.text.overcap, 300, 25, xCoord2, yCoord)
 		f = controls.colors.overcaprageText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -2415,6 +2387,43 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetChecked(TRB.Data.settings.warrior.arms.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.warrior.arms.colors.text.overcapEnabled = self:GetChecked()
+		end)
+	
+
+		yCoord = yCoord - 130
+		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+
+		yCoord = yCoord - 50
+		title = "Haste / Crit / Mastery Decimals to Show"
+		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.warrior.arms.hastePrecision, 1, 0,
+										sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 0)
+			self.EditBox:SetText(value)
+			TRB.Data.settings.warrior.arms.hastePrecision = value
+		end)
+
+		title = "Rage Decimal Precision"
+		controls.astralPowerPrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 1, TRB.Data.settings.warrior.arms.ragePrecision, 1, 0,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.astralPowerPrecision:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 0)
+			self.EditBox:SetText(value)
+			TRB.Data.settings.warrior.arms.ragePrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.arms = controls
@@ -2774,26 +2783,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.arms.generation.time = value
 		end)
 		]]
-
-		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
-
-		yCoord = yCoord - 40
-		title = "Haste / Crit / Mastery Decimal Precision"
-		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.warrior.arms.hastePrecision, 1, 0,
-										sliderWidth, sliderHeight, xCoord, yCoord)
-		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 0)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.warrior.arms.hastePrecision = value
-		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.arms = controls
 	end
