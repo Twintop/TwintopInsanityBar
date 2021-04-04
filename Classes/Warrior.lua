@@ -179,7 +179,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "impendingVictory",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				isSnowflake = true
+			},
+			victoryRush = {
+				id = 32216,
+				name = "",
+				icon = "",
+				isActive = false
 			},
 			massacre = {
 				id = 281001,
@@ -242,6 +249,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			startTime = nil,
 			duration = 0,
 			enabled = false
+		}
+		specCache.arms.snapshotData.victoryRush = {
+			endTime = nil,
+			duration = 0,
+			spellId = nil
 		}
 		specCache.arms.snapshotData.ignorePain = {
 			startTime = nil,
@@ -1204,7 +1216,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							local thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
 							local frameLevel = 129
 
-							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+							if spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
+								showThreshold = false
+							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.execute.id then
 									local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
 									local healthThreshold = TRB.Data.spells.execute.healthThreshold
@@ -1227,9 +1241,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
 										frameLevel = 128
 									end
+								elseif spell.id == TRB.Data.spells.impendingVictory.id then
+									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.unusable
+										frameLevel = 127
+									elseif currentRage >= -rageAmount or TRB.Data.spells.victoryRush.isActive then
+										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
+										frameLevel = 128
+									end
 								end
-							elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
-								showThreshold = false
 							elseif spell.hasCooldown then
 								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 									thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.unusable
@@ -1562,6 +1584,16 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					elseif spellId == TRB.Data.spells.impendingVictory.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.impendingVictory.startTime, TRB.Data.snapshotData.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
+						end
+					elseif spellId == TRB.Data.spells.victoryRush.id then
+						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
+							_, _, _, _, TRB.Data.snapshotData.victoryRush.duration, TRB.Data.snapshotData.victoryRush.endTime, _, _, _, TRB.Data.snapshotData.victoryRush.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.victoryRush.id)
+							TRB.Data.spells.victoryRush.isActive = true
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.victoryRush.endTime = nil
+							TRB.Data.snapshotData.victoryRush.duration = 0
+							TRB.Data.snapshotData.victoryRush.stacks = 0
+							TRB.Data.spells.victoryRush.isActive = false
 						end
 					elseif spellId == TRB.Data.spells.ignorePain.id then
 						if type == "SPELL_CAST_SUCCESS" then
