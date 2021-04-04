@@ -100,12 +100,23 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdUsable = false,
 				isSnowflake = true
 			},
+			ignorePain = {
+				id = 190456,
+				name = "",
+				icon = "",
+				rage = -40,
+				thresholdId = 2,
+				settingKey = "ignorePain",
+				isTalent = false,
+				hasCooldown = false,
+				thresholdUsable = false
+			},
 			shieldBlock = {
 				id = 2565,
 				name = "",
 				icon = "",
 				rage = -30,
-				thresholdId = 2,
+				thresholdId = 3,
 				settingKey = "shieldBlock",
 				isTalent = false,
 				hasCooldown = false,
@@ -116,7 +127,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -20,
-				thresholdId = 3,
+				thresholdId = 4,
 				settingKey = "slam",
 				isTalent = false,
 				hasCooldown = false,
@@ -127,7 +138,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -30,
-				thresholdId = 4,
+				thresholdId = 5,
 				settingKey = "whirlwind",
 				isTalent = false,
 				hasCooldown = false,
@@ -140,7 +151,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -30,
-				thresholdId = 5,
+				thresholdId = 6,
 				settingKey = "mortalStrike",
 				isTalent = false,
 				hasCooldown = true,
@@ -164,7 +175,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -10,
-				thresholdId = 6,
+				thresholdId = 7,
 				settingKey = "impendingVictory",
 				isTalent = true,
 				hasCooldown = true,
@@ -181,7 +192,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -30,
-				thresholdId = 7,
+				thresholdId = 8,
 				settingKey = "rend",
 				isTalent = true,
 				hasCooldown = false,
@@ -192,7 +203,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -20,
-				thresholdId = 8,
+				thresholdId = 9,
 				settingKey = "cleave",
 				isTalent = true,
 				hasCooldown = true,
@@ -228,6 +239,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			enabled = false
 		}
 		specCache.arms.snapshotData.impendingVictory = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		specCache.arms.snapshotData.ignorePain = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
@@ -1029,6 +1045,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
             TRB.Data.snapshotData.impendingVictory.duration = 0
         end
 
+		if TRB.Data.snapshotData.ignorePain.startTime ~= nil and currentTime > (TRB.Data.snapshotData.ignorePain.startTime + TRB.Data.snapshotData.ignorePain.duration) then
+            TRB.Data.snapshotData.ignorePain.startTime = nil
+            TRB.Data.snapshotData.ignorePain.duration = 0
+        end
+
 		if TRB.Data.snapshotData.cleave.startTime ~= nil and currentTime > (TRB.Data.snapshotData.cleave.startTime + TRB.Data.snapshotData.cleave.duration) then
             TRB.Data.snapshotData.cleave.startTime = nil
             TRB.Data.snapshotData.cleave.duration = 0
@@ -1541,6 +1562,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					elseif spellId == TRB.Data.spells.impendingVictory.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.impendingVictory.startTime, TRB.Data.snapshotData.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
+						end
+					elseif spellId == TRB.Data.spells.ignorePain.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.ignorePain.startTime, TRB.Data.snapshotData.ignorePain.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ignorePain.id)
 						end
 					elseif spellId == TRB.Data.spells.cleave.id then
 						if type == "SPELL_CAST_SUCCESS" then

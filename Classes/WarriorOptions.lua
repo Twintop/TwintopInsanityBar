@@ -89,26 +89,29 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				execute = {
 					enabled = true, -- 1
 				},
-				shieldBlock = {
+				ignorePain = {
 					enabled = false, -- 2
 				},
-				slam = {
-					enabled = true, -- 3
+				shieldBlock = {
+					enabled = false, -- 3
 				},
-				whirlwind = {
+				slam = {
 					enabled = true, -- 4
 				},
-				mortalStrike = {
+				whirlwind = {
 					enabled = true, -- 5
 				},
+				mortalStrike = {
+					enabled = true, -- 6
+				},
 				impendingVictory = {
-					enabled = false, -- 6
+					enabled = false, -- 7
 				},
 				rend = {
-					enabled = true, -- 7
+					enabled = true, -- 8
 				},
 				cleave = {
-					enabled = true, -- 8
+					enabled = true, -- 9
 				},	
 			},
 			--[[
@@ -1268,9 +1271,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_RB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord-15)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Rage < 120")
+		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Rage > 0")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar show out of combat only if Rage < 120, hidden otherwise when out of combat."
+		f.tooltip = "This will make the Resource Bar show out of combat only if Rage > 0, hidden otherwise when out of combat."
 		f:SetChecked(TRB.Data.settings.warrior.arms.displayBar.notZeroShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
@@ -1625,11 +1628,22 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.executeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_execute", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.executeThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Execute (Minimum Rage)")
+		getglobal(f:GetName() .. 'Text'):SetText("Execute")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute. Only visible when the current target is in Execute health range or available from a Sudden Death proc. Will move along the bar between the current minimum and maximum Rage cost amounts."
 		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.execute.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.warrior.arms.thresholds.execute.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.ignorePainThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_ignorePain", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.ignorePainThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Ignore Pain")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Ignore Pain."
+		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.ignorePain.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.warrior.arms.thresholds.ignorePain.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
