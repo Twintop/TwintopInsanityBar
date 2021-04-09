@@ -228,7 +228,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 152277,
 				name = "",
 				icon = "",
-				rage = 7
+				rage = 7,
+				ticks = 6, -- Sometimes 5, sometimes 6
+				duration = 12,
+				isHasted = true,
+				energizeId = 248439
 			},
 
 			-- Covenant
@@ -313,6 +317,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			endTime = nil,
 			duration = 0,
 			spellId = nil
+		}
+		specCache.arms.snapshotData.ravager = {
+			isActive = false,
+			ticksRemaining = 0,
+			rage = 0,
+			endTime = nil,
+			lastTick = nil,
+			totalDuration = 0
 		}
 		specCache.arms.snapshotData.condemn = {
 			startTime = nil,
@@ -788,7 +800,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		elseif var == "$resourceMax" or var == "$rageMax" then
 			valid = true
 		elseif var == "$resourceTotal" or var == "$rageTotal" then
-			if normalizedRage > 0 or
+			if normalizedRage > 0 or TRB.Data.snapshotData.ravager.rage > 0 or
 				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
 				then
 				valid = true
@@ -803,7 +815,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				valid = true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
-			if normalizedRage > 0 then
+			if normalizedRage > 0 or TRB.Data.snapshotData.ravager.rage > 0 then
 				valid = true
 			end
 		elseif var == "$casting" then
@@ -813,9 +825,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		elseif var == "$passive" then
 			--[[if normalizedRage < TRB.Data.character.maxResource and
 				((settings.generation.mode == "time" and settings.generation.time > 0) or
-				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then]]
+			if TRB.Data.snapshotData.ravager.rage > 0 then
 				valid = true
-			end]]
+			end
 		end
 
 		return valid
@@ -856,30 +869,32 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		if TRB.Data.snapshotData.casting.resourceFinal < 0 then
 			castingRageColor = TRB.Data.settings.warrior.arms.colors.text.spending
 		end
+
+		local _ravagerRage = TRB.Data.snapshotData.ravager.rage
+		local ravagerRage = string.format("%.0f", TRB.Data.snapshotData.ravager.rage)
+		local ravagerTicks = string.format("%.0f", TRB.Data.snapshotData.ravager.ticksRemaining)
         
 		--$rage
 		local ragePrecision = TRB.Data.settings.warrior.arms.ragePrecision or 0
 		local currentRage = string.format("|c%s%s|r", currentRageColor, TRB.Functions.RoundTo(normalizedRage, ragePrecision, "floor"))
 		--$casting
-		local castingRage = string.format("|c%s%sf|r", castingRageColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, ragePrecision, "floor"))
+		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, ragePrecision, "floor"))
 		--$passive
-		local _passiveRage
+		local _passiveRage = _ravagerRage
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
-        _passiveRage = 0
-
-		local passiveRage = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.passive, _passiveRage)
+		local passiveRage = string.format("|c%s%s|r", TRB.Data.settings.warrior.arms.colors.text.passive, TRB.Functions.RoundTo(_passiveRage, ragePrecision, "floor"))
 		
 		--$rageTotal
 		local _rageTotal = math.min(_passiveRage + TRB.Data.snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
-		local rageTotal = string.format("|c%s%.0f|r", currentRageColor, _rageTotal)
+		local rageTotal = string.format("|c%s%s|r", currentRageColor, TRB.Functions.RoundTo(_rageTotal, ragePrecision, "floor"))
 		--$ragePlusCasting
 		local _ragePlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
-		local ragePlusCasting = string.format("|c%s%.0f|r", castingRageColor, _ragePlusCasting)
+		local ragePlusCasting = string.format("|c%s%s|r", castingRageColor, TRB.Functions.RoundTo(_ragePlusCasting, ragePrecision, "floor"))
 		--$ragePlusPassive
 		local _ragePlusPassive = math.min(_passiveRage + normalizedRage, TRB.Data.character.maxResource)
-		local ragePlusPassive = string.format("|c%s%.0f|r", currentRageColor, _ragePlusPassive)
+		local ragePlusPassive = string.format("|c%s%s|r", currentRageColor, TRB.Functions.RoundTo(_ragePlusPassive, ragePrecision, "floor"))
 
 		----------------------------
 
@@ -954,12 +969,16 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			castingRageColor = TRB.Data.settings.warrior.fury.colors.text.spending
 		end
         
+		local _ravagerRage = TRB.Data.snapshotData.ravager.rage
+		local ravagerTicks = TRB.Data.snapshotData.ravager.ticksRemaining
+		local ravagerTime = TRB.Data.snapshotData.ravager.endTime - currentTime
+
 		--$rage
 		local currentRage = string.format("|c%s%.0f|r", currentRageColor, normalizedRage)
 		--$casting
 		local castingRage = string.format("|c%s%.0f|r", castingRageColor, TRB.Data.snapshotData.casting.resourceFinal)
 		--$passive
-		local _passiveRage = 0
+		local _passiveRage = _ravagerRage
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
@@ -1086,6 +1105,27 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 	end
 
+	local function UpdateRavager()
+		if TRB.Data.snapshotData.ravager.isActive then
+			local currentTime = GetTime()
+			if TRB.Data.snapshotData.ravager.endTime == nil or currentTime > TRB.Data.snapshotData.ravager.endTime then
+				TRB.Data.snapshotData.ravager.ticksRemaining = 0
+				TRB.Data.snapshotData.ravager.endTime = nil
+				TRB.Data.snapshotData.ravager.rage = 0
+				TRB.Data.snapshotData.ravager.isActive = false
+				TRB.Data.snapshotData.ravager.totalDuration = 0
+			else
+				local ticksRemaining = math.ceil((TRB.Data.snapshotData.ravager.endTime - currentTime) / (TRB.Data.snapshotData.ravager.totalDuration / TRB.Data.spells.ravager.ticks))
+				
+				if ticksRemaining < TRB.Data.snapshotData.ravager.ticksRemaining then
+					TRB.Data.snapshotData.ravager.ticksRemaining = ticksRemaining
+				end
+
+				TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage
+			end
+		end
+	end
+
 	local function UpdateSnapshot()
 		TRB.Functions.UpdateSnapshot()
 		local currentTime = GetTime()
@@ -1105,6 +1145,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function UpdateSnapshot_Arms()
 		UpdateSnapshot()
+		UpdateRavager()
+
 		local currentTime = GetTime()
 		local _
 
@@ -1237,7 +1279,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 					local passiveValue = 0
 					if TRB.Data.settings.warrior.arms.bar.showPassive then
-
+						if TRB.Data.snapshotData.ravager.rage > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.ravager.rage
+						end
 					end
 
 					if CastingSpell() and TRB.Data.settings.warrior.arms.bar.showCasting then
@@ -1708,8 +1752,31 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							TRB.Data.snapshotData.deadlyCalm.duration = 0
 							TRB.Data.snapshotData.deadlyCalm.spellId = nil
 							TRB.Data.spells.suddenDeath.isActive = false
-						end--[[
-					elseif spellId == TRB.Data.spells.barbedShot.buffId[1] or spellId == TRB.Data.spells.barbedShot.buffId[2] or spellId == TRB.Data.spells.barbedShot.buffId[3] or spellId == TRB.Data.spells.barbedShot.buffId[4] or spellId == TRB.Data.spells.barbedShot.buffId[5] then
+						end
+				elseif spellId == TRB.Data.spells.ravager.id then
+					if type == "SPELL_CAST_SUCCESS" then -- Ravager used
+						TRB.Data.snapshotData.ravager.isActive = true
+						TRB.Data.snapshotData.ravager.totalDuration = TRB.Data.spells.ravager.duration * (TRB.Functions.GetCurrentGCDTime(true) / 1.5)
+						TRB.Data.snapshotData.ravager.ticksRemaining = TRB.Data.spells.ravager.ticks
+						TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage
+						TRB.Data.snapshotData.ravager.endTime = currentTime + TRB.Data.snapshotData.ravager.totalDuration
+						TRB.Data.snapshotData.ravager.lastTick = currentTime
+					end
+				elseif spellId == TRB.Data.spells.ravager.energizeId then
+					if type == "SPELL_ENERGIZE" then						
+						TRB.Data.snapshotData.ravager.ticksRemaining = TRB.Data.snapshotData.ravager.ticksRemaining - 1
+						if TRB.Data.snapshotData.ravager.ticksRemaining == 0 then
+							TRB.Data.snapshotData.ravager.ticksRemaining = 0
+							TRB.Data.snapshotData.ravager.endTime = nil
+							TRB.Data.snapshotData.ravager.rage = 0
+							TRB.Data.snapshotData.ravager.isActive = false
+							TRB.Data.snapshotData.ravager.totalDuration = 0
+						else
+							TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage
+							TRB.Data.snapshotData.ravager.lastTick = currentTime
+						end
+					end
+				--[[	elseif spellId == TRB.Data.spells.barbedShot.buffId[1] or spellId == TRB.Data.spells.barbedShot.buffId[2] or spellId == TRB.Data.spells.barbedShot.buffId[3] or spellId == TRB.Data.spells.barbedShot.buffId[4] or spellId == TRB.Data.spells.barbedShot.buffId[5] then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Barbed Shot buff
 							table.insert(TRB.Data.snapshotData.barbedShot.list, {
 								ticksRemaining = TRB.Data.spells.barbedShot.ticks,
