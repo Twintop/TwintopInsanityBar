@@ -354,62 +354,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			icons = {},
 			values = {}
 		}
-
-
-		-- Fury
-
-		specCache.fury.Global_TwintopResourceBar = {
-			ttd = 0,
-			resource = {
-				resource = 0,
-				casting = 0,
-				passive = 0,
-				regen = 0
-			},
-			dots = {
-			}
-		}
-
-		specCache.fury.character = {
-			guid = UnitGUID("player"),
-			specGroup = GetActiveSpecGroup(),
-			specId = 2,
-			maxResource = 100,
-			covenantId = 0,
-			talents = {
-				serpentSting = {
-					isSelected = false
-				},           
-			},
-			items = {
-			}
-		}
-
-		specCache.fury.spells = {
-			aimedShot = {
-				id = 19434,
-				name = "",
-				icon = "",
-				rage = -35,
-				thresholdId = 1,
-				settingKey = "aimedShot",
-				isSnowflake = true,
-				thresholdUsable = false
-			},
-		}
-
-		specCache.fury.snapshotData.audio = {
-		}
-		specCache.fury.snapshotData.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			targets = {}
-		}
-
-		specCache.fury.barTextVariables = {
-			icons = {},
-			values = {}
-		}
 	end
 
 	local function Setup_Arms()
@@ -418,14 +362,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 
 		TRB.Functions.LoadFromSpecCache(specCache.arms)
-	end
-
-	local function Setup_Fury()
-		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-			return
-		end
-
-		TRB.Functions.LoadFromSpecCache(specCache.fury)
 	end
 
 	local function FillSpellData_Arms()
@@ -493,74 +429,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		specCache.arms.spells = spells
 	end
 
-	local function FillSpellData_Fury()
-		Setup_Fury()
-		local spells = TRB.Functions.FillSpellData(specCache.fury.spells)
-
-		-- This is done here so that we can get icons for the options menu!
-		specCache.fury.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the rage generating spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
-            --[[
-			{ variable = "#aMurderOfCrows", icon = spells.aMurderOfCrows.icon, description = "A Murder of Crows", printInSettings = true },
-			{ variable = "#aimedShot", icon = spells.aimedShot.icon, description = "Aimed Shot", printInSettings = true },
-			{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = "Arcane Shot", printInSettings = true },
-			{ variable = "#barrage", icon = spells.barrage.icon, description = "Barrage", printInSettings = true },
-			{ variable = "#burstingShot", icon = spells.burstingShot.icon, description = "Bursting Shot", printInSettings = true },
-			{ variable = "#chimaeraShot", icon = spells.chimaeraShot.icon, description = "Chimaera Shot", printInSettings = true },
-			{ variable = "#explosiveShot", icon = spells.explosiveShot.icon, description = "Explosive Shot", printInSettings = true },
-			{ variable = "#flayedShot", icon = spells.flayedShot.icon, description = "Flayed Shot", printInSettings = true },
-			{ variable = "#flayersMark", icon = spells.flayersMark.icon, description = "Flayer's Mark", printInSettings = true },
-			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
-			{ variable = "#multiShot", icon = spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
-			{ variable = "#nesingwarys", icon = spells.nesingwarysTrappingApparatus.icon, description = "Nesingwary'ss Trapping Apparatus", printInSettings = true },
-			{ variable = "#rapidFire", icon = spells.rapidFire.icon, description = "Rapid Fire", printInSettings = true },
-			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
-			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
-			{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
-			{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = "Steady Shot", printInSettings = true },
-			{ variable = "#trickShots", icon = spells.trickShots.icon, description = "Trick Shots", printInSettings = true },
-			{ variable = "#trueshot", icon = spells.trueshot.icon, description = "Trueshot", printInSettings = true },
-            { variable = "#vigil", icon = spells.secretsOfTheUnblinkingVigil.icon, description = "Secrets of the Unblinking Vigil", printInSettings = true },
-            ]]
-        }
-		specCache.fury.barTextVariables.values = {
-			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
-
-			{ variable = "$rage", description = "Current Rage", printInSettings = true, color = false },
-			{ variable = "$resource", description = "Current Rage", printInSettings = false, color = false },
-			{ variable = "$rageMax", description = "Maximum Rage", printInSettings = true, color = false },
-			{ variable = "$resourceMax", description = "Maximum Rage", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Builder Rage from Hardcasting Spells", printInSettings = true, color = false },
-			{ variable = "$casting", description = "Spender Rage from Hardcasting Spells", printInSettings = true, color = false },
-			{ variable = "$passive", description = "Rage from Passive Sources including Regen", printInSettings = true, color = false },
-			{ variable = "$ragePlusCasting", description = "Current + Casting Rage Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
-			{ variable = "$ragePlusPassive", description = "Current + Passive Rage Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusPassive", description = "Current + Passive Rage Total", printInSettings = false, color = false },
-			{ variable = "$rageTotal", description = "Current + Passive + Casting Rage Total", printInSettings = true, color = false },   
-			{ variable = "$resourceTotal", description = "Current + Passive + Casting Rage Total", printInSettings = false, color = false },   
-
-            --[[
-			{ variable = "$trueshotTime", description = "Time remaining on Trueshot buff", printInSettings = true, color = false },   
-			{ variable = "$ssCount", description = "Number of Serpent Stings active on targets", printInSettings = true, color = false },
-			{ variable = "$serpentSting", description = "Is Serpent Sting talented? Logic variable only!", printInSettings = true, color = false },
-
-			{ variable = "$flayersMarkTime", description = "Time remaining on Flayer's Mark buff", printInSettings = true, color = false },
-
-			{ variable = "$vigilTime", description = "Time remaining on Secrets of the Unblinking Vigil buff", printInSettings = true, color = false },
-			{ variable = "$nesingwarysTime", description = "Time remaining on Nesingwary's Trapping Apparatus buff", printInSettings = true, color = false },
-            ]]
-			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
-		}
-
-		specCache.fury.spells = spells
-	end
-
 	local function CheckCharacter()
 		TRB.Functions.CheckCharacter()
 		TRB.Data.character.className = "warrior"
@@ -578,16 +446,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
             TRB.Data.character.talents.deadlyCalm.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
             TRB.Data.character.talents.ravager.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
         elseif GetSpecialization() == 2 then
-			TRB.Data.character.specName = "fury"
-            --[[
-			TRB.Data.character.talents.serpentSting.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.aMurderOfCrows.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.barrage.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.explosiveShot.isSelected = select(4, GetTalentInfo(2, 3, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.chimaeraShot.isSelected = select(4, GetTalentInfo(4, 3, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.deadEye.isSelected = select(4, GetTalentInfo(6, 2, TRB.Data.character.specGroup))
-            TRB.Data.character.talents.doubleTap.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
-            ]]
 		elseif GetSpecialization() == 3 then
 		end
 	end
@@ -612,9 +470,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local specId = GetSpecialization()
 		if specId == 1 then
 			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
-			TRB.Data.specSupported = true
-		elseif specId == 2 then
-			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.fury)
 			TRB.Data.specSupported = true
 		else
 			--TRB.Data.resource = MANA
@@ -748,8 +603,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local settings = nil
 		if specId == 1 then
 			settings = TRB.Data.settings.warrior.arms
-		elseif specId == 2 then
-			settings = TRB.Data.settings.warrior.fury
 		end
 
         if specId == 1 then --Arms
@@ -772,22 +625,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				end
 			elseif var == "$frenzyStacks" then
 				if TRB.Data.snapshotData.frenzy.stacks ~= nil and TRB.Data.snapshotData.frenzy.stacks > 0 then
-					valid = true
-				end
-            end
-            ]]
-        elseif specId == 2 then --Fury
-            --[[
-			if var == "$trueshotTime" then
-				if GetTrueshotRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$vigilTime" then
-				if GetVigilRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$serpentSting" then
-				if TRB.Data.character.talents.serpentSting.isSelected then
 					valid = true
 				end
             end
@@ -935,110 +772,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		TRB.Data.lookup = lookup
 	end
 
-	local function RefreshLookupData_Fury()
-		local _
-		local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
-		--Spec specific implementation
-		local currentTime = GetTime()
-
-		--$overcap
-		local overcap = IsValidVariableForSpec("$overcap")
-
-		local currentRageColor = TRB.Data.settings.warrior.fury.colors.text.current
-		local castingRageColor = TRB.Data.settings.warrior.fury.colors.text.casting
-
-		if TRB.Data.settings.warrior.fury.colors.text.overcapEnabled and overcap then 
-			currentRageColor = TRB.Data.settings.warrior.fury.colors.text.overcap
-            castingRageColor = TRB.Data.settings.warrior.fury.colors.text.overcap
-		elseif TRB.Data.settings.warrior.fury.colors.text.overThresholdEnabled then
-			local _overThreshold = false
-			for k, v in pairs(TRB.Data.spells) do
-				local spell = TRB.Data.spells[k]
-				if	spell ~= nil and spell.thresholdUsable == true then
-					_overThreshold = true
-					break
-				end
-			end
-
-			if _overThreshold then
-				currentRageColor = TRB.Data.settings.warrior.fury.colors.text.overThreshold
-				castingRageColor = TRB.Data.settings.warrior.fury.colors.text.overThreshold
-			end
-		end
-
-		if TRB.Data.snapshotData.casting.resourceFinal < 0 then
-			castingRageColor = TRB.Data.settings.warrior.fury.colors.text.spending
-		end
-        
-		local _ravagerRage = TRB.Data.snapshotData.ravager.rage
-		local ravagerTicks = TRB.Data.snapshotData.ravager.ticksRemaining
-		local ravagerTime = TRB.Data.snapshotData.ravager.endTime - currentTime
-
-		--$rage
-		local currentRage = string.format("|c%s%.0f|r", currentRageColor, normalizedRage)
-		--$casting
-		local castingRage = string.format("|c%s%.0f|r", castingRageColor, TRB.Data.snapshotData.casting.resourceFinal)
-		--$passive
-		local _passiveRage = _ravagerRage
-
-		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
-
-		local passiveRage = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.fury.colors.text.passive, _passiveRage)
-		--$rageTotal
-		local _rageTotal = math.min(_passiveRage + TRB.Data.snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
-		local rageTotal = string.format("|c%s%.0f|r", currentRageColor, _rageTotal)
-		--$ragePlusCasting
-		local _ragePlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
-		local ragePlusCasting = string.format("|c%s%.0f|r", castingRageColor, _ragePlusCasting)
-		--$ragePlusPassive
-		local _ragePlusPassive = math.min(_passiveRage + normalizedRage, TRB.Data.character.maxResource)
-		local ragePlusPassive = string.format("|c%s%.0f|r", currentRageColor, _ragePlusPassive)
-
-		----------------------------
-
-		Global_TwintopResourceBar.resource.passive = _passiveRage
-		Global_TwintopResourceBar.resource.regen = _regenRage
-		Global_TwintopResourceBar.dots = {
-			ssCount = serpentStingCount or 0
-		}
-
-		lookup = TRB.Data.lookup or {}
-		--[[lookup["#aMurderOfCrows"] = TRB.Data.spells.aMurderOfCrows.icon
-		lookup["#aimedShot"] = TRB.Data.spells.aimedShot.icon
-		lookup["#arcaneShot"] = TRB.Data.spells.arcaneShot.icon
-		lookup["#barrage"] = TRB.Data.spells.barrage.icon
-		lookup["#burstingShot"] = TRB.Data.spells.burstingShot.icon
-		lookup["#chimaeraShot"] = TRB.Data.spells.chimaeraShot.icon
-		lookup["#explosiveShot"] = TRB.Data.spells.explosiveShot.icon
-		lookup["#flayedShot"] = TRB.Data.spells.flayedShot.icon
-		lookup["#flayersMark"] = TRB.Data.spells.flayersMark.icon
-		lookup["#killShot"] = TRB.Data.spells.killShot.icon
-		lookup["#multiShot"] = TRB.Data.spells.multiShot.icon
-		lookup["#nesingwarys"] = TRB.Data.spells.nesingwarysTrappingApparatus.icon
-		lookup["#rapidFire"] = TRB.Data.spells.rapidFire.icon
-		lookup["#revivePet"] = TRB.Data.spells.revivePet.icon
-		lookup["#scareBeast"] = TRB.Data.spells.scareBeast.icon
-		lookup["#serpentSting"] = TRB.Data.spells.serpentSting.icon
-		lookup["#steadyShot"] = TRB.Data.spells.steadyShot.icon
-		lookup["#trickShots"] = TRB.Data.spells.trickShots.icon
-		lookup["#trueshot"] = TRB.Data.spells.trueshot.icon
-		lookup["#vigil"] = TRB.Data.spells.secretsOfTheUnblinkingVigil.icon]]
-		lookup["$rageTotal"] = rageTotal
-		lookup["$rageMax"] = TRB.Data.character.maxResource
-		lookup["$rage"] = currentRage
-		lookup["$resourcePlusCasting"] = ragePlusCasting
-		lookup["$resourcePlusPassive"] = ragePlusPassive
-		lookup["$resourceTotal"] = rageTotal
-		lookup["$resourceMax"] = TRB.Data.character.maxResource
-		lookup["$resource"] = currentRage
-		lookup["$casting"] = castingRage
-		lookup["$passive"] = passiveRage
-		lookup["$overcap"] = overcap
-		lookup["$resourceOvercap"] = overcap
-		lookup["$rageOvercap"] = overcap
-		TRB.Data.lookup = lookup
-	end
-
     local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
         TRB.Data.snapshotData.casting.startTime = currentTime
@@ -1066,40 +799,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				else
 					TRB.Functions.ResetCastingSnapshotData()
 					return false
-				end
-			elseif specId == 2 then
-				if currentSpell == nil then
-					local spellName = select(1, currentChannel)
-					if spellName == TRB.Data.spells.rapidFire.name then
-						TRB.Data.snapshotData.rapidFire.isActive = true
-						TRB.Data.snapshotData.rapidFire.duration = (select(5, UnitChannelInfo("player")) - select(4, UnitChannelInfo("player"))) / 1000
-						TRB.Data.snapshotData.rapidFire.endTime = select(5, UnitChannelInfo("player")) / 1000
-						TRB.Data.snapshotData.casting.startTime = select(4, UnitChannelInfo("player")) / 1000
-						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.rapidFire.id
-						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.rapidFire.icon
-						UpdateRapidFire()
-					else
-						TRB.Functions.ResetCastingSnapshotData()
-						return false
-					end
-				else
-					local spellName = select(1, currentSpell)
-					if spellName == TRB.Data.spells.aimedShot.name then
-						FillSnapshotDataCasting(TRB.Data.spells.aimedShot)
-					elseif spellName == TRB.Data.spells.steadyShot.name then
-						FillSnapshotDataCasting(TRB.Data.spells.steadyShot)
-					elseif spellName == TRB.Data.spells.scareBeast.name then
-						FillSnapshotDataCasting(TRB.Data.spells.scareBeast)
-					elseif spellName == TRB.Data.spells.revivePet.name then
-						FillSnapshotDataCasting(TRB.Data.spells.revivePet)
-					else
-						TRB.Functions.ResetCastingSnapshotData()
-						return false
-					end
-					UpdateCastingResourceFinal()
-				end
-				return true
-			elseif specId == 3 then				
+				end						
 			end
 			TRB.Functions.ResetCastingSnapshotData()
 			return false
@@ -1130,18 +830,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local function UpdateSnapshot()
 		TRB.Functions.UpdateSnapshot()
 		local currentTime = GetTime()
-
-        --[[
-        if TRB.Data.snapshotData.aMurderOfCrows.startTime ~= nil and currentTime > (TRB.Data.snapshotData.aMurderOfCrows.startTime + TRB.Data.snapshotData.aMurderOfCrows.duration) then
-            TRB.Data.snapshotData.aMurderOfCrows.startTime = nil
-            TRB.Data.snapshotData.aMurderOfCrows.duration = 0
-        end
-
-        if TRB.Data.snapshotData.flayedShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.flayedShot.startTime + TRB.Data.snapshotData.flayedShot.duration) then
-            TRB.Data.snapshotData.flayedShot.startTime = nil
-            TRB.Data.snapshotData.flayedShot.duration = 0
-        end
-        ]]
 	end
 
 	local function UpdateSnapshot_Arms()
@@ -1183,37 +871,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		_, _, TRB.Data.snapshotData.deadlyCalm.stacks, _, TRB.Data.snapshotData.deadlyCalm.duration, TRB.Data.snapshotData.deadlyCalm.endTime, _, _, _, TRB.Data.snapshotData.deadlyCalm.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.deadlyCalm.id, "player")
 	end  
 
-	local function UpdateSnapshot_Fury()
-		UpdateSnapshot()
-		local currentTime = GetTime()
-		local _
-
-        --[[
-        TRB.Data.snapshotData.aimedShot.charges, _, TRB.Data.snapshotData.aimedShot.startTime, TRB.Data.snapshotData.aimedShot.duration, _ = GetSpellCharges(TRB.Data.spells.aimedShot.id)
-        TRB.Data.snapshotData.killShot.charges, _, TRB.Data.snapshotData.killShot.startTime, TRB.Data.snapshotData.killShot.duration, _ = GetSpellCharges(TRB.Data.spells.killShot.id)
-
-        if TRB.Data.snapshotData.burstingShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.burstingShot.startTime + TRB.Data.snapshotData.burstingShot.duration) then
-            TRB.Data.snapshotData.burstingShot.startTime = nil
-            TRB.Data.snapshotData.burstingShot.duration = 0
-        end
-
-        if TRB.Data.snapshotData.barrage.startTime ~= nil and currentTime > (TRB.Data.snapshotData.barrage.startTime + TRB.Data.snapshotData.barrage.duration) then
-            TRB.Data.snapshotData.barrage.startTime = nil
-            TRB.Data.snapshotData.barrage.duration = 0
-        end
-
-        if TRB.Data.snapshotData.explosiveShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.explosiveShot.startTime + TRB.Data.snapshotData.explosiveShot.duration) then
-            TRB.Data.snapshotData.explosiveShot.startTime = nil
-            TRB.Data.snapshotData.explosiveShot.duration = 0
-        end
-
-        if TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.startTime ~= nil and currentTime > (TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.startTime + TRB.Data.snapshotData.flayedShot.duration) then
-            TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.startTime = nil
-            TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration = 0
-        end
-        ]]
-	end    
-
 	local function HideResourceBar(force)
 		local affectingCombat = UnitAffectingCombat("player")
 		local specId = GetSpecialization()
@@ -1231,24 +888,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			else
 				TRB.Data.snapshotData.isTracking = true
 				if TRB.Data.settings.warrior.arms.displayBar.neverShow == true then
-					TRB.Frames.barContainerFrame:Hide()
-				else
-					TRB.Frames.barContainerFrame:Show()
-				end
-			end
-		elseif specId == 2 then
-			if force or ((not affectingCombat) and
-				(not UnitInVehicle("player")) and (
-					(not TRB.Data.settings.warrior.fury.displayBar.alwaysShow) and (
-						(not TRB.Data.settings.warrior.fury.displayBar.notZeroShow) or
-						(TRB.Data.settings.warrior.fury.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0)
-					)
-				)) then
-				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshotData.isTracking = false
-			else
-				TRB.Data.snapshotData.isTracking = true
-				if TRB.Data.settings.warrior.fury.displayBar.neverShow == true then
 					TRB.Frames.barContainerFrame:Hide()
 				else
 					TRB.Frames.barContainerFrame:Show()
@@ -1447,184 +1086,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				end
 			end
 			TRB.Functions.UpdateResourceBar(TRB.Data.settings.warrior.arms, refreshText)
-		elseif specId == 2 then
-			UpdateSnapshot_Fury()
-
-			if TRB.Data.snapshotData.isTracking then
-				TRB.Functions.HideResourceBar()
-
-				if TRB.Data.settings.warrior.fury.displayBar.neverShow == false then
-					refreshText = true
-					local passiveBarValue = 0
-					local castingBarValue = 0
-					local gcd = TRB.Functions.GetCurrentGCDTime(true)
-					local currentRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
-
-					if TRB.Data.settings.warrior.fury.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.borderOvercap, true))
-
-						if TRB.Data.settings.warrior.fury.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
-							TRB.Data.snapshotData.audio.overcapCue = true
-							PlaySoundFile(TRB.Data.settings.warrior.fury.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					else
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.border, true))
-						TRB.Data.snapshotData.audio.overcapCue = false
-					end
-
-					local passiveValue = 0
-					if TRB.Data.settings.warrior.fury.bar.showPassive then
-
-					end
-
-					if CastingSpell() and TRB.Data.settings.warrior.fury.bar.showCasting then
-						castingBarValue = currentRage + TRB.Data.snapshotData.casting.resourceFinal
-					else
-						castingBarValue = currentRage
-					end
-
-					if castingBarValue < currentRage then --Using a spender
-						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
-							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, resourceFrame, castingBarValue) 
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, passiveFrame, currentRage)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.spending, true))
-						else
-							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, castingFrame, currentRage)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.passive, true))
-						end
-					else
-						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, resourceFrame, currentRage)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.passive, true))
-					end
-
-                    --[[
-					for k, v in pairs(TRB.Data.spells) do
-						local spell = TRB.Data.spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							local rageAmount = CalculateAbilityResourceValue(spell.rage)
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.fury, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.fury.thresholdWidth, -rageAmount, TRB.Data.character.maxResource)
-
-							local showThreshold = true
-							local thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.over
-							local frameLevel = 129
-
-							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-								if spell.id == TRB.Data.spells.aimedShot.id then
-									if TRB.Data.snapshotData.aimedShot.charges == 0 then
-										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.unusable
-										frameLevel = 127
-									elseif currentRage >= -rageAmount or TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration > 0 then
-										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.over
-									else
-										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.under
-										frameLevel = 128
-									end
-								elseif spell.id == TRB.Data.spells.killShot.id then
-									local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
-									local flayersMarkTime = GetFlayersMarkRemainingTime()
-									if (targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum) and flayersMarkTime == 0 then
-										showThreshold = false
-									elseif TRB.Data.snapshotData.killShot.charges == 0 and flayersMarkTime == 0 then
-										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.unusable
-										frameLevel = 127
-									elseif currentRage >= -rageAmount or flayersMarkTime > 0 then
-										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.over
-									else
-										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.under
-										frameLevel = 128
-									end
-								elseif spell.id == TRB.Data.spells.flayedShot.id then
-									local flayersMarkTime = GetFlayersMarkRemainingTime() -- Change this to layer stacking if the cost of Kill Shot or Flayed Shot changes from 10 Rage!
-									if TRB.Data.character.covenantId == 2 and flayersMarkTime == 0 then -- Venthyr and Flayer's Mark buff isn't up
-										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-											thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.unusable
-											frameLevel = 127
-										elseif currentRage >= -rageAmount then
-											thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.over
-										else
-											thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.under
-											frameLevel = 128
-										end
-									else
-										showThreshold = false
-									end
-								end
-							elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
-								showThreshold = false
-							elseif spell.hasCooldown then
-								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-									thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.unusable
-									frameLevel = 127
-								elseif currentRage >= -rageAmount then
-									thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.over
-								else
-									thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.under
-									frameLevel = 128
-								end
-							else -- This is an active/available/normal spell threshold
-								if currentRage >= -rageAmount then
-									thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.over
-								else
-									thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.under
-									frameLevel = 128
-								end
-							end
-
-							if TRB.Data.settings.warrior.fury.thresholds[spell.settingKey].enabled and showThreshold then
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
-								resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
-								if frameLevel == 129 then
-									spell.thresholdUsable = true
-								else
-									spell.thresholdUsable = false
-								end
-							else
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
-								spell.thresholdUsable = false
-							end
-						end
-					end
-                    ]]
-					local barColor = TRB.Data.settings.warrior.fury.colors.bar.base
-
-                    --[[
-					if TRB.Data.spells.trueshot.isActive then
-						local timeThreshold = 0
-						local useEndOfTrueshotColor = false
-
-						if TRB.Data.settings.warrior.fury.endOfTrueshot.enabled then
-							useEndOfTrueshotColor = true
-							if TRB.Data.settings.warrior.fury.endOfTrueshot.mode == "gcd" then
-								local gcd = TRB.Functions.GetCurrentGCDTime()
-								timeThreshold = gcd * TRB.Data.settings.warrior.fury.endOfTrueshot.gcdsMax
-							elseif TRB.Data.settings.warrior.fury.endOfTrueshot.mode == "time" then
-								timeThreshold = TRB.Data.settings.warrior.fury.endOfTrueshot.timeMax
-							end
-						end
-
-						if useEndOfTrueshotColor and GetTrueshotRemainingTime() <= timeThreshold then
-							barColor = TRB.Data.settings.warrior.fury.colors.bar.trueshotEnding
-						else
-							barColor = TRB.Data.settings.warrior.fury.colors.bar.trueshot
-						end
-                    end
-                    ]]
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
-				end
-			end
-			TRB.Functions.UpdateResourceBar(TRB.Data.settings.warrior.fury, refreshText)
 		end
 	end
 
@@ -1707,169 +1168,31 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							TRB.Data.snapshotData.deadlyCalm.spellId = nil
 							TRB.Data.spells.suddenDeath.isActive = false
 						end
-				elseif spellId == TRB.Data.spells.ravager.id then
-					if type == "SPELL_CAST_SUCCESS" then -- Ravager used
-						TRB.Data.snapshotData.ravager.isActive = true
-						TRB.Data.snapshotData.ravager.totalDuration = TRB.Data.spells.ravager.duration * (TRB.Functions.GetCurrentGCDTime(true) / 1.5)
-						TRB.Data.snapshotData.ravager.ticksRemaining = TRB.Data.spells.ravager.ticks
-						TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage
-						TRB.Data.snapshotData.ravager.endTime = currentTime + TRB.Data.snapshotData.ravager.totalDuration
-						TRB.Data.snapshotData.ravager.lastTick = currentTime
-					end
-				elseif spellId == TRB.Data.spells.ravager.energizeId then
-					if type == "SPELL_ENERGIZE" then						
-						TRB.Data.snapshotData.ravager.ticksRemaining = TRB.Data.snapshotData.ravager.ticksRemaining - 1
-						if TRB.Data.snapshotData.ravager.ticksRemaining == 0 then
-							TRB.Data.snapshotData.ravager.ticksRemaining = 0
-							TRB.Data.snapshotData.ravager.endTime = nil
-							TRB.Data.snapshotData.ravager.rage = 0
-							TRB.Data.snapshotData.ravager.isActive = false
-							TRB.Data.snapshotData.ravager.totalDuration = 0
-						else
+					elseif spellId == TRB.Data.spells.ravager.id then
+						if type == "SPELL_CAST_SUCCESS" then -- Ravager used
+							TRB.Data.snapshotData.ravager.isActive = true
+							TRB.Data.snapshotData.ravager.totalDuration = TRB.Data.spells.ravager.duration * (TRB.Functions.GetCurrentGCDTime(true) / 1.5)
+							TRB.Data.snapshotData.ravager.ticksRemaining = TRB.Data.spells.ravager.ticks
 							TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage
+							TRB.Data.snapshotData.ravager.endTime = currentTime + TRB.Data.snapshotData.ravager.totalDuration
 							TRB.Data.snapshotData.ravager.lastTick = currentTime
 						end
-					end
-				--[[	elseif spellId == TRB.Data.spells.barbedShot.buffId[1] or spellId == TRB.Data.spells.barbedShot.buffId[2] or spellId == TRB.Data.spells.barbedShot.buffId[3] or spellId == TRB.Data.spells.barbedShot.buffId[4] or spellId == TRB.Data.spells.barbedShot.buffId[5] then
-						if type == "SPELL_AURA_APPLIED" then -- Gain Barbed Shot buff
-							table.insert(TRB.Data.snapshotData.barbedShot.list, {
-								ticksRemaining = TRB.Data.spells.barbedShot.ticks,
-								rage = TRB.Data.snapshotData.barbedShot.ticksRemaining * TRB.Data.spells.barbedShot.rage,
-								endTime = currentTime + TRB.Data.spells.barbedShot.duration,
-								lastTick = currentTime
-							})
-						end
-					elseif spellId == TRB.Data.spells.frenzy.id and destGUID == TRB.Data.character.petGuid then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, TRB.Data.snapshotData.frenzy.stacks, _, TRB.Data.snapshotData.frenzy.duration, TRB.Data.snapshotData.frenzy.endTime, _, _, _, TRB.Data.snapshotData.frenzy.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.frenzy.id, "pet")
-							TRB.Data.spells.frenzy.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshotData.frenzy.startTime = nil
-							TRB.Data.snapshotData.frenzy.duration = 0
-							TRB.Data.snapshotData.frenzy.stacks = 0
-							TRB.Data.spells.frenzy.isActive = false
-						end
-					elseif spellId == TRB.Data.spells.killCommand.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.killCommand.startTime, TRB.Data.snapshotData.killCommand.duration, _, _ = GetSpellCooldown(TRB.Data.spells.killCommand.id)
-						end
-					elseif spellId == TRB.Data.spells.beastialWrath.id then
-						TRB.Data.snapshotData.beastialWrath.startTime, TRB.Data.snapshotData.beastialWrath.duration, _, _ = GetSpellCooldown(TRB.Data.spells.beastialWrath.id)
-					elseif spellId == TRB.Data.spells.flamewakersCobraSting.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.spells.flamewakersCobraSting.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.spells.flamewakersCobraSting.isActive = false
-						end]]
-					end
-				elseif specId == 2 then --Fury
-					--[[if spellId == TRB.Data.spells.burstingShot.id then
-						TRB.Data.snapshotData.burstingShot.startTime, TRB.Data.snapshotData.burstingShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.burstingShot.id)
-					elseif spellId == TRB.Data.spells.barrage.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.barrage.startTime = currentTime
-							TRB.Data.snapshotData.barrage.duration = TRB.Data.spells.barrage.cooldown
-						end
-					elseif spellId == TRB.Data.spells.explosiveShot.id then
-						TRB.Data.snapshotData.explosiveShot.startTime, TRB.Data.snapshotData.explosiveShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.explosiveShot.id)
-					elseif spellId == TRB.Data.spells.trueshot.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.spells.trueshot.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.trueshot.duration, TRB.Data.snapshotData.trueshot.endTime, _, _, _, TRB.Data.snapshotData.trueshot.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.trueshot.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.spells.trueshot.isActive = false
-							TRB.Data.snapshotData.trueshot.spellId = nil
-							TRB.Data.snapshotData.trueshot.duration = 0
-							TRB.Data.snapshotData.trueshot.endTime = nil
-						end
-					elseif spellId == TRB.Data.spells.rapidFire.id then
-						if type == "SPELL_AURA_APPLIED" then -- Gained buff 
-							TRB.Data.snapshotData.rapidFire.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.rapidFire.duration, TRB.Data.snapshotData.rapidFire.endTime, _, _, _, TRB.Data.snapshotData.rapidFire.spellId = TRB.Functions.FindDebuffById(TRB.Data.spells.rapidFire.id, destGUID)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshotData.rapidFire.isActive = false
-							TRB.Data.snapshotData.rapidFire.spellId = nil
-							TRB.Data.snapshotData.rapidFire.duration = 0
-							TRB.Data.snapshotData.rapidFire.endTime = nil
-							TRB.Data.snapshotData.rapidFire.ticksRemaining = 0
-							TRB.Data.snapshotData.rapidFire.rage = 0
-						end
-					elseif spellId == TRB.Data.spells.eagletalonsTrueRage.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.spells.eagletalonsTrueRage.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.spells.eagletalonsTrueRage.isActive = false
-						end
-					elseif spellId == TRB.Data.spells.secretsOfTheUnblinkingVigil.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.startTime, TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration, _, _ = GetSpellCooldown(TRB.Data.spells.secretsOfTheUnblinkingVigil.id)
-
-							if TRB.Data.settings.warrior.fury.audio.secretsOfTheUnblinkingVigil.enabled then
-								PlaySoundFile(TRB.Data.settings.warrior.fury.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
+					elseif spellId == TRB.Data.spells.ravager.energizeId then
+						if type == "SPELL_ENERGIZE" then						
+							TRB.Data.snapshotData.ravager.ticksRemaining = TRB.Data.snapshotData.ravager.ticksRemaining - 1
+							if TRB.Data.snapshotData.ravager.ticksRemaining == 0 then
+								TRB.Data.snapshotData.ravager.ticksRemaining = 0
+								TRB.Data.snapshotData.ravager.endTime = nil
+								TRB.Data.snapshotData.ravager.rage = 0
+								TRB.Data.snapshotData.ravager.isActive = false
+								TRB.Data.snapshotData.ravager.totalDuration = 0
+							else
+								TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage
+								TRB.Data.snapshotData.ravager.lastTick = currentTime
 							end
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.spells.secretsOfTheUnblinkingVigil.isActive = false
-							TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.spellId = nil
-							TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration = 0
-							TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.endTime = nil
 						end
-					elseif spellId == TRB.Data.spells.serpentSting.id then
-						InitializeTarget(destGUID)
-						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-						if type == "SPELL_AURA_APPLIED" then -- SS Applied to Target
-							TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = true
-							TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
-						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = false
-							TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting - 1
-						--elseif type == "SPELL_PERIODIC_DAMAGE" then
-						end
-					end]]
+					end
 				end
-
-				-- Spec agnostic
-                --[[
-                if spellId == TRB.Data.spells.flayedShot.id then
-					TRB.Data.snapshotData.flayedShot.startTime, TRB.Data.snapshotData.flayedShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.flayedShot.id)
-				elseif spellId == TRB.Data.spells.aMurderOfCrows.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						TRB.Data.snapshotData.aMurderOfCrows.startTime = currentTime
-						TRB.Data.snapshotData.aMurderOfCrows.duration = TRB.Data.spells.aMurderOfCrows.cooldown
-					end
-				elseif spellId == TRB.Data.spells.flayersMark.id then
-					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-						TRB.Data.spells.flayersMark.isActive = true
-						_, _, _, _, TRB.Data.snapshotData.flayersMark.duration, TRB.Data.snapshotData.flayersMark.endTime, _, _, _, TRB.Data.snapshotData.flayersMark.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.flayersMark.id)
-
-						if specId == 2 and TRB.Data.settings.warrior.fury.audio.flayersMark.enabled then
-							PlaySoundFile(TRB.Data.settings.warrior.fury.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
-						elseif specId == 3 and TRB.Data.settings.warrior.protection.audio.flayersMark.enabled then
-							PlaySoundFile(TRB.Data.settings.warrior.protection.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-						TRB.Data.spells.flayersMark.isActive = false
-						TRB.Data.snapshotData.flayersMark.spellId = nil
-						TRB.Data.snapshotData.flayersMark.duration = 0
-						TRB.Data.snapshotData.flayersMark.endTime = nil
-					end
-				elseif spellId == TRB.Data.spells.nesingwarysTrappingApparatus.id then
-					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-						TRB.Data.spells.nesingwarysTrappingApparatus.isActive = true
-						_, _, _, _, TRB.Data.snapshotData.nesingwarysTrappingApparatus.duration, TRB.Data.snapshotData.nesingwarysTrappingApparatus.endTime, _, _, _, TRB.Data.snapshotData.nesingwarysTrappingApparatus.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.nesingwarysTrappingApparatus.id)
-
-						if specId == 2 and TRB.Data.settings.warrior.fury.audio.nesingwarysTrappingApparatus.enabled then
-							PlaySoundFile(TRB.Data.settings.warrior.fury.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
-						elseif specId == 3 and TRB.Data.settings.warrior.protection.audio.nesingwarysTrappingApparatus.enabled then
-							PlaySoundFile(TRB.Data.settings.warrior.protection.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-						TRB.Data.spells.nesingwarysTrappingApparatus.isActive = false
-						TRB.Data.snapshotData.nesingwarysTrappingApparatus.spellId = nil
-						TRB.Data.snapshotData.nesingwarysTrappingApparatus.duration = 0
-						TRB.Data.snapshotData.nesingwarysTrappingApparatus.endTime = nil
-					end
-                end
-                ]]
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
@@ -1931,7 +1254,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					end
 					FillSpecCache()
 					FillSpellData_Arms()
-					FillSpellData_Fury()
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"
@@ -1967,17 +1289,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						if TRB.Data.barConstructedForSpec ~= "arms" then
 							TRB.Data.barConstructedForSpec = "arms"
 							ConstructResourceBar(TRB.Data.settings.warrior.arms)
-						end
-					elseif specId == 2 then
-						TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.warrior.fury)
-						TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.fury)
-						FillSpellData_Fury()
-						TRB.Functions.LoadFromSpecCache(specCache.fury)
-						TRB.Functions.RefreshLookupData = RefreshLookupData_Fury
-
-						if TRB.Data.barConstructedForSpec ~= "fury" then
-							TRB.Data.barConstructedForSpec = "fury"
-							ConstructResourceBar(TRB.Data.settings.warrior.fury)
 						end
 					end
 					EventRegistration()
