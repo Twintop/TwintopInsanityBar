@@ -1109,14 +1109,14 @@ local function RemoveInvalidVariablesFromBarText(input)
                     end
                 else
                     returnText = returnText .. string.sub(input, p)
-                    p = string.len(input)
+                    p = string.len(input) + 1
                 end
             else
+				returnText = returnText .. string.sub(input, p)
                 if b ~= nil then
                     p = b + 1
                 else
-                    returnText = returnText .. string.sub(input, p)
-                    p = string.len(input)
+					p = string.len(input) + 1
                 end
             end
         else
