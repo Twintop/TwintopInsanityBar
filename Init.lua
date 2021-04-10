@@ -3,8 +3,8 @@ local addonName, TRB = ...
 -- Addon details data
 TRB.Details = {}
 TRB.Details.addonVersion = GetAddOnMetadata(addonName, "Version")
-TRB.Details.addonReleaseDate = "March 13, 2021"
-TRB.Details.supportedSpecs = "|cFFFF7C0ADruid|r - Balance\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFFFFFFFFPriest|r - Shadow\n|cFF0070DDShaman|r - Elemental"
+TRB.Details.addonReleaseDate = "April 11, 2021"
+TRB.Details.supportedSpecs = "|cFFFF7C0ADruid|r - Balance\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFFFFFFFFPriest|r - Shadow\n|cFF0070DDShaman|r - Elemental\n|cFFC69B6DWarrior|r - Arms"
 
 local addonData = {
 	loaded = false,
