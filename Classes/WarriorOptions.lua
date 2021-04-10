@@ -117,13 +117,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					enabled = true, -- 10
 				},	
 			},
-			--[[
-			generation = {
-				mode="gcd",
-				gcds=2,
-				time=3.0,
-			},
-			]]
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
@@ -157,19 +150,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				bar = {
 					border="FFC21807",
 					borderOvercap="FF800000",
-					--borderBeastialWrath="FF005500",
 					background="66000000",
 					base="FFFF0000",
-					--frenzyUse="FF00B60E",
-					--frenzyHold="FFFF0000",
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FFEA3C53",
-					--flashAlpha=0.70,
-					--flashPeriod=0.5,
-					--flashEnabled=true,
 					overcapEnabled=true,
-					--beastialWrathEnabled=true
 				},
 				threshold = {
 					under="FFFFFFFF",
@@ -184,16 +170,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-				flayersMark={
+				suddenDeath={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-				nesingwarysTrappingApparatus={
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				}
             },
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -360,11 +341,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					soundName="TRB: Air Horn"
 				},
 				nesingwarysTrappingApparatus={
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},
-				flayersMark={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -1217,41 +1193,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 70
 		controls.barDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display", 0, yCoord)
 
-		yCoord = yCoord - 50
-		--[[
-		title = "Beastial Wrath Flash Alpha"
-		controls.flashAlpha = TRB.UiFunctions.BuildSlider(parent, title, 0, 1, TRB.Data.settings.warrior.arms.colors.bar.flashAlpha, 0.01, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
-		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.warrior.arms.colors.bar.flashAlpha = value
-		end)
-
-		title = "Beastial Wrath Flash Period (sec)"
-		controls.flashPeriod = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 2, TRB.Data.settings.warrior.arms.colors.bar.flashPeriod, 0.05, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.warrior.arms.colors.bar.flashPeriod = value
-		end)
-		]]
-
 		yCoord = yCoord - 40
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_RB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
@@ -1325,29 +1266,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.HideResourceBar()
 		end)
 
-		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_CB1_5", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Beastial Wrath is usable")
-		f.tooltip = "This will flash the bar when Beastial Wrath can be cast."
-		f:SetChecked(TRB.Data.settings.warrior.arms.colors.bar.flashEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.colors.bar.flashEnabled = self:GetChecked()
-		end)
-
-		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.showCastingBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
-		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
-		f:SetChecked(TRB.Data.settings.warrior.arms.bar.showCasting)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.bar.showCasting = self:GetChecked()
-		end)
-
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
 		f:SetChecked(TRB.Data.settings.warrior.arms.bar.showPassive)
@@ -1355,20 +1276,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.arms.bar.showPassive = self:GetChecked()
 		end)
 
-		--[[
-		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_CB1_6", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.esThresholdShow
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
-		getglobal(f:GetName() .. 'Text'):SetText("Border color when Beastial Wrath is usable")
-		f.tooltip = "This will change the bar's border color (as configured below) when Beastial Wrath is usable."
-		f:SetChecked(TRB.Data.settings.warrior.arms.colors.bar.beastialWrathEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.colors.bar.beastialWrathEnabled = self:GetChecked()
-		end)
-		]]
-
 		yCoord = yCoord - 60
-
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -1455,70 +1363,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		yCoord = yCoord - 30
-		--[[
-		controls.colors.frenzyUse = TRB.UiFunctions.BuildColorPicker(parent, "Rage when Barbed Shot should be used", TRB.Data.settings.warrior.arms.colors.bar.frenzyUse, 275, 25, xCoord, yCoord)
-		f = controls.colors.frenzyUse
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.bar.frenzyUse, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.frenzyUse.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.warrior.arms.colors.bar.frenzyUse = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)
-
-		controls.colors.borderBeastialWrath = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when you can use Beastial Wrath", TRB.Data.settings.warrior.arms.colors.bar.borderBeastialWrath, 275, 25, xCoord2, yCoord)
-		f = controls.colors.borderBeastialWrath
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.bar.borderBeastialWrath, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.warrior.arms.colors.bar.borderBeastialWrath = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
-                end)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.frenzyHold = TRB.UiFunctions.BuildColorPicker(parent, "Rage when Barbed Shot charges should be held", TRB.Data.settings.warrior.arms.colors.bar.frenzyHold, 275, 25, xCoord, yCoord)
-		f = controls.colors.frenzyHold
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.bar.frenzyHold, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.frenzyHold.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.warrior.arms.colors.bar.frenzyHold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-		]]
-
 		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.warrior.arms.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1716,86 +1560,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.arms.thresholds.whirlwind.enabled = self:GetChecked()
 		end)
 
-		--[[
-		yCoord = yCoord - 30
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Trueshot Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.endOfTrueshot = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_EOT_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfTrueshot
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Trueshot")
-		f.tooltip = "Changes the bar color when Trueshot is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(TRB.Data.settings.warrior.arms.endOfTrueshot.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.endOfTrueshot.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 40
-		controls.checkBoxes.endOfTrueshotModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_EOT_M_GCD", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.endOfTrueshotModeGCDs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Trueshot ends")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many GCDs remain until Trueshot ends."
-		if TRB.Data.settings.warrior.arms.endOfTrueshot.mode == "gcd" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.endOfTrueshotModeGCDs:SetChecked(true)
-			controls.checkBoxes.endOfTrueshotModeTime:SetChecked(false)
-			TRB.Data.settings.warrior.arms.endOfTrueshot.mode = "gcd"
-		end)
-
-		title = "Trueshot GCDs - 0.75sec Floor"
-		controls.endOfTrueshotGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 20, TRB.Data.settings.warrior.arms.endOfTrueshot.gcdsMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.endOfTrueshotGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
-			TRB.Data.settings.warrior.arms.endOfTrueshot.gcdsMax = value
-		end)
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.endOfTrueshotModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_EOT_M_TIME", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.endOfTrueshotModeTime
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time until Trueshot ends")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many seconds remain until Trueshot ends."
-		if TRB.Data.settings.warrior.arms.endOfTrueshot.mode == "time" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.endOfTrueshotModeGCDs:SetChecked(false)
-			controls.checkBoxes.endOfTrueshotModeTime:SetChecked(true)
-			TRB.Data.settings.warrior.arms.endOfTrueshot.mode = "time"
-		end)
-
-		title = "Trueshot Time Remaining (sec)"
-		controls.endOfTrueshotTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.warrior.arms.endOfTrueshot.timeMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.endOfTrueshotTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.warrior.arms.endOfTrueshot.timeMax = value
-		end)
-		]]
-
 		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
@@ -1804,7 +1568,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f = controls.checkBoxes.overcapEnabled
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
-		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Rage."
+		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Rage. Setting accepts values up to 130 to accomidate the Deadly Calm talent."
 		f:SetChecked(TRB.Data.settings.warrior.arms.colors.bar.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.warrior.arms.colors.bar.overcapEnabled = self:GetChecked()
@@ -1813,7 +1577,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 40
 
 		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.UiFunctions.BuildSlider(parent, title, 0, 120, TRB.Data.settings.warrior.arms.overcapThreshold, 1, 1,
+		controls.overcapAt = TRB.UiFunctions.BuildSlider(parent, title, 0, 130, TRB.Data.settings.warrior.arms.overcapThreshold, 1, 1,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2292,54 +2056,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		end)
 
-		--[[
-		controls.colors.castingRageText = TRB.UiFunctions.BuildColorPicker(parent, "Rage gain from hardcasting builder abilities", TRB.Data.settings.warrior.arms.colors.text.casting, 275, 25, xCoord2, yCoord)
-		f = controls.colors.castingRageText
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.text.casting, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    --Text doesn't care about Alpha, but the color picker does!
-                    a = 0.0
-        
-                    controls.colors.castingRageText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.warrior.arms.colors.text.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)
-
-
-		yCoord = yCoord - 30
-		controls.colors.spendingRageText = TRB.UiFunctions.BuildColorPicker(parent, "Rage loss from hardcasting spender abilities", TRB.Data.settings.warrior.arms.colors.text.spending, 275, 25, xCoord2, yCoord)
-		f = controls.colors.spendingRageText
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.text.spending, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    --Text doesn't care about Alpha, but the color picker does!
-                    a = 0.0
-        
-                    controls.colors.spendingRageText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.warrior.arms.colors.text.spending = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)
-		]]
-
 		yCoord = yCoord - 30
 		controls.colors.thresholdrageText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Rage to use any enabled threshold ability", TRB.Data.settings.warrior.arms.colors.text.overThreshold, 300, 25, xCoord, yCoord)
 		f = controls.colors.thresholdrageText
@@ -2407,8 +2123,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.arms.colors.text.overcapEnabled = self:GetChecked()
 		end)
 	
-
-		yCoord = yCoord - 130
+		yCoord = yCoord - 30
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 
 		yCoord = yCoord - 50
@@ -2539,29 +2254,29 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flayersMarkAudio
+		controls.checkBoxes.suddenDeathAudio = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_suddenDeath_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.suddenDeathAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if Venthyr)")
-		f.tooltip = "Play an audio cue when you get a Flayer's Mark proc that allows you to cast Kill Shot for 0 Rage and above normal execute range enemy health."
-		f:SetChecked(TRB.Data.settings.warrior.arms.audio.flayersMark.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Sudden Death proc (if talented)")
+		f.tooltip = "Play an audio cue when you get a Sudden Death proc that allows you to use Execute/Condemnt for 0 Rage and above normal execute range enemy health."
+		f:SetChecked(TRB.Data.settings.warrior.arms.audio.suddenDeath.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.audio.flayersMark.enabled = self:GetChecked()
+			TRB.Data.settings.warrior.arms.audio.suddenDeath.enabled = self:GetChecked()
 
-			if TRB.Data.settings.warrior.arms.audio.flayersMark.enabled then
-				PlaySoundFile(TRB.Data.settings.warrior.arms.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
+			if TRB.Data.settings.warrior.arms.audio.suddenDeath.enabled then
+				PlaySoundFile(TRB.Data.settings.warrior.arms.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.flayersMarkAudio = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_flayersMark_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, TRB.Data.settings.warrior.arms.audio.flayersMark.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
+		controls.dropDown.suddenDeathAudio = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_suddenDeath_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.suddenDeathAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.suddenDeathAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.suddenDeathAudio, TRB.Data.settings.warrior.arms.audio.suddenDeath.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.suddenDeathAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.flayersMarkAudio, function(self, level, menuList)
+		UIDropDownMenu_Initialize(controls.dropDown.suddenDeathAudio, function(self, level, menuList)
 			local entries = 25
 			local info = UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
@@ -2582,7 +2297,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.warrior.arms.audio.flayersMark.sound
+						info.checked = sounds[v] == TRB.Data.settings.warrior.arms.audio.suddenDeath.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -2594,213 +2309,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-			TRB.Data.settings.warrior.arms.audio.flayersMark.sound = newValue
-			TRB.Data.settings.warrior.arms.audio.flayersMark.soundName = newName
+			TRB.Data.settings.warrior.arms.audio.suddenDeath.sound = newValue
+			TRB.Data.settings.warrior.arms.audio.suddenDeath.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.warrior.arms.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(TRB.Data.settings.warrior.arms.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
-
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.nesingwarysTrappingApparatusAudio = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_nesingwarysTrappingApparatus_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.nesingwarysTrappingApparatusAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Nesingwary's Trapping Apparatus proc")
-		f.tooltip = "Play an audio cue when you get a Nesingwary's Trapping Apparatus proc that allows your next Aimed Shot to cost 0 Rage."
-		f:SetChecked(TRB.Data.settings.warrior.arms.audio.nesingwarysTrappingApparatus.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.audio.nesingwarysTrappingApparatus.enabled = self:GetChecked()
-
-			if TRB.Data.settings.warrior.arms.audio.nesingwarysTrappingApparatus.enabled then
-				PlaySoundFile(TRB.Data.settings.warrior.arms.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.nesingwarysTrappingApparatusAudio = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_nesingwarysTrappingApparatusAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, TRB.Data.settings.warrior.arms.audio.nesingwarysTrappingApparatus.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.nesingwarysTrappingApparatusAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.nesingwarysTrappingApparatusAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.warrior.arms.audio.nesingwarysTrappingApparatus.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-			TRB.Data.settings.warrior.arms.audio.nesingwarysTrappingApparatus.sound = newValue
-			TRB.Data.settings.warrior.arms.audio.nesingwarysTrappingApparatus.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
-			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.warrior.arms.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
-
-		--[[
-		yCoord = yCoord - 60
-		controls.checkBoxes.secretsOfTheUnblinkingVigilAudio = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_secretsOfTheUnblinkingVigil_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.secretsOfTheUnblinkingVigilAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Secrets of the Unblinking Vigil proc")
-		f.tooltip = "Play an audio cue when you get a Secrets of the Unblinking Vigil proc that allows your next Aimed Shot to cost 0 Rage."
-		f:SetChecked(TRB.Data.settings.warrior.arms.audio.secretsOfTheUnblinkingVigil.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.audio.secretsOfTheUnblinkingVigil.enabled = self:GetChecked()
-
-			if TRB.Data.settings.warrior.arms.audio.secretsOfTheUnblinkingVigil.enabled then
-				PlaySoundFile(TRB.Data.settings.warrior.arms.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.secretsOfTheUnblinkingVigilAudio = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_secretsOfTheUnblinkingVigilAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.secretsOfTheUnblinkingVigilAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.secretsOfTheUnblinkingVigilAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, TRB.Data.settings.warrior.arms.audio.secretsOfTheUnblinkingVigil.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.secretsOfTheUnblinkingVigilAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.warrior.arms.audio.secretsOfTheUnblinkingVigil.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-			TRB.Data.settings.warrior.arms.audio.secretsOfTheUnblinkingVigil.sound = newValue
-			TRB.Data.settings.warrior.arms.audio.secretsOfTheUnblinkingVigil.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
-			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.warrior.arms.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-		]]
-
-		--[[
-		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Rage Generation", 0, yCoord)
-
-
-		yCoord = yCoord - 40
-		controls.checkBoxes.rageGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_PFG_GCD", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.rageGenerationModeGCDs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Rage generation from GCDs")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Rage generation over the next X GCDs, based on player's current GCD."
-		if TRB.Data.settings.warrior.arms.generation.mode == "gcd" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.rageGenerationModeGCDs:SetChecked(true)
-			controls.checkBoxes.rageGenerationModeTime:SetChecked(false)
-			TRB.Data.settings.warrior.arms.generation.mode = "gcd"
-		end)
-
-		title = "Rage GCDs - 0.75sec Floor"
-		controls.rageGenerationGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 15, TRB.Data.settings.warrior.arms.generation.gcds, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.rageGenerationGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
-			TRB.Data.settings.warrior.arms.generation.gcds = value
-		end)
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.rageGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_PFG_TIME", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.rageGenerationModeTime
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Rage generation over time")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Rage generation over the next X seconds."
-		if TRB.Data.settings.warrior.arms.generation.mode == "time" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.rageGenerationModeGCDs:SetChecked(false)
-			controls.checkBoxes.rageGenerationModeTime:SetChecked(true)
-			TRB.Data.settings.warrior.arms.generation.mode = "time"
-		end)
-
-		title = "Rage Over Time (sec)"
-		controls.rageGenerationTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.warrior.arms.generation.time, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.rageGenerationTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.warrior.arms.generation.time = value
-		end)
-		]]
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.arms = controls
 	end
@@ -5237,72 +4751,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.warrior.fury.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flayersMarkAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if Venthyr)")
-		f.tooltip = "Play an audio cue when you get a Flayer's Mark proc that allows you to cast Kill Shot for 0 Rage and above normal execute range enemy health."
-		f:SetChecked(TRB.Data.settings.warrior.fury.audio.flayersMark.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.fury.audio.flayersMark.enabled = self:GetChecked()
-
-			if TRB.Data.settings.warrior.fury.audio.flayersMark.enabled then
-				PlaySoundFile(TRB.Data.settings.warrior.fury.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.flayersMarkAudio = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Fury_flayersMark_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, TRB.Data.settings.warrior.fury.audio.flayersMark.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.flayersMarkAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.warrior.fury.audio.flayersMark.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-			TRB.Data.settings.warrior.fury.audio.flayersMark.sound = newValue
-			TRB.Data.settings.warrior.fury.audio.flayersMark.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
-			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.warrior.fury.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
-
 
 		yCoord = yCoord - 60
 		controls.checkBoxes.nesingwarysTrappingApparatusAudio = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_nesingwarysTrappingApparatus_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")

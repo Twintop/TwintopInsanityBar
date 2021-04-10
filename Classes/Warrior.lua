@@ -229,7 +229,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = 7,
-				ticks = 6, -- Sometimes 5, sometimes 6
+				ticks = 6, -- Sometimes 5, sometimes 6, sometimes 7?!
 				duration = 12,
 				isHasted = true,
 				energizeId = 248439
@@ -276,6 +276,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		}
 
 		specCache.arms.snapshotData.audio = {
+			overcapCue = false
 		}
 		specCache.arms.snapshotData.targetData = {
 			ttdIsActive = false,
@@ -1425,44 +1426,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 					local latency = TRB.Functions.GetLatency()
 
-                    --[[
-					local barbedShotRechargeRemaining = -(currentTime - (TRB.Data.snapshotData.barbedShot.startTime + TRB.Data.snapshotData.barbedShot.duration))
-					local barbedShotTotalRechargeRemaining = barbedShotRechargeRemaining + ((1 - TRB.Data.snapshotData.barbedShot.charges) * TRB.Data.snapshotData.barbedShot.duration)
-					local barbedShotPartialCharges = TRB.Data.snapshotData.barbedShot.charges + (barbedShotRechargeRemaining / TRB.Data.snapshotData.barbedShot.duration)
-					local beastialWrathCooldownRemaining = GetBeastialWrathCooldownRemainingTime()
-					local frenzyRemainingTime = GetFrenzyRemainingTime()
-					local affectingCombat = UnitAffectingCombat("player")
-					local reactionTimeGcds = math.min(gcd * 1.5, 2)
-
-					if TRB.Data.spells.frenzy.isActive then
-						if TRB.Data.snapshotData.barbedShot.charges == 2 then
-							barColor = TRB.Data.settings.warrior.arms.colors.bar.frenzyUse
-						elseif TRB.Data.snapshotData.barbedShot.charges == 1 and frenzyRemainingTime <= reactionTimeGcds then
-							barColor = TRB.Data.settings.warrior.arms.colors.bar.frenzyUse
-						elseif barbedShotTotalRechargeRemaining <= reactionTimeGcds and beastialWrathCooldownRemaining > 0 then
-							barColor = TRB.Data.settings.warrior.arms.colors.bar.frenzyUse
-						elseif barbedShotRechargeRemaining <= reactionTimeGcds and TRB.Data.snapshotData.barbedShot.charges == 1 then
-							barColor = TRB.Data.settings.warrior.arms.colors.bar.frenzyUse
-						elseif TRB.Data.character.talents.scentOfBlood.isSelected and barbedShotTotalRechargeRemaining <= reactionTimeGcds and beastialWrathCooldownRemaining < (TRB.Data.spells.barbedShot.beastialWrathCooldownReduction + reactionTimeGcds) then
-							barColor = TRB.Data.settings.warrior.arms.colors.bar.frenzyUse
-						elseif TRB.Data.character.talents.scentOfBlood.isSelected and TRB.Data.snapshotData.barbedShot.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * TRB.Data.spells.barbedShot.beastialWrathCooldownReduction) then
-							barColor = TRB.Data.settings.warrior.arms.colors.bar.frenzyUse
-						end
-					else
-						if affectingCombat then
-							if TRB.Data.snapshotData.barbedShot.charges == 2 then
-								barColor = TRB.Data.settings.warrior.arms.colors.bar.frenzyUse
-							elseif TRB.Data.character.talents.scentOfBlood.isSelected and TRB.Data.snapshotData.barbedShot.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * TRB.Data.spells.barbedShot.beastialWrathCooldownReduction) then
-								barColor = TRB.Data.settings.warrior.arms.colors.bar.frenzyUse
-							elseif barbedShotTotalRechargeRemaining <= reactionTimeGcds then
-								barColor = TRB.Data.settings.warrior.arms.colors.bar.frenzyUse
-							else
-								barColor = TRB.Data.settings.warrior.arms.colors.bar.frenzyHold
-							end
-						end
-					end
-                    ]]
-
 					local barBorderColor = TRB.Data.settings.warrior.arms.colors.bar.border
 
 					if TRB.Data.settings.warrior.arms.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
@@ -1476,20 +1439,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						TRB.Data.snapshotData.audio.overcapCue = false
 					end
 
-                    --[[
-					if beastialWrathCooldownRemaining <= gcd and affectingCombat then
-						if TRB.Data.settings.warrior.arms.bar.beastialWrathEnabled then
-							barBorderColor = TRB.Data.settings.warrior.arms.colors.bar.borderBeastialWrath
-						end
-
-						if TRB.Data.settings.warrior.arms.colors.bar.flashEnabled then
-							TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.warrior.arms.colors.bar.flashAlpha, TRB.Data.settings.warrior.arms.colors.bar.flashPeriod)
-						else
-							barContainerFrame:SetAlpha(1.0)
-						end
-					else]]
-						barContainerFrame:SetAlpha(1.0)
-					--end
+					barContainerFrame:SetAlpha(1.0)
 
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
 
@@ -1747,6 +1697,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
 							_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.suddenDeath.id)
 							TRB.Data.spells.suddenDeath.isActive = true
+							
+							if TRB.Data.settings.warrior.arms.audio.suddenDeath.enabled then
+								PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.aimedShot.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.deadlyCalm.endTime = nil
 							TRB.Data.snapshotData.deadlyCalm.duration = 0
