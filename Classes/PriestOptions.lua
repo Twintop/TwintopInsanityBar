@@ -2083,7 +2083,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter color based on DoT status?")
-		f.tooltip = "When checked, the color of total DoTs up colors counters ($sunfireCount, $moonfireCount, $stellarFlareCount) will change based on whether or not the DoT is on the current target."
+		f.tooltip = "When checked, the color of total DoTs up colors counters ($swpCount, $vtCount) will change based on whether or not the DoT is on the current target."
 		f:SetChecked(TRB.Data.settings.priest.shadow.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.priest.shadow.colors.text.dots.enabled = self:GetChecked()

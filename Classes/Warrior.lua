@@ -19,10 +19,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		arms = {
 			snapshotData = {},
 			barTextVariables = {}
-		},
-		fury = {
-			snapshotData = {},
-			barTextVariables = {}
 		}
 	}
 
@@ -156,7 +152,15 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				hasCooldown = true,
 				thresholdUsable = false	
-			},			
+			},
+			deepWounds = {
+				id = 262115,
+				name = "",
+				icon = "",
+				baseDuration = 10,
+				pandemic = true,
+				pandemicTime = 3 --Refreshes add 12sec, capping at 15? --10 * 0.3				
+			},
 			
 			--Talents
 			suddenDeath = {
@@ -203,7 +207,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "rend",
 				isTalent = true,
 				hasCooldown = false,
-				thresholdUsable = false					
+				thresholdUsable = false,
+				baseDuration = 15,
+				pandemic = true,
+				pandemicTime = 15 * 0.3				
 			},
 			cleave = {
 				id = 845,
@@ -373,24 +380,26 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#casting", icon = "", description = "The icon of the rage generating spell you are currently hardcasting", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-            --[[
-			{ variable = "#aMurderOfCrows", icon = spells.aMurderOfCrows.icon, description = "A Murder of Crows", printInSettings = true },
-			{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = "Arcane Shot", printInSettings = true },
-			{ variable = "#barbedShot", icon = spells.barbedShot.icon, description = "Barbed Shot", printInSettings = true },
-			{ variable = "#barrage", icon = spells.barrage.icon, description = "Barrage", printInSettings = true },
-			{ variable = "#beastialWrath", icon = spells.beastialWrath.icon, description = "Beastial Wrath", printInSettings = true },
-			{ variable = "#chimaeraShot", icon = spells.chimaeraShot.icon, description = "Chimaera Shot", printInSettings = true },
-			{ variable = "#cobraShot", icon = spells.cobraShot.icon, description = "Cobra Shot", printInSettings = true },
-			{ variable = "#flayedShot", icon = spells.flayedShot.icon, description = "Flayed Shot", printInSettings = true },
-			{ variable = "#flayersMark", icon = spells.flayersMark.icon, description = "Flayer's Mark", printInSettings = true },
-			{ variable = "#frenzy", icon = spells.frenzy.icon, description = "Frenzy", printInSettings = true },
-			{ variable = "#killCommand", icon = spells.killCommand.icon, description = "Kill Command", printInSettings = true },
-			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
-			{ variable = "#multiShot", icon = spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
-			{ variable = "#nesingwarys", icon = spells.nesingwarysTrappingApparatus.icon, description = "Nesingwary'ss Trapping Apparatus", printInSettings = true },
-			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
-            { variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
-            ]]
+            { variable = "#ancientAftershock", icon = spells.ancientAftershock.icon, description = "Ancient Aftershock", printInSettings = true },
+			{ variable = "#charge", icon = spells.charge.icon, description = "Charge", printInSettings = true },
+			{ variable = "#cleave", icon = spells.cleave.icon, description = "Cleave", printInSettings = true },
+            { variable = "#condemn", icon = spells.condemn.icon, description = "Condemn", printInSettings = true },
+            { variable = "#conquerorsBanner", icon = spells.conquerorsBanner.icon, description = "Conqueror's Banner", printInSettings = true },
+			{ variable = "#deadlyCalm", icon = spells.deadlyCalm.icon, description = "Deadly Calm", printInSettings = true },
+			{ variable = "#deepWounds", icon = spells.deepWounds.icon, description = "Deep Wounds", printInSettings = true },
+			{ variable = "#execute", icon = spells.execute.icon, description = "Execute", printInSettings = true },
+			{ variable = "#ignorePain", icon = spells.ignorePain.icon, description = "Ignore Pain", printInSettings = true },
+			{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = "Impending Victory", printInSettings = true },
+			{ variable = "#massacre", icon = spells.massacre.icon, description = "Massacre", printInSettings = true },
+			{ variable = "#mortalStrike", icon = spells.mortalStrike.icon, description = "Mortal Strike", printInSettings = true },
+			{ variable = "#ravager", icon = spells.ravager.icon, description = "Ravager", printInSettings = true },
+			{ variable = "#rend", icon = spells.rend.icon, description = "Rend", printInSettings = true },
+			{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = "Shield Block", printInSettings = true },
+			{ variable = "#skullsplitter", icon = spells.skullsplitter.icon, description = "Skullsplitter", printInSettings = true },
+			{ variable = "#slam", icon = spells.slam.icon, description = "Slam", printInSettings = true },
+            { variable = "#spearOfBastion", icon = spells.spearOfBastion.icon, description = "Spear of Bastion", printInSettings = true },
+			{ variable = "#victoryRush", icon = spells.victoryRush.icon, description = "Victory Rush", printInSettings = true },
+			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = "Whirlwind", printInSettings = true },			
         }
 		specCache.arms.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -411,17 +420,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$resourcePlusPassive", description = "Current + Passive Rage Total", printInSettings = false, color = false },
 			{ variable = "$rageTotal", description = "Current + Passive + Casting Rage Total", printInSettings = true, color = false },   
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Rage Total", printInSettings = false, color = false },   
-            --[[
-			{ variable = "$frenzyTime", description = "Time remaining on your pet's Frenzy buff", printInSettings = true, color = false }, 
-			{ variable = "$frenzyStacks", description = "Current stack count on your pet's Frenzy buff", printInSettings = true, color = false },   
 
-			{ variable = "$barbedShotTicks", description = "Total number of Barbed Shot buff ticks remaining", printInSettings = true, color = false },
-			{ variable = "$barbedShotTime", description = "Time remaining until the most recent Barbed Shot buff expires", printInSettings = true, color = false },
+			{ variable = "$rend", description = "Is Rend currently talented. Logic variable only!", printInSettings = true, color = false },
 
-			{ variable = "$flayersMarkTime", description = "Time remaining on Flayer's Mark buff", printInSettings = true, color = false },
+			{ variable = "$deepWoundsCount", description = "Number of Deep Wounds active on targets", printInSettings = true, color = false },
+			{ variable = "$rendCount", description = "Number of Rends active on targets", printInSettings = true, color = false },
+			
+			{ variable = "$ravagerTicks", description = "Number of expected ticks remaining on Ravager", printInSettings = true, color = false }, 
+			{ variable = "$ravagerRage", description = "Remaining expecting incoming Rage from Ravager", printInSettings = true, color = false },   
 
-			{ variable = "$nesingwarysTime", description = "Time remaining on Nesingwary's Trapping Apparatus buff", printInSettings = true, color = false },
-            ]]
+			{ variable = "$suddenDeathTime", description = "Time remaining on Sudden Death proc", printInSettings = true, color = false },
+
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
             { variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
@@ -520,15 +529,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local modifier = 1.0
 		
 		if resource > 0 then
-			--[[if GetSpecialization() == 1 then
-				if TRB.Data.spells.trueshot.isActive then
-					modifier = modifier * TRB.Data.spells.trueshot.modifier
-				end
-			end
 
-			if TRB.Data.spells.nesingwarysTrappingApparatus.isActive then
-				modifier = modifier * TRB.Data.spells.nesingwarysTrappingApparatus.modifier
-			end]]
 		else
 			if GetSpecialization() == 1 then
 				if TRB.Data.spells.deadlyCalm.isActive and includeDeadlyCalm then
@@ -544,20 +545,38 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
 	end
 
+	local function InitializeTarget(guid)
+		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
+			TRB.Functions.InitializeTarget(guid)
+			TRB.Data.snapshotData.targetData.targets[guid].rend = false
+			TRB.Data.snapshotData.targetData.targets[guid].rendRemaining = 0
+			TRB.Data.snapshotData.targetData.targets[guid].deepWounds = false
+			TRB.Data.snapshotData.targetData.targets[guid].deepWoundsRemaining = 0
+		end
+	end
+	TRB.Functions.InitializeTarget_Class = InitializeTarget
+
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
 		local rendTotal = 0
+		local deepWoundsTotal = 0
     	for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
 			if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
 				TRB.Data.snapshotData.targetData.targets[guid].rend = false
 				TRB.Data.snapshotData.targetData.targets[guid].rendRemaining = 0
+				TRB.Data.snapshotData.targetData.targets[guid].deepWounds = false
+				TRB.Data.snapshotData.targetData.targets[guid].deepWoundsRemaining = 0
 			else
 				if TRB.Data.snapshotData.targetData.targets[guid].rend == true then
 					rendTotal = rendTotal + 1
 				end
+				if TRB.Data.snapshotData.targetData.targets[guid].deepWounds == true then
+					deepWoundsTotal = deepWoundsTotal + 1
+				end
 			end
 		end
 		TRB.Data.snapshotData.targetData.rend = rendTotal
+		TRB.Data.snapshotData.targetData.deepWounds = deepWoundsTotal
 	end
 
 	local function TargetsCleanup(clearAll)
@@ -606,29 +625,31 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 
         if specId == 1 then --Arms
-            --[[
-			if var == "$barbedShotRage" then
-				if TRB.Data.snapshotData.barbedShot.isActive or TRB.Data.snapshotData.barbedShot.count > 0 or TRB.Data.snapshotData.barbedShot.rage > 0 then
+			if var == "$ravagerTicks" then
+				if TRB.Data.snapshotData.ravager.isActive then
 					valid = true
 				end
-			elseif var == "$barbedShotTicks" then
-				if TRB.Data.snapshotData.barbedShot.isActive or TRB.Data.snapshotData.barbedShot.count > 0 or TRB.Data.snapshotData.barbedShot.rage > 0 then
+			elseif var == "$ravagerRage" then
+				if TRB.Data.snapshotData.ravager.isActive then
 					valid = true
 				end
-			elseif var == "$barbedShotTime" then
-				if TRB.Data.snapshotData.barbedShot.isActive or TRB.Data.snapshotData.barbedShot.count > 0 or TRB.Data.snapshotData.barbedShot.rage > 0 then
+			elseif var == "$suddenDeathTime" then
+				if TRB.Data.snapshotData.suddenDeath.isActive then
 					valid = true
 				end
-			elseif var == "$frenzyTime" then
-				if TRB.Data.snapshotData.frenzy.endTime ~= nil then
+			elseif var == "$rend" then
+				if TRB.Data.character.talents.rend.isSelected then
 					valid = true
 				end
-			elseif var == "$frenzyStacks" then
-				if TRB.Data.snapshotData.frenzy.stacks ~= nil and TRB.Data.snapshotData.frenzy.stacks > 0 then
+			elseif var == "$rendCount" then
+				if TRB.Data.snapshotData.targetData.rend > 0 then
+					valid = true
+				end
+			elseif var == "$deepWoundsCount" then
+				if TRB.Data.snapshotData.targetData.deepWounds > 0 then
 					valid = true
 				end
             end
-            ]]
 		end
 
 		if var == "$resource" or var == "$rage" then
@@ -661,9 +682,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				valid = true
 			end
 		elseif var == "$passive" then
-			--[[if normalizedRage < TRB.Data.character.maxResource and
-				((settings.generation.mode == "time" and settings.generation.time > 0) or
-				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then]]
 			if TRB.Data.snapshotData.ravager.rage > 0 then
 				valid = true
 			end
@@ -712,6 +730,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local ravagerRage = string.format("%.0f", TRB.Data.snapshotData.ravager.rage)
 		local ravagerTicks = string.format("%.0f", TRB.Data.snapshotData.ravager.ticksRemaining)
         
+		--$suddenDeathTime
+		local _suddenDeathTime = GetSuddenDeathRemainingTime()
+		local suddenDeathTime
+		if _suddenDeathTime ~= nil then
+			suddenDeathTime = string.format("%.1f", _suddenDeathTime)
+		end
+
 		--$rage
 		local ragePrecision = TRB.Data.settings.warrior.arms.ragePrecision or 0
 		local currentRage = string.format("|c%s%s|r", currentRageColor, TRB.Functions.RoundTo(normalizedRage, ragePrecision, "floor"))
@@ -734,27 +759,67 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local _ragePlusPassive = math.min(_passiveRage + normalizedRage, TRB.Data.character.maxResource)
 		local ragePlusPassive = string.format("|c%s%s|r", currentRageColor, TRB.Functions.RoundTo(_ragePlusPassive, ragePrecision, "floor"))
 
+		
+		--$rendCount
+		local _rendCount = TRB.Data.snapshotData.targetData.rend or 0
+		local rendCount = _rendCount
+
+		local _deepWoundsCount = TRB.Data.snapshotData.targetData.deepWounds or 0
+		local deepWoundsCount = _deepWoundsCount
+
+		if TRB.Data.settings.warrior.arms.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rend then
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining > TRB.Data.spells.rend.pandemicTime then
+					rendCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.up, _rendCount)
+				else
+					rendCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.pandemic, _rendCount)
+				end
+			else
+				rendCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.down, _rendCount)
+			end
+
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWounds then
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining > TRB.Data.spells.deepWounds.pandemicTime then
+					deepWoundsCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.up, _deepWoundsCount)
+				else
+					deepWoundsCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.pandemic, _deepWoundsCount)
+				end
+			else
+				deepWoundsCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.down, _deepWoundsCount)
+			end
+		end
+
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveRage
 
 		lookup = TRB.Data.lookup or {}
-		--[[lookup["#aMurderOfCrows"] = TRB.Data.spells.aMurderOfCrows.icon
-		lookup["#arcaneShot"] = TRB.Data.spells.arcaneShot.icon
-		lookup["#barbedShot"] = TRB.Data.spells.barbedShot.icon
-		lookup["#barrage"] = TRB.Data.spells.barrage.icon
-		lookup["#beastialWrath"] = TRB.Data.spells.beastialWrath.icon
-		lookup["#chimaeraShot"] = TRB.Data.spells.chimaeraShot.icon
-		lookup["#cobraShot"] = TRB.Data.spells.cobraShot.icon
-		lookup["#flayedShot"] = TRB.Data.spells.flayedShot.icon
-		lookup["#flayersMark"] = TRB.Data.spells.flayersMark.icon
-		lookup["#frenzy"] = TRB.Data.spells.frenzy.icon
-		lookup["#killCommand"] = TRB.Data.spells.killCommand.icon
-		lookup["#killShot"] = TRB.Data.spells.killShot.icon
-		lookup["#multiShot"] = TRB.Data.spells.multiShot.icon
-		lookup["#nesingwarys"] = TRB.Data.spells.nesingwarysTrappingApparatus.icon
-		lookup["#revivePet"] = TRB.Data.spells.revivePet.icon
-		lookup["#scareBeast"] = TRB.Data.spells.scareBeast.icon]]
+		lookup["#ancientAftershock"] = TRB.Data.spells.ancientAftershock.icon
+		lookup["#charge"] = TRB.Data.spells.charge.icon
+		lookup["#cleave"] = TRB.Data.spells.cleave.icon
+		lookup["#condemn"] = TRB.Data.spells.condemn.icon
+		lookup["#conquerorsBanner"] = TRB.Data.spells.conquerorsBanner.icon
+		lookup["#deadlyCalm"] = TRB.Data.spells.deadlyCalm.icon
+		lookup["#deepWounds"] = TRB.Data.spells.deadlyCalm.icon
+		lookup["#execute"] = TRB.Data.spells.execute.icon
+		lookup["#ignorePain"] = TRB.Data.spells.ignorePain.icon
+		lookup["#impendingVictory"] = TRB.Data.spells.impendingVictory.icon
+		lookup["#massacre"] = TRB.Data.spells.massacre.icon
+		lookup["#mortalStrike"] = TRB.Data.spells.mortalStrike.icon
+		lookup["#ravager"] = TRB.Data.spells.ravager.icon
+		lookup["#rend"] = TRB.Data.spells.rend.icon
+		lookup["#shieldBlock"] = TRB.Data.spells.shieldBlock.icon
+		lookup["#skullsplitter"] = TRB.Data.spells.skullsplitter.icon
+		lookup["#slam"] = TRB.Data.spells.slam.icon
+		lookup["#spearOfBastion"] = TRB.Data.spells.spearOfBastion.icon
+		lookup["#victoryRush"] = TRB.Data.spells.victoryRush.icon
+		lookup["#whirlwind"] = TRB.Data.spells.whirlwind.icon
+		lookup["$rend"] = TRB.Data.character.talents.rend.isSelected
+		lookup["$rendCount"] = rendCount
+		lookup["$deepWoundsCount"] = deepWoundsCount
+		lookup["$suddenDeathTime"] = suddenDeathTime
+		lookup["$ravagerRage"] = ravagerRage
+		lookup["$ravagerTicks"] = ravagerTicks
 		lookup["$ragePlusCasting"] = ragePlusCasting
 		lookup["$rageTotal"] = rageTotal
 		lookup["$rageMax"] = TRB.Data.character.maxResource
@@ -869,6 +934,25 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		_, _, TRB.Data.snapshotData.suddenDeath.stacks, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.suddenDeath.id, "player")
 		_, _, TRB.Data.snapshotData.deadlyCalm.stacks, _, TRB.Data.snapshotData.deadlyCalm.duration, TRB.Data.snapshotData.deadlyCalm.endTime, _, _, _, TRB.Data.snapshotData.deadlyCalm.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.deadlyCalm.id, "player")
+
+		
+		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rend then
+				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.rend.id, "target", "player"))
+			
+				if expiration ~= nil then
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining = expiration - currentTime
+				end
+			end
+
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWounds then
+				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.deepWounds.id, "target", "player"))
+			
+				if expiration ~= nil then
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining = expiration - currentTime
+				end
+			end
+		end
 	end  
 
 	local function HideResourceBar(force)
@@ -1190,6 +1274,30 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage
 								TRB.Data.snapshotData.ravager.lastTick = currentTime
 							end
+						end
+					elseif spellId == TRB.Data.spells.rend.id then
+						InitializeTarget(destGUID)
+						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+						if type == "SPELL_AURA_APPLIED" then -- Rend Applied to Target
+							TRB.Data.snapshotData.targetData.targets[destGUID].rend = true
+							TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.rend + 1
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.targetData.targets[destGUID].rend = false
+							TRB.Data.snapshotData.targetData.targets[destGUID].rendRemaining = 0
+							TRB.Data.snapshotData.targetData.rend = TRB.Data.snapshotData.targetData.rend - 1
+						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						end
+					elseif spellId == TRB.Data.spells.deepWounds.id then
+						InitializeTarget(destGUID)
+						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+						if type == "SPELL_AURA_APPLIED" then -- Deep Wounds Applied to Target
+							TRB.Data.snapshotData.targetData.targets[destGUID].deepWounds = true
+							TRB.Data.snapshotData.targetData.deepWounds = TRB.Data.snapshotData.targetData.deepWounds + 1
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.targetData.targets[destGUID].deepWounds = false
+							TRB.Data.snapshotData.targetData.targets[destGUID].deepWoundsRemaining = 0
+							TRB.Data.snapshotData.targetData.deepWounds = TRB.Data.snapshotData.targetData.deepWounds - 1
+						--elseif type == "SPELL_PERIODIC_DAMAGE" then
 						end
 					end
 				end
