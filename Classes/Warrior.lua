@@ -390,7 +390,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.arms.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the rage generating spell you are currently hardcasting", printInSettings = true },
+			{ variable = "#casting", icon = "", description = "The icon of the Rage generating spell you are currently hardcasting", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
             { variable = "#ancientAftershock", icon = spells.ancientAftershock.icon, description = "Ancient Aftershock", printInSettings = true },
@@ -433,7 +433,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$casting", description = "Builder Rage from Hardcasting Spells", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Spender Rage from Hardcasting Spells", printInSettings = false, color = false },
 			{ variable = "$passive", description = "Rage from Passive Sources including Ravager and Covenant abilities", printInSettings = true, color = false },
-			{ variable = "$ragePlusCasting", description = "Current + Casting Rage Total", printInSettings = true, color = false },
+			{ variable = "$ragePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
 			{ variable = "$resourcePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
 			{ variable = "$ragePlusPassive", description = "Current + Passive Rage Total", printInSettings = true, color = false },
 			{ variable = "$resourcePlusPassive", description = "Current + Passive Rage Total", printInSettings = false, color = false },
