@@ -35,6 +35,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				conquerorsBanner = 0
 			},
 			dots = {
+				rend = 0,
+				deepWounds = 0
 			},
 			ravager = {
 				rage = 0,
@@ -882,6 +884,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		Global_TwintopResourceBar.resource.ravager = _ravagerRage
 		Global_TwintopResourceBar.resource.ancientAftershock = _ancientAftershockRage
 		Global_TwintopResourceBar.resource.conquerorsBanner = _conquerorsBannerRage
+		Global_TwintopResourceBar.dots.rend = _rendCount
+		Global_TwintopResourceBar.dots.deepWounds = _deepWoundsCount
 		Global_TwintopResourceBar.ravager = {
 			rage = _ravagerRage,
 			ticks = TRB.Data.snapshotData.ravager.ticksRemaining or 0
@@ -894,7 +898,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			rage = _ancientAftershockRage,
 			ticks = TRB.Data.snapshotData.ancientAftershock.ticksRemaining or 0
 			targetsHit = TRB.Data.snapshotData.ancientAftershock.targetsHit or 0
-		}
+		},
+
 
 		lookup = TRB.Data.lookup or {}
 		lookup["#ancientAftershock"] = TRB.Data.spells.ancientAftershock.icon
