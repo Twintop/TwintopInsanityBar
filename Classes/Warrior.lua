@@ -55,7 +55,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		specCache.arms.character = {
 			guid = UnitGUID("player"),
 			specGroup = GetActiveSpecGroup(),
-			petGuid = UnitGUID("pet"),
 			specId = 1,
 			maxResource = 100,
 			covenantId = 0,
