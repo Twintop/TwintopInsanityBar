@@ -385,6 +385,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#cleave", icon = spells.cleave.icon, description = "Cleave", printInSettings = true },
             { variable = "#condemn", icon = spells.condemn.icon, description = "Condemn", printInSettings = true },
             { variable = "#conquerorsBanner", icon = spells.conquerorsBanner.icon, description = "Conqueror's Banner", printInSettings = true },
+			{ variable = "#covenantAbility", icon = spells.spearOfBastion.icon .. spells.condemn.icon .. spells.ancientAftershock.icon .. spells.conquerorsBanner.icon, description = "Covenant on-use Ability", printInSettings = true},
 			{ variable = "#deadlyCalm", icon = spells.deadlyCalm.icon, description = "Deadly Calm", printInSettings = true },
 			{ variable = "#deepWounds", icon = spells.deepWounds.icon, description = "Deep Wounds", printInSettings = true },
 			{ variable = "#execute", icon = spells.execute.icon, description = "Execute", printInSettings = true },
@@ -407,13 +408,18 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
 
+			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!"},
+			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!"},
+			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!"},
+			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!"},
+
 			{ variable = "$rage", description = "Current Rage", printInSettings = true, color = false },
             { variable = "$resource", description = "Current Rage", printInSettings = false, color = false },
 			{ variable = "$rageMax", description = "Maximum Rage", printInSettings = true, color = false },
 			{ variable = "$resourceMax", description = "Maximum Rage", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Builder Rage from Hardcasting Spells", printInSettings = true, color = false },
-			{ variable = "$casting", description = "Spender Rage from Hardcasting Spells", printInSettings = true, color = false },
-			{ variable = "$passive", description = "Rage from Passive Sources including Regen and Barbed Shot buffs", printInSettings = true, color = false },
+			{ variable = "$casting", description = "Builder Rage from Hardcasting Spells", printInSettings = false, color = false },
+			{ variable = "$casting", description = "Spender Rage from Hardcasting Spells", printInSettings = false, color = false },
+			{ variable = "$passive", description = "Rage from Passive Sources including Ravager and Covenant abilities", printInSettings = true, color = false },
 			{ variable = "$ragePlusCasting", description = "Current + Casting Rage Total", printInSettings = true, color = false },
 			{ variable = "$resourcePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
 			{ variable = "$ragePlusPassive", description = "Current + Passive Rage Total", printInSettings = true, color = false },
@@ -427,10 +433,18 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$rendCount", description = "Number of Rends active on targets", printInSettings = true, color = false },
 			
 			{ variable = "$ravagerTicks", description = "Number of expected ticks remaining on Ravager", printInSettings = true, color = false }, 
-			{ variable = "$ravagerRage", description = "Remaining expecting incoming Rage from Ravager", printInSettings = true, color = false },   
+			{ variable = "$ravagerRage", description = "Rage from Ravager", printInSettings = true, color = false },   
 
-			{ variable = "$ancientAftershockTicks", description = "Number of expected ticks remaining on Ancient Aftershock", printInSettings = true, color = false }, 
-			{ variable = "$ancientAftershockRage", description = "Remaining expecting incoming Rage from Ancient Aftershock", printInSettings = true, color = false },   
+			{ variable = "$ancientAftershockTicks", description = "Number of ticks remaining on Ancient Aftershock", printInSettings = true, color = false }, 
+			{ variable = "$ancientAftershockRage", description = "Rage from Ancient Aftershock", printInSettings = true, color = false },   
+
+			{ variable = "$conquerorsBannerRage", description = "Rage from Conqueror's Banner", printInSettings = true, color = false },
+			{ variable = "$conquerorsBannerTicks", description = "Number of ticks remaining on Conqueror's Banner", printInSettings = true, color = false },
+
+			{ variable = "$covenantRage", description = "Rage from Ancient Aftershock or Conqueror's Banner, as appropriate", printInSettings = true, color = false },
+			{ variable = "$covenantAbilityRage", description = "Rage from Ancient Aftershock or Conqueror's Banner, as appropriate", printInSettings = false, color = false },
+			{ variable = "$covenantTicks", description = "Number of ticks remaining on Ancient Aftershock or Conqueror's Banner, as appropriate", printInSettings = true, color = false },
+			{ variable = "$covenantAbilityTicks", description = "Number of ticks remaining on Ancient Aftershock or Conqueror's Banner, as appropriate", printInSettings = false, color = false },
 
 			{ variable = "$suddenDeathTime", description = "Time remaining on Sudden Death proc", printInSettings = true, color = false },
 
@@ -644,6 +658,22 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				if TRB.Data.snapshotData.ancientAftershock.isActive then
 					valid = true
 				end
+			elseif var == "$conquerorsBannerTicks" then
+				if TRB.Data.snapshotData.conquerorsBanner.isActive then
+					valid = true
+				end
+			elseif var == "$conquerorsBannerRage" then
+				if TRB.Data.snapshotData.conquerorsBanner.isActive then
+					valid = true
+				end
+			elseif var == "$covenantTicks" then
+				if TRB.Data.snapshotData.ancientAftershock.isActive or TRB.Data.snapshotData.conquerorsBanner.isActive then
+					valid = true
+				end
+			elseif var == "$covenantRage" then
+				if TRB.Data.snapshotData.ancientAftershock.isActive or TRB.Data.snapshotData.conquerorsBanner.isActive then
+					valid = true
+				end
 			elseif var == "$suddenDeathTime" then
 				if TRB.Data.snapshotData.suddenDeath.isActive then
 					valid = true
@@ -749,6 +779,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		--$ancientAftershockTicks
 		local ancientAftershockTicks = string.format("%.0f", TRB.Data.snapshotData.ancientAftershock.ticksRemaining)
         
+		--$conquerorsBannerRage
+		local _conquerorsBannerRage = TRB.Data.snapshotData.conquerorsBanner.rage
+		local conquerorsBannerRage = string.format("%.0f", TRB.Data.snapshotData.conquerorsBanner.rage)
+		--$conquerorsBannerTicks
+		local conquerorsBannerTicks = string.format("%.0f", TRB.Data.snapshotData.conquerorsBanner.ticksRemaining)
+        
 		--$suddenDeathTime
 		local _suddenDeathTime = GetSuddenDeathRemainingTime()
 		local suddenDeathTime
@@ -762,7 +798,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		--$casting
 		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, ragePrecision, "floor"))
 		--$passive
-		local _passiveRage = _ravagerRage + _ancientAftershockRage
+		local _passiveRage = _ravagerRage + _ancientAftershockRage + _conquerorsBannerRage
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
@@ -808,6 +844,24 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		end
 
+		--#covenantAbility
+		local covenantAbilityIcon = ""
+		local covenantAbilityTicks = 0
+		local covenantAbilityRage = 0
+
+		if TRB.Data.character.covenantId == 1 then
+			covenantAbilityIcon = TRB.Data.spells.spearOfBastion.icon
+		elseif TRB.Data.character.covenantId == 2 then
+			covenantAbilityIcon = TRB.Data.spells.condemn.icon
+		elseif TRB.Data.character.covenantId == 3 then
+			covenantAbilityIcon = TRB.Data.spells.ancientAftershock.icon
+			covenantAbilityRage = ancientAftershockRage
+			covenantAbilityTicks = ancientAftershockTicks
+		elseif TRB.Data.character.covenantId == 4 then
+			covenantAbilityIcon = TRB.Data.spells.conquerorsBanner.icon
+			covenantAbilityRage = conquerorsBannerRage
+			covenantAbilityTicks = conquerorsBannerTicks
+		end
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveRage
@@ -818,6 +872,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#cleave"] = TRB.Data.spells.cleave.icon
 		lookup["#condemn"] = TRB.Data.spells.condemn.icon
 		lookup["#conquerorsBanner"] = TRB.Data.spells.conquerorsBanner.icon
+		lookup["#covenantAbility"] = covenantAbilityIcon
 		lookup["#deadlyCalm"] = TRB.Data.spells.deadlyCalm.icon
 		lookup["#deepWounds"] = TRB.Data.spells.deadlyCalm.icon
 		lookup["#execute"] = TRB.Data.spells.execute.icon
@@ -841,6 +896,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["$ravagerTicks"] = ravagerTicks
 		lookup["$ancientAftershockRage"] = ancientAftershockRage
 		lookup["$ancientAftershockTicks"] = ancientAftershockTicks
+		lookup["$conquerorsBannerRage"] = conquerorsBannerRage
+		lookup["$conquerorsBannerTicks"] = conquerorsBannerTicks
+		lookup["$covenantAbilityRage"] = covenantAbilityRage
+		lookup["$covenantRage"] = covenantAbilityRage
+		lookup["$covenantAbilityTicks"] = covenantAbilityTicks
+		lookup["$covenantTicks"] = covenantAbilityTicks
 		lookup["$ragePlusCasting"] = ragePlusCasting
 		lookup["$rageTotal"] = rageTotal
 		lookup["$rageMax"] = TRB.Data.character.maxResource
@@ -932,6 +993,21 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 	end
 
+	local function UpdateConquerorsBanner()
+		if TRB.Data.snapshotData.conquerorsBanner.isActive then
+			local currentTime = GetTime()
+			if TRB.Data.snapshotData.conquerorsBanner.endTime == nil or currentTime > TRB.Data.snapshotData.conquerorsBanner.endTime then
+				TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = 0
+				TRB.Data.snapshotData.conquerorsBanner.endTime = nil
+				TRB.Data.snapshotData.conquerorsBanner.rage = 0
+				TRB.Data.snapshotData.conquerorsBanner.isActive = false
+			else
+				TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = math.ceil((TRB.Data.snapshotData.conquerorsBanner.endTime - currentTime) / (TRB.Data.spells.conquerorsBanner.duration / TRB.Data.spells.conquerorsBanner.ticks))
+				TRB.Data.snapshotData.conquerorsBanner.rage = TRB.Data.snapshotData.conquerorsBanner.ticksRemaining * TRB.Data.spells.conquerorsBanner.rage
+			end
+		end
+	end
+
 	local function UpdateSnapshot()
 		TRB.Functions.UpdateSnapshot()
 		local currentTime = GetTime()
@@ -941,6 +1017,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		UpdateSnapshot()
 		UpdateRavager()
 		UpdateAncientAftershock()
+		UpdateConquerorsBanner()
 
 		local currentTime = GetTime()
 		local _
@@ -1370,6 +1447,29 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							end
 							TRB.Data.snapshotData.ancientAftershock.targetsHit = TRB.Data.snapshotData.ancientAftershock.targetsHit + 1
 							TRB.Data.snapshotData.ancientAftershock.hitTime = currentTime
+						end
+					elseif spellId == TRB.Data.spells.conquerorsBanner.id then
+						if type == "SPELL_AURA_APPLIED" then -- Gain Conqueror's Banner
+							TRB.Data.snapshotData.conquerorsBanner.isActive = true
+							TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = TRB.Data.spells.conquerorsBanner.ticks
+							TRB.Data.snapshotData.conquerorsBanner.rage = TRB.Data.snapshotData.conquerorsBanner.ticksRemaining * TRB.Data.spells.conquerorsBanner.rage
+							TRB.Data.snapshotData.conquerorsBanner.endTime = currentTime + TRB.Data.spells.conquerorsBanner.duration
+							TRB.Data.snapshotData.conquerorsBanner.lastTick = currentTime
+						elseif type == "SPELL_AURA_REFRESH" then
+							TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = TRB.Data.spells.conquerorsBanner.ticks + 1
+							TRB.Data.snapshotData.conquerorsBanner.rage = TRB.Data.snapshotData.conquerorsBanner.rage * TRB.Data.spells.conquerorsBanner.rage
+							TRB.Data.snapshotData.conquerorsBanner.endTime = currentTime + TRB.Data.spells.conquerorsBanner.duration + ((TRB.Data.spells.conquerorsBanner.duration / TRB.Data.spells.conquerorsBanner.ticks) - (currentTime - TRB.Data.snapshotData.conquerorsBanner.lastTick))
+							TRB.Data.snapshotData.conquerorsBanner.lastTick = currentTime
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.conquerorsBanner.isActive = false
+							TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = 0
+							TRB.Data.snapshotData.conquerorsBanner.rage = 0
+							TRB.Data.snapshotData.conquerorsBanner.endTime = nil
+							TRB.Data.snapshotData.conquerorsBanner.lastTick = nil
+						elseif type == "SPELL_PERIODIC_ENERGIZE" then
+							TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = TRB.Data.snapshotData.conquerorsBanner.ticksRemaining - 1
+							TRB.Data.snapshotData.conquerorsBanner.rage = TRB.Data.snapshotData.conquerorsBanner.ticksRemaining * TRB.Data.spells.conquerorsBanner.rage
+							TRB.Data.snapshotData.conquerorsBanner.lastTick = currentTime
 						end
 					end
 				end

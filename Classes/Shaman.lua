@@ -226,6 +226,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
 
+			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!"},
+			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!"},
+			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!"},
+			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!"},
+
 			{ variable = "$maelstrom", description = "Current Maelstrom", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Maelstrom", printInSettings = false, color = false },
 			{ variable = "$maelstromMax", description = "Maximum Maelstrom", printInSettings = true, color = false },

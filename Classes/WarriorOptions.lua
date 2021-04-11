@@ -69,7 +69,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				fontSize = 13
 			},
 			right = {
-				text = "{$casting}[#casting$casting+]$rage",
+				text = "{$ravagerRage}[#ravager$ravagerRage+]{$covenantRage}[#covenantAbility$covenantRage+]{$casting}[#casting$casting+]$rage",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
