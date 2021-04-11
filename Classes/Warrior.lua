@@ -278,7 +278,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				icon = "",
 				duration = 12,
 				ticks = 4,
-				rage = 4
+				rage = 4,
+				idTick = 326062
 			}
 		}
 
@@ -339,22 +340,21 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			duration = 0,
 			enabled = false
 		}
-		TRB.Data.snapshotData.conquerorsBanner = {
+		specCache.arms.snapshotData.conquerorsBanner = {
 			isActive = false,
 			ticksRemaining = 0,
 			rage = 0,
 			endTime = nil,
 			lastTick = nil
 		}
-		TRB.Data.snapshotData.ancientAftershock = {
+		specCache.arms.snapshotData.ancientAftershock = {
 			isActive = false,
 			ticksRemaining = 0,
 			rage = 0,
 			endTime = nil,
 			lastTick = nil,
 			targetsHit = 0,
-			hitTime = nil,
-			hasStruckTargets = false
+			hitTime = nil
 		}
 
         specCache.arms.barTextVariables = {
@@ -428,6 +428,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			
 			{ variable = "$ravagerTicks", description = "Number of expected ticks remaining on Ravager", printInSettings = true, color = false }, 
 			{ variable = "$ravagerRage", description = "Remaining expecting incoming Rage from Ravager", printInSettings = true, color = false },   
+
+			{ variable = "$ancientAftershockTicks", description = "Number of expected ticks remaining on Ancient Aftershock", printInSettings = true, color = false }, 
+			{ variable = "$ancientAftershockRage", description = "Remaining expecting incoming Rage from Ancient Aftershock", printInSettings = true, color = false },   
 
 			{ variable = "$suddenDeathTime", description = "Time remaining on Sudden Death proc", printInSettings = true, color = false },
 
@@ -633,6 +636,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				if TRB.Data.snapshotData.ravager.isActive then
 					valid = true
 				end
+			elseif var == "$ancientAftershockTicks" then
+				if TRB.Data.snapshotData.ancientAftershock.isActive then
+					valid = true
+				end
+			elseif var == "$ancientAftershockRage" then
+				if TRB.Data.snapshotData.ancientAftershock.isActive then
+					valid = true
+				end
 			elseif var == "$suddenDeathTime" then
 				if TRB.Data.snapshotData.suddenDeath.isActive then
 					valid = true
@@ -659,7 +670,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		elseif var == "$resourceMax" or var == "$rageMax" then
 			valid = true
 		elseif var == "$resourceTotal" or var == "$rageTotal" then
-			if normalizedRage > 0 or TRB.Data.snapshotData.ravager.rage > 0 or
+			if normalizedRage > 0 or TRB.Data.snapshotData.ravager.rage > 0 or TRB.Data.snapshotData.ancientAftershock.rage > 0 or
 				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
 				then
 				valid = true
@@ -674,7 +685,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				valid = true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
-			if normalizedRage > 0 or TRB.Data.snapshotData.ravager.rage > 0 then
+			if normalizedRage > 0 or TRB.Data.snapshotData.ravager.rage > 0 or TRB.Data.snapshotData.ancientAftershock.rage > 0 then
 				valid = true
 			end
 		elseif var == "$casting" then
@@ -682,7 +693,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				valid = true
 			end
 		elseif var == "$passive" then
-			if TRB.Data.snapshotData.ravager.rage > 0 then
+			if TRB.Data.snapshotData.ravager.rage > 0 or TRB.Data.snapshotData.ancientAftershock.rage > 0 then
 				valid = true
 			end
 		end
@@ -726,9 +737,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			castingRageColor = TRB.Data.settings.warrior.arms.colors.text.spending
 		end
 
+		--$ravagerRage
 		local _ravagerRage = TRB.Data.snapshotData.ravager.rage
 		local ravagerRage = string.format("%.0f", TRB.Data.snapshotData.ravager.rage)
+		--$ravagerTicks
 		local ravagerTicks = string.format("%.0f", TRB.Data.snapshotData.ravager.ticksRemaining)
+		
+		--$ancientAftershockRage
+		local _ancientAftershockRage = TRB.Data.snapshotData.ancientAftershock.rage
+		local ancientAftershockRage = string.format("%.0f", TRB.Data.snapshotData.ancientAftershock.rage)
+		--$ancientAftershockTicks
+		local ancientAftershockTicks = string.format("%.0f", TRB.Data.snapshotData.ancientAftershock.ticksRemaining)
         
 		--$suddenDeathTime
 		local _suddenDeathTime = GetSuddenDeathRemainingTime()
@@ -743,7 +762,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		--$casting
 		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, ragePrecision, "floor"))
 		--$passive
-		local _passiveRage = _ravagerRage
+		local _passiveRage = _ravagerRage + _ancientAftershockRage
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
@@ -820,6 +839,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["$suddenDeathTime"] = suddenDeathTime
 		lookup["$ravagerRage"] = ravagerRage
 		lookup["$ravagerTicks"] = ravagerTicks
+		lookup["$ancientAftershockRage"] = ancientAftershockRage
+		lookup["$ancientAftershockTicks"] = ancientAftershockTicks
 		lookup["$ragePlusCasting"] = ragePlusCasting
 		lookup["$rageTotal"] = rageTotal
 		lookup["$rageMax"] = TRB.Data.character.maxResource
@@ -892,6 +913,25 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 	end
 
+	local function UpdateAncientAftershock()
+		if TRB.Data.snapshotData.ancientAftershock.isActive then
+			local currentTime = GetTime()
+			if TRB.Data.snapshotData.ancientAftershock.endTime == nil or currentTime > TRB.Data.snapshotData.ancientAftershock.endTime then
+				TRB.Data.snapshotData.ancientAftershock.ticksRemaining = 0
+				TRB.Data.snapshotData.ancientAftershock.endTime = nil
+				TRB.Data.snapshotData.ancientAftershock.rage = 0
+				TRB.Data.snapshotData.ancientAftershock.isActive = false
+				TRB.Data.snapshotData.ancientAftershock.hitTime = nil
+				TRB.Data.snapshotData.ancientAftershock.targetsHit = 0
+				TRB.Data.snapshotData.ancientAftershock.lastTick = nil
+			else
+				local ticksRemaining = math.ceil((TRB.Data.snapshotData.ancientAftershock.endTime - currentTime) / (TRB.Data.spells.ancientAftershock.duration / TRB.Data.spells.ancientAftershock.ticks))
+				TRB.Data.snapshotData.ancientAftershock.ticksRemaining = ticksRemaining
+				TRB.Data.snapshotData.ancientAftershock.rage = TRB.Data.snapshotData.ancientAftershock.ticksRemaining * TRB.Data.spells.ancientAftershock.rage * TRB.Data.snapshotData.ancientAftershock.targetsHit
+			end
+		end
+	end
+
 	local function UpdateSnapshot()
 		TRB.Functions.UpdateSnapshot()
 		local currentTime = GetTime()
@@ -900,6 +940,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local function UpdateSnapshot_Arms()
 		UpdateSnapshot()
 		UpdateRavager()
+		UpdateAncientAftershock()
 
 		local currentTime = GetTime()
 		local _
@@ -1004,7 +1045,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					local passiveValue = 0
 					if TRB.Data.settings.warrior.arms.bar.showPassive then
 						if TRB.Data.snapshotData.ravager.rage > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshotData.ravager.rage
+							passiveValue = passiveValue + TRB.Data.snapshotData.ravager.rage 
+						end
+
+						if TRB.Data.snapshotData.ancientAftershock.rage > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.ancientAftershock.rage 
 						end
 					end
 
@@ -1298,6 +1343,33 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							TRB.Data.snapshotData.targetData.targets[destGUID].deepWoundsRemaining = 0
 							TRB.Data.snapshotData.targetData.deepWounds = TRB.Data.snapshotData.targetData.deepWounds - 1
 						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						end
+					elseif spellId == TRB.Data.spells.ancientAftershock.id then
+						if type == "SPELL_CAST_SUCCESS" then -- This is incase it doesn't hit any targets
+							if TRB.Data.snapshotData.ancientAftershock.hitTime == nil then --This is a new cast without target data. Use the initial number hit to seed predictions
+								TRB.Data.snapshotData.ancientAftershock.targetsHit = 0
+							end
+							TRB.Data.snapshotData.ancientAftershock.hitTime = currentTime
+							TRB.Data.snapshotData.ancientAftershock.endTime = currentTime + TRB.Data.spells.ancientAftershock.duration
+							TRB.Data.snapshotData.ancientAftershock.ticksRemaining = TRB.Data.spells.ancientAftershock.ticks
+							TRB.Data.snapshotData.ancientAftershock.isActive = true
+						elseif type == "SPELL_AURA_APPLIED" then
+							if TRB.Data.snapshotData.ancientAftershock.hitTime == nil then --This is a new cast without target data. Use the initial number hit to seed predictions
+								TRB.Data.snapshotData.ancientAftershock.targetsHit = 1
+							else
+								TRB.Data.snapshotData.ancientAftershock.targetsHit = TRB.Data.snapshotData.ancientAftershock.targetsHit + 1
+							end
+							TRB.Data.snapshotData.ancientAftershock.hitTime = currentTime
+							TRB.Data.snapshotData.ancientAftershock.endTime = currentTime + TRB.Data.spells.ancientAftershock.duration
+							TRB.Data.snapshotData.ancientAftershock.isActive = true
+						end
+					elseif spellId == TRB.Data.spells.ancientAftershock.idTick then
+						if type == "SPELL_DAMAGE" and TRB.Data.snapshotData.ancientAftershock.hitTime ~= nil then
+							if currentTime > (TRB.Data.snapshotData.ancientAftershock.hitTime + 0.1) then --This is a new tick
+								TRB.Data.snapshotData.ancientAftershock.targetsHit = 0
+							end
+							TRB.Data.snapshotData.ancientAftershock.targetsHit = TRB.Data.snapshotData.ancientAftershock.targetsHit + 1
+							TRB.Data.snapshotData.ancientAftershock.hitTime = currentTime
 						end
 					end
 				end
