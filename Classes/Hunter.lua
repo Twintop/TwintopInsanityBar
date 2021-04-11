@@ -301,9 +301,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		}
 
 		specCache.beastMastery.snapshotData.frenzy = {
-			startTime = nil,
+			endTime = nil,
 			duration = 0,
-			stacks = 0
+			stacks = 0,
+			spellId = 0
 		}
 
 		specCache.beastMastery.barTextVariables = {
@@ -1018,6 +1019,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
 
+			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!"},
+			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!"},
+			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!"},
+			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!"},
+
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
 			{ variable = "$focusMax", description = "Maximum Focus", printInSettings = true, color = false },
@@ -1089,6 +1095,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
+
+			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!"},
+			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!"},
+			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!"},
+			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!"},
 
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
@@ -1162,6 +1173,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
 
+			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!"},
+			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!"},
+			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!"},
+			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!"},
+
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
 			{ variable = "$focusMax", description = "Maximum Focus", printInSettings = true, color = false },
@@ -1202,8 +1218,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Data.character.className = "hunter"
 		TRB.Data.character.petGuid = UnitGUID("pet")
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Focus)
-		TRB.Data.character.covenantId = C_Covenants.GetActiveCovenantID()
-
 
 		if GetSpecialization() == 1 then		
 			TRB.Data.character.specName = "beastMastery"
@@ -3083,7 +3097,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							_, _, TRB.Data.snapshotData.frenzy.stacks, _, TRB.Data.snapshotData.frenzy.duration, TRB.Data.snapshotData.frenzy.endTime, _, _, _, TRB.Data.snapshotData.frenzy.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.frenzy.id, "pet")
 							TRB.Data.spells.frenzy.isActive = true
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshotData.frenzy.startTime = nil
+							TRB.Data.snapshotData.frenzy.endTime = nil
 							TRB.Data.snapshotData.frenzy.duration = 0
 							TRB.Data.snapshotData.frenzy.stacks = 0
 							TRB.Data.spells.frenzy.isActive = false
