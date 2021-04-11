@@ -285,22 +285,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					enabled = true, -- 1
 				},
 				arcaneShot = {
-					enabled = false, -- 2 --Also Chimera Shot @ 13
+					enabled = true, -- 2 --Also Chimera Shot @ 13
 				},
 				serpentSting = {
 					enabled = false, -- 3
 				},
 				barrage = {
-					enabled = false, -- 4
+					enabled = true, -- 4
 				},
 				killShot = {
-					enabled = false, -- 5
+					enabled = true, -- 5
 				},
 				multiShot = {
-					enabled = false, -- 6
+					enabled = true, -- 6
 				},
 				aMurderOfCrows = {
-					enabled = false, -- 7
+					enabled = true, -- 7
 				},
 				explosiveShot = {
 					enabled = false, -- 8
