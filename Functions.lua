@@ -981,7 +981,7 @@ local function RefreshLookupDataBase(settings)
 	lookup["$crit"] = critPercent
 	lookup["$mastery"] = masteryPercent
 	lookup["$isKyrian"] = tostring(TRB.Functions.IsValidVariableBase("$isKyrian"))
-	lookup["$isVentyr"] = tostring(TRB.Functions.IsValidVariableBase("$isVentyr"))
+	lookup["$isVenthyr"] = tostring(TRB.Functions.IsValidVariableBase("$isVenthyr"))
 	lookup["$isNightFae"] = tostring(TRB.Functions.IsValidVariableBase("$isNightFae"))
 	lookup["$isNecrolord"] = tostring(TRB.Functions.IsValidVariableBase("$isNecrolord"))
 	lookup["$gcd"] = gcd
