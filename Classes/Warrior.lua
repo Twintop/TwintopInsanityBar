@@ -29,11 +29,24 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			ttd = 0,
 			resource = {
 				resource = 0,
-				casting = 0,
 				passive = 0,
-				regen = 0
+				ravager = 0,
+				ancientAftershock = 0,
+				conquerorsBanner = 0
 			},
 			dots = {
+			},
+			ravager = {
+				rage = 0,
+				ticks = 0
+			},
+			ancientAftershock = {
+				rage = 0,
+				ticks = 0
+			},
+			conquerorsBanner = {
+				rage = 0,
+				ticks = 0
 			}
 		}
 
@@ -864,7 +877,24 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 		----------------------------
 
+		Global_TwintopResourceBar.resource.resource = normalizedRage
 		Global_TwintopResourceBar.resource.passive = _passiveRage
+		Global_TwintopResourceBar.resource.ravager = _ravagerRage
+		Global_TwintopResourceBar.resource.ancientAftershock = _ancientAftershockRage
+		Global_TwintopResourceBar.resource.conquerorsBanner = _conquerorsBannerRage
+		Global_TwintopResourceBar.ravager = {
+			rage = _ravagerRage,
+			ticks = TRB.Data.snapshotData.ravager.ticksRemaining or 0
+		}
+		Global_TwintopResourceBar.conquerorsBanner = {
+			rage = _conquerorsBannerRage,
+			ticks = TRB.Data.snapshotData.conquerorsBanner.ticksRemaining or 0
+		}
+		Global_TwintopResourceBar.ancientAftershock = {
+			rage = _ancientAftershockRage,
+			ticks = TRB.Data.snapshotData.ancientAftershock.ticksRemaining or 0
+			targetsHit = TRB.Data.snapshotData.ancientAftershock.targetsHit or 0
+		}
 
 		lookup = TRB.Data.lookup or {}
 		lookup["#ancientAftershock"] = TRB.Data.spells.ancientAftershock.icon
