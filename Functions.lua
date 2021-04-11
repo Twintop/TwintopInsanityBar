@@ -811,6 +811,11 @@ local function AddToBarTextCache(input)
 				z, z1 = string.find(input, barTextVariables.pipe[x].variable, c-1)
 				if z ~= nil and z == c then
 					match = true
+
+					if p == 0 then --Prevent weird newline issues
+						returnText = " "
+					end
+
 					if p ~= c then
 						returnText = returnText .. string.sub(input, p, c-1)
 					end
@@ -877,8 +882,8 @@ TRB.Functions.GetFromBarTextCache = GetFromBarTextCache
 local function GetReturnText(inputText)
     local lookup = TRB.Data.lookup
     lookup["color"] = inputText.color
-    inputText.text = TRB.Functions.RemoveInvalidVariablesFromBarText(inputText.text)
-    
+	inputText.text = TRB.Functions.RemoveInvalidVariablesFromBarText(inputText.text)
+
     local cache = TRB.Functions.GetFromBarTextCache(inputText.text)
     local mapping = {}
     local cachedTextVariableLength = TRB.Functions.TableLength(cache.variables)
