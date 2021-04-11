@@ -422,10 +422,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!"},
-			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!"},
-			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!"},
-			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!"},
+			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$rage", description = "Current Rage", printInSettings = true, color = false },
             { variable = "$resource", description = "Current Rage", printInSettings = false, color = false },

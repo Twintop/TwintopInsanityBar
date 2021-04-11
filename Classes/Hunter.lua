@@ -1019,10 +1019,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!"},
-			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!"},
-			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!"},
-			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!"},
+			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
@@ -1096,10 +1096,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!"},
-			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!"},
-			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!"},
-			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!"},
+			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
@@ -1173,10 +1173,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!"},
-			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!"},
-			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!"},
-			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!"},
+			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
