@@ -638,19 +638,45 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		yCoord = yCoord - 40
 
-		controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_CB1_1", parent, "ChatConfigCheckButtonTemplate")
+		--NOTE: the order of these checkboxes is reversed!
+
+		controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.lockPosition
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
-		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved."
+		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
 		f:SetChecked(TRB.Data.settings.warrior.arms.bar.dragAndDrop)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.warrior.arms.bar.dragAndDrop = self:GetChecked()
+			barContainerFrame:SetMovable((not TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.warrior.arms.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.warrior.arms.bar.dragAndDrop)
+		end)
 
-			if GetSpecialization() == 1 then
-				barContainerFrame:SetMovable(TRB.Data.settings.warrior.arms.bar.dragAndDrop)
-				barContainerFrame:EnableMouse(TRB.Data.settings.warrior.arms.bar.dragAndDrop)
+		if TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay then
+			controls.checkBoxes.lockPosition:Disable()
+			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
+		end
+
+		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.pinToPRD
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
+		f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
+		f:SetChecked(TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay = self:GetChecked()
+			
+			if TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay then				
+				controls.checkBoxes.lockPosition:Disable()
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)				
+			else
+				controls.checkBoxes.lockPosition:Enable()
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
 			end
+
+			barContainerFrame:SetMovable((not TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.warrior.arms.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.warrior.arms.bar.dragAndDrop)
+			TRB.Functions.RepositionBar(TRB.Data.settings.warrior.arms)
 		end)
 
 

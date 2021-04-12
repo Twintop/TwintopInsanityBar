@@ -572,9 +572,7 @@ local function ConstructResourceBar(settings)
             edgeSize = 1,
             insets = {0, 0, 0, 0}
         })
-        barContainerFrame:ClearAllPoints()
-        barContainerFrame:SetPoint("CENTER", UIParent)
-        barContainerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+        TRB.Functions.RepositionBar(settings)
         barContainerFrame:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))
         barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
         barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
@@ -670,7 +668,6 @@ local function ConstructResourceBar(settings)
         passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		passiveFrame:SetFrameLevel(80)
 
-
 		TRB.Functions.RedrawThresholdLines(settings)
 
 		SetBarMinMaxValues(settings)
@@ -713,6 +710,26 @@ local function ConstructResourceBar(settings)
     end
 end
 TRB.Functions.ConstructResourceBar = ConstructResourceBar
+
+local function RepositionBarForPRD(settings)
+	if settings.bar.pinToPersonalResourceDisplay then
+		TRB.Frames.barContainerFrame:ClearAllPoints()
+		TRB.Frames.barContainerFrame:SetPoint("CENTER", C_NamePlate.GetNamePlateForUnit("player"), "CENTER", settings.bar.xPos, settings.bar.yPos)
+	end
+end
+TRB.Functions.RepositionBarForPRD = RepositionBarForPRD
+
+local function RepositionBar(settings)
+	if settings.bar.pinToPersonalResourceDisplay then
+		TRB.Functions.RepositionBarForPRD(settings)
+	else
+		TRB.Frames.barContainerFrame:ClearAllPoints()
+		TRB.Frames.barContainerFrame:SetPoint("CENTER", UIParent)
+		TRB.Frames.barContainerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+	end
+end
+TRB.Functions.RepositionBar = RepositionBar
+
 
 local function TriggerResourceBarUpdates()
 	--To be implemented in each class/spec module

@@ -136,6 +136,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				height=34,
 				xPos=0,
 				yPos=-200,
+				pinToPersonalResourceDisplay=true,
 				border=4,
 				thresholdOverlapBorder=true,
 				dragAndDrop=false,
@@ -645,18 +646,46 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = yCoord - 40
 
-		controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TIBCB1_1", parent, "ChatConfigCheckButtonTemplate")
+		--NOTE: the order of these checkboxes is reversed!
+
+		controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.lockPosition
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
-		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved."
+		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
 		f:SetChecked(TRB.Data.settings.priest.shadow.bar.dragAndDrop)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.priest.shadow.bar.dragAndDrop = self:GetChecked()
-			barContainerFrame:SetMovable(TRB.Data.settings.priest.shadow.bar.dragAndDrop)
-			barContainerFrame:EnableMouse(TRB.Data.settings.priest.shadow.bar.dragAndDrop)
+			barContainerFrame:SetMovable((not TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.priest.shadow.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.priest.shadow.bar.dragAndDrop)
 		end)
 
+		if TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay then
+			controls.checkBoxes.lockPosition:Disable()
+			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
+		end
+
+		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.pinToPRD
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
+		f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
+		f:SetChecked(TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay = self:GetChecked()
+			
+			if TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay then				
+				controls.checkBoxes.lockPosition:Disable()
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)				
+			else
+				controls.checkBoxes.lockPosition:Enable()
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
+			end
+
+			barContainerFrame:SetMovable((not TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.priest.shadow.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.priest.shadow.bar.dragAndDrop)
+			TRB.Functions.RepositionBar(TRB.Data.settings.priest.shadow)
+		end)
 
 
 		yCoord = yCoord - 30

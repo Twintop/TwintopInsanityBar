@@ -681,6 +681,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function UpdateResourceBar()
 		local refreshText = false
 		UpdateSnapshot()
+		TRB.Functions.RepositionBarForPRD(TRB.Data.settings.shaman.elemental)
 
 		if TRB.Data.snapshotData.isTracking then
 			TRB.Functions.HideResourceBar()

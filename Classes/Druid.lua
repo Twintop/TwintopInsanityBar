@@ -1024,6 +1024,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local refreshText = false
 		UpdateSnapshot()
 
+		TRB.Functions.RepositionBarForPRD(TRB.Data.settings.druid.balance)
+
 		if TRB.Data.snapshotData.isTracking then
 			TRB.Functions.HideResourceBar()
 

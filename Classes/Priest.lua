@@ -1986,6 +1986,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function UpdateResourceBar()
 		local refreshText = false
 		UpdateSnapshot()
+		TRB.Functions.RepositionBarForPRD(TRB.Data.settings.priest.shadow)
 
 		if TRB.Data.snapshotData.isTracking then
 			TRB.Functions.HideResourceBar()

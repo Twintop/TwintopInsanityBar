@@ -1143,6 +1143,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		if specId == 1 then
 			UpdateSnapshot_Arms()
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.warrior.arms)
+
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
