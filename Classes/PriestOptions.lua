@@ -350,57 +350,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		
-		StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_Export"] = {
-			text = "Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest!",
-			button1 = "Close",			
-			hasEditBox = 1,
-			OnShow = function(self)
-				local json = TRB.Functions.GetJsonLibrary()
-				local base64 = TRB.Functions.GetBase64Library()
-
-				local configuration = {
-					priest = {
-					}
-				}
-
-				configuration.priest.shadow =  TRB.Data.settings.priest.shadow
-
-				local encoded = json.encode(configuration)
-				local output = base64.encode(encoded)
-
-				self.editBox:SetText(output)
-			end,
-			timeout = 0,
-			whileDead = true,
-			hideOnEscape = true,
-			preferredIndex = 3
-		}
-		
-		StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_Import"] = {
-			text = "Paste in a Twintop's Resource Bar configuration string to have that configuration be imported. Your UI will be reloaded automatically.",
-			button1 = "Import",	
-			button2 = "Cancel",		
-			hasEditBox = 1,
-			OnAccept = function(self)
-				local json = TRB.Functions.GetJsonLibrary()
-				local base64 = TRB.Functions.GetBase64Library()
-
-				local input = self.editBox:GetText()
-
-				local decoded = base64.decode(input)
-				local configuration = json.decode(decoded)
-				
-				local existingSettings = TRB.Data.settings
-				local mergedSettings = TRB.Functions.MergeSettings(existingSettings, configuration)
-				TRB.Data.settings = mergedSettings
-				ReloadUI()
-			end,
-			timeout = 0,
-			whileDead = true,
-			hideOnEscape = true,
-			preferredIndex = 3
-		}
 
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
@@ -513,63 +462,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPushedTexture(f.ptex)
 		f:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Priest_Shadow_ResetBarTextNarrowAdvanced")
-		end)
-
-		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Import and Export Settings Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Priest_Shadow_ExportButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(300)
-		f:SetHeight(30)
-		f:SetText("Export current configuration for Shadow")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_Priest_Shadow_Export")
-		end)
-
-		yCoord = yCoord - 40
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Priest_Shadow_ImportButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(300)
-		f:SetHeight(30)
-		f:SetText("Import configuration")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_Priest_Shadow_Import")
 		end)
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
