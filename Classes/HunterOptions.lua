@@ -285,22 +285,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					enabled = true, -- 1
 				},
 				arcaneShot = {
-					enabled = false, -- 2 --Also Chimera Shot @ 13
+					enabled = true, -- 2 --Also Chimera Shot @ 13
 				},
 				serpentSting = {
 					enabled = false, -- 3
 				},
 				barrage = {
-					enabled = false, -- 4
+					enabled = true, -- 4
 				},
 				killShot = {
-					enabled = false, -- 5
+					enabled = true, -- 5
 				},
 				multiShot = {
-					enabled = false, -- 6
+					enabled = true, -- 6
 				},
 				aMurderOfCrows = {
-					enabled = false, -- 7
+					enabled = true, -- 7
 				},
 				explosiveShot = {
 					enabled = false, -- 8
@@ -1077,20 +1077,47 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 40
 
-		controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_1", parent, "ChatConfigCheckButtonTemplate")
+		--NOTE: the order of these checkboxes is reversed!
+
+		controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.lockPosition
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
-		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved."
+		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
 		f:SetChecked(TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop = self:GetChecked()
-
-			if GetSpecialization() == 1 then
-				barContainerFrame:SetMovable(TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop)
-				barContainerFrame:EnableMouse(TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop)
-			end
+			barContainerFrame:SetMovable((not TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop)
 		end)
+
+		if TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay then
+			controls.checkBoxes.lockPosition:Disable()
+			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
+		end
+
+		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.pinToPRD
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
+		f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay = self:GetChecked()
+			
+			if TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay then				
+				controls.checkBoxes.lockPosition:Disable()
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)				
+			else
+				controls.checkBoxes.lockPosition:Enable()
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
+			end
+
+			barContainerFrame:SetMovable((not TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop)
+			TRB.Functions.RepositionBar(TRB.Data.settings.hunter.beastMastery)
+		end)
+
 
 
 
@@ -3672,19 +3699,45 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 40
 
-		controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB1_1", parent, "ChatConfigCheckButtonTemplate")
+		--NOTE: the order of these checkboxes is reversed!
+
+		controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.lockPosition
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
-		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved."
+		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
 		f:SetChecked(TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop = self:GetChecked()
+			barContainerFrame:SetMovable((not TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
+		end)
 
-			if GetSpecialization() == 2 then
-				barContainerFrame:SetMovable(TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
-				barContainerFrame:EnableMouse(TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
+		if TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay then
+			controls.checkBoxes.lockPosition:Disable()
+			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
+		end
+
+		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.pinToPRD
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
+		f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay = self:GetChecked()
+			
+			if TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay then				
+				controls.checkBoxes.lockPosition:Disable()
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)				
+			else
+				controls.checkBoxes.lockPosition:Enable()
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
 			end
+
+			barContainerFrame:SetMovable((not TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
+			TRB.Functions.RepositionBar(TRB.Data.settings.hunter.marksmanship)
 		end)
 
 
@@ -6703,19 +6756,45 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 40
 
-		controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB1_1", parent, "ChatConfigCheckButtonTemplate")
+		--NOTE: the order of these checkboxes is reversed!
+
+		controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.lockPosition
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
-		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved."
+		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
 		f:SetChecked(TRB.Data.settings.hunter.survival.bar.dragAndDrop)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.survival.bar.dragAndDrop = self:GetChecked()
+			barContainerFrame:SetMovable((not TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.survival.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.survival.bar.dragAndDrop)
+		end)
 
-			if GetSpecialization() == 3 then
-				barContainerFrame:SetMovable(TRB.Data.settings.hunter.survival.bar.dragAndDrop)
-				barContainerFrame:EnableMouse(TRB.Data.settings.hunter.survival.bar.dragAndDrop)
+		if TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay then
+			controls.checkBoxes.lockPosition:Disable()
+			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
+		end
+
+		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.pinToPRD
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
+		f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
+		f:SetChecked(TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay = self:GetChecked()
+			
+			if TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay then				
+				controls.checkBoxes.lockPosition:Disable()
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)				
+			else
+				controls.checkBoxes.lockPosition:Enable()
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
 			end
+
+			barContainerFrame:SetMovable((not TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.survival.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.survival.bar.dragAndDrop)
+			TRB.Functions.RepositionBar(TRB.Data.settings.hunter.survival)
 		end)
 
 

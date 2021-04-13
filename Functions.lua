@@ -572,9 +572,7 @@ local function ConstructResourceBar(settings)
             edgeSize = 1,
             insets = {0, 0, 0, 0}
         })
-        barContainerFrame:ClearAllPoints()
-        barContainerFrame:SetPoint("CENTER", UIParent)
-        barContainerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+        TRB.Functions.RepositionBar(settings)
         barContainerFrame:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))
         barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
         barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
@@ -670,7 +668,6 @@ local function ConstructResourceBar(settings)
         passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		passiveFrame:SetFrameLevel(80)
 
-
 		TRB.Functions.RedrawThresholdLines(settings)
 
 		SetBarMinMaxValues(settings)
@@ -713,6 +710,26 @@ local function ConstructResourceBar(settings)
     end
 end
 TRB.Functions.ConstructResourceBar = ConstructResourceBar
+
+local function RepositionBarForPRD(settings)
+	if settings.bar.pinToPersonalResourceDisplay then
+		TRB.Frames.barContainerFrame:ClearAllPoints()
+		TRB.Frames.barContainerFrame:SetPoint("CENTER", C_NamePlate.GetNamePlateForUnit("player"), "CENTER", settings.bar.xPos, settings.bar.yPos)
+	end
+end
+TRB.Functions.RepositionBarForPRD = RepositionBarForPRD
+
+local function RepositionBar(settings)
+	if settings.bar.pinToPersonalResourceDisplay then
+		TRB.Functions.RepositionBarForPRD(settings)
+	else
+		TRB.Frames.barContainerFrame:ClearAllPoints()
+		TRB.Frames.barContainerFrame:SetPoint("CENTER", UIParent)
+		TRB.Frames.barContainerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+	end
+end
+TRB.Functions.RepositionBar = RepositionBar
+
 
 local function TriggerResourceBarUpdates()
 	--To be implemented in each class/spec module
@@ -811,6 +828,11 @@ local function AddToBarTextCache(input)
 				z, z1 = string.find(input, barTextVariables.pipe[x].variable, c-1)
 				if z ~= nil and z == c then
 					match = true
+
+					if p == 0 then --Prevent weird newline issues
+						returnText = " "
+					end
+
 					if p ~= c then
 						returnText = returnText .. string.sub(input, p, c-1)
 					end
@@ -877,8 +899,8 @@ TRB.Functions.GetFromBarTextCache = GetFromBarTextCache
 local function GetReturnText(inputText)
     local lookup = TRB.Data.lookup
     lookup["color"] = inputText.color
-    inputText.text = TRB.Functions.RemoveInvalidVariablesFromBarText(inputText.text)
-    
+	inputText.text = TRB.Functions.RemoveInvalidVariablesFromBarText(inputText.text)
+
     local cache = TRB.Functions.GetFromBarTextCache(inputText.text)
     local mapping = {}
     local cachedTextVariableLength = TRB.Functions.TableLength(cache.variables)
@@ -975,6 +997,10 @@ local function RefreshLookupDataBase(settings)
 	lookup["$haste"] = hastePercent
 	lookup["$crit"] = critPercent
 	lookup["$mastery"] = masteryPercent
+	lookup["$isKyrian"] = tostring(TRB.Functions.IsValidVariableBase("$isKyrian"))
+	lookup["$isVenthyr"] = tostring(TRB.Functions.IsValidVariableBase("$isVenthyr"))
+	lookup["$isNightFae"] = tostring(TRB.Functions.IsValidVariableBase("$isNightFae"))
+	lookup["$isNecrolord"] = tostring(TRB.Functions.IsValidVariableBase("$isNecrolord"))
 	lookup["$gcd"] = gcd
 	lookup["$ttd"] = ttd
 	lookup["$ttdSeconds"] = ttdTotalSeconds
@@ -1045,6 +1071,22 @@ local function IsValidVariableBase(var)
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
 			valid = true
 		end
+	elseif var == "$isKyrian" then
+		if TRB.Data.character.covenantId == 1 then
+			valid = true
+		end
+	elseif var == "$isVentyr" then
+		if TRB.Data.character.covenantId == 2 then
+			valid = true
+		end
+	elseif var == "$isNightFae" then
+		if TRB.Data.character.covenantId == 3 then
+			valid = true
+		end
+	elseif var == "$isNecrolord" then
+		if TRB.Data.character.covenantId == 4 then
+			valid = true
+		end
 	end
 
 	return valid
@@ -1109,14 +1151,14 @@ local function RemoveInvalidVariablesFromBarText(input)
                     end
                 else
                     returnText = returnText .. string.sub(input, p)
-                    p = string.len(input)
+                    p = string.len(input) + 1
                 end
             else
+				returnText = returnText .. string.sub(input, p)
                 if b ~= nil then
                     p = b + 1
                 else
-                    returnText = returnText .. string.sub(input, p)
-                    p = string.len(input)
+					p = string.len(input) + 1
                 end
             end
         else
@@ -1228,6 +1270,7 @@ TRB.Functions.FindAuraById = FindAuraById
 local function CheckCharacter()
 	TRB.Data.character.guid = UnitGUID("player")
     TRB.Data.character.specGroup = GetActiveSpecGroup()
+	TRB.Data.character.covenantId = C_Covenants.GetActiveCovenantID()
 	TRB.Functions.FillSpellData()
 end
 TRB.Functions.CheckCharacter = CheckCharacter

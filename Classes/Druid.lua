@@ -353,6 +353,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
 
+			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!", printInSettings = true, color = false },
+
 			{ variable = "$moonkinForm", description = "Currently in Moonkin Form. Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$eclipse", description = "Currently in any kind of Eclipse. Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$eclipseTime", description = "Remaining duration of Eclipse.", printInSettings = true, color = false },
@@ -1018,6 +1023,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local currentTime = GetTime()
 		local refreshText = false
 		UpdateSnapshot()
+
+		TRB.Functions.RepositionBarForPRD(TRB.Data.settings.druid.balance)
 
 		if TRB.Data.snapshotData.isTracking then
 			TRB.Functions.HideResourceBar()

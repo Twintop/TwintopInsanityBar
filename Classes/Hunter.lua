@@ -301,9 +301,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		}
 
 		specCache.beastMastery.snapshotData.frenzy = {
-			startTime = nil,
+			endTime = nil,
 			duration = 0,
-			stacks = 0
+			stacks = 0,
+			spellId = 0
 		}
 
 		specCache.beastMastery.barTextVariables = {
@@ -992,7 +993,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.beastMastery.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the focus generating spell you are currently hardcasting", printInSettings = true },
+			{ variable = "#casting", icon = "", description = "The icon of the Focus generating spell you are currently hardcasting", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#aMurderOfCrows", icon = spells.aMurderOfCrows.icon, description = "A Murder of Crows", printInSettings = true },
@@ -1017,6 +1018,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
+
+			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
@@ -1059,7 +1065,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.marksmanship.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the focus generating spell you are currently hardcasting", printInSettings = true },
+			{ variable = "#casting", icon = "", description = "The icon of the Focus generating spell you are currently hardcasting", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#aMurderOfCrows", icon = spells.aMurderOfCrows.icon, description = "A Murder of Crows", printInSettings = true },
@@ -1089,6 +1095,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
+
+			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
@@ -1130,7 +1141,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.survival.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the focus generating spell you are currently hardcasting", printInSettings = true },
+			{ variable = "#casting", icon = "", description = "The icon of the Focus generating spell you are currently hardcasting", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#aMurderOfCrows", icon = spells.aMurderOfCrows.icon, description = "A Murder of Crows", printInSettings = true },
@@ -1161,6 +1172,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
+
+			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
@@ -1202,8 +1218,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Data.character.className = "hunter"
 		TRB.Data.character.petGuid = UnitGUID("pet")
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Focus)
-		TRB.Data.character.covenantId = C_Covenants.GetActiveCovenantID()
-
 
 		if GetSpecialization() == 1 then		
 			TRB.Data.character.specName = "beastMastery"
@@ -2432,6 +2446,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		if specId == 1 then
 			UpdateSnapshot_BeastMastery()
+			
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.hunter.beastMastery)
+
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
@@ -2639,6 +2656,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		elseif specId == 2 then
 			UpdateSnapshot_Marksmanship()
 
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.hunter.marksmanship)
+
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
@@ -2829,6 +2848,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.UpdateResourceBar(TRB.Data.settings.hunter.marksmanship, refreshText)
 		elseif specId == 3 then
 			UpdateSnapshot_Survival()
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.hunter.survival)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
@@ -3083,7 +3103,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							_, _, TRB.Data.snapshotData.frenzy.stacks, _, TRB.Data.snapshotData.frenzy.duration, TRB.Data.snapshotData.frenzy.endTime, _, _, _, TRB.Data.snapshotData.frenzy.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.frenzy.id, "pet")
 							TRB.Data.spells.frenzy.isActive = true
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshotData.frenzy.startTime = nil
+							TRB.Data.snapshotData.frenzy.endTime = nil
 							TRB.Data.snapshotData.frenzy.duration = 0
 							TRB.Data.snapshotData.frenzy.stacks = 0
 							TRB.Data.spells.frenzy.isActive = false
