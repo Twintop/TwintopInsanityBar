@@ -1101,7 +1101,7 @@ local function RemoveInvalidVariablesFromBarText(input)
     local returnText = ""
     local p = 0
     while p <= string.len(input) do
-        local a, b, c, d, a1, b1, c1, d1
+        local a, b, c, d, e, a1, b1, c1, d1, e1
         a, a1 = string.find(input, "{", p)
         if a ~= nil then
             b, b1 = string.find(input, "}", a)
@@ -1110,11 +1110,11 @@ local function RemoveInvalidVariablesFromBarText(input)
                 c, c1 = string.find(input, "]", b+1)
 
                 if c ~= nil then
-                    local hasOr = false
+                    local hasElse = false
                     if string.sub(input, c+1, c+1) == "[" then
                         d, d1 = string.find(input, "]", c+1)
                         if d ~= nil then
-                            hasOr = true
+                            hasElse = true
                         end
                     end
 
@@ -1124,12 +1124,12 @@ local function RemoveInvalidVariablesFromBarText(input)
                     
                     local valid = false
                     local useNot = false
-                    local var = string.sub(input, a+1, b-1)
+                    local var = string.trim(string.sub(input, a+1, b-1))
                     local notVar = string.sub(var, 1, 1)
 
                     if notVar == "!" then
                         useNot = true
-                        var = string.sub(var, 2)
+                        var = string.trim(string.sub(var, 2))
                     end
                     
                     valid = TRB.Data.IsValidVariableForSpec(var)
@@ -1140,26 +1140,25 @@ local function RemoveInvalidVariablesFromBarText(input)
 
                     if valid == true then
                         returnText = returnText .. string.sub(input, b+2, c-1)
-                    elseif hasOr == true then
+                    elseif hasElse == true then
                         returnText = returnText .. string.sub(input, c+2, d-1)
                     end
                     
-                    if hasOr == true then
+                    if hasElse == true then
                         p = d+1
                     else
                         p = c+1
                     end
-                else
-                    returnText = returnText .. string.sub(input, p)
-                    p = string.len(input) + 1
+                else -- No matching ]
+                    returnText = returnText .. string.sub(input, p, b+1)
+                    p = b+2
                 end
-            else
+			elseif b ~= nil then --b+1 is not [
+				returnText = returnText .. string.sub(input, p, b)
+				p = b + 1
+            else -- End of string
 				returnText = returnText .. string.sub(input, p)
-                if b ~= nil then
-                    p = b + 1
-                else
-					p = string.len(input) + 1
-                end
+				p = string.len(input) + 1
             end
         else
             returnText = returnText .. string.sub(input, p)
