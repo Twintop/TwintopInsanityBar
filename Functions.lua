@@ -1253,7 +1253,6 @@ local function RemoveInvalidVariablesFromBarText(input)
     local p = 0
 	local scan = TRB.Functions.ScanForLogicSymbols(input)
 
-	local openIfCurrentCounter = 0
 	local lastIndex = 0
     while p <= string.len(input) do
 		local nextOpenIf = TRB.Functions.FindNextSymbolIndex(scan.openIf, '{', lastIndex)
@@ -1341,6 +1340,92 @@ local function RemoveInvalidVariablesFromBarText(input)
     return returnText
 end
 TRB.Functions.RemoveInvalidVariablesFromBarText = RemoveInvalidVariablesFromBarText
+
+TRB.Functions.TableLength = TableLength
+
+
+-- Generic Frame Functions
+
+	@@ -1093,69 +1123,211 @@ local function IsValidVariableBase(var)
+end
+TRB.Functions.IsValidVariableBase = IsValidVariableBase
+
+local function RemoveInvalidVariablesFromBarText_Old(input)
+    --1         11                       36     43
+    --v         v                        v      v
+    --a         b                        c      d
+    --{$liStacks}[$liStacks - $liTime sec][No LI]
+    local returnText = ""
+    local p = 0
+    while p <= string.len(input) do
+        local a, b, c, d, e, a1, b1, c1, d1, e1
+        a, a1 = string.find(input, "{", p)
+        if a ~= nil then
+            b, b1 = string.find(input, "}", a)
+
+            if b ~= nil and string.sub(input, b+1, b+1) == "[" then
+                c, c1 = string.find(input, "]", b+1)
+
+                if c ~= nil then
+                    local hasElse = false
+                    if string.sub(input, c+1, c+1) == "[" then
+                        d, d1 = string.find(input, "]", c+1)
+                        if d ~= nil then
+                            hasElse = true
+                        end
+                    end
+
+                    if p ~= a then
+                        returnText = returnText .. string.sub(input, p, a-1)
+                    end
+
+                    local valid = false
+                    local useNot = false
+                    local var = string.trim(string.sub(input, a+1, b-1))
+                    local notVar = string.sub(var, 1, 1)
+
+                    if notVar == "!" then
+                        useNot = true
+                        var = string.trim(string.sub(var, 2))
+                    end
+
+                    valid = TRB.Data.IsValidVariableForSpec(var)
+
+                    if useNot == true then
+                        valid = not valid
+                    end
+
+                    if valid == true then
+                        returnText = returnText .. string.sub(input, b+2, c-1)
+                    elseif hasElse == true then
+                        returnText = returnText .. string.sub(input, c+2, d-1)
+                    end
+
+                    if hasElse == true then
+                        p = d+1
+                    else
+                        p = c+1
+                    end
+                else -- No matching ]
+                    returnText = returnText .. string.sub(input, p, b+1)
+                    p = b+2
+                end
+			elseif b ~= nil then --b+1 is not [
+				returnText = returnText .. string.sub(input, p, b)
+				p = b + 1
+            else -- End of string
+				returnText = returnText .. string.sub(input, p)
+				p = string.len(input) + 1
+			end
+        else
+            returnText = returnText .. string.sub(input, p)
+			p = string.len(input)
+			break
+        end
+    end
+    return returnText
+end
+TRB.Functions.RemoveInvalidVariablesFromBarText_Old = RemoveInvalidVariablesFromBarText_Old
 
 
 -- Character Functions
