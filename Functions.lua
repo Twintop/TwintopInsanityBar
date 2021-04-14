@@ -1341,15 +1341,6 @@ local function RemoveInvalidVariablesFromBarText(input)
 end
 TRB.Functions.RemoveInvalidVariablesFromBarText = RemoveInvalidVariablesFromBarText
 
-TRB.Functions.TableLength = TableLength
-
-
--- Generic Frame Functions
-
-	@@ -1093,69 +1123,211 @@ local function IsValidVariableBase(var)
-end
-TRB.Functions.IsValidVariableBase = IsValidVariableBase
-
 local function RemoveInvalidVariablesFromBarText_Old(input)
     --1         11                       36     43
     --v         v                        v      v
