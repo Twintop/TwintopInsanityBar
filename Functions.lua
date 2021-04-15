@@ -1129,11 +1129,17 @@ local function ScanForLogicSymbols(input)
 		closeIf = {},
 		openResult = {},
 		closeResult = {},
+		orLogic = {},
+		andLogic = {},
+		allLogic = {},
 		all = {},
 		openIfLength = 0,
 		closeIfLength = 0,
 		openResultLength = 0,
-		closeResultLength = 0
+		closeResultLength = 0,
+		orLogicLength = 0,
+		andLogicLength = 0,
+		allLogicLength = 0
 	}
 
 	if input == nil or string.len(input) == 0 then
@@ -1141,7 +1147,7 @@ local function ScanForLogicSymbols(input)
 	end
 
     local p = 0
-	local a, b, c, d, a1, b1, c1, d1
+	local a, b, c, d, e, e_1, e_2, e_3, f, a1, b1, c1, d1, e1, e1_1, e1_2, e1_3, f
 	local currentIf = 0
 	local currentResult = 0
 	local min
@@ -1151,20 +1157,39 @@ local function ScanForLogicSymbols(input)
 	local closeIf = {}
 	local openResult = {}
 	local closeResult = {}
+	local orLogic = {}
+	local andLogic = {}
+	local allLogic = {}
 	local all = {}
+
+	local endLength = (string.len(input) + 1)
 
     while p <= string.len(input) do
         a, a1 = string.find(input, "{", p)
         b, b1 = string.find(input, "}", p)
         c, c1 = string.find(input, "%[", p)
         d, d1 = string.find(input, "]", p)
+		e, e1 = string.find(input, "|", p)
+		e_1, e1_1 = string.find(input, "|n", p)
+		e_2, e1_2 = string.find(input, "|c", p)
+		e_3, e1_3 = string.find(input, "|r", p)
+		f, f1 = string.find(input, "&", p)
 
-		a = a or (string.len(input) + 1)
-		b = b or (string.len(input) + 1)
-		c = c or (string.len(input) + 1)
-		d = d or (string.len(input) + 1)
+		a = a or endLength
+		b = b or endLength
+		c = c or endLength
+		d = d or endLength
+		e = e or endLength
+		e_1 = e_1 or endLength
+		e_2 = e_2 or endLength
+		e_3 = e_3 or endLength
+		f = f or endLength
 
-		min = math.min(a, b, c, d)
+		if e == e_1 or e == e_2 or e == e_3 then
+			e = endLength
+		end
+
+		min = math.min(a, b, c, d, e, f)
 		i = i + 1
 
 		if min <= string.len(input) then
@@ -1194,6 +1219,18 @@ local function ScanForLogicSymbols(input)
 				ins.symbol = "]"
 				table.insert(closeResult, ins)
 				p = d + 1
+			elseif min == e then
+				currentResult = currentResult - 1
+				ins.symbol = "|"
+				table.insert(orLogic, ins)
+				table.insert(allLogic, ins)
+				p = e + 1
+			elseif min == f then
+				currentResult = currentResult - 1
+				ins.symbol = "&"
+				table.insert(andLogic, ins)
+				table.insert(allLogic, ins)
+				p = f + 1
 			else -- Something went wrong. Break for safety
 				p = string.len(input) + 1
 				break
@@ -1210,11 +1247,16 @@ local function ScanForLogicSymbols(input)
 	returnTable.closeIfLength = TRB.Functions.TableLength(closeIf)
 	returnTable.openResultLength = TRB.Functions.TableLength(openResult)
 	returnTable.closeResultLength = TRB.Functions.TableLength(closeResult)
+	returnTable.orLogic = TRB.Functions.TableLength(orLogic)
+	returnTable.andLogic = TRB.Functions.TableLength(andLogic)
+	returnTable.allLogic = TRB.Functions.TableLength(allLogic)
 
 	returnTable.openIf = openIf
 	returnTable.closeIf = closeIf
 	returnTable.openResult = openResult
 	returnTable.closeResult = closeResult
+	returnTable.orLogic = orLogic
+	returnTable.andLogic = andLogic
 	returnTable.all = all
 
 	return returnTable
@@ -1243,6 +1285,40 @@ local function FindNextSymbolIndex(t, symbol, minIndex)
 end
 TRB.Functions.FindNextSymbolIndex = FindNextSymbolIndex
 
+local function ParseVariablesFromString(input)
+    local returnText = ""
+
+	if string.trim(string.len(input)) == 0 then
+		return returnText
+	end
+
+	local vars = {}
+	local logic = {}
+	
+	local scan = TRB.Functions.ScanForLogicSymbols(input)
+
+	local lastIndex = 0
+	while p <= string.len(input) do
+		local nextLogic1 = TRB.Functions.FindNextSymbolIndex(scan.orLogic, '|', lastIndex)
+		local nextLogic2 = TRB.Functions.FindNextSymbolIndex(scan.andLogic, '&', lastIndex)
+
+		if nextLogic1 ~= nil and nextLogic2 ~= nil then
+			if nextLogic1.position > nextLogic2.position then
+				table.insert(logic, "or")
+			else
+				table.insert(logic, "and")
+			end
+		elseif nextLogic1 ~= nil then
+		elseif nextLogic2 ~= nil then
+		else
+			p = string.len(input) + 1
+		end
+	end
+
+	return returnText
+end
+TRB.Functions.ParseVariablesFromString = ParseVariablesFromString
+
 local function RemoveInvalidVariablesFromBarText(input)
     local returnText = ""
 
@@ -1255,7 +1331,7 @@ local function RemoveInvalidVariablesFromBarText(input)
 
 	local lastIndex = 0
     while p <= string.len(input) do
-		local nextOpenIf = TRB.Functions.FindNextSymbolIndex(scan.openIf, '{', lastIndex)
+		local nextOpenIf = TRB.Functions.FindNextSymbolIndex(scan.all, '{', lastIndex)		
         if nextOpenIf ~= nil then
 			local nextCloseIf = TRB.Functions.FindNextSymbolIndex(scan.closeIf, '}', nextOpenIf.index+1)
 
@@ -1274,10 +1350,10 @@ local function RemoveInvalidVariablesFromBarText(input)
 						local elseCloseResult
 
 						if elseOpenResult ~= nil and elseOpenResult.position == nextCloseResult.position + 1 then
-							-- We have if/else
 							elseCloseResult = TRB.Functions.FindNextSymbolIndex(scan.closeResult, ']', elseOpenResult.index)
 							
 							if elseCloseResult ~= nil then
+							-- We have if/else
 								hasElse = true
 							end
 						end
@@ -1291,7 +1367,7 @@ local function RemoveInvalidVariablesFromBarText(input)
 							useNot = true
 							var = string.trim(string.sub(var, 2))
 						end
-						
+
 						valid = TRB.Data.IsValidVariableForSpec(var)
 	
 						if useNot == true then
