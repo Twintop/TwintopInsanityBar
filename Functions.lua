@@ -1714,7 +1714,6 @@ end
 TRB.Functions.Import = Import
 
 local function ExportConfigurationSections(classId, specId, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
-	print("Exporing: ", classId, specId)
 	local configuration = {
 		colors = {},
 		displayText = {}
@@ -1939,7 +1938,6 @@ local function ExportPopup(exportMessage, classId, specId, includeBarDisplay, in
 		local output = TRB.Functions.Export(configuration)
 		self.editBox:SetText(output)
 	end
-	print(exportMessage)
 	StaticPopup_Show("TwintopResourceBar_Export")
 end
 TRB.Functions.ExportPopup = ExportPopup
