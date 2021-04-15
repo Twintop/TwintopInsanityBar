@@ -1423,6 +1423,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage
 							TRB.Data.snapshotData.ravager.endTime = currentTime + TRB.Data.snapshotData.ravager.totalDuration
 							TRB.Data.snapshotData.ravager.lastTick = currentTime
+							if TRB.Data.snapshotData.ravager.rage < 0 then
+								TRB.Data.snapshotData.ravager.rage = 0
+							end
 						end
 					elseif spellId == TRB.Data.spells.ravager.energizeId then
 						if type == "SPELL_ENERGIZE" then						
@@ -1436,6 +1439,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							else
 								TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage
 								TRB.Data.snapshotData.ravager.lastTick = currentTime
+								if TRB.Data.snapshotData.ravager.rage < 0 then
+									TRB.Data.snapshotData.ravager.rage = 0
+								end
 							end
 						end
 					elseif spellId == TRB.Data.spells.rend.id then
