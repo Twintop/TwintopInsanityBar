@@ -85,6 +85,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			thresholdWidth=2,
 			overcapThreshold=100,
 			starsurgeThreshold=true,
+			starsurge2Threshold=false,
+			starsurge3Threshold=false,
+			starsurgeThresholdOnlyOverShow=false,
 			starfallThreshold=true,
 			displayBar = {
 				alwaysShow=false,
@@ -106,6 +109,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				border=4,
 				thresholdOverlapBorder=true,
 				dragAndDrop=false,
+				pinToPersonalResourceDisplay=false,
 				showPassive=true,
 				showCasting=true
 			},

@@ -279,6 +279,54 @@ local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, 
 end
 TRB.UiFunctions.BuildDisplayTextHelpEntry = BuildDisplayTextHelpEntry
 
+local function BuildButton(parent, text, posX, posY, width, height)
+    local f = CreateFrame("Button", nil, parent)
+    f:SetPoint("TOPLEFT", parent, "TOPLEFT", posX, posY)
+    f:SetWidth(width)
+    f:SetHeight(height)
+    f:SetText(text)
+    f:SetNormalFontObject("GameFontNormal")
+    f.ntex = f:CreateTexture()
+    f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
+    f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
+    f.ntex:SetAllPoints()
+    f:SetNormalTexture(f.ntex)
+    f.htex = f:CreateTexture()
+    f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
+    f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
+    f.htex:SetAllPoints()
+    f:SetHighlightTexture(f.htex)
+    f.ptex = f:CreateTexture()
+    f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
+    f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
+    f.ptex:SetAllPoints()
+    f:SetPushedTexture(f.ptex)
+
+    return f
+end
+TRB.UiFunctions.BuildButton = BuildButton
+
+local function BuildLabel(parent, text, posX, posY, width, height, fontObject)
+    if fontObject == nil then
+        fontObject = GameFontNormal
+    end
+
+    local f = CreateFrame("Frame", nil, parent)
+    f:ClearAllPoints()
+    f:SetPoint("TOPLEFT", parent)
+    f:SetPoint("TOPLEFT", posX, posY)
+    f:SetWidth(100)
+    f:SetHeight(20)
+    f.font = f:CreateFontString(nil, "BACKGROUND")
+    f.font:SetFontObject(fontObject)
+    f.font:SetPoint("LEFT", f, "LEFT")
+    f.font:SetJustifyH("CENTER")
+    f.font:SetText(text)
+
+    return f
+end
+TRB.UiFunctions.BuildLabel = BuildLabel
+
 local function CreateScrollFrameContainer(name, parent, width, height)
     width = width or 560
     height = height or 540

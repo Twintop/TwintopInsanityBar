@@ -130,6 +130,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				border=4,
 				thresholdOverlapBorder=true,
 				dragAndDrop=false,
+				pinToPersonalResourceDisplay=false,
 				showPassive=true,
 				showCasting=true
 			},
@@ -169,7 +170,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					unusable="FFFF0000"
 				}
 			},
-			displayText = {},
+			displayText = {}, 
 			audio = {
 				overcap={
 					enabled=false,

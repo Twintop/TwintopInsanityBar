@@ -261,6 +261,14 @@ end
 TRB.Functions.UpdateSanityCheckValues = UpdateSanityCheckValues
 
 local function MergeSettings(settings, user)
+	if settings == nil and user == nil then
+		return {}
+	elseif settings == nil then
+		return user
+	elseif user == nil then
+		return settings
+	end
+
 	for k, v in pairs(user) do
         if (type(v) == "table") and (type(settings[k] or false) == "table") then
             TRB.Functions.MergeSettings(settings[k], user[k])
@@ -1663,6 +1671,289 @@ local function GetSoulbindRank(id)
 	return 0
 end
 TRB.Functions.GetSoulbindRank = GetSoulbindRank
+
+-- Import/Export Functions
+
+local function Import(input)
+	local json = TRB.Functions.GetJsonLibrary()
+	local base64 = TRB.Functions.GetBase64Library()
+
+	local decoded, configuration, mergedSettings, result
+
+	result, decoded = pcall(base64.decode, input)
+
+	if not result then
+		return -1
+	end
+
+	result, configuration = pcall(json.decode, decoded)
+		
+	if not result then
+		return -2
+	end
+
+	if not (configuration.core ~= nil or
+		(configuration.warrior ~= nil and configuration.warrior.arms ~= nil) or
+		(configuration.hunter ~= nil and (configuration.hunter.beastMastery ~= nil or configuration.hunter.marksmanship ~= nil or configuration.hunter.survival ~= nil)) or
+		(configuration.priest ~= nil and configuration.priest.shadow ~= nil) or
+		(configuration.shaman ~= nil and configuration.shaman.elemental ~= nil) or
+		(configuration.druid ~= nil and configuration.druid.balance ~= nil)) then
+		return -3
+	end
+
+	local existingSettings = TRB.Data.settings
+	result, mergedSettings = pcall(TRB.Functions.MergeSettings, existingSettings, configuration)
+	
+	if not result then
+		return -4
+	end
+	
+	TRB.Data.settings = mergedSettings
+	return 1
+end
+TRB.Functions.Import = Import
+
+local function ExportConfigurationSections(classId, specId, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+	print("Exporing: ", classId, specId)
+	local configuration = {
+		colors = {},
+		displayText = {}
+	}
+
+	if includeBarDisplay then
+		configuration.bar = settings.bar
+		configuration.displayBar = settings.displayBar
+		configuration.textures = settings.textures
+		configuration.colors.bar = settings.colors.bar
+		configuration.colors.threshold = settings.colors.threshold
+		configuration.thresholdWidth = settings.thresholdWidth
+		configuration.overcapThreshold = settings.overcapThreshold
+		
+		if classId == 1 and specId == 1 then -- Arms Warrior
+			configuration.thresholds = settings.thresholds
+		elseif classId == 3 then -- Hunters
+			configuration.thresholds = settings.thresholds
+			if specId == 1 then -- Beast Mastery Hunter
+			elseif specId == 2 then -- Marksmanship
+				configuration.endOfTrueshot = settings.endOfTrueshot
+			elseif specId == 3 then -- Survival
+				configuration.endOfCoordinatedAssault = settings.endOfCoordinatedAssault
+			end
+		elseif classId == 5 and specId == 3 then -- Shadow Priest
+			configuration.devouringPlagueThreshold = settings.devouringPlagueThreshold
+			configuration.searingNightmareThreshold = settings.searingNightmareThreshold
+			configuration.endOfVoidform = settings.endOfVoidform
+		elseif classId == 7 and specId == 1 then -- Elemental Shaman
+			configuration.earthShockThreshold = settings.earthShockThreshold
+		elseif classId == 11 and specId == 1 then -- Balance Druid
+			configuration.starsurgeThreshold = settings.starsurgeThreshold
+			configuration.starsurge2Threshold = settings.starsurge2Threshold
+			configuration.starsurge3Threshold = settings.starsurge3Threshold
+			configuration.starsurgeThresholdOnlyOverShow = settings.starsurgeThresholdOnlyOverShow
+			configuration.starfallThreshold = settings.starfallThreshold
+			configuration.endOfEclipse = settings.endOfEclipse
+		end
+	end
+
+	if includeFontAndText then
+		configuration.colors.text = settings.colors.text
+		configuration.hastePrecision = settings.hastePrecision
+		configuration.displayText.fontSizeLock = settings.displayText.fontSizeLock
+		configuration.displayText.fontFaceLock = settings.displayText.fontFaceLock
+		configuration.displayText.left = {
+			fontFace = settings.displayText.left.fontFace,
+			fontFaceName = settings.displayText.left.fontFaceName,
+			fontSize = settings.displayText.left.fontSize
+		}
+		configuration.displayText.middle = {
+			fontFace = settings.displayText.middle.fontFace,
+			fontFaceName = settings.displayText.middle.fontFaceName,
+			fontSize = settings.displayText.middle.fontSize
+		}
+		configuration.displayText.right = {
+			fontFace = settings.displayText.right.fontFace,
+			fontFaceName = settings.displayText.right.fontFaceName,
+			fontSize = settings.displayText.right.fontSize
+		}
+
+		if classId == 1 and specId == 1 then -- Arms Warrior
+			configuration.ragePrecision = settings.ragePrecision
+		elseif classId == 3 then -- Hunters
+			if specId == 1 then -- Beast Mastery Hunter
+			elseif specId == 2 then -- Marksmanship
+			elseif specId == 3 then -- Survival
+			end
+		elseif classId == 5 and specId == 3 then -- Shadow Priest
+			configuration.hasteApproachingThreshold = settings.hasteApproachingThreshold
+			configuration.hasteThreshold = settings.hasteThreshold
+			configuration.s2mApproachingThreshold = settings.s2mApproachingThreshold
+			configuration.s2mThreshold = settings.s2mThreshold
+			configuration.insanityPrecision = settings.insanityPrecision
+		elseif classId == 7 and specId == 1 then -- Elemental Shaman
+		elseif classId == 11 and specId == 1 then -- Balance Druid
+			configuration.astralPowerPrecision = settings.astralPowerPrecision
+		end
+	end
+
+	if includeAudioAndTracking then
+		configuration.audio = settings.audio
+
+		if classId == 1 and specId == 1 then -- Arms Warrior
+		elseif classId == 3 then -- Hunters
+			configuration.generation = settings.generation
+			if specId == 1 then -- Beast Mastery Hunter
+			elseif specId == 2 then -- Marksmanship
+			elseif specId == 3 then -- Survival
+			end
+		elseif classId == 5 and specId == 3 then -- Shadow Priest
+			configuration.mindbender = settings.mindbender
+			configuration.wrathfulFaerie = settings.wrathfulFaerie
+			configuration.auspiciousSpiritsTracker = settings.auspiciousSpiritsTracker
+			configuration.voidTendrilTracker = settings.voidTendrilTracker
+		elseif classId == 7 and specId == 1 then -- Elemental Shaman
+		elseif classId == 11 and specId == 1 then -- Balance Druid
+		end
+	end
+
+	if includeBarText then
+		if classId == 5 and specId == 3 then -- Shadow Priest
+			configuration.displayText.left = configuration.displayText.left or {}
+			configuration.displayText.left.outVoidformText = settings.displayText.left.outVoidformText
+			configuration.displayText.left.inVoidformText = settings.displayText.left.inVoidformText
+			configuration.displayText.middle = configuration.displayText.middle or {}
+			configuration.displayText.middle.outVoidformText = settings.displayText.middle.outVoidformText
+			configuration.displayText.middle.inVoidformText = settings.displayText.middle.inVoidformText
+			configuration.displayText.right = configuration.displayText.right or {}
+			configuration.displayText.right.outVoidformText = settings.displayText.right.outVoidformText
+			configuration.displayText.right.inVoidformText = settings.displayText.right.inVoidformText
+		else
+			configuration.displayText.left = configuration.displayText.left or {}
+			configuration.displayText.left.text = settings.displayText.left.text
+			configuration.displayText.middle = configuration.displayText.middle or {}
+			configuration.displayText.middle.text = settings.displayText.middle.text
+			configuration.displayText.right = configuration.displayText.right or {}
+			configuration.displayText.right.text = settings.displayText.right.text
+		end
+	end
+
+	return configuration
+end
+TRB.Functions.ExportConfigurationSections = ExportConfigurationSections
+
+local function ExportGetConfiguration(classId, specId, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
+	local settings = TRB.Data.settings
+	if includeBarDisplay == nil then
+		includeBarDisplay = true
+	end
+
+	if includeFontAndText == nil then
+		includeFontAndText = true
+	end
+
+	if includeAudioAndTracking == nil then
+		includeAudioAndTracking = true
+	end
+
+	if includeBarText == nil then
+		includeBarText = true
+	end
+
+	if includeCore == nil then
+		includeCore = false -- Don't include unless explicity stated
+	end
+
+	local configuration = {}
+
+	if classId ~= nil then -- One class
+		if classId == 1 and settings.warrior ~= nil then -- Warrior
+			configuration.warrior = {}
+			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.warrior.arms) > 0 then -- Arms				
+				configuration.warrior.arms = TRB.Functions.ExportConfigurationSections(1, 1, settings.warrior.arms, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+		elseif classId == 3 and settings.hunter ~= nil then -- Hunter
+			configuration.hunter = {}
+
+			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.hunter.beastMastery) > 0 then -- Beast Mastery
+				configuration.hunter.beastMastery = TRB.Functions.ExportConfigurationSections(3, 1, settings.hunter.beastMastery, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+			
+			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.hunter.marksmanship) > 0 then -- Marksmanship
+				configuration.hunter.marksmanship = TRB.Functions.ExportConfigurationSections(3, 2, settings.hunter.marksmanship, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+
+			if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.hunter.survival) > 0 then -- Survival
+				configuration.hunter.survival = TRB.Functions.ExportConfigurationSections(3, 3, settings.hunter.survival, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+		elseif classId == 5 and settings.priest ~= nil then -- Priest
+			configuration.priest = {}
+			if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.priest.shadow) > 0 then -- Shadow
+				configuration.priest.shadow = TRB.Functions.ExportConfigurationSections(5, 3, settings.priest.shadow, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+		elseif classId == 7 and settings.shaman ~= nil then -- Shaman
+			configuration.shaman = {}
+			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.shaman.elemental) > 0 then -- Elemental
+				configuration.shaman.elemental = TRB.Functions.ExportConfigurationSections(7, 1, settings.shaman.elemental, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+		elseif classId == 11 and settings.druid ~= nil then -- Druid
+			configuration.druid = {}
+			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.druid.balance) > 0 then -- Balance
+				configuration.druid.balance = TRB.Functions.ExportConfigurationSections(11, 1, settings.druid.balance, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+		end
+	elseif classId == nil and specId == nil then -- Everything
+		-- Instead of just dumping the whole table, let's clean it up
+
+		-- Arms Warrior
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(1, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		
+		-- Hunters
+		-- Beast Mastery
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		-- Marksmanship
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		-- Survival
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		
+		-- Shadow Priest
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(5, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		
+		-- Elemental Shaman
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		
+		-- Balance Druid
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+	end
+
+	if includeCore then
+		configuration.core = settings.core
+	end
+
+	return configuration
+end
+TRB.Functions.ExportGetConfiguration = ExportGetConfiguration
+
+local function ExportPopup(exportMessage, classId, specId, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
+	StaticPopupDialogs["TwintopResourceBar_Export"].text = exportMessage
+	StaticPopupDialogs["TwintopResourceBar_Export"].OnShow = function(self)
+		local configuration = TRB.Functions.ExportGetConfiguration(classId, specId, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
+		local output = TRB.Functions.Export(configuration)
+		self.editBox:SetText(output)
+	end
+	print(exportMessage)
+	StaticPopup_Show("TwintopResourceBar_Export")
+end
+TRB.Functions.ExportPopup = ExportPopup
+
+local function Export(configuration)
+	local json = TRB.Functions.GetJsonLibrary()
+	local base64 = TRB.Functions.GetBase64Library()
+
+	local encoded = json.encode(configuration)
+	local output = base64.encode(encoded)
+
+	return output
+end
+TRB.Functions.Export = Export
 
 -- Misc Functions
 

@@ -3,7 +3,7 @@ local addonName, TRB = ...
 -- Addon details data
 TRB.Details = {}
 TRB.Details.addonVersion = GetAddOnMetadata(addonName, "Version")
-TRB.Details.addonReleaseDate = "April 12, 2021"
+TRB.Details.addonReleaseDate = "April 16, 2021"
 TRB.Details.supportedSpecs = "|cFFFF7C0ADruid|r - Balance\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFFFFFFFFPriest|r - Shadow\n|cFF0070DDShaman|r - Elemental\n|cFFC69B6DWarrior|r - Arms"
 
 local addonData = {
@@ -78,7 +78,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 			local dps = 0
 			local ttd = 0
 
-			local count = #TRB.Data.snapshotData.targetData.targets[guid].snapshot
+			local count = TRB.Functions.TableLength(TRB.Data.snapshotData.targetData.targets[guid].snapshot)
 			if count > 0 and TRB.Data.snapshotData.targetData.targets[guid].snapshot[1] ~= nil then
 				healthDelta = math.max(TRB.Data.snapshotData.targetData.targets[guid].snapshot[1].health - currentHealth, 0)
 				timeDelta = math.max(currentTime - TRB.Data.snapshotData.targetData.targets[guid].snapshot[1].time, 0)

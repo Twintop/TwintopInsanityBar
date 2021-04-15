@@ -8,12 +8,15 @@ local f2 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Green_Small_Color")
 f2:SetFontObject(GameFontGreenSmall)
 local f3 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Normal_Small_Color")
 f3:SetFontObject(GameFontNormalSmall)
+local f4 = CreateFont("TwintopResourceBar_OptionsMenu_Export_Spec_Color")
+f4:SetFontObject(GameFontWhite)
 
 TRB.Options.fonts = {}
 TRB.Options.fonts.options = {}
 TRB.Options.fonts.options.tabHighlightSmall = f1
 TRB.Options.fonts.options.tabGreenSmall = f2
 TRB.Options.fonts.options.tabNormalSmall = f3
+TRB.Options.fonts.options.exportSpec = f4
 
 local function LoadDefaultSettings()
     local settings = {
@@ -44,7 +47,6 @@ local function LoadDefaultSettings()
             survival = {}
         },
         priest = {
-            holy = {},
             shadow = {}
         },
         shaman = {
@@ -86,7 +88,7 @@ local function ConstructAddonOptionsPanel()
     InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
     
     parent = interfaceSettingsFrame.optionsPanel
-    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "General Options", xCoord+xPadding, yCoord)
+    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Global Options", xCoord+xPadding, yCoord)
 
     yCoord = yCoord - 30
     parent.panel = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 580, 523)
@@ -293,7 +295,7 @@ local function ConstructImportExportPanel()
     local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
     local parent = interfaceSettingsFrame.panel
     local controls = interfaceSettingsFrame.controls.importExport or {}
-    local yCoord = 5
+    local yCoord = -5
     local f = nil
 
     local maxOptionsWidth = 580
@@ -306,6 +308,8 @@ local function ConstructImportExportPanel()
     local xOffset2 = xCoord2 + xOffset1
 
     local title = ""
+    local specName = ""
+    local buttonOffest = 0
 
     local dropdownWidth = 225
     local sliderWidth = 260
@@ -314,119 +318,429 @@ local function ConstructImportExportPanel()
     interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_ImportExport", UIParent)
     interfaceSettingsFrame.optionsPanel.name = "Import/Export"
     interfaceSettingsFrame.optionsPanel.parent = parent.name
-    InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)   
-
-		
-    StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_Export"] = {
-        text = "Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest!",
-        button1 = "Close",			
-        hasEditBox = 1,
-        OnShow = function(self)
-            local json = TRB.Functions.GetJsonLibrary()
-            local base64 = TRB.Functions.GetBase64Library()
-
-            local configuration = {
-                priest = {
-                }
-            }
-
-            configuration.priest.shadow =  TRB.Data.settings.priest.shadow
-
-            local encoded = json.encode(configuration)
-            local output = base64.encode(encoded)
-
-            self.editBox:SetText(output)
-        end,
-        timeout = 0,
-        whileDead = true,
-        hideOnEscape = true,
-        preferredIndex = 3
-    }
+    InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel) 
     
-    StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_Import"] = {
-        text = "Paste in a Twintop's Resource Bar configuration string to have that configuration be imported. Your UI will be reloaded automatically.",
-        button1 = "Import",	
-        button2 = "Cancel",		
-        hasEditBox = 1,
-        OnAccept = function(self)
-            local json = TRB.Functions.GetJsonLibrary()
-            local base64 = TRB.Functions.GetBase64Library()
-
-            local input = self.editBox:GetText()
-
-            local decoded = base64.decode(input)
-            local configuration = json.decode(decoded)
-            
-            local existingSettings = TRB.Data.settings
-            local mergedSettings = TRB.Functions.MergeSettings(existingSettings, configuration)
-            TRB.Data.settings = mergedSettings
-            ReloadUI()
-        end,
-        timeout = 0,
-        whileDead = true,
-        hideOnEscape = true,
-        preferredIndex = 3
-    }
-
     parent = interfaceSettingsFrame.optionsPanel
     controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Import/Export", xCoord+xPadding, yCoord)
+    controls.labels = controls.labels or {}
+    controls.buttons = controls.buttons or {}
 
     yCoord = yCoord - 30
+    parent.panel = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 580, 523)
+    parent.panel:SetPoint("TOPLEFT", 10, yCoord)
+    parent.panel:Show()
+
+    parent = parent.panel.scrollFrame.scrollChild
+
+    yCoord = 5
+    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Import Settings Configuration", xCoord, yCoord)
+    
+
+    StaticPopupDialogs["TwintopResourceBar_ImportError"] = {
+        text = "Twintop's Resource Bar import failed. Please check the settings configuration string that you entered and try again.",
+        button1 = "OK",	
+        OnAccept = function(self)  
+            StaticPopup_Show("TwintopResourceBar_Import")
+        end,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        preferredIndex = 3
+    }
+
+    StaticPopupDialogs["TwintopResourceBar_Import"] = {
+        text = "Paste in a Twintop's Resource Bar configuration string to have that configuration be imported. Your UI will be reloaded automatically.",
+        button1 = "Import",	
+        button2 = "Cancel",	
+        hasEditBox = 1,
+        OnAccept = function(self)
+            local result = false
+            result = TRB.Functions.Import(self.editBox:GetText())                
+
+            if result >= 0 then
+                ReloadUI()
+            else
+                if result == -3 then
+                    StaticPopupDialogs["TwintopResourceBar_ImportError"].text = "Twintop's Resource Bar import failed. There were no valid classes, specs, or settings values found. Please check the settings configuration string that you entered and try again."                    
+                else
+                    StaticPopupDialogs["TwintopResourceBar_ImportError"].text = "Twintop's Resource Bar import failed. Please check the settings configuration string that you entered and try again."
+                end
+
+                StaticPopup_Show("TwintopResourceBar_ImportError")
+            end
+        end,
+        timeout = 0,
+        whileDead = true,
+        EditBoxOnEscapePressed = function(self)
+            self:GetParent():Hide();
+        end,
+        hideOnEscape = true,
+        preferredIndex = 3
+    }
+
     yCoord = yCoord - 40
-    controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Import and Export Settings Configuration", 0, yCoord)
-
-    yCoord = yCoord - 30
-    controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Priest_Shadow_ExportButton", parent)
-    f = controls.resetButton
-    f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-    f:SetWidth(300)
-    f:SetHeight(30)
-    f:SetText("Export current configuration for Shadow")
-    f:SetNormalFontObject("GameFontNormal")
-    f.ntex = f:CreateTexture()
-    f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-    f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-    f.ntex:SetAllPoints()
-    f:SetNormalTexture(f.ntex)
-    f.htex = f:CreateTexture()
-    f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-    f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-    f.htex:SetAllPoints()
-    f:SetHighlightTexture(f.htex)
-    f.ptex = f:CreateTexture()
-    f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-    f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-    f.ptex:SetAllPoints()
-    f:SetPushedTexture(f.ptex)
-    f:SetScript("OnClick", function(self, ...)
-        StaticPopup_Show("TwintopResourceBar_Priest_Shadow_Export")
+    controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import existing Settings Configuration string", xCoord, yCoord, 300, 30)
+    controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+	    StaticPopup_Show("TwintopResourceBar_Import")
     end)
 
+		
+    StaticPopupDialogs["TwintopResourceBar_Export"] = {
+        text = "",
+        button1 = "Close",	
+        hasEditBox = 1,
+        timeout = 0,
+        whileDead = true,
+        EditBoxOnEscapePressed = function(self)
+            self:GetParent():Hide();
+        end,
+        hideOnEscape = true,
+        preferredIndex = 3
+    }
+
+    
+
     yCoord = yCoord - 40
-    controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Priest_Shadow_ImportButton", parent)
-    f = controls.resetButton
-    f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-    f:SetWidth(300)
-    f:SetHeight(30)
-    f:SetText("Import configuration")
-    f:SetNormalFontObject("GameFontNormal")
-    f.ntex = f:CreateTexture()
-    f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-    f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-    f.ntex:SetAllPoints()
-    f:SetNormalTexture(f.ntex)
-    f.htex = f:CreateTexture()
-    f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-    f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-    f.htex:SetAllPoints()
-    f:SetHighlightTexture(f.htex)
-    f.ptex = f:CreateTexture()
-    f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-    f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-    f.ptex:SetAllPoints()
-    f:SetPushedTexture(f.ptex)
-    f:SetScript("OnClick", function(self, ...)
-        StaticPopup_Show("TwintopResourceBar_Priest_Shadow_Import")
+    controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Export Settings Configuration", xCoord, yCoord)
+
+
+    yCoord = yCoord - 35
+    --controls.labels.druid = TRB.UiFunctions.BuildLabel(parent, "Everything", xCoord, yCoord, 100, 20)
+
+    buttonOffset = xCoord + xPadding + 100
+    controls.exportButton_Everything = TRB.UiFunctions.BuildButton(parent, "All Classes/Specs + Global Options", buttonOffset, yCoord, 230, 20)
+    controls.exportButton_Everything:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (All).", nil, nil, true, true, true, true, true)
+    end)    
+
+    buttonOffset = buttonOffset + 230 + 5
+    controls.exportButton_All_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Just Global Options", buttonOffset, yCoord, 200, 20)
+    controls.exportButton_All_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Display).", nil, -1, false, false, false, false, true)
+    end)   
+
+    yCoord = yCoord - 35
+    controls.labels.druid = TRB.UiFunctions.BuildLabel(parent, "All Classes/Specs", xCoord, yCoord, 100, 20)
+
+    buttonOffset = xCoord + xPadding + 100
+    controls.exportButton_All_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.exportButton_All_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (All).", 11, 1, true, true, true, true, false)
+    end)    
+
+    buttonOffset = buttonOffset + 50 + 5
+    controls.exportButton_All_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_All_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Display).", 11, 1, true, false, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 80 + 5
+    controls.exportButton_All_FontAndText = TRB.UiFunctions.BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_All_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Font & Text).", 11, 1, false, true, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 90 + 5
+    controls.exportButton_All_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_All_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Audio & Tracking).", 11, 1, false, false, true, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 120 + 5
+    controls.exportButton_All_BarText = TRB.UiFunctions.BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_All_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Text).", 11, 1, false, false, false, true, false)
+    end)
+
+    yCoord = yCoord - 35
+    controls.labels.druid = TRB.UiFunctions.BuildLabel(parent, "Druid", xCoord, yCoord, 100, 20)
+
+    yCoord = yCoord - 25
+    specName = "Balance"
+    controls.labels.druidBalance = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+(xPadding*2), yCoord, 100, 20)
+    controls.labels.druidBalance.font:SetFontObject(TRB.Options.fonts.options.exportSpec)
+
+    buttonOffset = xCoord + xPadding + 100
+    controls.exportButton_Druid_Balance_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.exportButton_Druid_Balance_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (All).", 11, 1, true, true, true, true, false)
+    end)    
+
+    buttonOffset = buttonOffset + 50 + 5
+    controls.exportButton_Druid_Balance_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Druid_Balance_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Display).", 11, 1, true, false, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 80 + 5
+    controls.exportButton_Druid_Balance_FontAndText = TRB.UiFunctions.BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Druid_Balance_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Font & Text).", 11, 1, false, true, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 90 + 5
+    controls.exportButton_Druid_Balance_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Druid_Balance_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Audio & Tracking).", 11, 1, false, false, true, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 120 + 5
+    controls.exportButton_Druid_Balance_BarText = TRB.UiFunctions.BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Druid_Balance_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Text).", 11, 1, false, false, false, true, false)
+    end)
+
+    yCoord = yCoord - 35
+    controls.labels.hunter = TRB.UiFunctions.BuildLabel(parent, "Hunter", xCoord, yCoord, 100, 20)
+    
+    buttonOffset = xCoord + xPadding + 100
+    controls.exportButton_Hunter_BeastMastery_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.exportButton_Hunter_BeastMastery_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for all Hunter specializations (All).", 3, nil, true, true, true, true, false)
+    end)    
+
+    buttonOffset = buttonOffset + 50 + 5
+    controls.exportButton_Hunter_BeastMastery_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Hunter_BeastMastery_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for all Hunter specializations (Bar Display).", 3, nil, true, false, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 80 + 5
+    controls.exportButton_Hunter_BeastMastery_FontAndText = TRB.UiFunctions.BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Hunter_BeastMastery_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for all Hunter specializations (Font & Text).", 3, nil, false, true, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 90 + 5
+    controls.exportButton_Hunter_BeastMastery_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Hunter_BeastMastery_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for all Hunter specializations (Audio & Tracking).", 3, nil, false, false, true, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 120 + 5
+    controls.exportButton_Hunter_BeastMastery_BarText = TRB.UiFunctions.BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Hunter_BeastMastery_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for all Hunter specializations (Bar Text).", 3, nil, false, false, false, true, false)
+    end)
+
+
+    yCoord = yCoord - 25
+    specName = "Beast Mastery"
+    controls.labels.hunterBeastMastery = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+(xPadding*2), yCoord, 100, 20)
+    controls.labels.hunterBeastMastery.font:SetFontObject(TRB.Options.fonts.options.exportSpec)
+
+    buttonOffset = xCoord + xPadding + 100
+    controls.exportButton_Hunter_BeastMastery_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.exportButton_Hunter_BeastMastery_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (All).", 3, 1, true, true, true, true, false)
+    end)    
+
+    buttonOffset = buttonOffset + 50 + 5
+    controls.exportButton_Hunter_BeastMastery_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Hunter_BeastMastery_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (Bar Display).", 3, 1, true, false, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 80 + 5
+    controls.exportButton_Hunter_BeastMastery_FontAndText = TRB.UiFunctions.BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Hunter_BeastMastery_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (Font & Text).", 3, 1, false, true, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 90 + 5
+    controls.exportButton_Hunter_BeastMastery_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Hunter_BeastMastery_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (Audio & Tracking).", 3, 1, false, false, true, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 120 + 5
+    controls.exportButton_Hunter_BeastMastery_BarText = TRB.UiFunctions.BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Hunter_BeastMastery_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (Bar Text).", 3, 1, false, false, false, true, false)
+    end)
+
+    yCoord = yCoord - 25
+    specName = "Marksmanship"
+    controls.labels.hunterMarksmanship = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+(xPadding*2), yCoord, 100, 20)
+    controls.labels.hunterMarksmanship.font:SetFontObject(TRB.Options.fonts.options.exportSpec)
+
+    buttonOffset = xCoord + xPadding + 100
+    controls.exportButton_Hunter_Marksmanship_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.exportButton_Hunter_Marksmanship_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (All).", 3, 2, true, true, true, true, false)
+    end)    
+
+    buttonOffset = buttonOffset + 50 + 5
+    controls.exportButton_Hunter_Marksmanship_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Hunter_Marksmanship_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (Bar Display).", 3, 2, true, false, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 80 + 5
+    controls.exportButton_Hunter_Marksmanship_FontAndText = TRB.UiFunctions.BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Hunter_Marksmanship_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (Font & Text).", 3, 2, false, true, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 90 + 5
+    controls.exportButton_Hunter_Marksmanship_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Hunter_Marksmanship_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (Audio & Tracking).", 3, 2, false, false, true, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 120 + 5
+    controls.exportButton_Hunter_Marksmanship_BarText = TRB.UiFunctions.BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Hunter_Marksmanship_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (Bar Text).", 3, 2, false, false, false, true, false)
+    end)
+
+    yCoord = yCoord - 25
+    specName = "Survival"
+    controls.labels.hunterSurvival = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+(xPadding*2), yCoord, 100, 20)
+    controls.labels.hunterSurvival.font:SetFontObject(TRB.Options.fonts.options.exportSpec)
+
+    buttonOffset = xCoord + xPadding + 100
+    controls.exportButton_Hunter_Survival_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.exportButton_Hunter_Survival_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (All).", 3, 3, true, true, true, true, false)
+    end)    
+
+    buttonOffset = buttonOffset + 50 + 5
+    controls.exportButton_Hunter_Survival_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Hunter_Survival_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (Bar Display).", 3, 3, true, false, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 80 + 5
+    controls.exportButton_Hunter_Survival_FontAndText = TRB.UiFunctions.BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Hunter_Survival_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (Font & Text).", 3, 3, false, true, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 90 + 5
+    controls.exportButton_Hunter_Survival_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Hunter_Survival_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (Audio & Tracking).", 3, 3, false, false, true, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 120 + 5
+    controls.exportButton_Hunter_Survival_BarText = TRB.UiFunctions.BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Hunter_Survival_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (Bar Text).", 3, 3, false, false, false, true, false)
+    end)
+
+    yCoord = yCoord - 35
+    controls.labels.priest = TRB.UiFunctions.BuildLabel(parent, "Priest", xCoord, yCoord, 100, 20)
+
+    yCoord = yCoord - 25
+    specName = "Shadow"
+    controls.labels.priestShadow = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+(xPadding*2), yCoord, 100, 20)
+    controls.labels.priestShadow.font:SetFontObject(TRB.Options.fonts.options.exportSpec)
+
+    buttonOffset = xCoord + xPadding + 100
+    controls.exportButton_Priest_Shadow_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.exportButton_Priest_Shadow_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest (All).", 5, 3, true, true, true, true, false)
+    end)    
+
+    buttonOffset = buttonOffset + 50 + 5
+    controls.exportButton_Priest_Shadow_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Priest_Shadow_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest (Bar Display).", 5, 3, true, false, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 80 + 5
+    controls.exportButton_Priest_Shadow_FontAndText = TRB.UiFunctions.BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Priest_Shadow_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest (Font & Text).", 5, 3, false, true, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 90 + 5
+    controls.exportButton_Priest_Shadow_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Priest_Shadow_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest (Audio & Tracking).", 5, 3, false, false, true, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 120 + 5
+    controls.exportButton_Priest_Shadow_BarText = TRB.UiFunctions.BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Priest_Shadow_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest (Bar Text).", 5, 3, false, false, false, true, false)
+    end)   
+
+    yCoord = yCoord - 35
+    controls.labels.shaman = TRB.UiFunctions.BuildLabel(parent, "Shaman", xCoord, yCoord, 100, 20)
+
+    yCoord = yCoord - 25
+    specName = "Elemental"
+    controls.labels.shamanElemental = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+(xPadding*2), yCoord, 100, 20)
+    controls.labels.shamanElemental.font:SetFontObject(TRB.Options.fonts.options.exportSpec)
+
+    buttonOffset = xCoord + xPadding + 100
+    controls.exportButton_Shaman_Elemental_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.exportButton_Shaman_Elemental_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (All).", 7, 3, true, true, true, true, false)
+    end)    
+
+    buttonOffset = buttonOffset + 50 + 5
+    controls.exportButton_Shaman_Elemental_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Shaman_Elemental_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Bar Display).", 7, 3, true, false, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 80 + 5
+    controls.exportButton_Shaman_Elemental_FontAndText = TRB.UiFunctions.BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Shaman_Elemental_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Font & Text).", 7, 3, false, true, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 90 + 5
+    controls.exportButton_Shaman_Elemental_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Shaman_Elemental_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Audio & Tracking).", 7, 3, false, false, true, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 120 + 5
+    controls.exportButton_Shaman_Elemental_BarText = TRB.UiFunctions.BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Shaman_Elemental_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Bar Text).", 7, 3, false, false, false, true, false)
+    end)
+
+    yCoord = yCoord - 35
+    controls.labels.warrior = TRB.UiFunctions.BuildLabel(parent, "Warrior", xCoord, yCoord, 100, 20)
+
+    yCoord = yCoord - 25
+    specName = "Arms"
+    controls.labels.warriorArms = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+(xPadding*2), yCoord, 100, 20)
+    controls.labels.warriorArms.font:SetFontObject(TRB.Options.fonts.options.exportSpec)
+
+    buttonOffset = xCoord + xPadding + 100
+    controls.exportButton_Warrior_Arms_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.exportButton_Warrior_Arms_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (All).", 1, 1, true, true, true, true, false)
+    end)    
+
+    buttonOffset = buttonOffset + 50 + 5
+    controls.exportButton_Warrior_Arms_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Warrior_Arms_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (Bar Display).", 1, 1, true, false, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 80 + 5
+    controls.exportButton_Warrior_Arms_FontAndText = TRB.UiFunctions.BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Warrior_Arms_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (Font & Text).", 1, 1, false, true, false, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 90 + 5
+    controls.exportButton_Warrior_Arms_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Warrior_Arms_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (Audio & Tracking).", 1, 1, false, false, true, false, false)
+    end)   
+
+    buttonOffset = buttonOffset + 120 + 5
+    controls.exportButton_Warrior_Arms_BarText = TRB.UiFunctions.BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Warrior_Arms_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (Bar Text).", 1, 1, false, false, false, true, false)
     end)
 
 

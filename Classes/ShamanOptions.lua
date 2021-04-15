@@ -96,6 +96,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				border=4,
 				thresholdOverlapBorder=true,
 				dragAndDrop=false,
+				pinToPersonalResourceDisplay=false,
 				showPassive=true,
 				showCasting=true
 			},

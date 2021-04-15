@@ -136,10 +136,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				height=34,
 				xPos=0,
 				yPos=-200,
-				pinToPersonalResourceDisplay=true,
 				border=4,
 				thresholdOverlapBorder=true,
 				dragAndDrop=false,
+				pinToPersonalResourceDisplay=false,
 				showPassive=true,
 				showCasting=true
 			},

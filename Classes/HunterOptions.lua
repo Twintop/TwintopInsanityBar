@@ -132,6 +132,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				border=4,
 				thresholdOverlapBorder=true,
 				dragAndDrop=false,
+				pinToPersonalResourceDisplay=false,
 				showPassive=true,
 				showCasting=true
 			},
@@ -340,6 +341,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				border=4,
 				thresholdOverlapBorder=true,
 				dragAndDrop=false,
+				pinToPersonalResourceDisplay=false,
 				showPassive=true,
 				showCasting=true
 			},
@@ -567,6 +569,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				border=4,
 				thresholdOverlapBorder=true,
 				dragAndDrop=false,
+				pinToPersonalResourceDisplay=false,
 				showPassive=true,
 				showCasting=true
 			},
@@ -2534,7 +2537,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 
 		yCoord = yCoord - 50
-		title = "Haste / Crit / Mastery Decimals to Show"
+		title = "Haste / Crit / Mastery Decimal Precision"
 		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.beastMastery.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
@@ -2979,27 +2982,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.beastMastery.generation.time = value
-		end)
-
-
-		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
-
-		yCoord = yCoord - 40
-		title = "Haste / Crit / Mastery Decimal Precision"
-		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.beastMastery.hastePrecision, 1, 0,
-										sliderWidth, sliderHeight, xCoord, yCoord)
-		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 0)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.hunter.beastMastery.hastePrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = controls
@@ -5399,7 +5381,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 
 		yCoord = yCoord - 50
-		title = "Haste / Crit / Mastery Decimals to Show"
+		title = "Haste / Crit / Mastery Decimal Precision"
 		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.marksmanship.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
@@ -6036,27 +6018,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.generation.time = value
-		end)
-
-
-		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
-
-		yCoord = yCoord - 40
-		title = "Haste / Crit / Mastery Decimal Precision"
-		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.marksmanship.hastePrecision, 1, 0,
-										sliderWidth, sliderHeight, xCoord, yCoord)
-		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 0)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.hunter.marksmanship.hastePrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
@@ -8413,7 +8374,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 
 		yCoord = yCoord - 50
-		title = "Haste / Crit / Mastery Decimals to Show"
+		title = "Haste / Crit / Mastery Decimal Precision"
 		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.survival.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
@@ -8795,27 +8756,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.survival.generation.time = value
-		end)
-
-
-		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
-
-		yCoord = yCoord - 40
-		title = "Haste / Crit / Mastery Decimal Precision"
-		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.survival.hastePrecision, 1, 0,
-										sliderWidth, sliderHeight, xCoord, yCoord)
-		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 0)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.hunter.survival.hastePrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
