@@ -42,7 +42,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				fontSize=18
 			},
 			right={
-				text="{$casting}[$casting + ]{$passive}[$passive + ]$rage",
+				text="{$passive}[$passive+]{$casting}[$casting + ]{$passive}[$passive + ]$rage",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
