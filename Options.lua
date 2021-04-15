@@ -410,13 +410,13 @@ local function ConstructImportExportPanel()
     buttonOffset = xCoord + xPadding + 100
     controls.exportButton_Everything = TRB.UiFunctions.BuildButton(parent, "All Classes/Specs + Global Options", buttonOffset, yCoord, 230, 20)
     controls.exportButton_Everything:SetScript("OnClick", function(self, ...)
-        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (All).", nil, nil, true, true, true, true, true)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for All Classes/Specs + Global Options.", nil, nil, true, true, true, true, true)
     end)    
 
     buttonOffset = buttonOffset + 230 + 5
-    controls.exportButton_All_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Just Global Options", buttonOffset, yCoord, 200, 20)
+    controls.exportButton_All_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Global Options Only", buttonOffset, yCoord, 200, 20)
     controls.exportButton_All_BarDisplay:SetScript("OnClick", function(self, ...)
-        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Display).", nil, -1, false, false, false, false, true)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Global Options Only.", nil, -1, false, false, false, false, true)
     end)   
 
     yCoord = yCoord - 35
@@ -425,31 +425,31 @@ local function ConstructImportExportPanel()
     buttonOffset = xCoord + xPadding + 100
     controls.exportButton_All_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.exportButton_All_All:SetScript("OnClick", function(self, ...)
-        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (All).", 11, 1, true, true, true, true, false)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for All Classes/Specs (All).", 11, 1, true, true, true, true, false)
     end)    
 
     buttonOffset = buttonOffset + 50 + 5
     controls.exportButton_All_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
     controls.exportButton_All_BarDisplay:SetScript("OnClick", function(self, ...)
-        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Display).", 11, 1, true, false, false, false, false)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for All Classes/Specs (Bar Display).", 11, 1, true, false, false, false, false)
     end)   
 
     buttonOffset = buttonOffset + 80 + 5
     controls.exportButton_All_FontAndText = TRB.UiFunctions.BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
     controls.exportButton_All_FontAndText:SetScript("OnClick", function(self, ...)
-        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Font & Text).", 11, 1, false, true, false, false, false)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for All Classes/Specs (Font & Text).", 11, 1, false, true, false, false, false)
     end)   
 
     buttonOffset = buttonOffset + 90 + 5
     controls.exportButton_All_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
     controls.exportButton_All_AudioAndTracking:SetScript("OnClick", function(self, ...)
-        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Audio & Tracking).", 11, 1, false, false, true, false, false)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for All Classes/Specs (Audio & Tracking).", 11, 1, false, false, true, false, false)
     end)   
 
     buttonOffset = buttonOffset + 120 + 5
     controls.exportButton_All_BarText = TRB.UiFunctions.BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
     controls.exportButton_All_BarText:SetScript("OnClick", function(self, ...)
-        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Text).", 11, 1, false, false, false, true, false)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for All Classes/Specs (Bar Text).", 11, 1, false, false, false, true, false)
     end)
 
     yCoord = yCoord - 35
