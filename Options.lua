@@ -771,9 +771,9 @@ local function ConstructOptionsPanel()
     local xOffset1 = 50
     local xOffset2 = 275
 
-    interfaceSettingsFrame.controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Twintop's Resource Bar", xCoord+xPadding, yCoord)
+    interfaceSettingsFrame.controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, TRB.Details.addonTitle, xCoord+xPadding, yCoord)
     yCoord = yCoord - 40
-    interfaceSettingsFrame.controls.labels.infoAuthor = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Author:", "Twintop - Frostmourne-US/OCE", xCoord+xPadding*2, yCoord, 100, 450)
+    interfaceSettingsFrame.controls.labels.infoAuthor = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Author:", TRB.Details.addonAuthor .. " - " .. TRB.Details.addonAuthorServer, xCoord+xPadding*2, yCoord, 100, 450)
     yCoord = yCoord - 20
     interfaceSettingsFrame.controls.labels.infoVersion = TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, "Version:", TRB.Details.addonVersion, xCoord+xPadding*2, yCoord, 100, 450)
     yCoord = yCoord - 20
