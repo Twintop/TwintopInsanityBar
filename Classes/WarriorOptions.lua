@@ -2299,7 +2299,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.warrior.arms.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
 		end)
 
 		yCoord = yCoord - 30
@@ -2324,7 +2324,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.warrior.arms.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
 		end)
 
 		yCoord = yCoord - 30
@@ -2349,7 +2349,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.warrior.arms.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
 		end)
 
 		yCoord = yCoord - 30

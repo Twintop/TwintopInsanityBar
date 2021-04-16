@@ -2145,7 +2145,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.shaman.elemental.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.elemental)
 		end)
 
 		yCoord = yCoord - 30
@@ -2170,7 +2170,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.shaman.elemental.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.elemental)
 		end)
 
 		yCoord = yCoord - 30
@@ -2195,7 +2195,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.shaman.elemental.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.elemental)
 		end)
 
 		yCoord = yCoord - 30

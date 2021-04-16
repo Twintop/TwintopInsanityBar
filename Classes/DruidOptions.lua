@@ -2574,7 +2574,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.druid.balance.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.balance)
 		end)
 
 		yCoord = yCoord - 30
@@ -2599,7 +2599,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.druid.balance.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.balance)
 		end)
 
 		yCoord = yCoord - 30
@@ -2624,7 +2624,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.druid.balance.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.balance)
 		end)
 
 		yCoord = yCoord - 30

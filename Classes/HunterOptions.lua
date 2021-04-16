@@ -3030,7 +3030,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.beastMastery.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.beastMastery)
 		end)
 
 		yCoord = yCoord - 30
@@ -3055,7 +3055,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.beastMastery.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.beastMastery)
 		end)
 
 		yCoord = yCoord - 30
@@ -3080,7 +3080,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.beastMastery.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.beastMastery)
 		end)
 
 		yCoord = yCoord - 30
@@ -6066,7 +6066,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.marksmanship.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.marksmanship)
 		end)
 
 		yCoord = yCoord - 30
@@ -6091,7 +6091,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.marksmanship.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.marksmanship)
 		end)
 
 		yCoord = yCoord - 30
@@ -6116,7 +6116,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.marksmanship.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.marksmanship)
 		end)
 
 		yCoord = yCoord - 30
@@ -8804,7 +8804,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.survival.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.survival)
 		end)
 
 		yCoord = yCoord - 30
@@ -8829,7 +8829,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.survival.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.survival)
 		end)
 
 		yCoord = yCoord - 30
@@ -8854,7 +8854,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.survival.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.survival)
 		end)
 
 		yCoord = yCoord - 30

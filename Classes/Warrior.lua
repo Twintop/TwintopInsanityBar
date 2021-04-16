@@ -18,7 +18,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local specCache = {
 		arms = {
 			snapshotData = {},
-			barTextVariables = {}
+			barTextVariables = {
+				icons = {},
+				values = {}
+			}
 		}
 	}
 
@@ -370,11 +373,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			targetsHit = 0,
 			hitTime = nil
 		}
-
-        specCache.arms.barTextVariables = {
-			icons = {},
-			values = {}
-		}
 	end
 
 	local function Setup_Arms()
@@ -473,7 +471,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		TRB.Functions.CheckCharacter()
 		TRB.Data.character.className = "warrior"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Rage)
-		TRB.Data.character.covenantId = C_Covenants.GetActiveCovenantID()
 
         if GetSpecialization() == 1 then		
 			TRB.Data.character.specName = "arms"            
@@ -490,21 +487,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
-
-	local function IsTtdActive(settings)
-		if settings ~= nil and settings.displayText ~= nil then
-			if string.find(settings.displayText.left.text, "$ttd") or
-				string.find(settings.displayText.middle.text, "$ttd") or
-				string.find(settings.displayText.right.text, "$ttd") then
-				TRB.Data.snapshotData.targetData.ttdIsActive = true
-			else
-				TRB.Data.snapshotData.targetData.ttdIsActive = false
-			end
-		else
-			TRB.Data.snapshotData.targetData.ttdIsActive = false
-		end
-    end
-	TRB.Functions.IsTtdActive = IsTtdActive
 
 	local function EventRegistration()
 		local specId = GetSpecialization()
@@ -650,10 +632,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return valid
 		end
 		local specId = GetSpecialization()
-		local settings = nil
-		if specId == 1 then
-			settings = TRB.Data.settings.warrior.arms
-		end
 
         if specId == 1 then --Arms
 			if var == "$ravagerTicks" then
@@ -1340,7 +1318,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local updateRateLimit = 0
 
 	local function TriggerResourceBarUpdates()
-		if GetSpecialization() ~= 1 and GetSpecialization() ~= 2 then
+		if GetSpecialization() ~= 1 then
 			TRB.Functions.HideResourceBar(true)
 			return
 		end

@@ -1247,21 +1247,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
 
-	local function IsTtdActive(settings)
-		if settings ~= nil and settings.displayText ~= nil then
-			if string.find(settings.displayText.left.text, "$ttd") or
-				string.find(settings.displayText.middle.text, "$ttd") or
-				string.find(settings.displayText.right.text, "$ttd") then
-				TRB.Data.snapshotData.targetData.ttdIsActive = true
-			else
-				TRB.Data.snapshotData.targetData.ttdIsActive = false
-			end
-		else
-			TRB.Data.snapshotData.targetData.ttdIsActive = false
-		end
-    end
-	TRB.Functions.IsTtdActive = IsTtdActive
-
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 1 then
@@ -1377,18 +1362,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
-		local ssTotal = 0
-		for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
-			if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
-				TRB.Data.snapshotData.targetData.targets[guid].serpentSting = false
-				TRB.Data.snapshotData.targetData.targets[guid].serpentStingRemaining = 0
-			else
-				if TRB.Data.snapshotData.targetData.targets[guid].serpentSting == true then
-					ssTotal = ssTotal + 1
+		local specId = GetSpecialization()
+
+		if specId == 2 or specId == 3 then -- Marksmanship or Survival
+			local ssTotal = 0
+			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
+				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
+					TRB.Data.snapshotData.targetData.targets[guid].serpentSting = false
+					TRB.Data.snapshotData.targetData.targets[guid].serpentStingRemaining = 0
+				else
+					if TRB.Data.snapshotData.targetData.targets[guid].serpentSting == true then
+						ssTotal = ssTotal + 1
+					end
 				end
 			end
+			TRB.Data.snapshotData.targetData.serpentSting = ssTotal
 		end
-		TRB.Data.snapshotData.targetData.serpentSting = ssTotal
 	end
 
 	local function TargetsCleanup(clearAll)

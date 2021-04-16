@@ -273,6 +273,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 	TRB.Options.Priest.LoadDefaultSettings = LoadDefaultSettings
 
+	--[[
+
+	Shadow Option Menus
+
+	]]
+
 	local function ShadowConstructResetDefaultsPanel(parent)
 		if parent == nil then
 			return
@@ -2735,7 +2741,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.priest.shadow.auspiciousSpiritsTracker = self:GetChecked()
 
-			if ((TRB.Data.settings.priest.shadow.auspiciousSpiritsTracker and TRB.Data.character.talents.as.isSelected) or TRB.Functions.IsTtdActive()) and GetSpecialization() == 3 then
+			if ((TRB.Data.settings.priest.shadow.auspiciousSpiritsTracker and TRB.Data.character.talents.as.isSelected) or TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)) and GetSpecialization() == 3 then
 				targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			else
 				targetsTimerFrame:SetScript("OnUpdate", nil)
@@ -3009,7 +3015,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls
 	end
 
-	local function ShadowConstructBarTextDisplayPanel(parent)
+	local function ShadowConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
 		end
@@ -3083,7 +3089,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.priest.shadow.displayText.left.outVoidformText = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
 		end)
 
 		controls.textbox.voidformInLeft = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.left.inVoidformText,
@@ -3092,7 +3098,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.priest.shadow.displayText.left.inVoidformText = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
 		end)
 
 		yCoord = yCoord - 30
@@ -3117,7 +3123,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.priest.shadow.displayText.middle.outVoidformText = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
 		end)
 
 		controls.textbox.voidformInMiddle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.middle.inVoidformText,
@@ -3126,7 +3132,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.priest.shadow.displayText.middle.inVoidformText = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
 		end)
 
 		yCoord = yCoord - 30
@@ -3151,7 +3157,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.priest.shadow.displayText.right.outVoidformText = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
 		end)
 
 		controls.textbox.voidformInRight = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.right.inVoidformText,
@@ -3160,7 +3166,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.priest.shadow.displayText.right.inVoidformText = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
 		end)
 
 		yCoord = yCoord - 30
@@ -3245,19 +3251,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 25
 
 		local yCoordTop = yCoord
-		local entries1 = TRB.Functions.TableLength(TRB.Data.barTextVariables.values)
+		local entries1 = TRB.Functions.TableLength(cache.barTextVariables.values)
 		for i=1, entries1 do
-			if TRB.Data.barTextVariables.values[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 125, 400, 15)
+			if cache.barTextVariables.values[i].printInSettings == true then
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, cache.barTextVariables.values[i].variable, cache.barTextVariables.values[i].description, xCoord, yCoord, 125, 400, 15)
 				local height = 15
 				yCoord = yCoord - height - 5
 			end
 		end
 
-		local entries2 = TRB.Functions.TableLength(TRB.Data.barTextVariables.pipe)
+		local entries2 = TRB.Functions.TableLength(cache.barTextVariables.pipe)
 		for i=1, entries2 do
-			if TRB.Data.barTextVariables.pipe[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 125, 400, 15)
+			if cache.barTextVariables.pipe[i].printInSettings == true then
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, cache.barTextVariables.pipe[i].variable, cache.barTextVariables.pipe[i].description, xCoord, yCoord, 125, 400, 15)
 				local height = 15
 				yCoord = yCoord - height - 5
 			end
@@ -3265,27 +3271,27 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		---------
 
-		local entries3 = TRB.Functions.TableLength(TRB.Data.barTextVariables.icons)
+		local entries3 = TRB.Functions.TableLength(cache.barTextVariables.icons)
 		for i=1, entries3 do
-			if TRB.Data.barTextVariables.icons[i].printInSettings == true then
+			if cache.barTextVariables.icons[i].printInSettings == true then
 				local text = ""
-				if TRB.Data.barTextVariables.icons[i].icon ~= "" then
-					text = TRB.Data.barTextVariables.icons[i].icon .. " "
+				if cache.barTextVariables.icons[i].icon ~= "" then
+					text = cache.barTextVariables.icons[i].icon .. " "
 				end
 				local height = 15
-				if TRB.Data.barTextVariables.icons[i].variable == "#casting" then
+				if cache.barTextVariables.icons[i].variable == "#casting" then
 					height = 15
 				end
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord, yCoord, 125, 400, height)
+				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, cache.barTextVariables.icons[i].variable, text .. cache.barTextVariables.icons[i].description, xCoord, yCoord, 125, 400, height)
 				yCoord = yCoord - height - 5
 			end
 		end
 	end
 
-	local function ShadowConstructOptionsPanel()
+	local function ShadowConstructOptionsPanel(cache)
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local parent = interfaceSettingsFrame.panel
-		local controls = interfaceSettingsFrame.controls
+		local controls = interfaceSettingsFrame.controls.shadow or {}
 		local yCoord = 0
 		local f = nil
 		local xPadding = 10
@@ -3295,6 +3301,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local xCoord2 = 325
 		local xOffset1 = 50
 		local xOffset2 = 275
+
+		controls.colors = {}
+		controls.labels = {}
+		controls.textbox = {}
+		controls.checkBoxes = {}
+		controls.dropDown = {}
+
 		interfaceSettingsFrame.shadowDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Priest_Shadow", UIParent)
 		interfaceSettingsFrame.shadowDisplayPanel.name = "Shadow Priest"
 		interfaceSettingsFrame.shadowDisplayPanel.parent = parent.name
@@ -3343,13 +3356,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		ShadowConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 		ShadowConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
 		ShadowConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
-		ShadowConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild)
+		ShadowConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
 		ShadowConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
 	end
 
-	local function ConstructOptionsPanel()
+	local function ConstructOptionsPanel(specCache)
 		TRB.Options.ConstructOptionsPanel()
-		ShadowConstructOptionsPanel()
+		ShadowConstructOptionsPanel(specCache.shadow)
 	end
 	TRB.Options.Priest.ConstructOptionsPanel = ConstructOptionsPanel
 end

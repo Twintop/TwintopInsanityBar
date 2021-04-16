@@ -278,21 +278,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
 
-	local function IsTtdActive()
-		if TRB.Data.settings.shaman ~= nil and TRB.Data.settings.shaman.elemental ~= nil and TRB.Data.settings.shaman.elemental.displayText ~= nil then
-			if string.find(TRB.Data.settings.shaman.elemental.displayText.left.text, "$ttd") or
-				string.find(TRB.Data.settings.shaman.elemental.displayText.middle.text, "$ttd") or
-				string.find(TRB.Data.settings.shaman.elemental.displayText.right.text, "$ttd") then
-				TRB.Data.snapshotData.targetData.ttdIsActive = true
-			else
-				TRB.Data.snapshotData.targetData.ttdIsActive = false
-			end
-		else
-			TRB.Data.snapshotData.targetData.ttdIsActive = false
-		end
-    end
-    TRB.Functions.IsTtdActive = IsTtdActive
-
 	local function EventRegistration()
 		if GetSpecialization() == 1 then
 			TRB.Data.specSupported = true
@@ -928,7 +913,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					end
 
 					TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.shaman.elemental)
-					TRB.Functions.IsTtdActive()
+					TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.elemental)
 					FillSpellData()
 					ConstructResourceBar()
 					TRB.Options.Shaman.ConstructOptionsPanel()
