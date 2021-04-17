@@ -3025,8 +3025,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
 		local xPadding = 10
 		local xPadding2 = 30
 		local xCoord = 5
@@ -3034,41 +3032,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
 
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.labels.outVoidform = TRB.UiFunctions.BuildLabel(parent, "Out of Voidform", xCoord+95, yCoord, 220, 20, nil, "CENTER")
-
-		controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
-		f = controls.labels.inVoidform
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord2+35, yCoord)
-		f:SetWidth(225)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("CENTER")
-		f.font:SetSize(220, 20)
-		f.font:SetText("In Voidform")
+		TRB.UiFunctions.BuildLabel(parent, "Out of Voidform", xCoord+95, yCoord, 220, 20, nil, "CENTER")
+		TRB.UiFunctions.BuildLabel(parent, "In Voidform", xCoord2+35, yCoord, 220, 20, nil, "CENTER")
 
 		yCoord = yCoord - 20
-		controls.labels.leftText = CreateFrame("Frame", nil, parent)
-		f = controls.labels.leftText
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		f:SetWidth(90)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("RIGHT")
-		f.font:SetSize(90, 20)
-		f.font:SetText("Left Text")
+		TRB.UiFunctions.BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.voidformOutLeft = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.left.outVoidformText,
 														500, 220, 24, xCoord+95, yCoord)
@@ -3089,20 +3060,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.middleText = CreateFrame("Frame", nil, parent)
-		f = controls.labels.middleText
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		f:SetWidth(90)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("RIGHT")
-		f.font:SetSize(90, 20)
-		f.font:SetText("Middle Text")
+		controls.labels.middleText = TRB.UiFunctions.BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.voidformOutMiddle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.middle.outVoidformText,
 														500, 220, 24, xCoord+95, yCoord)
@@ -3123,20 +3081,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.rightText = CreateFrame("Frame", nil, parent)
-		f = controls.labels.rightText
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		f:SetWidth(90)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("RIGHT")
-		f.font:SetSize(90, 20)
-		f.font:SetText("Right Text")
+		TRB.UiFunctions.BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.voidformOutRight = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.right.outVoidformText,
 														500, 220, 24, xCoord+95, yCoord)
@@ -3157,122 +3102,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.instructions5Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions5Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("For more detailed information about Bar Text customization, see the TRB Wiki on GitHub.")
-
-		yCoord = yCoord - 25
-		controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructionsVar
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("For conditional display (only if $VAR is active/non-zero): {$VAR}[WHAT TO DISPLAY]")
-
-		yCoord = yCoord - 25
-		controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions2Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("Limited Boolean NOT logic for conditional display is supported via {!$VAR}")
-
-		yCoord = yCoord - 25
-		controls.labels.instructions3Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions3Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("IF/ELSE is supported via {$VAR}[TRUE output][FALSE output] and includes NOT support")
-
-		yCoord = yCoord - 25
-		controls.labels.instructions4Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions4Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("For icons use #ICONVARIABLENAME")
-		yCoord = yCoord - 25
-
-		local yCoordTop = yCoord
-		local entries1 = TRB.Functions.TableLength(cache.barTextVariables.values)
-		for i=1, entries1 do
-			if cache.barTextVariables.values[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, cache.barTextVariables.values[i].variable, cache.barTextVariables.values[i].description, xCoord, yCoord, 125, 400, 15)
-				local height = 15
-				yCoord = yCoord - height - 5
-			end
-		end
-
-		local entries2 = TRB.Functions.TableLength(cache.barTextVariables.pipe)
-		for i=1, entries2 do
-			if cache.barTextVariables.pipe[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, cache.barTextVariables.pipe[i].variable, cache.barTextVariables.pipe[i].description, xCoord, yCoord, 125, 400, 15)
-				local height = 15
-				yCoord = yCoord - height - 5
-			end
-		end
-
-		---------
-
-		local entries3 = TRB.Functions.TableLength(cache.barTextVariables.icons)
-		for i=1, entries3 do
-			if cache.barTextVariables.icons[i].printInSettings == true then
-				local text = ""
-				if cache.barTextVariables.icons[i].icon ~= "" then
-					text = cache.barTextVariables.icons[i].icon .. " "
-				end
-				local height = 15
-				if cache.barTextVariables.icons[i].variable == "#casting" then
-					height = 15
-				end
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, cache.barTextVariables.icons[i].variable, text .. cache.barTextVariables.icons[i].description, xCoord, yCoord, 125, 400, height)
-				yCoord = yCoord - height - 5
-			end
-		end
+		TRB.Options.CreateBarTextInstructions(cache, parent, xCoord, yCoord)	
 	end
 
 	local function ShadowConstructOptionsPanel(cache)

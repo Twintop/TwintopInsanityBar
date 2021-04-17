@@ -18,6 +18,15 @@ TRB.Options.fonts.options.tabGreenSmall = f2
 TRB.Options.fonts.options.tabNormalSmall = f3
 TRB.Options.fonts.options.exportSpec = f4
 
+TRB.Options.variables = {}
+local barTextInstructions = string.format("For more detailed information about Bar Text customization, see the TRB Wiki on GitHub.\n\n")
+barTextInstructions = string.format("%sFor conditional display (only if $VARIABLE is active/non-zero):\n    {$VARIABLE}[$VARIABLE is TRUE output]\n\n", barTextInstructions)
+barTextInstructions = string.format("%sLimited Boolean NOT logic for conditional display is supported:\n    {!$VARIABLE}[$VARIABLE is FALSE output]\n\n", barTextInstructions)
+barTextInstructions = string.format("%sIF/ELSE is supported:\n    {$VARIABLE}[$VARIABLE is TRUE output][$VARIABLE is FALSE output]\n\n", barTextInstructions)
+barTextInstructions = string.format("%sIF/ELSE includes NOT support:\n    {!$VARIABLE}[$VARIABLE is FALSE output][$VARIABLE is TRUE output]\n\n", barTextInstructions)
+barTextInstructions = string.format("%sTo display icons use:\n    #ICONVARIABLENAME", barTextInstructions)
+TRB.Options.variables.barTextInstructions = barTextInstructions
+
 local function LoadDefaultSettings()
     local settings = {
         core = {
@@ -828,3 +837,52 @@ local function CleanupSettings(oldSettings)
     return newSettings
 end
 TRB.Options.CleanupSettings = CleanupSettings
+
+local function CreateBarTextInstructions(cache, parent, xCoord, yCoord, variableSplit)
+    if variableSplit == nil then
+        variableSplit = 135
+    end
+
+    local maxOptionsWidth = 550
+    local barTextInstructionsHeight = 200
+    TRB.UiFunctions.BuildLabel(parent, TRB.Options.variables.barTextInstructions, xCoord+5, yCoord, maxOptionsWidth-(2*(xCoord+5)), barTextInstructionsHeight, GameFontHighlight, "LEFT")
+		
+    yCoord = yCoord - barTextInstructionsHeight - 10
+
+    local entries1 = TRB.Functions.TableLength(cache.barTextVariables.values)
+    for i=1, entries1 do
+        if cache.barTextVariables.values[i].printInSettings == true then
+            TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, cache.barTextVariables.values[i].variable, cache.barTextVariables.values[i].description, xCoord, yCoord, variableSplit, 400, 15)
+            local height = 15
+            yCoord = yCoord - height - 5
+        end
+    end
+
+    local entries2 = TRB.Functions.TableLength(cache.barTextVariables.pipe)
+    for i=1, entries2 do
+        if cache.barTextVariables.pipe[i].printInSettings == true then
+            TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, cache.barTextVariables.pipe[i].variable, cache.barTextVariables.pipe[i].description, xCoord, yCoord, variableSplit, 400, 15)
+            local height = 15
+            yCoord = yCoord - height - 5
+        end
+    end
+
+    ---------
+
+    local entries3 = TRB.Functions.TableLength(cache.barTextVariables.icons)
+    for i=1, entries3 do
+        if cache.barTextVariables.icons[i].printInSettings == true then
+            local text = ""
+            if cache.barTextVariables.icons[i].icon ~= "" then
+                text = cache.barTextVariables.icons[i].icon .. " "
+            end
+            local height = 15
+            if cache.barTextVariables.icons[i].variable == "#casting" then
+                height = 15
+            end
+            TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, cache.barTextVariables.icons[i].variable, text .. cache.barTextVariables.icons[i].description, xCoord, yCoord, variableSplit, 400, height)
+            yCoord = yCoord - height - 5
+        end
+    end
+end
+TRB.Options.CreateBarTextInstructions = CreateBarTextInstructions

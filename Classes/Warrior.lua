@@ -632,6 +632,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return valid
 		end
 		local specId = GetSpecialization()
+		local settings = nil
+		if specId == 1 then
+			settings = TRB.Data.settings.warrior.arms
+		end
 
         if specId == 1 then --Arms
 			if var == "$ravagerTicks" then

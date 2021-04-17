@@ -2102,7 +2102,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
     
-	local function ElementalConstructBarTextDisplayPanel(parent)
+	local function ElementalConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
 		end
@@ -2124,20 +2124,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.labels.text = CreateFrame("Frame", nil, parent)
-		f = controls.labels.text
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		f:SetWidth(90)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("RIGHT")
-		f.font:SetSize(90, 20)
-		f.font:SetText("Left Text")
+		controls.labels.leftText = TRB.UiFunctions.BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.left = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.shaman.elemental.displayText.left.text,
 														500, 440, 24, xCoord+100, yCoord)
@@ -2149,20 +2136,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.text = CreateFrame("Frame", nil, parent)
-		f = controls.labels.text
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		f:SetWidth(90)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("RIGHT")
-		f.font:SetSize(90, 20)
-		f.font:SetText("Middle Text")
+		controls.labels.middleText = TRB.UiFunctions.BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.middle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.shaman.elemental.displayText.middle.text,
 														500, 440, 24, xCoord+100, yCoord)
@@ -2174,20 +2148,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.text = CreateFrame("Frame", nil, parent)
-		f = controls.labels.text
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		f:SetWidth(90)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("RIGHT")
-		f.font:SetSize(90, 20)
-		f.font:SetText("Right Text")
+		controls.labels.rightText = TRB.UiFunctions.BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.right = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.shaman.elemental.displayText.right.text,
 														500, 440, 24, xCoord+100, yCoord)
@@ -2199,121 +2160,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.instructions5Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions5Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("For more detailed information about Bar Text customization, see the TRB Wiki on GitHub.")
-
-		yCoord = yCoord - 25
-		controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructionsVar
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("For conditional display (only if $VAR is active/non-zero): {$VAR}[WHAT TO DISPLAY]")
-
-		yCoord = yCoord - 25
-		controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions2Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("Limited Boolean NOT logic for conditional display is supported via {!$VAR}")
-
-		yCoord = yCoord - 25
-		controls.labels.instructions3Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions3Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("IF/ELSE is supported via {$VAR}[TRUE output][FALSE output] and includes NOT support")
-
-		yCoord = yCoord - 25
-		controls.labels.instructions4Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions4Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("For icons use #ICONVARIABLENAME")
-		yCoord = yCoord - 25
-
-		local entries1 = TRB.Functions.TableLength(TRB.Data.barTextVariables.values)
-		for i=1, entries1 do
-			if TRB.Data.barTextVariables.values[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 135, 400, 15)
-				local height = 15
-				yCoord = yCoord - height - 5
-			end
-		end
-
-		local entries2 = TRB.Functions.TableLength(TRB.Data.barTextVariables.pipe)
-		for i=1, entries2 do
-			if TRB.Data.barTextVariables.pipe[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 135, 400, 15)
-				local height = 15
-				yCoord = yCoord - height - 5
-			end
-		end
-
-		---------
-
-		local entries3 = TRB.Functions.TableLength(TRB.Data.barTextVariables.icons)
-		for i=1, entries3 do
-			if TRB.Data.barTextVariables.icons[i].printInSettings == true then
-				local text = ""
-				if TRB.Data.barTextVariables.icons[i].icon ~= "" then
-					text = TRB.Data.barTextVariables.icons[i].icon .. " "
-				end
-				local height = 15
-				if TRB.Data.barTextVariables.icons[i].variable == "#casting" then
-					height = 15
-				end
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord, yCoord, 135, 400, height)
-				yCoord = yCoord - height - 5
-			end
-		end
+		TRB.Options.CreateBarTextInstructions(cache, parent, xCoord, yCoord)
 	end
 
 	local function ElementalConstructOptionsPanel()
@@ -2377,7 +2224,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		ElementalConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 		ElementalConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
 		ElementalConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
-		ElementalConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild)
+		ElementalConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, TRB.Data)
 		ElementalConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
 	end
 
