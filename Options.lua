@@ -405,7 +405,7 @@ local function ConstructImportExportPanel()
 
 
     yCoord = yCoord - 35
-    --controls.labels.druid = TRB.UiFunctions.BuildLabel(parent, "Everything", xCoord, yCoord, 100, 20)
+    --controls.labels.druid = TRB.UiFunctions.BuildLabel(parent, "Everything", xCoord, yCoord, 110, 20)
 
     buttonOffset = xCoord + xPadding + 100
     controls.exportButton_Everything = TRB.UiFunctions.BuildButton(parent, "All Classes/Specs + Global Options", buttonOffset, yCoord, 230, 20)
@@ -420,7 +420,7 @@ local function ConstructImportExportPanel()
     end)   
 
     yCoord = yCoord - 35
-    controls.labels.druid = TRB.UiFunctions.BuildLabel(parent, "All Classes/Specs", xCoord, yCoord, 100, 20)
+    controls.labels.druid = TRB.UiFunctions.BuildLabel(parent, "All Classes/Specs", xCoord, yCoord, 110, 20)
 
     buttonOffset = xCoord + xPadding + 100
     controls.exportButton_All_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
@@ -453,12 +453,11 @@ local function ConstructImportExportPanel()
     end)
 
     yCoord = yCoord - 35
-    controls.labels.druid = TRB.UiFunctions.BuildLabel(parent, "Druid", xCoord, yCoord, 100, 20)
+    controls.labels.druid = TRB.UiFunctions.BuildLabel(parent, "Druid", xCoord, yCoord, 110, 20)
 
     yCoord = yCoord - 25
     specName = "Balance"
-    controls.labels.druidBalance = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+(xPadding*2), yCoord, 100, 20)
-    controls.labels.druidBalance.font:SetFontObject(TRB.Options.fonts.options.exportSpec)
+    controls.labels.druidBalance = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
     buttonOffset = xCoord + xPadding + 100
     controls.exportButton_Druid_Balance_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
@@ -491,7 +490,7 @@ local function ConstructImportExportPanel()
     end)
 
     yCoord = yCoord - 35
-    controls.labels.hunter = TRB.UiFunctions.BuildLabel(parent, "Hunter", xCoord, yCoord, 100, 20)
+    controls.labels.hunter = TRB.UiFunctions.BuildLabel(parent, "Hunter", xCoord, yCoord, 110, 20)
     
     buttonOffset = xCoord + xPadding + 100
     controls.exportButton_Hunter_BeastMastery_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
@@ -526,8 +525,7 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 25
     specName = "Beast Mastery"
-    controls.labels.hunterBeastMastery = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+(xPadding*2), yCoord, 100, 20)
-    controls.labels.hunterBeastMastery.font:SetFontObject(TRB.Options.fonts.options.exportSpec)
+    controls.labels.hunterBeastMastery = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
     buttonOffset = xCoord + xPadding + 100
     controls.exportButton_Hunter_BeastMastery_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
@@ -561,8 +559,7 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 25
     specName = "Marksmanship"
-    controls.labels.hunterMarksmanship = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+(xPadding*2), yCoord, 100, 20)
-    controls.labels.hunterMarksmanship.font:SetFontObject(TRB.Options.fonts.options.exportSpec)
+    controls.labels.hunterMarksmanship = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
     buttonOffset = xCoord + xPadding + 100
     controls.exportButton_Hunter_Marksmanship_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
@@ -596,8 +593,7 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 25
     specName = "Survival"
-    controls.labels.hunterSurvival = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+(xPadding*2), yCoord, 100, 20)
-    controls.labels.hunterSurvival.font:SetFontObject(TRB.Options.fonts.options.exportSpec)
+    controls.labels.hunterSurvival = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
     buttonOffset = xCoord + xPadding + 100
     controls.exportButton_Hunter_Survival_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
@@ -630,12 +626,11 @@ local function ConstructImportExportPanel()
     end)
 
     yCoord = yCoord - 35
-    controls.labels.priest = TRB.UiFunctions.BuildLabel(parent, "Priest", xCoord, yCoord, 100, 20)
+    controls.labels.priest = TRB.UiFunctions.BuildLabel(parent, "Priest", xCoord, yCoord, 110, 20)
 
     yCoord = yCoord - 25
     specName = "Shadow"
-    controls.labels.priestShadow = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+(xPadding*2), yCoord, 100, 20)
-    controls.labels.priestShadow.font:SetFontObject(TRB.Options.fonts.options.exportSpec)
+    controls.labels.priestShadow = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
     buttonOffset = xCoord + xPadding + 100
     controls.exportButton_Priest_Shadow_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
@@ -668,12 +663,11 @@ local function ConstructImportExportPanel()
     end)   
 
     yCoord = yCoord - 35
-    controls.labels.shaman = TRB.UiFunctions.BuildLabel(parent, "Shaman", xCoord, yCoord, 100, 20)
+    controls.labels.shaman = TRB.UiFunctions.BuildLabel(parent, "Shaman", xCoord, yCoord, 110, 20)
 
     yCoord = yCoord - 25
     specName = "Elemental"
-    controls.labels.shamanElemental = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+(xPadding*2), yCoord, 100, 20)
-    controls.labels.shamanElemental.font:SetFontObject(TRB.Options.fonts.options.exportSpec)
+    controls.labels.shamanElemental = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
     buttonOffset = xCoord + xPadding + 100
     controls.exportButton_Shaman_Elemental_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
@@ -706,12 +700,11 @@ local function ConstructImportExportPanel()
     end)
 
     yCoord = yCoord - 35
-    controls.labels.warrior = TRB.UiFunctions.BuildLabel(parent, "Warrior", xCoord, yCoord, 100, 20)
+    controls.labels.warrior = TRB.UiFunctions.BuildLabel(parent, "Warrior", xCoord, yCoord, 110, 20)
 
     yCoord = yCoord - 25
     specName = "Arms"
-    controls.labels.warriorArms = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+(xPadding*2), yCoord, 100, 20)
-    controls.labels.warriorArms.font:SetFontObject(TRB.Options.fonts.options.exportSpec)
+    controls.labels.warriorArms = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
     buttonOffset = xCoord + xPadding + 100
     controls.exportButton_Warrior_Arms_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)

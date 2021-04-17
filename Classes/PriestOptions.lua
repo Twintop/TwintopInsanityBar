@@ -3037,20 +3037,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.labels.outVoidform = CreateFrame("Frame", nil, parent)
-		f = controls.labels.outVoidform
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+100, yCoord)
-		f:SetWidth(225)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("CENTER")
-		f.font:SetSize(220, 20)
-		f.font:SetText("Out of Voidform")
+		controls.labels.outVoidform = TRB.UiFunctions.BuildLabel(parent, "Out of Voidform", xCoord+95, yCoord, 220, 20, nil, "CENTER")
 
 		controls.labels.inVoidform = CreateFrame("Frame", nil, parent)
 		f = controls.labels.inVoidform

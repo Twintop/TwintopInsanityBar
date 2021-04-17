@@ -306,9 +306,13 @@ local function BuildButton(parent, text, posX, posY, width, height)
 end
 TRB.UiFunctions.BuildButton = BuildButton
 
-local function BuildLabel(parent, text, posX, posY, width, height, fontObject)
+local function BuildLabel(parent, text, posX, posY, width, height, fontObject, hAlign)
     if fontObject == nil then
         fontObject = GameFontNormal
+    end
+
+    if hAlign == nil or (string.upper(hAlign) ~= "LEFT" and string.upper(hAlign) ~= "CENTER" and string.upper(hAlign) ~= "RIGHT") then
+        hAlign = "LEFT"
     end
 
     local f = CreateFrame("Frame", nil, parent)
@@ -320,7 +324,8 @@ local function BuildLabel(parent, text, posX, posY, width, height, fontObject)
     f.font = f:CreateFontString(nil, "BACKGROUND")
     f.font:SetFontObject(fontObject)
     f.font:SetPoint("LEFT", f, "LEFT")
-    f.font:SetJustifyH("CENTER")
+    f.font:SetJustifyH(hAlign)
+    f.font:SetSize(width, height)
     f.font:SetText(text)
 
     return f
