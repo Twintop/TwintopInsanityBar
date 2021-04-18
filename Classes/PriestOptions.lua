@@ -22,6 +22,194 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	TRB.Options.Priest.Holy = {}
 	TRB.Options.Priest.Shadow = {}
 
+
+
+	local function HolyLoadDefaultBarTextSimpleSettings()
+		local textSettings = {
+			fontSizeLock=true,
+			fontFaceLock=true,
+			left={
+				text="$haste%",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
+			},
+			middle={
+				text="",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
+			},
+			right={
+				text="{$casting}[$casting + ]{$passive}[$passive + ]$mana / $manaMax ($manaPercent%)",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
+			}
+		}
+
+		return textSettings
+	end
+
+	local function HolyLoadDefaultBarTextAdvancedSettings()
+		local textSettings = {
+			fontSizeLock = false,
+			fontFaceLock = true,
+			left = {
+				text = "$haste% ($gcd)||n{$ttd}[TTD: $ttd]",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 13
+			},
+			middle = {
+				text = "",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 13
+			},
+			right = {
+				text = "{$casting}[#casting$casting+]{$wfMana}[#wf$wfMana+]$mana / $manaMax ($manaPercent%)",				
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 22
+			}
+		}
+
+		return textSettings
+	end
+
+	local function HolyLoadDefaultSettings()
+		local settings = {
+			--hasteApproachingThreshold=135,
+			--hasteThreshold=140,
+			--s2mApproachingThreshold=15,
+			--s2mThreshold=20,
+			hastePrecision=2,
+			overcapThreshold=50000,
+			--manaPrecision=0,
+			--devouringPlagueThreshold=true,
+			--searingNightmareThreshold=true,
+			thresholdWidth=2,
+			--auspiciousSpiritsTracker=true,
+			--voidTendrilTracker=true,
+			displayBar = {
+				alwaysShow=false,
+				notZeroShow=true,
+				neverShow=false
+			},
+			bar = {
+				width=555,
+				height=34,
+				xPos=0,
+				yPos=-200,
+				border=4,
+				thresholdOverlapBorder=true,
+				dragAndDrop=false,
+				pinToPersonalResourceDisplay=false,
+				showPassive=true,
+				showCasting=true
+			},--[[
+			mindbender={
+				mode="gcd",
+				swingsMax=4,
+				gcdsMax=2,
+				timeMax=3.0,
+				enabled=true,
+				useNotification = {
+					enabled=false,
+					thresholdStacks=10
+				}
+			},]]
+			wrathfulFaerie={
+				mode="gcd",
+				procsMax=4,
+				gcdsMax=2,
+				timeMax=3.0,
+				procDelay=0.15,
+				enabled=true
+			},--[[
+			endOfVoidform = {
+				enabled=true,
+				hungeringVoidOnly=false,
+				mode="gcd",
+				gcdsMax=2,
+				timeMax=3.0
+			},]]
+			colors={
+				text={
+					current="FF4D4DFF",
+					casting="FFFFFFFF",
+					passive="FF8080FF",
+					overcap="FFFF0000",
+					overThreshold="FF00FF00",
+					overThresholdEnabled=false,
+					overcapEnabled=true,
+					left="FFFFFFFF",
+					middle="FFFFFFFF",
+					right="FFFFFFFF",
+					--[[hasteBelow="FFFFFFFF",
+					hasteApproaching="FFFFFF00",
+					hasteAbove="FF00FF00",
+					s2mBelow="FF00FF00",
+					s2mApproaching="FFFFFF00",
+					s2mAbove="FFFF0000",
+					dots={
+						enabled=true,
+						up="FFFFFFFF",
+						down="FFFF0000",
+						pandemic="FFFFFF00"
+					}]]
+				},
+				bar={
+					border="FF000099",
+					borderOvercap="FFFF0000",
+					background="66000000",
+					base="FF763BAF",
+					--enterVoidform="FF5C2F89",
+					--inVoidform="FF431863",
+					--inVoidform1GCD="FFFF0000",
+					casting="FFFFFFFF",
+					passive="FF8080FF",
+					--flashAlpha=0.70,
+					--flashPeriod=0.5,
+					--flashEnabled=true,
+					overcapEnabled=true
+				},
+				threshold={
+					under="FFFFFFFF",
+					over="FF00FF00",
+					mindbender="FF8080FF"
+				}
+			},
+			displayText={},
+			audio={
+				overcap={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				}
+			},
+			textures={
+				background="Interface\\Tooltips\\UI-Tooltip-Background",
+				backgroundName="Blizzard Tooltip",
+				border="Interface\\Buttons\\WHITE8X8",
+				borderName="1 Pixel",
+				resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
+				resourceBarName="Blizzard",
+				passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
+				passiveBarName="Blizzard",
+				castingBar="Interface\\TargetingFrame\\UI-StatusBar",
+				castingBarName="Blizzard",
+				textureLock=true
+			}
+		}
+
+		settings.displayText = HolyLoadDefaultBarTextSimpleSettings()
+		return settings
+	end
+
+
+
 	local function ShadowLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
@@ -266,8 +454,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return settings
 	end
 
+
+
+	local function HolyResetSettings()
+		local settings = HolyLoadDefaultSettings()
+		return settings
+	end
+
+
 	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
+		settings.priest.holy = HolyLoadDefaultSettings()
 		settings.priest.shadow = ShadowLoadDefaultSettings()
 		return settings
 	end

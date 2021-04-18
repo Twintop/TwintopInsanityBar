@@ -2434,8 +2434,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local specId = GetSpecialization()
 
 		if specId == 1 then
-			UpdateSnapshot_BeastMastery()
-			
+			UpdateSnapshot_BeastMastery()			
 			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.hunter.beastMastery)
 
 			if TRB.Data.snapshotData.isTracking then
@@ -2644,7 +2643,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.UpdateResourceBar(TRB.Data.settings.hunter.beastMastery, refreshText)
 		elseif specId == 2 then
 			UpdateSnapshot_Marksmanship()
-
 			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.hunter.marksmanship)
 
 			if TRB.Data.snapshotData.isTracking then
@@ -3044,7 +3042,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local updateRateLimit = 0
 
 	local function TriggerResourceBarUpdates()
-		if GetSpecialization() ~= 1 and GetSpecialization() ~= 2 and GetSpecialization() ~= 3 then
+		local specId = GetSpecialization()
+		if specId ~= 1 and specId ~= 2 and specId ~= 3 then
 			TRB.Functions.HideResourceBar(true)
 			return
 		end

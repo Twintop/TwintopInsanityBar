@@ -121,6 +121,20 @@ local function RoundTo(num, numDecimalPlaces, mode)
 end
 TRB.Functions.RoundTo = RoundTo
 
+local function ConvertToShortNumberNotation(num, numDecimalPlaces, mode)
+	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
+
+	if num >= 10^9 then
+		return string.format("%." .. numDecimalPlaces .. "fb", TRB.Functions.RoundTo(num / 10^9, numDecimalPlaces, mode))
+	elseif num >= 10^6 then
+        return string.format("%." .. numDecimalPlaces .. "fm", TRB.Functions.RoundTo(num / 10^6, numDecimalPlaces, mode))
+    elseif num >= 10^3 then
+        return string.format("%." .. numDecimalPlaces .. "fk", TRB.Functions.RoundTo(num / 10^3, numDecimalPlaces, mode))
+    else
+        return string.format("%." .. numDecimalPlaces .. "f", TRB.Functions.RoundTo(num, 0, mode))
+    end
+end
+TRB.Functions.ConvertToShortNumberNotation = ConvertToShortNumberNotation
 
 -- Color Functions
 
