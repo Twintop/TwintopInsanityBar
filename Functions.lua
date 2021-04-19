@@ -310,9 +310,42 @@ local function FillSpellData(spells)
 		end
 	end
 
+	spells = TRB.Functions.FillSpellDataManaCost(spells)
+
 	return spells
 end
 TRB.Functions.FillSpellData = FillSpellData
+
+local function GetSpellManaCost(spellId)
+	local spc = GetSpellPowerCost(spellId)
+	local length = TRB.Functions.TableLength(spc)
+
+	for x = 1, length do
+		if spc[x]["name"] == "MANA" and spc[x]["cost"] > 0 then
+			return spc[x]["cost"]
+		end
+	end
+	return 0
+end
+TRB.Functions.GetSpellManaCost = GetSpellManaCost
+
+local function FillSpellDataManaCost(spells)
+	if spells == nil then
+		spells = TRB.Data.spells
+	end
+
+	local toc = select(4, GetBuildInfo())
+
+	for k, v in pairs(spells) do
+		if spells[k] ~= nil and spells[k]["id"] ~= nil and (spells[k]["tocMinVersion"] == nil or toc >= spells[k]["tocMinVersion"]) and spells[k]["usesMana"] then
+			spells[k]["mana"] = -TRB.Functions.GetSpellManaCost(spells[k]["id"])
+		end
+	end
+
+	return spells
+end
+TRB.Functions.FillSpellDataManaCost = FillSpellDataManaCost
+
 
 local function ResetSnapshotData()
 	TRB.Data.snapshotData = {
