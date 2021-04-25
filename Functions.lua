@@ -123,15 +123,21 @@ TRB.Functions.RoundTo = RoundTo
 
 local function ConvertToShortNumberNotation(num, numDecimalPlaces, mode)
 	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
+	local negative = ""
+
+	if num < 0 then
+		negative = "-"
+		num = -num
+	end
 
 	if num >= 10^9 then
-		return string.format("%." .. numDecimalPlaces .. "fb", TRB.Functions.RoundTo(num / 10^9, numDecimalPlaces, mode))
+		return string.format(negative .. "%." .. numDecimalPlaces .. "fb", TRB.Functions.RoundTo(num / 10^9, numDecimalPlaces, mode))
 	elseif num >= 10^6 then
-        return string.format("%." .. numDecimalPlaces .. "fm", TRB.Functions.RoundTo(num / 10^6, numDecimalPlaces, mode))
+        return string.format(negative .. "%." .. numDecimalPlaces .. "fm", TRB.Functions.RoundTo(num / 10^6, numDecimalPlaces, mode))
     elseif num >= 10^3 then
-        return string.format("%." .. numDecimalPlaces .. "fk", TRB.Functions.RoundTo(num / 10^3, numDecimalPlaces, mode))
+        return string.format(negative .. "%." .. numDecimalPlaces .. "fk", TRB.Functions.RoundTo(num / 10^3, numDecimalPlaces, mode))
     else
-        return string.format("%." .. numDecimalPlaces .. "f", TRB.Functions.RoundTo(num, 0, mode))
+        return string.format(negative .. "%." .. numDecimalPlaces .. "f", TRB.Functions.RoundTo(num, 0, mode))
     end
 end
 TRB.Functions.ConvertToShortNumberNotation = ConvertToShortNumberNotation
