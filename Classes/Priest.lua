@@ -135,6 +135,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			isActive = false,
 			ticksRemaining = 0,
 			tickRate = 0,
+			tickRateFound = false,
 			previousTickTime = nil,			
 			firstTickTime = nil, -- First time we saw a tick.
 			endTime = nil,
@@ -2703,7 +2704,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function UpdateSymbolOfHope(forceCleanup)
 		if TRB.Data.snapshotData.symbolOfHope.isActive or forceCleanup then
 			local currentTime = GetTime()
-			if forceCleanup or TRB.Data.snapshotData.symbolOfHope.endTime == nil or currentTime > TRB.Data.snapshotData.symbolOfHope.endTime then
+			if forceCleanup or TRB.Data.snapshotData.symbolOfHope.endTime == nil or currentTime > TRB.Data.snapshotData.symbolOfHope.endTime or currentTime > TRB.Data.snapshotData.symbolOfHope.firstTickTime + TRB.Data.spells.symbolOfHope.duration or currentTime > TRB.Data.snapshotData.symbolOfHope.firstTickTime + (TRB.Data.spells.symbolOfHope.ticks * TRB.Data.snapshotData.symbolOfHope.tickRate) then
 				TRB.Data.snapshotData.symbolOfHope.ticksRemaining = 0
 				TRB.Data.snapshotData.symbolOfHope.tickRate = 0
 				TRB.Data.snapshotData.symbolOfHope.previousTickTime = nil
@@ -2712,11 +2713,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.symbolOfHope.resourceRaw = 0
 				TRB.Data.snapshotData.symbolOfHope.resourceFinal = 0
 				TRB.Data.snapshotData.symbolOfHope.isActive = false
+				TRB.Data.snapshotData.symbolOfHope.tickRateFound = false
 			else
 				TRB.Data.snapshotData.symbolOfHope.ticksRemaining = math.ceil((TRB.Data.snapshotData.symbolOfHope.endTime - currentTime) / TRB.Data.snapshotData.symbolOfHope.tickRate)
 				TRB.Data.snapshotData.symbolOfHope.resourceRaw = TRB.Data.snapshotData.symbolOfHope.ticksRemaining * TRB.Data.spells.symbolOfHope.manaPercent * TRB.Data.character.maxResource
 				TRB.Data.snapshotData.symbolOfHope.resourceFinal = CalculateManaGain(TRB.Data.snapshotData.symbolOfHope.resourceRaw)
-				print(TRB.Data.snapshotData.symbolOfHope.resourceRaw)
 			end
 		end
 	end
@@ -3156,7 +3157,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			if destGUID == TRB.Data.character.guid then
 				if specId == 2 then -- Let's check raid effect mana stuff
-					if type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.symbolOfHope.tickId then
+					if type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.symbolOfHope.tickId then						
+						local diff = 0
+						if TRB.Data.snapshotData.symbolOfHope.previousTickTime ~= nil then
+							diff = currentTime - TRB.Data.snapshotData.symbolOfHope.previousTickTime
+						end
+
 						TRB.Data.snapshotData.symbolOfHope.isActive = true
 						if TRB.Data.snapshotData.symbolOfHope.firstTickTime == nil then
 							TRB.Data.snapshotData.symbolOfHope.firstTickTime = currentTime
@@ -3165,24 +3171,28 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							if sourceGUID == TRB.Data.character.guid then
 								TRB.Data.snapshotData.symbolOfHope.endTime = currentTime + (TRB.Data.spells.symbolOfHope.duration / (1.5 / TRB.Functions.GetCurrentGCDTime(true)))
 								TRB.Data.snapshotData.symbolOfHope.tickRate = (TRB.Data.spells.symbolOfHope.duration / TRB.Data.spells.symbolOfHope.ticks) / (1.5 / TRB.Functions.GetCurrentGCDTime(true))
+								TRB.Data.snapshotData.symbolOfHope.tickRateFound = true
 							else -- If the player isn't the one casting this, we can't know the tickrate until there are multiple ticks.
 								TRB.Data.snapshotData.symbolOfHope.tickRate = (TRB.Data.spells.symbolOfHope.duration / TRB.Data.spells.symbolOfHope.ticks)
 								TRB.Data.snapshotData.symbolOfHope.endTime = currentTime + TRB.Data.spells.symbolOfHope.duration
 							end
-						else
-							TRB.Data.snapshotData.symbolOfHope.ticksRemaining = TRB.Data.snapshotData.symbolOfHope.ticksRemaining - 1
-							
-							if TRB.Data.snapshotData.symbolOfHope.ticksRemaining > 0 then
+						else							
+							if TRB.Data.snapshotData.symbolOfHope.ticksRemaining >= 1 then
 								if sourceGUID ~= TRB.Data.character.guid then
-									TRB.Data.snapshotData.symbolOfHope.tickRate = currentTime - TRB.Data.snapshotData.symbolOfHope.previousTickTime
+									if not TRB.Data.snapshotData.symbolOfHope.tickRateFound then
+										TRB.Data.snapshotData.symbolOfHope.tickRate = currentTime - TRB.Data.snapshotData.symbolOfHope.previousTickTime
+										TRB.Data.snapshotData.symbolOfHope.tickRateFound = true
+										TRB.Data.snapshotData.symbolOfHope.endTime = currentTime + (TRB.Data.snapshotData.symbolOfHope.tickRate * (TRB.Data.snapshotData.symbolOfHope.ticksRemaining - 1))
+									end
 
 									if TRB.Data.snapshotData.symbolOfHope.tickRate > (1.75 * 1.5) then -- Assume if it's taken this long for a tick to happen, the rate is really half this and one was missed
 										TRB.Data.snapshotData.symbolOfHope.tickRate = TRB.Data.snapshotData.symbolOfHope.tickRate / 2
-									end
-
-									TRB.Data.snapshotData.symbolOfHope.endTime = currentTime + (TRB.Data.snapshotData.symbolOfHope.tickRate * TRB.Data.snapshotData.symbolOfHope.ticksRemaining)
+										TRB.Data.snapshotData.symbolOfHope.endTime = currentTime + (TRB.Data.snapshotData.symbolOfHope.tickRate * (TRB.Data.snapshotData.symbolOfHope.ticksRemaining - 2))
+										TRB.Data.snapshotData.symbolOfHope.tickRateFound = false
+									end									
 								end
 							end
+							TRB.Data.snapshotData.symbolOfHope.previousTickTime = currentTime
 						end
 						TRB.Data.snapshotData.symbolOfHope.resourceRaw = TRB.Data.snapshotData.symbolOfHope.ticksRemaining * TRB.Data.spells.symbolOfHope.manaPercent * TRB.Data.character.maxResource
 						TRB.Data.snapshotData.symbolOfHope.resourceFinal = CalculateManaGain(TRB.Data.snapshotData.symbolOfHope.resourceRaw)
@@ -3202,7 +3212,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			if sourceGUID == TRB.Data.character.guid then 
 				if specId == 2 then
-					if spellIs == TRB.Data.spells.symbolOfHope.id then
+					if spellId == TRB.Data.spells.symbolOfHope.id then
 						if type == "SPELL_AURA_REMOVED" then -- Lost Symbol of Hope							
 							-- Let UpdateSymbolOfHope() clean this up
 							UpdateSymbolOfHope(true)
