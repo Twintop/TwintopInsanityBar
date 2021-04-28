@@ -85,6 +85,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				tickId = 265144
 			},
 
+			-- External mana
+			innervate = {
+				id = 29166,
+				name = "",
+				icon = "",
+				duration = 10,
+				isActive = false
+			},
+
 			-- Covenant
 			wrathfulFaerie = {
 				id = 342132,
@@ -93,7 +102,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				manaPercent = 0.005, 
 				duration = 20,
 				icd = 0.75,
-				energizeId = 327703 -- CONFIRM
+				energizeId = 327703
 			},
 
 			-- Conduit
@@ -104,7 +113,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				manaPercent = 0, -- We'll use modifier against wrathfulFaerie instead
 				modifier = 0.8,
 				icd = 0.75,
-				energizeId = 345456, -- CONFIRM
+				energizeId = 345456,
 				conduitId = 101,
 				conduitRanks = {}
 			},
@@ -130,6 +139,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			currentTargetGuid = nil,
 			wrathfulFaerieGuid = nil,
 			targets = {}
+		}
+		specCache.holy.snapshotData.innervate = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil
 		}
 		specCache.holy.snapshotData.symbolOfHope = {
 			isActive = false,
@@ -1239,14 +1253,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(TRB.Data.spells.voidBolt.id)
 				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier), 0.75) + latency
 				local gcdLockRemaining = TRB.Functions.GetCurrentGCDLockRemaining()
-				local targetDebuffId = select(10, TRB.Functions.FindDebuffById(TRB.Data.spells.hungeringVoid.idDebuff, "target", TRB.Data.character.guid))
-
+				
 				local castGrantsExtension = true
 				--[[
 				Issue #107 - Twintop 2021-01-03
 					Hungering Void doesn't require the target to actually be debuffed to grant extensions.
 					Change back to the code below once this is fixed by Blizz.
 				----
+				local targetDebuffId = select(10, TRB.Functions.FindDebuffById(TRB.Data.spells.hungeringVoid.idDebuff, "target", TRB.Data.character.guid))
 				local castGrantsExtension = false
 
 				if targetDebuffId ~= nil then
@@ -2734,6 +2748,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				
 		local currentTime = GetTime()
 		local _
+
+		if TRB.Data.snapshotData.innervate.startTime ~= nil and currentTime > (TRB.Data.snapshotData.innervate.startTime + TRB.Data.snapshotData.innervate.duration) then
+            TRB.Data.snapshotData.innervate.startTime = nil
+            TRB.Data.snapshotData.innervate.duration = 0
+        end
 	end
 
 	local function UpdateSnapshot_Shadow()
@@ -2890,6 +2909,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					if TRB.Data.settings.priest.holy.bar.showPassive and passiveValue > 0 and passiveBarValue < TRB.Data.character.maxResource then
 						TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, passiveFrame.thresholds[1], passiveFrame, TRB.Data.settings.priest.holy.thresholdWidth, (castingBarValue + TRB.Data.snapshotData.wrathfulFaerie.resourceFinal), TRB.Data.character.maxResource)
+						passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.mindbender, true))
 						passiveFrame.thresholds[1]:Show()
 					else
 						passiveFrame.thresholds[1]:Hide()
@@ -3196,6 +3216,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 						TRB.Data.snapshotData.symbolOfHope.resourceRaw = TRB.Data.snapshotData.symbolOfHope.ticksRemaining * TRB.Data.spells.symbolOfHope.manaPercent * TRB.Data.character.maxResource
 						TRB.Data.snapshotData.symbolOfHope.resourceFinal = CalculateManaGain(TRB.Data.snapshotData.symbolOfHope.resourceRaw)
+					elseif spellId == TRB.Data.spells.innervate.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.innervate.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.innervate.duration, TRB.Data.snapshotData.innervate.endTime, _, _, _, TRB.Data.snapshotData.innervate.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.innervate.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.innervate.isActive = false
+							TRB.Data.snapshotData.innervate.spellId = nil
+							TRB.Data.snapshotData.innervate.duration = 0
+							TRB.Data.snapshotData.innervate.endTime = nil
+						end
 					end		
 				elseif specId == 3 then
 					if settings.mindbender.enabled and type == "SPELL_ENERGIZE" and
