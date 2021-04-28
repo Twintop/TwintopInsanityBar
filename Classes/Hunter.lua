@@ -1354,16 +1354,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.flayersMark)
 	end
 
-    local function CalculateAbilityResourceValue(resource)
+    local function CalculateAbilityResourceValue(resource, threshold)
         local modifier = 1.0
 		if GetSpecialization() == 2 then
-			if TRB.Data.spells.trueshot.isActive then
+			if TRB.Data.spells.trueshot.isActive and not threshold then
 				modifier = modifier * TRB.Data.spells.trueshot.modifier
 			end
 		end
 
 		if resource > 0 then
-			if TRB.Data.spells.nesingwarysTrappingApparatus.isActive then
+			if TRB.Data.spells.nesingwarysTrappingApparatus.isActive and not threshold then
 				modifier = modifier * TRB.Data.spells.nesingwarysTrappingApparatus.modifier
 			end
 		end
@@ -2503,7 +2503,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							local focusAmount = CalculateAbilityResourceValue(spell.focus)
+							local focusAmount = CalculateAbilityResourceValue(spell.focus, true)
 							TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.beastMastery, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.hunter.beastMastery.thresholdWidth, -focusAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
@@ -2723,7 +2723,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							local focusAmount = CalculateAbilityResourceValue(spell.focus)
+							local focusAmount = CalculateAbilityResourceValue(spell.focus, true)
 							TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholdWidth, -focusAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
@@ -2917,7 +2917,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							local focusAmount = CalculateAbilityResourceValue(spell.focus)
+							local focusAmount = CalculateAbilityResourceValue(spell.focus, true)
 							TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.hunter.survival.thresholdWidth, -focusAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
