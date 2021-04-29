@@ -661,7 +661,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		return settings
 	end
 
-
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 
@@ -901,6 +900,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.beastMastery)
+
+		controls.buttons.exportButton_Hunter_BeastMastery_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_BeastMastery_BarDisplay:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (Bar Display).", 3, 1, true, false, false, false, false)
+		end)
 
 		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
 
@@ -2029,6 +2033,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
+		controls.buttons.exportButton_Hunter_BeastMastery_FontAndText = TRB.UiFunctions.BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_BeastMastery_FontAndText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (Font & Text).", 3, 1, false, true, false, false, false)
+		end)
+
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -2581,6 +2590,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
+		controls.buttons.exportButton_Hunter_BeastMastery_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_BeastMastery_AudioAndTracking:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (Audio & Tracking).", 3, 1, false, false, true, false, false)
+		end)
+
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -3006,6 +3020,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
 
+		controls.buttons.exportButton_Hunter_BeastMastery_BarText = TRB.UiFunctions.BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_BeastMastery_BarText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (Bar Text).", 3, 1, false, false, false, true, false)
+		end)
+
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -3220,6 +3239,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textbox = {}
 		controls.checkBoxes = {}
 		controls.dropDown = {}
+		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.beastMasteryDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_BeastMastery", UIParent)
 		interfaceSettingsFrame.beastMasteryDisplayPanel.name = "Beast Mastery Hunter"
@@ -3228,7 +3248,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		parent = interfaceSettingsFrame.beastMasteryDisplayPanel
 
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Beast Mastery Hunter", xCoord+xPadding, yCoord)
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Beast Mastery Hunter", xCoord+xPadding, yCoord-5)
+
+		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+			StaticPopup_Show("TwintopResourceBar_Import")
+		end)
+
+		controls.buttons.exportButton_Hunter_BeastMastery_All = TRB.UiFunctions.BuildButton(parent, "Export Specialization", 440, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Hunter_BeastMastery_All:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (All).", 3, 1, true, true, true, true, false)
+		end)
 
 		yCoord = yCoord - 42
 
@@ -3502,6 +3532,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.marksmanship)
+
+		controls.buttons.exportButton_Hunter_Marksmanship_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_Marksmanship_BarDisplay:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (Bar Display).", 3, 2, true, false, false, false, false)
+		end)
 
 		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
 
@@ -4752,6 +4787,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
+		controls.buttons.exportButton_Hunter_Marksmanship_FontAndText = TRB.UiFunctions.BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_Marksmanship_FontAndText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (Font & Text).", 3, 2, false, true, false, false, false)
+		end)
+
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -5425,6 +5465,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
+		controls.buttons.exportButton_Hunter_Marksmanship_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_Marksmanship_AudioAndTracking:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (Audio & Tracking).", 3, 2, false, false, true, false, false)
+		end)
+
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -6042,6 +6087,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
 
+		controls.buttons.exportButton_Hunter_Marksmanship_BarText = TRB.UiFunctions.BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_Marksmanship_BarText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (Bar Text).", 3, 2, false, false, false, true, false)
+		end)
+
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -6256,6 +6306,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textbox = {}
 		controls.checkBoxes = {}
 		controls.dropDown = {}
+		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.marksmanshipDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Marksmanship", UIParent)
 		interfaceSettingsFrame.marksmanshipDisplayPanel.name = "Marksmanship Hunter"
@@ -6264,7 +6315,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		parent = interfaceSettingsFrame.marksmanshipDisplayPanel
 
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Marksmanship Hunter", xCoord+xPadding, yCoord)
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Marksmanship Hunter", xCoord+xPadding, yCoord-5)
+
+		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+			StaticPopup_Show("TwintopResourceBar_Import")
+		end)
+
+		controls.buttons.exportButton_Hunter_Marksmanship_All = TRB.UiFunctions.BuildButton(parent, "Export Specialization", 440, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Hunter_Marksmanship_All:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (All).", 3, 2, true, true, true, true, false)
+		end)
 
 		yCoord = yCoord - 42
 
@@ -6539,6 +6600,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.survival)
+
+		controls.buttons.exportButton_Hunter_Survival_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_Survival_BarDisplay:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (Bar Display).", 3, 3, true, false, false, false, false)
+		end)
 
 		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
 
@@ -7772,6 +7838,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
+		controls.buttons.exportButton_Hunter_Survival_FontAndText = TRB.UiFunctions.BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_Survival_FontAndText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (Font & Text).", 3, 3, false, true, false, false, false)
+		end)
+
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -8418,6 +8489,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
+		controls.buttons.exportButton_Hunter_Survival_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_Survival_AudioAndTracking:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (Audio & Tracking).", 3, 3, false, false, true, false, false)
+		end)
+
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -8780,6 +8856,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
 
+		controls.buttons.exportButton_Hunter_Survival_BarText = TRB.UiFunctions.BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_Survival_BarText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (Bar Text).", 3, 3, false, false, false, true, false)
+		end)
+
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -8993,7 +9074,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.labels = {}
 		controls.textbox = {}
 		controls.checkBoxes = {}
-		controls.dropDown = {}
+		controls.dropDown = {}		
+		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.survivalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Survival", UIParent)
 		interfaceSettingsFrame.survivalDisplayPanel.name = "Survival Hunter"
@@ -9002,7 +9084,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		parent = interfaceSettingsFrame.survivalDisplayPanel
 
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Survival Hunter", xCoord+xPadding, yCoord)
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Survival Hunter", xCoord+xPadding, yCoord-5)
+
+		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+			StaticPopup_Show("TwintopResourceBar_Import")
+		end)
+
+		controls.buttons.exportButton_Hunter_Survival_All = TRB.UiFunctions.BuildButton(parent, "Export Specialization", 440, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Hunter_Survival_All:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (All).", 3, 3, true, true, true, true, false)
+		end)
 
 		yCoord = yCoord - 42
 
