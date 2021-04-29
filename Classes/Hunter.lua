@@ -1357,8 +1357,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
     local function CalculateAbilityResourceValue(resource, threshold)
         local modifier = 1.0
 		if GetSpecialization() == 2 then
-			if TRB.Data.spells.trueshot.isActive and not threshold then
-				modifier = modifier * TRB.Data.spells.trueshot.modifier
+			if resource > 0 then
+				if TRB.Data.spells.trueshot.isActive and not threshold then
+					modifier = modifier * TRB.Data.spells.trueshot.modifier
+				end
 			end
 		end
 
