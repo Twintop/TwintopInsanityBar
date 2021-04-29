@@ -3591,6 +3591,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.shadow.bar.width / TRB.Data.constants.borderWidthFactor))
 
+		controls.buttons.exportButton_Priest_Shadow_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Priest_Shadow_BarDisplay:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest (Bar Display).", 5, 3, true, false, false, false, false)
+		end)
+
 		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
 
 		yCoord = yCoord - 40
@@ -4705,6 +4710,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
+		controls.buttons.exportButton_Priest_Shadow_FontAndText = TRB.UiFunctions.BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Priest_Shadow_FontAndText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest (Font & Text).", 5, 3, false, true, false, false, false)
+		end)
+
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -5559,6 +5569,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
+		controls.buttons.exportButton_Priest_Shadow_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Priest_Shadow_AudioAndTracking:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest (Audio & Tracking).", 5, 3, false, false, true, false, false)
+		end)
+
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -6123,6 +6138,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local xOffset2 = xCoord2 + xOffset1
 
 		TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		controls.buttons.exportButton_Priest_Shadow_BarText = TRB.UiFunctions.BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Priest_Shadow_BarText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest (Bar Text).", 5, 3, false, false, false, true, false)
+		end)
 
 		yCoord = yCoord - 30
 		TRB.UiFunctions.BuildLabel(parent, "Out of Voidform", xCoord+95, yCoord, 220, 20, nil, "CENTER")
@@ -6221,8 +6240,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.shadowDisplayPanel)
 
 		parent = interfaceSettingsFrame.shadowDisplayPanel
+		
+		controls.buttons = controls.buttons or {}
 
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Shadow Priest", xCoord+xPadding, yCoord)
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Shadow Priest", xCoord+xPadding, yCoord-5)
+
+		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+			StaticPopup_Show("TwintopResourceBar_Import")
+		end)
+
+		controls.buttons.exportButton_Priest_Shadow_All = TRB.UiFunctions.BuildButton(parent, "Export Specialization", 440, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Priest_Shadow_All:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest (All).", 5, 3, true, true, true, true, false)
+		end)
 
 		yCoord = yCoord - 42
 

@@ -406,6 +406,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.shaman.elemental.bar.width / TRB.Data.constants.borderWidthFactor))
 
+		controls.buttons.exportButton_Shaman_Elemental_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Elemental_BarDisplay:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Bar Display).", 7, 1, true, false, false, false, false)
+		end)
+
 		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
 
 		yCoord = yCoord - 40
@@ -1354,6 +1359,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
+		controls.buttons.exportButton_Shaman_Elemental_FontAndText = TRB.UiFunctions.BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Elemental_FontAndText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Font & Text).", 7, 1, false, true, false, false, false)
+		end)
+
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -1951,6 +1961,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
+		controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Audio & Tracking).", 7, 1, false, false, true, false, false)
+		end)
+
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -2121,6 +2136,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
 
+		controls.buttons.exportButton_Shaman_Elemental_BarText = TRB.UiFunctions.BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Elemental_BarText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Bar Text).", 7, 1, false, false, false, true, false)
+		end)
+
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -2182,8 +2202,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.elementalDisplayPanel)
 
 		parent = interfaceSettingsFrame.elementalDisplayPanel
+		
+		controls.buttons = controls.buttons or {}
 
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Elemental Shaman", xCoord+xPadding, yCoord)
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Elemental Shaman", xCoord+xPadding, yCoord-5)
+
+		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+			StaticPopup_Show("TwintopResourceBar_Import")
+		end)
+
+		controls.buttons.exportButton_Shaman_Elemental_All = TRB.UiFunctions.BuildButton(parent, "Export Specialization", 440, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Shaman_Elemental_All:SetScript("OnClick", function(self, ...)
+			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (All).", 7, 1, true, true, true, true, false)
+		end)
 
 		yCoord = yCoord - 42
 
