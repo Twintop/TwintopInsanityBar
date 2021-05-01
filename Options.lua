@@ -351,8 +351,10 @@ local function ConstructImportExportPanel()
     StaticPopupDialogs["TwintopResourceBar_Import"] = {
         text = "Paste in a Twintop's Resource Bar configuration string to have that configuration be imported. Your UI will be reloaded automatically.",
         button1 = "Import",	
-        button2 = "Cancel",	
-        hasEditBox = 1,
+        button2 = "Cancel",		
+        hasEditBox = true,
+        hasWideEditBox = true,
+        editBoxWidth = 500,
         OnAccept = function(self)
             local result = false
             result = TRB.Functions.Import(self.editBox:GetText())                
@@ -388,9 +390,18 @@ local function ConstructImportExportPanel()
     StaticPopupDialogs["TwintopResourceBar_Export"] = {
         text = "",
         button1 = "Close",	
-        hasEditBox = 1,
+        hasEditBox = true,
+        hasWideEditBox = true,
+        editBoxWidth = 500,
         timeout = 0,
         whileDead = true,
+        OnShow = function(self)
+            self:SetWidth(420)
+            local editBox = _G[self:GetName() .. "WideEditBox"] or _G[self:GetName() .. "EditBox"]
+            editBox:SetText(self.text.text_arg1)
+            editBox:SetFocus()
+            editBox:HighlightText(false)
+        end,
         EditBoxOnEscapePressed = function(self)
             self:GetParent():Hide();
         end,
