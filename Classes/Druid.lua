@@ -437,21 +437,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
 
-	local function IsTtdActive()
-		if TRB.Data.settings.druid ~= nil and TRB.Data.settings.druid.balance ~= nil and TRB.Data.settings.druid.balance.displayText ~= nil then
-			if string.find(TRB.Data.settings.druid.balance.displayText.left.text, "$ttd") or
-				string.find(TRB.Data.settings.druid.balance.displayText.middle.text, "$ttd") or
-				string.find(TRB.Data.settings.druid.balance.displayText.right.text, "$ttd") then
-				TRB.Data.snapshotData.targetData.ttdIsActive = true
-			else
-				TRB.Data.snapshotData.targetData.ttdIsActive = false
-			end
-		else
-			TRB.Data.snapshotData.targetData.ttdIsActive = false
-		end
-    end
-    TRB.Functions.IsTtdActive = IsTtdActive
-
 	local function EventRegistration()
 		if GetSpecialization() == 1 then
 			TRB.Data.specSupported = true
@@ -1437,7 +1422,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 
 					TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.druid.balance)
-					TRB.Functions.IsTtdActive()
+					TRB.Functions.IsTtdActive(TRB.Data.settings.druid.balance)
 					FillSpellData()
 					ConstructResourceBar()
 					TRB.Options.Druid.ConstructOptionsPanel()
