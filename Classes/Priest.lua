@@ -85,6 +85,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				tickId = 265144
 			},
 
+			-- Talents
+			
+			apotheosis = {
+				id = 200183,
+				name = "", 
+				icon = "",
+				duration = 20,
+				isActive = false
+			},
+			surgeOfLight = {
+				id = 114255,
+				name = "", 
+				icon = "",
+				duration = 20,
+				isActive = false
+			},
+
 			-- External mana
 			innervate = {
 				id = 29166,
@@ -132,7 +149,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		}
 
 		specCache.holy.snapshotData.audio = {
-			overcapCue = false
+			innervateCue = false,
+			surgeOfLightCue = false,
+			surgeOfLight2Cue = false
 		}
 		specCache.holy.snapshotData.targetData = {
 			ttdIsActive = false,
@@ -143,7 +162,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.holy.snapshotData.innervate = {
 			spellId = nil,
 			duration = 0,
-			endTime = nil
+			endTime = nil,
+			remainingTime = 0
+		}
+		specCache.holy.snapshotData.apotheosis = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0
+		}
+		specCache.holy.snapshotData.surgeOfLight = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0,
+			stacks = 0
 		}
 		specCache.holy.snapshotData.symbolOfHope = {
 			isActive = false,
@@ -1011,17 +1044,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			-- Threshold lines
 			if TRB.Data.settings.priest.shadow.devouringPlagueThreshold and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
-				resourceFrame.thresholds[1]:Show()
+				TRB.Frames.resourceFrame.thresholds[1]:Show()
 				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
 			else
-				resourceFrame.thresholds[1]:Hide()
+				TRB.Frames.resourceFrame.thresholds[1]:Hide()
 			end
 
 			if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then
-				resourceFrame.thresholds[2]:Show()
+				TRB.Frames.resourceFrame.thresholds[2]:Show()
 				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 			else
-				resourceFrame.thresholds[2]:Hide()
+				TRB.Frames.resourceFrame.thresholds[2]:Hide()
 			end
 
 			-- Legendaries
@@ -1386,6 +1419,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.voidform.isAverageInfinite = false
 			end
 		end  
+	end
+
+	local function GetApotheosisRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.apotheosis)
+	end
+
+	local function GetInnervateRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.innervate)
+	end
+
+	local function GetSurgeOfLightRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.surgeOfLight)
 	end
 
 	local function CalculateManaGain(mana)
@@ -2749,10 +2794,24 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local currentTime = GetTime()
 		local _
 
+		if TRB.Data.snapshotData.apotheosis.startTime ~= nil and currentTime > (TRB.Data.snapshotData.apotheosis.startTime + TRB.Data.snapshotData.apotheosis.duration) then
+            TRB.Data.snapshotData.apotheosis.startTime = nil
+            TRB.Data.snapshotData.apotheosis.duration = 0
+			TRB.Data.snapshotData.apotheosis.remainingTime = 0
+		else
+			TRB.Data.snapshotData.apotheosis.remainingTime = GetApotheosisRemainingTime()
+        end
+
 		if TRB.Data.snapshotData.innervate.startTime ~= nil and currentTime > (TRB.Data.snapshotData.innervate.startTime + TRB.Data.snapshotData.innervate.duration) then
             TRB.Data.snapshotData.innervate.startTime = nil
             TRB.Data.snapshotData.innervate.duration = 0
+			TRB.Data.snapshotData.innervate.remainingTime = 0
+		else
+			TRB.Data.snapshotData.innervate.remainingTime = GetInnervateRemainingTime()
         end
+
+		_, _, TRB.Data.snapshotData.surgeOfLight.stacks, _, TRB.Data.snapshotData.surgeOfLight.duration, TRB.Data.snapshotData.surgeOfLight.endTime, _, _, _, TRB.Data.snapshotData.surgeOfLight.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.surgeOfLight.id)
+		TRB.Data.snapshotData.surgeOfLight.remainingTime = GetSurgeOfLightRemainingTime()
 	end
 
 	local function UpdateSnapshot_Shadow()
@@ -2849,17 +2908,27 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local castingBarValue = 0
 					local currentMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
-					if TRB.Data.settings.priest.holy.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.borderOvercap, true))
-
-						if TRB.Data.settings.priest.holy.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
-							TRB.Data.snapshotData.audio.overcapCue = true
-							PlaySoundFile(TRB.Data.settings.priest.holy.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+					if TRB.Data.spells.innervate.isActive then
+						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.innervate, true))
+						
+						if TRB.Data.settings.priest.holy.audio.innervate.enabled and TRB.Data.snapshotData.audio.innervateCue == false then
+							TRB.Data.snapshotData.audio.innervateCue = true
+							PlaySoundFile(TRB.Data.settings.priest.holy.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
 						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.border, true))
-						TRB.Data.snapshotData.audio.overcapCue = false
 					end
+
+					if TRB.Data.settings.priest.holy.audio.surgeOfLight.enabled and TRB.Data.snapshotData.surgeOfLight.stacks == 1 and not TRB.Data.snapshotData.audio.surgeOfLightCue then
+						TRB.Data.snapshotData.audio.surgeOfLightCue = true
+						PlaySoundFile(TRB.Data.settings.priest.holy.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
+					end
+
+					if TRB.Data.settings.priest.holy.audio.surgeOfLight2.enabled and TRB.Data.snapshotData.surgeOfLight.stacks == 2 and not TRB.Data.snapshotData.audio.surgeOfLight2Cue then
+						TRB.Data.snapshotData.audio.surgeOfLight2Cue = true
+						PlaySoundFile(TRB.Data.settings.priest.holy.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
+					end
+
 
 					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, resourceFrame, currentMana)
 
@@ -2908,16 +2977,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 
 					if TRB.Data.settings.priest.holy.bar.showPassive and passiveValue > 0 and passiveBarValue < TRB.Data.character.maxResource then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, passiveFrame.thresholds[1], passiveFrame, TRB.Data.settings.priest.holy.thresholdWidth, (castingBarValue + TRB.Data.snapshotData.wrathfulFaerie.resourceFinal), TRB.Data.character.maxResource)
-						passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.mindbender, true))
-						passiveFrame.thresholds[1]:Show()
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, TRB.Data.settings.priest.holy.thresholdWidth, (castingBarValue + TRB.Data.snapshotData.wrathfulFaerie.resourceFinal), TRB.Data.character.maxResource)
+						TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.mindbender, true))
+						TRB.Frames.passiveFrame.thresholds[1]:Show()
 					else
-						passiveFrame.thresholds[1]:Hide()
+						TRB.Frames.passiveFrame.thresholds[1]:Hide()
 					end
 
-					resourceFrame.thresholds[1]:Hide()
-					resourceFrame.thresholds[2]:Hide()
-					passiveFrame.thresholds[2]:Hide()
+					TRB.Frames.resourceFrame.thresholds[1]:Hide()
+					TRB.Frames.resourceFrame.thresholds[2]:Hide()
+					TRB.Frames.passiveFrame.thresholds[2]:Hide()
 
  					--[[
 					if TRB.Data.settings.priest.holy.devouringPlagueThreshold then
@@ -2959,37 +3028,30 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.audio.playedDpCue = false
 						TRB.Data.snapshotData.audio.playedMdCue = false
 					end
+					]]
 
-					if TRB.Data.snapshotData.voidform.spellId then
+					if TRB.Data.snapshotData.apotheosis.spellId then
 						local timeThreshold = 0
-						local useEndOfVoidformColor = false
+						local useEndOfApotheosisColor = false
 
-						if TRB.Data.settings.priest.holy.endOfVoidform.enabled and (not TRB.Data.settings.priest.holy.endOfVoidform.hungeringVoidOnly or TRB.Data.character.talents.hungeringVoid.isSelected) then
-							useEndOfVoidformColor = true
-							if TRB.Data.settings.priest.holy.endOfVoidform.mode == "gcd" then
+						if TRB.Data.settings.priest.holy.endOfApotheosis.enabled then
+							useEndOfApotheosisColor = true
+							if TRB.Data.settings.priest.holy.endOfApotheosis.mode == "gcd" then
 								local gcd = TRB.Functions.GetCurrentGCDTime()
-								timeThreshold = gcd * TRB.Data.settings.priest.holy.endOfVoidform.gcdsMax
-							elseif TRB.Data.settings.priest.holy.endOfVoidform.mode == "time" then
-								timeThreshold = TRB.Data.settings.priest.holy.endOfVoidform.timeMax
+								timeThreshold = gcd * TRB.Data.settings.priest.holy.endOfApotheosis.gcdsMax
+							elseif TRB.Data.settings.priest.holy.endOfApotheosis.mode == "time" then
+								timeThreshold = TRB.Data.settings.priest.holy.endOfApotheosis.timeMax
 							end
 						end
 
-						if useEndOfVoidformColor and TRB.Data.snapshotData.voidform.remainingTime <= timeThreshold then
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.inVoidform1GCD, true))
-						elseif currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.enterVoidform, true))
+						if useEndOfApotheosisColor and TRB.Data.snapshotData.apotheosis.remainingTime <= timeThreshold then
+							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.apotheosisEnd, true))
 						else
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.inVoidform, true))
+							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.apotheosis, true))
 						end
 					else
-						if currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.enterVoidform, true))
-						else
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.base, true))
-						end
+						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.base, true))
 					end
-					]]
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.base, true))
 				end
 
 				TRB.Functions.UpdateResourceBar(TRB.Data.settings.priest.holy, refreshText)
@@ -3039,47 +3101,47 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal > 0) then
 						passiveBarValue = castingBarValue + ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity, false) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.mindbender.resourceFinal + TRB.Data.snapshotData.deathAndMadness.insanity + TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal + TRB.Data.snapshotData.wrathfulFaerie.resourceFinal)
 						if TRB.Data.snapshotData.mindbender.resourceFinal > 0 and (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, passiveFrame.thresholds[1], passiveFrame, TRB.Data.settings.priest.shadow.thresholdWidth, (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal), TRB.Data.character.maxResource)
-							passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.mindbender, true))
-							passiveFrame.thresholds[1]:Show()
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, TRB.Data.settings.priest.shadow.thresholdWidth, (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal), TRB.Data.character.maxResource)
+							TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.mindbender, true))
+							TRB.Frames.passiveFrame.thresholds[1]:Show()
 						else
-							passiveFrame.thresholds[1]:Hide()
+							TRB.Frames.passiveFrame.thresholds[1]:Hide()
 						end
 
 						if TRB.Data.snapshotData.wrathfulFaerie.resourceFinal > 0 and (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal + TRB.Data.snapshotData.wrathfulFaerie.resourceFinal) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, passiveFrame.thresholds[2], passiveFrame, TRB.Data.settings.priest.shadow.thresholdWidth, (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal + TRB.Data.snapshotData.wrathfulFaerie.resourceFinal), TRB.Data.character.maxResource)
-							passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.mindbender, true))
-							passiveFrame.thresholds[2]:Show()
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, TRB.Data.settings.priest.shadow.thresholdWidth, (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal + TRB.Data.snapshotData.wrathfulFaerie.resourceFinal), TRB.Data.character.maxResource)
+							TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.mindbender, true))
+							TRB.Frames.passiveFrame.thresholds[2]:Show()
 						else
-							passiveFrame.thresholds[2]:Hide()
+							TRB.Frames.passiveFrame.thresholds[2]:Hide()
 						end
 					else
-						passiveFrame.thresholds[1]:Hide()
-						passiveFrame.thresholds[2]:Hide()
+						TRB.Frames.passiveFrame.thresholds[1]:Hide()
+						TRB.Frames.passiveFrame.thresholds[2]:Hide()
 						passiveBarValue = castingBarValue
 					end
 
 					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.shadow, passiveFrame, passiveBarValue)
 
 					if TRB.Data.settings.priest.shadow.devouringPlagueThreshold then
-						resourceFrame.thresholds[1]:Show()
+						TRB.Frames.resourceFrame.thresholds[1]:Show()
 					else
-						resourceFrame.thresholds[1]:Hide()
+						TRB.Frames.resourceFrame.thresholds[1]:Hide()
 					end
 
 					if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then
 						if currentInsanity >= TRB.Data.character.searingNightmareThreshold then
-							resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true))
+							TRB.Frames.resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true))
 						else
-							resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
+							TRB.Frames.resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
 						end
-						resourceFrame.thresholds[2]:Show()
+						TRB.Frames.resourceFrame.thresholds[2]:Show()
 					else
-						resourceFrame.thresholds[2]:Hide()
+						TRB.Frames.resourceFrame.thresholds[2]:Hide()
 					end
 
 					if currentInsanity >= TRB.Data.character.devouringPlagueThreshold or TRB.Data.spells.mindDevourer.isActive then
-						resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true))
+						TRB.Frames.resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true))
 						if TRB.Data.settings.priest.shadow.colors.bar.flashEnabled then
 							TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.priest.shadow.colors.bar.flashAlpha, TRB.Data.settings.priest.shadow.colors.bar.flashPeriod)
 						else
@@ -3095,7 +3157,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							PlaySoundFile(TRB.Data.settings.priest.shadow.audio.dpReady.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
-						resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
+						TRB.Frames.resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
 						barContainerFrame:SetAlpha(1.0)
 						TRB.Data.snapshotData.audio.playedDpCue = false
 						TRB.Data.snapshotData.audio.playedMdCue = false
@@ -3220,11 +3282,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.innervate.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.innervate.duration, TRB.Data.snapshotData.innervate.endTime, _, _, _, TRB.Data.snapshotData.innervate.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.innervate.id)
+							TRB.Data.snapshotData.audio.innervateCue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.innervate.isActive = false
 							TRB.Data.snapshotData.innervate.spellId = nil
 							TRB.Data.snapshotData.innervate.duration = 0
 							TRB.Data.snapshotData.innervate.endTime = nil
+							TRB.Data.snapshotData.audio.innervateCue = false
 						end
 					end		
 				elseif specId == 3 then
@@ -3246,6 +3310,31 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						if type == "SPELL_AURA_REMOVED" then -- Lost Symbol of Hope							
 							-- Let UpdateSymbolOfHope() clean this up
 							UpdateSymbolOfHope(true)
+						end
+					elseif spellId == TRB.Data.spells.apotheosis.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.apotheosis.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.apotheosis.duration, TRB.Data.snapshotData.apotheosis.endTime, _, _, _, TRB.Data.snapshotData.apotheosis.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.apotheosis.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.apotheosis.isActive = false
+							TRB.Data.snapshotData.apotheosis.spellId = nil
+							TRB.Data.snapshotData.apotheosis.duration = 0
+							TRB.Data.snapshotData.apotheosis.endTime = nil
+						end
+					elseif spellId == TRB.Data.spells.surgeOfLight.id then
+						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.apotheosis.isActive = true
+							_, _, TRB.Data.snapshotData.surgeOfLight.stacks, _, TRB.Data.snapshotData.surgeOfLight.duration, TRB.Data.snapshotData.surgeOfLight.endTime, _, _, _, TRB.Data.snapshotData.surgeOfLight.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.surgeOfLight.id)
+						elseif type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
+							TRB.Data.snapshotData.audio.surgeOfLight2Cue = false
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.surgeOfLight.isActive = false
+							TRB.Data.snapshotData.surgeOfLight.spellId = nil
+							TRB.Data.snapshotData.surgeOfLight.duration = 0
+							TRB.Data.snapshotData.surgeOfLight.stacks = 0
+							TRB.Data.snapshotData.surgeOfLight.endTime = nil
+							TRB.Data.snapshotData.audio.surgeOfLightCue = false
+							TRB.Data.snapshotData.audio.surgeOfLight2Cue = false
 						end
 					end
 				elseif specId == 3 then

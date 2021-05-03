@@ -127,14 +127,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				timeMax=3.0,
 				procDelay=0.15,
 				enabled=true
-			},--[[
-			endOfVoidform = {
+			},
+			endOfApotheosis = {
 				enabled=true,
-				hungeringVoidOnly=false,
 				mode="gcd",
 				gcdsMax=2,
 				timeMax=3.0
-			},]]
+			},
 			colors={
 				text={
 					current="FF4D4DFF",
@@ -165,10 +164,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					borderOvercap="FFFF0000",
 					background="66000000",
 					base="FF0000FF",
-					--enterVoidform="FF5C2F89",
-					--inVoidform="FF431863",
-					--inVoidform1GCD="FFFF0000",
-					casting="FF555555",
+					innervate="FF00FF00",
+					apotheosis="FFFADA5E",
+					apotheosisEnd="FFFF0000",
+					--casting="FF555555",
 					spending="FFFFFFFF",
 					passive="FF8080FF",
 					--flashAlpha=0.70,
@@ -184,7 +183,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			displayText={},
 			audio={
-				overcap={
+				innervate={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
+					soundName="TRB: Boxing Arena Gong"
+				},
+				surgeOfLight={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
+					soundName="TRB: Boxing Arena Gong"
+				},
+				surgeOfLight2={
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -1395,12 +1404,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		--[[
-		controls.colors.inVoidform = TRB.UiFunctions.BuildColorPicker(parent, "Mana while in Voidform", TRB.Data.settings.priest.holy.colors.bar.inVoidform, 275, 25, xCoord2, yCoord)
-		f = controls.colors.inVoidform
+		controls.colors.inApotheosis = TRB.UiFunctions.BuildColorPicker(parent, "Mana while Apotheosis is active", TRB.Data.settings.priest.holy.colors.bar.apotheosis, 275, 25, xCoord2, yCoord)
+		f = controls.colors.inApotheosis
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.inVoidform, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.apotheosis, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1410,13 +1418,34 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 
-					controls.colors.inVoidform.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.holy.colors.bar.inVoidform = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.inApotheosis.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.apotheosis = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
 
 		yCoord = yCoord - 30
+		controls.colors.spending = TRB.UiFunctions.BuildColorPicker(parent, "Mana cost of current hardcast spell", TRB.Data.settings.priest.holy.colors.bar.spending, 300, 25, xCoord, yCoord)
+		f = controls.colors.spending
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.spending, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.spending.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.spending = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					castingFrame:SetStatusBarColor(r, g, b, 1-a)
+				end)
+			end
+		end)		
+		--[[
 		controls.colors.enterVoidform = TRB.UiFunctions.BuildColorPicker(parent, "Mana when you can cast Devouring Plague", TRB.Data.settings.priest.holy.colors.bar.enterVoidform, 300, 25, xCoord, yCoord)
 		f = controls.colors.enterVoidform
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1436,34 +1465,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end)
 			end
 		end)
-
-		controls.colors.inVoidform1GCD = TRB.UiFunctions.BuildColorPicker(parent, "Mana while you have less than 1 GCD left in Voidform (if enabled)", TRB.Data.settings.priest.holy.colors.bar.inVoidform1GCD, 275, 25, xCoord2, yCoord)
-		f = controls.colors.inVoidform1GCD
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.inVoidform1GCD, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.inVoidform1GCD.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.holy.colors.bar.inVoidform1GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
 		]]
 
-		yCoord = yCoord - 30
-		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Mana from hardcasting spells", TRB.Data.settings.priest.holy.colors.bar.casting, 300, 25, xCoord, yCoord)
-		f = controls.colors.casting
+		controls.colors.inApotheosisEnd = TRB.UiFunctions.BuildColorPicker(parent, "Mana when Apotheosis is close to ending (configurable/if enabled)", TRB.Data.settings.priest.holy.colors.bar.apotheosisEnd, 275, 25, xCoord2, yCoord)
+		f = controls.colors.inApotheosisEnd
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.casting, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.apotheosisEnd, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1473,14 +1481,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 
-					controls.colors.casting.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.holy.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					castingFrame:SetStatusBarColor(r, g, b, 1-a)
+					controls.colors.inApotheosisEnd.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.apotheosisEnd = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
 
-		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.priest.holy.colors.bar.border, 275, 25, xCoord2, yCoord)
+		yCoord = yCoord - 30
+		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.priest.holy.colors.bar.border, 300, 25, xCoord, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1501,7 +1509,29 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
+		controls.colors.innervate = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when you have Innervate", TRB.Data.settings.priest.holy.colors.bar.innervate, 275, 25, xCoord2, yCoord)
+		f = controls.colors.innervate
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.innervate, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.innervate.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.innervate = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
+				end)
+			end
+		end)
+
 		yCoord = yCoord - 30
+		--[[
 		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Mana", TRB.Data.settings.priest.holy.colors.bar.borderOvercap, 300, 25, xCoord, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1521,6 +1551,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end)
 			end
 		end)
+		]]
 
 		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.priest.holy.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
@@ -1670,51 +1701,41 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 25
 		yCoord = yCoord - 25
 
-		--[[
+		
 		yCoord = yCoord - 30
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Voidform Configuration", 0, yCoord)
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Apotheosis Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.endOfVoidform = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOVF_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfVoidform
+		controls.checkBoxes.endOfApotheosis = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOA_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfApotheosis
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Voidform")
-		f.tooltip = "Changes the bar color when Voidform is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(TRB.Data.settings.priest.holy.endOfVoidform.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Apotheosis")
+		f.tooltip = "Changes the bar color when Apotheosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(TRB.Data.settings.priest.holy.endOfApotheosis.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.priest.holy.endOfVoidform.enabled = self:GetChecked()
-		end)
-		yCoord = yCoord - 20
-		controls.checkBoxes.endOfVoidformHungeringVoidOnly = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOVF_CB_HVO", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfVoidformHungeringVoidOnly
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Only change the bar color when using Hungering Void")
-		f.tooltip = "Only changes the bar color when you are talented in to Hungering Void."
-		f:SetChecked(TRB.Data.settings.priest.holy.endOfVoidform.hungeringVoidOnly)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.priest.holy.endOfVoidform.hungeringVoidOnly = self:GetChecked()
+			TRB.Data.settings.priest.holy.endOfApotheosis.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
-		controls.checkBoxes.endOfVoidformModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOFV_M_GCD", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.endOfVoidformModeGCDs
+		controls.checkBoxes.endOfApotheosisModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOA_M_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfApotheosisModeGCDs
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Voidform ends")
+		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Apotheosis ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many GCDs remain until Voidform ends."
-		if TRB.Data.settings.priest.holy.endOfVoidform.mode == "gcd" then
+		f.tooltip = "Change the bar color based on how many GCDs remain until Apotheosis ends."
+		if TRB.Data.settings.priest.holy.endOfApotheosis.mode == "gcd" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.endOfVoidformModeGCDs:SetChecked(true)
-			controls.checkBoxes.endOfVoidformModeTime:SetChecked(false)
-			TRB.Data.settings.priest.holy.endOfVoidform.mode = "gcd"
+			controls.checkBoxes.endOfApotheosisModeGCDs:SetChecked(true)
+			controls.checkBoxes.endOfApotheosisModeTime:SetChecked(false)
+			TRB.Data.settings.priest.holy.endOfApotheosis.mode = "gcd"
 		end)
 
-		title = "Voidform GCDs - 0.75sec Floor"
-		controls.endOfVoidformGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 10, TRB.Data.settings.priest.holy.endOfVoidform.gcdsMax, 0.25, 2,
+		title = "Apotheosis GCDs - 0.75sec Floor"
+		controls.endOfApotheosisGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 10, TRB.Data.settings.priest.holy.endOfApotheosis.gcdsMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.endOfVoidformGCDs:SetScript("OnValueChanged", function(self, value)
+		controls.endOfApotheosisGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
 				value = max
@@ -1723,30 +1744,30 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			self.EditBox:SetText(value)
-			TRB.Data.settings.priest.holy.endOfVoidform.gcdsMax = value
+			TRB.Data.settings.priest.holy.endOfApotheosis.gcdsMax = value
 		end)
 
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.endOfVoidformModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOFV_M_TIME", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.endOfVoidformModeTime
+		controls.checkBoxes.endOfApotheosisModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOA_M_TIME", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfApotheosisModeTime
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time until Voidform ends")
+		getglobal(f:GetName() .. 'Text'):SetText("Time until Apotheosis ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many seconds remain until Voidform will end."
-		if TRB.Data.settings.priest.holy.endOfVoidform.mode == "time" then
+		f.tooltip = "Change the bar color based on how many seconds remain until Apotheosis will end."
+		if TRB.Data.settings.priest.holy.endOfApotheosis.mode == "time" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.endOfVoidformModeGCDs:SetChecked(false)
-			controls.checkBoxes.endOfVoidformModeTime:SetChecked(true)
-			TRB.Data.settings.priest.holy.endOfVoidform.mode = "time"
+			controls.checkBoxes.endOfApotheosisModeGCDs:SetChecked(false)
+			controls.checkBoxes.endOfApotheosisModeTime:SetChecked(true)
+			TRB.Data.settings.priest.holy.endOfApotheosis.mode = "time"
 		end)
 
-		title = "Voidform Time Remaining"
-		controls.endOfVoidformTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.priest.holy.endOfVoidform.timeMax, 0.25, 2,
+		title = "Apotheosis Time Remaining"
+		controls.endOfApotheosisTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.priest.holy.endOfApotheosis.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.endOfVoidformTime:SetScript("OnValueChanged", function(self, value)
+		controls.endOfApotheosisTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
 				value = max
@@ -1756,10 +1777,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.priest.holy.endOfVoidform.timeMax = value
+			TRB.Data.settings.priest.holy.endOfApotheosis.timeMax = value
 		end)
-		]]
 
+		--[[
 		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
@@ -1791,7 +1812,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.holy.overcapThreshold = value
 		end)
-
+		]]
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.holy = controls
@@ -2686,31 +2707,30 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
-		yCoord = yCoord - 30
-		--[[
-		controls.checkBoxes.s2mDeath = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_CB3_2", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.s2mDeath
+		yCoord = yCoord - 30		
+		controls.checkBoxes.innervate = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Innervate_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.innervate
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio when you die, horribly, from Surrender to Madness")
-		f.tooltip = "When you die, horribly, after Surrender to Madness ends, play the infamous Wilhelm Scream (or another sound) to make you feel a bit better."
-		f:SetChecked(TRB.Data.settings.priest.holy.audio.s2mDeath.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio when you gain Innervate")
+		f.tooltip = "This sound will play when you gain Innervate from a helpful Druid."
+		f:SetChecked(TRB.Data.settings.priest.holy.audio.innervate.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.priest.holy.audio.s2mDeath.enabled = self:GetChecked()
+			TRB.Data.settings.priest.holy.audio.innervate.enabled = self:GetChecked()
 
-			if TRB.Data.settings.priest.holy.audio.s2mDeath.enabled then
-				PlaySoundFile(TRB.Data.settings.priest.holy.audio.s2mDeath.sound, TRB.Data.settings.core.audio.channel.channel)
+			if TRB.Data.settings.priest.holy.audio.innervate.enabled then
+				PlaySoundFile(TRB.Data.settings.priest.holy.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.s2mAudio = CreateFrame("FRAME", "TwintopResourceBar_Priest_Holy_S2MDeathAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.s2mAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.s2mAudio, sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.s2mAudio, TRB.Data.settings.priest.holy.audio.s2mDeath.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.s2mAudio, "LEFT")
+		controls.dropDown.innervateAudio = CreateFrame("FRAME", "TwintopResourceBar_Priest_Holy_Innervate_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.innervateAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.innervateAudio, sliderWidth)
+		UIDropDownMenu_SetText(controls.dropDown.innervateAudio, TRB.Data.settings.priest.holy.audio.innervate.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.innervateAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.s2mAudio, function(self, level, menuList)
+		UIDropDownMenu_Initialize(controls.dropDown.innervateAudio, function(self, level, menuList)
 			local entries = 25
 			local info = UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
@@ -2731,7 +2751,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.priest.holy.audio.s2mDeath.sound
+						info.checked = sounds[v] == TRB.Data.settings.priest.holy.audio.innervate.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -2742,39 +2762,39 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.s2mAudio:SetValue(newValue, newName)
-			TRB.Data.settings.priest.holy.audio.s2mDeath.sound = newValue
-			TRB.Data.settings.priest.holy.audio.s2mDeath.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.s2mAudio, newName)
+		function controls.dropDown.innervateAudio:SetValue(newValue, newName)
+			TRB.Data.settings.priest.holy.audio.innervate.sound = newValue
+			TRB.Data.settings.priest.holy.audio.innervate.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.innervateAudio, newName)
 			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.priest.holy.audio.s2mDeath.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(TRB.Data.settings.priest.holy.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.dpReady = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_CB3_3", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.dpReady
+		controls.checkBoxes.surgeOfLight = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_SurgeOfLightCB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.surgeOfLight
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Devouring Plague is usable")
-		f.tooltip = "Play an audio cue when Devouring Plague can be cast."
-		f:SetChecked(TRB.Data.settings.priest.holy.audio.dpReady.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Surge of Light proc occurs")
+		f.tooltip = "Play an audio cue when a Surge of Light proc occurs. This will only play for the first proc."
+		f:SetChecked(TRB.Data.settings.priest.holy.audio.surgeOfLight.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.priest.holy.audio.dpReady.enabled = self:GetChecked()
+			TRB.Data.settings.priest.holy.audio.surgeOfLight.enabled = self:GetChecked()
 
-			if TRB.Data.settings.priest.holy.audio.dpReady.enabled then
-				PlaySoundFile(TRB.Data.settings.priest.holy.audio.dpReady.sound, TRB.Data.settings.core.audio.channel.channel)
+			if TRB.Data.settings.priest.holy.audio.surgeOfLight.enabled then
+				PlaySoundFile(TRB.Data.settings.priest.holy.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.dpReadyAudio = CreateFrame("FRAME", "TwintopResourceBar_Priest_Holy_dpReadyAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.dpReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.dpReadyAudio, sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.dpReadyAudio, TRB.Data.settings.priest.holy.audio.dpReady.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.dpReadyAudio, "LEFT")
+		controls.dropDown.surgeOfLightAudio = CreateFrame("FRAME", "TwintopResourceBar_Priest_Holy_SurgeOfLightAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.surgeOfLightAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.surgeOfLightAudio, sliderWidth)
+		UIDropDownMenu_SetText(controls.dropDown.surgeOfLightAudio, TRB.Data.settings.priest.holy.audio.surgeOfLight.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.surgeOfLightAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.dpReadyAudio, function(self, level, menuList)
+		UIDropDownMenu_Initialize(controls.dropDown.surgeOfLightAudio, function(self, level, menuList)
 			local entries = 25
 			local info = UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
@@ -2795,7 +2815,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.priest.holy.audio.dpReady.sound
+						info.checked = sounds[v] == TRB.Data.settings.priest.holy.audio.surgeOfLight.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -2806,15 +2826,79 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.dpReadyAudio:SetValue(newValue, newName)
-			TRB.Data.settings.priest.holy.audio.dpReady.sound = newValue
-			TRB.Data.settings.priest.holy.audio.dpReady.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.dpReadyAudio, newName)
+		function controls.dropDown.surgeOfLightAudio:SetValue(newValue, newName)
+			TRB.Data.settings.priest.holy.audio.surgeOfLight.sound = newValue
+			TRB.Data.settings.priest.holy.audio.surgeOfLight.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.surgeOfLightAudio, newName)
 			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.priest.holy.audio.dpReady.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(TRB.Data.settings.priest.holy.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+		
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.surgeOfLight2 = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_SurgeOfLight2CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.surgeOfLight2
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you have two (max) Surge of Light procs")
+		f.tooltip = "Play audio cue when you get a second (and maximum) Surge of Light proc. If both are checked, only this sound will play."
+		f:SetChecked(TRB.Data.settings.priest.holy.audio.surgeOfLight2.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.audio.surgeOfLight2.enabled = self:GetChecked()
+
+			if TRB.Data.settings.priest.holy.audio.surgeOfLight2.enabled then
+				PlaySoundFile(TRB.Data.settings.priest.holy.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.surgeOfLight2Audio = CreateFrame("FRAME", "TwintopResourceBar_Priest_Holy_SurgeOfLightAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.surgeOfLight2Audio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.surgeOfLight2Audio, sliderWidth)
+		UIDropDownMenu_SetText(controls.dropDown.surgeOfLight2Audio, TRB.Data.settings.priest.holy.audio.surgeOfLight2.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.surgeOfLight2Audio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.surgeOfLight2Audio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.priest.holy.audio.surgeOfLight2.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.surgeOfLight2Audio:SetValue(newValue, newName)
+			TRB.Data.settings.priest.holy.audio.surgeOfLight2.sound = newValue
+			TRB.Data.settings.priest.holy.audio.surgeOfLight2.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.surgeOfLight2Audio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.priest.holy.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
-
+		--[[
 		yCoord = yCoord - 60
 		controls.checkBoxes.mdProc = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_CB3_MD_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mdProc
@@ -2877,7 +2961,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.priest.holy.audio.mdProc.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
-		]]
 
 		yCoord = yCoord - 60
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
@@ -2940,10 +3023,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.priest.holy.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
+		end		
+		]]
 
-		--[[
 		yCoord = yCoord - 60
+		--[[
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Auspicious Spirits Tracking", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -3094,9 +3178,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.holy.mindbender.timeMax = value
 		end)
-		]]
 
 		yCoord = yCoord - 30
+		]]
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Wrathful Faerie Tracking", 0, yCoord)
 
 		yCoord = yCoord - 30
