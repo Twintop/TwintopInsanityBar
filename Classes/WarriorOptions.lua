@@ -227,8 +227,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return
 		end
 
-		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls.arms
+		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.arms
 		local yCoord = 5
 		local f = nil
 
@@ -303,29 +302,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Warrior_Arms_ResetButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(150)
-		f:SetHeight(30)
-		f:SetText("Reset to Defaults")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
+		controls.resetButton = TRB.UiFunctions.BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Arms_Reset")
 		end)
 
@@ -333,84 +311,21 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Warrior_Arms_ResetBarTextSimpleButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Simple)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
+		controls.resetButton1 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Arms_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 
 		--[[
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Warrior_Arms_ResetBarTextNarrowAdvancedButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord2, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Narrow Advanced)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
+		controls.resetButton2 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton2:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Arms_ResetBarTextNarrowAdvanced")
 		end)
 		]]
 
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Warrior_Arms_ResetBarTextAdvancedButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Full Advanced)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
+		controls.resetButton3 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Arms_ResetBarTextAdvanced")
 		end)
 

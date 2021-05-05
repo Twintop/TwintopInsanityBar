@@ -189,8 +189,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			return
 		end
 
-		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls.elemental
+		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.elemental
 		local yCoord = 5
 		local f = nil
 
@@ -209,7 +208,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		StaticPopupDialogs["TwintopResourceBar_Reset"] = {
+		StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_Reset"] = {
 			text = "Do you want to reset the Twintop's Resource Bar back to it's default configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
@@ -222,7 +221,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		StaticPopupDialogs["TwintopResourceBar_ResetBarTextSimple"] = {
+		StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_ResetBarTextSimple"] = {
 			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (simple) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
@@ -235,7 +234,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		StaticPopupDialogs["TwintopResourceBar_ResetBarTextAdvanced"] = {
+		StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_ResetBarTextAdvanced"] = {
 			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
@@ -248,7 +247,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		--[[StaticPopupDialogs["TwintopResourceBar_ResetBarTextNarrowAdvanced"] = {
+		--[[StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_ResetBarTextNarrowAdvanced"] = {
 			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
@@ -265,118 +264,33 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(150)
-		f:SetHeight(30)
-		f:SetText("Reset to Defaults")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_Reset")
+		controls.resetButton = TRB.UiFunctions.BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_Reset")
 		end)
 
 		yCoord = yCoord - 40
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextSimpleButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Simple)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_ResetBarTextSimple")
+		controls.resetButton1 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 
 		--[[
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextNarrowAdvancedButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord2, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Narrow Advanced)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_ResetBarTextNarrowAdvanced")
+		controls.resetButton2 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton2:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_ResetBarTextNarrowAdvanced")
 		end)
 		]]
 
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextAdvancedButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Full Advanced)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_ResetBarTextAdvanced")
+		controls.resetButton3 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_ResetBarTextAdvanced")
 		end)
 
-		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
 

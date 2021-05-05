@@ -492,8 +492,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			return
 		end
 
-		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls.holy
+		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.holy
 		local yCoord = 5
 		local f = nil
 
@@ -570,29 +569,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Priest_Holy_ResetButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(150)
-		f:SetHeight(30)
-		f:SetText("Reset to Defaults")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
+		controls.resetButton = TRB.UiFunctions.BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Priest_Holy_Reset")
 		end)
 
@@ -600,88 +578,25 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Priest_Holy_ResetBarTextSimpleButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Simple)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
+		controls.resetButton1 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Priest_Holy_ResetBarTextSimple")
-		end)
+        end)
+		yCoord = yCoord - 40
 
-		yCoord = yCoord - 40
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Priest_Holy_ResetBarTextAdvancedButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Full Advanced)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_Priest_Holy_ResetBarTextAdvanced")
-		end)
 		--[[
-		yCoord = yCoord - 40
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Priest_Holy_ResetBarTextNarrowAdvancedButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Narrow Advanced)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
+		controls.resetButton2 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton2:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Priest_Holy_ResetBarTextNarrowAdvanced")
 		end)
-	]]
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls.holy = controls
+		]]
+
+		controls.resetButton3 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Priest_Holy_ResetBarTextAdvanced")
+		end)
+
+		TRB.Frames.interfaceSettingsFrameContainer.controls.holy = controls
 	end
 
 	local function HolyConstructBarColorsAndBehaviorPanel(parent)
@@ -711,11 +626,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.priest.holy.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.holy.bar.width / TRB.Data.constants.borderWidthFactor))
 
+		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.priest.holy)
+
 		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
 
 		yCoord = yCoord - 40
 		title = "Bar Width"
-		controls.width = TRB.UiFunctions.BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinWidth, TRB.Data.sanityCheckValues.barMaxWidth, TRB.Data.settings.priest.holy.bar.width, 1, 2,
+		controls.width = TRB.UiFunctions.BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, TRB.Data.settings.priest.holy.bar.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -738,7 +655,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		title = "Bar Height"
-		controls.height = TRB.UiFunctions.BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinHeight, TRB.Data.sanityCheckValues.barMaxHeight, TRB.Data.settings.priest.holy.bar.height, 1, 2,
+		controls.height = TRB.UiFunctions.BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, TRB.Data.settings.priest.holy.bar.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -759,7 +676,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		title = "Bar Horizontal Position"
 		yCoord = yCoord - 60
-		controls.horizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth/2), math.floor(TRB.Data.sanityCheckValues.barMaxWidth/2), TRB.Data.settings.priest.holy.bar.xPos, 1, 2,
+		controls.horizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.priest.holy.bar.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -776,7 +693,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		title = "Bar Vertical Position"
-		controls.vertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxHeight/2), math.floor(TRB.Data.sanityCheckValues.barMaxHeight/2), TRB.Data.settings.priest.holy.bar.yPos, 1, 2,
+		controls.vertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.priest.holy.bar.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -837,9 +754,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			local minsliderWidth = math.max(TRB.Data.settings.priest.holy.bar.border*2, 120)
 			local minsliderHeight = math.max(TRB.Data.settings.priest.holy.bar.border*2, 1)
-			controls.height:SetMinMaxValues(minsliderHeight, TRB.Data.sanityCheckValues.barMaxHeight)
+			controls.height:SetMinMaxValues(minsliderHeight, sanityCheckValues.barMaxHeight)
 			controls.height.MinLabel:SetText(minsliderHeight)
-			controls.width:SetMinMaxValues(minsliderWidth, TRB.Data.sanityCheckValues.barMaxWidth)
+			controls.width:SetMinMaxValues(minsliderWidth, sanityCheckValues.barMaxWidth)
 			controls.width.MinLabel:SetText(minsliderWidth)
 		end)
 
@@ -3459,8 +3376,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			return
 		end
 
-		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls.shadow
+		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.shadow
 		local yCoord = 5
 		local f = nil
 
@@ -3535,29 +3451,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Priest_Shadow_ResetButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(150)
-		f:SetHeight(30)
-		f:SetText("Reset to Defaults")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
+		controls.resetButton = TRB.UiFunctions.BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Priest_Shadow_Reset")
 		end)
 
@@ -3565,88 +3460,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Priest_Shadow_ResetBarTextSimpleButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Simple)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
+		controls.resetButton1 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Priest_Shadow_ResetBarTextSimple")
-		end)
-
+        end)
 		yCoord = yCoord - 40
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Priest_Shadow_ResetBarTextAdvancedButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Full Advanced)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_Priest_Shadow_ResetBarTextAdvanced")
-		end)
 
-		yCoord = yCoord - 40
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Priest_Shadow_ResetBarTextNarrowAdvancedButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Narrow Advanced)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
+		controls.resetButton2 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton2:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Priest_Shadow_ResetBarTextNarrowAdvanced")
 		end)
 
-		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls.shadow = controls
+		controls.resetButton3 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Priest_Shadow_ResetBarTextAdvanced")
+		end)
+
+		TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls
 	end
 
 	local function ShadowConstructBarColorsAndBehaviorPanel(parent)
@@ -3675,6 +3505,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local sliderHeight = 20
 
 		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.shadow.bar.width / TRB.Data.constants.borderWidthFactor))
+		
+		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.priest.shadow)
 
 		controls.buttons.exportButton_Priest_Shadow_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Shadow_BarDisplay:SetScript("OnClick", function(self, ...)
@@ -3685,7 +3517,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = yCoord - 40
 		title = "Bar Width"
-		controls.width = TRB.UiFunctions.BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinWidth, TRB.Data.sanityCheckValues.barMaxWidth, TRB.Data.settings.priest.shadow.bar.width, 1, 2,
+		controls.width = TRB.UiFunctions.BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, TRB.Data.settings.priest.shadow.bar.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3708,7 +3540,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		title = "Bar Height"
-		controls.height = TRB.UiFunctions.BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinHeight, TRB.Data.sanityCheckValues.barMaxHeight, TRB.Data.settings.priest.shadow.bar.height, 1, 2,
+		controls.height = TRB.UiFunctions.BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, TRB.Data.settings.priest.shadow.bar.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3729,7 +3561,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		title = "Bar Horizontal Position"
 		yCoord = yCoord - 60
-		controls.horizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth/2), math.floor(TRB.Data.sanityCheckValues.barMaxWidth/2), TRB.Data.settings.priest.shadow.bar.xPos, 1, 2,
+		controls.horizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.priest.shadow.bar.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3746,7 +3578,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		title = "Bar Vertical Position"
-		controls.vertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxHeight/2), math.floor(TRB.Data.sanityCheckValues.barMaxHeight/2), TRB.Data.settings.priest.shadow.bar.yPos, 1, 2,
+		controls.vertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.priest.shadow.bar.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3807,9 +3639,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			local minsliderWidth = math.max(TRB.Data.settings.priest.shadow.bar.border*2, 120)
 			local minsliderHeight = math.max(TRB.Data.settings.priest.shadow.bar.border*2, 1)
-			controls.height:SetMinMaxValues(minsliderHeight, TRB.Data.sanityCheckValues.barMaxHeight)
+			controls.height:SetMinMaxValues(minsliderHeight, sanityCheckValues.barMaxHeight)
 			controls.height.MinLabel:SetText(minsliderHeight)
-			controls.width:SetMinMaxValues(minsliderWidth, TRB.Data.sanityCheckValues.barMaxWidth)
+			controls.width:SetMinMaxValues(minsliderWidth, sanityCheckValues.barMaxWidth)
 			controls.width.MinLabel:SetText(minsliderWidth)
 		end)
 
