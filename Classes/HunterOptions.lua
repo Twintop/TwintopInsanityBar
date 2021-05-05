@@ -3136,14 +3136,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 		tabsheets[1]:Show()
+		tabsheets[1].selected = true
+		tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 		parent.tabs = tabs
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
----@diagnostic disable-next-line: undefined-field
-		parent.tabsheets[1].selected = true
----@diagnostic disable-next-line: undefined-field
-		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = controls
@@ -6054,14 +6052,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 		tabsheets[1]:Show()
+		tabsheets[1].selected = true
+		tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 		parent.tabs = tabs
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
----@diagnostic disable-next-line: undefined-field
-		parent.tabsheets[1].selected = true
----@diagnostic disable-next-line: undefined-field
-		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
@@ -8675,14 +8671,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 		tabsheets[1]:Show()
+		tabsheets[1].selected = true
+		tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 		parent.tabs = tabs
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
----@diagnostic disable-next-line: undefined-field
-		parent.tabsheets[1].selected = true
----@diagnostic disable-next-line: undefined-field
-		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
 
 		SurvivalConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 		SurvivalConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)

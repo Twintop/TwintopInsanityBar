@@ -52,7 +52,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		return textSettings
 	end
-    
+
     local function ArmsLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
@@ -113,10 +113,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				},
 				cleave = {
 					enabled = true, -- 9
-				},	
+				},
 				condemn = {
 					enabled = true, -- 10
-				},	
+				},
 			},
 			displayBar = {
 				alwaysShow=false,
@@ -171,7 +171,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					unusable="FFFF0000"
 				}
 			},
-			displayText = {}, 
+			displayText = {},
 			audio = {
 				overcap={
 					enabled=false,
@@ -387,7 +387,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			StaticPopup_Show("TwintopResourceBar_Warrior_Arms_ResetBarTextNarrowAdvanced")
 		end)
 		]]
-        
+
 		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Warrior_Arms_ResetBarTextAdvancedButton", parent)
 		f = controls.resetButton
 		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
@@ -477,7 +477,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["rage"] ~= nil and TRB.Data.spells[k]["rage"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -TRB.Data.spells[k]["rage"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -TRB.Data.spells[k]["rage"], TRB.Data.character.maxResource)
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -591,7 +591,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					})
 					barBorderFrame:Hide()
 				else
-					barBorderFrame:SetBackdrop({ 
+					barBorderFrame:SetBackdrop({
 						edgeFile = TRB.Data.settings.warrior.arms.textures.border,
 						tile = true,
 						tileSize=4,
@@ -607,7 +607,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["rage"] ~= nil and TRB.Data.spells[k]["rage"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -TRB.Data.spells[k]["rage"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -TRB.Data.spells[k]["rage"], TRB.Data.character.maxResource)
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -672,10 +672,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetChecked(TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay = self:GetChecked()
-			
-			if TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay then				
+
+			if TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay then
 				controls.checkBoxes.lockPosition:Disable()
-				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)				
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 			else
 				controls.checkBoxes.lockPosition:Enable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
@@ -1042,7 +1042,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.arms.textures.backgroundName = newName
 
 			if GetSpecialization() == 1 then
-				barContainerFrame:SetBackdrop({ 
+				barContainerFrame:SetBackdrop({
 					bgFile = TRB.Data.settings.warrior.arms.textures.background,
 					tile = true,
 					tileSize = TRB.Data.settings.warrior.arms.bar.width,
@@ -1179,7 +1179,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
@@ -1201,7 +1201,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-                    
+
 					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
 					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1243,7 +1243,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barContainerFrame:SetBackdropColor(r, g, b, 1-a)
@@ -1270,7 +1270,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1290,7 +1290,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1310,7 +1310,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.thresholdUnusable.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.threshold.unusable = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1779,7 +1779,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1802,7 +1802,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1825,7 +1825,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1899,7 +1899,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.currentRageText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.text.current = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1994,11 +1994,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.warrior.arms.colors.text.overcapEnabled = self:GetChecked()
 		end)
-		
+
 
 		yCoord = yCoord - 30
 		controls.dotColorSection = TRB.UiFunctions.BuildSectionHeader(parent, "DoT Count Tracking", 0, yCoord)
-		
+
 		yCoord = yCoord - 25
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
@@ -2023,7 +2023,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotUp.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.text.dots.up = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -2043,7 +2043,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotPandemic.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.text.dots.pandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -2063,7 +2063,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotDown.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -2271,7 +2271,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.arms = controls
 	end
-    
+
 	local function ArmsConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
@@ -2365,13 +2365,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.armsDisplayPanel)
 
 		parent = interfaceSettingsFrame.armsDisplayPanel
-		
+
 		controls.buttons = controls.buttons or {}
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Arms Warrior", xCoord+xPadding, yCoord-5)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
-		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
@@ -2399,21 +2399,19 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		PanelTemplates_TabResize(tabs[5], 0)
 		yCoord = yCoord - 15
 
-		for i = 1, 5 do 
+		for i = 1, 5 do
 			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Warrior_Arms_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
 		end
 
 		tabsheets[1]:Show()
+		tabsheets[1].selected = true
+		tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 		parent.tabs = tabs
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
----@diagnostic disable-next-line: undefined-field
-		parent.tabsheets[1].selected = true
----@diagnostic disable-next-line: undefined-field
-		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.arms = controls

@@ -3,16 +3,12 @@ local _, TRB = ...
 TRB.Options = {}
 
 local f1 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Highlight_Small_Color")
----@diagnostic disable-next-line: undefined-global
 f1:SetFontObject(GameFontHighlightSmall)
 local f2 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Green_Small_Color")
----@diagnostic disable-next-line: undefined-global
 f2:SetFontObject(GameFontGreenSmall)
 local f3 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Normal_Small_Color")
----@diagnostic disable-next-line: undefined-global
 f3:SetFontObject(GameFontNormalSmall)
 local f4 = CreateFont("TwintopResourceBar_OptionsMenu_Export_Spec_Color")
----@diagnostic disable-next-line: undefined-global
 f4:SetFontObject(GameFontWhite)
 
 TRB.Options.fonts = {}
@@ -97,8 +93,8 @@ local function ConstructAddonOptionsPanel()
 
     interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_General", UIParent)
     interfaceSettingsFrame.optionsPanel.name = "Global Options"
+---@diagnostic disable-next-line: undefined-field
     interfaceSettingsFrame.optionsPanel.parent = parent.name
----@diagnostic disable-next-line: undefined-global
     InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
 
     parent = interfaceSettingsFrame.optionsPanel
@@ -196,21 +192,15 @@ local function ConstructAddonOptionsPanel()
     -- Create the dropdown, and configure its appearance
     controls.dropDown.strata = CreateFrame("FRAME", "TIBFrameStrata", parent, "UIDropDownMenuTemplate")
     controls.dropDown.strata.label = TRB.UiFunctions.BuildSectionHeader(parent, "Frame Strata Level To Draw Bar On", xCoord, yCoord)
----@diagnostic disable-next-line: undefined-global
     controls.dropDown.strata.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.strata:SetPoint("TOPLEFT", xCoord, yCoord-30)
----@diagnostic disable-next-line: undefined-global
     UIDropDownMenu_SetWidth(controls.dropDown.strata, dropdownWidth)
----@diagnostic disable-next-line: undefined-global
     UIDropDownMenu_SetText(controls.dropDown.strata, TRB.Data.settings.core.strata.name)
----@diagnostic disable-next-line: undefined-global
     UIDropDownMenu_JustifyText(controls.dropDown.strata, "LEFT")
 
     -- Create and bind the initialization function to the dropdown menu
----@diagnostic disable-next-line: undefined-global
     UIDropDownMenu_Initialize(controls.dropDown.strata, function(self, level, menuList)
         local entries = 25
----@diagnostic disable-next-line: undefined-global
         local info = UIDropDownMenu_CreateInfo()
         local strata = {}
         strata["Background"] = "BACKGROUND"
@@ -239,7 +229,6 @@ local function ConstructAddonOptionsPanel()
             info.func = self.SetValue
             info.arg1 = strata[v]
             info.arg2 = v
----@diagnostic disable-next-line: undefined-global
             UIDropDownMenu_AddButton(info, level)
         end
     end)
@@ -258,12 +247,9 @@ local function ConstructAddonOptionsPanel()
         TRB.Frames.leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         TRB.Frames.middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         TRB.Frames.rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
----@diagnostic disable-next-line: undefined-global
         UIDropDownMenu_SetText(controls.dropDown.strata, newName)
----@diagnostic disable-next-line: undefined-global
         CloseDropDownMenus()
     end
-
 
 
     yCoord = yCoord - 60
@@ -274,21 +260,15 @@ local function ConstructAddonOptionsPanel()
     -- Create the dropdown, and configure its appearance
     controls.dropDown.audioChannel = CreateFrame("FRAME", "TIBFrameAudioChannel", parent, "UIDropDownMenuTemplate")
     controls.dropDown.audioChannel.label = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Channel To Use", xCoord, yCoord)
----@diagnostic disable-next-line: undefined-global
     controls.dropDown.audioChannel.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.audioChannel:SetPoint("TOPLEFT", xCoord, yCoord-30)
----@diagnostic disable-next-line: undefined-global
     UIDropDownMenu_SetWidth(controls.dropDown.audioChannel, dropdownWidth)
----@diagnostic disable-next-line: undefined-global
     UIDropDownMenu_SetText(controls.dropDown.audioChannel, TRB.Data.settings.core.audio.channel.name)
----@diagnostic disable-next-line: undefined-global
     UIDropDownMenu_JustifyText(controls.dropDown.audioChannel, "LEFT")
 
     -- Create and bind the initialization function to the dropdown menu
----@diagnostic disable-next-line: undefined-global
     UIDropDownMenu_Initialize(controls.dropDown.audioChannel, function(self, level, menuList)
         local entries = 25
----@diagnostic disable-next-line: undefined-global
         local info = UIDropDownMenu_CreateInfo()
         local channel = {}
         channel["Master"] = "Master"
@@ -304,7 +284,6 @@ local function ConstructAddonOptionsPanel()
             info.func = self.SetValue
             info.arg1 = channel[v]
             info.arg2 = v
----@diagnostic disable-next-line: undefined-global
             UIDropDownMenu_AddButton(info, level)
         end
     end)
@@ -312,9 +291,7 @@ local function ConstructAddonOptionsPanel()
     function controls.dropDown.audioChannel:SetValue(newValue, newName)
         TRB.Data.settings.core.audio.channel.channel = newValue
         TRB.Data.settings.core.audio.channel.name = newName
----@diagnostic disable-next-line: undefined-global
         UIDropDownMenu_SetText(controls.dropDown.audioChannel, newName)
----@diagnostic disable-next-line: undefined-global
         CloseDropDownMenus()
     end
 
@@ -350,8 +327,8 @@ local function ConstructImportExportPanel()
 
     interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_ImportExport", UIParent)
     interfaceSettingsFrame.optionsPanel.name = "Import/Export"
+---@diagnostic disable-next-line: undefined-field
     interfaceSettingsFrame.optionsPanel.parent = parent.name
----@diagnostic disable-next-line: undefined-global
     InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
 
     parent = interfaceSettingsFrame.optionsPanel
@@ -392,7 +369,6 @@ local function ConstructImportExportPanel()
             result = TRB.Functions.Import(self.editBox:GetText())
 
             if result >= 0 then
-                ---@diagnostic disable-next-line: undefined-global
                 ReloadUI()
             else
                 if result == -3 then
@@ -811,7 +787,6 @@ local function ConstructOptionsPanel()
 
 
     interfaceSettingsFrame.panel.yCoord = yCoord
----@diagnostic disable-next-line: undefined-global
     InterfaceOptions_AddCategory(interfaceSettingsFrame.panel)
 
     ConstructAddonOptionsPanel()
@@ -871,7 +846,6 @@ local function CreateBarTextInstructions(cache, parent, xCoord, yCoord, variable
 
     local maxOptionsWidth = 550
     local barTextInstructionsHeight = 200
----@diagnostic disable-next-line: undefined-global
     TRB.UiFunctions.BuildLabel(parent, TRB.Options.variables.barTextInstructions, xCoord+5, yCoord, maxOptionsWidth-(2*(xCoord+5)), barTextInstructionsHeight, GameFontHighlight, "LEFT")
 
     yCoord = yCoord - barTextInstructionsHeight - 10

@@ -622,7 +622,7 @@ local function RedrawThresholdLines(settings)
 		for x = 1, entries do
 			resourceFrame.thresholds[x]:SetWidth(settings.thresholdWidth)
 			resourceFrame.thresholds[x]:SetHeight(settings.bar.height - borderSubtraction)
-			resourceFrame.thresholds[x].texture = resourceFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
+			resourceFrame.thresholds[x].texture = resourceFrame.thresholds[x].texture or resourceFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
 			resourceFrame.thresholds[x].texture:SetAllPoints(resourceFrame.thresholds[x])
 			resourceFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
 			resourceFrame.thresholds[x]:SetFrameStrata(TRB.Data.settings.core.strata.level)
@@ -636,7 +636,7 @@ local function RedrawThresholdLines(settings)
 		for x = 1, entries do
 			passiveFrame.thresholds[x]:SetWidth(settings.thresholdWidth)
 			passiveFrame.thresholds[x]:SetHeight(settings.bar.height - borderSubtraction)
-			passiveFrame.thresholds[x].texture = passiveFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
+			passiveFrame.thresholds[x].texture = passiveFrame.thresholds[x].texture or passiveFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
 			passiveFrame.thresholds[x].texture:SetAllPoints(passiveFrame.thresholds[x])
 			passiveFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
 			passiveFrame.thresholds[x]:SetFrameStrata(TRB.Data.settings.core.strata.level)
@@ -644,6 +644,9 @@ local function RedrawThresholdLines(settings)
 			passiveFrame.thresholds[x]:Show()
 		end
 	end
+
+	TRB.Frames.resourceFrame = resourceFrame
+	TRB.Frames.passiveFrame = passiveFrame
 end
 TRB.Functions.RedrawThresholdLines = RedrawThresholdLines
 

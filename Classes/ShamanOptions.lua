@@ -22,8 +22,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	TRB.Options.Shaman.Elemental = {}
 	TRB.Options.Shaman.Enhancement = {}
     TRB.Options.Shaman.Restoration = {}
-    
-    
+
+
 	local function ElementalLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
@@ -50,7 +50,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		return textSettings
 	end
-    
+
     local function ElementalLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
@@ -183,7 +183,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
     TRB.Options.Shaman.LoadDefaultSettings = LoadDefaultSettings
 
-    
+
 	local function ElementalConstructResetDefaultsPanel(parent)
 		if parent == nil then
 			return
@@ -349,7 +349,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			StaticPopup_Show("TwintopResourceBar_ResetBarTextNarrowAdvanced")
 		end)
 		]]
-        
+
 		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextAdvancedButton", parent)
 		f = controls.resetButton
 		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
@@ -427,11 +427,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.bar.width = value
-			
+
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.shaman.elemental.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
-			
+
 			TRB.Functions.UpdateBarWidth(TRB.Data.settings.shaman.elemental)
 
 			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
@@ -449,7 +449,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.bar.height = value
-			
+
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.shaman.elemental.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -519,7 +519,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				})
 				barBorderFrame:Hide()
 			else
-				barBorderFrame:SetBackdrop({ 
+				barBorderFrame:SetBackdrop({
 					edgeFile = TRB.Data.settings.shaman.elemental.textures.border,
 					tile = true,
 					tileSize=4,
@@ -586,10 +586,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetChecked(TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay = self:GetChecked()
-			
-			if TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay then				
+
+			if TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay then
 				controls.checkBoxes.lockPosition:Disable()
-				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)				
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 			else
 				controls.checkBoxes.lockPosition:Enable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
@@ -923,7 +923,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
 			TRB.Data.settings.shaman.elemental.textures.background = newValue
 			TRB.Data.settings.shaman.elemental.textures.backgroundName = newName
-			barContainerFrame:SetBackdrop({ 
+			barContainerFrame:SetBackdrop({
 				bgFile = TRB.Data.settings.shaman.elemental.textures.background,
 				tile = true,
 				tileSize = TRB.Data.settings.shaman.elemental.bar.width,
@@ -1113,7 +1113,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
@@ -1135,7 +1135,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.earthShock.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.bar.earthShock = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1155,7 +1155,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barContainerFrame:SetBackdropColor(r, g, b, 1-a)
@@ -1177,7 +1177,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.casting.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     castingFrame:SetStatusBarColor(r, g, b, 1-a)
@@ -1219,7 +1219,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-                    
+
 					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
 					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1246,7 +1246,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1266,7 +1266,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1627,7 +1627,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1650,7 +1650,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1673,7 +1673,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1739,7 +1739,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.currentMaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1761,7 +1761,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.castingMaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1886,7 +1886,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotUp.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.dots.up = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1906,7 +1906,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotPandemic.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.dots.pandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1926,7 +1926,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotDown.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -2117,7 +2117,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
-    
+
 	local function ElementalConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
@@ -2204,13 +2204,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.elementalDisplayPanel)
 
 		parent = interfaceSettingsFrame.elementalDisplayPanel
-		
+
 		controls.buttons = controls.buttons or {}
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Elemental Shaman", xCoord+xPadding, yCoord-5)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
-		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
@@ -2238,22 +2238,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		PanelTemplates_TabResize(tabs[5], 0)
 		yCoord = yCoord - 15
 
-		for i = 1, 5 do 
+		for i = 1, 5 do
 			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Shaman_Elemental_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
 		end
 
 		tabsheets[1]:Show()
+		tabsheets[1].selected = true
+		tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 		parent.tabs = tabs
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
----@diagnostic disable-next-line: undefined-field
-		parent.tabsheets[1].selected = true
----@diagnostic disable-next-line: undefined-field
-		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-		
+
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 

@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-global
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 5 then --Only do this if we're on a Priest!
@@ -69,7 +68,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				fontSize = 13
 			},
 			right = {
-				text = "{$casting}[#casting$casting+]{$wfMana}[#wf$wfMana+]$mana / $manaMax ($manaPercent%)",				
+				text = "{$casting}[#casting$casting+]{$wfMana}[#wf$wfMana+]$mana / $manaMax ($manaPercent%)",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
@@ -727,7 +726,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.holy.bar.width = value
-			
+
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.holy.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.holy.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -820,7 +819,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				})
 				barBorderFrame:Hide()
 			else
-				barBorderFrame:SetBackdrop({ 
+				barBorderFrame:SetBackdrop({
 					edgeFile = TRB.Data.settings.priest.holy.textures.border,
 					tile = true,
 					tileSize=4,
@@ -890,10 +889,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay = self:GetChecked()
-			
-			if TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay then				
+
+			if TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay then
 				controls.checkBoxes.lockPosition:Disable()
-				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)				
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 			else
 				controls.checkBoxes.lockPosition:Enable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
@@ -1225,7 +1224,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
 			TRB.Data.settings.priest.holy.textures.background = newValue
 			TRB.Data.settings.priest.holy.textures.backgroundName = newName
-			barContainerFrame:SetBackdrop({ 
+			barContainerFrame:SetBackdrop({
 				bgFile = TRB.Data.settings.priest.holy.textures.background,
 				tile = true,
 				tileSize = TRB.Data.settings.priest.holy.bar.width,
@@ -1445,7 +1444,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					castingFrame:SetStatusBarColor(r, g, b, 1-a)
 				end)
 			end
-		end)		
+		end)
 		--[[
 		controls.colors.enterVoidform = TRB.UiFunctions.BuildColorPicker(parent, "Mana when you can cast Devouring Plague", TRB.Data.settings.priest.holy.colors.bar.enterVoidform, 300, 25, xCoord, yCoord)
 		f = controls.colors.enterVoidform
@@ -1616,7 +1615,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.priest.holy.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1636,7 +1635,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.priest.holy.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1702,7 +1701,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 25
 		yCoord = yCoord - 25
 
-		
+
 		yCoord = yCoord - 30
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Apotheosis Configuration", 0, yCoord)
 
@@ -2371,7 +2370,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotUp.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.priest.holy.colors.text.dots.up = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -2391,7 +2390,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotPandemic.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.priest.holy.colors.text.dots.pandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -2411,13 +2410,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotDown.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.priest.holy.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
-		
+
 
 		yCoord = yCoord - 130
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Haste Threshold Colors in Voidform", 0, yCoord)
@@ -2708,7 +2707,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
-		yCoord = yCoord - 30		
+		yCoord = yCoord - 30
 		controls.checkBoxes.innervate = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Innervate_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.innervate
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -2834,7 +2833,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.priest.holy.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
-		
+
 
 		yCoord = yCoord - 60
 		controls.checkBoxes.surgeOfLight2 = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_SurgeOfLight2CB", parent, "ChatConfigCheckButtonTemplate")
@@ -3024,7 +3023,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.priest.holy.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-		end		
+		end
 		]]
 
 		yCoord = yCoord - 60
@@ -3371,7 +3370,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Options.CreateBarTextInstructions(cache, parent, xCoord, yCoord)	
+		TRB.Options.CreateBarTextInstructions(cache, parent, xCoord, yCoord)
 	end
 
 	local function HolyConstructOptionsPanel(cache)
@@ -3396,6 +3395,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		interfaceSettingsFrame.holyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Priest_Holy", UIParent)
 		interfaceSettingsFrame.holyDisplayPanel.name = "Holy Priest"
+---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.holyDisplayPanel.parent = parent.name
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.holyDisplayPanel)
 
@@ -3422,19 +3422,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		PanelTemplates_TabResize(tabs[5], 0)
 		yCoord = yCoord - 15
 
-		for i = 1, 5 do 
+		for i = 1, 5 do
 			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Priest_Holy_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
 		end
 
 		tabsheets[1]:Show()
+		tabsheets[1].selected = true
+		tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 		parent.tabs = tabs
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
-		parent.tabsheets[1].selected = true
-		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.holy = controls
@@ -3447,7 +3447,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 
-	
+
 	--[[
 
 	Shadow Option Menus
@@ -3696,7 +3696,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.shadow.bar.width = value
-			
+
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.shadow.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -3789,7 +3789,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				})
 				barBorderFrame:Hide()
 			else
-				barBorderFrame:SetBackdrop({ 
+				barBorderFrame:SetBackdrop({
 					edgeFile = TRB.Data.settings.priest.shadow.textures.border,
 					tile = true,
 					tileSize=4,
@@ -3859,10 +3859,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay = self:GetChecked()
-			
-			if TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay then				
+
+			if TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay then
 				controls.checkBoxes.lockPosition:Disable()
-				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)				
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 			else
 				controls.checkBoxes.lockPosition:Enable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
@@ -4194,7 +4194,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
 			TRB.Data.settings.priest.shadow.textures.background = newValue
 			TRB.Data.settings.priest.shadow.textures.backgroundName = newName
-			barContainerFrame:SetBackdrop({ 
+			barContainerFrame:SetBackdrop({
 				bgFile = TRB.Data.settings.priest.shadow.textures.background,
 				tile = true,
 				tileSize = TRB.Data.settings.priest.shadow.bar.width,
@@ -4559,7 +4559,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.priest.shadow.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -4579,7 +4579,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.priest.shadow.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -5322,7 +5322,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotUp.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.priest.shadow.colors.text.dots.up = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -5342,7 +5342,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotPandemic.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.priest.shadow.colors.text.dots.pandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -5362,13 +5362,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotDown.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.priest.shadow.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
-		
+
 
 		yCoord = yCoord - 130
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Haste Threshold Colors in Voidform", 0, yCoord)
@@ -6296,7 +6296,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Options.CreateBarTextInstructions(cache, parent, xCoord, yCoord)	
+		TRB.Options.CreateBarTextInstructions(cache, parent, xCoord, yCoord)
 	end
 
 	local function ShadowConstructOptionsPanel(cache)
@@ -6321,17 +6321,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		interfaceSettingsFrame.shadowDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Priest_Shadow", UIParent)
 		interfaceSettingsFrame.shadowDisplayPanel.name = "Shadow Priest"
+---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.shadowDisplayPanel.parent = parent.name
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.shadowDisplayPanel)
 
 		parent = interfaceSettingsFrame.shadowDisplayPanel
-		
+
 		controls.buttons = controls.buttons or {}
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Shadow Priest", xCoord+xPadding, yCoord-5)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
-		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
@@ -6359,21 +6360,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		PanelTemplates_TabResize(tabs[5], 0)
 		yCoord = yCoord - 15
 
-		for i = 1, 5 do 
+		for i = 1, 5 do
 			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Priest_Shadow_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
 		end
 
 		tabsheets[1]:Show()
+		tabsheets[1].selected = true
+		tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 		parent.tabs = tabs
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
----@diagnostic disable-next-line: undefined-field
-		parent.tabsheets[1].selected = true
-		---@diagnostic disable-next-line: undefined-field
-		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls

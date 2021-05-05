@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-global
+
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 11 then --Only do this if we're on a Druid!
@@ -23,8 +23,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	TRB.Options.Druid.Feral = {}
 	TRB.Options.Druid.Guardian = {}
 	TRB.Options.Druid.Restoration = {}
-    
-    
+
+
 	local function BalanceLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
@@ -51,7 +51,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		return textSettings
 	end
-    
+
     local function BalanceLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
@@ -213,7 +213,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
     TRB.Options.Druid.LoadDefaultSettings = LoadDefaultSettings
 
-    
+
 	local function BalanceConstructResetDefaultsPanel(parent)
 		if parent == nil then
 			return
@@ -552,7 +552,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				})
 				barBorderFrame:Hide()
 			else
-				barBorderFrame:SetBackdrop({ 
+				barBorderFrame:SetBackdrop({
 					edgeFile = TRB.Data.settings.druid.balance.textures.border,
 					tile = true,
 					tileSize=4,
@@ -625,10 +625,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetChecked(TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay = self:GetChecked()
-			
-			if TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay then				
+
+			if TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay then
 				controls.checkBoxes.lockPosition:Disable()
-				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)				
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 			else
 				controls.checkBoxes.lockPosition:Enable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
@@ -962,7 +962,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
 			TRB.Data.settings.druid.balance.textures.background = newValue
 			TRB.Data.settings.druid.balance.textures.backgroundName = newName
-			barContainerFrame:SetBackdrop({ 
+			barContainerFrame:SetBackdrop({
 				bgFile = TRB.Data.settings.druid.balance.textures.background,
 				tile = true,
 				tileSize = TRB.Data.settings.druid.balance.bar.width,
@@ -2168,7 +2168,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotUp.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.druid.balance.colors.text.dots.up = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -2188,7 +2188,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotPandemic.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.druid.balance.colors.text.dots.pandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -2208,13 +2208,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotDown.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.druid.balance.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
-		
+
 
 		yCoord = yCoord - 130
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
@@ -2546,7 +2546,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
 	end
-    
+
 	local function BalanceConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
@@ -2572,7 +2572,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Text).", 11, 1, false, false, false, true, false)
 		end)
 
-		yCoord = yCoord - 30		
+		yCoord = yCoord - 30
 		TRB.UiFunctions.BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.left = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.druid.balance.displayText.left.text,
@@ -2634,7 +2634,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.balanceDisplayPanel)
 
 		parent = interfaceSettingsFrame.balanceDisplayPanel
-		
+
 		controls.buttons = controls.buttons or {}
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Balance Druid", xCoord+xPadding, yCoord-5)
@@ -2667,21 +2667,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		PanelTemplates_TabResize(tabs[5], 0)
 		yCoord = yCoord - 15
 
-		for i = 1, 5 do 
+		for i = 1, 5 do
 			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Druid_Balance_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
 		end
 
 		tabsheets[1]:Show()
+		tabsheets[1].selected = true
+		tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 		parent.tabs = tabs
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
----@diagnostic disable-next-line: undefined-field
-		parent.tabsheets[1].selected = true
----@diagnostic disable-next-line: undefined-field
-		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls

@@ -56,7 +56,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					time = 0
 				}
 			}
-		}		
+		}
 
 		specCache.holy.character = {
 			guid = UnitGUID("player"),
@@ -86,17 +86,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 
 			-- Talents
-			
+
 			apotheosis = {
 				id = 200183,
-				name = "", 
+				name = "",
 				icon = "",
 				duration = 20,
 				isActive = false
 			},
 			surgeOfLight = {
 				id = 114255,
-				name = "", 
+				name = "",
 				icon = "",
 				duration = 20,
 				isActive = false
@@ -116,7 +116,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 342132,
 				name = "",
 				icon = "",
-				manaPercent = 0.005, 
+				manaPercent = 0.005,
 				duration = 20,
 				icd = 0.75,
 				energizeId = 327703
@@ -183,7 +183,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			ticksRemaining = 0,
 			tickRate = 0,
 			tickRateFound = false,
-			previousTickTime = nil,			
+			previousTickTime = nil,
 			firstTickTime = nil, -- First time we saw a tick.
 			endTime = nil,
 			resourceRaw = 0,
@@ -220,8 +220,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			icons = {},
 			values = {}
 		}
-		
-		-- Shadow		
+
+		-- Shadow
 		specCache.shadow.Global_TwintopResourceBar = {
 			ttd = 0,
 			voidform = {
@@ -350,7 +350,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				name = "",
 				insanity = 4,
-				fotm = false, 
+				fotm = false,
 				baseDuration = 16,
 				pandemic = true,
 				pandemicTime = 16 * 0.3
@@ -360,7 +360,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				insanity = 5,
-				fotm = false, 
+				fotm = false,
 				baseDuration = 21,
 				pandemic = true,
 				pandemicTime = 21 * 0.3
@@ -492,7 +492,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				tocMinVersion = 90001
 			},
 			lashOfInsanity_Lasher = {
-				id = 344838, --Doesn't actually exist / unused? 
+				id = 344838, --Doesn't actually exist / unused?
 				name = "",
 				icon = "",
 				insanity = 1,
@@ -687,7 +687,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.holy.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Mana generating/spending spell you are currently hardcasting", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
-						
+
 			--{ variable = "#hws", icon = spells.holyWordSerenity.icon, description = "Holy Word: Serenity", printInSettings = true },
 
 			--[[
@@ -706,7 +706,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#voidTorrent", icon = spells.voidTorrent.icon, description = "Void Torrent", printInSettings = false },
 			{ variable = "#dam", icon = spells.deathAndMadness.icon, description = "Death and Madness", printInSettings = true },
 			{ variable = "#deathAndMadness", icon = spells.deathAndMadness.icon, description = "Death and Madness", printInSettings = false },
-			
+
 			{ variable = "#swp", icon = spells.shadowWordPain.icon, description = "Shadow Word: Pain", printInSettings = true },
 			{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = "Shadow Word: Pain", printInSettings = false },
 			{ variable = "#vt", icon = spells.vampiricTouch.icon, description = "Vampiric Touch", printInSettings = true },
@@ -763,7 +763,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$resourcePlusCasting", description = "Current + Casting Mana Total", printInSettings = false, color = false },
 			{ variable = "$manaPlusPassive", description = "Current + Passive Mana Total", printInSettings = true, color = false },
 			{ variable = "$resourcePlusPassive", description = "Current + Passive Mana Total", printInSettings = false, color = false },
-			{ variable = "$manaTotal", description = "Current + Passive + Casting Mana Total", printInSettings = true, color = false },   
+			{ variable = "$manaTotal", description = "Current + Passive + Casting Mana Total", printInSettings = true, color = false },
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Mana Total", printInSettings = false, color = false },
 			{ variable = "$overcap", description = "Will hardcast spell will overcap Mana? Logic variable only!", printInSettings = false, color = false },
 			{ variable = "$resourceOvercap", description = "Will hardcast spell will overcap Mana? Logic variable only!", printInSettings = false, color = false },
@@ -957,7 +957,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$resourcePlusCasting", description = "Current + Casting Insanity Total", printInSettings = false, color = false },
 			{ variable = "$insanityPlusPassive", description = "Current + Passive Insanity Total", printInSettings = true, color = false },
 			{ variable = "$resourcePlusPassive", description = "Current + Passive Insanity Total", printInSettings = false, color = false },
-			{ variable = "$insanityTotal", description = "Current + Passive + Casting Insanity Total", printInSettings = true, color = false },   
+			{ variable = "$insanityTotal", description = "Current + Passive + Casting Insanity Total", printInSettings = true, color = false },
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Insanity Total", printInSettings = false, color = false },
 			{ variable = "$overcap", description = "Will hardcast spell will overcap Insanity? Logic variable only!", printInSettings = false, color = false },
 			{ variable = "$resourceOvercap", description = "Will hardcast spell will overcap Insanity? Logic variable only!", printInSettings = false, color = false },
@@ -1138,7 +1138,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		if TRB.Data.specSupported then
             CheckCharacter()
-            
+
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
@@ -1146,7 +1146,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 
-			TRB.Details.addonData.registered = true		
+			TRB.Details.addonData.registered = true
 		else
 			--TRB.Data.resource = MANA
 			TRB.Data.specSupported = false
@@ -1157,7 +1157,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
 			TRB.Details.addonData.registered = false
-			barContainerFrame:Hide()	
+			barContainerFrame:Hide()
 		end
 	end
 	TRB.Functions.EventRegistration = EventRegistration
@@ -1287,7 +1287,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(TRB.Data.spells.voidBolt.id)
 				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier), 0.75) + latency
 				local gcdLockRemaining = TRB.Functions.GetCurrentGCDLockRemaining()
-				
+
 				local castGrantsExtension = true
 				--[[
 				Issue #107 - Twintop 2021-01-03
@@ -1356,10 +1356,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				local infinityCounter = 0
 				local infinityAverageCounter = 0
 				local maxCounter = 25
-				while (not (infiniteExtensions and infiniteAverageExtensions)) and 
+				while (not (infiniteExtensions and infiniteAverageExtensions)) and
 					  (remainingTimeTmpAverage >= vbCooldown or remainingTimeTmp >= vbCooldown) and
 					  infinityCounter < maxCounter and
-					  infinityAverageCounter < maxCounter and 
+					  infinityAverageCounter < maxCounter and
 					  sanityCheckCounter < maxCounter
 				do
 					sanityCheckCounter = sanityCheckCounter + 1
@@ -1419,7 +1419,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.voidform.isInfinite = false
 				TRB.Data.snapshotData.voidform.isAverageInfinite = false
 			end
-		end  
+		end
 	end
 
 	local function GetApotheosisRemainingTime()
@@ -1690,7 +1690,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local manaThreshold = 0
 
-		if TRB.Data.settings.priest.holy.colors.text.overcapEnabled and overcap then 
+		if TRB.Data.settings.priest.holy.colors.text.overcapEnabled and overcap then
 			currentManaColor = TRB.Data.settings.priest.holy.colors.text.overcap
 			castingManaColor = TRB.Data.settings.priest.holy.colors.text.overcap
 		elseif TRB.Data.settings.priest.holy.colors.text.overThresholdEnabled and normalizedMana >= manaThreshold then
@@ -1721,7 +1721,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local wfProcs = string.format("%.0f", math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.procs, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.procs))
 		--$wfTime
 		local wfTime = string.format("%.1f", math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds))
-		
+
 		--$sohMana
 		local _sohMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
 		local sohMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor"))
@@ -1776,7 +1776,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.holy.colors.text.dots.up, _shadowWordPainCount)
 				else
 					shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.holy.colors.text.dots.pandemic, _shadowWordPainCount)
-				end				
+				end
 			else
 				shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.holy.colors.text.dots.down, _shadowWordPainCount)
 			end
@@ -1823,7 +1823,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if TRB.Data.settings.priest.holy.s2mThreshold <= target.ttd then
 					_ttdColor = TRB.Data.settings.priest.holy.colors.text.s2mAbove
 				elseif TRB.Data.settings.priest.holy.s2mApproachingThreshold <= target.ttd then
-					_ttdColor = TRB.Data.settings.priest.holy.colors.text.s2mApproaching    
+					_ttdColor = TRB.Data.settings.priest.holy.colors.text.s2mApproaching
 				else
 					_ttdColor = TRB.Data.settings.priest.holy.colors.text.s2mBelow
 				end
@@ -1923,15 +1923,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$overcap"] = overcap
 		lookup["$resourceOvercap"] = overcap
 		lookup["$manaOvercap"] = overcap
-		--[[		lookup["$mbMana"] = mbMana 
+		--[[		lookup["$mbMana"] = mbMana
 		lookup["$mbGcds"] = mbGcds
 		lookup["$mbSwings"] = mbSwings
 		lookup["$mbTime"] = mbTime]]
-		lookup["$wfMana"] = wfMana 
+		lookup["$wfMana"] = wfMana
 		lookup["$wfGcds"] = wfGcds
 		lookup["$wfProcs"] = wfProcs
 		lookup["$wfTime"] = wfTime
-		lookup["$sohMana"] = sohMana 
+		lookup["$sohMana"] = sohMana
 		--[[		lookup["$loiMana"] = loiMana
 		lookup["$loiTicks"] = loiTicks
 		lookup["$cttvEquipped"] = ""
@@ -1984,7 +1984,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			insanityThreshold = TRB.Data.character.searingNightmareThreshold
 		end
 
-		if TRB.Data.settings.priest.shadow.colors.text.overcapEnabled and overcap then 
+		if TRB.Data.settings.priest.shadow.colors.text.overcapEnabled and overcap then
 			currentInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overcapInsanity
 			castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overcapInsanity
 		elseif TRB.Data.settings.priest.shadow.colors.text.overThresholdEnabled and normalizedInsanity >= insanityThreshold then
@@ -2059,7 +2059,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.up, _shadowWordPainCount)
 				else
 					shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.pandemic, _shadowWordPainCount)
-				end				
+				end
 			else
 				shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.down, _shadowWordPainCount)
 			end
@@ -2106,7 +2106,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if TRB.Data.settings.priest.shadow.s2mThreshold <= target.ttd then
 					_ttdColor = TRB.Data.settings.priest.shadow.colors.text.s2mAbove
 				elseif TRB.Data.settings.priest.shadow.s2mApproachingThreshold <= target.ttd then
-					_ttdColor = TRB.Data.settings.priest.shadow.colors.text.s2mApproaching    
+					_ttdColor = TRB.Data.settings.priest.shadow.colors.text.s2mApproaching
 				else
 					_ttdColor = TRB.Data.settings.priest.shadow.colors.text.s2mBelow
 				end
@@ -2291,11 +2291,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$overcap"] = overcap
 		lookup["$resourceOvercap"] = overcap
 		lookup["$insanityOvercap"] = overcap
-		lookup["$mbInsanity"] = mbInsanity 
+		lookup["$mbInsanity"] = mbInsanity
 		lookup["$mbGcds"] = mbGcds
 		lookup["$mbSwings"] = mbSwings
 		lookup["$mbTime"] = mbTime
-		lookup["$wfInsanity"] = wfInsanity 
+		lookup["$wfInsanity"] = wfInsanity
 		lookup["$wfGcds"] = wfGcds
 		lookup["$wfProcs"] = wfProcs
 		lookup["$wfTime"] = wfTime
@@ -2372,7 +2372,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					if spellId then
 						local manaCost = -TRB.Functions.GetSpellManaCost(spellId)
-						
+
 						TRB.Data.snapshotData.casting.startTime = currentTime
 						TRB.Data.snapshotData.casting.resourceRaw = manaCost
 						TRB.Data.snapshotData.casting.spellId = spellId
@@ -2470,7 +2470,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					timeToNextSwing = 0
 				elseif timeToNextSwing > 1.5 then
 					timeToNextSwing = 1.5
-				end        
+				end
 
 				TRB.Data.snapshotData.mindbender.remaining.time = timeRemaining
 				TRB.Data.snapshotData.mindbender.remaining.swings = math.ceil((timeRemaining - timeToNextSwing) / swingSpeed)
@@ -2498,7 +2498,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 				elseif TRB.Data.settings.priest.shadow.mindbender.mode == "time" then
 					if TRB.Data.snapshotData.mindbender.remaining.time > TRB.Data.settings.priest.shadow.mindbender.timeMax then
-						countValue = math.ceil((TRB.Data.settings.priest.shadow.mindbender.timeMax - timeToNextSwing) / swingSpeed)                
+						countValue = math.ceil((TRB.Data.settings.priest.shadow.mindbender.timeMax - timeToNextSwing) / swingSpeed)
 					else
 						countValue = math.ceil((TRB.Data.snapshotData.mindbender.remaining.time - timeToNextSwing) / swingSpeed)
 					end
@@ -2630,7 +2630,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					timeToNextProc = 0
 				elseif timeToNextProc > tickRate then
 					timeToNextProc = tickRate
-				end        
+				end
 
 				local gcd = TRB.Functions.GetCurrentGCDTime(true)
 
@@ -2650,7 +2650,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 				elseif settings.wrathfulFaerie.mode == "time" then
 					if TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time > settings.wrathfulFaerie.timeMax then
-						countValue = math.ceil((settings.wrathfulFaerie.timeMax - timeToNextProc) / tickRate)                
+						countValue = math.ceil((settings.wrathfulFaerie.timeMax - timeToNextProc) / tickRate)
 					else
 						countValue = math.ceil((TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time - timeToNextProc) / tickRate)
 					end
@@ -2700,7 +2700,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					timeToNextProc = 0
 				elseif timeToNextProc > tickRate then
 					timeToNextProc = tickRate
-				end        
+				end
 
 				local gcd = TRB.Functions.GetCurrentGCDTime(true)
 
@@ -2720,7 +2720,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 				elseif settings.wrathfulFaerie.mode == "time" then
 					if TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.time > settings.wrathfulFaerie.timeMax then
-						countValue = math.ceil((settings.wrathfulFaerie.timeMax - timeToNextProc) / tickRate)                
+						countValue = math.ceil((settings.wrathfulFaerie.timeMax - timeToNextProc) / tickRate)
 					else
 						countValue = math.ceil((TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.time - timeToNextProc) / tickRate)
 					end
@@ -2735,10 +2735,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if TRB.Data.snapshotData.targetData.wrathfulFaerieFermataGuid then
 					if specId == 2 then
 						TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceRaw = countValue * TRB.Data.spells.wrathfulFaerie.manaPercent * TRB.Data.character.maxResource * TRB.Data.spells.wrathfulFaerieFermata.modifier
-						TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceFinal = TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceRaw				
+						TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceFinal = TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceRaw
 					elseif specId == 3 then
 						TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceRaw = countValue * TRB.Data.spells.wrathfulFaerie.insanity * TRB.Data.spells.wrathfulFaerieFermata.modifier
-						TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceFinal = CalculateInsanityGain(TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceRaw, false)						
+						TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceFinal = CalculateInsanityGain(TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceRaw, false)
 					end
 				else
 					TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceRaw = 0
@@ -2791,7 +2791,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateSnapshot()
 		UpdateWrathfulFaerieValues()
 		UpdateSymbolOfHope()
-				
+
 		local currentTime = GetTime()
 		local _
 
@@ -2822,14 +2822,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateExternalCallToTheVoidValues()
 		UpdateDeathAndMadness()
 		UpdateWrathfulFaerieValues()
-				
+
 		local currentTime = GetTime()
 		local _
 
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPain then
 				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.shadowWordPain.id, "target", "player"))
-			
+
 				if expiration ~= nil then
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining = expiration - currentTime
 				end
@@ -2837,7 +2837,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouch then
 				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.vampiricTouch.id, "target", "player"))
-			
+
 				if expiration ~= nil then
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouchRemaining = expiration - currentTime
 				end
@@ -2849,7 +2849,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local specId = GetSpecialization()
 		local affectingCombat = UnitAffectingCombat("player")
 
-		if specId == 2 then	
+		if specId == 2 then
 			if force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.priest.holy.displayBar.alwaysShow) and (
@@ -2911,7 +2911,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					if TRB.Data.spells.innervate.isActive then
 						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.innervate, true))
-						
+
 						if TRB.Data.settings.priest.holy.audio.innervate.enabled and TRB.Data.snapshotData.audio.innervateCue == false then
 							TRB.Data.snapshotData.audio.innervateCue = true
 							PlaySoundFile(TRB.Data.settings.priest.holy.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -2940,24 +2940,24 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 
 					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, castingFrame, castingBarValue)
-					
+
 					local passiveValue = 0
 					if TRB.Data.settings.priest.holy.bar.showPassive then
 						if TRB.Data.snapshotData.wrathfulFaerie.resourceFinal > 0 then
 							passiveValue = passiveValue + TRB.Data.snapshotData.wrathfulFaerie.resourceFinal
 						end
-						
+
 						if TRB.Data.snapshotData.symbolOfHope.resourceFinal > 0 then
 							passiveValue = passiveValue + TRB.Data.snapshotData.symbolOfHope.resourceFinal
 						end
 					else
 						passiveBarValue = castingBarValue
 					end
-		 
+
 					passiveBarValue = castingBarValue + passiveValue
 					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, resourceFrame, castingBarValue) 
+							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, castingFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, passiveFrame, TRB.Data.snapshotData.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.passive, true))
@@ -3095,7 +3095,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.shadow, castingFrame, castingBarValue)
 
-					if TRB.Data.settings.priest.shadow.bar.showPassive and 
+					if TRB.Data.settings.priest.shadow.bar.showPassive and
 						(TRB.Data.character.talents.as.isSelected or
 						TRB.Data.snapshotData.mindbender.resourceFinal > 0 or
 						TRB.Data.snapshotData.deathAndMadness.isActive or
@@ -3247,7 +3247,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			if destGUID == TRB.Data.character.guid then
 				if specId == 2 then -- Let's check raid effect mana stuff
-					if type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.symbolOfHope.tickId then						
+					if type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.symbolOfHope.tickId then
 						local diff = 0
 						if TRB.Data.snapshotData.symbolOfHope.previousTickTime ~= nil then
 							diff = currentTime - TRB.Data.snapshotData.symbolOfHope.previousTickTime
@@ -3266,7 +3266,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								TRB.Data.snapshotData.symbolOfHope.tickRate = (TRB.Data.spells.symbolOfHope.duration / TRB.Data.spells.symbolOfHope.ticks)
 								TRB.Data.snapshotData.symbolOfHope.endTime = currentTime + TRB.Data.spells.symbolOfHope.duration
 							end
-						else							
+						else
 							if TRB.Data.snapshotData.symbolOfHope.ticksRemaining >= 1 then
 								if sourceGUID ~= TRB.Data.character.guid then
 									if not TRB.Data.snapshotData.symbolOfHope.tickRateFound then
@@ -3279,7 +3279,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										TRB.Data.snapshotData.symbolOfHope.tickRate = TRB.Data.snapshotData.symbolOfHope.tickRate / 2
 										TRB.Data.snapshotData.symbolOfHope.endTime = currentTime + (TRB.Data.snapshotData.symbolOfHope.tickRate * (TRB.Data.snapshotData.symbolOfHope.ticksRemaining - 2))
 										TRB.Data.snapshotData.symbolOfHope.tickRateFound = false
-									end									
+									end
 								end
 							end
 							TRB.Data.snapshotData.symbolOfHope.previousTickTime = currentTime
@@ -3298,11 +3298,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.innervate.endTime = nil
 							TRB.Data.snapshotData.audio.innervateCue = false
 						end
-					end		
+					end
 				elseif specId == 3 then
 					if settings.mindbender.enabled and type == "SPELL_ENERGIZE" and
-						((TRB.Data.character.talents.mindbender.isSelected and sourceName == TRB.Data.spells.mindbender.name) or 
-						(not TRB.Data.character.talents.mindbender.isSelected and sourceName == TRB.Data.spells.shadowfiend.name)) then 
+						((TRB.Data.character.talents.mindbender.isSelected and sourceName == TRB.Data.spells.mindbender.name) or
+						(not TRB.Data.character.talents.mindbender.isSelected and sourceName == TRB.Data.spells.shadowfiend.name)) then
 						TRB.Data.snapshotData.mindbender.swingTime = currentTime
 					elseif (type == "SPELL_INSTAKILL" or type == "UNIT_DIED" or type == "UNIT_DESTROYED") then
 						if TRB.Data.snapshotData.voidform.s2m.active then -- Surrender to Madness ended
@@ -3312,10 +3312,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			end
 
-			if sourceGUID == TRB.Data.character.guid then 
+			if sourceGUID == TRB.Data.character.guid then
 				if specId == 2 then
 					if spellId == TRB.Data.spells.symbolOfHope.id then
-						if type == "SPELL_AURA_REMOVED" then -- Lost Symbol of Hope							
+						if type == "SPELL_AURA_REMOVED" then -- Lost Symbol of Hope
 							-- Let UpdateSymbolOfHope() clean this up
 							UpdateSymbolOfHope(true)
 						end
@@ -3346,8 +3346,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					end
 				elseif specId == 3 then
-					if spellId == TRB.Data.spells.s2m.id then                
-						if type == "SPELL_AURA_APPLIED" then -- Gain Surrender to Madness   
+					if spellId == TRB.Data.spells.s2m.id then
+						if type == "SPELL_AURA_APPLIED" then -- Gain Surrender to Madness
 							TRB.Data.snapshotData.voidform.s2m.active = true
 							TRB.Data.snapshotData.voidform.s2m.startTime = currentTime
 							UpdateCastingResourceFinal_Shadow()
@@ -3629,7 +3629,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						FillSpellData_Shadow()
 						TRB.Functions.LoadFromSpecCache(specCache.holy)
 						TRB.Functions.RefreshLookupData = RefreshLookupData_Holy
-						
+
 						if TRB.Data.barConstructedForSpec ~= "holy" then
 							TRB.Data.barConstructedForSpec = "holy"
 							ConstructResourceBar(TRB.Data.settings.priest.holy)
@@ -3640,7 +3640,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						FillSpellData_Shadow()
 						TRB.Functions.LoadFromSpecCache(specCache.shadow)
 						TRB.Functions.RefreshLookupData = RefreshLookupData_Shadow
-						
+
 						if TRB.Data.barConstructedForSpec ~= "shadow" then
 							TRB.Data.barConstructedForSpec = "shadow"
 							ConstructResourceBar(TRB.Data.settings.priest.shadow)

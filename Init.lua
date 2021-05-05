@@ -14,7 +14,6 @@ local addonData = {
 	registered = false,
 	libs = {}
 }
----@diagnostic disable-next-line: undefined-global
 addonData.libs.SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 addonData.libs.SharedMedia:Register("sound", "TRB: Wilhelm Scream", "Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg")
 addonData.libs.SharedMedia:Register("sound", "TRB: Boxing Arena Gong", "Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg")
@@ -207,7 +206,6 @@ TRB.Data.BarText = BarText
 do
 	local function get_panel_name(panel)
 		local tp = type(panel)
----@diagnostic disable-next-line: undefined-global
 		local cat = INTERFACEOPTIONS_ADDONCATEGORIES
 		if tp == "string" then
 			for i = 1, #cat do
@@ -242,7 +240,6 @@ do
 		local shownpanels = 0
 		local mypanel
 		local t = {}
----@diagnostic disable-next-line: undefined-global
 		local cat = INTERFACEOPTIONS_ADDONCATEGORIES
 		for i = 1, #cat do
 			local panel = cat[i]
@@ -250,7 +247,6 @@ do
 				if panel.name == panelName then
 					panel.collapsed = true
 					t.element = panel
----@diagnostic disable-next-line: undefined-global
 					InterfaceOptionsListButton_ToggleSubCategories(t)
 					noncollapsedHeaders[panel.name] = true
 					mypanel = shownpanels + 1
@@ -261,16 +257,13 @@ do
 				shownpanels = shownpanels + 1
 			end
 		end
----@diagnostic disable-next-line: undefined-global
 		local Smin, Smax = InterfaceOptionsFrameAddOnsListScrollBar:GetMinMaxValues()
 		if shownpanels > 15 and Smin < Smax then
 			local val = (Smax/(shownpanels-15))*(mypanel-2)
----@diagnostic disable-next-line: undefined-global
 			InterfaceOptionsFrameAddOnsListScrollBar:SetValue(val)
 		end
 ---@diagnostic disable-next-line: lowercase-global
 		doNotRun = true
----@diagnostic disable-next-line: undefined-global
 		InterfaceOptionsFrame_OpenToCategory(panel)
 ---@diagnostic disable-next-line: lowercase-global
 		doNotRun = false
@@ -289,7 +282,6 @@ function SlashCmdList.TWINTOP(msg)
         local x, y = TRB.Functions.ParseCmdString(subcmd)
         TRB.Functions.UpdateBarPosition(tonumber(x), tonumber(y))
     else
----@diagnostic disable-next-line: undefined-global
         InterfaceOptionsFrame_OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)
     end
 end
