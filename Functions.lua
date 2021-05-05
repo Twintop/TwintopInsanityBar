@@ -20,17 +20,17 @@ local function TablePrint(T, indent)
 	if not indent then
 		indent = 0
 	end
-	
+
 	local toprint = string.rep(" ", indent) .. "{\r\n"
-	indent = indent + 2 
+	indent = indent + 2
 	for k, v in pairs(T) do
 		toprint = toprint .. string.rep(" ", indent)
 		if (type(k) == "number") then
 			toprint = toprint .. "[" .. k .. "] = "
 		elseif (type(k) == "string") then
-			toprint = toprint  .. k ..  "= "   
+			toprint = toprint  .. k ..  "= "
 		end
-	
+
 		if (type(v) == "number") then
 			toprint = toprint .. v .. ",\r\n"
 		elseif (type(v) == "string") then
@@ -150,7 +150,7 @@ local function GetRGBAFromString(s, normalize)
     local _g = 1
     local _b = 0
 
-    if not (s == nil) then        
+    if not (s == nil) then
         _a = min(255, tonumber(string.sub(s, 1, 2), 16))
         _r = min(255, tonumber(string.sub(s, 3, 4), 16))
         _g = min(255, tonumber(string.sub(s, 5, 6), 16))
@@ -256,6 +256,11 @@ end
 TRB.Functions.GetLatency = GetLatency
 
 -- Addon Maintenance Functions
+
+local function EventRegistration()
+	-- To be implemented by the class module
+end
+TRB.Functions.EventRegistration = EventRegistration
 
 local function GetSanityCheckValues(settings)
 	local sc = {}
@@ -490,7 +495,7 @@ TRB.Functions.RepositionThreshold = RepositionThreshold
 
 local function ShowResourceBar()
 	if TRB.Details.addonData.registered == false then
-		EventRegistration()
+		TRB.Functions.EventRegistration()
 	end
 
 	TRB.Data.snapshotData.isTracking = true
@@ -639,12 +644,10 @@ local function RedrawThresholdLines(settings)
 			passiveFrame.thresholds[x]:Show()
 		end
 	end
-
-	return thresholds
 end
 TRB.Functions.RedrawThresholdLines = RedrawThresholdLines
 
-local function ConstructResourceBar(settings)    
+local function ConstructResourceBar(settings)
     if settings ~= nil and settings.bar ~= nil then
         local barContainerFrame = TRB.Frames.barContainerFrame
         local resourceFrame = TRB.Frames.resourceFrame
@@ -684,7 +687,7 @@ local function ConstructResourceBar(settings)
                 self.isMoving = false
             end
         end)
-        
+
         barContainerFrame:SetMovable(settings.bar.dragAndDrop)
         barContainerFrame:EnableMouse(settings.bar.dragAndDrop)
 
@@ -738,7 +741,7 @@ local function ConstructResourceBar(settings)
         resourceFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
         resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		resourceFrame:SetFrameLevel(125)
-		        
+
         castingFrame:Show()
         castingFrame:SetMinMaxValues(0, settings.bar.width)
         castingFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
@@ -748,7 +751,7 @@ local function ConstructResourceBar(settings)
         castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting, true))
         castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         castingFrame:SetFrameLevel(90)
-        
+
         passiveFrame:Show()
         passiveFrame:SetMinMaxValues(0, settings.bar.width)
         passiveFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
@@ -774,7 +777,7 @@ local function ConstructResourceBar(settings)
         leftTextFrame.font:SetJustifyH("LEFT")
         leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
         leftTextFrame.font:Show()
-        
+
         middleTextFrame:Show()
         middleTextFrame:SetWidth(settings.bar.width)
         middleTextFrame:SetHeight(settings.bar.height * 3.5)
@@ -786,7 +789,7 @@ local function ConstructResourceBar(settings)
         middleTextFrame.font:SetJustifyH("CENTER")
         middleTextFrame.font:SetFont(settings.displayText.middle.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
         middleTextFrame.font:Show()
-        
+
         rightTextFrame:Show()
         rightTextFrame:SetWidth(settings.bar.width)
         rightTextFrame:SetHeight(settings.bar.height * 3.5)
@@ -995,7 +998,7 @@ local function GetReturnText(inputText)
     local cache = TRB.Functions.GetFromBarTextCache(inputText.text)
     local mapping = {}
     local cachedTextVariableLength = TRB.Functions.TableLength(cache.variables)
-    
+
     if cachedTextVariableLength > 0 then
         for y = 1, cachedTextVariableLength do
             table.insert(mapping, lookup[cache.variables[y]])
@@ -1010,7 +1013,7 @@ local function GetReturnText(inputText)
     else
         inputText.text = ""
     end
-    
+
     return string.format("%s%s", inputText.color, inputText.text)
 end
 TRB.Functions.GetReturnText = GetReturnText
@@ -1220,7 +1223,7 @@ local function ScanForLogicSymbols(input)
 	end
 
     local p = 0
-	local a, b, c, d, e, e_1, e_2, e_3, f, a1, b1, c1, d1, e1, e1_1, e1_2, e1_3, f
+	local a, b, c, d, e, e_1, e_2, e_3, f, a1, b1, c1, d1, e1, e1_1, e1_2, e1_3, f1
 	local currentIf = 0
 	local currentResult = 0
 	local min
@@ -1308,7 +1311,7 @@ local function ScanForLogicSymbols(input)
 				p = string.len(input) + 1
 				break
 			end
-			
+
 			table.insert(all, ins)
 		else
 			p = string.len(input) + 1
@@ -1354,7 +1357,7 @@ local function FindNextSymbolIndex(t, symbol, minIndex)
 			end
 		end
 	end
-	return nil	
+	return nil
 end
 TRB.Functions.FindNextSymbolIndex = FindNextSymbolIndex
 
@@ -1367,10 +1370,11 @@ local function ParseVariablesFromString(input)
 
 	local vars = {}
 	local logic = {}
-	
+
 	local scan = TRB.Functions.ScanForLogicSymbols(input)
 
 	local lastIndex = 0
+	local p = 0
 	while p <= string.len(input) do
 		local nextLogic1 = TRB.Functions.FindNextSymbolIndex(scan.orLogic, '|', lastIndex)
 		local nextLogic2 = TRB.Functions.FindNextSymbolIndex(scan.andLogic, '&', lastIndex)
@@ -1404,7 +1408,7 @@ local function RemoveInvalidVariablesFromBarText(input)
 
 	local lastIndex = 0
     while p <= string.len(input) do
-		local nextOpenIf = TRB.Functions.FindNextSymbolIndex(scan.all, '{', lastIndex)		
+		local nextOpenIf = TRB.Functions.FindNextSymbolIndex(scan.all, '{', lastIndex)
         if nextOpenIf ~= nil then
 			local nextCloseIf = TRB.Functions.FindNextSymbolIndex(scan.closeIf, '}', nextOpenIf.index+1)
 
@@ -1424,29 +1428,29 @@ local function RemoveInvalidVariablesFromBarText(input)
 
 						if elseOpenResult ~= nil and elseOpenResult.position == nextCloseResult.position + 1 then
 							elseCloseResult = TRB.Functions.FindNextSymbolIndex(scan.closeResult, ']', elseOpenResult.index)
-							
+
 							if elseCloseResult ~= nil then
 							-- We have if/else
 								hasElse = true
 							end
 						end
-						
+
 						local valid = false
 						local useNot = false
 						local var = string.trim(string.sub(input, nextOpenIf.position+1, nextCloseIf.position-1))
 						local notVar = string.sub(var, 1, 1)
-	
+
 						if notVar == "!" then
 							useNot = true
 							var = string.trim(string.sub(var, 2))
 						end
 
 						valid = TRB.Data.IsValidVariableForSpec(var)
-	
+
 						if useNot == true then
 							valid = not valid
 						end
-	
+
 						if valid == true then
 							-- TODO: Recursion goes here for "IF", once we find the matched ]
 							returnText = returnText .. string.sub(input, nextOpenResult.position+1, nextCloseResult.position-1)
@@ -1454,7 +1458,7 @@ local function RemoveInvalidVariablesFromBarText(input)
 							-- TODO: Recursion goes here for "ELSE", once we find to matched ]
 							returnText = returnText .. string.sub(input, elseOpenResult.position+1, elseCloseResult.position-1)
 						end
-                    
+
 						if hasElse == true then
 							p = elseCloseResult.position+1
 							lastIndex = elseCloseResult.index
@@ -1631,7 +1635,7 @@ local function FindDebuffById(spellId, onWhom, byWhom)
 	end
 end
 TRB.Functions.FindDebuffById = FindDebuffById
-    
+
 local function FindAuraByName(spellName, onWhom, filter, byWhom)
 	if onWhom == nil then
 		onWhom = "player"
@@ -1706,11 +1710,11 @@ local function IsSoulbindActive(id)
 	local soulbindId = C_Soulbinds.GetActiveSoulbindID()
     local soulbindData = C_Soulbinds.GetSoulbindData(soulbindId)
     local length = TableLength(soulbindData.tree.nodes)
-    
+
 	for x = 1, length do
 		if soulbindData.tree.nodes[x].conduitID == id then
 			return true
-		end        
+		end
 	end
 
 	return false
@@ -1752,7 +1756,7 @@ local function Import(input)
 	end
 
 	result, configuration = pcall(json.decode, decoded)
-		
+
 	if not result then
 		return -2
 	end
@@ -1768,11 +1772,11 @@ local function Import(input)
 
 	local existingSettings = TRB.Data.settings
 	result, mergedSettings = pcall(TRB.Functions.MergeSettings, existingSettings, configuration)
-	
+
 	if not result then
 		return -4
 	end
-	
+
 	TRB.Data.settings = mergedSettings
 	return 1
 end
@@ -1792,7 +1796,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		configuration.colors.threshold = settings.colors.threshold
 		configuration.thresholdWidth = settings.thresholdWidth
 		configuration.overcapThreshold = settings.overcapThreshold
-		
+
 		if classId == 1 and specId == 1 then -- Arms Warrior
 			configuration.thresholds = settings.thresholds
 		elseif classId == 3 then -- Hunters
@@ -1931,7 +1935,7 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 	if classId ~= nil then -- One class
 		if classId == 1 and settings.warrior ~= nil then -- Warrior
 			configuration.warrior = {}
-			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.warrior.arms) > 0 then -- Arms				
+			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.warrior.arms) > 0 then -- Arms
 				configuration.warrior.arms = TRB.Functions.ExportConfigurationSections(1, 1, settings.warrior.arms, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 3 and settings.hunter ~= nil then -- Hunter
@@ -1940,7 +1944,7 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.hunter.beastMastery) > 0 then -- Beast Mastery
 				configuration.hunter.beastMastery = TRB.Functions.ExportConfigurationSections(3, 1, settings.hunter.beastMastery, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
-			
+
 			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.hunter.marksmanship) > 0 then -- Marksmanship
 				configuration.hunter.marksmanship = TRB.Functions.ExportConfigurationSections(3, 2, settings.hunter.marksmanship, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
@@ -1969,7 +1973,7 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 
 		-- Arms Warrior
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(1, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
-		
+
 		-- Hunters
 		-- Beast Mastery
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
@@ -1977,13 +1981,13 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
 		-- Survival
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
-		
+
 		-- Shadow Priest
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(5, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
-		
+
 		-- Elemental Shaman
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
-		
+
 		-- Balance Druid
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
 	end
@@ -2001,6 +2005,7 @@ local function ExportPopup(exportMessage, classId, specId, includeBarDisplay, in
 	StaticPopupDialogs["TwintopResourceBar_Export"].OnShow = function(self)
 		local configuration = TRB.Functions.ExportGetConfiguration(classId, specId, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
 		local output = TRB.Functions.Export(configuration)
+---@diagnostic disable-next-line: undefined-field
 		self.editBox:SetText(output)
 	end
 	StaticPopup_Show("TwintopResourceBar_Export")

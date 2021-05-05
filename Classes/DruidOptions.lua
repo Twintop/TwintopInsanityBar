@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 11 then --Only do this if we're on a Druid!
@@ -2628,6 +2629,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local xOffset2 = 275
 		interfaceSettingsFrame.balanceDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Balance", UIParent)
 		interfaceSettingsFrame.balanceDisplayPanel.name = "Balance Druid"
+---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.balanceDisplayPanel.parent = parent.name
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.balanceDisplayPanel)
 
@@ -2676,7 +2678,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
+---@diagnostic disable-next-line: undefined-field
 		parent.tabsheets[1].selected = true
+---@diagnostic disable-next-line: undefined-field
 		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame

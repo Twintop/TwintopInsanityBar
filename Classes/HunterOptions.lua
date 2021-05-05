@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 3 then --Only do this if we're on a Hunter!
@@ -3091,6 +3092,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		interfaceSettingsFrame.beastMasteryDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_BeastMastery", UIParent)
 		interfaceSettingsFrame.beastMasteryDisplayPanel.name = "Beast Mastery Hunter"
+---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.beastMasteryDisplayPanel.parent = parent.name
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.beastMasteryDisplayPanel)
 
@@ -3138,7 +3140,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
+---@diagnostic disable-next-line: undefined-field
 		parent.tabsheets[1].selected = true
+---@diagnostic disable-next-line: undefined-field
 		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -6006,6 +6010,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		interfaceSettingsFrame.marksmanshipDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Marksmanship", UIParent)
 		interfaceSettingsFrame.marksmanshipDisplayPanel.name = "Marksmanship Hunter"
+---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.marksmanshipDisplayPanel.parent = parent.name
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.marksmanshipDisplayPanel)
 
@@ -6053,7 +6058,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
+---@diagnostic disable-next-line: undefined-field
 		parent.tabsheets[1].selected = true
+---@diagnostic disable-next-line: undefined-field
 		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -8621,6 +8628,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		interfaceSettingsFrame.survivalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Survival", UIParent)
 		interfaceSettingsFrame.survivalDisplayPanel.name = "Survival Hunter"
+---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.survivalDisplayPanel.parent = parent.name
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.survivalDisplayPanel)
 
@@ -8671,7 +8679,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
+---@diagnostic disable-next-line: undefined-field
 		parent.tabsheets[1].selected = true
+---@diagnostic disable-next-line: undefined-field
 		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
 		SurvivalConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)

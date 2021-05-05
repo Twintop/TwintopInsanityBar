@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 1 then --Only do this if we're on a Warrior!
@@ -2359,6 +2360,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		interfaceSettingsFrame.armsDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warrior_Arms", UIParent)
 		interfaceSettingsFrame.armsDisplayPanel.name = "Arms Warrior"
+---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.armsDisplayPanel.parent = parent.name
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.armsDisplayPanel)
 
@@ -2408,7 +2410,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
+---@diagnostic disable-next-line: undefined-field
 		parent.tabsheets[1].selected = true
+---@diagnostic disable-next-line: undefined-field
 		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame

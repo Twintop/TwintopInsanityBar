@@ -309,6 +309,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Details.addonData.registered = true			
 		end
 	end
+	TRB.Functions.EventRegistration = EventRegistration
 
 	local function InitializeTarget(guid)
 		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
@@ -510,7 +511,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			remaining = icefuryTime
 		}
 
-		lookup = TRB.Data.lookup or {}
+		local lookup = TRB.Data.lookup or {}
 		lookup["#lightningBolt"] = TRB.Data.spells.lightningBolt.icon
 		lookup["#lavaBurst"] = TRB.Data.spells.lavaBurst.icon
 		lookup["#elementalBlast"] = TRB.Data.spells.elementalBlast.icon
@@ -718,6 +719,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 				if TRB.Data.snapshotData.resource >= TRB.Data.character.earthShockThreshold then
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.earthShock, true))
+---@diagnostic disable-next-line: undefined-field
 					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.over, true))
 					if TRB.Data.settings.shaman.elemental.colors.bar.flashEnabled then
 						TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.shaman.elemental.colors.bar.flashAlpha, TRB.Data.settings.shaman.elemental.colors.bar.flashPeriod)
@@ -730,6 +732,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
 					end
 				else
+---@diagnostic disable-next-line: undefined-field
 					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.under, true))
 					barContainerFrame:SetAlpha(1.0)
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.base, true))
@@ -857,7 +860,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
             end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.RemoveTarget(guid)
+				TRB.Functions.RemoveTarget(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end

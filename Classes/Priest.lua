@@ -1160,6 +1160,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			barContainerFrame:Hide()	
 		end
 	end
+	TRB.Functions.EventRegistration = EventRegistration
 
 	local function CheckVoidTendrilExists(guid)
 		if guid == nil or (not TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid] or TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils[guid] == nil) then
@@ -2134,7 +2135,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				}
 			},
 			insanity = {
-				insanity = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor or 0,
+				insanity = (TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) or 0,
 				casting = TRB.Data.snapshotData.casting.resourceFinal or 0,
 				passive = _passiveInsanity,
 				auspiciousSpirits = _asInsanity,
@@ -2978,6 +2979,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					if TRB.Data.settings.priest.holy.bar.showPassive and passiveValue > 0 and passiveBarValue < TRB.Data.character.maxResource then
 						TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, TRB.Data.settings.priest.holy.thresholdWidth, (castingBarValue + TRB.Data.snapshotData.wrathfulFaerie.resourceFinal), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
 						TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.mindbender, true))
 						TRB.Frames.passiveFrame.thresholds[1]:Show()
 					else
@@ -3102,6 +3104,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						passiveBarValue = castingBarValue + ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity, false) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.mindbender.resourceFinal + TRB.Data.snapshotData.deathAndMadness.insanity + TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal + TRB.Data.snapshotData.wrathfulFaerie.resourceFinal)
 						if TRB.Data.snapshotData.mindbender.resourceFinal > 0 and (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal) < TRB.Data.character.maxResource then
 							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, TRB.Data.settings.priest.shadow.thresholdWidth, (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.mindbender, true))
 							TRB.Frames.passiveFrame.thresholds[1]:Show()
 						else
@@ -3110,6 +3113,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 						if TRB.Data.snapshotData.wrathfulFaerie.resourceFinal > 0 and (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal + TRB.Data.snapshotData.wrathfulFaerie.resourceFinal) < TRB.Data.character.maxResource then
 							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, TRB.Data.settings.priest.shadow.thresholdWidth, (castingBarValue + TRB.Data.snapshotData.mindbender.resourceFinal + TRB.Data.snapshotData.wrathfulFaerie.resourceFinal), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.mindbender, true))
 							TRB.Frames.passiveFrame.thresholds[2]:Show()
 						else
@@ -3131,8 +3135,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then
 						if currentInsanity >= TRB.Data.character.searingNightmareThreshold then
+---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true))
 						else
+---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
 						end
 						TRB.Frames.resourceFrame.thresholds[2]:Show()
@@ -3141,6 +3147,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 
 					if currentInsanity >= TRB.Data.character.devouringPlagueThreshold or TRB.Data.spells.mindDevourer.isActive then
+---@diagnostic disable-next-line: undefined-field
 						TRB.Frames.resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true))
 						if TRB.Data.settings.priest.shadow.colors.bar.flashEnabled then
 							TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.priest.shadow.colors.bar.flashAlpha, TRB.Data.settings.priest.shadow.colors.bar.flashPeriod)
@@ -3157,6 +3164,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							PlaySoundFile(TRB.Data.settings.priest.shadow.audio.dpReady.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
+---@diagnostic disable-next-line: undefined-field
 						TRB.Frames.resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
 						barContainerFrame:SetAlpha(1.0)
 						TRB.Data.snapshotData.audio.playedDpCue = false

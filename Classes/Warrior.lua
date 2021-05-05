@@ -521,6 +521,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Details.addonData.registered = true			
 		end
 	end
+	TRB.Functions.EventRegistration = EventRegistration
 
 	local function InitializeTarget(guid)
 		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
@@ -884,7 +885,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		}
 
 
-		lookup = TRB.Data.lookup or {}
+		local lookup = TRB.Data.lookup or {}
 		lookup["#ancientAftershock"] = TRB.Data.spells.ancientAftershock.icon
 		lookup["#charge"] = TRB.Data.spells.charge.icon
 		lookup["#cleave"] = TRB.Data.spells.cleave.icon
@@ -1278,6 +1279,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
+---@diagnostic disable-next-line: undefined-field
 								resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 								if frameLevel == 129 then
 									spell.thresholdUsable = true
@@ -1505,7 +1507,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.RemoveTarget(guid)
+				TRB.Functions.RemoveTarget(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end

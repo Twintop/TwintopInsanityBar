@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 5 then --Only do this if we're on a Priest!
@@ -6369,7 +6370,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
+---@diagnostic disable-next-line: undefined-field
 		parent.tabsheets[1].selected = true
+		---@diagnostic disable-next-line: undefined-field
 		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame

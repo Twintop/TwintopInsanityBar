@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 7 then --Only do this if we're on a Shaman!
@@ -2198,6 +2199,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local xOffset2 = 275
 		interfaceSettingsFrame.elementalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Elemental", UIParent)
 		interfaceSettingsFrame.elementalDisplayPanel.name = "Elemental Shaman"
+---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.elementalDisplayPanel.parent = parent.name
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.elementalDisplayPanel)
 
@@ -2247,7 +2249,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
+---@diagnostic disable-next-line: undefined-field
 		parent.tabsheets[1].selected = true
+---@diagnostic disable-next-line: undefined-field
 		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 		
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
