@@ -527,6 +527,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		if TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 			controls.checkBoxes.lockPosition:Disable()
 			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 		end
@@ -541,9 +542,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay = self:GetChecked()
 
 			if TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Disable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 			else
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Enable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
 			end

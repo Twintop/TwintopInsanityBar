@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-global
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 3 then --Only do this if we're on a Hunter!
@@ -1015,6 +1014,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		if TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 			controls.checkBoxes.lockPosition:Disable()
 			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 		end
@@ -1028,10 +1028,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay = self:GetChecked()
 			
-			if TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay then				
+			if TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Disable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)				
 			else
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Enable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
 			end
@@ -3411,6 +3413,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		if TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 			controls.checkBoxes.lockPosition:Disable()
 			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 		end
@@ -3424,10 +3427,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay = self:GetChecked()
 			
-			if TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay then				
+			if TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field				
 				controls.checkBoxes.lockPosition:Disable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)				
 			else
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Enable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
 			end
@@ -6242,6 +6247,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		if TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 			controls.checkBoxes.lockPosition:Disable()
 			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 		end
@@ -6255,10 +6261,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay = self:GetChecked()
 			
-			if TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay then				
+			if TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field				
 				controls.checkBoxes.lockPosition:Disable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)				
 			else
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Enable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
 			end

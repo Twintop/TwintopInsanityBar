@@ -794,6 +794,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		if TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 			controls.checkBoxes.lockPosition:Disable()
 			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 		end
@@ -808,9 +809,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay = self:GetChecked()
 
 			if TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Disable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 			else
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Enable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
 			end
@@ -3679,6 +3682,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		if TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 			controls.checkBoxes.lockPosition:Disable()
 			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 		end
@@ -3693,9 +3697,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay = self:GetChecked()
 
 			if TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Disable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 			else
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Enable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
 			end

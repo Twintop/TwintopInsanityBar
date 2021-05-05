@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-global
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 1 then --Only do this if we're on a Warrior!
@@ -575,6 +574,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		if TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 			controls.checkBoxes.lockPosition:Disable()
 			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 		end
@@ -589,9 +589,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay = self:GetChecked()
 
 			if TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Disable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 			else
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Enable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
 			end

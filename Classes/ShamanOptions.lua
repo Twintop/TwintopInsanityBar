@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-global
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 7 then --Only do this if we're on a Shaman!
@@ -488,6 +487,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		if TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 			controls.checkBoxes.lockPosition:Disable()
 			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 		end
@@ -502,9 +502,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay = self:GetChecked()
 
 			if TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Disable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 			else
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Enable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
 			end
