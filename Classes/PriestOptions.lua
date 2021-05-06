@@ -167,6 +167,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					innervate="FF00FF00",
 					apotheosis="FFFADA5E",
 					apotheosisEnd="FFFF0000",
+					holyWord="FF00FF00",
 					--casting="FF555555",
 					spending="FFFFFFFF",
 					passive="FF8080FF",
@@ -215,6 +216,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		}
 
 		settings.displayText = HolyLoadDefaultBarTextSimpleSettings()
+		return settings
+	end
+
+	local function HolyResetSettings()
+		local settings = HolyLoadDefaultSettings()
 		return settings
 	end
 
@@ -464,12 +470,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return settings
 	end
 
-
-
-	local function HolyResetSettings()
-		local settings = HolyLoadDefaultSettings()
-		return settings
-	end
 
 
 	local function LoadDefaultSettings()
@@ -1365,27 +1365,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end)
 			end
 		end)
-		--[[
-		controls.colors.enterVoidform = TRB.UiFunctions.BuildColorPicker(parent, "Mana when you can cast Devouring Plague", TRB.Data.settings.priest.holy.colors.bar.enterVoidform, 300, 25, xCoord, yCoord)
-		f = controls.colors.enterVoidform
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.enterVoidform, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.enterVoidform.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.holy.colors.bar.enterVoidform = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-		]]
 
 		controls.colors.inApotheosisEnd = TRB.UiFunctions.BuildColorPicker(parent, "Mana when Apotheosis is close to ending (configurable/if enabled)", TRB.Data.settings.priest.holy.colors.bar.apotheosisEnd, 275, 25, xCoord2, yCoord)
 		f = controls.colors.inApotheosisEnd
@@ -1452,11 +1431,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = yCoord - 30
 		--[[
-		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Mana", TRB.Data.settings.priest.holy.colors.bar.borderOvercap, 300, 25, xCoord, yCoord)
-		f = controls.colors.borderOvercap
+		controls.colors.holyWord = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will complete the cooldown of the related Holy Word", TRB.Data.settings.priest.holy.colors.bar.borderOvercap, 300, 25, xCoord, yCoord)
+		f = controls.colors.holyWord
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.borderOvercap, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.holyWord, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1466,8 +1445,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 
-					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.holy.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.holyWord.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.holyWord = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1490,6 +1469,27 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.holy.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 					barContainerFrame:SetBackdropColor(r, g, b, 1-a)
+				end)
+			end
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.holyWord = TRB.UiFunctions.BuildColorPicker(parent, "Bar color when your current hardcast will complete the cooldown of the related Holy Word", TRB.Data.settings.priest.holy.colors.bar.holyWord, 550, 25, xCoord, yCoord)
+		f = controls.colors.holyWord
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.holyWord, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.holyWord.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.holyWord = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)

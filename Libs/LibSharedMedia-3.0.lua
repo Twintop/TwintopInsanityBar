@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-global
 --[[
 Name: LibSharedMedia-3.0
 Revision: $Revision: 91 $

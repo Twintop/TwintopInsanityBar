@@ -245,6 +245,7 @@ local function ResetCastingSnapshotData()
 	TRB.Data.snapshotData.casting.resourceRaw = 0
 	TRB.Data.snapshotData.casting.resourceFinal = 0
 	TRB.Data.snapshotData.casting.icon = ""
+	TRB.Data.snapshotData.casting.spellKey = nil
 end
 TRB.Functions.ResetCastingSnapshotData = ResetCastingSnapshotData
 

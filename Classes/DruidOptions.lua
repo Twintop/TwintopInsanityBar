@@ -557,8 +557,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 
-
-
 		yCoord = yCoord - 30
 		controls.textBarTexturesSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Textures", 0, yCoord)
 		yCoord = yCoord - 30
@@ -2210,6 +2208,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Starsurge is usable")
 		f.tooltip = "Play an audio cue when Starsurge can be cast."
+---@diagnostic disable-next-line: undefined-field
 		f:SetChecked(TRB.Data.settings.druid.balance.audio.ssReady.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.balance.audio.ssReady.enabled = self:GetChecked()
@@ -2274,6 +2273,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Starfall is usable")
 		f.tooltip = "Play an audio cue when Starfall is usable. This supercedes the regular Starsurge audio sound if both are usable."
+---@diagnostic disable-next-line: undefined-field
 		f:SetChecked(TRB.Data.settings.druid.balance.audio.sfReady.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.balance.audio.sfReady.enabled = self:GetChecked()
@@ -2338,6 +2338,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Oneth's Clear Vision or Oneth's Perception proc occurs.")
 		f.tooltip = "Play an audio cue when an Oneth's Clear Vision or Oneth's Perception proc occurs. This supercedes the regular Starsurge and Starfall audio sound if both are usable."
+---@diagnostic disable-next-line: undefined-field
 		f:SetChecked(TRB.Data.settings.druid.balance.audio.onethsReady.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.balance.audio.onethsReady.enabled = self:GetChecked()
@@ -2403,6 +2404,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Astral Power")
 		f.tooltip = "Play an audio cue when your hardcast spell will overcap Astral Power."
+---@diagnostic disable-next-line: undefined-field
 		f:SetChecked(TRB.Data.settings.druid.balance.audio.overcap.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.balance.audio.overcap.enabled = self:GetChecked()

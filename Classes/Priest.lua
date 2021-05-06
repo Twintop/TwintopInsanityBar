@@ -75,6 +75,59 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		}
 
 		specCache.holy.spells = {
+			holyWordSerenity = {
+				id = 2050,
+				name = "",
+				icon = "",
+				duration = 60
+			},
+			heal = {
+				id = 2060,
+				name = "",
+				icon = "",
+				holyWordKey = "holyWordSerenity",
+				holyWordReduction = 6
+			},
+			flashHeal = {
+				id = 2061,
+				name = "",
+				icon = "",
+				holyWordKey = "holyWordSerenity",
+				holyWordReduction = 6
+			},
+			holyWordSanctify = {
+				id = 34861,
+				name = "",
+				icon = "",
+				duration = 60
+			},
+			prayerOfHealing = {
+				id = 596,
+				name = "",
+				icon = "",
+				holyWordKey = "holyWordSanctify",
+				holyWordReduction = 6
+			},
+			renew = {
+				id = 139,
+				name = "",
+				icon = "",
+				holyWordKey = "holyWordSanctify",
+				holyWordReduction = 2
+			},
+			holyWordChastise = {
+				id = 88625,
+				name = "",
+				icon = "",
+				duration = 60
+			},
+			smite = {
+				id = 585,
+				name = "",
+				icon = "",
+				holyWordKey = "holyWordChastise",
+				holyWordReduction = 4
+			},
 			symbolOfHope = {
 				id = 64901,
 				name = "",
@@ -188,6 +241,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			endTime = nil,
 			resourceRaw = 0,
 			resourceFinal = 0
+		}
+		specCache.holy.snapshotData.holyWordSerenity = {
+			startTime = nil,
+			duration = 0
+		}
+		specCache.holy.snapshotData.holyWordSanctify = {
+			startTime = nil,
+			duration = 0
+		}
+		specCache.holy.snapshotData.holyWordChastise = {
+			startTime = nil,
+			duration = 0
 		}
 		specCache.holy.snapshotData.wrathfulFaerie = {
 			main = {
@@ -1433,6 +1498,32 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function GetSurgeOfLightRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.surgeOfLight)
 	end
+	
+	local function GetHolyWordCooldownTimeRemaining(holyWord)
+		local currentTime = GetTime()
+		local gcd = TRB.Functions.GetCurrentGCDTime(true)
+		local remainingTime = 0
+
+		if holyWord.duration == gcd or holyWord.startTime == 0 or holyWord.duration == 0 then
+			remainingTime = 0
+		else
+			remainingTime = (holyWord.startTime + holyWord.duration) - currentTime
+		end
+
+		return remainingTime
+	end
+
+	local function GetHolyWordSerenityCooldownRemainingTime()
+		return GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData.holyWordSerenity)
+	end
+	
+	local function GetHolyWordSanctifyCooldownRemainingTime()
+		return GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData.holyWordSanctify)
+	end
+	
+	local function GetHolyWordChastiseCooldownRemainingTime()
+		return GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData.holyWordChastise)
+	end
 
 	local function CalculateManaGain(mana)
 		local modifier = 1.0
@@ -2379,6 +2470,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.casting.icon = string.format("|T%s:0|t", spellIcon)
 
 						UpdateCastingResourceFinal_Holy()
+						if spellName == TRB.Data.spells.heal.name then
+							TRB.Data.snapshotData.casting.spellKey = "heal"
+						elseif spellName == TRB.Data.spells.flashHeal.name then
+							TRB.Data.snapshotData.casting.spellKey = "flashHeal"
+						elseif spellName == TRB.Data.spells.prayerOfHealing.name then
+							TRB.Data.snapshotData.casting.spellKey = "prayerOfHealing"
+						elseif spellName == TRB.Data.spells.renew.name then --This shouldn't happen
+							TRB.Data.snapshotData.casting.spellKey = "renew"
+						elseif spellName == TRB.Data.spells.smite.name then
+							TRB.Data.snapshotData.casting.spellKey = "smite"
+						end
 					else
 						TRB.Functions.ResetCastingSnapshotData()
 						return false
@@ -2811,6 +2913,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.snapshotData.innervate.remainingTime = GetInnervateRemainingTime()
         end
 
+		TRB.Data.snapshotData.holyWordSerenity.startTime, TRB.Data.snapshotData.holyWordSerenity.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordSerenity.id)
+		TRB.Data.snapshotData.holyWordSanctify.startTime, TRB.Data.snapshotData.holyWordSanctify.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordSanctify.id)
+		TRB.Data.snapshotData.holyWordChastise.startTime, TRB.Data.snapshotData.holyWordChastise.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordChastise.id)
+
 		_, _, TRB.Data.snapshotData.surgeOfLight.stacks, _, TRB.Data.snapshotData.surgeOfLight.duration, TRB.Data.snapshotData.surgeOfLight.endTime, _, _, _, TRB.Data.snapshotData.surgeOfLight.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.surgeOfLight.id)
 		TRB.Data.snapshotData.surgeOfLight.remainingTime = GetSurgeOfLightRemainingTime()
 	end
@@ -2919,6 +3025,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					else
 						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.border, true))
 					end
+
 
 					if TRB.Data.settings.priest.holy.audio.surgeOfLight.enabled and TRB.Data.snapshotData.surgeOfLight.stacks == 1 and not TRB.Data.snapshotData.audio.surgeOfLightCue then
 						TRB.Data.snapshotData.audio.surgeOfLightCue = true
@@ -3032,7 +3139,26 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 					]]
 
-					if TRB.Data.snapshotData.apotheosis.spellId then
+					local resourceBarColor = nil
+
+					if TRB.Data.snapshotData.casting.spellKey ~= nil then
+						if TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey] ~= nil and
+							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey ~= nil and
+							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction ~= nil and
+							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction >= 0 then
+							
+							print(TRB.Data.snapshotData.casting.spellKey, TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey)
+							print(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey].duration)
+							print(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey].startTime)
+
+							local holyWordCooldownRemaining = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey])
+							if (holyWordCooldownRemaining - TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction) <= 0 then
+								resourceBarColor = TRB.Data.settings.priest.holy.colors.bar.holyWord
+							end
+						end
+					end
+
+					if TRB.Data.snapshotData.apotheosis.spellId and resourceBarColor == nil then
 						local timeThreshold = 0
 						local useEndOfApotheosisColor = false
 
@@ -3047,13 +3173,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 
 						if useEndOfApotheosisColor and TRB.Data.snapshotData.apotheosis.remainingTime <= timeThreshold then
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.apotheosisEnd, true))
+							resourceBarColor = TRB.Data.settings.priest.holy.colors.bar.apotheosisEnd
 						else
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.apotheosis, true))
+							resourceBarColor = TRB.Data.settings.priest.holy.colors.bar.apotheosis
 						end
-					else
-						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.base, true))
+					elseif resourceBarColor == nil then
+						resourceBarColor = TRB.Data.settings.priest.holy.colors.bar.base
 					end
+
+					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(resourceBarColor, true))
 				end
 
 				TRB.Functions.UpdateResourceBar(TRB.Data.settings.priest.holy, refreshText)
