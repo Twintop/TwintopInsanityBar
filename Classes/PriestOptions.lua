@@ -167,7 +167,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					innervate="FF00FF00",
 					apotheosis="FFFADA5E",
 					apotheosisEnd="FFFF0000",
-					holyWord="FF00FF00",
+					holyWordChastise="FFAAFFAA",
+					holyWordSanctify="FF55FF55",
+					holyWordSerenity="FF00FF00",
 					--casting="FF555555",
 					spending="FFFFFFFF",
 					passive="FF8080FF",
@@ -1387,7 +1389,27 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.priest.holy.colors.bar.border, 300, 25, xCoord, yCoord)
+		controls.colors.holyWordChastise = TRB.UiFunctions.BuildColorPicker(parent, "Mana when your hardcast will complete the cooldown of Holy Word: Chastise", TRB.Data.settings.priest.holy.colors.bar.holyWordChastise, 300, 25, xCoord, yCoord)
+		f = controls.colors.holyWordChastise
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.holyWordChastise, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.holyWordChastise.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.holyWordChastise = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)
+
+		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.priest.holy.colors.bar.border, 275, 25, xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1404,6 +1426,27 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.holy.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 					barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
+				end)
+			end
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.holyWordSanctify = TRB.UiFunctions.BuildColorPicker(parent, "Mana when your hardcast will complete the cooldown of Holy Word: Sanctify", TRB.Data.settings.priest.holy.colors.bar.holyWordSanctify, 300, 25, xCoord, yCoord)
+		f = controls.colors.holyWordSanctify
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.holyWordSanctify, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.holyWordSanctify.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.holyWordSanctify = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1430,12 +1473,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		--[[
-		controls.colors.holyWord = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast will complete the cooldown of the related Holy Word", TRB.Data.settings.priest.holy.colors.bar.borderOvercap, 300, 25, xCoord, yCoord)
-		f = controls.colors.holyWord
+		controls.colors.holyWordSerenity = TRB.UiFunctions.BuildColorPicker(parent, "Mana when your hardcast will complete the cooldown of Holy Word: Serenity", TRB.Data.settings.priest.holy.colors.bar.holyWordSerenity, 300, 25, xCoord, yCoord)
+		f = controls.colors.holyWordSerenity
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.holyWord, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.holyWordSerenity, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1445,12 +1487,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 
-					controls.colors.holyWord.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.holy.colors.bar.holyWord = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.holyWordSerenity.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.holyWordSerenity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
-		]]
 
 		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.priest.holy.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
@@ -1469,27 +1510,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.holy.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 					barContainerFrame:SetBackdropColor(r, g, b, 1-a)
-				end)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.holyWord = TRB.UiFunctions.BuildColorPicker(parent, "Bar color when your current hardcast will complete the cooldown of the related Holy Word", TRB.Data.settings.priest.holy.colors.bar.holyWord, 550, 25, xCoord, yCoord)
-		f = controls.colors.holyWord
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.holyWord, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.holyWord.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.holy.colors.bar.holyWord = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
