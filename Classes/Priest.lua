@@ -105,6 +105,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				holyWordKey = "holyWordSerenity",
 				holyWordReduction = 6
 			},
+			prayerOfMending = {
+				id = 33076,
+				name = "",
+				icon = "",
+				holyWordKey = "holyWordSerenity",
+				holyWordReduction = 4
+			},
 			holyWordSanctify = {
 				id = 34861,
 				name = "",
@@ -117,6 +124,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				holyWordKey = "holyWordSanctify",
 				holyWordReduction = 6
+			},
+			circleOfHealing = {
+				id = 204883,
+				name = "",
+				icon = "",
+				holyWordKey = "holyWordSanctify",
+				holyWordReduction = 4
 			},
 			renew = {
 				id = 139,
@@ -133,6 +147,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			smite = {
 				id = 585,
+				name = "",
+				icon = "",
+				holyWordKey = "holyWordChastise",
+				holyWordReduction = 4
+			},
+			holyFire = {
+				id = 14914,
 				name = "",
 				icon = "",
 				holyWordKey = "holyWordChastise",
@@ -176,6 +197,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 200183,
 				name = "",
 				icon = "",
+				holyWordModifier = 4, -- 300% more
 				duration = 20,
 				isActive = false
 			},
@@ -210,6 +232,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icd = 0.75,
 				energizeId = 345456,
 				conduitId = 101,
+				conduitRanks = {}
+			},
+			holyOration = {
+				id = 338345,
+				name = "",
+				icon = "",
+				conduitId = 116,
 				conduitRanks = {}
 			},
 
@@ -778,6 +807,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		spells.wrathfulFaerieFermata.conduitRanks[13] = 8.36
 		spells.wrathfulFaerieFermata.conduitRanks[14] = 8.74
 		spells.wrathfulFaerieFermata.conduitRanks[15] = 9.12
+		
+		spells.holyOration.conduitRanks[0] = 0
+		spells.holyOration.conduitRanks[1] = 0.06
+		spells.holyOration.conduitRanks[2] = 0.088
+		spells.holyOration.conduitRanks[3] = 0.096
+		spells.holyOration.conduitRanks[4] = 0.104
+		spells.holyOration.conduitRanks[5] = 0.112
+		spells.holyOration.conduitRanks[6] = 0.120
+		spells.holyOration.conduitRanks[7] = 0.128
+		spells.holyOration.conduitRanks[8] = 0.136
+		spells.holyOration.conduitRanks[9] = 0.144
+		spells.holyOration.conduitRanks[10] = 0.152
+		spells.holyOration.conduitRanks[11] = 0.16
+		spells.holyOration.conduitRanks[12] = 0.168
+		spells.holyOration.conduitRanks[13] = 0.176
+		spells.holyOration.conduitRanks[14] = 0.184
+		spells.holyOration.conduitRanks[15] = 0.192
 		-- TODO: Add these conduits to the bar icon variables too!
 
 
@@ -1582,6 +1628,24 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData.holyWordChastise)
 	end
 
+	local function CalculateHolyWordCooldown(base)
+		local holyOrationValue = TRB.Data.spells.holyOration.conduitRanks[TRB.Functions.GetSoulbindRank(TRB.Data.spells.holyOration.conduitId)]
+		local mod = 1
+
+		if TRB.Data.spells.apotheosis.isActive then
+			mod = mod * TRB.Data.spells.apotheosis.holyWordModifier
+		end
+
+		if TRB.Data.character.talents.lightOfTheNaaru.isSelected then
+			mod = mod * TRB.Data.spells.lightOfTheNaaru.holyWordModifier
+		end
+
+		print(base, "= (", mod, "+", holyOrationValue, ") * ", base)
+		mod = mod + holyOrationValue
+
+		return mod * base
+	end
+	
 	local function CalculateManaGain(mana)
 		local modifier = 1.0
 
@@ -1626,7 +1690,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
 				if TRB.Data.snapshotData.resource > 0 or
 					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0)) or
-					TRB.Data.snapshotData.wrathfulFaerie.resourceRaw > 0 or TRB.Data.snapshotData.symbolOfHope.main.resourceRaw > 0 then
+					TRB.Data.snapshotData.wrathfulFaerie.resourceRaw > 0 or TRB.Data.snapshotData.symbolOfHope.resourceRaw > 0 then
 					valid = true
 				end
 			elseif var == "$overcap" or var == "$manaOvercap" or var == "$resourceOvercap" then
@@ -1634,7 +1698,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
-				if TRB.Data.snapshotData.resource > 0 or TRB.Data.snapshotData.wrathfulFaerie.main.resourceRaw > 0 or TRB.Data.snapshotData.symbolOfHope.main.resourceRaw > 0 then
+				if TRB.Data.snapshotData.resource > 0 or TRB.Data.snapshotData.wrathfulFaerie.main.resourceRaw > 0 or TRB.Data.snapshotData.symbolOfHope.resourceRaw > 0 then
 					valid = true
 				end
 			elseif var == "$casting" then
@@ -1642,7 +1706,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$passive" then
-				if TRB.Data.snapshotData.wrathfulFaerie.resourceRaw > 0 or TRB.Data.snapshotData.symbolOfHope.main.resourceRaw > 0 then
+				if TRB.Data.snapshotData.wrathfulFaerie.resourceRaw > 0 or TRB.Data.snapshotData.symbolOfHope.resourceRaw > 0 then
 					valid = true
 				end
 			elseif var == "$wfMana" then
@@ -1907,7 +1971,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor"))
 
 		--$manaPercent
-		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.RoundTo((normalizedMana/TRB.Data.character.maxResource)*100, manaPrecision, "floor"))
+		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.RoundTo((normalizedMana/(TRB.Data.character.maxResource or 1))*100, manaPrecision, "floor"))
 
 		----------
 		--[[		--$swpCount
@@ -2539,12 +2603,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.casting.spellKey = "smite"
 						elseif spellName == TRB.Data.spells.bindingHeal.name then --If talented
 							TRB.Data.snapshotData.casting.spellKey = "bindingHeal"
-						elseif spellName == TRB.Data.spells.circleOfHealing.name then --Harmonious Apparatus / This shouldn't happen
-							TRB.Data.snapshotData.casting.spellKey = "circleOfHealing"
-						elseif spellName == TRB.Data.spells.prayerOfMending.name then --Harmonious Apparatus / This shouldn't happen
-							TRB.Data.snapshotData.casting.spellKey = "prayerOfMending"
-						elseif spellName == TRB.Data.spells.holyFire.name then --Harmonious Apparatus
-							TRB.Data.snapshotData.casting.spellKey = "holyFire"
+						elseif TRB.Data.character.items.harmoniousApparatus then
+							if spellName == TRB.Data.spells.circleOfHealing.name then --Harmonious Apparatus / This shouldn't happen
+								TRB.Data.snapshotData.casting.spellKey = "circleOfHealing"
+							elseif spellName == TRB.Data.spells.prayerOfMending.name then --Harmonious Apparatus / This shouldn't happen
+								TRB.Data.snapshotData.casting.spellKey = "prayerOfMending"
+							elseif spellName == TRB.Data.spells.holyFire.name then --Harmonious Apparatus
+								TRB.Data.snapshotData.casting.spellKey = "holyFire"
+							end
 						end
 					else
 						TRB.Functions.ResetCastingSnapshotData()
@@ -3212,9 +3278,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction ~= nil and
 							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction >= 0 then
 							
-							print(TRB.Data.snapshotData.casting.spellKey, TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey)
-							print(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey].duration)
-							print(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey].startTime)
+							--print(TRB.Data.snapshotData.casting.spellKey, TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey)
+							--print(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey].duration)
+							--print(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey].startTime)
 
 							if TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey2 ~= nil and
 								TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction2 ~= nil and
@@ -3222,8 +3288,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								local holyWordCooldownRemaining1 = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey])
 								local holyWordCooldownRemaining2 = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey2])
 								
-								local remaining1 = holyWordCooldownRemaining1 - TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction
-								local remaining2 = holyWordCooldownRemaining2 - TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction2
+								local remaining1 = holyWordCooldownRemaining1 - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction)
+								local remaining2 = holyWordCooldownRemaining2 - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction2)
 
 								if remaining1 <= 0 and remaining2 > 0 then
 									resourceBarColor = TRB.Data.settings.priest.holy.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]
@@ -3234,13 +3300,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								end
 							else
 								local holyWordCooldownRemaining = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey])
-								print(holyWordCooldownRemaining, "sec", TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction)
-								if (holyWordCooldownRemaining - TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction) <= 0 then
+								print(TRB.Data.snapshotData.casting.spellKey, CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction))
+								if (holyWordCooldownRemaining - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction)) <= 0 then
 									resourceBarColor = TRB.Data.settings.priest.holy.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]
 								end
 							end
 
-							print("COLOR:", resourceBarColor)
+							--print("COLOR:", resourceBarColor)
 						end
 					end
 
