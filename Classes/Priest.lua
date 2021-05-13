@@ -5,6 +5,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	TRB.Frames.passiveFrame.thresholds[2] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 	TRB.Frames.resourceFrame.thresholds[1] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 	TRB.Frames.resourceFrame.thresholds[2] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+	TRB.Frames.resourceFrame.thresholds[3] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+	TRB.Frames.resourceFrame.thresholds[4] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
@@ -16,7 +18,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
 
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
 
@@ -80,11 +81,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				potions = {
 					potionOfSpiritualClarity = {
 						id = 171272,
-						mana = 2500
+						mana = 10000
 					},
 					spiritualRejuvenationPotion = {
 						id = 171269,
-						mana = 10000
+						mana = 2500
 					},
 					spiritualManaPotion = {
 						id = 171268,
@@ -1273,6 +1274,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			else
 				TRB.Frames.resourceFrame.thresholds[2]:Hide()
 			end
+
+			TRB.Frames.resourceFrame.thresholds[3]:Hide()
+			TRB.Frames.resourceFrame.thresholds[4]:Hide()
 
 			-- Legendaries
 			local wristItemLink = GetInventoryItemLink("player", 9)
@@ -3321,9 +3325,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Frames.passiveFrame.thresholds[2]:Hide()
 					end
 
-					TRB.Frames.resourceFrame.thresholds[1]:Hide()
-					TRB.Frames.resourceFrame.thresholds[2]:Hide()
-
 					passiveBarValue = castingBarValue + passiveValue
 					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
@@ -3345,6 +3346,49 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.passive, true))
+					end
+
+					if not TRB.Data.snapshotData.potion.onCooldown then
+						if TRB.Data.settings.priest.holy.thresholds.potionOfSpiritualClarity.enabled and (passiveBarValue + TRB.Data.character.items.potions.potionOfSpiritualClarity.mana) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (passiveBarValue + TRB.Data.character.items.potions.potionOfSpiritualClarity.mana), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.over, true))
+							TRB.Frames.resourceFrame.thresholds[1]:Show()
+						else
+							TRB.Frames.resourceFrame.thresholds[1]:Hide()
+						end
+
+						if TRB.Data.settings.priest.holy.thresholds.spiritualRejuvenationPotion.enabled and (passiveBarValue + TRB.Data.character.items.potions.spiritualRejuvenationPotion.mana) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (passiveBarValue + TRB.Data.character.items.potions.spiritualRejuvenationPotion.mana), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.over, true))
+							TRB.Frames.resourceFrame.thresholds[2]:Show()
+						else
+							TRB.Frames.resourceFrame.thresholds[2]:Hide()
+						end
+
+						if TRB.Data.settings.priest.holy.thresholds.spiritualManaPotion.enabled and (passiveBarValue + TRB.Data.character.items.potions.spiritualManaPotion.mana) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (passiveBarValue + TRB.Data.character.items.potions.spiritualManaPotion.mana), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.over, true))
+							TRB.Frames.resourceFrame.thresholds[3]:Show()
+						else
+							TRB.Frames.resourceFrame.thresholds[3]:Hide()
+						end
+
+						if TRB.Data.settings.priest.holy.thresholds.soulfulManaPotion.enabled and (passiveBarValue + TRB.Data.character.items.potions.soulfulManaPotion.mana) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (passiveBarValue + TRB.Data.character.items.potions.soulfulManaPotion.mana), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.over, true))
+							TRB.Frames.resourceFrame.thresholds[4]:Show()
+						else
+							TRB.Frames.resourceFrame.thresholds[4]:Hide()
+						end
+					else
+						TRB.Frames.resourceFrame.thresholds[1]:Hide()
+						TRB.Frames.resourceFrame.thresholds[2]:Hide()
+						TRB.Frames.resourceFrame.thresholds[3]:Hide()
+						TRB.Frames.resourceFrame.thresholds[4]:Hide()
 					end
 
 

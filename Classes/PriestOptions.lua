@@ -92,6 +92,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			thresholdWidth=2,
 			--auspiciousSpiritsTracker=true,
 			--voidTendrilTracker=true,
+			thresholds = {
+				potionOfSpiritualClarity = {
+					enabled = true, -- 1
+				},
+				spiritualRejuvenationPotion = {
+					enabled = false, -- 2
+				},
+				spiritualManaPotion = {
+					enabled = true, -- 3
+				},
+				soulfulManaPotion = {
+					enabled = false, -- 4
+				},
+			},
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
@@ -179,7 +193,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					overcapEnabled=true
 				},
 				threshold={
-					under="FFFFFFFF",
+					--under="FFFFFFFF",
 					over="FF00FF00",
 					mindbender="FF8080FF"
 				}
@@ -1538,10 +1552,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Threshold Lines", 0, yCoord)
 
 		yCoord = yCoord - 25
-
+		--[[
 		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under minimum required Mana", TRB.Data.settings.priest.holy.colors.threshold.under, 275, 25, xCoord2, yCoord)
 		f = controls.colors.thresholdUnder
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1560,9 +1574,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
                     TRB.Data.settings.priest.holy.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
-		end)
+		end)]]
 
-		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over minimum required Mana", TRB.Data.settings.priest.holy.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Mana gain from potions (when usable)", TRB.Data.settings.priest.holy.colors.threshold.over, 275, 25, xCoord2, yCoord-0)
 		f = controls.colors.thresholdOver
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1582,7 +1596,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		controls.colors.passiveThreshold = TRB.UiFunctions.BuildColorPicker(parent, "Passive/Wrathful Faerie Mana Gain", TRB.Data.settings.priest.holy.colors.threshold.mindbender, 275, 25, xCoord2, yCoord-60)
+		controls.colors.passiveThreshold = TRB.UiFunctions.BuildColorPicker(parent, "Passive/Wrathful Faerie Mana Gain", TRB.Data.settings.priest.holy.colors.threshold.mindbender, 275, 25, xCoord2, yCoord-30)
 		f = controls.colors.passiveThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1605,7 +1619,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(TRB.Data.settings.priest.holy.bar.thresholdOverlapBorder)
@@ -1614,32 +1628,48 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.holy)
 		end)
 
-		--[[
-		controls.checkBoxes.dpThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_devouringPlague", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.dpThresholdShow
+		controls.checkBoxes.potionOfSpiritualClarityThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_potionOfSpiritualClarity", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.potionOfSpiritualClarityThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Devouring Plague")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Mana is required to cast Devouring Plague."
-		f:SetChecked(TRB.Data.settings.priest.holy.devouringPlagueThreshold)
+		getglobal(f:GetName() .. 'Text'):SetText("Potion of Spiritual Clarity (10,000)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Potion of Spirital Clarity (10,000)"
+		f:SetChecked(TRB.Data.settings.priest.holy.thresholds.potionOfSpiritualClarity.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.priest.holy.devouringPlagueThreshold = self:GetChecked()
+			TRB.Data.settings.priest.holy.thresholds.potionOfSpiritualClarity.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.snThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_searingNightmare", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.snThresholdShow
+		controls.checkBoxes.soulfulManaPotionThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_soulfulManaPotion", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.soulfulManaPotionThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Searing Nightmare (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Mana is required to cast Searing Nightmare. Only visibile if talented in to Searing Nightmare and channeling Mind Sear."
-		f:SetChecked(TRB.Data.settings.priest.holy.searingNightmareThreshold)
+		getglobal(f:GetName() .. 'Text'):SetText("Soulful Mana Potion (4,000)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Soulful Mana Potion (4,000)"
+		f:SetChecked(TRB.Data.settings.priest.holy.thresholds.soulfulManaPotion.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.priest.holy.searingNightmareThreshold = self:GetChecked()
+			TRB.Data.settings.priest.holy.thresholds.soulfulManaPotion.enabled = self:GetChecked()
 		end)
-		]]
 
 		yCoord = yCoord - 25
+		controls.checkBoxes.spiritualManaPotionThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_spiritualManaPotion", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.spiritualManaPotionThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Spiritual Mana Potion (6,000)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Spiritual Mana Potion (6,000)"
+		f:SetChecked(TRB.Data.settings.priest.holy.thresholds.spiritualManaPotion.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.thresholds.spiritualManaPotion.enabled = self:GetChecked()
+		end)
+
 		yCoord = yCoord - 25
-		yCoord = yCoord - 25
+		controls.checkBoxes.spiritualRejuvenationPotionThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_spiritualRejuvenationPotion", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.spiritualRejuvenationPotionThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Spiritual Rejuvenation Potion (2,500)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Spiritual Rejuvenation Potion (2,500)"
+		f:SetChecked(TRB.Data.settings.priest.holy.thresholds.spiritualRejuvenationPotion.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.thresholds.spiritualRejuvenationPotion.enabled = self:GetChecked()
+		end)
 
 
 		yCoord = yCoord - 30
