@@ -292,6 +292,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			}
 		}
 
+		specCache.holy.snapshotData.manaRegen = 0
 		specCache.holy.snapshotData.audio = {
 			innervateCue = false,
 			surgeOfLightCue = false,
@@ -1945,6 +1946,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function RefreshLookupData_Holy()
 		local currentTime = GetTime()
 		local normalizedMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
+
+		-- This probably needs to be pulled every refresh
+		TRB.Data.snapshotData.manaRegen, _ = GetPowerRegen()
+
 		--[[		--$vfTime
 		local voidformTime = string.format("%.1f", TRB.Data.snapshotData.voidform.remainingTime)
 		--$hvTime
@@ -2670,6 +2675,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		else
 			if specId == 2 then
 				if currentSpell == nil then
+					local spellName = select(1, currentChannel)
+					if spellName == TRB.Data.spells.symbolOfHope.name then
+						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.symbolOfHope.id
+						TRB.Data.snapshotData.casting.startTime = currentTime
+						TRB.Data.snapshotData.casting.resourceRaw = 0
+						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.symbolOfHope.icon
+					else
+						TRB.Functions.ResetCastingSnapshotData()
+						return false
+					end
 				else
 					local spellName = select(1, currentSpell)
 					local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(spellName)
@@ -3096,7 +3111,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.potionOfSpiritualClarity.isActive = false
 			else
 				TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining = math.ceil((TRB.Data.snapshotData.potionOfSpiritualClarity.endTime - currentTime) / (TRB.Data.spells.potionOfSpiritualClarity.duration / TRB.Data.spells.potionOfSpiritualClarity.ticks))
-				TRB.Data.snapshotData.potionOfSpiritualClarity.mana = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining * TRB.Data.spells.potionOfSpiritualClarity.mana
+				local nextTickRemaining = TRB.Data.snapshotData.potionOfSpiritualClarity.endTime - currentTime - math.floor((TRB.Data.snapshotData.potionOfSpiritualClarity.endTime - currentTime) / (TRB.Data.spells.potionOfSpiritualClarity.duration / TRB.Data.spells.potionOfSpiritualClarity.ticks))
+				TRB.Data.snapshotData.potionOfSpiritualClarity.mana = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining * TRB.Data.spells.potionOfSpiritualClarity.mana + ((TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining - 1 + nextTickRemaining) * TRB.Data.snapshotData.manaRegen)
 			end
 		end
 	end
@@ -3114,9 +3130,24 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.symbolOfHope.resourceFinal = 0
 				TRB.Data.snapshotData.symbolOfHope.isActive = false
 				TRB.Data.snapshotData.symbolOfHope.tickRateFound = false
+				TRB.Data.snapshotData.symbolOfHope.pri = false
 			else
 				TRB.Data.snapshotData.symbolOfHope.ticksRemaining = math.ceil((TRB.Data.snapshotData.symbolOfHope.endTime - currentTime) / TRB.Data.snapshotData.symbolOfHope.tickRate)
-				TRB.Data.snapshotData.symbolOfHope.resourceRaw = TRB.Data.snapshotData.symbolOfHope.ticksRemaining * TRB.Data.spells.symbolOfHope.manaPercent * TRB.Data.character.maxResource
+				local nextTickRemaining = TRB.Data.snapshotData.symbolOfHope.endTime - currentTime - math.floor((TRB.Data.snapshotData.symbolOfHope.endTime - currentTime) / TRB.Data.snapshotData.symbolOfHope.tickRate)
+				TRB.Data.snapshotData.symbolOfHope.resourceRaw = 0
+
+				for x = 1, TRB.Data.snapshotData.symbolOfHope.ticksRemaining do
+					local casterRegen = 0
+					if TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.symbolOfHope.id then
+						casterRegen = ((x - 1 + nextTickRemaining) * TRB.Data.snapshotData.manaRegen)
+					end
+					
+					local nextTick = (TRB.Data.spells.symbolOfHope.manaPercent * math.max(0, math.min(TRB.Data.character.maxResource, TRB.Data.character.maxResource + TRB.Data.snapshotData.symbolOfHope.resourceRaw + casterRegen - (TRB.Data.snapshotData.resource / TRB.Data.resourceFactor))))
+					print(x, TRB.Data.snapshotData.symbolOfHope.resourceRaw, "+", nextTick, "=", TRB.Data.snapshotData.symbolOfHope.resourceRaw + nextTick)
+					TRB.Data.snapshotData.symbolOfHope.resourceRaw = TRB.Data.snapshotData.symbolOfHope.resourceRaw + nextTick
+				end
+
+				--Revisit if we get mana modifiers added
 				TRB.Data.snapshotData.symbolOfHope.resourceFinal = CalculateManaGain(TRB.Data.snapshotData.symbolOfHope.resourceRaw)
 			end
 		end
@@ -3295,6 +3326,50 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, castingFrame, castingBarValue)
 
+					if not TRB.Data.snapshotData.potion.onCooldown then
+						local poscTotal = TRB.Data.character.items.potions.potionOfSpiritualClarity.mana + (TRB.Data.spells.potionOfSpiritualClarity.duration * TRB.Data.snapshotData.manaRegen)
+						if TRB.Data.settings.priest.holy.thresholds.potionOfSpiritualClarity.enabled and (castingBarValue + poscTotal) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (castingBarValue + poscTotal), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.over, true))
+							TRB.Frames.resourceFrame.thresholds[1]:Show()
+						else
+							TRB.Frames.resourceFrame.thresholds[1]:Hide()
+						end
+
+						if TRB.Data.settings.priest.holy.thresholds.spiritualRejuvenationPotion.enabled and (castingBarValue + TRB.Data.character.items.potions.spiritualRejuvenationPotion.mana) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (castingBarValue + TRB.Data.character.items.potions.spiritualRejuvenationPotion.mana), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.over, true))
+							TRB.Frames.resourceFrame.thresholds[2]:Show()
+						else
+							TRB.Frames.resourceFrame.thresholds[2]:Hide()
+						end
+
+						if TRB.Data.settings.priest.holy.thresholds.spiritualManaPotion.enabled and (castingBarValue + TRB.Data.character.items.potions.spiritualManaPotion.mana) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (castingBarValue + TRB.Data.character.items.potions.spiritualManaPotion.mana), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.over, true))
+							TRB.Frames.resourceFrame.thresholds[3]:Show()
+						else
+							TRB.Frames.resourceFrame.thresholds[3]:Hide()
+						end
+
+						if TRB.Data.settings.priest.holy.thresholds.soulfulManaPotion.enabled and (castingBarValue + TRB.Data.character.items.potions.soulfulManaPotion.mana) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (castingBarValue + TRB.Data.character.items.potions.soulfulManaPotion.mana), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.over, true))
+							TRB.Frames.resourceFrame.thresholds[4]:Show()
+						else
+							TRB.Frames.resourceFrame.thresholds[4]:Hide()
+						end
+					else
+						TRB.Frames.resourceFrame.thresholds[1]:Hide()
+						TRB.Frames.resourceFrame.thresholds[2]:Hide()
+						TRB.Frames.resourceFrame.thresholds[3]:Hide()
+						TRB.Frames.resourceFrame.thresholds[4]:Hide()
+					end
+
 					local passiveValue = 0
 					if TRB.Data.settings.priest.holy.bar.showPassive then
 						if TRB.Data.snapshotData.potionOfSpiritualClarity.isActive then
@@ -3347,51 +3422,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.passive, true))
 					end
-
-					if not TRB.Data.snapshotData.potion.onCooldown then
-						if TRB.Data.settings.priest.holy.thresholds.potionOfSpiritualClarity.enabled and (passiveBarValue + TRB.Data.character.items.potions.potionOfSpiritualClarity.mana) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (passiveBarValue + TRB.Data.character.items.potions.potionOfSpiritualClarity.mana), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.over, true))
-							TRB.Frames.resourceFrame.thresholds[1]:Show()
-						else
-							TRB.Frames.resourceFrame.thresholds[1]:Hide()
-						end
-
-						if TRB.Data.settings.priest.holy.thresholds.spiritualRejuvenationPotion.enabled and (passiveBarValue + TRB.Data.character.items.potions.spiritualRejuvenationPotion.mana) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (passiveBarValue + TRB.Data.character.items.potions.spiritualRejuvenationPotion.mana), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.over, true))
-							TRB.Frames.resourceFrame.thresholds[2]:Show()
-						else
-							TRB.Frames.resourceFrame.thresholds[2]:Hide()
-						end
-
-						if TRB.Data.settings.priest.holy.thresholds.spiritualManaPotion.enabled and (passiveBarValue + TRB.Data.character.items.potions.spiritualManaPotion.mana) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (passiveBarValue + TRB.Data.character.items.potions.spiritualManaPotion.mana), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.over, true))
-							TRB.Frames.resourceFrame.thresholds[3]:Show()
-						else
-							TRB.Frames.resourceFrame.thresholds[3]:Hide()
-						end
-
-						if TRB.Data.settings.priest.holy.thresholds.soulfulManaPotion.enabled and (passiveBarValue + TRB.Data.character.items.potions.soulfulManaPotion.mana) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (passiveBarValue + TRB.Data.character.items.potions.soulfulManaPotion.mana), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.over, true))
-							TRB.Frames.resourceFrame.thresholds[4]:Show()
-						else
-							TRB.Frames.resourceFrame.thresholds[4]:Hide()
-						end
-					else
-						TRB.Frames.resourceFrame.thresholds[1]:Hide()
-						TRB.Frames.resourceFrame.thresholds[2]:Hide()
-						TRB.Frames.resourceFrame.thresholds[3]:Hide()
-						TRB.Frames.resourceFrame.thresholds[4]:Hide()
-					end
-
-
 
  					--[[
 					if TRB.Data.settings.priest.holy.devouringPlagueThreshold then

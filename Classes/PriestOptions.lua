@@ -1631,8 +1631,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.potionOfSpiritualClarityThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_potionOfSpiritualClarity", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.potionOfSpiritualClarityThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Potion of Spiritual Clarity (10,000)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Potion of Spirital Clarity (10,000)"
+		getglobal(f:GetName() .. 'Text'):SetText("Potion of Spiritual Clarity (10,000 + 10sec regen)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Potion of Spirital Clarity (10,000 + 10 seconds of passive mana regen)"
 		f:SetChecked(TRB.Data.settings.priest.holy.thresholds.potionOfSpiritualClarity.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.priest.holy.thresholds.potionOfSpiritualClarity.enabled = self:GetChecked()
