@@ -3130,7 +3130,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.symbolOfHope.resourceFinal = 0
 				TRB.Data.snapshotData.symbolOfHope.isActive = false
 				TRB.Data.snapshotData.symbolOfHope.tickRateFound = false
-				TRB.Data.snapshotData.symbolOfHope.pri = false
 			else
 				TRB.Data.snapshotData.symbolOfHope.ticksRemaining = math.ceil((TRB.Data.snapshotData.symbolOfHope.endTime - currentTime) / TRB.Data.snapshotData.symbolOfHope.tickRate)
 				local nextTickRemaining = TRB.Data.snapshotData.symbolOfHope.endTime - currentTime - math.floor((TRB.Data.snapshotData.symbolOfHope.endTime - currentTime) / TRB.Data.snapshotData.symbolOfHope.tickRate)
@@ -3139,12 +3138,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				for x = 1, TRB.Data.snapshotData.symbolOfHope.ticksRemaining do
 					local casterRegen = 0
 					if TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.symbolOfHope.id then
-						casterRegen = ((x - 1 + nextTickRemaining) * TRB.Data.snapshotData.manaRegen)
+						if x == 1 then
+							casterRegen = nextTickRemaining * TRB.Data.snapshotData.manaRegen
+						else
+							casterRegen = TRB.Data.snapshotData.manaRegen
+						end
 					end
-					
-					local nextTick = (TRB.Data.spells.symbolOfHope.manaPercent * math.max(0, math.min(TRB.Data.character.maxResource, TRB.Data.character.maxResource + TRB.Data.snapshotData.symbolOfHope.resourceRaw + casterRegen - (TRB.Data.snapshotData.resource / TRB.Data.resourceFactor))))
-					print(x, TRB.Data.snapshotData.symbolOfHope.resourceRaw, "+", nextTick, "=", TRB.Data.snapshotData.symbolOfHope.resourceRaw + nextTick)
-					TRB.Data.snapshotData.symbolOfHope.resourceRaw = TRB.Data.snapshotData.symbolOfHope.resourceRaw + nextTick
+
+					local estimatedMana = TRB.Data.character.maxResource + TRB.Data.snapshotData.symbolOfHope.resourceRaw + casterRegen - (TRB.Data.snapshotData.resource / TRB.Data.resourceFactor)
+					local nextTick = TRB.Data.spells.symbolOfHope.manaPercent * math.max(0, math.min(TRB.Data.character.maxResource, estimatedMana))
+					TRB.Data.snapshotData.symbolOfHope.resourceRaw = TRB.Data.snapshotData.symbolOfHope.resourceRaw + nextTick + casterRegen
 				end
 
 				--Revisit if we get mana modifiers added
