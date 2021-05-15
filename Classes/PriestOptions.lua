@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 5 then --Only do this if we're on a Priest!
@@ -11,11 +12,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local middleTextFrame = TRB.Frames.middleTextFrame
 	local rightTextFrame = TRB.Frames.rightTextFrame
 
-	local resourceFrame = TRB.Frames.resourceFrame
-	local passiveFrame = TRB.Frames.passiveFrame
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
-	local timerFrame = TRB.Frames.timerFrame
-	local combatFrame = TRB.Frames.combatFrame
 
 	TRB.Options.Priest = {}
 	TRB.Options.Priest.Discipline = {}
@@ -664,10 +661,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 
-			TRB.Functions.UpdateBarWidth(TRB.Data.settings.priest.holy)
-
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			if GetSpecialization() == 2 then
+				TRB.Functions.UpdateBarWidth(TRB.Data.settings.priest.holy)
+			end
 		end)
 
 		title = "Bar Height"
@@ -687,7 +683,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 
-			TRB.Functions.UpdateBarHeight(TRB.Data.settings.priest.holy)
+			if GetSpecialization() == 2 then
+				TRB.Functions.UpdateBarHeight(TRB.Data.settings.priest.holy)
+			end
 		end)
 
 		title = "Bar Horizontal Position"
@@ -703,9 +701,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.holy.bar.xPos = value
-			barContainerFrame:ClearAllPoints()
-			barContainerFrame:SetPoint("CENTER", UIParent)
-			barContainerFrame:SetPoint("CENTER", TRB.Data.settings.priest.holy.bar.xPos, TRB.Data.settings.priest.holy.bar.yPos)
+			
+			if GetSpecialization() == 2 then
+				barContainerFrame:ClearAllPoints()
+				barContainerFrame:SetPoint("CENTER", UIParent)
+				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.priest.holy.bar.xPos, TRB.Data.settings.priest.holy.bar.yPos)
+			end
 		end)
 
 		title = "Bar Vertical Position"
@@ -720,9 +721,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.holy.bar.yPos = value
-			barContainerFrame:ClearAllPoints()
-			barContainerFrame:SetPoint("CENTER", UIParent)
-			barContainerFrame:SetPoint("CENTER", TRB.Data.settings.priest.holy.bar.xPos, TRB.Data.settings.priest.holy.bar.yPos)
+			
+			if GetSpecialization() == 2 then
+				barContainerFrame:ClearAllPoints()
+				barContainerFrame:SetPoint("CENTER", UIParent)
+				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.priest.holy.bar.xPos, TRB.Data.settings.priest.holy.bar.yPos)
+			end
 		end)
 
 		title = "Bar Border Width"
@@ -738,35 +742,36 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.holy.bar.border = value
-			barContainerFrame:SetWidth(TRB.Data.settings.priest.holy.bar.width-(TRB.Data.settings.priest.holy.bar.border*2))
-			barContainerFrame:SetHeight(TRB.Data.settings.priest.holy.bar.height-(TRB.Data.settings.priest.holy.bar.border*2))
-			barBorderFrame:SetWidth(TRB.Data.settings.priest.holy.bar.width)
-			barBorderFrame:SetHeight(TRB.Data.settings.priest.holy.bar.height)
-			if TRB.Data.settings.priest.holy.bar.border < 1 then
-				barBorderFrame:SetBackdrop({
-					edgeFile = TRB.Data.settings.priest.holy.textures.border,
-					tile = true,
-					tileSize = 4,
-					edgeSize = 1,
-					insets = {0, 0, 0, 0}
-				})
-				barBorderFrame:Hide()
-			else
-				barBorderFrame:SetBackdrop({
-					edgeFile = TRB.Data.settings.priest.holy.textures.border,
-					tile = true,
-					tileSize=4,
-					edgeSize=TRB.Data.settings.priest.holy.bar.border,
-					insets = {0, 0, 0, 0}
-				})
-				barBorderFrame:Show()
-			end
-			barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-			barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.border, true))
+			
+			if GetSpecialization() == 2 then
+				barContainerFrame:SetWidth(TRB.Data.settings.priest.holy.bar.width-(TRB.Data.settings.priest.holy.bar.border*2))
+				barContainerFrame:SetHeight(TRB.Data.settings.priest.holy.bar.height-(TRB.Data.settings.priest.holy.bar.border*2))
+				barBorderFrame:SetWidth(TRB.Data.settings.priest.holy.bar.width)
+				barBorderFrame:SetHeight(TRB.Data.settings.priest.holy.bar.height)
+				if TRB.Data.settings.priest.holy.bar.border < 1 then
+					barBorderFrame:SetBackdrop({
+						edgeFile = TRB.Data.settings.priest.holy.textures.border,
+						tile = true,
+						tileSize = 4,
+						edgeSize = 1,
+						insets = {0, 0, 0, 0}
+					})
+					barBorderFrame:Hide()
+				else
+					barBorderFrame:SetBackdrop({
+						edgeFile = TRB.Data.settings.priest.holy.textures.border,
+						tile = true,
+						tileSize=4,
+						edgeSize=TRB.Data.settings.priest.holy.bar.border,
+						insets = {0, 0, 0, 0}
+					})
+					barBorderFrame:Show()
+				end
+				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
+				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.border, true))
 
-			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.priest.holy)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.priest.holy)
+			end
 
 			local minsliderWidth = math.max(TRB.Data.settings.priest.holy.bar.border*2, 120)
 			local minsliderHeight = math.max(TRB.Data.settings.priest.holy.bar.border*2, 1)
@@ -788,9 +793,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.holy.thresholdWidth = value
-			resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
-			resourceFrame.thresholds[2]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
-			passiveFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
+			
+			if GetSpecialization() == 2 then
+				resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
+				resourceFrame.thresholds[2]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
+				resourceFrame.thresholds[3]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
+				resourceFrame.thresholds[4]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
+				passiveFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
+				passiveFrame.thresholds[2]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
+			end
 		end)
 
 		yCoord = yCoord - 40
@@ -1555,27 +1566,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Threshold Lines", 0, yCoord)
 
 		yCoord = yCoord - 25
-		--[[
-		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under minimum required Mana", TRB.Data.settings.priest.holy.colors.threshold.under, 275, 25, xCoord2, yCoord)
-		f = controls.colors.thresholdUnder
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.under, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.priest.holy.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)]]
-
 		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Mana gain from potions (when usable)", TRB.Data.settings.priest.holy.colors.threshold.over, 275, 25, xCoord2, yCoord-0)
 		f = controls.colors.thresholdOver
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1596,6 +1586,28 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
+		yCoord = yCoord - 25
+		controls.colors.thresholdUnusable = TRB.UiFunctions.BuildColorPicker(parent, "Mana potion on cooldown", TRB.Data.settings.priest.holy.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
+		f = controls.colors.thresholdUnusable
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.unusable, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.thresholdUnusable.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.priest.holy.colors.threshold.unusable = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+		
+		yCoord = yCoord - 25
 		controls.colors.passiveThreshold = TRB.UiFunctions.BuildColorPicker(parent, "Passive/Wrathful Faerie Mana Gain", TRB.Data.settings.priest.holy.colors.threshold.mindbender, 275, 25, xCoord2, yCoord-30)
 		f = controls.colors.passiveThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1612,6 +1624,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					controls.colors.passiveThreshold.Texture:SetColorTexture(r, g, b, 1-a)
 					passiveFrame.thresholds[1].texture:SetColorTexture(r, g, b, 1-a)
+					passiveFrame.thresholds[2].texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.holy.colors.threshold.mindbender = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
@@ -1863,23 +1876,29 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.fontLeft:SetValue(newValue, newName)
 			TRB.Data.settings.priest.holy.displayText.left.fontFace = newValue
 			TRB.Data.settings.priest.holy.displayText.left.fontFaceName = newName
-			leftTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.left.fontFace, TRB.Data.settings.priest.holy.displayText.left.fontSize, "OUTLINE")
 			UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
 			if TRB.Data.settings.priest.holy.displayText.fontFaceLock then
 				TRB.Data.settings.priest.holy.displayText.middle.fontFace = newValue
 				TRB.Data.settings.priest.holy.displayText.middle.fontFaceName = newName
-				middleTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.middle.fontFace, TRB.Data.settings.priest.holy.displayText.middle.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 				TRB.Data.settings.priest.holy.displayText.right.fontFace = newValue
 				TRB.Data.settings.priest.holy.displayText.right.fontFaceName = newName
-				rightTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.right.fontFace, TRB.Data.settings.priest.holy.displayText.right.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
+
+			if GetSpecialization() == 2 then
+				leftTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.left.fontFace, TRB.Data.settings.priest.holy.displayText.left.fontSize, "OUTLINE")
+				if TRB.Data.settings.priest.holy.displayText.fontFaceLock then
+					middleTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.middle.fontFace, TRB.Data.settings.priest.holy.displayText.middle.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.right.fontFace, TRB.Data.settings.priest.holy.displayText.right.fontSize, "OUTLINE")
+				end
+			end
+
 			CloseDropDownMenus()
 		end
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Priest_Holy_fFontMiddle", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Priest_Holy_FontMiddle", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontMiddle.label = TRB.UiFunctions.BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -1924,18 +1943,24 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.fontMiddle:SetValue(newValue, newName)
 			TRB.Data.settings.priest.holy.displayText.middle.fontFace = newValue
 			TRB.Data.settings.priest.holy.displayText.middle.fontFaceName = newName
-			middleTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.middle.fontFace, TRB.Data.settings.priest.holy.displayText.middle.fontSize, "OUTLINE")
 			UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 			if TRB.Data.settings.priest.holy.displayText.fontFaceLock then
 				TRB.Data.settings.priest.holy.displayText.left.fontFace = newValue
 				TRB.Data.settings.priest.holy.displayText.left.fontFaceName = newName
-				leftTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.left.fontFace, TRB.Data.settings.priest.holy.displayText.left.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
 				TRB.Data.settings.priest.holy.displayText.right.fontFace = newValue
 				TRB.Data.settings.priest.holy.displayText.right.fontFaceName = newName
-				rightTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.right.fontFace, TRB.Data.settings.priest.holy.displayText.right.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
+
+			if GetSpecialization() == 2 then
+				middleTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.middle.fontFace, TRB.Data.settings.priest.holy.displayText.middle.fontSize, "OUTLINE")
+				if TRB.Data.settings.priest.holy.displayText.fontFaceLock then
+					leftTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.left.fontFace, TRB.Data.settings.priest.holy.displayText.left.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.right.fontFace, TRB.Data.settings.priest.holy.displayText.right.fontSize, "OUTLINE")
+				end
+			end
+
 			CloseDropDownMenus()
 		end
 
@@ -1987,22 +2012,28 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.fontRight:SetValue(newValue, newName)
 			TRB.Data.settings.priest.holy.displayText.right.fontFace = newValue
 			TRB.Data.settings.priest.holy.displayText.right.fontFaceName = newName
-			rightTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.right.fontFace, TRB.Data.settings.priest.holy.displayText.right.fontSize, "OUTLINE")
 			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			if TRB.Data.settings.priest.holy.displayText.fontFaceLock then
 				TRB.Data.settings.priest.holy.displayText.left.fontFace = newValue
 				TRB.Data.settings.priest.holy.displayText.left.fontFaceName = newName
-				leftTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.left.fontFace, TRB.Data.settings.priest.holy.displayText.left.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
 				TRB.Data.settings.priest.holy.displayText.middle.fontFace = newValue
 				TRB.Data.settings.priest.holy.displayText.middle.fontFaceName = newName
-				middleTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.middle.fontFace, TRB.Data.settings.priest.holy.displayText.middle.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 			end
+
+			if GetSpecialization() == 2 then
+				rightTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.right.fontFace, TRB.Data.settings.priest.holy.displayText.right.fontSize, "OUTLINE")
+				if TRB.Data.settings.priest.holy.displayText.fontFaceLock then
+					leftTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.left.fontFace, TRB.Data.settings.priest.holy.displayText.left.fontSize, "OUTLINE")
+					middleTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.middle.fontFace, TRB.Data.settings.priest.holy.displayText.middle.fontSize, "OUTLINE")
+				end
+			end
+
 			CloseDropDownMenus()
 		end
 
-		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_Priest_HolyCB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
@@ -2013,12 +2044,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.settings.priest.holy.displayText.fontFaceLock then
 				TRB.Data.settings.priest.holy.displayText.middle.fontFace = TRB.Data.settings.priest.holy.displayText.left.fontFace
 				TRB.Data.settings.priest.holy.displayText.middle.fontFaceName = TRB.Data.settings.priest.holy.displayText.left.fontFaceName
-				middleTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.middle.fontFace, TRB.Data.settings.priest.holy.displayText.middle.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.priest.holy.displayText.middle.fontFaceName)
 				TRB.Data.settings.priest.holy.displayText.right.fontFace = TRB.Data.settings.priest.holy.displayText.left.fontFace
 				TRB.Data.settings.priest.holy.displayText.right.fontFaceName = TRB.Data.settings.priest.holy.displayText.left.fontFaceName
-				rightTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.right.fontFace, TRB.Data.settings.priest.holy.displayText.right.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.priest.holy.displayText.right.fontFaceName)
+
+				if GetSpecialization() == 2 then
+					middleTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.middle.fontFace, TRB.Data.settings.priest.holy.displayText.middle.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.right.fontFace, TRB.Data.settings.priest.holy.displayText.right.fontSize, "OUTLINE")
+				end
 			end
 		end)
 
@@ -2039,7 +2073,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.holy.displayText.left.fontSize = value
-			leftTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.left.fontFace, TRB.Data.settings.priest.holy.displayText.left.fontSize, "OUTLINE")
+
+			if GetSpecialization() == 2 then
+				leftTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.left.fontFace, TRB.Data.settings.priest.holy.displayText.left.fontSize, "OUTLINE")
+			end
+
 			if TRB.Data.settings.priest.holy.displayText.fontSizeLock then
 				controls.fontSizeMiddle:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
@@ -2142,7 +2180,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.holy.displayText.middle.fontSize = value
-			middleTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.middle.fontFace, TRB.Data.settings.priest.holy.displayText.middle.fontSize, "OUTLINE")
+
+			if GetSpecialization() == 2 then
+				middleTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.middle.fontFace, TRB.Data.settings.priest.holy.displayText.middle.fontSize, "OUTLINE")
+			end
+
 			if TRB.Data.settings.priest.holy.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
@@ -2162,7 +2204,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.holy.displayText.right.fontSize = value
-			rightTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.right.fontFace, TRB.Data.settings.priest.holy.displayText.right.fontSize, "OUTLINE")
+
+			if GetSpecialization() == 2 then
+				rightTextFrame.font:SetFont(TRB.Data.settings.priest.holy.displayText.right.fontFace, TRB.Data.settings.priest.holy.displayText.right.fontSize, "OUTLINE")
+			end
+
 			if TRB.Data.settings.priest.holy.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeMiddle:SetValue(value)
@@ -3010,7 +3056,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.priest.holy.auspiciousSpiritsTracker = self:GetChecked()
 
-			if ((TRB.Data.settings.priest.holy.auspiciousSpiritsTracker and TRB.Data.character.talents.as.isSelected) or TRB.Functions.IsTtdActive(TRB.Data.settings.priest.holy)) and GetSpecialization() == 3 then
+			if ((TRB.Data.settings.priest.holy.auspiciousSpiritsTracker and TRB.Data.character.talents.as.isSelected) or TRB.Functions.IsTtdActive(TRB.Data.settings.priest.holy)) and GetSpecialization() == 2 then
 				targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			else
 				targetsTimerFrame:SetScript("OnUpdate", nil)
@@ -3586,10 +3632,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 
-			TRB.Functions.UpdateBarWidth(TRB.Data.settings.priest.shadow)
+			if GetSpecialization() == 3 then
+				TRB.Functions.UpdateBarWidth(TRB.Data.settings.priest.shadow)
 
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			end
 		end)
 
 		title = "Bar Height"
@@ -3609,7 +3657,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 
-			TRB.Functions.UpdateBarHeight(TRB.Data.settings.priest.shadow)
+			if GetSpecialization() == 3 then
+				TRB.Functions.UpdateBarHeight(TRB.Data.settings.priest.shadow)
+			end
 		end)
 
 		title = "Bar Horizontal Position"
@@ -3625,9 +3675,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.shadow.bar.xPos = value
-			barContainerFrame:ClearAllPoints()
-			barContainerFrame:SetPoint("CENTER", UIParent)
-			barContainerFrame:SetPoint("CENTER", TRB.Data.settings.priest.shadow.bar.xPos, TRB.Data.settings.priest.shadow.bar.yPos)
+			
+			if GetSpecialization() == 3 then
+				barContainerFrame:ClearAllPoints()
+				barContainerFrame:SetPoint("CENTER", UIParent)
+				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.priest.shadow.bar.xPos, TRB.Data.settings.priest.shadow.bar.yPos)
+			end
 		end)
 
 		title = "Bar Vertical Position"
@@ -3642,9 +3695,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.shadow.bar.yPos = value
-			barContainerFrame:ClearAllPoints()
-			barContainerFrame:SetPoint("CENTER", UIParent)
-			barContainerFrame:SetPoint("CENTER", TRB.Data.settings.priest.shadow.bar.xPos, TRB.Data.settings.priest.shadow.bar.yPos)
+			
+			if GetSpecialization() == 3 then
+				barContainerFrame:ClearAllPoints()
+				barContainerFrame:SetPoint("CENTER", UIParent)
+				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.priest.shadow.bar.xPos, TRB.Data.settings.priest.shadow.bar.yPos)
+			end
 		end)
 
 		title = "Bar Border Width"
@@ -3660,35 +3716,38 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.shadow.bar.border = value
-			barContainerFrame:SetWidth(TRB.Data.settings.priest.shadow.bar.width-(TRB.Data.settings.priest.shadow.bar.border*2))
-			barContainerFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height-(TRB.Data.settings.priest.shadow.bar.border*2))
-			barBorderFrame:SetWidth(TRB.Data.settings.priest.shadow.bar.width)
-			barBorderFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height)
-			if TRB.Data.settings.priest.shadow.bar.border < 1 then
-				barBorderFrame:SetBackdrop({
-					edgeFile = TRB.Data.settings.priest.shadow.textures.border,
-					tile = true,
-					tileSize = 4,
-					edgeSize = 1,
-					insets = {0, 0, 0, 0}
-				})
-				barBorderFrame:Hide()
-			else
-				barBorderFrame:SetBackdrop({
-					edgeFile = TRB.Data.settings.priest.shadow.textures.border,
-					tile = true,
-					tileSize=4,
-					edgeSize=TRB.Data.settings.priest.shadow.bar.border,
-					insets = {0, 0, 0, 0}
-				})
-				barBorderFrame:Show()
-			end
-			barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-			barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.border, true))
+			
+			if GetSpecialization() == 3 then
+				barContainerFrame:SetWidth(TRB.Data.settings.priest.shadow.bar.width-(TRB.Data.settings.priest.shadow.bar.border*2))
+				barContainerFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height-(TRB.Data.settings.priest.shadow.bar.border*2))
+				barBorderFrame:SetWidth(TRB.Data.settings.priest.shadow.bar.width)
+				barBorderFrame:SetHeight(TRB.Data.settings.priest.shadow.bar.height)
+				if TRB.Data.settings.priest.shadow.bar.border < 1 then
+					barBorderFrame:SetBackdrop({
+						edgeFile = TRB.Data.settings.priest.shadow.textures.border,
+						tile = true,
+						tileSize = 4,
+						edgeSize = 1,
+						insets = {0, 0, 0, 0}
+					})
+					barBorderFrame:Hide()
+				else
+					barBorderFrame:SetBackdrop({
+						edgeFile = TRB.Data.settings.priest.shadow.textures.border,
+						tile = true,
+						tileSize=4,
+						edgeSize=TRB.Data.settings.priest.shadow.bar.border,
+						insets = {0, 0, 0, 0}
+					})
+					barBorderFrame:Show()
+				end
+				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
+				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.border, true))
 
-			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.priest.shadow)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.priest.shadow)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			end
 
 			local minsliderWidth = math.max(TRB.Data.settings.priest.shadow.bar.border*2, 120)
 			local minsliderHeight = math.max(TRB.Data.settings.priest.shadow.bar.border*2, 1)
@@ -3710,9 +3769,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.shadow.thresholdWidth = value
-			resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
-			resourceFrame.thresholds[2]:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
-			passiveFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
+			
+			if GetSpecialization() == 3 then
+				resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
+				resourceFrame.thresholds[2]:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
+				passiveFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
+				passiveFrame.thresholds[2]:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
+			end
 		end)
 
 		yCoord = yCoord - 40
@@ -3812,17 +3875,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.resourceBarTexture:SetValue(newValue, newName)
 			TRB.Data.settings.priest.shadow.textures.resourceBar = newValue
 			TRB.Data.settings.priest.shadow.textures.resourceBarName = newName
-			resourceFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.resourceBar)
 			UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
 			if TRB.Data.settings.priest.shadow.textures.textureLock then
 				TRB.Data.settings.priest.shadow.textures.castingBar = newValue
 				TRB.Data.settings.priest.shadow.textures.castingBarName = newName
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.castingBar)
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
 				TRB.Data.settings.priest.shadow.textures.passiveBar = newValue
 				TRB.Data.settings.priest.shadow.textures.passiveBarName = newName
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.passiveBar)
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
+			end
+
+			if GetSpecialization() == 3 then
+				resourceFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.resourceBar)
+				if TRB.Data.settings.priest.shadow.textures.textureLock then
+					castingFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.castingBar)
+					passiveFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.passiveBar)
+				end
 			end
 			CloseDropDownMenus()
 		end
@@ -3885,6 +3953,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				passiveFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.passiveBar)
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
 			end
+
+			if GetSpecialization() == 3 then
+				castingFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.castingBar)
+				if TRB.Data.settings.priest.shadow.textures.textureLock then
+					resourceFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.resourceBar)
+					passiveFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.passiveBar)
+				end
+			end
+
 			CloseDropDownMenus()
 		end
 
@@ -3948,6 +4025,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				castingFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.castingBar)
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
 			end
+
+			if GetSpecialization() == 3 then
+				passiveFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.passiveBar)
+				if TRB.Data.settings.priest.shadow.textures.textureLock then
+					resourceFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.resourceBar)
+					castingFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.castingBar)
+				end
+			end
+
 			CloseDropDownMenus()
 		end
 
@@ -3962,12 +4048,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.settings.priest.shadow.textures.textureLock then
 				TRB.Data.settings.priest.shadow.textures.passiveBar = TRB.Data.settings.priest.shadow.textures.resourceBar
 				TRB.Data.settings.priest.shadow.textures.passiveBarName = TRB.Data.settings.priest.shadow.textures.resourceBarName
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.passiveBar)
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, TRB.Data.settings.priest.shadow.textures.passiveBarName)
 				TRB.Data.settings.priest.shadow.textures.castingBar = TRB.Data.settings.priest.shadow.textures.resourceBar
 				TRB.Data.settings.priest.shadow.textures.castingBarName = TRB.Data.settings.priest.shadow.textures.resourceBarName
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.castingBar)
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.priest.shadow.textures.castingBarName)
+
+				if GetSpecialization() == 3 then
+					passiveFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.passiveBar)
+					castingFrame:SetStatusBarTexture(TRB.Data.settings.priest.shadow.textures.castingBar)
+				end
 			end
 		end)
 
@@ -4020,18 +4109,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.borderTexture:SetValue(newValue, newName)
 			TRB.Data.settings.priest.shadow.textures.border = newValue
 			TRB.Data.settings.priest.shadow.textures.borderName = newName
-			if TRB.Data.settings.priest.shadow.bar.border < 1 then
-				barBorderFrame:SetBackdrop({ })
-			else
-				barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.priest.shadow.textures.border,
-											tile = true,
-											tileSize=4,
-											edgeSize=TRB.Data.settings.priest.shadow.bar.border,
-											insets = {0, 0, 0, 0}
-											})
+
+			if GetSpecialization() == 3 then
+				if TRB.Data.settings.priest.shadow.bar.border < 1 then
+					barBorderFrame:SetBackdrop({ })
+				else
+					barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.priest.shadow.textures.border,
+												tile = true,
+												tileSize=4,
+												edgeSize=TRB.Data.settings.priest.shadow.bar.border,
+												insets = {0, 0, 0, 0}
+												})
+				end
+				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
+				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.border, true))
 			end
-			barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.border, true))
+
 			UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
 			CloseDropDownMenus()
 		end
@@ -4082,14 +4175,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
 			TRB.Data.settings.priest.shadow.textures.background = newValue
 			TRB.Data.settings.priest.shadow.textures.backgroundName = newName
-			barContainerFrame:SetBackdrop({
-				bgFile = TRB.Data.settings.priest.shadow.textures.background,
-				tile = true,
-				tileSize = TRB.Data.settings.priest.shadow.bar.width,
-				edgeSize = 1,
-				insets = {0, 0, 0, 0}
-			})
-			barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.background, true))
+
+			if GetSpecialization() == 3 then
+				barContainerFrame:SetBackdrop({ 
+					bgFile = TRB.Data.settings.priest.shadow.textures.background,
+					tile = true,
+					tileSize = TRB.Data.settings.priest.shadow.bar.width,
+					edgeSize = 1,
+					insets = {0, 0, 0, 0}
+				})
+				barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.background, true))
+			end
+
 			UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, newName)
 			CloseDropDownMenus()
 		end
@@ -4693,7 +4790,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 30
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontLeft = CreateFrame("FRAME", "TIBFontLeft", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_Priest_Shadow_FontLeft", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontLeft.label = TRB.UiFunctions.BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -4738,23 +4835,29 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.fontLeft:SetValue(newValue, newName)
 			TRB.Data.settings.priest.shadow.displayText.left.fontFace = newValue
 			TRB.Data.settings.priest.shadow.displayText.left.fontFaceName = newName
-			leftTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.left.fontFace, TRB.Data.settings.priest.shadow.displayText.left.fontSize, "OUTLINE")
 			UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
 			if TRB.Data.settings.priest.shadow.displayText.fontFaceLock then
 				TRB.Data.settings.priest.shadow.displayText.middle.fontFace = newValue
 				TRB.Data.settings.priest.shadow.displayText.middle.fontFaceName = newName
-				middleTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.middle.fontFace, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 				TRB.Data.settings.priest.shadow.displayText.right.fontFace = newValue
 				TRB.Data.settings.priest.shadow.displayText.right.fontFaceName = newName
-				rightTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.right.fontFace, TRB.Data.settings.priest.shadow.displayText.right.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
+
+			if GetSpecialization() == 3 then
+				leftTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.left.fontFace, TRB.Data.settings.priest.shadow.displayText.left.fontSize, "OUTLINE")
+				if TRB.Data.settings.priest.shadow.displayText.fontFaceLock then
+					middleTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.middle.fontFace, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.right.fontFace, TRB.Data.settings.priest.shadow.displayText.right.fontSize, "OUTLINE")
+				end
+			end
+
 			CloseDropDownMenus()
 		end
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TIBfFontMiddle", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Priest_Shadow_FontMiddle", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontMiddle.label = TRB.UiFunctions.BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -4799,25 +4902,31 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.fontMiddle:SetValue(newValue, newName)
 			TRB.Data.settings.priest.shadow.displayText.middle.fontFace = newValue
 			TRB.Data.settings.priest.shadow.displayText.middle.fontFaceName = newName
-			middleTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.middle.fontFace, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, "OUTLINE")
 			UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 			if TRB.Data.settings.priest.shadow.displayText.fontFaceLock then
 				TRB.Data.settings.priest.shadow.displayText.left.fontFace = newValue
 				TRB.Data.settings.priest.shadow.displayText.left.fontFaceName = newName
-				leftTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.left.fontFace, TRB.Data.settings.priest.shadow.displayText.left.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
 				TRB.Data.settings.priest.shadow.displayText.right.fontFace = newValue
 				TRB.Data.settings.priest.shadow.displayText.right.fontFaceName = newName
-				rightTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.right.fontFace, TRB.Data.settings.priest.shadow.displayText.right.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
+
+			if GetSpecialization() == 3 then
+				middleTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.middle.fontFace, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, "OUTLINE")
+				if TRB.Data.settings.priest.shadow.displayText.fontFaceLock then
+					leftTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.left.fontFace, TRB.Data.settings.priest.shadow.displayText.left.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.right.fontFace, TRB.Data.settings.priest.shadow.displayText.right.fontSize, "OUTLINE")
+				end
+			end
+
 			CloseDropDownMenus()
 		end
 
 		yCoord = yCoord - 40 - 20
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontRight = CreateFrame("FRAME", "TIBFontRight", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Priest_Shadow_FontRight", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontRight.label = TRB.UiFunctions.BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -4862,22 +4971,28 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.fontRight:SetValue(newValue, newName)
 			TRB.Data.settings.priest.shadow.displayText.right.fontFace = newValue
 			TRB.Data.settings.priest.shadow.displayText.right.fontFaceName = newName
-			rightTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.right.fontFace, TRB.Data.settings.priest.shadow.displayText.right.fontSize, "OUTLINE")
 			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			if TRB.Data.settings.priest.shadow.displayText.fontFaceLock then
 				TRB.Data.settings.priest.shadow.displayText.left.fontFace = newValue
 				TRB.Data.settings.priest.shadow.displayText.left.fontFaceName = newName
-				leftTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.left.fontFace, TRB.Data.settings.priest.shadow.displayText.left.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
 				TRB.Data.settings.priest.shadow.displayText.middle.fontFace = newValue
 				TRB.Data.settings.priest.shadow.displayText.middle.fontFaceName = newName
-				middleTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.middle.fontFace, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 			end
+
+			if GetSpecialization() == 3 then
+				rightTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.right.fontFace, TRB.Data.settings.priest.shadow.displayText.right.fontSize, "OUTLINE")
+				if TRB.Data.settings.priest.shadow.displayText.fontFaceLock then
+					leftTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.left.fontFace, TRB.Data.settings.priest.shadow.displayText.left.fontSize, "OUTLINE")
+					middleTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.middle.fontFace, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, "OUTLINE")
+				end
+			end
+
 			CloseDropDownMenus()
 		end
 
-		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TIBCB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_Priest_ShadowCB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
@@ -4888,12 +5003,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.settings.priest.shadow.displayText.fontFaceLock then
 				TRB.Data.settings.priest.shadow.displayText.middle.fontFace = TRB.Data.settings.priest.shadow.displayText.left.fontFace
 				TRB.Data.settings.priest.shadow.displayText.middle.fontFaceName = TRB.Data.settings.priest.shadow.displayText.left.fontFaceName
-				middleTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.middle.fontFace, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.priest.shadow.displayText.middle.fontFaceName)
 				TRB.Data.settings.priest.shadow.displayText.right.fontFace = TRB.Data.settings.priest.shadow.displayText.left.fontFace
 				TRB.Data.settings.priest.shadow.displayText.right.fontFaceName = TRB.Data.settings.priest.shadow.displayText.left.fontFaceName
-				rightTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.right.fontFace, TRB.Data.settings.priest.shadow.displayText.right.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.priest.shadow.displayText.right.fontFaceName)
+
+				if GetSpecialization() == 3 then
+					middleTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.middle.fontFace, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.right.fontFace, TRB.Data.settings.priest.shadow.displayText.right.fontSize, "OUTLINE")
+				end
 			end
 		end)
 
@@ -4914,14 +5032,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.shadow.displayText.left.fontSize = value
-			leftTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.left.fontFace, TRB.Data.settings.priest.shadow.displayText.left.fontSize, "OUTLINE")
+
+			if GetSpecialization() == 3 then
+				leftTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.left.fontFace, TRB.Data.settings.priest.shadow.displayText.left.fontSize, "OUTLINE")
+			end
+
 			if TRB.Data.settings.priest.shadow.displayText.fontSizeLock then
 				controls.fontSizeMiddle:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
 		end)
 
-		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TIBCB2_F1", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontSizeLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
@@ -5017,7 +5139,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.shadow.displayText.middle.fontSize = value
-			middleTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.middle.fontFace, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, "OUTLINE")
+
+			if GetSpecialization() == 3 then
+				middleTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.middle.fontFace, TRB.Data.settings.priest.shadow.displayText.middle.fontSize, "OUTLINE")
+			end
+
 			if TRB.Data.settings.priest.shadow.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
@@ -5037,7 +5163,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.priest.shadow.displayText.right.fontSize = value
-			rightTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.right.fontFace, TRB.Data.settings.priest.shadow.displayText.right.fontSize, "OUTLINE")
+
+			if GetSpecialization() == 3 then
+				rightTextFrame.font:SetFont(TRB.Data.settings.priest.shadow.displayText.right.fontFace, TRB.Data.settings.priest.shadow.displayText.right.fontSize, "OUTLINE")
+			end
+
 			if TRB.Data.settings.priest.shadow.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeMiddle:SetValue(value)

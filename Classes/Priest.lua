@@ -229,6 +229,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				duration = 10,
 				isActive = false
 			},
+			manaTideTotem = {
+				id = 320763,
+				name = "",
+				icon = "",
+				duration = 8,
+				isActive = false
+			},
 
 			-- Covenant
 			wrathfulFaerie = {
@@ -308,7 +315,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spellId = nil,
 			duration = 0,
 			endTime = nil,
-			remainingTime = 0
+			remainingTime = 0,
+			mana = 0
+		}
+		specCache.holy.snapshotData.manaTideTotem = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0,
+			mana = 0
 		}
 		specCache.holy.snapshotData.apotheosis = {
 			spellId = nil,
@@ -1652,6 +1667,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.innervate)
 	end
 
+	local function GetManaTideTotemRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.manaTideTotem)
+	end
+
 	local function GetSurgeOfLightRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.surgeOfLight)
 	end
@@ -1659,7 +1678,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function GetPotionOfSpiritualClarityRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.potionOfSpiritualClarity)
 	end
-	
+
 	local function GetHolyWordCooldownTimeRemaining(holyWord)
 		local currentTime = GetTime()
 		local gcd = TRB.Functions.GetCurrentGCDTime(true)
@@ -3156,6 +3175,36 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 	end
 
+	local function UpdateInnervate()
+		local currentTime = GetTime()
+
+		if TRB.Data.snapshotData.innervate.endTime ~= nil and currentTime > TRB.Data.snapshotData.innervate.endTime then
+            TRB.Data.snapshotData.innervate.endTime = nil
+            TRB.Data.snapshotData.innervate.duration = 0
+			TRB.Data.snapshotData.innervate.remainingTime = 0
+			TRB.Data.snapshotData.innervate.mana = 0
+			TRB.Data.snapshotData.audio.innervateCue = false
+		else
+			TRB.Data.snapshotData.innervate.remainingTime = GetInnervateRemainingTime()
+			TRB.Data.snapshotData.innervate.mana = TRB.Data.snapshotData.innervate.remainingTime * TRB.Data.snapshotData.manaRegen
+        end
+	end
+
+	local function UpdateManaTideTotem(forceCleanup)
+		local currentTime = GetTime()
+
+		if forceCleanup or (TRB.Data.snapshotData.manaTideTotem.endTime ~= nil and currentTime > TRB.Data.snapshotData.innervate.endTime) then
+            TRB.Data.snapshotData.manaTideTotem.endTime = nil
+            TRB.Data.snapshotData.manaTideTotem.duration = 0
+			TRB.Data.snapshotData.manaTideTotem.remainingTime = 0
+			TRB.Data.snapshotData.manaTideTotem.mana = 0
+			TRB.Data.snapshotData.audio.manaTideTotemCue = false
+		else
+			TRB.Data.snapshotData.manaTideTotem.remainingTime = GetManaTideTotemRemainingTime()
+			TRB.Data.snapshotData.manaTideTotem.mana = TRB.Data.snapshotData.manaTideTotem.remainingTime * (TRB.Data.snapshotData.manaRegen / 2) --Only half of this is considered bonus
+        end
+	end
+
 	local function UpdateSnapshot()
 		TRB.Functions.UpdateSnapshot()
 		local currentTime = GetTime()
@@ -3166,6 +3215,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateWrathfulFaerieValues()
 		UpdateSymbolOfHope()
 		UpdatePotionOfSpiritualClarity()
+		UpdateInnervate()
+		UpdateManaTideTotem()
 
 		local currentTime = GetTime()
 		local _
@@ -3769,6 +3820,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.innervate.duration = 0
 							TRB.Data.snapshotData.innervate.endTime = nil
 							TRB.Data.snapshotData.audio.innervateCue = false
+						end
+					elseif spellId == TRB.Data.spells.manaTideTotem.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.manaTideTotem.isActive = true
+							TRB.Data.snapshotData.manaTideTotem.duration = TRB.Data.spells.manaTideTotem.duration
+							TRB.Data.snapshotData.manaTideTotem.endTime = TRB.Data.spells.manaTideTotem.duration + currentTime
+							TRB.Data.snapshotData.audio.manaTideTotemCue = false
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.manaTideTotem.isActive = false
+							TRB.Data.snapshotData.manaTideTotem.spellId = nil
+							TRB.Data.snapshotData.manaTideTotem.duration = 0
+							TRB.Data.snapshotData.manaTideTotem.endTime = nil
+							TRB.Data.snapshotData.audio.manaTideTotemCue = false
 						end
 					end
 				elseif specId == 3 then
