@@ -102,6 +102,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				soulfulManaPotion = {
 					enabled = false, -- 4
 				},
+				potionCooldown = {
+					enabled=true,
+					mode="time",
+					gcdsMax=40,
+					timeMax=60
+				},
 			},
 			displayBar = {
 				alwaysShow=false,
@@ -190,7 +196,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					overcapEnabled=true
 				},
 				threshold={
-					--under="FFFFFFFF",
+					unusable="FFFF0000",
 					over="FF00FF00",
 					mindbender="FF8080FF"
 				}
@@ -1222,7 +1228,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 		]]
 
-		yCoord = yCoord - 40
+		yCoord = yCoord - 30
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_RB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -1586,8 +1592,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		yCoord = yCoord - 25
-		controls.colors.thresholdUnusable = TRB.UiFunctions.BuildColorPicker(parent, "Mana potion on cooldown", TRB.Data.settings.priest.holy.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
+		controls.colors.thresholdUnusable = TRB.UiFunctions.BuildColorPicker(parent, "Mana potion on cooldown", TRB.Data.settings.priest.holy.colors.threshold.unusable, 275, 25, xCoord2, yCoord-30)
 		f = controls.colors.thresholdUnusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1600,15 +1605,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.thresholdUnusable.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.priest.holy.colors.threshold.unusable = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
-		
-		yCoord = yCoord - 25
-		controls.colors.passiveThreshold = TRB.UiFunctions.BuildColorPicker(parent, "Passive/Wrathful Faerie Mana Gain", TRB.Data.settings.priest.holy.colors.threshold.mindbender, 275, 25, xCoord2, yCoord-30)
+
+		controls.colors.passiveThreshold = TRB.UiFunctions.BuildColorPicker(parent, "Passive/Wrathful Faerie Mana Gain", TRB.Data.settings.priest.holy.colors.threshold.mindbender, 275, 25, xCoord2, yCoord-60)
 		f = controls.colors.passiveThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1632,7 +1636,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(TRB.Data.settings.priest.holy.bar.thresholdOverlapBorder)
@@ -1644,7 +1648,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.potionOfSpiritualClarityThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_potionOfSpiritualClarity", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.potionOfSpiritualClarityThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Potion of Spiritual Clarity (10,000 + 10sec regen)")
+		getglobal(f:GetName() .. 'Text'):SetText("Potion of Spiritual Clarity (10,000 + regen)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Potion of Spirital Clarity (10,000 + 10 seconds of passive mana regen)"
 		f:SetChecked(TRB.Data.settings.priest.holy.thresholds.potionOfSpiritualClarity.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1682,6 +1686,85 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(TRB.Data.settings.priest.holy.thresholds.spiritualRejuvenationPotion.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.priest.holy.thresholds.spiritualRejuvenationPotion.enabled = self:GetChecked()
+		end)
+
+
+		yCoord = yCoord - 30
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Potion on Cooldown Configuration", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.potionCooldown = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_potionCooldown_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.potionCooldown
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show potion threshold lines when potion is on cooldown")
+		f.tooltip = "Shows the potion threshold lines while potion use is still on cooldown. Configure below how far in advance to have the lines be visible, between 0 - 300 seconds (300 being effectively 'always visible')."
+		f:SetChecked(TRB.Data.settings.priest.holy.thresholds.potionCooldown.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.thresholds.potionCooldown.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 40
+		controls.checkBoxes.potionCooldownModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_potionCooldown_M_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.potionCooldownModeGCDs
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("GCDs left on Potion cooldown")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Show potion threshold lines based on how many GCDs remain on potion cooldown."
+		if TRB.Data.settings.priest.holy.thresholds.potionCooldown.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.potionCooldownModeGCDs:SetChecked(true)
+			controls.checkBoxes.potionCooldownModeTime:SetChecked(false)
+			TRB.Data.settings.priest.holy.thresholds.potionCooldown.mode = "gcd"
+		end)
+
+		title = "Potion Cooldown GCDs - 0.75sec Floor"
+		controls.potionCooldownGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0, 400, TRB.Data.settings.priest.holy.thresholds.potionCooldown.gcdsMax, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.potionCooldownGCDs:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			self.EditBox:SetText(value)
+			TRB.Data.settings.priest.holy.thresholds.potionCooldown.gcdsMax = value
+		end)
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.potionCooldownModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_potionCooldown_M_TIME", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.potionCooldownModeTime
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Time left on Potion cooldown")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many seconds remain until Apotheosis will end."
+		if TRB.Data.settings.priest.holy.thresholds.potionCooldown.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.potionCooldownModeGCDs:SetChecked(false)
+			controls.checkBoxes.potionCooldownModeTime:SetChecked(true)
+			TRB.Data.settings.priest.holy.thresholds.potionCooldown.mode = "time"
+		end)
+
+		title = "Potion Cooldown Time Remaining"
+		controls.potionCooldownTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 300, TRB.Data.settings.priest.holy.thresholds.potionCooldown.timeMax, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.potionCooldownTime:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 2)
+			self.EditBox:SetText(value)
+			TRB.Data.settings.priest.holy.thresholds.potionCooldown.timeMax = value
 		end)
 
 
