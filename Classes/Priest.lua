@@ -2691,7 +2691,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function CastingSpell()
 		local currentTime = GetTime()
 		local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
-		local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, _, currentChannelId = UnitChannelInfo("player")
+		local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
 		local specId = GetSpecialization()
 
 		if currentSpellName == nil and currentChannelName == nil then
