@@ -807,6 +807,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				resourceFrame.thresholds[4]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
 				passiveFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
 				passiveFrame.thresholds[2]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
+				passiveFrame.thresholds[3]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
+				passiveFrame.thresholds[4]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
+				passiveFrame.thresholds[5]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
 			end
 		end)
 
@@ -1627,9 +1630,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 
 					controls.colors.passiveThreshold.Texture:SetColorTexture(r, g, b, 1-a)
-					passiveFrame.thresholds[1].texture:SetColorTexture(r, g, b, 1-a)
-					passiveFrame.thresholds[2].texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.holy.colors.threshold.mindbender = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					if GetSpecialization() == 2 then
+						passiveFrame.thresholds[1].texture:SetColorTexture(r, g, b, 1-a)
+						passiveFrame.thresholds[2].texture:SetColorTexture(r, g, b, 1-a)
+						passiveFrame.thresholds[3].texture:SetColorTexture(r, g, b, 1-a)
+						passiveFrame.thresholds[4].texture:SetColorTexture(r, g, b, 1-a)
+						passiveFrame.thresholds[5].texture:SetColorTexture(r, g, b, 1-a)
+					end
 				end)
 			end
 		end)

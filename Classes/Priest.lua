@@ -3,6 +3,9 @@ local _, _, classIndexId = UnitClass("player")
 if classIndexId == 5 then --Only do this if we're on a Priest!
 	TRB.Frames.passiveFrame.thresholds[1] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 	TRB.Frames.passiveFrame.thresholds[2] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
+	TRB.Frames.passiveFrame.thresholds[3] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
+	TRB.Frames.passiveFrame.thresholds[4] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
+	TRB.Frames.passiveFrame.thresholds[5] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 	TRB.Frames.resourceFrame.thresholds[1] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 	TRB.Frames.resourceFrame.thresholds[2] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 	TRB.Frames.resourceFrame.thresholds[3] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
@@ -1293,6 +1296,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			TRB.Frames.resourceFrame.thresholds[3]:Hide()
 			TRB.Frames.resourceFrame.thresholds[4]:Hide()
+			TRB.Frames.passiveFrame.thresholds[3]:Hide()
+			TRB.Frames.passiveFrame.thresholds[4]:Hide()
+			TRB.Frames.passiveFrame.thresholds[5]:Hide()
 
 			-- Legendaries
 			local wristItemLink = GetInventoryItemLink("player", 9)
@@ -2684,20 +2690,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function CastingSpell()
 		local currentTime = GetTime()
-		local currentSpell = UnitCastingInfo("player")
-		local currentChannel = UnitChannelInfo("player")
+		local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
+		local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, _, currentChannelId = UnitChannelInfo("player")
 		local specId = GetSpecialization()
 
-		if currentSpell == nil and currentChannel == nil then
+		if currentSpellName == nil and currentChannelName == nil then
 			TRB.Functions.ResetCastingSnapshotData()
 			return false
 		else
 			if specId == 2 then
-				if currentSpell == nil then
-					local spellName = select(1, currentChannel)
-					if spellName == TRB.Data.spells.symbolOfHope.name then
+				if currentSpellName == nil then
+					if currentSpellId == TRB.Data.spells.symbolOfHope.id then
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.symbolOfHope.id
-						TRB.Data.snapshotData.casting.startTime = currentTime
+						TRB.Data.snapshotData.casting.startTime = currentChannelStartTime / 1000
+						TRB.Data.snapshotData.casting.endTime = currentChannelEndTime / 1000
 						TRB.Data.snapshotData.casting.resourceRaw = 0
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.symbolOfHope.icon
 					else
@@ -2705,36 +2711,36 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						return false
 					end
 				else
-					local spellName = select(1, currentSpell)
-					local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(spellName)
+					local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 					if spellId then
 						local manaCost = -TRB.Functions.GetSpellManaCost(spellId)
 
-						TRB.Data.snapshotData.casting.startTime = currentTime
+						TRB.Data.snapshotData.casting.startTime = currentSpellStartTime / 1000
+						TRB.Data.snapshotData.casting.endTime = currentSpellEndTime / 1000
 						TRB.Data.snapshotData.casting.resourceRaw = manaCost
 						TRB.Data.snapshotData.casting.spellId = spellId
 						TRB.Data.snapshotData.casting.icon = string.format("|T%s:0|t", spellIcon)
 
 						UpdateCastingResourceFinal_Holy()
-						if spellName == TRB.Data.spells.heal.name then
+						if currentSpellId == TRB.Data.spells.heal.id then
 							TRB.Data.snapshotData.casting.spellKey = "heal"
-						elseif spellName == TRB.Data.spells.flashHeal.name then
+						elseif currentSpellId == TRB.Data.spells.flashHeal.id then
 							TRB.Data.snapshotData.casting.spellKey = "flashHeal"
-						elseif spellName == TRB.Data.spells.prayerOfHealing.name then
+						elseif currentSpellId == TRB.Data.spells.prayerOfHealing.id then
 							TRB.Data.snapshotData.casting.spellKey = "prayerOfHealing"
-						elseif spellName == TRB.Data.spells.renew.name then --This shouldn't happen
+						elseif currentSpellId == TRB.Data.spells.renew.id then --This shouldn't happen
 							TRB.Data.snapshotData.casting.spellKey = "renew"
-						elseif spellName == TRB.Data.spells.smite.name then
+						elseif currentSpellId == TRB.Data.spells.smite.id then
 							TRB.Data.snapshotData.casting.spellKey = "smite"
-						elseif spellName == TRB.Data.spells.bindingHeal.name then --If talented
+						elseif currentSpellId == TRB.Data.spells.bindingHeal.id then --If talented
 							TRB.Data.snapshotData.casting.spellKey = "bindingHeal"
 						elseif TRB.Data.character.items.harmoniousApparatus then
-							if spellName == TRB.Data.spells.circleOfHealing.name then --Harmonious Apparatus / This shouldn't happen
+							if currentSpellId == TRB.Data.spells.circleOfHealing.id then --Harmonious Apparatus / This shouldn't happen
 								TRB.Data.snapshotData.casting.spellKey = "circleOfHealing"
-							elseif spellName == TRB.Data.spells.prayerOfMending.name then --Harmonious Apparatus / This shouldn't happen
+							elseif currentSpellId == TRB.Data.spells.prayerOfMending.id then --Harmonious Apparatus / This shouldn't happen
 								TRB.Data.snapshotData.casting.spellKey = "prayerOfMending"
-							elseif spellName == TRB.Data.spells.holyFire.name then --Harmonious Apparatus
+							elseif currentSpellId == TRB.Data.spells.holyFire.id then --Harmonious Apparatus
 								TRB.Data.snapshotData.casting.spellKey = "holyFire"
 							end
 						end
@@ -2745,7 +2751,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 				return true
 			elseif specId == 3 then
-				if currentSpell == nil then
+				if currentSpellName == nil then
 					local spellName = select(1, currentChannel)
 					if spellName == TRB.Data.spells.mindFlay.name then
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.mindFlay.id
@@ -2780,7 +2786,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						return false
 					end
 				else
-					local spellName = select(1, currentSpell)
+					local spellName = select(1, currentSpellName)
 					if spellName == TRB.Data.spells.mindBlast.name then
 						TRB.Data.snapshotData.casting.startTime = currentTime
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindBlast.insanity
@@ -3193,7 +3199,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function UpdateManaTideTotem(forceCleanup)
 		local currentTime = GetTime()
 
-		if forceCleanup or (TRB.Data.snapshotData.manaTideTotem.endTime ~= nil and currentTime > TRB.Data.snapshotData.innervate.endTime) then
+		if forceCleanup or (TRB.Data.snapshotData.manaTideTotem.endTime ~= nil and currentTime > TRB.Data.snapshotData.manaTideTotem.endTime) then
             TRB.Data.snapshotData.manaTideTotem.endTime = nil
             TRB.Data.snapshotData.manaTideTotem.duration = 0
 			TRB.Data.snapshotData.manaTideTotem.remainingTime = 0
@@ -3462,12 +3468,41 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Frames.passiveFrame.thresholds[2]:Hide()
 						end
 
+						if TRB.Data.snapshotData.innervate.mana > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.innervate.mana
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, TRB.Data.settings.priest.holy.thresholdWidth, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.mindbender, true))
+							TRB.Frames.passiveFrame.thresholds[3]:Show()
+						else
+							TRB.Frames.passiveFrame.thresholds[3]:Hide()
+						end
+
 						if TRB.Data.snapshotData.symbolOfHope.resourceFinal > 0 then
 							passiveValue = passiveValue + TRB.Data.snapshotData.symbolOfHope.resourceFinal
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, TRB.Data.settings.priest.holy.thresholdWidth, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.mindbender, true))
+							TRB.Frames.passiveFrame.thresholds[4]:Show()
+						else
+							TRB.Frames.passiveFrame.thresholds[4]:Hide()
+						end
+
+						if TRB.Data.snapshotData.manaTideTotem.mana > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.manaTideTotem.mana
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, TRB.Data.settings.priest.holy.thresholdWidth, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.passiveFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.mindbender, true))
+							TRB.Frames.passiveFrame.thresholds[5]:Show()
+						else
+							TRB.Frames.passiveFrame.thresholds[5]:Hide()
 						end
 					else
 						TRB.Frames.passiveFrame.thresholds[1]:Hide()
 						TRB.Frames.passiveFrame.thresholds[2]:Hide()
+						TRB.Frames.passiveFrame.thresholds[3]:Hide()
+						TRB.Frames.passiveFrame.thresholds[4]:Hide()
+						TRB.Frames.passiveFrame.thresholds[5]:Hide()
 					end
 
 					passiveBarValue = castingBarValue + passiveValue
@@ -3543,14 +3578,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction ~= nil and
 							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction >= 0 then
 							
+							local castTimeRemains = TRB.Data.snapshotData.casting.endTime - currentTime
+
 							if TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey2 ~= nil and
 								TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction2 ~= nil and
 								TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction2 >= 0 then --We have an edge case, boiz
 								local holyWordCooldownRemaining1 = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey])
 								local holyWordCooldownRemaining2 = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey2])
 								
-								local remaining1 = holyWordCooldownRemaining1 - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction)
-								local remaining2 = holyWordCooldownRemaining2 - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction2)
+								local remaining1 = holyWordCooldownRemaining1 - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction) - castTimeRemains
+								local remaining2 = holyWordCooldownRemaining2 - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction2) - castTimeRemains
 
 								if remaining1 <= 0 and remaining2 > 0 then
 									resourceBarColor = TRB.Data.settings.priest.holy.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]
@@ -3561,8 +3598,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								end
 							else
 								local holyWordCooldownRemaining = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey])
-								print(TRB.Data.snapshotData.casting.spellKey, CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction))
-								if (holyWordCooldownRemaining - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction)) <= 0 then
+
+								if (holyWordCooldownRemaining - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction) - castTimeRemains) <= 0 then
 									resourceBarColor = TRB.Data.settings.priest.holy.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]
 								end
 							end
