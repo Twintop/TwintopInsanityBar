@@ -1768,7 +1768,7 @@ local function Import(input)
 	if not (configuration.core ~= nil or
 		(configuration.warrior ~= nil and configuration.warrior.arms ~= nil) or
 		(configuration.hunter ~= nil and (configuration.hunter.beastMastery ~= nil or configuration.hunter.marksmanship ~= nil or configuration.hunter.survival ~= nil)) or
-		(configuration.priest ~= nil and configuration.priest.shadow ~= nil) or
+		(configuration.priest ~= nil and (configuration.priest.holy ~= nil or configuration.priest.shadow ~= nil)) or
 		(configuration.shaman ~= nil and configuration.shaman.elemental ~= nil) or
 		(configuration.druid ~= nil and configuration.druid.balance ~= nil)) then
 		return -3
@@ -1805,16 +1805,21 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			configuration.thresholds = settings.thresholds
 		elseif classId == 3 then -- Hunters
 			configuration.thresholds = settings.thresholds
-			if specId == 1 then -- Beast Mastery Hunter
+			if specId == 1 then -- Beast Mastery
 			elseif specId == 2 then -- Marksmanship
 				configuration.endOfTrueshot = settings.endOfTrueshot
 			elseif specId == 3 then -- Survival
 				configuration.endOfCoordinatedAssault = settings.endOfCoordinatedAssault
 			end
-		elseif classId == 5 and specId == 3 then -- Shadow Priest
-			configuration.devouringPlagueThreshold = settings.devouringPlagueThreshold
-			configuration.searingNightmareThreshold = settings.searingNightmareThreshold
-			configuration.endOfVoidform = settings.endOfVoidform
+		elseif classId == 5 then -- Priests
+			if specId == 2 then -- Holy
+				configuration.thresholds = settings.thresholds
+				configuration.endOfApotheosis = settings.endOfApotheosis
+			elseif specId == 3 then -- Shadow
+				configuration.devouringPlagueThreshold = settings.devouringPlagueThreshold
+				configuration.searingNightmareThreshold = settings.searingNightmareThreshold
+				configuration.endOfVoidform = settings.endOfVoidform
+			end
 		elseif classId == 7 and specId == 1 then -- Elemental Shaman
 			configuration.earthShockThreshold = settings.earthShockThreshold
 		elseif classId == 11 and specId == 1 then -- Balance Druid
@@ -1851,16 +1856,19 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		if classId == 1 and specId == 1 then -- Arms Warrior
 			configuration.ragePrecision = settings.ragePrecision
 		elseif classId == 3 then -- Hunters
-			if specId == 1 then -- Beast Mastery Hunter
+			if specId == 1 then -- Beast Mastery
 			elseif specId == 2 then -- Marksmanship
 			elseif specId == 3 then -- Survival
 			end
-		elseif classId == 5 and specId == 3 then -- Shadow Priest
-			configuration.hasteApproachingThreshold = settings.hasteApproachingThreshold
-			configuration.hasteThreshold = settings.hasteThreshold
-			configuration.s2mApproachingThreshold = settings.s2mApproachingThreshold
-			configuration.s2mThreshold = settings.s2mThreshold
-			configuration.insanityPrecision = settings.insanityPrecision
+		elseif classId == 5 then -- Priests
+			if specId == 2 then -- Holy
+			elseif specId == 3 then -- Shadow
+				configuration.hasteApproachingThreshold = settings.hasteApproachingThreshold
+				configuration.hasteThreshold = settings.hasteThreshold
+				configuration.s2mApproachingThreshold = settings.s2mApproachingThreshold
+				configuration.s2mThreshold = settings.s2mThreshold
+				configuration.insanityPrecision = settings.insanityPrecision
+			end
 		elseif classId == 7 and specId == 1 then -- Elemental Shaman
 		elseif classId == 11 and specId == 1 then -- Balance Druid
 			configuration.astralPowerPrecision = settings.astralPowerPrecision
@@ -1873,15 +1881,19 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		if classId == 1 and specId == 1 then -- Arms Warrior
 		elseif classId == 3 then -- Hunters
 			configuration.generation = settings.generation
-			if specId == 1 then -- Beast Mastery Hunter
+			if specId == 1 then -- Beast Mastery
 			elseif specId == 2 then -- Marksmanship
 			elseif specId == 3 then -- Survival
 			end
-		elseif classId == 5 and specId == 3 then -- Shadow Priest
-			configuration.mindbender = settings.mindbender
-			configuration.wrathfulFaerie = settings.wrathfulFaerie
-			configuration.auspiciousSpiritsTracker = settings.auspiciousSpiritsTracker
-			configuration.voidTendrilTracker = settings.voidTendrilTracker
+		elseif classId == 5 then -- Priests
+			if specId == 2 then -- Holy
+				configuration.wrathfulFaerie = settings.wrathfulFaerie
+			elseif specId == 3 then -- Shadow
+				configuration.mindbender = settings.mindbender
+				configuration.wrathfulFaerie = settings.wrathfulFaerie
+				configuration.auspiciousSpiritsTracker = settings.auspiciousSpiritsTracker
+				configuration.voidTendrilTracker = settings.voidTendrilTracker
+			end
 		elseif classId == 7 and specId == 1 then -- Elemental Shaman
 		elseif classId == 11 and specId == 1 then -- Balance Druid
 		end
@@ -1939,6 +1951,7 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 	if classId ~= nil then -- One class
 		if classId == 1 and settings.warrior ~= nil then -- Warrior
 			configuration.warrior = {}
+
 			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.warrior.arms) > 0 then -- Arms
 				configuration.warrior.arms = TRB.Functions.ExportConfigurationSections(1, 1, settings.warrior.arms, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
@@ -1958,16 +1971,23 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			end
 		elseif classId == 5 and settings.priest ~= nil then -- Priest
 			configuration.priest = {}
+
+			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.priest.holy) > 0 then -- Holy
+				configuration.priest.holy = TRB.Functions.ExportConfigurationSections(5, 2, settings.priest.holy, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+
 			if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.priest.shadow) > 0 then -- Shadow
 				configuration.priest.shadow = TRB.Functions.ExportConfigurationSections(5, 3, settings.priest.shadow, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 7 and settings.shaman ~= nil then -- Shaman
 			configuration.shaman = {}
+
 			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.shaman.elemental) > 0 then -- Elemental
 				configuration.shaman.elemental = TRB.Functions.ExportConfigurationSections(7, 1, settings.shaman.elemental, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 11 and settings.druid ~= nil then -- Druid
 			configuration.druid = {}
+			
 			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.druid.balance) > 0 then -- Balance
 				configuration.druid.balance = TRB.Functions.ExportConfigurationSections(11, 1, settings.druid.balance, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
@@ -1986,7 +2006,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Survival
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
 
-		-- Shadow Priest
+		-- Priests
+		-- Holy
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(5, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		-- Shadow
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(5, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
 
 		-- Elemental Shaman

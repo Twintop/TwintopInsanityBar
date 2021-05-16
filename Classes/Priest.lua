@@ -100,6 +100,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					}
 				},
 				harmoniousApparatus = false,
+				flashConcentration = false
 			},
 			torghast = {
 				dreamspunMushroomsModifier = 1,
@@ -277,6 +278,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				idLegendaryBonus = 6977
+			},
+			flashConcentration = {
+				id = 336267,
+				name = "",
+				icon = "",
+				idLegendaryBonus = 6974
 			},
 
 			-- Potions
@@ -1236,11 +1243,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.character.talents.apotheosis.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 			
 			-- Legendaries
+			local neckItemLink = GetInventoryItemLink("player", 2)
 			local shoulderItemLink = GetInventoryItemLink("player", 3)
+			local wristItemLink = GetInventoryItemLink("player", 9)
 			local ring1ItemLink = GetInventoryItemLink("player", 11)
 			local ring2ItemLink = GetInventoryItemLink("player", 12)
 
 			local harmoniousApparatus = false
+			local flashConcentration = false
+			if neckItemLink ~= nil then
+				flashConcentration = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(neckItemLink, 178927, TRB.Data.spells.flashConcentration.idLegendaryBonus)
+			end
+
+			if flashConcentration == false and wristItemLink ~= nil then
+				flashConcentration = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(wristItemLink, 173249, TRB.Data.spells.flashConcentration.idLegendaryBonus)
+			end
+
 			if shoulderItemLink ~= nil then
 				harmoniousApparatus = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(shoulderItemLink, 173247, TRB.Data.spells.harmoniousApparatus.idLegendaryBonus)
 			end
