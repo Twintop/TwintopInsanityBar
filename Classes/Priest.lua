@@ -2752,14 +2752,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				return true
 			elseif specId == 3 then
 				if currentSpellName == nil then
-					local spellName = select(1, currentChannel)
-					if spellName == TRB.Data.spells.mindFlay.name then
+					if currentChannelId == TRB.Data.spells.mindFlay.id then
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.mindFlay.id
 						TRB.Data.snapshotData.casting.startTime = currentTime
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindFlay.insanity
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.mindFlay.icon
 						UpdateCastingResourceFinal_Shadow(TRB.Data.spells.mindFlay.fotm)
-					elseif spellName == TRB.Data.spells.mindSear.name then
+					elseif currentChannelId == TRB.Data.spells.mindSear.id then
 						local latency = TRB.Functions.GetLatency()
 
 						if TRB.Data.snapshotData.mindSear.hitTime == nil then
@@ -2775,7 +2774,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindSear.insanity * TRB.Data.snapshotData.mindSear.targetsHit
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.mindSear.icon
 						UpdateCastingResourceFinal_Shadow(TRB.Data.spells.mindSear.fotm)
-					elseif spellName == TRB.Data.spells.voidTorrent.name then
+					elseif currentChannelId == TRB.Data.spells.voidTorrent.id then
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.voidTorrent.id
 						TRB.Data.snapshotData.casting.startTime = currentTime
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.voidTorrent.insanity
@@ -2786,20 +2785,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						return false
 					end
 				else
-					local spellName = select(1, currentSpellName)
-					if spellName == TRB.Data.spells.mindBlast.name then
+					if currentSpellId == TRB.Data.spells.mindBlast.id then
 						TRB.Data.snapshotData.casting.startTime = currentTime
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindBlast.insanity
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.mindBlast.id
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.mindBlast.icon
 						UpdateCastingResourceFinal_Shadow(TRB.Data.spells.mindBlast.fotm)
-					elseif spellName == TRB.Data.spells.vampiricTouch.name then
+					elseif currentSpellId == TRB.Data.spells.vampiricTouch.id then
 						TRB.Data.snapshotData.casting.startTime = currentTime
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.vampiricTouch.insanity
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.vampiricTouch.id
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.vampiricTouch.icon
 						UpdateCastingResourceFinal_Shadow(TRB.Data.spells.vampiricTouch.fotm)
-					elseif spellName == TRB.Data.spells.massDispel.name then
+					elseif currentSpellId == TRB.Data.spells.massDispel.id then
 						TRB.Data.snapshotData.casting.startTime = currentTime
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.massDispel.insanity
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.massDispel.id
