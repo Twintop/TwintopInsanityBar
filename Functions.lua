@@ -1815,6 +1815,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 2 then -- Holy
 				configuration.thresholds = settings.thresholds
 				configuration.endOfApotheosis = settings.endOfApotheosis
+				configuration.flashConcentration = settings.flashConcentration
 			elseif specId == 3 then -- Shadow
 				configuration.devouringPlagueThreshold = settings.devouringPlagueThreshold
 				configuration.searingNightmareThreshold = settings.searingNightmareThreshold
@@ -1888,6 +1889,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 5 then -- Priests
 			if specId == 2 then -- Holy
 				configuration.wrathfulFaerie = settings.wrathfulFaerie
+				configuration.passiveGeneration = settings.passiveGeneration
 			elseif specId == 3 then -- Shadow
 				configuration.mindbender = settings.mindbender
 				configuration.wrathfulFaerie = settings.wrathfulFaerie

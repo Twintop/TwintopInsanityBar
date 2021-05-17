@@ -130,22 +130,29 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				gcdsMax=2,
 				timeMax=3.0
 			},
+			flashConcentration = {
+				enabled=true,
+				enabledUncapped=false,
+				mode="gcd",
+				gcdsMax=3.5,
+				timeMax=5.0
+			},
+			passiveGeneration = {
+				innervate = true,
+				manaTideTotem = true,
+				symbolOfHope = true
+			},
 			colors={
 				text={
 					current="FF4D4DFF",
 					casting="FFFFFFFF",
 					passive="FF8080FF",
-					overcap="FFFF0000",
-					overThreshold="FF00FF00",
-					overThresholdEnabled=false,
-					overcapEnabled=true,
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
 					right="FFFFFFFF"
 				},
 				bar={
 					border="FF000099",
-					borderOvercap="FFFF0000",
 					background="66000000",
 					base="FF0000FF",
 					innervate="FF00FF00",
@@ -156,13 +163,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					holyWordSerenity="FF00FF00",
 					surgeOfLight1="FFFCE58E",
 					surgeOfLight2="FFAF9942",
+					flashConcentration="FFFF0000",
 					--casting="FF555555",
 					spending="FFFFFFFF",
 					passive="FF8080FF",
+					surgeOfLightBorderChange1=true,
+					surgeOfLightBorderChange2=true,
+					innervateBorderChange = true
 					--flashAlpha=0.70,
 					--flashPeriod=0.5,
 					--flashEnabled=true,
-					overcapEnabled=true
 				},
 				threshold={
 					unusable="FFFF0000",
@@ -1310,7 +1320,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)]]
 
 		yCoord = yCoord - 70
-
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -1333,12 +1342,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end)
 			end
 		end)
-
-		controls.colors.inApotheosis = TRB.UiFunctions.BuildColorPicker(parent, "Mana while Apotheosis is active", TRB.Data.settings.priest.holy.colors.bar.apotheosis, 275, 25, xCoord2, yCoord)
-		f = controls.colors.inApotheosis
+		
+		controls.colors.holyWordChastise = TRB.UiFunctions.BuildColorPicker(parent, "Mana when your cast will complete the cooldown of Holy Word: Chastise", TRB.Data.settings.priest.holy.colors.bar.holyWordChastise, 275, 25, xCoord2, yCoord)
+		f = controls.colors.holyWordChastise
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.apotheosis, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.holyWordChastise, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1348,8 +1357,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 
-					controls.colors.inApotheosis.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.holy.colors.bar.apotheosis = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.holyWordChastise.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.holyWordChastise = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1376,70 +1385,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		controls.colors.inApotheosisEnd = TRB.UiFunctions.BuildColorPicker(parent, "Mana when Apotheosis is close to ending (configurable/if enabled)", TRB.Data.settings.priest.holy.colors.bar.apotheosisEnd, 275, 25, xCoord2, yCoord)
-		f = controls.colors.inApotheosisEnd
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.apotheosisEnd, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.inApotheosisEnd.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.holy.colors.bar.apotheosisEnd = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.holyWordChastise = TRB.UiFunctions.BuildColorPicker(parent, "Mana when your hardcast will complete the cooldown of Holy Word: Chastise", TRB.Data.settings.priest.holy.colors.bar.holyWordChastise, 300, 25, xCoord, yCoord)
-		f = controls.colors.holyWordChastise
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.holyWordChastise, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.holyWordChastise.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.holy.colors.bar.holyWordChastise = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-
-		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.priest.holy.colors.bar.border, 275, 25, xCoord2, yCoord)
-		f = controls.colors.border
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.border, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.holy.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
-				end)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.holyWordSanctify = TRB.UiFunctions.BuildColorPicker(parent, "Mana when your hardcast will complete the cooldown of Holy Word: Sanctify", TRB.Data.settings.priest.holy.colors.bar.holyWordSanctify, 300, 25, xCoord, yCoord)
+		controls.colors.holyWordSanctify = TRB.UiFunctions.BuildColorPicker(parent, "Mana when your cast will complete the cooldown of Holy Word: Sanctify", TRB.Data.settings.priest.holy.colors.bar.holyWordSanctify, 275, 25, xCoord2, yCoord)
 		f = controls.colors.holyWordSanctify
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1459,11 +1405,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		controls.colors.innervate = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when you have Innervate", TRB.Data.settings.priest.holy.colors.bar.innervate, 275, 25, xCoord2, yCoord)
-		f = controls.colors.innervate
+		yCoord = yCoord - 30
+		controls.colors.inApotheosis = TRB.UiFunctions.BuildColorPicker(parent, "Mana while Apotheosis is active", TRB.Data.settings.priest.holy.colors.bar.apotheosis, 300, 25, xCoord, yCoord)
+		f = controls.colors.inApotheosis
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.innervate, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.apotheosis, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1473,15 +1420,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 
-					controls.colors.innervate.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.holy.colors.bar.innervate = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
+					controls.colors.inApotheosis.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.apotheosis = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
 
-		yCoord = yCoord - 30
-		controls.colors.holyWordSerenity = TRB.UiFunctions.BuildColorPicker(parent, "Mana when your hardcast will complete the cooldown of Holy Word: Serenity", TRB.Data.settings.priest.holy.colors.bar.holyWordSerenity, 300, 25, xCoord, yCoord)
+		controls.colors.holyWordSerenity = TRB.UiFunctions.BuildColorPicker(parent, "Mana when your cast will complete the cooldown of Holy Word: Serenity", TRB.Data.settings.priest.holy.colors.bar.holyWordSerenity, 275, 25, xCoord2, yCoord)
 		f = controls.colors.holyWordSerenity
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1501,11 +1446,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		controls.colors.surgeOfLight1 = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when you have 1 stack of Surge of Light", TRB.Data.settings.priest.holy.colors.bar.surgeOfLight1, 275, 25, xCoord2, yCoord)
-		f = controls.colors.surgeOfLight1
+		yCoord = yCoord - 30
+		controls.colors.inApotheosisEnd = TRB.UiFunctions.BuildColorPicker(parent, "Mana when Apotheosis is close to ending (configurable/if enabled)", TRB.Data.settings.priest.holy.colors.bar.apotheosisEnd, 300, 25, xCoord, yCoord)
+		f = controls.colors.inApotheosisEnd
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.surgeOfLight1, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.apotheosisEnd, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1515,14 +1461,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 
-					controls.colors.surgeOfLight1.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.holy.colors.bar.surgeOfLight1 = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.inApotheosisEnd.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.apotheosisEnd = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
 
-		yCoord = yCoord - 30
-		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.priest.holy.colors.bar.background, 300, 25, xCoord, yCoord)
+		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.priest.holy.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1542,29 +1487,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end)
 			end
 		end)
-						
-		controls.colors.surgeOfLight2 = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when you have 2 stacks of Surge of Light", TRB.Data.settings.priest.holy.colors.bar.surgeOfLight2, 275, 25, xCoord2, yCoord)
-		f = controls.colors.surgeOfLight2
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.surgeOfLight2, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.surgeOfLight2.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.holy.colors.bar.surgeOfLight2 = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Mana from Passive Sources (Mana Tide Totem, Potions, Wrathful Faerie procs, etc)", TRB.Data.settings.priest.holy.colors.bar.passive, 550, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, Wrathful Faerie procs, etc)", TRB.Data.settings.priest.holy.colors.bar.passive, 550, 25, xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1585,6 +1510,150 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
+
+		yCoord = yCoord - 40
+		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
+
+		yCoord = yCoord - 25
+		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Bar's normal/base border", TRB.Data.settings.priest.holy.colors.bar.border, 275, 25, xCoord2, yCoord-0)
+		f = controls.colors.border
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.border, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
+				end)
+			end
+		end)
+
+		controls.colors.innervate = TRB.UiFunctions.BuildColorPicker(parent, "Border when you have Innervate", TRB.Data.settings.priest.holy.colors.bar.innervate, 275, 25, xCoord2, yCoord-30)
+		f = controls.colors.innervate
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.innervate, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.innervate.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.innervate = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
+				end)
+			end
+		end)
+
+		controls.colors.surgeOfLight1 = TRB.UiFunctions.BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", TRB.Data.settings.priest.holy.colors.bar.surgeOfLight1, 275, 25, xCoord2, yCoord-60)
+		f = controls.colors.surgeOfLight1
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.surgeOfLight1, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.surgeOfLight1.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.surgeOfLight1 = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)
+						
+		controls.colors.surgeOfLight2 = TRB.UiFunctions.BuildColorPicker(parent, "Border when you have 2 stacks of Surge of Light", TRB.Data.settings.priest.holy.colors.bar.surgeOfLight2, 275, 25, xCoord2, yCoord-90)
+		f = controls.colors.surgeOfLight2
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.surgeOfLight2, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.surgeOfLight2.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.surgeOfLight2 = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)
+
+		controls.colors.flashConcentration = TRB.UiFunctions.BuildColorPicker(parent, "Border when Flash Concentration is expiring or not up (per settings)", TRB.Data.settings.priest.holy.colors.bar.flashConcentration, 275, 25, xCoord2, yCoord-120)
+		f = controls.colors.flashConcentration
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.flashConcentration, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.flashConcentration.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.holy.colors.bar.flashConcentration = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
+				end)
+			end
+		end)
+
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.innervateBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_innervateBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.innervateBorderChange
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Innervate")
+		f.tooltip = "This will change the bar border color when you have Innervate."
+		f:SetChecked(TRB.Data.settings.priest.holy.colors.bar.innervateBorderChange)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.colors.bar.innervateBorderChange = self:GetChecked()
+		end)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.surgeOfLight1BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_surgeOfLight1BorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.surgeOfLight1BorderChange
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Surge of Light (1 stack)")
+		f.tooltip = "This will change the bar border color when you have 1 stack of Surge of Light."
+		f:SetChecked(TRB.Data.settings.priest.holy.colors.bar.surgeOfLightBorderChange1)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.colors.bar.surgeOfLightBorderChange1 = self:GetChecked()
+		end)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.surgeOfLight2BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_surgeOfLight2BorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.surgeOfLight2BorderChange
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Surge of Light (2 stacks)")
+		f.tooltip = "This will change the bar border color when you have 2 stacks of Surge of Light."
+		f:SetChecked(TRB.Data.settings.priest.holy.colors.bar.surgeOfLightBorderChange2)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.colors.bar.surgeOfLightBorderChange2 = self:GetChecked()
+		end)
+
+
+		yCoord = yCoord - 30
 
 		yCoord = yCoord - 40
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Threshold Lines", 0, yCoord)
@@ -1869,27 +1938,52 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.holy.endOfApotheosis.timeMax = value
 		end)
 
-		--[[
-		yCoord = yCoord - 40
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_CB1_8", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapEnabled
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Flash Concentration Expiration Configuration", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.flashConcentration = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_flashConcentration_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.flashConcentration
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
-		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Mana."
-		f:SetChecked(TRB.Data.settings.priest.holy.colors.bar.overcapEnabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar border when your Flash Concentration buff is close to expiring (if equipped)")
+		f.tooltip = "Changes the bar border color when your Flash Concentration buff is expiring in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(TRB.Data.settings.priest.holy.flashConcentration.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.priest.holy.colors.bar.overcapEnabled = self:GetChecked()
+			TRB.Data.settings.priest.holy.flashConcentration.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 20
+		controls.checkBoxes.flashConcentrationUncapped = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_flashConcentrationUncapped_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.flashConcentrationUncapped
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar border when your Flash Concentration buff has < 5 stacks (if equipped)")
+		f.tooltip = "Changes the bar border color when your Flash Concentration buff has fewer than 5 (max) stacks."
+		f:SetChecked(TRB.Data.settings.priest.holy.flashConcentration.enabledUncapped)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.flashConcentration.enabledUncapped = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
+		controls.checkBoxes.flashConcentrationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_flashConcentration_M_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.flashConcentrationModeGCDs
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("GCDs left on Flash Concentration buff")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar border color based on how many GCDs remain until Flash Concentration will end."
+		if TRB.Data.settings.priest.holy.flashConcentration.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.flashConcentrationModeGCDs:SetChecked(true)
+			controls.checkBoxes.flashConcentrationModeTime:SetChecked(false)
+			TRB.Data.settings.priest.holy.flashConcentration.mode = "gcd"
+		end)
 
-		title = "Show Overcap Notification Above %"
-		controls.overcapAt = TRB.UiFunctions.BuildSlider(parent, title, 0, 100, TRB.Data.settings.priest.holy.overcapThreshold, 0.5, 1,
-										sliderWidth, sliderHeight, xCoord, yCoord)
-		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
+		title = "Flash Concentration GCDs - 0.75sec Floor"
+		controls.flashConcentrationGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0, 30, TRB.Data.settings.priest.holy.flashConcentration.gcdsMax, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.flashConcentrationGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
 			if value > max then
 				value = max
@@ -1897,11 +1991,42 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = min
 			end
 
-			value = TRB.Functions.RoundTo(value, 1)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.priest.holy.overcapThreshold = value
+			TRB.Data.settings.priest.holy.flashConcentration.gcdsMax = value
 		end)
-		]]
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.flashConcentrationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_flashConcentration_M_TIME", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.flashConcentrationModeTime
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Time left on Flash Concentration buff")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar border color based on how many seconds remain until Flash Concentration will end."
+		if TRB.Data.settings.priest.holy.flashConcentration.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.flashConcentrationModeGCDs:SetChecked(false)
+			controls.checkBoxes.flashConcentrationModeTime:SetChecked(true)
+			TRB.Data.settings.priest.holy.flashConcentration.mode = "time"
+		end)
+
+		title = "Flash Concentration Time Remaining"
+		controls.flashConcentrationTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 20, TRB.Data.settings.priest.holy.flashConcentration.timeMax, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.flashConcentrationTime:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 2)
+			self.EditBox:SetText(value)
+			TRB.Data.settings.priest.holy.flashConcentration.timeMax = value
+		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.holy = controls
@@ -2642,6 +2767,45 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.priest.holy.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
+
+		
+		yCoord = yCoord - 60
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive External Mana Generation Tracking", 0, yCoord)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.innervateRegen = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_InnervatePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.innervateRegen
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Track passive mana regen while Innervate is active")
+		f.tooltip = "Show the passive regeneration of mana over the remaining duration of Innervate."
+		f:SetChecked(TRB.Data.settings.priest.holy.passiveGeneration.innervate)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.passiveGeneration.innervate = self:GetChecked()
+		end)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.manaTideTotemRegen = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_ManaTideTotemPassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.manaTideTotemRegen
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Track bonus passive mana regen while Mana Tide Totem is active")
+		f.tooltip = "Show the bonus passive regeneration of mana over the remaining duration of Mana Tide Totem."
+		f:SetChecked(TRB.Data.settings.priest.holy.passiveGeneration.manaTideTotem)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.passiveGeneration.manaTideTotem = self:GetChecked()
+		end)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.symbolOfHopeRegen = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_SymbolOfHopePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.symbolOfHopeRegen
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Track mana regen from another Priest's Symbol of Hope")
+		f.tooltip = "Show the regeneration of mana from another Priest's Symbol of Hope channel. This does not hide the mana regeneration from your own channeling of Symbol of Hope."
+		f:SetChecked(TRB.Data.settings.priest.holy.passiveGeneration.symbolOfHope)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.passiveGeneration.symbolOfHope = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 30
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Wrathful Faerie Tracking", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -2649,7 +2813,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.wrathfulFaerie
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track Wrathful Faerie and Fae Fermata Mana Gain")
-		f.tooltip = "Show the gain of Mana over the next serveral procs, GCDs, or fixed length of time. Select which to track from the options below."
+		f.tooltip = "Show the gain of mana over the next serveral procs, GCDs, or fixed length of time. Select which to track from the options below."
 		f:SetChecked(TRB.Data.settings.priest.holy.wrathfulFaerie.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.priest.holy.wrathfulFaerie.enabled = self:GetChecked()
