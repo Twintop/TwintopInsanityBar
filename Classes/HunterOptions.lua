@@ -702,7 +702,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderHeight = 20
 
 		StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to it's default configuration? Only the Beast Mastery Hunter settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Beast Mastery Hunter settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -715,7 +715,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (simple) configuration? Only the Beast Mastery Hunter settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Beast Mastery Hunter settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -728,7 +728,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? Only the Beast Mastery Hunter settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Beast Mastery Hunter settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -741,7 +741,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		--[[StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? Only the Beast Mastery Hunter settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Beast Mastery Hunter settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -3101,7 +3101,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderHeight = 20
 
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to it's default configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -3114,7 +3114,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (simple) configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -3127,7 +3127,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -3140,7 +3140,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		--[[StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -5936,7 +5936,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderHeight = 20
 
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to it's default configuration? Only the Survival Hunter settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Survival Hunter settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -5949,7 +5949,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (simple) configuration? Only the Survival Hunter settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Survival Hunter settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -5962,7 +5962,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? Only the Survival Hunter settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Survival Hunter settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -5975,7 +5975,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		--[[StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? Only the Survival Hunter settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Survival Hunter settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()

@@ -208,7 +208,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local sliderHeight = 20
 
 		StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to it's default configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -221,7 +221,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (simple) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -234,7 +234,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -247,7 +247,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			preferredIndex = 3
 		}
 		--[[StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()

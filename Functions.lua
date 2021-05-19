@@ -891,9 +891,9 @@ local function AddToBarTextCache(input)
 				z, z1 = string.find(input, "_", a+6)
 				if z ~= nil then
 					local iconName = string.sub(input, a, z)
-					local spellId = string.sub(input, a+6, z-1)
+					local itemId = string.sub(input, a+6, z-1)
 					local _, icon
-					_, _, _, _, _, _, _, _, _, icon = GetItemInfo(spellId)
+					_, _, _, _, _, _, _, _, _, icon = GetItemInfo(itemId)
 
 					if icon ~= nil then
 						match = true

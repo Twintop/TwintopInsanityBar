@@ -246,7 +246,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local sliderHeight = 20
 
 		StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to it's default configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -259,7 +259,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (simple) configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -272,7 +272,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -285,7 +285,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			preferredIndex = 3
 		}
 		--[[StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
