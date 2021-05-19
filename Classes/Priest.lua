@@ -2176,6 +2176,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		Global_TwintopResourceBar.resource.passive = _passiveMana
 		Global_TwintopResourceBar.resource.wrathfulFaerie = _wfMana or 0
 		Global_TwintopResourceBar.resource.potionOfSpiritualClarity = _pscMana or 0
+		Global_TwintopResourceBar.resource.manaTideTotem = _mttMana or 0
+		Global_TwintopResourceBar.resource.innervate = _innervateMana or 0
+		Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
 		Global_TwintopResourceBar.wrathfulFaerie = {
 			mana = _wfMana,
 			main = {
@@ -2194,6 +2197,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		Global_TwintopResourceBar.potionOfSpiritualClarity = {
 			mana = _pscMana,
 			ticks = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining or 0
+		}
+		Global_TwintopResourceBar.symbolOfHope = {
+			mana = _sohMana,
+			ticks = TRB.Data.snapshotData.symbolOfHope.ticksRemaining or 0
 		}
 
 
