@@ -293,7 +293,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				itemId = 171272,
 				name = "",
 				icon = "",
-				mana = 10000,
+				mana = 1000,
 				duration = 10,
 				ticks = 10
 			},
@@ -386,15 +386,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		}
 		specCache.holy.snapshotData.holyWordSerenity = {
 			startTime = nil,
-			duration = 0
+			duration = 0,
+			onCooldown = false
 		}
 		specCache.holy.snapshotData.holyWordSanctify = {
 			startTime = nil,
-			duration = 0
+			duration = 0,
+			onCooldown = false
 		}
 		specCache.holy.snapshotData.holyWordChastise = {
 			startTime = nil,
-			duration = 0
+			duration = 0,
+			onCooldown = false
 		}
 		specCache.holy.snapshotData.wrathfulFaerie = {
 			main = {
@@ -921,7 +924,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.holy.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the Mana generating/spending spell you are currently hardcasting", printInSettings = true },
+			{ variable = "#casting", icon = "", description = "The icon of the mana spending spell you are currently casting", printInSettings = true },
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
@@ -1000,54 +1003,50 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$resourcePlusPassive", description = "Current + Passive Mana Total", printInSettings = false, color = false },
 			{ variable = "$manaTotal", description = "Current + Passive + Casting Mana Total", printInSettings = true, color = false },
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Mana Total", printInSettings = false, color = false },
-			{ variable = "$overcap", description = "Will hardcast spell will overcap Mana? Logic variable only!", printInSettings = false, color = false },
-			{ variable = "$resourceOvercap", description = "Will hardcast spell will overcap Mana? Logic variable only!", printInSettings = false, color = false },
-			{ variable = "$manaOvercap", description = "Will hardcast spell will overcap Mana? Logic variable only!", printInSettings = false, color = false },
-			--[[
 			
-			{ variable = "$mbMana", description = "Mana from Mindbender/Shadowfiend (per settings)", printInSettings = true, color = false },
-			{ variable = "$mbGcds", description = "Number of GCDs left on Mindbender/Shadowfiend", printInSettings = true, color = false },
-			{ variable = "$mbSwings", description = "Number of Swings left on Mindbender/Shadowfiend", printInSettings = true, color = false },
-			{ variable = "$mbTime", description = "Time left on Mindbender/Shadowfiend", printInSettings = true, color = false },
-			]]
+			{ variable = "$hwChastiseTime", description = "Time left on Holy Word: Chastise's cooldown", printInSettings = true, color = false },
+			{ variable = "$chastiseTime", description = "Time left on Holy Word: Chastise's cooldown", printInSettings = false, color = false },
+			{ variable = "$holyWordChastiseTime", description = "Time left on Holy Word: Chastise's cooldown", printInSettings = false, color = false },
+			
+			{ variable = "$hwSanctifyTime", description = "Time left on Holy Word: Sanctify's cooldown", printInSettings = true, color = false },
+			{ variable = "$sanctifyTime", description = "Time left on Holy Word: Sanctify's cooldown", printInSettings = false, color = false },
+			{ variable = "$holyWordSanctifyTime", description = "Time left on Holy Word: Sanctify's cooldown", printInSettings = false, color = false },
+			
+			{ variable = "$hwSerenityTime", description = "Time left on Holy Word: Serenity's cooldown", printInSettings = true, color = false },
+			{ variable = "$serenityTime", description = "Time left on Holy Word: Serenity's cooldown", printInSettings = false, color = false },
+			{ variable = "$holyWordSerenityTime", description = "Time left on Holy Word: Serenity's cooldown", printInSettings = false, color = false },
+
+			{ variable = "$apotheosisTime", description = "Time remaining on Apotheosis", printInSettings = true, color = false },
+			
+			{ variable = "$solStacks", description = "Number of Surge of Light stacks", printInSettings = true, color = false },
+			{ variable = "$solTime", description = "Time left on Surge of Light", printInSettings = true, color = false },
+
+			{ variable = "$fcEquipped", description = "Checks if you have Flash Concentration equipped. Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$fcStacks", description = "Number of Flash Concentration stacks", printInSettings = true, color = false },
+			{ variable = "$fcTime", description = "Time left on Flash Concentration", printInSettings = true, color = false },
+
+			{ variable = "$sohMana", description = "Mana from Symbol of Hope", printInSettings = true, color = false },
+			{ variable = "$sohTime", description = "Time left on Symbol of Hope", printInSettings = true, color = false },
+			{ variable = "$sohTicks", description = "Number of ticks left from Symbol of Hope", printInSettings = true, color = false },
+
+			{ variable = "$innervateMana", description = "Passive mana regen while Innervate is active", printInSettings = true, color = false },
+			{ variable = "$innervateTime", description = "Time left on Innervate", printInSettings = true, color = false },
+			
+			{ variable = "$mttMana", description = "Bonus passive mana regen while Mana Tide Totem is active", printInSettings = true, color = false },
+			{ variable = "$mttTime", description = "Time left on Mana Tide Totem", printInSettings = true, color = false },
+
 			{ variable = "$wfMana", description = "Mana from Wrathful Faerie (per settings)", printInSettings = true, color = false },
 			{ variable = "$wfGcds", description = "Number of GCDs left on Wrathful Faerie", printInSettings = true, color = false },
 			{ variable = "$wfProcs", description = "Number of Procs left on Wrathful Faerie", printInSettings = true, color = false },
 			{ variable = "$wfTime", description = "Time left on Wrathful Faerie", printInSettings = true, color = false },
-
-			{ variable = "$sohMana", description = "Mana from Symbol of Hope", printInSettings = true, color = false },
 			
-			{ variable = "$pscMana", description = "Mana from channeling of Potion of Spiritual Clarity", printInSettings = true, color = false },
+			{ variable = "$pscMana", description = "Mana while channeling of Potion of Spiritual Clarity", printInSettings = true, color = false },
 			{ variable = "$pscTicks", description = "Number of ticks left channeling Potion of Spiritual Clarity", printInSettings = true, color = false },
 			{ variable = "$pscTime", description = "Amount of time, in seconds, remaining of your channel of Potion of Spiritual Clarity", printInSettings = true, color = false },
 			
 			{ variable = "$potionCooldown", description = "How long, in seconds, is left on your potion's cooldown in MM:SS format", printInSettings = true, color = false },
 			{ variable = "$potionCooldownSeconds", description = "How long, in seconds, is left on your potion's cooldown in seconds", printInSettings = true, color = false },
 
-			--[[
-			{ variable = "$cttvEquipped", description = "Checks if you have Call of the Void equipped. Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$ecttvCount", description = "Number of active Void Tendrils/Void Lashers", printInSettings = true, color = false },
-			{ variable = "$loiMana", description = "Mana from all Void Tendrils and Void Lashers", printInSettings = true, color = false },
-			{ variable = "$loiTicks", description = "Number of ticks remaining for all active Void Tendrils/Void Lashers", printInSettings = true, color = false },
-
-			{ variable = "$asMana", description = "Mana from Auspicious Spirits", printInSettings = true, color = false },
-			{ variable = "$asCount", description = "Number of Auspicious Spirits in flight", printInSettings = true, color = false },
-
-			{ variable = "$swpCount", description = "Number of Shadow Word: Pains active on targets", printInSettings = true, color = false },
-			{ variable = "$vtCount", description = "Number of Vampiric Touches active on targets", printInSettings = true, color = false },
-			{ variable = "$dpCount", description = "Number of Devouring Plagues active on targets", printInSettings = true, color = false },
-
-			{ variable = "$mdTime", description = "Time remaining on Mind Devourer buff", printInSettings = true, color = false },
-
-			{ variable = "$vfTime", description = "Duration remaining of Voidform", printInSettings = true, color = false },
-			{ variable = "$hvTime", description = "Duration remaining of VF w/max VB casts in Hungering Void", printInSettings = true, color = false },
-			{ variable = "$vbCasts", description = "Max Void Bolt casts remaining in Hungering Void", printInSettings = true, color = false },
-			{ variable = "$hvAvgTime", description = "Duration of VF w/max VB casts in Hungering Void, includes crits", printInSettings = true, color = false },
-			{ variable = "$vbAvgCasts", description = "Max Void Bolt casts remaining in Hungering Void, includes crits", printInSettings = true, color = false },
-
-			{ variable = "$s2m", description = "Is Surrender to Madness currently talented. Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$surrenderToMadness", description = "Is Surrender to Madness currently talented. Logic variable only!", printInSettings = true, color = false },
-			]]
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
@@ -1716,6 +1715,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.manaTideTotem)
 	end
 
+	local function GetSymbolOfHopeRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.symbolOfHope)
+	end
+
 	local function GetSurgeOfLightRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.surgeOfLight)
 	end
@@ -1729,7 +1732,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local gcd = TRB.Functions.GetCurrentGCDTime(true)
 		local remainingTime = 0
 
-		if holyWord.duration == gcd or holyWord.startTime == 0 or holyWord.duration == 0 then
+		if holyWord.duration == gcd or holyWord.startTime == nil or holyWord.startTime == 0 or holyWord.duration == 0 then
 			remainingTime = 0
 		else
 			remainingTime = (holyWord.startTime + holyWord.duration) - currentTime
@@ -1804,31 +1807,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			elseif var == "$resourceMax" or var == "$manaMax" then
 				valid = true
 			elseif var == "$resourceTotal" or var == "$manaTotal" then
-				if TRB.Data.snapshotData.resource > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0)) or
-					(TRB.Data.snapshotData.potionOfSpiritualClarity.mana + TRB.Data.snapshotData.symbolOfHope.resourceRaw + TRB.Data.snapshotData.wrathfulFaerie.resourceRaw) > 0 then
-					valid = true
-				end
+				valid = true
 			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
-				if TRB.Data.snapshotData.resource > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0)) then
-					valid = true
-				end
-			elseif var == "$overcap" or var == "$manaOvercap" or var == "$resourceOvercap" then
-				if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.priest.holy.overcapThreshold then
-					valid = true
-				end
+				valid = true
 			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
-				if TRB.Data.snapshotData.resource > 0 or
-					(TRB.Data.snapshotData.potionOfSpiritualClarity.mana + TRB.Data.snapshotData.symbolOfHope.resourceRaw + TRB.Data.snapshotData.wrathfulFaerie.resourceRaw) > 0 then
-					valid = true
-				end
+				valid = true
 			elseif var == "$casting" then
 				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
 					valid = true
 				end
 			elseif var == "$passive" then
-				if (TRB.Data.snapshotData.potionOfSpiritualClarity.mana + TRB.Data.snapshotData.symbolOfHope.resourceRaw + TRB.Data.snapshotData.wrathfulFaerie.resourceRaw) > 0 then
+				if IsValidVariableForSpec("$pscMana") or
+					IsValidVariableForSpec("$sohMana") or
+					IsValidVariableForSpec("$resource") or
+					IsValidVariableForSpec("$wfMana") or
+					IsValidVariableForSpec("$mttMana") then
 					valid = true
 				end
 			elseif var == "$wfMana" then
@@ -1837,6 +1830,30 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif var == "$sohMana" then
 				if TRB.Data.snapshotData.symbolOfHope.resourceRaw > 0 then
+					valid = true
+				end
+			elseif var == "$sohTime" then
+				if TRB.Data.snapshotData.symbolOfHope.isActive then
+					valid = true
+				end
+			elseif var == "$sohTicks" then
+				if TRB.Data.snapshotData.symbolOfHope.isActive then
+					valid = true
+				end
+			elseif var == "$innervateMana" then
+				if TRB.Data.snapshotData.innervate.mana > 0 then
+					valid = true
+				end
+			elseif var == "$innervateTime" then
+				if TRB.Data.snapshotData.innervate.isActive then
+					valid = true
+				end
+			elseif var == "$mttMana" or var == "$manaTideTotemMana" then
+				if TRB.Data.snapshotData.manaTideTotem.mana > 0 then
+					valid = true
+				end
+			elseif var == "$mttTime" or var == "$manaTideTotemTime" then
+				if TRB.Data.snapshotData.manaTideTotem.isActive then
 					valid = true
 				end
 			elseif var == "$pscMana" then
@@ -1853,6 +1870,34 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif var == "$potionCooldown" then
 				if TRB.Data.snapshotData.potion.onCooldown then
+					valid = true
+				end
+			elseif var == "$potionCooldownSeconds" then
+				if TRB.Data.snapshotData.potion.onCooldown then
+					valid = true
+				end
+			elseif var == "$fcEquipped" then
+				if TRB.Data.character.items.flashConcentration then
+					valid = true
+				end
+			elseif var == "$fcStacks" then
+				if TRB.Data.snapshotData.flashConcentration.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$fcTime" then
+				if TRB.Data.snapshotData.flashConcentration.remainingTime then
+					valid = true
+				end
+			elseif var == "$solStacks" then
+				if TRB.Data.snapshotData.surgeOfLight.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$solTime" then
+				if TRB.Data.snapshotData.surgeOfLight.remainingTime then
+					valid = true
+				end
+			elseif var == "$apotheosisTime" then
+				if TRB.Data.snapshotData.apotheosis.remainingTime then
 					valid = true
 				end
 			end
@@ -2013,60 +2058,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		-- This probably needs to be pulled every refresh
 		TRB.Data.snapshotData.manaRegen, _ = GetPowerRegen()
 
-		--[[		--$vfTime
-		local voidformTime = string.format("%.1f", TRB.Data.snapshotData.voidform.remainingTime)
-		--$hvTime
-		local hungeringVoidTime = string.format("%.1f", TRB.Data.snapshotData.voidform.remainingHvTime)
-		--$vbCasts
-		local voidBoltCasts = string.format("%.0f", TRB.Data.snapshotData.voidform.additionalVbCasts)
-		--$hvAvgTime
-		local hungeringVoidTimeAvg = string.format("%.1f", TRB.Data.snapshotData.voidform.remainingHvAvgTime)
-		--$vbAvgCasts
-		local voidBoltCastsAvg = string.format("%.0f", TRB.Data.snapshotData.voidform.additionalVbAvgCasts)
-
-		if TRB.Data.snapshotData.voidform.isInfinite then
-			hungeringVoidTime = "∞"
-			voidBoltCasts = "∞"
-		end
-
-		if TRB.Data.snapshotData.voidform.isAverageInfinite then
-			hungeringVoidTimeAvg = "∞"
-			voidBoltCastsAvg = "∞"
-		end
-
-		----------
-		]]
-		--$overcap
-		local overcap = IsValidVariableForSpec("$overcap")
-
 		local currentManaColor = TRB.Data.settings.priest.holy.colors.text.current
 		local castingManaColor = TRB.Data.settings.priest.holy.colors.text.casting
-
-		local manaThreshold = 0
-
-		if TRB.Data.settings.priest.holy.colors.text.overcapEnabled and overcap then
-			currentManaColor = TRB.Data.settings.priest.holy.colors.text.overcap
-			castingManaColor = TRB.Data.settings.priest.holy.colors.text.overcap
-		elseif TRB.Data.settings.priest.holy.colors.text.overThresholdEnabled and normalizedMana >= manaThreshold then
-			currentManaColor = TRB.Data.settings.priest.holy.colors.text.overThreshold
-			castingManaColor = TRB.Data.settings.priest.holy.colors.text.overThreshold
-		end
 
 		--$mana
 		local manaPrecision = TRB.Data.settings.priest.holy.manaPrecision or 1
 		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor"))
 		--$casting
 		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.casting.resourceFinal, manaPrecision, "floor"))
-		--[[		--$mbMana
-		local mbMana = string.format("%.0f", TRB.Data.snapshotData.mindbender.resourceFinal)
-		--$mbGcds
-		local mbGcds = string.format("%.0f", TRB.Data.snapshotData.mindbender.remaining.gcds)
-		--$mbSwings
-		local mbSwings = string.format("%.0f", TRB.Data.snapshotData.mindbender.remaining.swings)
-		--$mbTime
-		local mbTime = string.format("%.1f", TRB.Data.snapshotData.mindbender.remaining.time)
+
 		--$wfMana
-		]]
 		local _wfMana = TRB.Data.snapshotData.wrathfulFaerie.resourceFinal
 		local wfMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_wfMana, manaPrecision, "floor"))
 		--$wfGcds
@@ -2079,25 +2080,33 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$sohMana
 		local _sohMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
 		local sohMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor"))
+		--$sohTicks
+		local sohTicks = string.format("%.0f", TRB.Data.snapshotData.symbolOfHope.ticksRemaining)
+		--$sohTime
+		local sohTime = string.format("%.1f", GetSymbolOfHopeRemainingTime())
 
-		--[[		--$loiMana
-		local loiMana = string.format("%.0f", TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal)
-		--$loiTicks
-		local loiTicks = string.format("%.0f", TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining)
-		--$ecttvCount
-		local ecttvCount = string.format("%.0f", TRB.Data.snapshotData.eternalCallToTheVoid.numberActive)
-		--$asCount
-		local asCount = string.format("%.0f", TRB.Data.snapshotData.targetData.auspiciousSpirits)
-		--$asMana
-		local _asMana = CalculateManaGain(TRB.Data.spells.auspiciousSpirits.mana, false) * TRB.Data.snapshotData.targetData.auspiciousSpirits
-		local asMana = string.format("%.0f", _asMana)]]
-		
-		--$potionCooldown
+		--$innervateMana
+		local _innervateMana = TRB.Data.snapshotData.innervate.mana
+		local innervateMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor"))
+		--$innervateTime
+		local innervateTime = string.format("%.1f", GetInnervateRemainingTime())
+
+		--$mttMana
+		local _mttMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
+		local mttMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor"))
+		--$mttTime
+		local mttTime = string.format("%.1f", GetManaTideTotemRemainingTime())
+
+		--$potionCooldownSeconds
 		local _potionCooldown = 0
 		if TRB.Data.snapshotData.potion.onCooldown then
 			_potionCooldown = math.abs(TRB.Data.snapshotData.potion.startTime + TRB.Data.snapshotData.potion.duration - currentTime)
 		end
-		local potionCooldown = string.format("%.1f", _potionCooldown)
+		local potionCooldownSeconds = string.format("%.1f", _potionCooldown)
+		local _potionCooldownMinutes = math.floor(_potionCooldown / 60)
+		local _potionCooldownSeconds = _potionCooldown % 60
+		--$potionCooldown
+		local potionCooldown = string.format("%d:%0.2d", _potionCooldownMinutes, _potionCooldownSeconds)
 
 		--$pscMana
 		local _pscMana = CalculateManaGain(TRB.Data.snapshotData.potionOfSpiritualClarity.mana)
@@ -2108,7 +2117,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _pscTime = GetPotionOfSpiritualClarityRemainingTime()
 		local pscTime = string.format("%.1f", _pscTime)
 		--$passive
-		local _passiveMana = _wfMana + _sohMana + _pscMana
+		local _passiveMana = _wfMana + _sohMana + _pscMana + _innervateMana + _mttMana
 		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.priest.holy.colors.text.passive, TRB.Functions.ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor"))
 		--$manaTotal
 		local _manaTotal = math.min(_passiveMana + TRB.Data.snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
@@ -2126,85 +2135,31 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$manaPercent
 		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.RoundTo((normalizedMana/(TRB.Data.character.maxResource or 1))*100, manaPrecision, "floor"))
 
-		----------
-		--[[		--$swpCount
-		local _shadowWordPainCount = TRB.Data.snapshotData.targetData.shadowWordPain or 0
-		local shadowWordPainCount = _shadowWordPainCount
+		--$hwChastiseTime
+		local _hwChastiseTime = GetHolyWordChastiseCooldownRemainingTime()
+		local hwChastiseTime = string.format("%.1f", _hwChastiseTime)
 
-		--$vtCount
-		local _vampiricTouchCount = TRB.Data.snapshotData.targetData.vampiricTouch or 0
-		local vampiricTouchCount = _vampiricTouchCount
+		--$hwSanctifyTime
+		local _hwSanctifyTime = GetHolyWordSanctifyCooldownRemainingTime()
+		local hwSanctifyTime = string.format("%.1f", _hwSanctifyTime)
 
-		if TRB.Data.settings.priest.shadow.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPain then
-				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining > TRB.Data.spells.shadowWordPain.pandemicTime then
-					shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.holy.colors.text.dots.up, _shadowWordPainCount)
-				else
-					shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.holy.colors.text.dots.pandemic, _shadowWordPainCount)
-				end
-			else
-				shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.holy.colors.text.dots.down, _shadowWordPainCount)
-			end
+		--$hwSerenityTime
+		local _hwSerenityTime = GetHolyWordSerenityCooldownRemainingTime()
+		local hwSerenityTime = string.format("%.1f", _hwSerenityTime)
 
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouch then
-				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouchRemaining > TRB.Data.spells.vampiricTouch.pandemicTime then
-					vampiricTouchCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.holy.colors.text.dots.up, _vampiricTouchCount)
-				else
-					vampiricTouchCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.holy.colors.text.dots.pandemic, _vampiricTouchCount)
-				end
-			else
-				vampiricTouchCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.holy.colors.text.dots.down, _vampiricTouchCount)
-			end
-		end
+		--$apotheosisTime
+		local _apotheosisTime = TRB.Data.snapshotData.apotheosis.remainingTime
+		local apotheosisTime = string.format("%.1f", _apotheosisTime)
 
-		--$dpCount
-		local devouringPlagueCount = TRB.Data.snapshotData.targetData.devouringPlague or 0
+		--$solStacks
+		local solStacks = string.format("%.0f", TRB.Data.snapshotData.surgeOfLight.stacks or 0)
+		--$solTime
+		local solTime = string.format("%.1f", TRB.Data.snapshotData.surgeOfLight.remainingTime or 0)
 
-		--$mdTime
-		local _mdTime = 0
-		if TRB.Data.snapshotData.mindDevourer.spellId ~= nil then
-			_mdTime = math.abs(TRB.Data.snapshotData.mindDevourer.endTime - currentTime)
-		end
-		local mdTime = string.format("%.1f", _mdTime)
-
-		----------
-
-		--We have extra custom stuff we want to do with TTD for Priests
-		--$ttd
-		local _ttd = ""
-		local ttd = ""
-		local ttdTotalSeconds = 0
-
-		if TRB.Data.snapshotData.targetData.ttdIsActive and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd ~= 0 then
-			local target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
-			local ttdMinutes = math.floor(target.ttd / 60)
-			local ttdSeconds = target.ttd % 60
-			_ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
-
-			local _ttdColor = TRB.Data.settings.priest.holy.colors.text.left
-			local s2mStart, s2mDuration, _, _ = GetSpellCooldown(TRB.Data.spells.s2m.id)
-
-			if TRB.Data.character.talents.surrenderToMadeness.isSelected and not TRB.Data.snapshotData.voidform.s2m.active then
-				if TRB.Data.settings.priest.holy.s2mThreshold <= target.ttd then
-					_ttdColor = TRB.Data.settings.priest.holy.colors.text.s2mAbove
-				elseif TRB.Data.settings.priest.holy.s2mApproachingThreshold <= target.ttd then
-					_ttdColor = TRB.Data.settings.priest.holy.colors.text.s2mApproaching
-				else
-					_ttdColor = TRB.Data.settings.priest.holy.colors.text.s2mBelow
-				end
-
-				ttd = string.format("|c%s%d:%0.2d|c%s", _ttdColor, ttdMinutes, ttdSeconds, TRB.Data.settings.priest.holy.colors.text.left)
-				ttdTotalSeconds = string.format("|c%s%s|c%s", _ttdColor, TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor"), TRB.Data.settings.priest.holy.colors.text.left)
-			else
-				ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
-				ttdTotalSeconds = string.format("%s", TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor"))
-			end
-		else
-			ttd = "--"
-			ttdTotalSeconds = string.format("%s", TRB.Functions.RoundTo(0, TRB.Data.settings.core.ttd.precision or 1, "floor"))
-		end
-		]]
-		----------------------------
+		--$fcStacks
+		local fcStacks = string.format("%.0f", TRB.Data.snapshotData.flashConcentration.stacks or 0)
+		--$fcTime
+		local fcTime = string.format("%.1f", TRB.Data.snapshotData.flashConcentration.remainingTime or 0)
 
 		Global_TwintopResourceBar.resource.passive = _passiveMana
 		Global_TwintopResourceBar.resource.wrathfulFaerie = _wfMana or 0
@@ -2231,52 +2186,54 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 
 		local lookup = TRB.Data.lookup or {}
-		--[[		lookup["#as"] = TRB.Data.spells.auspiciousSpirits.icon
-		lookup["#auspiciousSpirits"] = TRB.Data.spells.auspiciousSpirits.icon
-		lookup["#sa"] = TRB.Data.spells.shadowyApparition.icon
-		lookup["#shadowyApparition"] = TRB.Data.spells.shadowyApparition.icon
-		lookup["#mb"] = TRB.Data.spells.mindBlast.icon
-		lookup["#mindBlast"] = TRB.Data.spells.mindBlast.icon
-		lookup["#mf"] = TRB.Data.spells.mindFlay.icon
-		lookup["#mindFlay"] = TRB.Data.spells.mindFlay.icon
-		lookup["#ms"] = TRB.Data.spells.mindSear.icon
-		lookup["#mindSear"] = TRB.Data.spells.mindSear.icon
-		lookup["#mindbender"] = TRB.Data.spells.mindbender.icon
-		lookup["#shadowfiend"] = TRB.Data.spells.shadowfiend.icon]]
-		lookup["#wf"] = TRB.Data.spells.wrathfulFaerie.icon
-		lookup["#wrathfulFaerie"] = TRB.Data.spells.wrathfulFaerie.icon
+		lookup["#apotheosis"] = TRB.Data.spells.apotheosis.icon
+		lookup["#bh"] = TRB.Data.spells.bindingHeal.icon
+		lookup["#bindingHeal"] = TRB.Data.spells.bindingHeal.icon
+		lookup["#coh"] = TRB.Data.spells.circleOfHealing.icon
+		lookup["#circleOfHealing"] = TRB.Data.spells.circleOfHealing.icon
+		lookup["#fc"] = TRB.Data.spells.flashConcentration.icon
+		lookup["#flashConcentration"] = TRB.Data.spells.flashConcentration.icon
+		lookup["#flashHeal"] = TRB.Data.spells.flashHeal.icon
+		lookup["#ha"] = TRB.Data.spells.harmoniousApparatus.icon
+		lookup["#harmoniousApparatus"] = TRB.Data.spells.harmoniousApparatus.icon
+		lookup["#heal"] = TRB.Data.spells.heal.icon
+		lookup["#hf"] = TRB.Data.spells.holyFire.icon
+		lookup["#holyFire"] = TRB.Data.spells.holyFire.icon
+		lookup["#ho"] = TRB.Data.spells.holyOration.icon
+		lookup["#holyOration"] = TRB.Data.spells.holyOration.icon
+		lookup["#hwChastise"] = TRB.Data.spells.holyWordChastise.icon
+		lookup["#chastise"] = TRB.Data.spells.holyWordChastise.icon
+		lookup["#holyWordChastise"] = TRB.Data.spells.holyWordChastise.icon
+		lookup["#hwSanctify"] = TRB.Data.spells.holyWordSanctify.icon
+		lookup["#sanctify"] = TRB.Data.spells.holyWordSanctify.icon
+		lookup["#holyWordSanctify"] = TRB.Data.spells.holyWordSanctify.icon
+		lookup["#hwSerenity"] = TRB.Data.spells.holyWordSerenity.icon
+		lookup["#serenity"] = TRB.Data.spells.holyWordSerenity.icon
+		lookup["#holyWordSerenity"] = TRB.Data.spells.holyWordSerenity.icon
+		lookup["#innervate"] = TRB.Data.spells.innervate.icon
+		lookup["#lotn"] = TRB.Data.spells.lightOfTheNaaru.icon
+		lookup["#lightOfTheNaaru"] = TRB.Data.spells.lightOfTheNaaru.icon
+		lookup["#mtt"] = TRB.Data.spells.manaTideTotem.icon
+		lookup["#manaTideTotem"] = TRB.Data.spells.manaTideTotem.icon
+		lookup["#poh"] = TRB.Data.spells.prayerOfHealing.icon
+		lookup["#prayerOfHealing"] = TRB.Data.spells.prayerOfHealing.icon
+		lookup["#pom"] = TRB.Data.spells.prayerOfMending.icon
+		lookup["#prayerOfMending"] = TRB.Data.spells.prayerOfMending.icon
+		lookup["#renew"] = TRB.Data.spells.renew.icon
+		lookup["#smite"] = TRB.Data.spells.smite.icon
 		lookup["#soh"] = TRB.Data.spells.symbolOfHope.icon
 		lookup["#symbolOfHope"] = TRB.Data.spells.symbolOfHope.icon
+		lookup["#sol"] = TRB.Data.spells.surgeOfLight.icon
+		lookup["#surgeOfLight"] = TRB.Data.spells.surgeOfLight.icon
+		lookup["#wf"] = TRB.Data.spells.wrathfulFaerie.icon
+		lookup["#wrathfulFaerie"] = TRB.Data.spells.wrathfulFaerie.icon
 		lookup["#psc"] = TRB.Data.spells.potionOfSpiritualClarity.icon
 		lookup["#potionOfSpiritualClarity"] = TRB.Data.spells.potionOfSpiritualClarity.icon
-		--[[		lookup["#sf"] = TRB.Data.spells.shadowfiend.icon
-		lookup["#ecttv"] = TRB.Data.spells.eternalCallToTheVoid_Tendril.icon
-		lookup["#tb"] = TRB.Data.spells.eternalCallToTheVoid_Tendril.icon
-		lookup["#loi"] = TRB.Data.spells.lashOfMana_Tendril.icon
-		lookup["#vf"] = TRB.Data.spells.voidform.icon
-		lookup["#voidform"] = TRB.Data.spells.voidform.icon
-		lookup["#vb"] = TRB.Data.spells.voidBolt.icon
-		lookup["#voidBolt"] = TRB.Data.spells.voidBolt.icon
-		lookup["#vt"] = TRB.Data.spells.vampiricTouch.icon
-		lookup["#vampiricTouch"] = TRB.Data.spells.vampiricTouch.icon
-		lookup["#swp"] = TRB.Data.spells.shadowWordPain.icon
-		lookup["#shadowWordPain"] = TRB.Data.spells.shadowWordPain.icon
-		lookup["#dp"] = TRB.Data.spells.devouringPlague.icon
-		lookup["#devouringPlague"] = TRB.Data.spells.devouringPlague.icon
-		lookup["#mDev"] = TRB.Data.spells.mindDevourer.icon
-		lookup["#mindDevourer"] = TRB.Data.spells.mindDevourer.icon]]
-		--lookup["#md"] = TRB.Data.spells.massDispel.icon
-		--lookup["#massDispel"] = TRB.Data.spells.massDispel.icon
-		--[[
-		lookup["$swpCount"] = shadowWordPainCount
-		lookup["$vtCount"] = vampiricTouchCount
-		lookup["$dpCount"] = devouringPlagueCount
-		lookup["$mdTime"] = mdTime
-		lookup["$vfTime"] = voidformTime
-		lookup["$hvTime"] = hungeringVoidTime
-		lookup["$vbCasts"] = voidBoltCasts
-		lookup["$hvAvgTime"] = hungeringVoidTimeAvg
-		lookup["$vbAvgCasts"] = voidBoltCastsAvg]]
+		lookup["#srp"] = TRB.Data.spells.spiritualRejuvenationPotion.icon
+		lookup["#spiritualRejuvenationPotion"] = TRB.Data.spells.spiritualRejuvenationPotion.icon
+		lookup["#spiritualManaPotion"] = TRB.Data.spells.spiritualManaPotion.icon
+		lookup["#soulfulManaPotion"] = TRB.Data.spells.soulfulManaPotion.icon
+
 		lookup["$manaPlusCasting"] = manaPlusCasting
 		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$manaTotal"] = manaTotal
@@ -2291,30 +2248,44 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$resource"] = currentMana
 		lookup["$casting"] = castingMana
 		lookup["$passive"] = passiveMana
-		lookup["$overcap"] = overcap
-		lookup["$resourceOvercap"] = overcap
-		lookup["$manaOvercap"] = overcap
-		--[[		lookup["$mbMana"] = mbMana
-		lookup["$mbGcds"] = mbGcds
-		lookup["$mbSwings"] = mbSwings
-		lookup["$mbTime"] = mbTime]]
+
+		lookup["$hwChastiseTime"] = hwChastiseTime
+		lookup["$chastiseTime"] = hwChastiseTime
+		lookup["$holyWordChastiseTime"] = hwChastiseTime
+
+		lookup["$hwSanctifyTime"] = hwSanctifyTime
+		lookup["$sanctifyTime"] = hwSanctifyTime
+		lookup["$holyWordSanctifyTime"] = hwSanctifyTime
+
+		lookup["$hwSerenityTime"] = hwSerenityTime
+		lookup["$serenityTime"] = hwSerenityTime
+		lookup["$holyWordSerenityTime"] = hwSerenityTime
+
 		lookup["$wfMana"] = wfMana
 		lookup["$wfGcds"] = wfGcds
 		lookup["$wfProcs"] = wfProcs
 		lookup["$wfTime"] = wfTime
 		lookup["$sohMana"] = sohMana
+		lookup["$sohTime"] = sohTime
+		lookup["$sohTicks"] = sohTicks
+		lookup["$innervateMana"] = innervateMana
+		lookup["$innervateTime"] = innervateTime
+		lookup["$mttMana"] = mttMana
+		lookup["$mttTime"] = mttTime
 		lookup["$pscMana"] = pscMana
 		lookup["$pscTicks"] = pscTicks
+		lookup["$pscTime"] = pscTime
 		lookup["$potionCooldown"] = potionCooldown
-		--[[		lookup["$loiMana"] = loiMana
-		lookup["$loiTicks"] = loiTicks
-		lookup["$cttvEquipped"] = ""
-		lookup["$ecttvCount"] = ecttvCount
-		lookup["$asCount"] = asCount
-		lookup["$asMana"] = asMana
-		]]
-		--lookup["$ttd"] = ttd --Custom TTD for Shadow
-		--lookup["$ttdSeconds"] = ttdTotalSeconds
+		lookup["$potionCooldownSeconds"] = potionCooldownSeconds
+		
+		lookup["$fcEquipped"] = TRB.Data.character.items.flashConcentration
+		lookup["$fcStacks"] = fcStacks
+		lookup["$fcTime"] = fcTime
+
+		lookup["$solStacks"] = solStacks
+		lookup["$solTime"] = solTime
+		lookup["$apotheosisTime"] = apotheosisTime
+
 		TRB.Data.lookup = lookup
 	end
 
@@ -3279,9 +3250,29 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.snapshotData.innervate.remainingTime = GetInnervateRemainingTime()
         end
 
-		TRB.Data.snapshotData.holyWordSerenity.startTime, TRB.Data.snapshotData.holyWordSerenity.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordSerenity.id)
-		TRB.Data.snapshotData.holyWordSanctify.startTime, TRB.Data.snapshotData.holyWordSanctify.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordSanctify.id)
-		TRB.Data.snapshotData.holyWordChastise.startTime, TRB.Data.snapshotData.holyWordChastise.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordChastise.id)
+		if TRB.Data.snapshotData.holyWordSerenity.startTime ~= nil then
+			TRB.Data.snapshotData.holyWordSerenity.startTime, TRB.Data.snapshotData.holyWordSerenity.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordSerenity.id)
+			
+			if TRB.Data.snapshotData.holyWordSerenity.startTime == 0 then
+				TRB.Data.snapshotData.holyWordSerenity.startTime = nil
+			end
+		end
+
+		if TRB.Data.snapshotData.holyWordSanctify.startTime ~= nil then
+			TRB.Data.snapshotData.holyWordSanctify.startTime, TRB.Data.snapshotData.holyWordSanctify.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordSanctify.id)
+			
+			if TRB.Data.snapshotData.holyWordSanctify.startTime == 0 then
+				TRB.Data.snapshotData.holyWordSanctify.startTime = nil
+			end
+		end
+
+		if TRB.Data.snapshotData.holyWordChastise.startTime ~= nil then
+			TRB.Data.snapshotData.holyWordChastise.startTime, TRB.Data.snapshotData.holyWordChastise.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordChastise.id)
+
+			if TRB.Data.snapshotData.holyWordChastise.startTime == 0 then
+				TRB.Data.snapshotData.holyWordChastise.startTime = nil
+			end
+		end
 
 		if TRB.Data.character.items.flashConcentration then
 			_, _, TRB.Data.snapshotData.flashConcentration.stacks, _, TRB.Data.snapshotData.flashConcentration.duration, TRB.Data.snapshotData.flashConcentration.endTime, _, _, _, TRB.Data.snapshotData.flashConcentration.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.flashConcentration.id)
@@ -4005,6 +3996,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.surgeOfLight.endTime = nil
 							TRB.Data.snapshotData.audio.surgeOfLightCue = false
 							TRB.Data.snapshotData.audio.surgeOfLight2Cue = false
+						end
+					elseif spellId == TRB.Data.spells.holyWordSerenity.id then
+						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Serenity
+							TRB.Data.snapshotData.holyWordSerenity.startTime, TRB.Data.snapshotData.holyWordSerenity.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordSerenity.id)
+						end
+					elseif spellId == TRB.Data.spells.holyWordSanctify.id then
+						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Sanctify
+							TRB.Data.snapshotData.holyWordSanctify.startTime, TRB.Data.snapshotData.holyWordSanctify.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordSanctify.id)
+						end
+					elseif spellId == TRB.Data.spells.holyWordChastise.id then
+						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Chastise
+							TRB.Data.snapshotData.holyWordChastise.startTime, TRB.Data.snapshotData.holyWordChastise.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordChastise.id)
 						end
 					end
 				elseif specId == 3 then
