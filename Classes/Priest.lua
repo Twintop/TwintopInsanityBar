@@ -922,64 +922,58 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		-- This is done here so that we can get icons for the options menu!
 		specCache.holy.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Mana generating/spending spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via it's item ID (e.g.: #item_18609_).", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-			--{ variable = "#hws", icon = spells.holyWordSerenity.icon, description = "Holy Word: Serenity", printInSettings = true },
+			{ variable = "#apotheosis", icon = spells.apotheosis.icon, description = spells.apotheosis.name, printInSettings = true },
+			{ variable = "#bh", icon = spells.bindingHeal.icon, description = spells.bindingHeal.name, printInSettings = true },
+			{ variable = "#bindingHeal", icon = spells.bindingHeal.icon, description = spells.bindingHeal.name, printInSettings = false },
+			{ variable = "#coh", icon = spells.circleOfHealing.icon, description = spells.circleOfHealing.name, printInSettings = true },
+			{ variable = "#circleOfHealing", icon = spells.circleOfHealing.icon, description = spells.circleOfHealing.name, printInSettings = false },
+			{ variable = "#fc", icon = spells.flashConcentration.icon, description = spells.flashConcentration.name, printInSettings = true },
+			{ variable = "#flashConcentration", icon = spells.flashConcentration.icon, description = spells.flashConcentration.name, printInSettings = false },
+			{ variable = "#flashHeal", icon = spells.flashHeal.icon, description = spells.flashHeal.name, printInSettings = true },
+			{ variable = "#ha", icon = spells.harmoniousApparatus.icon, description = spells.harmoniousApparatus.name, printInSettings = true },
+			{ variable = "#harmoniousApparatus", icon = spells.harmoniousApparatus.icon, description = spells.harmoniousApparatus.name, printInSettings = false },
+			{ variable = "#heal", icon = spells.heal.icon, description = spells.heal.name, printInSettings = true },
+			{ variable = "#hf", icon = spells.holyFire.icon, description = spells.holyFire.name, printInSettings = true },
+			{ variable = "#holyFire", icon = spells.holyFire.icon, description = spells.holyFire.name, printInSettings = false },
+			{ variable = "#ho", icon = spells.holyOration.icon, description = spells.holyOration.name, printInSettings = true },
+			{ variable = "#holyOration", icon = spells.holyOration.icon, description = spells.holyOration.name, printInSettings = false },
+			{ variable = "#hwChastise", icon = spells.holyWordChastise.icon, description = spells.holyWordChastise.name, printInSettings = true },
+			{ variable = "#chastise", icon = spells.holyWordChastise.icon, description = spells.holyWordChastise.name, printInSettings = false },
+			{ variable = "#holyWordChastise", icon = spells.holyWordChastise.icon, description = spells.holyWordChastise.name, printInSettings = false },
+			{ variable = "#hwSanctify", icon = spells.holyWordSanctify.icon, description = spells.holyWordSanctify.name, printInSettings = true },
+			{ variable = "#sanctify", icon = spells.holyWordSanctify.icon, description = spells.holyWordSanctify.name, printInSettings = false },
+			{ variable = "#holyWordSanctify", icon = spells.holyWordSanctify.icon, description = spells.holyWordSanctify.name, printInSettings = false },
+			{ variable = "#hwSerenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = true },
+			{ variable = "#serenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = false },
+			{ variable = "#holyWordSerenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = false },
+			{ variable = "#innervate", icon = spells.innervate.icon, description = spells.innervate.name, printInSettings = true },
+			{ variable = "#lotn", icon = spells.lightOfTheNaaru.icon, description = spells.lightOfTheNaaru.name, printInSettings = true },
+			{ variable = "#lightOfTheNaaru", icon = spells.lightOfTheNaaru.icon, description = spells.lightOfTheNaaru.name, printInSettings = false },
+			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
+			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
+			{ variable = "#poh", icon = spells.prayerOfHealing.icon, description = spells.prayerOfHealing.name, printInSettings = true },
+			{ variable = "#prayerOfHealing", icon = spells.prayerOfHealing.icon, description = spells.prayerOfHealing.name, printInSettings = false },
+			{ variable = "#pom", icon = spells.prayerOfMending.icon, description = spells.prayerOfMending.name, printInSettings = true },
+			{ variable = "#prayerOfMending", icon = spells.prayerOfMending.icon, description = spells.prayerOfMending.name, printInSettings = false },
+			{ variable = "#renew", icon = spells.renew.icon, description = spells.renew.name, printInSettings = true },
+			{ variable = "#smite", icon = spells.smite.icon, description = spells.smite.name, printInSettings = true },
+			{ variable = "#soh", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = true },
+			{ variable = "#symbolOfHope", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = false },
+			{ variable = "#sol", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = true },
+			{ variable = "#surgeOfLight", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = false },
+			{ variable = "#wf", icon = spells.wrathfulFaerie.icon, description = spells.wrathfulFaerie.name, printInSettings = true },
+			{ variable = "#wrathfulFaerie", icon = spells.wrathfulFaerie.icon, description = spells.wrathfulFaerie.name, printInSettings = false },
 
-			--[[
-			{ variable = "#vf", icon = spells.voidform.icon, description = "Voidform", printInSettings = true },
-			{ variable = "#voidform", icon = spells.voidform.icon, description = "Voidform", printInSettings = false },
-			{ variable = "#vb", icon = spells.voidBolt.icon, description = "Void Bolt", printInSettings = true },
-			{ variable = "#voidBolt", icon = spells.voidBolt.icon, description = "Void Bolt", printInSettings = false },
+			{ variable = "#psc", icon = spells.potionOfSpiritualClarity.icon, description = spells.potionOfSpiritualClarity.name, printInSettings = true },
+			{ variable = "#potionOfSpiritualClarity", icon = spells.potionOfSpiritualClarity.icon, description = spells.potionOfSpiritualClarity.name, printInSettings = false },
+			{ variable = "#srp", icon = spells.spiritualRejuvenationPotion.icon, description = spells.spiritualRejuvenationPotion.name, printInSettings = true },
+			{ variable = "#spiritualRejuvenationPotion", icon = spells.spiritualRejuvenationPotion.icon, description = spells.spiritualRejuvenationPotion.name, printInSettings = false },
+			{ variable = "#spiritualManaPotion", icon = spells.spiritualManaPotion.icon, description = spells.spiritualManaPotion.name, printInSettings = true },
+			{ variable = "#soulfulManaPotion", icon = spells.soulfulManaPotion.icon, description = spells.soulfulManaPotion.name, printInSettings = true },
 
-			{ variable = "#mb", icon = spells.mindBlast.icon, description = "Mind Blast", printInSettings = true },
-			{ variable = "#mindBlast", icon = spells.mindBlast.icon, description = "Mind Blast", printInSettings = false },
-			{ variable = "#mf", icon = spells.mindFlay.icon, description = "Mind Flay", printInSettings = true },
-			{ variable = "#mindFlay", icon = spells.mindFlay.icon, description = "Mind Flay", printInSettings = false },
-			{ variable = "#ms", icon = spells.mindSear.icon, description = "Mind Sear", printInSettings = true },
-			{ variable = "#mindSear", icon = spells.mindSear.icon, description = "Mind Sear", printInSettings = false },
-			{ variable = "#voit", icon = spells.voidTorrent.icon, description = "Void Torrent", printInSettings = true },
-			{ variable = "#voidTorrent", icon = spells.voidTorrent.icon, description = "Void Torrent", printInSettings = false },
-			{ variable = "#dam", icon = spells.deathAndMadness.icon, description = "Death and Madness", printInSettings = true },
-			{ variable = "#deathAndMadness", icon = spells.deathAndMadness.icon, description = "Death and Madness", printInSettings = false },
-
-			{ variable = "#swp", icon = spells.shadowWordPain.icon, description = "Shadow Word: Pain", printInSettings = true },
-			{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = "Shadow Word: Pain", printInSettings = false },
-			{ variable = "#vt", icon = spells.vampiricTouch.icon, description = "Vampiric Touch", printInSettings = true },
-			{ variable = "#vampiricTouch", icon = spells.vampiricTouch.icon, description = "Vampiric Touch", printInSettings = false },
-			{ variable = "#dp", icon = spells.devouringPlague.icon, description = "Devouring Plague", printInSettings = true },
-			{ variable = "#devouringPlague", icon = spells.devouringPlague.icon, description = "Devouring Plague", printInSettings = false },
-			{ variable = "#mDev", icon = spells.mindDevourer.icon, description = "Mind Devourer", printInSettings = true },
-			{ variable = "#mindDevourer", icon = spells.mindDevourer.icon, description = "Mind Devourer", printInSettings = false },
-
-			{ variable = "#as", icon = spells.auspiciousSpirits.icon, description = "Auspicious Spirits", printInSettings = true },
-			{ variable = "#auspiciousSpirits", icon = spells.auspiciousSpirits.icon, description = "Auspicious Spirits", printInSettings = false },
-			{ variable = "#sa", icon = spells.shadowyApparition.icon, description = "Shadowy Apparition", printInSettings = true },
-			{ variable = "#shadowyApparition", icon = spells.shadowyApparition.icon, description = "Shadowy Apparition", printInSettings = false },
-
-			{ variable = "#mindbender", icon = spells.mindbender.icon, description = "Mindbender/Shadowfiend", printInSettings = false },
-			{ variable = "#shadowfiend", icon = spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = false },
-			{ variable = "#sf", icon = spells.shadowfiend.icon, description = "Mindbender/Shadowfiend", printInSettings = true },
-			]]
-			{ variable = "#wf", icon = spells.wrathfulFaerie.icon, description = "Wrathful Faerie", printInSettings = true },
-			{ variable = "#wrathfulFaerie", icon = spells.wrathfulFaerie.icon, description = "Wrathful Faerie", printInSettings = false },
-			{ variable = "#soh", icon = spells.symbolOfHope.icon, description = "Symbol of Hope", printInSettings = true },
-			{ variable = "#symbolOfHope", icon = spells.symbolOfHope.icon, description = "Symbol of Hope", printInSettings = false },
-			
-			{ variable = "#psc", icon = spells.potionOfSpiritualClarity.icon, description = "Potion of Spiritual Clarity", printInSettings = true },
-			{ variable = "#potionOfSpiritualClarity", icon = spells.potionOfSpiritualClarity.icon, description = "Potion of Spiritual Clarity", printInSettings = false },
-
-			--[[
-			{ variable = "#s2m", icon = spells.s2m.icon, description = "Surrender to Madness", printInSettings = true },
-			{ variable = "#surrenderToMadness", icon = spells.s2m.icon, description = "Surrender to Madness", printInSettings = false },
-
-			{ variable = "#ecttv", icon = spells.eternalCallToTheVoid_Tendril.icon, description = "Eternal Call to the Void", printInSettings = true },
-			{ variable = "#tb", icon = spells.eternalCallToTheVoid_Tendril.icon, description = "Eternal Call to the Void", printInSettings = false },
-			{ variable = "#loi", icon = spells.lashOfMana_Tendril.icon, description = "Lash of Mana", printInSettings = true },
-			]]
-			--{ variable = "#md", icon = spells.massDispel.icon, description = "Mass Dispel", printInSettings = true },
-			--{ variable = "#massDispel", icon = spells.massDispel.icon, description = "Mass Dispel", printInSettings = false }
 		}
 		specCache.holy.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -1027,7 +1021,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$pscTicks", description = "Number of ticks left channeling Potion of Spiritual Clarity", printInSettings = true, color = false },
 			{ variable = "$pscTime", description = "Amount of time, in seconds, remaining of your channel of Potion of Spiritual Clarity", printInSettings = true, color = false },
 			
-			{ variable = "$potionCooldown", description = "How long, in seconds, is left on your potion's cooldown", printInSettings = true, color = false },
+			{ variable = "$potionCooldown", description = "How long, in seconds, is left on your potion's cooldown in MM:SS format", printInSettings = true, color = false },
+			{ variable = "$potionCooldownSeconds", description = "How long, in seconds, is left on your potion's cooldown in seconds", printInSettings = true, color = false },
 
 			--[[
 			{ variable = "$cttvEquipped", description = "Checks if you have Call of the Void equipped. Logic variable only!", printInSettings = true, color = false },
@@ -1133,8 +1128,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		-- This is done here so that we can get icons for the options menu!
 		specCache.shadow.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Insanity generating spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via it's item ID (e.g.: #item_18609_).", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#vf", icon = spells.voidform.icon, description = "Voidform", printInSettings = true },
 			{ variable = "#voidform", icon = spells.voidform.icon, description = "Voidform", printInSettings = false },
@@ -1303,14 +1298,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			-- Torghast
 			if IsInJailersTower() then
 				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1 + ((select(16, TRB.Functions.FindAuraById(TRB.Data.spells.dreamspunMushrooms.id, "player", "MAW")) or 0) / 100)
-				--[[if TRB.Functions.FindAuraById(TRB.Data.spells.elethiumMuzzle.id, "player", "MAW") then
-					TRB.Data.character.torghast.elethiumMuzzleModifier = 0.75
-				else
-					TRB.Data.character.torghast.elethiumMuzzleModifier = 1
-				end]]
 			else
 				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1
-				--TRB.Data.character.torghast.elethiumMuzzleModifier = 1
 			end
 		elseif specId == 3 then
 			TRB.Data.character.specName = "shadow"
@@ -3925,7 +3914,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										TRB.Data.snapshotData.symbolOfHope.endTime = currentTime + (TRB.Data.snapshotData.symbolOfHope.tickRate * (TRB.Data.snapshotData.symbolOfHope.ticksRemaining - 1))
 									end
 
-									if TRB.Data.snapshotData.symbolOfHope.tickRate > (1.75 * 1.5) then -- Assume if it's taken this long for a tick to happen, the rate is really half this and one was missed
+									if TRB.Data.snapshotData.symbolOfHope.tickRate > (1.75 * 1.5) then -- Assume if its taken this long for a tick to happen, the rate is really half this and one was missed
 										TRB.Data.snapshotData.symbolOfHope.tickRate = TRB.Data.snapshotData.symbolOfHope.tickRate / 2
 										TRB.Data.snapshotData.symbolOfHope.endTime = currentTime + (TRB.Data.snapshotData.symbolOfHope.tickRate * (TRB.Data.snapshotData.symbolOfHope.ticksRemaining - 2))
 										TRB.Data.snapshotData.symbolOfHope.tickRateFound = false
