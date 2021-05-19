@@ -283,7 +283,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 336267,
 				name = "",
 				icon = "",
-				idLegendaryBonus = 6974
+				idLegendaryBonus = 6974,
+				maxStacks = 5
 			},
 
 			-- Potions
@@ -313,7 +314,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.holy.snapshotData.audio = {
 			innervateCue = false,
 			surgeOfLightCue = false,
-			surgeOfLight2Cue = false
+			surgeOfLight2Cue = false,
+			flashConcentrationCue = false
 		}
 		specCache.holy.snapshotData.targetData = {
 			ttdIsActive = false,
@@ -342,6 +344,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			remainingTime = 0
 		}
 		specCache.holy.snapshotData.surgeOfLight = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0,
+			stacks = 0
+		}
+		specCache.holy.snapshotData.flashConcentration = {
 			spellId = nil,
 			duration = 0,
 			endTime = nil,
@@ -1258,6 +1267,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if flashConcentration == false and wristItemLink ~= nil then
 				flashConcentration = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(wristItemLink, 173249, TRB.Data.spells.flashConcentration.idLegendaryBonus)
 			end
+			TRB.Data.character.items.flashConcentration = flashConcentration
 
 			if shoulderItemLink ~= nil then
 				harmoniousApparatus = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(shoulderItemLink, 173247, TRB.Data.spells.harmoniousApparatus.idLegendaryBonus)
@@ -1687,6 +1697,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.apotheosis)
 	end
 
+	local function GetFlashConcentrationRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.flashConcentration)
+	end
+
 	local function GetInnervateRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.innervate)
 	end
@@ -1720,11 +1734,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function GetHolyWordSerenityCooldownRemainingTime()
 		return GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData.holyWordSerenity)
 	end
-	
+
 	local function GetHolyWordSanctifyCooldownRemainingTime()
 		return GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData.holyWordSanctify)
 	end
-	
+
 	local function GetHolyWordChastiseCooldownRemainingTime()
 		return GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData.holyWordChastise)
 	end
@@ -1741,12 +1755,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			mod = mod * TRB.Data.spells.lightOfTheNaaru.holyWordModifier
 		end
 
-		print(base, "= (", mod, "+", holyOrationValue, ") * ", base)
 		mod = mod + holyOrationValue
 
 		return mod * base
 	end
-	
+
 	local function CalculateManaGain(mana)
 		local modifier = 1.0
 
@@ -3263,6 +3276,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.snapshotData.holyWordSanctify.startTime, TRB.Data.snapshotData.holyWordSanctify.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordSanctify.id)
 		TRB.Data.snapshotData.holyWordChastise.startTime, TRB.Data.snapshotData.holyWordChastise.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordChastise.id)
 
+		if TRB.Data.character.items.flashConcentration then
+			_, _, TRB.Data.snapshotData.flashConcentration.stacks, _, TRB.Data.snapshotData.flashConcentration.duration, TRB.Data.snapshotData.flashConcentration.endTime, _, _, _, TRB.Data.snapshotData.flashConcentration.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.flashConcentration.id)
+			TRB.Data.snapshotData.flashConcentration.remainingTime = GetFlashConcentrationRemainingTime()
+		end
+
 		_, _, TRB.Data.snapshotData.surgeOfLight.stacks, _, TRB.Data.snapshotData.surgeOfLight.duration, TRB.Data.snapshotData.surgeOfLight.endTime, _, _, _, TRB.Data.snapshotData.surgeOfLight.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.surgeOfLight.id)
 		TRB.Data.snapshotData.surgeOfLight.remainingTime = GetSurgeOfLightRemainingTime()
 
@@ -3370,7 +3388,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local currentMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 					local barBorderColor = TRB.Data.settings.priest.holy.colors.bar.border
 										
-					if TRB.Data.snapshotData.surgeOfLight.stacks == 1 then
+					if TRB.Data.snapshotData.surgeOfLight.stacks == 1 and TRB.Data.settings.priest.holy.colors.bar.surgeOfLightBorderChange1 then
 						barBorderColor = TRB.Data.settings.priest.holy.colors.bar.surgeOfLight1
 
 						if TRB.Data.settings.priest.holy.audio.surgeOfLight.enabled and not TRB.Data.snapshotData.audio.surgeOfLightCue then
@@ -3379,7 +3397,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					end
 
-					if TRB.Data.snapshotData.surgeOfLight.stacks == 2 then
+					if TRB.Data.snapshotData.surgeOfLight.stacks == 2 and TRB.Data.settings.priest.holy.colors.bar.surgeOfLightBorderChange2 then
 						barBorderColor = TRB.Data.settings.priest.holy.colors.bar.surgeOfLight2
 						
 						if TRB.Data.settings.priest.holy.audio.surgeOfLight2.enabled and not TRB.Data.snapshotData.audio.surgeOfLight2Cue then
@@ -3388,7 +3406,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					end
 
-					if TRB.Data.spells.innervate.isActive then
+					if TRB.Data.spells.innervate.isActive and TRB.Data.settings.priest.holy.colors.bar.innervateBorderChange then
 						barBorderColor = TRB.Data.settings.priest.holy.colors.bar.innervate
 
 						if TRB.Data.settings.priest.holy.audio.innervate.enabled and TRB.Data.snapshotData.audio.innervateCue == false then
@@ -3397,6 +3415,38 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					end
 
+					if TRB.Data.character.items.flashConcentration then
+						local affectingCombat = UnitAffectingCombat("player")
+						if affectingCombat then
+							if TRB.Data.settings.priest.holy.flashConcentration.enabledUncapped and (TRB.Data.snapshotData.flashConcentration.stacks == nil or TRB.Data.snapshotData.flashConcentration.stacks < TRB.Data.spells.flashConcentration.maxStacks) then
+								barBorderColor = TRB.Data.settings.priest.holy.colors.bar.flashConcentration
+							end
+
+							if TRB.Data.snapshotData.flashConcentration.remainingTime ~= nil and TRB.Data.snapshotData.flashConcentration.remainingTime > 0 then
+								local fcTimeThreshold = 0
+								if TRB.Data.settings.priest.holy.flashConcentration.mode == "gcd" then
+									local gcd = TRB.Functions.GetCurrentGCDTime()
+									fcTimeThreshold = gcd * TRB.Data.settings.priest.holy.flashConcentration.gcdsMax
+								elseif TRB.Data.settings.priest.holy.flashConcentration.mode == "time" then
+									fcTimeThreshold = TRB.Data.settings.priest.holy.flashConcentration.timeMax
+								end
+
+								if TRB.Data.snapshotData.flashConcentration.remainingTime <= fcTimeThreshold then
+									if TRB.Data.settings.priest.holy.flashConcentration.enabled then
+										barBorderColor = TRB.Data.settings.priest.holy.colors.bar.flashConcentration
+									end
+
+									if TRB.Data.settings.priest.holy.audio.flashConcentration.enabled and TRB.Data.snapshotData.audio.flashConcentrationCue == false then
+										TRB.Data.snapshotData.audio.flashConcentrationCue = true
+										PlaySoundFile(TRB.Data.settings.priest.holy.audio.flashConcentration.sound, TRB.Data.settings.core.audio.channel.channel)
+									end
+								else
+									TRB.Data.snapshotData.audio.flashConcentrationCue = false
+								end
+							end
+						end
+					end
+					
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
 
 					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, resourceFrame, currentMana)
@@ -3575,48 +3625,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.passive, true))
 					end
-
- 					--[[
-					if TRB.Data.settings.priest.holy.devouringPlagueThreshold then
-						resourceFrame.thresholds[1]:Show()
-					else
-						resourceFrame.thresholds[1]:Hide()
-					end
-
-					if TRB.Data.settings.priest.holy.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then
-						if currentMana >= TRB.Data.character.searingNightmareThreshold then
-							resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.over, true))
-						else
-							resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.under, true))
-						end
-						resourceFrame.thresholds[2]:Show()
-					else
-						resourceFrame.thresholds[2]:Hide()
-					end
-
-					if currentMana >= TRB.Data.character.devouringPlagueThreshold or TRB.Data.spells.mindDevourer.isActive then
-						resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.over, true))
-						if TRB.Data.settings.priest.holy.colors.bar.flashEnabled then
-							TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.priest.holy.colors.bar.flashAlpha, TRB.Data.settings.priest.holy.colors.bar.flashPeriod)
-						else
-							barContainerFrame:SetAlpha(1.0)
-						end
-
-						if TRB.Data.spells.mindDevourer.isActive and TRB.Data.settings.priest.holy.audio.mdProc.enabled and TRB.Data.snapshotData.audio.playedMdCue == false then
-							TRB.Data.snapshotData.audio.playedDpCue = true
-							TRB.Data.snapshotData.audio.playedMdCue = true
-							PlaySoundFile(TRB.Data.settings.priest.holy.audio.mdProc.sound, TRB.Data.settings.core.audio.channel.channel)
-						elseif TRB.Data.settings.priest.holy.audio.dpReady.enabled and TRB.Data.snapshotData.audio.playedDpCue == false then
-							TRB.Data.snapshotData.audio.playedDpCue = true
-							PlaySoundFile(TRB.Data.settings.priest.holy.audio.dpReady.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					else
-						resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.threshold.under, true))
-						barContainerFrame:SetAlpha(1.0)
-						TRB.Data.snapshotData.audio.playedDpCue = false
-						TRB.Data.snapshotData.audio.playedMdCue = false
-					end
-					]]
 
 					local resourceBarColor = nil
 

@@ -196,6 +196,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
+				},
+				flashConcentration={
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
 				}
 			},
 			textures={
@@ -2766,6 +2771,70 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			UIDropDownMenu_SetText(controls.dropDown.surgeOfLight2Audio, newName)
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.priest.holy.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.flashConcentrationAudioCB = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_FlashConcentration", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.flashConcentrationAudioCB
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Flash Concentration is going to expire, based on settings")
+		f.tooltip = "Play audio cue when your Flash Concentration buff is close to expiring. This uses the configuration from the Bar Settings menu for border color change even if that feature is disabled."
+		f:SetChecked(TRB.Data.settings.priest.holy.audio.flashConcentration.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.audio.flashConcentration.enabled = self:GetChecked()
+
+			if TRB.Data.settings.priest.holy.audio.flashConcentration.enabled then
+				PlaySoundFile(TRB.Data.settings.priest.holy.audio.flashConcentration.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.flashConcentrationAudio = CreateFrame("FRAME", "TwintopResourceBar_Priest_Holy_flashConcentrationAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.flashConcentrationAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.flashConcentrationAudio, sliderWidth)
+		UIDropDownMenu_SetText(controls.dropDown.flashConcentrationAudio, TRB.Data.settings.priest.holy.audio.flashConcentration.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.flashConcentrationAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.flashConcentrationAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.priest.holy.audio.flashConcentration.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.flashConcentrationAudio:SetValue(newValue, newName)
+			TRB.Data.settings.priest.holy.audio.flashConcentration.sound = newValue
+			TRB.Data.settings.priest.holy.audio.flashConcentration.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.flashConcentrationAudio, newName)
+			CloseDropDownMenus()
+			PlaySoundFile(TRB.Data.settings.priest.holy.audio.flashConcentration.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 		
