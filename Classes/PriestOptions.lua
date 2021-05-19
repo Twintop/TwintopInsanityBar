@@ -26,22 +26,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			fontSizeLock=true,
 			fontFaceLock=true,
 			left={
-				text="$haste%",
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
-				fontSize=18
-			},
-			middle={
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontSize=16
 			},
-			right={
-				text="{$casting}[$casting + ]{$passive}[$passive + ]$mana / $manaMax ($manaPercent%)",
+			middle={
+				text="{$apotheosisTime}[$apotheosisTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontSize=16
+			},
+			right={
+				text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=16
 			}
 		}
 
@@ -53,22 +53,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "$haste% ($gcd)||n{$ttd}[TTD: $ttd]",
+				text = "{$hwSanctifyTime}[#hwSanctify $hwSanctifyTime][          ]    {$potionCooldown}[#psc $potionCooldown]||n{$hwSerenityTime}[#hwSerenity $hwSerenityTime] ",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			middle = {
-				text = "",
+				text = "{$apotheosisTime}[#apotheosis $apotheosisTime #apotheosis]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			right = {
-				text = "{$casting}[#casting$casting+]{$wfMana}[#wf$wfMana+]$mana / $manaMax ($manaPercent%)",
+				text = "{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
-				fontSize = 22
+				fontSize = 16
 			}
 		}
 
@@ -117,10 +117,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				showCasting=true
 			},
 			wrathfulFaerie={
-				mode="gcd",
+				mode="time",
 				procsMax=4,
 				gcdsMax=2,
-				timeMax=3.0,
+				timeMax=90.0,
 				procDelay=0.15,
 				enabled=true
 			},

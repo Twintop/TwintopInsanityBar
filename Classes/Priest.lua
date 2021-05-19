@@ -1819,7 +1819,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			elseif var == "$passive" then
 				if IsValidVariableForSpec("$pscMana") or
 					IsValidVariableForSpec("$sohMana") or
-					IsValidVariableForSpec("$resource") or
+					IsValidVariableForSpec("$innervateMana") or
 					IsValidVariableForSpec("$wfMana") or
 					IsValidVariableForSpec("$mttMana") then
 					valid = true
@@ -1857,7 +1857,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$pscMana" then
-				if TRB.Data.snapshotData.potionOfSpiritualClarity.insanity > 0 then
+				if TRB.Data.snapshotData.potionOfSpiritualClarity.mana > 0 then
 					valid = true
 				end
 			elseif var == "$pscTicks" then
@@ -1885,7 +1885,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$fcTime" then
-				if TRB.Data.snapshotData.flashConcentration.remainingTime then
+				if TRB.Data.snapshotData.flashConcentration.remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$solStacks" then
@@ -1893,11 +1893,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$solTime" then
-				if TRB.Data.snapshotData.surgeOfLight.remainingTime then
+				if TRB.Data.snapshotData.surgeOfLight.remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$apotheosisTime" then
-				if TRB.Data.snapshotData.apotheosis.remainingTime then
+				if TRB.Data.snapshotData.apotheosis.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$hwChastiseTime" then
+				if GetHolyWordChastiseCooldownRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$hwSerenityTime" then
+				if GetHolyWordSerenityCooldownRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$hwSanctifyTime" then
+				if GetHolyWordSanctifyCooldownRemainingTime() > 0 then
 					valid = true
 				end
 			end
@@ -3984,7 +3996,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					elseif spellId == TRB.Data.spells.surgeOfLight.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.spells.apotheosis.isActive = true
+							TRB.Data.spells.surgeOfLight.isActive = true
 							_, _, TRB.Data.snapshotData.surgeOfLight.stacks, _, TRB.Data.snapshotData.surgeOfLight.duration, TRB.Data.snapshotData.surgeOfLight.endTime, _, _, _, TRB.Data.snapshotData.surgeOfLight.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.surgeOfLight.id)
 						elseif type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
 							TRB.Data.snapshotData.audio.surgeOfLight2Cue = false
