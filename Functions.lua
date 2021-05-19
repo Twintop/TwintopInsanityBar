@@ -314,11 +314,18 @@ local function FillSpellData(spells)
 	local toc = select(4, GetBuildInfo())
 
 	for k, v in pairs(spells) do
-		if spells[k] ~= nil and spells[k]["id"] ~= nil and (spells[k]["tocMinVersion"] == nil or toc >= spells[k]["tocMinVersion"]) then
-			local _, name, icon
-			name, _, icon = GetSpellInfo(spells[k]["id"])
-			spells[k]["icon"] = string.format("|T%s:0|t", icon)
-			spells[k]["name"] = name
+		if spells[k] ~= nil and (spells[k]["tocMinVersion"] == nil or toc >= spells[k]["tocMinVersion"]) then
+			if spells[k]["itemId"] ~= nil then
+				local _, name, icon
+				name, _, _, _, _, _, _, _, _, icon = GetItemInfo(spells[k]["itemId"])
+				spells[k]["icon"] = string.format("|T%s:0|t", icon)
+				spells[k]["name"] = name
+			elseif spells[k]["id"] ~= nil then
+				local _, name, icon
+				name, _, icon = GetSpellInfo(spells[k]["id"])
+				spells[k]["icon"] = string.format("|T%s:0|t", icon)
+				spells[k]["name"] = name
+			end
 		end
 	end
 

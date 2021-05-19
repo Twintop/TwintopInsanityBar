@@ -290,11 +290,27 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			-- Potions
 			potionOfSpiritualClarity = {
 				id = 307161,
+				itemId = 171272,
 				name = "",
 				icon = "",
-				mana = 1000,
+				mana = 10000,
 				duration = 10,
-				ticks = 10,
+				ticks = 10
+			},
+			spiritualRejuvenationPotion = {
+				itemId = 171269,
+				name = "",
+				icon = "",
+			},
+			spiritualManaPotion = {
+				itemId = 171268,
+				name = "",
+				icon = "",
+			},
+			soulfulManaPotion = {
+				itemId = 180318,
+				name = "",
+				icon = "",
 			},
 
 			-- Torghast
@@ -3387,7 +3403,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local castingBarValue = 0
 					local currentMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 					local barBorderColor = TRB.Data.settings.priest.holy.colors.bar.border
-										
+
 					if TRB.Data.snapshotData.surgeOfLight.stacks == 1 and TRB.Data.settings.priest.holy.colors.bar.surgeOfLightBorderChange1 then
 						barBorderColor = TRB.Data.settings.priest.holy.colors.bar.surgeOfLight1
 
@@ -3399,7 +3415,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					if TRB.Data.snapshotData.surgeOfLight.stacks == 2 and TRB.Data.settings.priest.holy.colors.bar.surgeOfLightBorderChange2 then
 						barBorderColor = TRB.Data.settings.priest.holy.colors.bar.surgeOfLight2
-						
+
 						if TRB.Data.settings.priest.holy.audio.surgeOfLight2.enabled and not TRB.Data.snapshotData.audio.surgeOfLight2Cue then
 							TRB.Data.snapshotData.audio.surgeOfLight2Cue = true
 							PlaySoundFile(TRB.Data.settings.priest.holy.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -3446,7 +3462,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							end
 						end
 					end
-					
+
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
 
 					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, resourceFrame, currentMana)
@@ -3633,7 +3649,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey ~= nil and
 							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction ~= nil and
 							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction >= 0 then
-							
+
 							local castTimeRemains = TRB.Data.snapshotData.casting.endTime - currentTime
 
 							if TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey2 ~= nil and
@@ -3641,7 +3657,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction2 >= 0 then --We have an edge case, boiz
 								local holyWordCooldownRemaining1 = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey])
 								local holyWordCooldownRemaining2 = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey2])
-								
+
 								local remaining1 = holyWordCooldownRemaining1 - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction) - castTimeRemains
 								local remaining2 = holyWordCooldownRemaining2 - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction2) - castTimeRemains
 
