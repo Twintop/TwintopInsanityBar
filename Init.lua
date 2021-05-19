@@ -6,8 +6,8 @@ TRB.Details.addonVersion = GetAddOnMetadata(addonName, "Version")
 TRB.Details.addonAuthor = GetAddOnMetadata(addonName, "Author")
 TRB.Details.addonAuthorServer = GetAddOnMetadata(addonName, "AuthorServer")
 TRB.Details.addonTitle = GetAddOnMetadata(addonName, "Title")
-TRB.Details.addonReleaseDate = "April 29, 2021"
-TRB.Details.supportedSpecs = "|cFFFF7C0ADruid|r - Balance\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFFFFFFFFPriest|r - Shadow\n|cFF0070DDShaman|r - Elemental\n|cFFC69B6DWarrior|r - Arms"
+TRB.Details.addonReleaseDate = "May 20, 2021"
+TRB.Details.supportedSpecs = "|cFFFF7C0ADruid|r - Balance\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFFFFFFFFPriest|r - Holy, Shadow\n|cFF0070DDShaman|r - Elemental\n|cFFC69B6DWarrior|r - Arms"
 
 local addonData = {
 	loaded = false,
@@ -262,8 +262,10 @@ do
 			local val = (Smax/(shownpanels-15))*(mypanel-2)
 			InterfaceOptionsFrameAddOnsListScrollBar:SetValue(val)
 		end
+---@diagnostic disable-next-line: lowercase-global
 		doNotRun = true
 		InterfaceOptionsFrame_OpenToCategory(panel)
+---@diagnostic disable-next-line: lowercase-global
 		doNotRun = false
 	end
 
@@ -274,13 +276,6 @@ function SlashCmdList.TWINTOP(msg)
     local cmd, subcmd = TRB.Functions.ParseCmdString(msg);
     if cmd == "reset" then
         StaticPopup_Show("TwintopResourceBar_Reset")
-    elseif cmd == "set" then
-        cmd, subcmd = TRB.Functions.ParseCmdString(subcmd)
-
-        if cmd == "numEntries" and subcmd ~= nil then
-            local num = TRB.Functions.RoundTo(subcmd, 0)
-            settings.ttd.numEntries = num
-        end
     elseif cmd == "fill" then
         TRB.Functions.FillSpellData()
     elseif cmd == "move" then

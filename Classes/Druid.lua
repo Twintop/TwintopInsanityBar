@@ -301,7 +301,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		-- This is done here so that we can get icons for the options menu!
 		TRB.Data.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Astral Power generating spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#moonkinForm", icon = TRB.Data.spells.moonkinForm.icon, description = "Moonkin Form", printInSettings = true },
 
@@ -468,6 +469,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Details.addonData.registered = true			
 		end
 	end
+	TRB.Functions.EventRegistration = EventRegistration
 
 	local function InitializeTarget(guid)
 		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
@@ -1081,9 +1083,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				local timewornModifier = TRB.Data.snapshotData.timewornDreambinder.stacks * TRB.Data.spells.timewornDreambinder.modifier
 
 				if currentResource >= TRB.Data.character.starsurgeThreshold then
+---@diagnostic disable-next-line: undefined-field
 					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
 
-					if TRB.Data.spells.onethsClearVision.isActive and RB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
+					if TRB.Data.spells.onethsClearVision.isActive and TRB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
 						TRB.Data.snapshotData.audio.playedOnethsCue = true
 						TRB.Data.snapshotData.audio.playedSfCue = true
 						PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1092,6 +1095,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
 					end
 				else
+---@diagnostic disable-next-line: undefined-field
 					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
 					TRB.Data.snapshotData.audio.playedSsCue = false
 					TRB.Data.snapshotData.audio.playedOnethsCue = false
@@ -1104,8 +1108,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*(1+timewornModifier)*2, TRB.Data.character.maxResource)
 
 					if currentResource >= TRB.Data.character.starsurgeThreshold * 2 then
+---@diagnostic disable-next-line: undefined-field
 						resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
 					else
+---@diagnostic disable-next-line: undefined-field
 						resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
 					end
 				else
@@ -1119,8 +1125,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*(1+timewornModifier)*3, TRB.Data.character.maxResource)
 
 					if currentResource >= TRB.Data.character.starsurgeThreshold * 3 then
+---@diagnostic disable-next-line: undefined-field
 						resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
 					else
+---@diagnostic disable-next-line: undefined-field
 						resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
 					end
 				else
@@ -1130,12 +1138,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 				if currentResource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.onethsPerception.isActive then
 					if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > TRB.Data.spells.starfall.pandemicTime then
+---@diagnostic disable-next-line: undefined-field
 						resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
 					else
+---@diagnostic disable-next-line: undefined-field
 						resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
 					end
 
-					if TRB.Data.spells.onethsPerception.isActive and RB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
+					if TRB.Data.spells.onethsPerception.isActive and TRB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
 						TRB.Data.snapshotData.audio.playedOnethsCue = true
 						TRB.Data.snapshotData.audio.playedSfCue = true
 						PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1144,6 +1154,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
 					end
 				else
+---@diagnostic disable-next-line: undefined-field
 					resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
 					TRB.Data.snapshotData.audio.playedSfCue = false
 					TRB.Data.snapshotData.audio.playedOnethsCue = false
@@ -1366,7 +1377,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.RemoveTarget(guid)
+				TRB.Functions.RemoveTarget(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end

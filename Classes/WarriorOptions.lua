@@ -51,7 +51,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		return textSettings
 	end
-    
+
     local function ArmsLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
@@ -112,10 +112,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				},
 				cleave = {
 					enabled = true, -- 9
-				},	
+				},
 				condemn = {
 					enabled = true, -- 10
-				},	
+				},
 			},
 			displayBar = {
 				alwaysShow=false,
@@ -170,7 +170,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					unusable="FFFF0000"
 				}
 			},
-			displayText = {}, 
+			displayText = {},
 			audio = {
 				overcap={
 					enabled=false,
@@ -226,8 +226,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return
 		end
 
-		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls.arms
+		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.arms
 		local yCoord = 5
 		local f = nil
 
@@ -247,7 +246,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local sliderHeight = 20
 
 		StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to it's default configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -260,7 +259,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (simple) configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -273,7 +272,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -286,7 +285,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			preferredIndex = 3
 		}
 		--[[StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -302,29 +301,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Warrior_Arms_ResetButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(150)
-		f:SetHeight(30)
-		f:SetText("Reset to Defaults")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
+		controls.resetButton = TRB.UiFunctions.BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Arms_Reset")
 		end)
 
@@ -332,84 +310,21 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Warrior_Arms_ResetBarTextSimpleButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Simple)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
+		controls.resetButton1 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Arms_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 
 		--[[
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Warrior_Arms_ResetBarTextNarrowAdvancedButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord2, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Narrow Advanced)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
+		controls.resetButton2 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton2:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Arms_ResetBarTextNarrowAdvanced")
 		end)
 		]]
-        
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_Warrior_Arms_ResetBarTextAdvancedButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Full Advanced)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
+
+		controls.resetButton3 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Arms_ResetBarTextAdvanced")
 		end)
 
@@ -476,7 +391,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["rage"] ~= nil and TRB.Data.spells[k]["rage"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -TRB.Data.spells[k]["rage"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -TRB.Data.spells[k]["rage"], TRB.Data.character.maxResource)
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -590,7 +505,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					})
 					barBorderFrame:Hide()
 				else
-					barBorderFrame:SetBackdrop({ 
+					barBorderFrame:SetBackdrop({
 						edgeFile = TRB.Data.settings.warrior.arms.textures.border,
 						tile = true,
 						tileSize=4,
@@ -606,7 +521,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["rage"] ~= nil and TRB.Data.spells[k]["rage"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -TRB.Data.spells[k]["rage"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -TRB.Data.spells[k]["rage"], TRB.Data.character.maxResource)
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -659,6 +574,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		if TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 			controls.checkBoxes.lockPosition:Disable()
 			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 		end
@@ -671,11 +587,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetChecked(TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay = self:GetChecked()
-			
-			if TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay then				
+
+			if TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Disable()
-				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)				
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 			else
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Enable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
 			end
@@ -1041,7 +959,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.arms.textures.backgroundName = newName
 
 			if GetSpecialization() == 1 then
-				barContainerFrame:SetBackdrop({ 
+				barContainerFrame:SetBackdrop({
 					bgFile = TRB.Data.settings.warrior.arms.textures.background,
 					tile = true,
 					tileSize = TRB.Data.settings.warrior.arms.bar.width,
@@ -1178,7 +1096,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
@@ -1200,7 +1118,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-                    
+
 					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
 					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1242,7 +1160,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barContainerFrame:SetBackdropColor(r, g, b, 1-a)
@@ -1269,7 +1187,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1289,7 +1207,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1309,7 +1227,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.thresholdUnusable.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.threshold.unusable = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1778,7 +1696,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1801,7 +1719,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1824,7 +1742,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1898,7 +1816,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.currentRageText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.text.current = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1993,11 +1911,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.warrior.arms.colors.text.overcapEnabled = self:GetChecked()
 		end)
-		
+
 
 		yCoord = yCoord - 30
 		controls.dotColorSection = TRB.UiFunctions.BuildSectionHeader(parent, "DoT Count Tracking", 0, yCoord)
-		
+
 		yCoord = yCoord - 25
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
@@ -2022,7 +1940,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotUp.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.text.dots.up = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -2042,7 +1960,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotPandemic.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.text.dots.pandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -2062,7 +1980,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotDown.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.warrior.arms.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -2270,7 +2188,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.arms = controls
 	end
-    
+
 	local function ArmsConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
@@ -2298,20 +2216,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.labels.text = CreateFrame("Frame", nil, parent)
-		f = controls.labels.text
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		f:SetWidth(90)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("RIGHT")
-		f.font:SetSize(90, 20)
-		f.font:SetText("Left Text")
+		controls.labels.leftText = TRB.UiFunctions.BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.left = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.warrior.arms.displayText.left.text,
 														500, 440, 24, xCoord+100, yCoord)
@@ -2319,24 +2224,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.warrior.arms.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.text = CreateFrame("Frame", nil, parent)
-		f = controls.labels.text
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		f:SetWidth(90)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("RIGHT")
-		f.font:SetSize(90, 20)
-		f.font:SetText("Middle Text")
+		controls.labels.middleText = TRB.UiFunctions.BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.middle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.warrior.arms.displayText.middle.text,
 														500, 440, 24, xCoord+100, yCoord)
@@ -2344,24 +2236,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.warrior.arms.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.text = CreateFrame("Frame", nil, parent)
-		f = controls.labels.text
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		f:SetWidth(90)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("RIGHT")
-		f.font:SetSize(90, 20)
-		f.font:SetText("Right Text")
+		controls.labels.rightText = TRB.UiFunctions.BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.right = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.warrior.arms.displayText.right.text,
 														500, 440, 24, xCoord+100, yCoord)
@@ -2369,125 +2248,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.warrior.arms.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.instructions5Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions5Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("For more detailed information about Bar Text customization, see the TRB Wiki on GitHub.")
-
-		yCoord = yCoord - 25
-		controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructionsVar
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("For conditional display (only if $VAR is active/non-zero): {$VAR}[WHAT TO DISPLAY]")
-
-		yCoord = yCoord - 25
-		controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions2Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("Limited Boolean NOT logic for conditional display is supported via {!$VAR}")
-
-		yCoord = yCoord - 25
-		controls.labels.instructions3Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions3Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("IF/ELSE is supported via {$VAR}[TRUE output][FALSE output] and includes NOT support")
-
-		yCoord = yCoord - 25
-		controls.labels.instructions4Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions4Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("For icons use #ICONVARIABLENAME")
-		yCoord = yCoord - 25
-
-		local entries1 = TRB.Functions.TableLength(cache.barTextVariables.values)
-		for i=1, entries1 do
-			if cache.barTextVariables.values[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, cache.barTextVariables.values[i].variable, cache.barTextVariables.values[i].description, xCoord, yCoord, 135, 400, 15)
-				local height = 15
-				yCoord = yCoord - height - 5
-			end
-		end
-
-		local entries2 = TRB.Functions.TableLength(TRB.Data.barTextVariables.pipe)
-		for i=1, entries2 do
-			if TRB.Data.barTextVariables.pipe[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 135, 400, 15)
-				local height = 15
-				yCoord = yCoord - height - 5
-			end
-		end
-
-		---------
-
-		local entries3 = TRB.Functions.TableLength(cache.barTextVariables.icons)
-		for i=1, entries3 do
-			if cache.barTextVariables.icons[i].printInSettings == true then
-				local text = ""
-				if cache.barTextVariables.icons[i].icon ~= "" then
-					text = cache.barTextVariables.icons[i].icon .. " "
-				end
-				local height = 15
-				if cache.barTextVariables.icons[i].variable == "#casting" then
-					height = 15
-				end
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, cache.barTextVariables.icons[i].variable, text .. cache.barTextVariables.icons[i].description, xCoord, yCoord, 135, 400, height)
-				yCoord = yCoord - height - 5
-			end
-		end
+		TRB.Options.CreateBarTextInstructions(cache, parent, xCoord, yCoord)
 	end
 
 	local function ArmsConstructOptionsPanel(cache)
@@ -2512,17 +2277,18 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		interfaceSettingsFrame.armsDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warrior_Arms", UIParent)
 		interfaceSettingsFrame.armsDisplayPanel.name = "Arms Warrior"
+---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.armsDisplayPanel.parent = parent.name
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.armsDisplayPanel)
 
 		parent = interfaceSettingsFrame.armsDisplayPanel
-		
+
 		controls.buttons = controls.buttons or {}
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Arms Warrior", xCoord+xPadding, yCoord-5)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
-		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
@@ -2550,19 +2316,19 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		PanelTemplates_TabResize(tabs[5], 0)
 		yCoord = yCoord - 15
 
-		for i = 1, 5 do 
+		for i = 1, 5 do
 			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Warrior_Arms_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
 		end
 
 		tabsheets[1]:Show()
+		tabsheets[1].selected = true
+		tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 		parent.tabs = tabs
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
-		parent.tabsheets[1].selected = true
-		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.arms = controls

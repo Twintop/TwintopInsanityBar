@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.UiFunctions = {}
 
@@ -306,21 +307,26 @@ local function BuildButton(parent, text, posX, posY, width, height)
 end
 TRB.UiFunctions.BuildButton = BuildButton
 
-local function BuildLabel(parent, text, posX, posY, width, height, fontObject)
+local function BuildLabel(parent, text, posX, posY, width, height, fontObject, hAlign)
     if fontObject == nil then
         fontObject = GameFontNormal
+    end
+
+    if hAlign == nil or (string.upper(hAlign) ~= "LEFT" and string.upper(hAlign) ~= "CENTER" and string.upper(hAlign) ~= "RIGHT") then
+        hAlign = "LEFT"
     end
 
     local f = CreateFrame("Frame", nil, parent)
     f:ClearAllPoints()
     f:SetPoint("TOPLEFT", parent)
     f:SetPoint("TOPLEFT", posX, posY)
-    f:SetWidth(100)
-    f:SetHeight(20)
+    f:SetWidth(width)
+    f:SetHeight(height)
     f.font = f:CreateFontString(nil, "BACKGROUND")
     f.font:SetFontObject(fontObject)
     f.font:SetPoint("LEFT", f, "LEFT")
-    f.font:SetJustifyH("CENTER")
+    f.font:SetJustifyH(hAlign)
+    f.font:SetSize(width, height)
     f.font:SetText(text)
 
     return f

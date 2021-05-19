@@ -20,17 +20,17 @@ local function TablePrint(T, indent)
 	if not indent then
 		indent = 0
 	end
-	
+
 	local toprint = string.rep(" ", indent) .. "{\r\n"
-	indent = indent + 2 
+	indent = indent + 2
 	for k, v in pairs(T) do
 		toprint = toprint .. string.rep(" ", indent)
 		if (type(k) == "number") then
 			toprint = toprint .. "[" .. k .. "] = "
 		elseif (type(k) == "string") then
-			toprint = toprint  .. k ..  "= "   
+			toprint = toprint  .. k ..  "= "
 		end
-	
+
 		if (type(v) == "number") then
 			toprint = toprint .. v .. ",\r\n"
 		elseif (type(v) == "string") then
@@ -121,6 +121,26 @@ local function RoundTo(num, numDecimalPlaces, mode)
 end
 TRB.Functions.RoundTo = RoundTo
 
+local function ConvertToShortNumberNotation(num, numDecimalPlaces, mode)
+	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
+	local negative = ""
+
+	if num < 0 then
+		negative = "-"
+		num = -num
+	end
+
+	if num >= 10^9 then
+		return string.format(negative .. "%." .. numDecimalPlaces .. "fb", TRB.Functions.RoundTo(num / 10^9, numDecimalPlaces, mode))
+	elseif num >= 10^6 then
+        return string.format(negative .. "%." .. numDecimalPlaces .. "fm", TRB.Functions.RoundTo(num / 10^6, numDecimalPlaces, mode))
+    elseif num >= 10^3 then
+        return string.format(negative .. "%." .. numDecimalPlaces .. "fk", TRB.Functions.RoundTo(num / 10^3, numDecimalPlaces, mode))
+    else
+        return string.format(negative .. "%." .. numDecimalPlaces .. "f", TRB.Functions.RoundTo(num, 0, mode))
+    end
+end
+TRB.Functions.ConvertToShortNumberNotation = ConvertToShortNumberNotation
 
 -- Color Functions
 
@@ -130,7 +150,7 @@ local function GetRGBAFromString(s, normalize)
     local _g = 1
     local _b = 0
 
-    if not (s == nil) then        
+    if not (s == nil) then
         _a = min(255, tonumber(string.sub(s, 1, 2), 16))
         _r = min(255, tonumber(string.sub(s, 3, 4), 16))
         _g = min(255, tonumber(string.sub(s, 5, 6), 16))
@@ -225,6 +245,7 @@ local function ResetCastingSnapshotData()
 	TRB.Data.snapshotData.casting.resourceRaw = 0
 	TRB.Data.snapshotData.casting.resourceFinal = 0
 	TRB.Data.snapshotData.casting.icon = ""
+	TRB.Data.snapshotData.casting.spellKey = nil
 end
 TRB.Functions.ResetCastingSnapshotData = ResetCastingSnapshotData
 
@@ -236,6 +257,11 @@ end
 TRB.Functions.GetLatency = GetLatency
 
 -- Addon Maintenance Functions
+
+local function EventRegistration()
+	-- To be implemented by the class module
+end
+TRB.Functions.EventRegistration = EventRegistration
 
 local function GetSanityCheckValues(settings)
 	local sc = {}
@@ -288,17 +314,57 @@ local function FillSpellData(spells)
 	local toc = select(4, GetBuildInfo())
 
 	for k, v in pairs(spells) do
-		if spells[k] ~= nil and spells[k]["id"] ~= nil and (spells[k]["tocMinVersion"] == nil or toc >= spells[k]["tocMinVersion"]) then
-			local _, name, icon
-			name, _, icon = GetSpellInfo(spells[k]["id"])
-			spells[k]["icon"] = string.format("|T%s:0|t", icon)
-			spells[k]["name"] = name
+		if spells[k] ~= nil and (spells[k]["tocMinVersion"] == nil or toc >= spells[k]["tocMinVersion"]) then
+			if spells[k]["itemId"] ~= nil then
+				local _, name, icon
+				name, _, _, _, _, _, _, _, _, icon = GetItemInfo(spells[k]["itemId"])
+				spells[k]["icon"] = string.format("|T%s:0|t", icon)
+				spells[k]["name"] = name
+			elseif spells[k]["id"] ~= nil then
+				local _, name, icon
+				name, _, icon = GetSpellInfo(spells[k]["id"])
+				spells[k]["icon"] = string.format("|T%s:0|t", icon)
+				spells[k]["name"] = name
+			end
+		end
+	end
+
+	spells = TRB.Functions.FillSpellDataManaCost(spells)
+
+	return spells
+end
+TRB.Functions.FillSpellData = FillSpellData
+
+local function GetSpellManaCost(spellId)
+	local spc = GetSpellPowerCost(spellId)
+	local length = TRB.Functions.TableLength(spc)
+
+	for x = 1, length do
+		if spc[x]["name"] == "MANA" and spc[x]["cost"] > 0 then
+			return spc[x]["cost"]
+		end
+	end
+	return 0
+end
+TRB.Functions.GetSpellManaCost = GetSpellManaCost
+
+local function FillSpellDataManaCost(spells)
+	if spells == nil then
+		spells = TRB.Data.spells
+	end
+
+	local toc = select(4, GetBuildInfo())
+
+	for k, v in pairs(spells) do
+		if spells[k] ~= nil and spells[k]["id"] ~= nil and (spells[k]["tocMinVersion"] == nil or toc >= spells[k]["tocMinVersion"]) and spells[k]["usesMana"] then
+			spells[k]["mana"] = -TRB.Functions.GetSpellManaCost(spells[k]["id"])
 		end
 	end
 
 	return spells
 end
-TRB.Functions.FillSpellData = FillSpellData
+TRB.Functions.FillSpellDataManaCost = FillSpellDataManaCost
+
 
 local function ResetSnapshotData()
 	TRB.Data.snapshotData = {
@@ -437,7 +503,7 @@ TRB.Functions.RepositionThreshold = RepositionThreshold
 
 local function ShowResourceBar()
 	if TRB.Details.addonData.registered == false then
-		EventRegistration()
+		TRB.Functions.EventRegistration()
 	end
 
 	TRB.Data.snapshotData.isTracking = true
@@ -564,7 +630,7 @@ local function RedrawThresholdLines(settings)
 		for x = 1, entries do
 			resourceFrame.thresholds[x]:SetWidth(settings.thresholdWidth)
 			resourceFrame.thresholds[x]:SetHeight(settings.bar.height - borderSubtraction)
-			resourceFrame.thresholds[x].texture = resourceFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
+			resourceFrame.thresholds[x].texture = resourceFrame.thresholds[x].texture or resourceFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
 			resourceFrame.thresholds[x].texture:SetAllPoints(resourceFrame.thresholds[x])
 			resourceFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
 			resourceFrame.thresholds[x]:SetFrameStrata(TRB.Data.settings.core.strata.level)
@@ -578,7 +644,7 @@ local function RedrawThresholdLines(settings)
 		for x = 1, entries do
 			passiveFrame.thresholds[x]:SetWidth(settings.thresholdWidth)
 			passiveFrame.thresholds[x]:SetHeight(settings.bar.height - borderSubtraction)
-			passiveFrame.thresholds[x].texture = passiveFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
+			passiveFrame.thresholds[x].texture = passiveFrame.thresholds[x].texture or passiveFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
 			passiveFrame.thresholds[x].texture:SetAllPoints(passiveFrame.thresholds[x])
 			passiveFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
 			passiveFrame.thresholds[x]:SetFrameStrata(TRB.Data.settings.core.strata.level)
@@ -587,11 +653,12 @@ local function RedrawThresholdLines(settings)
 		end
 	end
 
-	return thresholds
+	TRB.Frames.resourceFrame = resourceFrame
+	TRB.Frames.passiveFrame = passiveFrame
 end
 TRB.Functions.RedrawThresholdLines = RedrawThresholdLines
 
-local function ConstructResourceBar(settings)    
+local function ConstructResourceBar(settings)
     if settings ~= nil and settings.bar ~= nil then
         local barContainerFrame = TRB.Frames.barContainerFrame
         local resourceFrame = TRB.Frames.resourceFrame
@@ -631,7 +698,7 @@ local function ConstructResourceBar(settings)
                 self.isMoving = false
             end
         end)
-        
+
         barContainerFrame:SetMovable(settings.bar.dragAndDrop)
         barContainerFrame:EnableMouse(settings.bar.dragAndDrop)
 
@@ -685,7 +752,7 @@ local function ConstructResourceBar(settings)
         resourceFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
         resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		resourceFrame:SetFrameLevel(125)
-		        
+
         castingFrame:Show()
         castingFrame:SetMinMaxValues(0, settings.bar.width)
         castingFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
@@ -695,7 +762,7 @@ local function ConstructResourceBar(settings)
         castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting, true))
         castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         castingFrame:SetFrameLevel(90)
-        
+
         passiveFrame:Show()
         passiveFrame:SetMinMaxValues(0, settings.bar.width)
         passiveFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
@@ -721,7 +788,7 @@ local function ConstructResourceBar(settings)
         leftTextFrame.font:SetJustifyH("LEFT")
         leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
         leftTextFrame.font:Show()
-        
+
         middleTextFrame:Show()
         middleTextFrame:SetWidth(settings.bar.width)
         middleTextFrame:SetHeight(settings.bar.height * 3.5)
@@ -733,7 +800,7 @@ local function ConstructResourceBar(settings)
         middleTextFrame.font:SetJustifyH("CENTER")
         middleTextFrame.font:SetFont(settings.displayText.middle.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
         middleTextFrame.font:Show()
-        
+
         rightTextFrame:Show()
         rightTextFrame:SetWidth(settings.bar.width)
         rightTextFrame:SetHeight(settings.bar.height * 3.5)
@@ -805,8 +872,28 @@ local function AddToBarTextCache(input)
 				if z ~= nil then
 					local iconName = string.sub(input, a, z)
 					local spellId = string.sub(input, a+7, z-1)
-					local _, name, icon
-					name, _, icon = GetSpellInfo(spellId)
+					local _, icon
+					_, _, icon = GetSpellInfo(spellId)
+
+					if icon ~= nil then
+						match = true
+						if p ~= a then
+							returnText = returnText .. string.sub(input, p, a-1)
+						end
+
+						returnText = returnText .. "%s"
+						TRB.Data.lookup[iconName] = string.format("|T%s:0|t", icon)
+						table.insert(returnVariables, iconName)
+						p = z1 + 1
+					end
+				end
+			elseif string.sub(input, a+1, a+5) == "item_" then
+				z, z1 = string.find(input, "_", a+6)
+				if z ~= nil then
+					local iconName = string.sub(input, a, z)
+					local itemId = string.sub(input, a+6, z-1)
+					local _, icon
+					_, _, _, _, _, _, _, _, _, icon = GetItemInfo(itemId)
 
 					if icon ~= nil then
 						match = true
@@ -942,7 +1029,7 @@ local function GetReturnText(inputText)
     local cache = TRB.Functions.GetFromBarTextCache(inputText.text)
     local mapping = {}
     local cachedTextVariableLength = TRB.Functions.TableLength(cache.variables)
-    
+
     if cachedTextVariableLength > 0 then
         for y = 1, cachedTextVariableLength do
             table.insert(mapping, lookup[cache.variables[y]])
@@ -957,13 +1044,25 @@ local function GetReturnText(inputText)
     else
         inputText.text = ""
     end
-    
+
     return string.format("%s%s", inputText.color, inputText.text)
 end
 TRB.Functions.GetReturnText = GetReturnText
 
-local function IsTtdActive()
-    --To be implemented in each class/spec module
+-- Implemented separately in older 1-spec modules like Balance Druid and Elemental Shaman
+-- Implemented separately in Priest because Shadow is (still) a special snowflake with bar text to check
+local function IsTtdActive(settings)
+	if settings ~= nil and settings.displayText ~= nil then
+		if string.find(settings.displayText.left.text, "$ttd") or
+			string.find(settings.displayText.middle.text, "$ttd") or
+			string.find(settings.displayText.right.text, "$ttd") then
+			TRB.Data.snapshotData.targetData.ttdIsActive = true
+		else
+			TRB.Data.snapshotData.targetData.ttdIsActive = false
+		end
+	else
+		TRB.Data.snapshotData.targetData.ttdIsActive = false
+	end
 end
 TRB.Functions.IsTtdActive = IsTtdActive
 
@@ -1155,7 +1254,7 @@ local function ScanForLogicSymbols(input)
 	end
 
     local p = 0
-	local a, b, c, d, e, e_1, e_2, e_3, f, a1, b1, c1, d1, e1, e1_1, e1_2, e1_3, f
+	local a, b, c, d, e, e_1, e_2, e_3, f, a1, b1, c1, d1, e1, e1_1, e1_2, e1_3, f1
 	local currentIf = 0
 	local currentResult = 0
 	local min
@@ -1243,7 +1342,7 @@ local function ScanForLogicSymbols(input)
 				p = string.len(input) + 1
 				break
 			end
-			
+
 			table.insert(all, ins)
 		else
 			p = string.len(input) + 1
@@ -1289,7 +1388,7 @@ local function FindNextSymbolIndex(t, symbol, minIndex)
 			end
 		end
 	end
-	return nil	
+	return nil
 end
 TRB.Functions.FindNextSymbolIndex = FindNextSymbolIndex
 
@@ -1302,10 +1401,11 @@ local function ParseVariablesFromString(input)
 
 	local vars = {}
 	local logic = {}
-	
+
 	local scan = TRB.Functions.ScanForLogicSymbols(input)
 
 	local lastIndex = 0
+	local p = 0
 	while p <= string.len(input) do
 		local nextLogic1 = TRB.Functions.FindNextSymbolIndex(scan.orLogic, '|', lastIndex)
 		local nextLogic2 = TRB.Functions.FindNextSymbolIndex(scan.andLogic, '&', lastIndex)
@@ -1339,7 +1439,7 @@ local function RemoveInvalidVariablesFromBarText(input)
 
 	local lastIndex = 0
     while p <= string.len(input) do
-		local nextOpenIf = TRB.Functions.FindNextSymbolIndex(scan.all, '{', lastIndex)		
+		local nextOpenIf = TRB.Functions.FindNextSymbolIndex(scan.all, '{', lastIndex)
         if nextOpenIf ~= nil then
 			local nextCloseIf = TRB.Functions.FindNextSymbolIndex(scan.closeIf, '}', nextOpenIf.index+1)
 
@@ -1359,29 +1459,29 @@ local function RemoveInvalidVariablesFromBarText(input)
 
 						if elseOpenResult ~= nil and elseOpenResult.position == nextCloseResult.position + 1 then
 							elseCloseResult = TRB.Functions.FindNextSymbolIndex(scan.closeResult, ']', elseOpenResult.index)
-							
+
 							if elseCloseResult ~= nil then
 							-- We have if/else
 								hasElse = true
 							end
 						end
-						
+
 						local valid = false
 						local useNot = false
 						local var = string.trim(string.sub(input, nextOpenIf.position+1, nextCloseIf.position-1))
 						local notVar = string.sub(var, 1, 1)
-	
+
 						if notVar == "!" then
 							useNot = true
 							var = string.trim(string.sub(var, 2))
 						end
 
 						valid = TRB.Data.IsValidVariableForSpec(var)
-	
+
 						if useNot == true then
 							valid = not valid
 						end
-	
+
 						if valid == true then
 							-- TODO: Recursion goes here for "IF", once we find the matched ]
 							returnText = returnText .. string.sub(input, nextOpenResult.position+1, nextCloseResult.position-1)
@@ -1389,7 +1489,7 @@ local function RemoveInvalidVariablesFromBarText(input)
 							-- TODO: Recursion goes here for "ELSE", once we find to matched ]
 							returnText = returnText .. string.sub(input, elseOpenResult.position+1, elseCloseResult.position-1)
 						end
-                    
+
 						if hasElse == true then
 							p = elseCloseResult.position+1
 							lastIndex = elseCloseResult.index
@@ -1566,7 +1666,7 @@ local function FindDebuffById(spellId, onWhom, byWhom)
 	end
 end
 TRB.Functions.FindDebuffById = FindDebuffById
-    
+
 local function FindAuraByName(spellName, onWhom, filter, byWhom)
 	if onWhom == nil then
 		onWhom = "player"
@@ -1641,11 +1741,11 @@ local function IsSoulbindActive(id)
 	local soulbindId = C_Soulbinds.GetActiveSoulbindID()
     local soulbindData = C_Soulbinds.GetSoulbindData(soulbindId)
     local length = TableLength(soulbindData.tree.nodes)
-    
+
 	for x = 1, length do
 		if soulbindData.tree.nodes[x].conduitID == id then
 			return true
-		end        
+		end
 	end
 
 	return false
@@ -1687,7 +1787,7 @@ local function Import(input)
 	end
 
 	result, configuration = pcall(json.decode, decoded)
-		
+
 	if not result then
 		return -2
 	end
@@ -1695,7 +1795,7 @@ local function Import(input)
 	if not (configuration.core ~= nil or
 		(configuration.warrior ~= nil and configuration.warrior.arms ~= nil) or
 		(configuration.hunter ~= nil and (configuration.hunter.beastMastery ~= nil or configuration.hunter.marksmanship ~= nil or configuration.hunter.survival ~= nil)) or
-		(configuration.priest ~= nil and configuration.priest.shadow ~= nil) or
+		(configuration.priest ~= nil and (configuration.priest.holy ~= nil or configuration.priest.shadow ~= nil)) or
 		(configuration.shaman ~= nil and configuration.shaman.elemental ~= nil) or
 		(configuration.druid ~= nil and configuration.druid.balance ~= nil)) then
 		return -3
@@ -1703,11 +1803,11 @@ local function Import(input)
 
 	local existingSettings = TRB.Data.settings
 	result, mergedSettings = pcall(TRB.Functions.MergeSettings, existingSettings, configuration)
-	
+
 	if not result then
 		return -4
 	end
-	
+
 	TRB.Data.settings = mergedSettings
 	return 1
 end
@@ -1727,21 +1827,27 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		configuration.colors.threshold = settings.colors.threshold
 		configuration.thresholdWidth = settings.thresholdWidth
 		configuration.overcapThreshold = settings.overcapThreshold
-		
+
 		if classId == 1 and specId == 1 then -- Arms Warrior
 			configuration.thresholds = settings.thresholds
 		elseif classId == 3 then -- Hunters
 			configuration.thresholds = settings.thresholds
-			if specId == 1 then -- Beast Mastery Hunter
+			if specId == 1 then -- Beast Mastery
 			elseif specId == 2 then -- Marksmanship
 				configuration.endOfTrueshot = settings.endOfTrueshot
 			elseif specId == 3 then -- Survival
 				configuration.endOfCoordinatedAssault = settings.endOfCoordinatedAssault
 			end
-		elseif classId == 5 and specId == 3 then -- Shadow Priest
-			configuration.devouringPlagueThreshold = settings.devouringPlagueThreshold
-			configuration.searingNightmareThreshold = settings.searingNightmareThreshold
-			configuration.endOfVoidform = settings.endOfVoidform
+		elseif classId == 5 then -- Priests
+			if specId == 2 then -- Holy
+				configuration.thresholds = settings.thresholds
+				configuration.endOfApotheosis = settings.endOfApotheosis
+				configuration.flashConcentration = settings.flashConcentration
+			elseif specId == 3 then -- Shadow
+				configuration.devouringPlagueThreshold = settings.devouringPlagueThreshold
+				configuration.searingNightmareThreshold = settings.searingNightmareThreshold
+				configuration.endOfVoidform = settings.endOfVoidform
+			end
 		elseif classId == 7 and specId == 1 then -- Elemental Shaman
 			configuration.earthShockThreshold = settings.earthShockThreshold
 		elseif classId == 11 and specId == 1 then -- Balance Druid
@@ -1778,16 +1884,19 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		if classId == 1 and specId == 1 then -- Arms Warrior
 			configuration.ragePrecision = settings.ragePrecision
 		elseif classId == 3 then -- Hunters
-			if specId == 1 then -- Beast Mastery Hunter
+			if specId == 1 then -- Beast Mastery
 			elseif specId == 2 then -- Marksmanship
 			elseif specId == 3 then -- Survival
 			end
-		elseif classId == 5 and specId == 3 then -- Shadow Priest
-			configuration.hasteApproachingThreshold = settings.hasteApproachingThreshold
-			configuration.hasteThreshold = settings.hasteThreshold
-			configuration.s2mApproachingThreshold = settings.s2mApproachingThreshold
-			configuration.s2mThreshold = settings.s2mThreshold
-			configuration.insanityPrecision = settings.insanityPrecision
+		elseif classId == 5 then -- Priests
+			if specId == 2 then -- Holy
+			elseif specId == 3 then -- Shadow
+				configuration.hasteApproachingThreshold = settings.hasteApproachingThreshold
+				configuration.hasteThreshold = settings.hasteThreshold
+				configuration.s2mApproachingThreshold = settings.s2mApproachingThreshold
+				configuration.s2mThreshold = settings.s2mThreshold
+				configuration.insanityPrecision = settings.insanityPrecision
+			end
 		elseif classId == 7 and specId == 1 then -- Elemental Shaman
 		elseif classId == 11 and specId == 1 then -- Balance Druid
 			configuration.astralPowerPrecision = settings.astralPowerPrecision
@@ -1800,15 +1909,20 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		if classId == 1 and specId == 1 then -- Arms Warrior
 		elseif classId == 3 then -- Hunters
 			configuration.generation = settings.generation
-			if specId == 1 then -- Beast Mastery Hunter
+			if specId == 1 then -- Beast Mastery
 			elseif specId == 2 then -- Marksmanship
 			elseif specId == 3 then -- Survival
 			end
-		elseif classId == 5 and specId == 3 then -- Shadow Priest
-			configuration.mindbender = settings.mindbender
-			configuration.wrathfulFaerie = settings.wrathfulFaerie
-			configuration.auspiciousSpiritsTracker = settings.auspiciousSpiritsTracker
-			configuration.voidTendrilTracker = settings.voidTendrilTracker
+		elseif classId == 5 then -- Priests
+			if specId == 2 then -- Holy
+				configuration.wrathfulFaerie = settings.wrathfulFaerie
+				configuration.passiveGeneration = settings.passiveGeneration
+			elseif specId == 3 then -- Shadow
+				configuration.mindbender = settings.mindbender
+				configuration.wrathfulFaerie = settings.wrathfulFaerie
+				configuration.auspiciousSpiritsTracker = settings.auspiciousSpiritsTracker
+				configuration.voidTendrilTracker = settings.voidTendrilTracker
+			end
 		elseif classId == 7 and specId == 1 then -- Elemental Shaman
 		elseif classId == 11 and specId == 1 then -- Balance Druid
 		end
@@ -1866,7 +1980,8 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 	if classId ~= nil then -- One class
 		if classId == 1 and settings.warrior ~= nil then -- Warrior
 			configuration.warrior = {}
-			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.warrior.arms) > 0 then -- Arms				
+
+			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.warrior.arms) > 0 then -- Arms
 				configuration.warrior.arms = TRB.Functions.ExportConfigurationSections(1, 1, settings.warrior.arms, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 3 and settings.hunter ~= nil then -- Hunter
@@ -1875,7 +1990,7 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.hunter.beastMastery) > 0 then -- Beast Mastery
 				configuration.hunter.beastMastery = TRB.Functions.ExportConfigurationSections(3, 1, settings.hunter.beastMastery, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
-			
+
 			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.hunter.marksmanship) > 0 then -- Marksmanship
 				configuration.hunter.marksmanship = TRB.Functions.ExportConfigurationSections(3, 2, settings.hunter.marksmanship, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
@@ -1885,16 +2000,23 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			end
 		elseif classId == 5 and settings.priest ~= nil then -- Priest
 			configuration.priest = {}
+
+			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.priest.holy) > 0 then -- Holy
+				configuration.priest.holy = TRB.Functions.ExportConfigurationSections(5, 2, settings.priest.holy, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+
 			if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.priest.shadow) > 0 then -- Shadow
 				configuration.priest.shadow = TRB.Functions.ExportConfigurationSections(5, 3, settings.priest.shadow, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 7 and settings.shaman ~= nil then -- Shaman
 			configuration.shaman = {}
+
 			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.shaman.elemental) > 0 then -- Elemental
 				configuration.shaman.elemental = TRB.Functions.ExportConfigurationSections(7, 1, settings.shaman.elemental, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 11 and settings.druid ~= nil then -- Druid
 			configuration.druid = {}
+			
 			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.druid.balance) > 0 then -- Balance
 				configuration.druid.balance = TRB.Functions.ExportConfigurationSections(11, 1, settings.druid.balance, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
@@ -1904,7 +2026,7 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 
 		-- Arms Warrior
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(1, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
-		
+
 		-- Hunters
 		-- Beast Mastery
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
@@ -1912,13 +2034,16 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
 		-- Survival
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
-		
-		-- Shadow Priest
+
+		-- Priests
+		-- Holy
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(5, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		-- Shadow
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(5, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
-		
+
 		-- Elemental Shaman
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
-		
+
 		-- Balance Druid
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
 	end
@@ -1936,6 +2061,7 @@ local function ExportPopup(exportMessage, classId, specId, includeBarDisplay, in
 	StaticPopupDialogs["TwintopResourceBar_Export"].OnShow = function(self)
 		local configuration = TRB.Functions.ExportGetConfiguration(classId, specId, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
 		local output = TRB.Functions.Export(configuration)
+---@diagnostic disable-next-line: undefined-field
 		self.editBox:SetText(output)
 	end
 	StaticPopup_Show("TwintopResourceBar_Export")

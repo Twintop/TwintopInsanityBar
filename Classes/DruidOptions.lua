@@ -1,3 +1,4 @@
+
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 11 then --Only do this if we're on a Druid!
@@ -22,8 +23,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	TRB.Options.Druid.Feral = {}
 	TRB.Options.Druid.Guardian = {}
 	TRB.Options.Druid.Restoration = {}
-    
-    
+
+
 	local function BalanceLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
@@ -50,7 +51,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		return textSettings
 	end
-    
+
     local function BalanceLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
@@ -212,14 +213,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
     TRB.Options.Druid.LoadDefaultSettings = LoadDefaultSettings
 
-    
+
 	local function BalanceConstructResetDefaultsPanel(parent)
 		if parent == nil then
 			return
 		end
 
-		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls.balance
+		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.balance
 		local yCoord = 5
 		local f = nil
 
@@ -238,8 +238,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		StaticPopupDialogs["TwintopResourceBar_Reset"] = {
-			text = "Do you want to reset Twintop's Resource Bar back to it's default configuration? Only the Balance Druid settings will be changed. This will cause your UI to be reloaded!",
+		StaticPopupDialogs["TwintopResourceBar_Druid_Balance_Reset"] = {
+			text = "Do you want to reset Twintop's Resource Bar back to its default configuration? Only the Balance Druid settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -251,8 +251,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		StaticPopupDialogs["TwintopResourceBar_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (simple) configuration? Only the Balance Druid settings will be changed. This will cause your UI to be reloaded!",
+		StaticPopupDialogs["TwintopResourceBar_Druid_Balance_ResetBarTextSimple"] = {
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Balance Druid settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -264,8 +264,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		StaticPopupDialogs["TwintopResourceBar_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? Only the Balance Druid settings will be changed. This will cause your UI to be reloaded!",
+		StaticPopupDialogs["TwintopResourceBar_Druid_Balance_ResetBarTextAdvanced"] = {
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Balance Druid settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -277,8 +277,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		--[[StaticPopupDialogs["TwintopResourceBar_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? Only the Balance Druid settings will be changed. This will cause your UI to be reloaded!",
+		--[[StaticPopupDialogs["TwintopResourceBar_Druid_Balance_ResetBarTextNarrowAdvanced"] = {
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Balance Druid settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -294,118 +294,33 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(150)
-		f:SetHeight(30)
-		f:SetText("Reset to Defaults")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_Reset")
+		controls.resetButton = TRB.UiFunctions.BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Druid_Balance_Reset")
 		end)
 
 		yCoord = yCoord - 40
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextSimpleButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(dropdownWidth)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Simple)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_ResetBarTextSimple")
-		end)
-
+		controls.resetButton1 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Druid_Balance_ResetBarTextSimple")
+        end)
 		yCoord = yCoord - 40
+
 		--[[
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextNarrowAdvancedButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord2, yCoord)
-		f:SetWidth(dropdownWidth)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Narrow Advanced)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_ResetBarTextNarrowAdvanced")
+		controls.resetButton2 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton2:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Druid_Balance_ResetBarTextNarrowAdvanced")
 		end)
 		]]
 
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextAdvancedButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(dropdownWidth)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Full Advanced)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_ResetBarTextAdvanced")
+		controls.resetButton3 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Druid_Balance_ResetBarTextAdvanced")
 		end)
 
-		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
 	end
 
@@ -551,7 +466,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				})
 				barBorderFrame:Hide()
 			else
-				barBorderFrame:SetBackdrop({ 
+				barBorderFrame:SetBackdrop({
 					edgeFile = TRB.Data.settings.druid.balance.textures.border,
 					tile = true,
 					tileSize=4,
@@ -612,6 +527,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		if TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 			controls.checkBoxes.lockPosition:Disable()
 			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 		end
@@ -624,11 +540,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetChecked(TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay = self:GetChecked()
-			
-			if TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay then				
+
+			if TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Disable()
-				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)				
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 			else
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Enable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
 			end
@@ -637,8 +555,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			barContainerFrame:EnableMouse((not TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.balance.bar.dragAndDrop)
 			TRB.Functions.RepositionBar(TRB.Data.settings.druid.balance)
 		end)
-
-
 
 
 		yCoord = yCoord - 30
@@ -961,7 +877,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
 			TRB.Data.settings.druid.balance.textures.background = newValue
 			TRB.Data.settings.druid.balance.textures.backgroundName = newName
-			barContainerFrame:SetBackdrop({ 
+			barContainerFrame:SetBackdrop({
 				bgFile = TRB.Data.settings.druid.balance.textures.background,
 				tile = true,
 				tileSize = TRB.Data.settings.druid.balance.bar.width,
@@ -2167,7 +2083,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotUp.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.druid.balance.colors.text.dots.up = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -2187,7 +2103,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotPandemic.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.druid.balance.colors.text.dots.pandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -2207,13 +2123,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotDown.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.druid.balance.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
-		
+
 
 		yCoord = yCoord - 130
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
@@ -2252,7 +2168,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
-		TRB.Frames.interfaceSettingsFrame.controls.balance = controls
+		TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
 	end
 
 	local function BalanceConstructAudioAndTrackingPanel(parent)
@@ -2292,6 +2208,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Starsurge is usable")
 		f.tooltip = "Play an audio cue when Starsurge can be cast."
+---@diagnostic disable-next-line: undefined-field
 		f:SetChecked(TRB.Data.settings.druid.balance.audio.ssReady.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.balance.audio.ssReady.enabled = self:GetChecked()
@@ -2356,6 +2273,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Starfall is usable")
 		f.tooltip = "Play an audio cue when Starfall is usable. This supercedes the regular Starsurge audio sound if both are usable."
+---@diagnostic disable-next-line: undefined-field
 		f:SetChecked(TRB.Data.settings.druid.balance.audio.sfReady.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.balance.audio.sfReady.enabled = self:GetChecked()
@@ -2420,6 +2338,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Oneth's Clear Vision or Oneth's Perception proc occurs.")
 		f.tooltip = "Play an audio cue when an Oneth's Clear Vision or Oneth's Perception proc occurs. This supercedes the regular Starsurge and Starfall audio sound if both are usable."
+---@diagnostic disable-next-line: undefined-field
 		f:SetChecked(TRB.Data.settings.druid.balance.audio.onethsReady.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.balance.audio.onethsReady.enabled = self:GetChecked()
@@ -2485,6 +2404,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Astral Power")
 		f.tooltip = "Play an audio cue when your hardcast spell will overcap Astral Power."
+---@diagnostic disable-next-line: undefined-field
 		f:SetChecked(TRB.Data.settings.druid.balance.audio.overcap.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.balance.audio.overcap.enabled = self:GetChecked()
@@ -2545,8 +2465,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
 	end
-    
-	local function BalanceConstructBarTextDisplayPanel(parent)
+
+	local function BalanceConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
 		end
@@ -2565,29 +2485,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
 
+		TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 		controls.buttons.exportButton_Druid_Balance_BarText = TRB.UiFunctions.BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Balance_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Text).", 11, 1, false, false, false, true, false)
 		end)
 
-
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
-
 		yCoord = yCoord - 30
-		controls.labels.text = CreateFrame("Frame", nil, parent)
-		f = controls.labels.text
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		f:SetWidth(90)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("RIGHT")
-		f.font:SetSize(90, 20)
-		f.font:SetText("Left Text")
+		TRB.UiFunctions.BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.left = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.druid.balance.displayText.left.text,
 														500, 440, 24, xCoord+100, yCoord)
@@ -2595,24 +2500,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.druid.balance.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.balance)
 		end)
 
+
 		yCoord = yCoord - 30
-		controls.labels.text = CreateFrame("Frame", nil, parent)
-		f = controls.labels.text
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		f:SetWidth(90)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("RIGHT")
-		f.font:SetSize(90, 20)
-		f.font:SetText("Middle Text")
+		TRB.UiFunctions.BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.middle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.druid.balance.displayText.middle.text,
 														500, 440, 24, xCoord+100, yCoord)
@@ -2620,24 +2513,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.druid.balance.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.balance)
 		end)
 
+
 		yCoord = yCoord - 30
-		controls.labels.text = CreateFrame("Frame", nil, parent)
-		f = controls.labels.text
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		f:SetWidth(90)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("RIGHT")
-		f.font:SetSize(90, 20)
-		f.font:SetText("Right Text")
+		TRB.UiFunctions.BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.right = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.druid.balance.displayText.right.text,
 														500, 440, 24, xCoord+100, yCoord)
@@ -2645,125 +2526,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.druid.balance.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.balance)
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.instructions5Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions5Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("For more detailed information about Bar Text customization, see the TRB Wiki on GitHub.")
-
-		yCoord = yCoord - 25
-		controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructionsVar
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("For conditional display (only if $VAR is active/non-zero): {$VAR}[WHAT TO DISPLAY]")
-
-		yCoord = yCoord - 25
-		controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions2Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("Limited Boolean NOT logic for conditional display is supported via {!$VAR}")
-
-		yCoord = yCoord - 25
-		controls.labels.instructions3Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions3Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("IF/ELSE is supported via {$VAR}[TRUE output][FALSE output] and includes NOT support")
-
-		yCoord = yCoord - 25
-		controls.labels.instructions4Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions4Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("For icons use #ICONVARIABLENAME")
-		yCoord = yCoord - 25
-
-		local entries1 = TRB.Functions.TableLength(TRB.Data.barTextVariables.values)
-		for i=1, entries1 do
-			if TRB.Data.barTextVariables.values[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 135, 400, 15)
-				local height = 15
-				yCoord = yCoord - height - 5
-			end
-		end
-
-		local entries2 = TRB.Functions.TableLength(TRB.Data.barTextVariables.pipe)
-		for i=1, entries2 do
-			if TRB.Data.barTextVariables.pipe[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 135, 400, 15)
-				local height = 15
-				yCoord = yCoord - height - 5
-			end
-		end
-
-		---------
-
-		local entries3 = TRB.Functions.TableLength(TRB.Data.barTextVariables.icons)
-		for i=1, entries3 do
-			if TRB.Data.barTextVariables.icons[i].printInSettings == true then
-				local text = ""
-				if TRB.Data.barTextVariables.icons[i].icon ~= "" then
-					text = TRB.Data.barTextVariables.icons[i].icon .. " "
-				end
-				local height = 15
-				if TRB.Data.barTextVariables.icons[i].variable == "#casting" then
-					height = 15
-				end
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord, yCoord, 135, 400, height)
-				yCoord = yCoord - height - 5
-			end
-		end
+		TRB.Options.CreateBarTextInstructions(cache, parent, xCoord, yCoord)
 	end
 
 	local function BalanceConstructOptionsPanel()
@@ -2781,11 +2548,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local xOffset2 = 275
 		interfaceSettingsFrame.balanceDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Balance", UIParent)
 		interfaceSettingsFrame.balanceDisplayPanel.name = "Balance Druid"
+---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.balanceDisplayPanel.parent = parent.name
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.balanceDisplayPanel)
 
 		parent = interfaceSettingsFrame.balanceDisplayPanel
-		
+
 		controls.buttons = controls.buttons or {}
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Balance Druid", xCoord+xPadding, yCoord-5)
@@ -2818,19 +2586,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		PanelTemplates_TabResize(tabs[5], 0)
 		yCoord = yCoord - 15
 
-		for i = 1, 5 do 
+		for i = 1, 5 do
 			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Druid_Balance_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
 		end
 
 		tabsheets[1]:Show()
+		tabsheets[1].selected = true
+		tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 		parent.tabs = tabs
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
-		parent.tabsheets[1].selected = true
-		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
@@ -2838,7 +2606,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		BalanceConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 		BalanceConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
 		BalanceConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
-		BalanceConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild)
+		BalanceConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, TRB.Data)
 		BalanceConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
 	end
 

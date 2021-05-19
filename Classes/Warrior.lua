@@ -18,7 +18,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local specCache = {
 		arms = {
 			snapshotData = {},
-			barTextVariables = {}
+			barTextVariables = {
+				icons = {},
+				values = {}
+			}
 		}
 	}
 
@@ -370,11 +373,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			targetsHit = 0,
 			hitTime = nil
 		}
-
-        specCache.arms.barTextVariables = {
-			icons = {},
-			values = {}
-		}
 	end
 
 	local function Setup_Arms()
@@ -392,7 +390,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		-- This is done here so that we can get icons for the options menu!
 		specCache.arms.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Rage generating spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
             { variable = "#ancientAftershock", icon = spells.ancientAftershock.icon, description = "Ancient Aftershock", printInSettings = true },
 			{ variable = "#charge", icon = spells.charge.icon, description = "Charge", printInSettings = true },
@@ -473,7 +472,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		TRB.Functions.CheckCharacter()
 		TRB.Data.character.className = "warrior"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Rage)
-		TRB.Data.character.covenantId = C_Covenants.GetActiveCovenantID()
 
         if GetSpecialization() == 1 then		
 			TRB.Data.character.specName = "arms"            
@@ -490,21 +488,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
-
-	local function IsTtdActive(settings)
-		if settings ~= nil and settings.displayText ~= nil then
-			if string.find(settings.displayText.left.text, "$ttd") or
-				string.find(settings.displayText.middle.text, "$ttd") or
-				string.find(settings.displayText.right.text, "$ttd") then
-				TRB.Data.snapshotData.targetData.ttdIsActive = true
-			else
-				TRB.Data.snapshotData.targetData.ttdIsActive = false
-			end
-		else
-			TRB.Data.snapshotData.targetData.ttdIsActive = false
-		end
-    end
-	TRB.Functions.IsTtdActive = IsTtdActive
 
 	local function EventRegistration()
 		local specId = GetSpecialization()
@@ -539,6 +522,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Details.addonData.registered = true			
 		end
 	end
+	TRB.Functions.EventRegistration = EventRegistration
 
 	local function InitializeTarget(guid)
 		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
@@ -902,7 +886,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		}
 
 
-		lookup = TRB.Data.lookup or {}
+		local lookup = TRB.Data.lookup or {}
 		lookup["#ancientAftershock"] = TRB.Data.spells.ancientAftershock.icon
 		lookup["#charge"] = TRB.Data.spells.charge.icon
 		lookup["#cleave"] = TRB.Data.spells.cleave.icon
@@ -1296,6 +1280,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
+---@diagnostic disable-next-line: undefined-field
 								resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 								if frameLevel == 129 then
 									spell.thresholdUsable = true
@@ -1340,7 +1325,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local updateRateLimit = 0
 
 	local function TriggerResourceBarUpdates()
-		if GetSpecialization() ~= 1 and GetSpecialization() ~= 2 then
+		if GetSpecialization() ~= 1 then
 			TRB.Functions.HideResourceBar(true)
 			return
 		end
@@ -1523,7 +1508,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.RemoveTarget(guid)
+				TRB.Functions.RemoveTarget(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end

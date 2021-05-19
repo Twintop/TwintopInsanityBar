@@ -21,8 +21,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	TRB.Options.Shaman.Elemental = {}
 	TRB.Options.Shaman.Enhancement = {}
     TRB.Options.Shaman.Restoration = {}
-    
-    
+
+
 	local function ElementalLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
@@ -49,7 +49,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		return textSettings
 	end
-    
+
     local function ElementalLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
@@ -182,14 +182,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
     TRB.Options.Shaman.LoadDefaultSettings = LoadDefaultSettings
 
-    
+
 	local function ElementalConstructResetDefaultsPanel(parent)
 		if parent == nil then
 			return
 		end
 
-		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-		local controls = interfaceSettingsFrame.controls.elemental
+		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.elemental
 		local yCoord = 5
 		local f = nil
 
@@ -208,8 +207,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		StaticPopupDialogs["TwintopResourceBar_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to it's default configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
+		StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_Reset"] = {
+			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -221,8 +220,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		StaticPopupDialogs["TwintopResourceBar_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (simple) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
+		StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_ResetBarTextSimple"] = {
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -234,8 +233,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		StaticPopupDialogs["TwintopResourceBar_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (advanced) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
+		StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_ResetBarTextAdvanced"] = {
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -247,8 +246,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		--[[StaticPopupDialogs["TwintopResourceBar_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to it's default (narrow advanced) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
+		--[[StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_ResetBarTextNarrowAdvanced"] = {
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Elemental Shaman settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
@@ -264,118 +263,33 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(150)
-		f:SetHeight(30)
-		f:SetText("Reset to Defaults")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_Reset")
+		controls.resetButton = TRB.UiFunctions.BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_Reset")
 		end)
 
 		yCoord = yCoord - 40
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextSimpleButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Simple)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_ResetBarTextSimple")
+		controls.resetButton1 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 
 		--[[
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextNarrowAdvancedButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord2, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Narrow Advanced)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_ResetBarTextNarrowAdvanced")
+		controls.resetButton2 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton2:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_ResetBarTextNarrowAdvanced")
 		end)
 		]]
-        
-		controls.resetButton = CreateFrame("Button", "TwintopResourceBar_ResetBarTextAdvancedButton", parent)
-		f = controls.resetButton
-		f:SetPoint("TOPLEFT", parent, "TOPLEFT", xCoord, yCoord)
-		f:SetWidth(250)
-		f:SetHeight(30)
-		f:SetText("Reset Bar Text (Full Advanced)")
-		f:SetNormalFontObject("GameFontNormal")
-		f.ntex = f:CreateTexture()
-		f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-		f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ntex:SetAllPoints()
-		f:SetNormalTexture(f.ntex)
-		f.htex = f:CreateTexture()
-		f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-		f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.htex:SetAllPoints()
-		f:SetHighlightTexture(f.htex)
-		f.ptex = f:CreateTexture()
-		f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-		f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-		f.ptex:SetAllPoints()
-		f:SetPushedTexture(f.ptex)
-		f:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_ResetBarTextAdvanced")
+
+		controls.resetButton3 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_ResetBarTextAdvanced")
 		end)
 
-		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
 
@@ -426,11 +340,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.bar.width = value
-			
+
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.shaman.elemental.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
-			
+
 			TRB.Functions.UpdateBarWidth(TRB.Data.settings.shaman.elemental)
 
 			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
@@ -448,7 +362,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.elemental.bar.height = value
-			
+
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.shaman.elemental.bar.width / TRB.Data.constants.borderWidthFactor))
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -518,7 +432,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				})
 				barBorderFrame:Hide()
 			else
-				barBorderFrame:SetBackdrop({ 
+				barBorderFrame:SetBackdrop({
 					edgeFile = TRB.Data.settings.shaman.elemental.textures.border,
 					tile = true,
 					tileSize=4,
@@ -573,6 +487,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		if TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 			controls.checkBoxes.lockPosition:Disable()
 			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 		end
@@ -585,11 +500,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetChecked(TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay = self:GetChecked()
-			
-			if TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay then				
+
+			if TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay then
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Disable()
-				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)				
+				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 			else
+---@diagnostic disable-next-line: undefined-field
 				controls.checkBoxes.lockPosition:Enable()
 				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
 			end
@@ -922,7 +839,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
 			TRB.Data.settings.shaman.elemental.textures.background = newValue
 			TRB.Data.settings.shaman.elemental.textures.backgroundName = newName
-			barContainerFrame:SetBackdrop({ 
+			barContainerFrame:SetBackdrop({
 				bgFile = TRB.Data.settings.shaman.elemental.textures.background,
 				tile = true,
 				tileSize = TRB.Data.settings.shaman.elemental.bar.width,
@@ -1112,7 +1029,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
@@ -1134,7 +1051,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.earthShock.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.bar.earthShock = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1154,7 +1071,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barContainerFrame:SetBackdropColor(r, g, b, 1-a)
@@ -1176,7 +1093,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.casting.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     castingFrame:SetStatusBarColor(r, g, b, 1-a)
@@ -1218,7 +1135,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-                    
+
 					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
 					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
@@ -1245,7 +1162,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1265,7 +1182,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1626,7 +1543,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1649,7 +1566,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1672,7 +1589,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1738,7 +1655,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.currentMaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1760,7 +1677,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                     end
                     --Text doesn't care about Alpha, but the color picker does!
                     a = 0.0
-        
+
                     controls.colors.castingMaelstromText.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1885,7 +1802,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotUp.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.dots.up = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1905,7 +1822,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotPandemic.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.dots.pandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -1925,7 +1842,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                         r, g, b = ColorPickerFrame:GetColorRGB()
                         a = OpacitySliderFrame:GetValue()
                     end
-        
+
                     controls.colors.dotDown.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.shaman.elemental.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
@@ -2116,8 +2033,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
-    
-	local function ElementalConstructBarTextDisplayPanel(parent)
+
+	local function ElementalConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
 		end
@@ -2144,20 +2061,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.labels.text = CreateFrame("Frame", nil, parent)
-		f = controls.labels.text
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		f:SetWidth(90)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("RIGHT")
-		f.font:SetSize(90, 20)
-		f.font:SetText("Left Text")
+		controls.labels.leftText = TRB.UiFunctions.BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.left = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.shaman.elemental.displayText.left.text,
 														500, 440, 24, xCoord+100, yCoord)
@@ -2165,24 +2069,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.shaman.elemental.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.elemental)
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.text = CreateFrame("Frame", nil, parent)
-		f = controls.labels.text
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		f:SetWidth(90)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("RIGHT")
-		f.font:SetSize(90, 20)
-		f.font:SetText("Middle Text")
+		controls.labels.middleText = TRB.UiFunctions.BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.middle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.shaman.elemental.displayText.middle.text,
 														500, 440, 24, xCoord+100, yCoord)
@@ -2190,24 +2081,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.shaman.elemental.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.elemental)
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.text = CreateFrame("Frame", nil, parent)
-		f = controls.labels.text
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		f:SetWidth(90)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontNormal)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("RIGHT")
-		f.font:SetSize(90, 20)
-		f.font:SetText("Right Text")
+		controls.labels.rightText = TRB.UiFunctions.BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.right = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.shaman.elemental.displayText.right.text,
 														500, 440, 24, xCoord+100, yCoord)
@@ -2215,125 +2093,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.shaman.elemental.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive()
+			TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.elemental)
 		end)
 
 		yCoord = yCoord - 30
-		controls.labels.instructions5Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions5Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("For more detailed information about Bar Text customization, see the TRB Wiki on GitHub.")
-
-		yCoord = yCoord - 25
-		controls.labels.instructionsVar = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructionsVar
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("For conditional display (only if $VAR is active/non-zero): {$VAR}[WHAT TO DISPLAY]")
-
-		yCoord = yCoord - 25
-		controls.labels.instructions2Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions2Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("Limited Boolean NOT logic for conditional display is supported via {!$VAR}")
-
-		yCoord = yCoord - 25
-		controls.labels.instructions3Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions3Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("IF/ELSE is supported via {$VAR}[TRUE output][FALSE output] and includes NOT support")
-
-		yCoord = yCoord - 25
-		controls.labels.instructions4Var = CreateFrame("Frame", nil, parent)
-		f = controls.labels.instructions4Var
-		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", parent)
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		f:SetWidth(maxOptionsWidth-xPadding)
-		f:SetHeight(20)
-		f.font = f:CreateFontString(nil, "BACKGROUND")
-		f.font:SetFontObject(GameFontHighlight)
-		f.font:SetPoint("LEFT", f, "LEFT")
-		f.font:SetSize(0, 14)
-		f.font:SetJustifyH("LEFT")
-		f.font:SetSize(maxOptionsWidth-xPadding, 20)
-		f.font:SetText("For icons use #ICONVARIABLENAME")
-		yCoord = yCoord - 25
-
-		local entries1 = TRB.Functions.TableLength(TRB.Data.barTextVariables.values)
-		for i=1, entries1 do
-			if TRB.Data.barTextVariables.values[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.values[i].variable, TRB.Data.barTextVariables.values[i].description, xCoord, yCoord, 135, 400, 15)
-				local height = 15
-				yCoord = yCoord - height - 5
-			end
-		end
-
-		local entries2 = TRB.Functions.TableLength(TRB.Data.barTextVariables.pipe)
-		for i=1, entries2 do
-			if TRB.Data.barTextVariables.pipe[i].printInSettings == true then
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.pipe[i].variable, TRB.Data.barTextVariables.pipe[i].description, xCoord, yCoord, 135, 400, 15)
-				local height = 15
-				yCoord = yCoord - height - 5
-			end
-		end
-
-		---------
-
-		local entries3 = TRB.Functions.TableLength(TRB.Data.barTextVariables.icons)
-		for i=1, entries3 do
-			if TRB.Data.barTextVariables.icons[i].printInSettings == true then
-				local text = ""
-				if TRB.Data.barTextVariables.icons[i].icon ~= "" then
-					text = TRB.Data.barTextVariables.icons[i].icon .. " "
-				end
-				local height = 15
-				if TRB.Data.barTextVariables.icons[i].variable == "#casting" then
-					height = 15
-				end
-				TRB.UiFunctions.BuildDisplayTextHelpEntry(parent, TRB.Data.barTextVariables.icons[i].variable, text .. TRB.Data.barTextVariables.icons[i].description, xCoord, yCoord, 135, 400, height)
-				yCoord = yCoord - height - 5
-			end
-		end
+		TRB.Options.CreateBarTextInstructions(cache, parent, xCoord, yCoord)
 	end
 
 	local function ElementalConstructOptionsPanel()
@@ -2351,17 +2115,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local xOffset2 = 275
 		interfaceSettingsFrame.elementalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Elemental", UIParent)
 		interfaceSettingsFrame.elementalDisplayPanel.name = "Elemental Shaman"
+---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.elementalDisplayPanel.parent = parent.name
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.elementalDisplayPanel)
 
 		parent = interfaceSettingsFrame.elementalDisplayPanel
-		
+
 		controls.buttons = controls.buttons or {}
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Elemental Shaman", xCoord+xPadding, yCoord-5)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
-		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
@@ -2389,27 +2154,27 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		PanelTemplates_TabResize(tabs[5], 0)
 		yCoord = yCoord - 15
 
-		for i = 1, 5 do 
+		for i = 1, 5 do
 			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Shaman_Elemental_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
 		end
 
 		tabsheets[1]:Show()
+		tabsheets[1].selected = true
+		tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 		parent.tabs = tabs
 		parent.tabsheets = tabsheets
 		parent.lastTab = tabsheets[1]
 		parent.lastTabId = 1
-		parent.tabsheets[1].selected = true
-		parent.tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-		
+
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 
 		ElementalConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 		ElementalConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
 		ElementalConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
-		ElementalConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild)
+		ElementalConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, TRB.Data)
 		ElementalConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
 	end
 
