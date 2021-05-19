@@ -390,6 +390,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		-- This is done here so that we can get icons for the options menu!
 		specCache.arms.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Rage generating spell you are currently hardcasting", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via it's item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via it's spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
             { variable = "#ancientAftershock", icon = spells.ancientAftershock.icon, description = "Ancient Aftershock", printInSettings = true },

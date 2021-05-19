@@ -872,8 +872,28 @@ local function AddToBarTextCache(input)
 				if z ~= nil then
 					local iconName = string.sub(input, a, z)
 					local spellId = string.sub(input, a+7, z-1)
-					local _, name, icon
-					name, _, icon = GetSpellInfo(spellId)
+					local _, icon
+					_, _, icon = GetSpellInfo(spellId)
+
+					if icon ~= nil then
+						match = true
+						if p ~= a then
+							returnText = returnText .. string.sub(input, p, a-1)
+						end
+
+						returnText = returnText .. "%s"
+						TRB.Data.lookup[iconName] = string.format("|T%s:0|t", icon)
+						table.insert(returnVariables, iconName)
+						p = z1 + 1
+					end
+				end
+			elseif string.sub(input, a+1, a+5) == "item_" then
+				z, z1 = string.find(input, "_", a+6)
+				if z ~= nil then
+					local iconName = string.sub(input, a, z)
+					local spellId = string.sub(input, a+6, z-1)
+					local _, icon
+					_, _, _, _, _, _, _, _, _, icon = GetItemInfo(spellId)
 
 					if icon ~= nil then
 						match = true
