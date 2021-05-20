@@ -2,7 +2,7 @@
 ## Title: Twintop's Resource Bar
 ## Author: Twintop
 ## AuthorServer: Frostmourne-US/OCE
-## Version: 9.0.5.11
+## Version: 9.0.5.12
 ## SavedVariables: TwintopInsanityBarSettings
 ## DefaultState: enabled
 ## Notes: Multi-class Resource Bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.

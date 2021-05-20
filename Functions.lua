@@ -318,8 +318,10 @@ local function FillSpellData(spells)
 			if spells[k]["itemId"] ~= nil then
 				local _, name, icon
 				name, _, _, _, _, _, _, _, _, icon = GetItemInfo(spells[k]["itemId"])
-				spells[k]["icon"] = string.format("|T%s:0|t", icon)
-				spells[k]["name"] = name
+				if name ~= nil and icon ~= nil then
+					spells[k]["icon"] = string.format("|T%s:0|t", icon)
+					spells[k]["name"] = name
+				end
 			elseif spells[k]["id"] ~= nil then
 				local _, name, icon
 				name, _, icon = GetSpellInfo(spells[k]["id"])
@@ -507,7 +509,7 @@ local function ShowResourceBar()
 	end
 
 	TRB.Data.snapshotData.isTracking = true
-	TRB.Frames.barContainerFrame:Show()
+	TRB.Functions.HideResourceBar()
 end
 TRB.Functions.ShowResourceBar = ShowResourceBar
 

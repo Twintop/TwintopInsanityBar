@@ -290,13 +290,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			-- Potions
 			potionOfSpiritualClarity = {
 				id = 307161,
-				itemId = 171272,
+				--itemId = 171272,
 				name = "",
 				icon = "",
 				mana = 1000,
 				duration = 10,
 				ticks = 10
 			},
+			--[[
 			spiritualRejuvenationPotion = {
 				itemId = 171269,
 				name = "",
@@ -312,6 +313,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 			},
+			]]
 
 			-- Torghast
 			dreamspunMushrooms = {
@@ -925,7 +927,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		-- This is done here so that we can get icons for the options menu!
 		specCache.holy.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the mana spending spell you are currently casting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#apotheosis", icon = spells.apotheosis.icon, description = spells.apotheosis.name, printInSettings = true },
@@ -972,11 +974,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			{ variable = "#psc", icon = spells.potionOfSpiritualClarity.icon, description = spells.potionOfSpiritualClarity.name, printInSettings = true },
 			{ variable = "#potionOfSpiritualClarity", icon = spells.potionOfSpiritualClarity.icon, description = spells.potionOfSpiritualClarity.name, printInSettings = false },
-			{ variable = "#srp", icon = spells.spiritualRejuvenationPotion.icon, description = spells.spiritualRejuvenationPotion.name, printInSettings = true },
+			--[[{ variable = "#srp", icon = spells.spiritualRejuvenationPotion.icon, description = spells.spiritualRejuvenationPotion.name, printInSettings = true },
 			{ variable = "#spiritualRejuvenationPotion", icon = spells.spiritualRejuvenationPotion.icon, description = spells.spiritualRejuvenationPotion.name, printInSettings = false },
 			{ variable = "#spiritualManaPotion", icon = spells.spiritualManaPotion.icon, description = spells.spiritualManaPotion.name, printInSettings = true },
 			{ variable = "#soulfulManaPotion", icon = spells.soulfulManaPotion.icon, description = spells.soulfulManaPotion.name, printInSettings = true },
-
+			]]
 		}
 		specCache.holy.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -1127,7 +1129,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		-- This is done here so that we can get icons for the options menu!
 		specCache.shadow.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Insanity generating spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#vf", icon = spells.voidform.icon, description = "Voidform", printInSettings = true },
@@ -2249,9 +2251,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#psc"] = TRB.Data.spells.potionOfSpiritualClarity.icon
 		lookup["#potionOfSpiritualClarity"] = TRB.Data.spells.potionOfSpiritualClarity.icon
 		lookup["#srp"] = TRB.Data.spells.spiritualRejuvenationPotion.icon
-		lookup["#spiritualRejuvenationPotion"] = TRB.Data.spells.spiritualRejuvenationPotion.icon
-		lookup["#spiritualManaPotion"] = TRB.Data.spells.spiritualManaPotion.icon
-		lookup["#soulfulManaPotion"] = TRB.Data.spells.soulfulManaPotion.icon
+		--lookup["#spiritualRejuvenationPotion"] = TRB.Data.spells.spiritualRejuvenationPotion.icon
+		--lookup["#spiritualManaPotion"] = TRB.Data.spells.spiritualManaPotion.icon
+		--lookup["#soulfulManaPotion"] = TRB.Data.spells.soulfulManaPotion.icon
 
 		lookup["$manaPlusCasting"] = manaPlusCasting
 		lookup["$manaPlusPassive"] = manaPlusPassive
