@@ -2250,7 +2250,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#wrathfulFaerie"] = TRB.Data.spells.wrathfulFaerie.icon
 		lookup["#psc"] = TRB.Data.spells.potionOfSpiritualClarity.icon
 		lookup["#potionOfSpiritualClarity"] = TRB.Data.spells.potionOfSpiritualClarity.icon
-		lookup["#srp"] = TRB.Data.spells.spiritualRejuvenationPotion.icon
+		--lookup["#srp"] = TRB.Data.spells.spiritualRejuvenationPotion.icon
 		--lookup["#spiritualRejuvenationPotion"] = TRB.Data.spells.spiritualRejuvenationPotion.icon
 		--lookup["#spiritualManaPotion"] = TRB.Data.spells.spiritualManaPotion.icon
 		--lookup["#soulfulManaPotion"] = TRB.Data.spells.soulfulManaPotion.icon
