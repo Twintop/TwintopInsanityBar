@@ -23,7 +23,7 @@ A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insan
 Currently supported specs:
 - Druid - Balance
 - Hunter - Beast Mastery, Marksmanship, Survival
-- Priest - Shadow
+- Priest - Holy, Shadow
 - Shaman - Elemental
 - Warrior - Arms
 
