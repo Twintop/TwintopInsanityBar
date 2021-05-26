@@ -526,11 +526,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			barContainerFrame:EnableMouse((not TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.balance.bar.dragAndDrop)
 		end)
 
-		if TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay then
----@diagnostic disable-next-line: undefined-field
-			controls.checkBoxes.lockPosition:Disable()
-			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
-		end
+		TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay)
 
 		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.pinToPRD
@@ -541,15 +537,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay = self:GetChecked()
 
-			if TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay then
----@diagnostic disable-next-line: undefined-field
-				controls.checkBoxes.lockPosition:Disable()
-				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
-			else
----@diagnostic disable-next-line: undefined-field
-				controls.checkBoxes.lockPosition:Enable()
-				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
-			end
+			TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay)
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.balance.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.balance.bar.dragAndDrop)

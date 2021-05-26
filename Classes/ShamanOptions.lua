@@ -486,12 +486,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			barContainerFrame:EnableMouse((not TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.shaman.elemental.bar.dragAndDrop)
 		end)
 
-		if TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay then
----@diagnostic disable-next-line: undefined-field
-			controls.checkBoxes.lockPosition:Disable()
-			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
-		end
-
+		TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay)
+		
 		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.pinToPRD
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
@@ -501,15 +497,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay = self:GetChecked()
 
-			if TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay then
----@diagnostic disable-next-line: undefined-field
-				controls.checkBoxes.lockPosition:Disable()
-				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
-			else
----@diagnostic disable-next-line: undefined-field
-				controls.checkBoxes.lockPosition:Enable()
-				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
-			end
+			TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay)
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.shaman.elemental.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.shaman.elemental.bar.dragAndDrop)

@@ -3436,32 +3436,30 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					if TRB.Data.character.items.flashConcentration then
 						local affectingCombat = UnitAffectingCombat("player")
-						if affectingCombat then
-							if TRB.Data.settings.priest.holy.flashConcentration.enabledUncapped and (TRB.Data.snapshotData.flashConcentration.stacks == nil or TRB.Data.snapshotData.flashConcentration.stacks < TRB.Data.spells.flashConcentration.maxStacks) then
-								barBorderColor = TRB.Data.settings.priest.holy.colors.bar.flashConcentration
+						if TRB.Data.settings.priest.holy.flashConcentration.enabledUncapped and (affectingCombat or TRB.Data.settings.priest.holy.flashConcentration.enabledUncappedOutOfCombat) and (TRB.Data.snapshotData.flashConcentration.stacks == nil or TRB.Data.snapshotData.flashConcentration.stacks < TRB.Data.spells.flashConcentration.maxStacks) then
+							barBorderColor = TRB.Data.settings.priest.holy.colors.bar.flashConcentration
+						end
+
+						if TRB.Data.snapshotData.flashConcentration.remainingTime ~= nil and TRB.Data.snapshotData.flashConcentration.remainingTime > 0 then
+							local fcTimeThreshold = 0
+							if TRB.Data.settings.priest.holy.flashConcentration.mode == "gcd" then
+								local gcd = TRB.Functions.GetCurrentGCDTime()
+								fcTimeThreshold = gcd * TRB.Data.settings.priest.holy.flashConcentration.gcdsMax
+							elseif TRB.Data.settings.priest.holy.flashConcentration.mode == "time" then
+								fcTimeThreshold = TRB.Data.settings.priest.holy.flashConcentration.timeMax
 							end
 
-							if TRB.Data.snapshotData.flashConcentration.remainingTime ~= nil and TRB.Data.snapshotData.flashConcentration.remainingTime > 0 then
-								local fcTimeThreshold = 0
-								if TRB.Data.settings.priest.holy.flashConcentration.mode == "gcd" then
-									local gcd = TRB.Functions.GetCurrentGCDTime()
-									fcTimeThreshold = gcd * TRB.Data.settings.priest.holy.flashConcentration.gcdsMax
-								elseif TRB.Data.settings.priest.holy.flashConcentration.mode == "time" then
-									fcTimeThreshold = TRB.Data.settings.priest.holy.flashConcentration.timeMax
+							if TRB.Data.snapshotData.flashConcentration.remainingTime <= fcTimeThreshold then
+								if TRB.Data.settings.priest.holy.flashConcentration.enabled and (affectingCombat or TRB.Data.settings.priest.holy.flashConcentration.enabledUncappedOutOfCombat) then
+									barBorderColor = TRB.Data.settings.priest.holy.colors.bar.flashConcentration
 								end
 
-								if TRB.Data.snapshotData.flashConcentration.remainingTime <= fcTimeThreshold then
-									if TRB.Data.settings.priest.holy.flashConcentration.enabled then
-										barBorderColor = TRB.Data.settings.priest.holy.colors.bar.flashConcentration
-									end
-
-									if TRB.Data.settings.priest.holy.audio.flashConcentration.enabled and TRB.Data.snapshotData.audio.flashConcentrationCue == false then
-										TRB.Data.snapshotData.audio.flashConcentrationCue = true
-										PlaySoundFile(TRB.Data.settings.priest.holy.audio.flashConcentration.sound, TRB.Data.settings.core.audio.channel.channel)
-									end
-								else
-									TRB.Data.snapshotData.audio.flashConcentrationCue = false
+								if TRB.Data.settings.priest.holy.audio.flashConcentration.enabled and TRB.Data.snapshotData.audio.flashConcentrationCue == false then
+									TRB.Data.snapshotData.audio.flashConcentrationCue = true
+									PlaySoundFile(TRB.Data.settings.priest.holy.audio.flashConcentration.sound, TRB.Data.settings.core.audio.channel.channel)
 								end
+							else
+								TRB.Data.snapshotData.audio.flashConcentrationCue = false
 							end
 						end
 					end

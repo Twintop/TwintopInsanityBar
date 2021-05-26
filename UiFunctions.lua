@@ -409,3 +409,16 @@ local function CreateTab(name, displayText, id, parent, width, rightOf)
     return tab
 end
 TRB.UiFunctions.CreateTab = CreateTab
+
+local function ToggleCheckboxEnabled(checkbox, enable)
+    if enable then
+---@diagnostic disable-next-line: undefined-field
+        checkbox:Enable()
+        getglobal(checkbox:GetName().."Text"):SetTextColor(1, 1, 1)
+    else
+---@diagnostic disable-next-line: undefined-field
+        checkbox:Disable()
+        getglobal(checkbox:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
+    end
+end
+TRB.UiFunctions.ToggleCheckboxEnabled = ToggleCheckboxEnabled

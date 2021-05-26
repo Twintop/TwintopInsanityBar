@@ -136,6 +136,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			flashConcentration = {
 				enabled=true,
 				enabledUncapped=false,
+				enabledOutOfCombat=true,
+				enabledUncappedOutOfCombat=false,
 				mode="gcd",
 				gcdsMax=3.5,
 				timeMax=5.0
@@ -821,11 +823,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			barContainerFrame:EnableMouse((not TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.priest.holy.bar.dragAndDrop)
 		end)
 
-		if TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay then
----@diagnostic disable-next-line: undefined-field
-			controls.checkBoxes.lockPosition:Disable()
-			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
-		end
+		TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay)
 
 		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.pinToPRD
@@ -836,15 +834,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay = self:GetChecked()
 
-			if TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay then
----@diagnostic disable-next-line: undefined-field
-				controls.checkBoxes.lockPosition:Disable()
-				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
-			else
----@diagnostic disable-next-line: undefined-field
-				controls.checkBoxes.lockPosition:Enable()
-				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
-			end
+			TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay)
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.priest.holy.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.priest.holy.bar.dragAndDrop)
@@ -1983,7 +1973,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 30
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Flash Concentration Expiration Configuration", 0, yCoord)
 
+
+		--NOTE: the order of these checkboxes is reversed!
 		yCoord = yCoord - 30
+		controls.checkBoxes.flashConcentrationOOC = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_flashConcentrationOOC_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.flashConcentrationOOC
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-20)
+		getglobal(f:GetName() .. 'Text'):SetText("Also change bar border color for expiration when out of combat?")
+		f.tooltip = "Changes the bar's border color for Flash Concentration when your buff will expire when both in and out of combat."
+		f:SetChecked(TRB.Data.settings.priest.holy.flashConcentration.enabledOutOfCombat)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.flashConcentration.enabledOutOfCombat = self:GetChecked()
+		end)
+
 		controls.checkBoxes.flashConcentration = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_flashConcentration_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashConcentration
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -1992,20 +1994,40 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(TRB.Data.settings.priest.holy.flashConcentration.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.priest.holy.flashConcentration.enabled = self:GetChecked()
+
+			TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.flashConcentrationOOC, TRB.Data.settings.priest.holy.flashConcentration.enabled)
 		end)
 
-		yCoord = yCoord - 20
+		TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.flashConcentrationOOC, TRB.Data.settings.priest.holy.flashConcentration.enableOutOfCombat)
+
+
+		--NOTE: the order of these checkboxes is reversed!
+		yCoord = yCoord - 40
+		controls.checkBoxes.flashConcentrationUncappedOOC = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_flashConcentrationUncappedOOC_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.flashConcentrationUncappedOOC
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-20)
+		getglobal(f:GetName() .. 'Text'):SetText("Also change bar border color for < 5 stacks when out of combat?")
+		f.tooltip = "Changes the bar's border color for Flash Concentration when you do not have max stacks when both in and out of combat."
+		f:SetChecked(TRB.Data.settings.priest.holy.flashConcentration.enabledUncappedOutOfCombat)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.flashConcentration.enabledUncappedOutOfCombat = self:GetChecked()
+		end)
+
 		controls.checkBoxes.flashConcentrationUncapped = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_flashConcentrationUncapped_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashConcentrationUncapped
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change bar border when your Flash Concentration buff has < 5 stacks (if equipped)")
 		f.tooltip = "Changes the bar border color when your Flash Concentration buff has fewer than 5 (max) stacks."
 		f:SetChecked(TRB.Data.settings.priest.holy.flashConcentration.enabledUncapped)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.priest.holy.flashConcentration.enabledUncapped = self:GetChecked()
+
+			TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.flashConcentrationUncappedOOC, TRB.Data.settings.priest.holy.flashConcentration.enabledUncapped)
 		end)
 
-		yCoord = yCoord - 40
+		TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.flashConcentrationUncappedOOC, TRB.Data.settings.priest.holy.flashConcentration.enabledUncapped)
+
+		yCoord = yCoord - 60
 		controls.checkBoxes.flashConcentrationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_flashConcentration_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.flashConcentrationModeGCDs
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -3531,11 +3553,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			barContainerFrame:EnableMouse((not TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.priest.shadow.bar.dragAndDrop)
 		end)
 
-		if TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay then
----@diagnostic disable-next-line: undefined-field
-			controls.checkBoxes.lockPosition:Disable()
-			getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
-		end
+		TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay)
 
 		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.pinToPRD
@@ -3546,15 +3564,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay = self:GetChecked()
 
-			if TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay then
----@diagnostic disable-next-line: undefined-field
-				controls.checkBoxes.lockPosition:Disable()
-				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
-			else
----@diagnostic disable-next-line: undefined-field
-				controls.checkBoxes.lockPosition:Enable()
-				getglobal(controls.checkBoxes.lockPosition:GetName().."Text"):SetTextColor(1, 1, 1)
-			end
+			TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay)
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.priest.shadow.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.priest.shadow.bar.dragAndDrop)
