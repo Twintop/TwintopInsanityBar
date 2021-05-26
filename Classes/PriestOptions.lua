@@ -114,7 +114,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
-				showCasting=true
+				showCasting=true,
+				holyWordChastiseEnabled=false,
+				holyWordSanctifyEnabled=true,
+				holyWordSerenityEnabled=true
 			},
 			wrathfulFaerie={
 				mode="time",
@@ -169,7 +172,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					passive="FF8080FF",
 					surgeOfLightBorderChange1=true,
 					surgeOfLightBorderChange2=true,
-					innervateBorderChange = true
+					innervateBorderChange=true,
 					--flashAlpha=0.70,
 					--flashPeriod=0.5,
 					--flashEnabled=true,
@@ -1325,6 +1328,39 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)]]
 
 		yCoord = yCoord - 70
+		controls.checkBoxes.holyWordChastiseEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordChastiseEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.holyWordChastiseEnabled
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change mana bar color for Holy Word: Chastise cooldown")
+		f.tooltip = "This will change the mana bar color when your current cast will complete the cooldown of Holy Word: Chastise."
+		f:SetChecked(TRB.Data.settings.priest.holy.bar.holyWordChastiseEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.bar.holyWordChastiseEnabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 20
+		controls.checkBoxes.holyWordSanctifyEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSanctifyEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.holyWordSanctifyEnabled
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change mana bar color for Holy Word: Sanctify cooldown")
+		f.tooltip = "This will change the mana bar color when your current cast will complete the cooldown of Holy Word: Sanctify."
+		f:SetChecked(TRB.Data.settings.priest.holy.bar.holyWordSanctifyEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.bar.holyWordSanctifyEnabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 20
+		controls.checkBoxes.holyWordSerenityEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSerenityEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.holyWordSerenityEnabled
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change mana bar color for Holy Word: Serenity cooldown")
+		f.tooltip = "This will change the mana bar color when your current cast will complete the cooldown of Holy Word: Serenity."
+		f:SetChecked(TRB.Data.settings.priest.holy.bar.holyWordSerenityEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.bar.holyWordSerenityEnabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 30
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -3263,13 +3299,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Priest_Shadow_ResetBarTextSimple")
         end)
-		yCoord = yCoord - 40
 
+		yCoord = yCoord - 40
 		controls.resetButton2 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
 		controls.resetButton2:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Priest_Shadow_ResetBarTextNarrowAdvanced")
 		end)
 
+		yCoord = yCoord - 40
 		controls.resetButton3 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
 		controls.resetButton3:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Priest_Shadow_ResetBarTextAdvanced")

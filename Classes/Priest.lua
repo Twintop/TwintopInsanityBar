@@ -3664,17 +3664,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								local remaining1 = holyWordCooldownRemaining1 - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction) - castTimeRemains
 								local remaining2 = holyWordCooldownRemaining2 - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction2) - castTimeRemains
 
-								if remaining1 <= 0 and remaining2 > 0 then
+								if remaining1 <= 0 and remaining2 > 0 and TRB.Data.settings.priest.holy.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey .. "Enabled"] then
 									resourceBarColor = TRB.Data.settings.priest.holy.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]
-								elseif remaining1 > 0 and remaining2 <= 0 then
+								elseif remaining1 > 0 and remaining2 <= 0 and TRB.Data.settings.priest.holy.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey2 .. "Enabled"] then
 									resourceBarColor = TRB.Data.settings.priest.holy.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey2]
-								elseif remaining1 <= 0 and remaining2 <= 0 then
+								elseif remaining1 <= 0 and remaining2 <= 0 and TRB.Data.settings.priest.holy.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey .. "Enabled"] then
 									resourceBarColor = TRB.Data.settings.priest.holy.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]
 								end
 							else
 								local holyWordCooldownRemaining = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey])
 
-								if (holyWordCooldownRemaining - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction) - castTimeRemains) <= 0 then
+								if (holyWordCooldownRemaining - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction) - castTimeRemains) <= 0 and TRB.Data.settings.priest.holy.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey .. "Enabled"] then
 									resourceBarColor = TRB.Data.settings.priest.holy.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]
 								end
 							end
