@@ -1841,8 +1841,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local _serpentStingCount = TRB.Data.snapshotData.targetData.serpentSting or 0
 		local serpentStingCount = _serpentStingCount
 
-		if TRB.Data.settings.hunter.marksmanship.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentSting then
+		if TRB.Data.settings.hunter.marksmanship.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentSting then
 				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining > TRB.Data.spells.serpentSting.pandemicTime then
 					serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.marksmanship.colors.text.dots.up, _serpentStingCount)
 				else
@@ -2013,8 +2013,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local _serpentStingCount = TRB.Data.snapshotData.targetData.serpentSting or 0
 		local serpentStingCount = _serpentStingCount
 
-		if TRB.Data.settings.hunter.survival.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentSting then
+		if TRB.Data.settings.hunter.survival.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil  and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentSting then
 				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining > TRB.Data.spells.serpentSting.pandemicTime then
 					serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.survival.colors.text.dots.up, _serpentStingCount)
 				else
@@ -3191,7 +3191,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					elseif spellId == TRB.Data.spells.serpentSting.id then
 						InitializeTarget(destGUID)
 						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-						if type == "SPELL_AURA_APPLIED" then -- SS Applied to Target
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SS Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = true
 							TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
 						elseif type == "SPELL_AURA_REMOVED" then
@@ -3245,7 +3245,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					elseif spellId == TRB.Data.spells.serpentSting.id then
 						InitializeTarget(destGUID)
 						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-						if type == "SPELL_AURA_APPLIED" then -- SS Applied to Target
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SS Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = true
 							TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
 						elseif type == "SPELL_AURA_REMOVED" then

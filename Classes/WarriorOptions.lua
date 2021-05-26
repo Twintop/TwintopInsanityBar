@@ -1955,7 +1955,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		end)
 
-		controls.colors.dotDown = TRB.UiFunctions.BuildColorPicker(parent, "DoT is not active oncurrent target", TRB.Data.settings.warrior.arms.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
+		controls.colors.dotDown = TRB.UiFunctions.BuildColorPicker(parent, "DoT is not active on current target", TRB.Data.settings.warrior.arms.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
 		f = controls.colors.dotDown
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then

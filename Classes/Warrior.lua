@@ -820,8 +820,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local _deepWoundsCount = TRB.Data.snapshotData.targetData.deepWounds or 0
 		local deepWoundsCount = _deepWoundsCount
 
-		if TRB.Data.settings.warrior.arms.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rend then
+		if TRB.Data.settings.warrior.arms.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rend then
 				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining > TRB.Data.spells.rend.pandemicTime then
 					rendCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.up, _rendCount)
 				else
@@ -831,7 +831,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				rendCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.down, _rendCount)
 			end
 
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWounds then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWounds then
 				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining > TRB.Data.spells.deepWounds.pandemicTime then
 					deepWoundsCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.up, _deepWoundsCount)
 				else
@@ -1432,7 +1432,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					elseif spellId == TRB.Data.spells.rend.id then
 						InitializeTarget(destGUID)
 						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-						if type == "SPELL_AURA_APPLIED" then -- Rend Applied to Target
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rend Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].rend = true
 							TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.rend + 1
 						elseif type == "SPELL_AURA_REMOVED" then
@@ -1444,7 +1444,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					elseif spellId == TRB.Data.spells.deepWounds.id then
 						InitializeTarget(destGUID)
 						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-						if type == "SPELL_AURA_APPLIED" then -- Deep Wounds Applied to Target
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Deep Wounds Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].deepWounds = true
 							TRB.Data.snapshotData.targetData.deepWounds = TRB.Data.snapshotData.targetData.deepWounds + 1
 						elseif type == "SPELL_AURA_REMOVED" then

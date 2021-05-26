@@ -487,7 +487,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay)
-		
+
 		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.pinToPRD
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
@@ -1817,7 +1817,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)
 
-		controls.colors.dotDown = TRB.UiFunctions.BuildColorPicker(parent, "DoT is not active oncurrent target", TRB.Data.settings.shaman.elemental.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
+		controls.colors.dotDown = TRB.UiFunctions.BuildColorPicker(parent, "DoT is not active on current target", TRB.Data.settings.shaman.elemental.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
 		f = controls.colors.dotDown
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then

@@ -59,7 +59,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					procs = 0,
 					time = 0
 				}
-			}
+			},
+			dots = {
+				swpCount = 0
+			},
 		}
 
 		specCache.holy.character = {
@@ -181,6 +184,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				holyWordKey = "holyWordChastise",
 				holyWordReduction = 4
+			},
+			shadowWordPain = {
+				id = 589,
+				icon = "",
+				name = "",
+				baseDuration = 16,
+				pandemic = true,
+				pandemicTime = 16 * 0.3
 			},
 			symbolOfHope = {
 				id = 64901,
@@ -339,6 +350,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			ttdIsActive = false,
 			currentTargetGuid = nil,
 			wrathfulFaerieGuid = nil,
+			shadowWordPain = 0,
 			targets = {}
 		}
 		specCache.holy.snapshotData.innervate = {
@@ -979,6 +991,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#spiritualManaPotion", icon = spells.spiritualManaPotion.icon, description = spells.spiritualManaPotion.name, printInSettings = true },
 			{ variable = "#soulfulManaPotion", icon = spells.soulfulManaPotion.icon, description = spells.soulfulManaPotion.name, printInSettings = true },
 			]]
+
+			{ variable = "#swp", icon = spells.shadowWordPain.icon, description = "Shadow Word: Pain", printInSettings = true },
+			{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = "Shadow Word: Pain", printInSettings = false },
 		}
 		specCache.holy.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -1048,6 +1063,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			
 			{ variable = "$potionCooldown", description = "How long, in seconds, is left on your potion's cooldown in MM:SS format", printInSettings = true, color = false },
 			{ variable = "$potionCooldownSeconds", description = "How long, in seconds, is left on your potion's cooldown in seconds", printInSettings = true, color = false },
+
+			{ variable = "$swpCount", description = "Number of Shadow Word: Pains active on targets", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -1469,6 +1486,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local specId = GetSpecialization()
 
 		if specId == 2 then
+			if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
+				TRB.Functions.InitializeTarget(guid)
+				TRB.Data.snapshotData.targetData.targets[guid].shadowWordPain = false
+				TRB.Data.snapshotData.targetData.targets[guid].shadowWordPainRemaining = 0
+			end
 		elseif specId == 3 then
 			if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
 				TRB.Functions.InitializeTarget(guid)
@@ -1488,6 +1510,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local specId = GetSpecialization()
 
 		if specId == 2 then -- Holy
+			local swpTotal = 0
+			for tguid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
+				if (currentTime - TRB.Data.snapshotData.targetData.targets[tguid].lastUpdate) > 10 then
+					TRB.Data.snapshotData.targetData.targets[tguid].shadowWordPain = false
+					TRB.Data.snapshotData.targetData.targets[tguid].shadowWordPainRemaining = 0
+				else
+					if TRB.Data.snapshotData.targetData.targets[tguid].shadowWordPain == true then
+						swpTotal = swpTotal + 1
+					end
+				end
+			end
+
+			TRB.Data.snapshotData.targetData.shadowWordPain = swpTotal
 		elseif specId == 3 then -- Shadow
 			local swpTotal = 0
 			local vtTotal = 0
@@ -1530,7 +1565,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Functions.TargetsCleanup(clearAll)
 		if clearAll == true then
 			local specId = GetSpecialization()
-			if specId == 3 then
+			if specId == 2 then
+				TRB.Data.snapshotData.targetData.shadowWordPain = 0
+			elseif specId == 3 then
 				TRB.Data.snapshotData.targetData.shadowWordPain = 0
 				TRB.Data.snapshotData.targetData.vampiricTouch = 0
 				TRB.Data.snapshotData.targetData.devouringPlague = 0
@@ -2022,10 +2059,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if TRB.Data.snapshotData.targetData.auspiciousSpirits > 0 then
 					valid = true
 				end
-			elseif var == "$swpCount" then
-				if TRB.Data.snapshotData.targetData.shadowWordPain > 0 then
-					valid = true
-				end
 			elseif var == "$vtCount" then
 				if TRB.Data.snapshotData.targetData.vampiricTouch > 0 then
 					valid = true
@@ -2058,6 +2091,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		elseif var == "$wfTime" then
 			if TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time > 0 then
+				valid = true
+			end
+		elseif var == "$swpCount" then
+			if TRB.Data.snapshotData.targetData.shadowWordPain > 0 then
 				valid = true
 			end
 		end
@@ -2175,6 +2212,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$fcTime
 		local fcTime = string.format("%.1f", TRB.Data.snapshotData.flashConcentration.remainingTime or 0)
 
+		-----------
+		--$swpCount
+		local _shadowWordPainCount = TRB.Data.snapshotData.targetData.shadowWordPain or 0
+		local shadowWordPainCount = _shadowWordPainCount
+
+		if TRB.Data.settings.priest.holy.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPain then
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining > TRB.Data.spells.shadowWordPain.pandemicTime then
+					shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.holy.colors.text.dots.up, _shadowWordPainCount)
+				else
+					shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.holy.colors.text.dots.pandemic, _shadowWordPainCount)
+				end
+			else
+				shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.holy.colors.text.dots.down, _shadowWordPainCount)
+			end
+		end
+
 		Global_TwintopResourceBar.resource.passive = _passiveMana
 		Global_TwintopResourceBar.resource.wrathfulFaerie = _wfMana or 0
 		Global_TwintopResourceBar.resource.potionOfSpiritualClarity = _pscMana or 0
@@ -2203,6 +2257,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		Global_TwintopResourceBar.symbolOfHope = {
 			mana = _sohMana,
 			ticks = TRB.Data.snapshotData.symbolOfHope.ticksRemaining or 0
+		}
+		Global_TwintopResourceBar.dots = {
+			swpCount = _shadowWordPainCount or 0
 		}
 
 
@@ -2254,6 +2311,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--lookup["#spiritualRejuvenationPotion"] = TRB.Data.spells.spiritualRejuvenationPotion.icon
 		--lookup["#spiritualManaPotion"] = TRB.Data.spells.spiritualManaPotion.icon
 		--lookup["#soulfulManaPotion"] = TRB.Data.spells.soulfulManaPotion.icon
+		
+		lookup["#swp"] = TRB.Data.spells.shadowWordPain.icon
+		lookup["#shadowWordPain"] = TRB.Data.spells.shadowWordPain.icon
 
 		lookup["$manaPlusCasting"] = manaPlusCasting
 		lookup["$manaPlusPassive"] = manaPlusPassive
@@ -2306,6 +2366,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$solStacks"] = solStacks
 		lookup["$solTime"] = solTime
 		lookup["$apotheosisTime"] = apotheosisTime
+
+		lookup["$swpCount"] = shadowWordPainCount
 
 		TRB.Data.lookup = lookup
 	end
@@ -2417,8 +2479,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _vampiricTouchCount = TRB.Data.snapshotData.targetData.vampiricTouch or 0
 		local vampiricTouchCount = _vampiricTouchCount
 
-		if TRB.Data.settings.priest.shadow.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPain then
+		if TRB.Data.settings.priest.shadow.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPain then
 				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining > TRB.Data.spells.shadowWordPain.pandemicTime then
 					shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.up, _shadowWordPainCount)
 				else
@@ -2428,7 +2490,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.down, _shadowWordPainCount)
 			end
 
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouch then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouch then
 				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouchRemaining > TRB.Data.spells.vampiricTouch.pandemicTime then
 					vampiricTouchCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.up, _vampiricTouchCount)
 				else
@@ -2512,8 +2574,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				insanity = _asInsanity
 			},
 			dots = {
-				swpCount = shadowWordPainCount or 0,
-				vtCount = vampiricTouchCount or 0,
+				swpCount = _shadowWordPainCount or 0,
+				vtCount = _vampiricTouchCount or 0,
 				dpCount = devouringPlagueCount or 0
 			},
 			mindbender = {
@@ -2557,8 +2619,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			insanity = _asInsanity
 		}
 		Global_TwintopResourceBar.dots = {
-			swpCount = shadowWordPainCount or 0,
-			vtCount = vampiricTouchCount or 0,
+			swpCount = _shadowWordPainCount or 0,
+			vtCount = _vampiricTouchCount or 0,
 			dpCount = devouringPlagueCount or 0
 		}
 		Global_TwintopResourceBar.mindbender = {
@@ -3309,6 +3371,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.snapshotData.potion.onCooldown = true
 		else
 			TRB.Data.snapshotData.potion.onCooldown = false
+		end
+
+		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPain then
+				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.shadowWordPain.id, "target", "player"))
+
+				if expiration ~= nil then
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining = expiration - currentTime
+				end
+			end
 		end
 	end
 
@@ -4066,18 +4138,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.deathAndMadness.insanity = TRB.Data.snapshotData.deathAndMadness.ticksRemaining * TRB.Data.spells.deathAndMadness.insanity
 							TRB.Data.snapshotData.deathAndMadness.lastTick = currentTime
 						end
-					elseif spellId == TRB.Data.spells.shadowWordPain.id then
-						InitializeTarget(destGUID)
-						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-						if type == "SPELL_AURA_APPLIED" then -- SWP Applied to Target
-							TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = true
-							TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain + 1
-						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = false
-							TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPainRemaining = 0
-							TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain - 1
-						--elseif type == "SPELL_PERIODIC_DAMAGE" then
-						end
 					elseif spellId == TRB.Data.spells.mindSear.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_CAST_SUCCESS" then
 							if TRB.Data.snapshotData.mindSear.hitTime == nil then --This is a new cast without target data
@@ -4097,7 +4157,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == TRB.Data.spells.vampiricTouch.id then
 						InitializeTarget(destGUID)
 						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-						if type == "SPELL_AURA_APPLIED" then -- VT Applied to Target
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- VT Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouch = true
 							TRB.Data.snapshotData.targetData.vampiricTouch = TRB.Data.snapshotData.targetData.vampiricTouch + 1
 						elseif type == "SPELL_AURA_REMOVED" then
@@ -4109,7 +4169,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == TRB.Data.spells.devouringPlague.id then
 						InitializeTarget(destGUID)
 						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-						if type == "SPELL_AURA_APPLIED" then -- DP Applied to Target
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- DP Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlague = true
 							TRB.Data.snapshotData.targetData.devouringPlague = TRB.Data.snapshotData.targetData.devouringPlague + 1
 						elseif type == "SPELL_AURA_REMOVED" then
@@ -4193,6 +4253,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 				elseif settings.wrathfulFaerie.enabled and spellId == TRB.Data.spells.wrathfulFaerieFermata.energizeId and type == "SPELL_ENERGIZE" then
 					TRB.Data.snapshotData.wrathfulFaerie.fermata.procTime = currentTime
+				elseif spellId == TRB.Data.spells.shadowWordPain.id then
+					InitializeTarget(destGUID)
+					TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SWP Applied to Target
+						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = true
+						TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain + 1
+					elseif type == "SPELL_AURA_REMOVED" then
+						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = false
+						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPainRemaining = 0
+						TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain - 1
+					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+					end
 				end
 			elseif specId == 3 and settings.voidTendrilTracker and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.idTick or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.idTick) and CheckVoidTendrilExists(sourceGUID) then
 				if spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.idTick and type == "SPELL_DAMAGE" then

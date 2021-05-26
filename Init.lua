@@ -63,12 +63,13 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 		self.characterCheckSinceLastUpdate  = 0
 	end
 
+	local guid = UnitGUID("target")
+	if TRB.Data.snapshotData.targetData.currentTargetGuid ~= guid then
+		TRB.Data.snapshotData.targetData.currentTargetGuid = guid
+	end
+
 	if TRB.Data.snapshotData.targetData.ttdIsActive and self.ttdSinceLastUpdate >= TRB.Data.settings.core.ttd.sampleRate then -- in seconds
 		local currentTime = GetTime()
-		local guid = UnitGUID("target")
-		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= guid then
-			TRB.Data.snapshotData.targetData.currentTargetGuid = guid
-		end
 
 		if guid ~= nil then
 			TRB.Functions.InitializeTarget_Class(guid)
