@@ -1122,8 +1122,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			{ variable = "$trueshotTime", description = "Time remaining on Trueshot buff", printInSettings = true, color = false },
 			{ variable = "lockAndLoadTime", description = "Time remaining on Lock and Load buff", printInSettings = true, color = false },
-			{ variable = "$ssCount", description = "Number of Serpent Stings active on targets", printInSettings = true, color = false },
+
 			{ variable = "$serpentSting", description = "Is Serpent Sting talented? Logic variable only!", printInSettings = true, color = false },
+			
+			{ variable = "$ssCount", description = "Number of Serpent Stings active on targets", printInSettings = true, color = false },
+			{ variable = "$ssTime", description = "Time remaining on Serpent Sting on your current target", printInSettings = true, color = false },
 
 			{ variable = "$flayersMarkTime", description = "Time remaining on Flayer's Mark buff", printInSettings = true, color = false },
 
@@ -1199,8 +1202,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Focus Total", printInSettings = false, color = false },
 
 			{ variable = "$coordinatedAssaultTime", description = "Time remaining on Coordinated Assault buff", printInSettings = true, color = false },
+
 			{ variable = "$ssCount", description = "Number of Serpent Stings active on targets", printInSettings = true, color = false },
-			{ variable = "$serpentSting", description = "Is Serpent Sting talented? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$ssTime", description = "Time remaining on Serpent Sting on your current target", printInSettings = true, color = false },
 
 			{ variable = "$toeFocus", description = "Focus from Terms of Engagement", printInSettings = true, color = false },
 			{ variable = "$toeTicks", description = "Number of ticks left on Terms of Engagement", printInSettings = true, color = false },
@@ -1548,6 +1552,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Data.snapshotData.targetData.serpentSting > 0 then
 				valid = true
 			end
+		elseif var == "$ssTime" then
+			if not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining > 0 then
+				valid = true
+			end
 		end
 
 		return valid
@@ -1837,20 +1845,32 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			vigilTime = string.format("%.1f", _vigilTime)
 		end
 
-		--$ssCount
+		--$ssCount and $ssTime
 		local _serpentStingCount = TRB.Data.snapshotData.targetData.serpentSting or 0
 		local serpentStingCount = _serpentStingCount
+		local _serpentStingTime = 0
+		
+		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
+			_serpentStingTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining or 0
+		end
+
+		local serpentStingTime
 
 		if TRB.Data.settings.hunter.marksmanship.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentSting then
 				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining > TRB.Data.spells.serpentSting.pandemicTime then
 					serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.marksmanship.colors.text.dots.up, _serpentStingCount)
+					serpentStingTime = string.format("|c%s%.1f|r", TRB.Data.settings.hunter.marksmanship.colors.text.dots.up, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining)
 				else
 					serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.marksmanship.colors.text.dots.pandemic, _serpentStingCount)
+					serpentStingTime = string.format("|c%s%.1f|r", TRB.Data.settings.hunter.marksmanship.colors.text.dots.pandemic, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining)
 				end
 			else
 				serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.marksmanship.colors.text.dots.down, _serpentStingCount)
+				serpentStingTime = string.format("|c%s%.1f|r", TRB.Data.settings.hunter.marksmanship.colors.text.dots.down, 0)
 			end
+		else
+			serpentStingTime = string.format("%.1f", _serpentStingTime)
 		end
 
 		----------------------------
@@ -1890,6 +1910,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$flayersMarkTime"] = flayersMarkTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
 		lookup["$ssCount"] = serpentStingCount
+		lookup["$ssTime"] = serpentStingTime
 		lookup["$focusTotal"] = focusTotal
 		lookup["$focusMax"] = TRB.Data.character.maxResource
 		lookup["$focus"] = currentFocus
@@ -2010,19 +2031,33 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 		--$ssCount
+
+		--$ssCount and $ssTime
 		local _serpentStingCount = TRB.Data.snapshotData.targetData.serpentSting or 0
 		local serpentStingCount = _serpentStingCount
+		local _serpentStingTime = 0
+		
+		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
+			_serpentStingTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining or 0
+		end
 
-		if TRB.Data.settings.hunter.survival.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil  and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+		local serpentStingTime
+
+		if TRB.Data.settings.hunter.survival.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentSting then
 				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining > TRB.Data.spells.serpentSting.pandemicTime then
 					serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.survival.colors.text.dots.up, _serpentStingCount)
+					serpentStingTime = string.format("|c%s%.1f|r", TRB.Data.settings.hunter.survival.colors.text.dots.up, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining)
 				else
 					serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.survival.colors.text.dots.pandemic, _serpentStingCount)
+					serpentStingTime = string.format("|c%s%.1f|r", TRB.Data.settings.hunter.survival.colors.text.dots.pandemic, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining)
 				end
 			else
 				serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.survival.colors.text.dots.down, _serpentStingCount)
+				serpentStingTime = string.format("|c%s%.1f|r", TRB.Data.settings.hunter.survival.colors.text.dots.down, 0)
 			end
+		else
+			serpentStingTime = string.format("%.1f", _serpentStingTime)
 		end
 
 		----------------------------
@@ -2066,6 +2101,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$nesingwarysTime"] = nesingwarysTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
 		lookup["$ssCount"] = serpentStingCount
+		lookup["$ssTime"] = serpentStingTime
 		lookup["$focusTotal"] = focusTotal
 		lookup["$focusMax"] = TRB.Data.character.maxResource
 		lookup["$focus"] = currentFocus

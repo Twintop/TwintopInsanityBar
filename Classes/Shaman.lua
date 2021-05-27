@@ -209,17 +209,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-			{ variable = "#lightningBolt", icon = TRB.Data.spells.lightningBolt.icon, description = "Lightning Bolt", printInSettings = true },
-			{ variable = "#lavaBurst", icon = TRB.Data.spells.lavaBurst.icon, description = "Lava Burst", printInSettings = true },
-			{ variable = "#elementalBlast", icon = TRB.Data.spells.elementalBlast.icon, description = "Elemental Blast", printInSettings = true },
-			{ variable = "#chainLightning", icon = TRB.Data.spells.chainLightning.icon, description = "Chain Lightning", printInSettings = true },
-			{ variable = "#lavaBeam", icon = TRB.Data.spells.lavaBeam.icon, description = "Lava Beam", printInSettings = true },
-			{ variable = "#echoingShock", icon = TRB.Data.spells.echoingShock.icon, description = "Echoing Shock", printInSettings = true },
-			{ variable = "#icefury", icon = TRB.Data.spells.icefury.icon, description = "Icefury", printInSettings = true },
-			{ variable = "#ascendance", icon = TRB.Data.spells.ascendance.icon, description = "Ascendance", printInSettings = true },
-			{ variable = "#flameShock", icon = TRB.Data.spells.flameShock.icon, description = "Flame Shock", printInSettings = true },
-			{ variable = "#frostShock", icon = TRB.Data.spells.frostShock.icon, description = "Frost Shock", printInSettings = true },
-			{ variable = "#lightningShield", icon = TRB.Data.spells.lightningShield.icon, description = "Lightning Shield", printInSettings = true },
+			{ variable = "#ascendance", icon = TRB.Data.spells.ascendance.icon, description = TRB.Data.spells.ascendance.name, printInSettings = true },
+			{ variable = "#chainLightning", icon = TRB.Data.spells.chainLightning.icon, description = TRB.Data.spells.chainLightning.name, printInSettings = true },
+			{ variable = "#echoingShock", icon = TRB.Data.spells.echoingShock.icon, description = TRB.Data.spells.echoingShock.name, printInSettings = true },
+			{ variable = "#elementalBlast", icon = TRB.Data.spells.elementalBlast.icon, description = TRB.Data.spells.elementalBlast.name, printInSettings = true },
+			{ variable = "#flameShock", icon = TRB.Data.spells.flameShock.icon, description = TRB.Data.spells.flameShock.name, printInSettings = true },
+			{ variable = "#frostShock", icon = TRB.Data.spells.frostShock.icon, description = TRB.Data.spells.frostShock.name, printInSettings = true },
+			{ variable = "#icefury", icon = TRB.Data.spells.icefury.icon, description = TRB.Data.spells.icefury.name, printInSettings = true },
+			{ variable = "#lavaBeam", icon = TRB.Data.spells.lavaBeam.icon, description = TRB.Data.spells.lavaBeam.name, printInSettings = true },
+			{ variable = "#lavaBurst", icon = TRB.Data.spells.lavaBurst.icon, description = TRB.Data.spells.lavaBurst.name, printInSettings = true },
+			{ variable = "#lightningBolt", icon = TRB.Data.spells.lightningBolt.icon, description = TRB.Data.spells.lightningBolt.name, printInSettings = true },
+			{ variable = "#lightningShield", icon = TRB.Data.spells.lightningShield.icon, description = TRB.Data.spells.lightningShield.name, printInSettings = true },
+			{ variable = "#stormkeeper", icon = TRB.Data.spells.stormkeeper.icon, description = TRB.Data.spells.stormkeeper.name, printInSettings = true },
 		}
 		TRB.Data.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -246,9 +247,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Maelstrom Total", printInSettings = false, color = false },   
 
 			{ variable = "$fsCount", description = "Number of Flame Shocks active on targets", printInSettings = true, color = false },
+			{ variable = "$fsTime", description = "Time remaining on Flame Shock on your current target", printInSettings = true, color = false },
+
 			{ variable = "$ifStacks", description = "Number of Icefury Frost Shock stacks remaining", printInSettings = true, color = false },
 			{ variable = "$ifMaelstrom", description = "Total Maelstrom from available Icefury Frost Shock stacks", printInSettings = true, color = false },
 			{ variable = "$ifTime", description = "Time remaining on Icefury buff", printInSettings = true, color = false },
+
+			{ variable = "$skStacks", description = "Number of Stormkeeper stacks remaining", printInSettings = true, color = false },
+			{ variable = "$skTime", description = "Time remaining on Stormkeeper buff", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -405,6 +411,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			if TRB.Data.snapshotData.targetData.flameShock > 0 then
 				valid = true
 			end
+		elseif var == "$fsTime" then
+			if not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining > 0 then
+				valid = true
+			end
 		elseif var == "$ifMaelstrom" then
 			if TRB.Data.snapshotData.icefury.maelstrom > 0 then
 				valid = true
@@ -415,6 +425,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		elseif var == "$ifTime" then
 			if TRB.Data.snapshotData.icefury.startTime ~= nil and TRB.Data.snapshotData.icefury.startTime > 0 then
+				valid = true
+			end
+		elseif var == "$skStacks" then
+			if TRB.Data.snapshotData.stormkeeper.stacksRemaining > 0 then
+				valid = true
+			end
+		elseif var == "$skTime" then
+			if TRB.Data.snapshotData.stormkeeper.startTime ~= nil and TRB.Data.snapshotData.stormkeeper.startTime > 0 then
 				valid = true
 			end
 		else
@@ -468,20 +486,32 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local maelstromPlusPassive = string.format("|c%s%.0f|r", currentMaelstromColor, _maelstromPlusPassive)
 
 		----------
-		--$fsCount
+		--$fsCount and $fsTime
 		local _flameShockCount = TRB.Data.snapshotData.targetData.flameShock or 0
 		local flameShockCount = _flameShockCount
+		local _flameShockTime = 0
+		
+		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
+			_flameShockTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining or 0
+		end
+
+		local flameShockTime
 
 		if TRB.Data.settings.shaman.elemental.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShock then
 				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining > TRB.Data.spells.flameShock.pandemicTime then
 					flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.up, _flameShockCount)
+					flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.up, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining)
 				else
 					flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.pandemic, _flameShockCount)
+					flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.pandemic, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining)
 				end
 			else
 				flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.down, _flameShockCount)
+				flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.down, 0)
 			end
+		else
+			flameShockTime = string.format("%.1f", _flameShockTime)
 		end
 
 		----------
@@ -496,6 +526,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			icefuryTime = string.format("%.1f", math.abs(currentTime - (TRB.Data.snapshotData.icefury.startTime + TRB.Data.spells.icefury.duration)))
 		end
 
+		--$skStacks
+		local stormkeeperStacks = TRB.Data.snapshotData.stormkeeper.stacksRemaining or 0
+		--$skStacks
+		local stormkeeperTime = 0
+		if TRB.Data.snapshotData.stormkeeper.startTime ~= nil then
+			stormkeeperTime = string.format("%.1f", math.abs(currentTime - (TRB.Data.snapshotData.stormkeeper.startTime + TRB.Data.spells.stormkeeper.duration)))
+		end
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveMaelstrom
@@ -513,18 +550,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		}
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#lightningBolt"] = TRB.Data.spells.lightningBolt.icon
-		lookup["#lavaBurst"] = TRB.Data.spells.lavaBurst.icon
-		lookup["#elementalBlast"] = TRB.Data.spells.elementalBlast.icon
-		lookup["#chainLightning"] = TRB.Data.spells.chainLightning.icon
-		lookup["#lavaBeam"] = TRB.Data.spells.lavaBeam.icon
-		lookup["#icefury"] = TRB.Data.spells.icefury.icon
 		lookup["#ascendance"] = TRB.Data.spells.ascendance.icon
+		lookup["#chainLightning"] = TRB.Data.spells.chainLightning.icon
 		lookup["#echoingShock"] = TRB.Data.spells.echoingShock.icon
+		lookup["#elementalBlast"] = TRB.Data.spells.elementalBlast.icon
 		lookup["#flameShock"] = TRB.Data.spells.flameShock.icon
 		lookup["#frostShock"] = TRB.Data.spells.frostShock.icon
+		lookup["#icefury"] = TRB.Data.spells.icefury.icon
+		lookup["#lavaBeam"] = TRB.Data.spells.lavaBeam.icon
+		lookup["#lavaBurst"] = TRB.Data.spells.lavaBurst.icon
+		lookup["#lightningBolt"] = TRB.Data.spells.lightningBolt.icon
 		lookup["#lightningShield"] = TRB.Data.spells.lightningShield.icon
+		lookup["#stormkeeper"] = TRB.Data.spells.stormkeeper.icon
 		lookup["$fsCount"] = flameShockCount
+		lookup["$fsTime"] = flameShockTime
 		lookup["$maelstromPlusCasting"] = maelstromPlusCasting
 		lookup["$maelstromPlusPassive"] = maelstromPlusPassive
 		lookup["$maelstromTotal"] = maelstromTotal
@@ -543,6 +582,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["$ifMaelstrom"] = icefuryMaelstrom
 		lookup["$ifStacks"] = icefuryStacks
 		lookup["$ifTime"] = icefuryTime
+		lookup["$skStacks"] = stormkeeperStacks
+		lookup["$skTime"] = stormkeeperTime
 		TRB.Data.lookup = lookup
 	end
 	TRB.Functions.RefreshLookupData = RefreshLookupData
@@ -633,14 +674,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Functions.UpdateSnapshot()
 		UpdateIcefury()
 		
-		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShock then
-			local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.flameShock.id, "target", "player"))
-		
-			if expiration ~= nil then
-				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining = expiration - currentTime
+		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShock then
+				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.flameShock.id, "target", "player"))
+			
+				if expiration ~= nil then
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining = expiration - currentTime
+				end
 			end
-		end
-	end    
+		end    
+	end
 
 	local function HideResourceBar(force)
 		local affectingCombat = UnitAffectingCombat("player")
