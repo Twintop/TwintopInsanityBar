@@ -56,6 +56,7 @@ local function LoadDefaultSettings()
             survival = {}
         },
         priest = {
+            holy = {},
             shadow = {}
         },
         shaman = {
