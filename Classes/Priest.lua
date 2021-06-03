@@ -1302,6 +1302,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if flashConcentration == false and wristItemLink ~= nil then
 				flashConcentration = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(wristItemLink, 173249, TRB.Data.spells.flashConcentration.idLegendaryBonus)
 			end
+			
+			if flashConcentration == false and ring1ItemLink ~= nil then
+				flashConcentration = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(ring1ItemLink, 178926, TRB.Data.spells.flashConcentration.idLegendaryBonus)
+			end
+
+			if flashConcentration == false and ring2ItemLink ~= nil then
+				flashConcentration = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(ring2ItemLink, 178926, TRB.Data.spells.flashConcentration.idLegendaryBonus)
+			end
 			TRB.Data.character.items.flashConcentration = flashConcentration
 
 			if shoulderItemLink ~= nil then
