@@ -47,6 +47,9 @@ local function LoadDefaultSettings()
                 name="Background"
             }
         },
+        demonhunter = {
+            havoc = {}
+        },
         druid = {
             balance = {}
         },
