@@ -1262,8 +1262,7 @@ local function ScanForLogicSymbols(input)
 
 	local a, b, c, d, e, e_1, e_2, e_3, f, g, h, i, j
 	local a1, b1, c1, d1, e1, e1_1, e1_2, e1_3, f1, g1, h1, i1, j1
-	local currentIf = 0
-	local currentResult = 0
+	local currentLevel = 0
 	local min
 	local index = 0
 
@@ -1321,28 +1320,29 @@ local function ScanForLogicSymbols(input)
 		if min <= string.len(input) then
 			local ins = {
 				position = min,
-				level = currentIf,
+				level = currentLevel,
 				index = index
 			}
 
 			if min == a then
-				currentIf = currentIf + 1
-				ins.level = currentIf
+				currentLevel = currentLevel + 1
+				ins.level = currentLevel
 				ins.symbol = "{"
 				table.insert(openIf, ins)
 				currentPosition = a + 1
 			elseif min == b then
-				currentIf = currentIf - 1
+				currentLevel = currentLevel - 1
 				ins.symbol = "}"
 				table.insert(closeIf, ins)
 				currentPosition = b + 1
 			elseif min == c then
-				currentResult = currentResult + 1
+				currentLevel = currentLevel + 1
+				ins.level = currentLevel
 				ins.symbol = "["
 				table.insert(openResult, ins)
 				currentPosition = c + 1
 			elseif min == d then
-				currentResult = currentResult - 1
+				currentLevel = currentLevel - 1
 				ins.symbol = "]"
 				table.insert(closeResult, ins)
 				currentPosition = d + 1
@@ -1366,11 +1366,14 @@ local function ScanForLogicSymbols(input)
 				table.insert(variable, ins)
 				currentPosition = h + 1
 			elseif min == i then
+				currentLevel = currentLevel + 1
+				ins.level = currentLevel
 				ins.symbol = "("
 				table.insert(variable, ins)
 				currentPosition = i + 1
 			elseif min == j then
 				ins.symbol = ")"
+				currentLevel = currentLevel - 1
 				table.insert(variable, ins)
 				currentPosition = j + 1
 			else -- Something went wrong. Break for safety
@@ -1412,7 +1415,7 @@ end
 TRB.Functions.ScanForLogicSymbols = ScanForLogicSymbols
 
 local function FindNextSymbolIndex(t, symbol, minIndex, notSymbol)
-	if t == nil then
+	if t == nil or symbol == nil then
 		return nil
 	end
 
@@ -1436,6 +1439,28 @@ local function FindNextSymbolIndex(t, symbol, minIndex, notSymbol)
 	return nil
 end
 TRB.Functions.FindNextSymbolIndex = FindNextSymbolIndex
+
+local function FindNextSymbolLevel(t, symbol, minIndex, level)
+	if t == nil or symbol == nil or level == nil or level < 0 then
+		return nil
+	end
+
+	if minIndex == nil then
+		minIndex = 0
+	end
+
+	local len = TRB.Functions.TableLength(t)
+
+	if len > 0 then
+		for k, v in ipairs(t) do
+			if t[k] ~= nil and t[k].level ~= nil and t[k].index >= minIndex and t[k].symbol == symbol and t[k].level == level then
+				return t[k]
+			end
+		end
+	end
+	return nil
+end
+TRB.Functions.FindNextSymbolLevel = FindNextSymbolLevel
 
 local function ParseVariablesFromString(input)
     local returnText = ""
@@ -1488,24 +1513,25 @@ local function RemoveInvalidVariablesFromBarText(input)
     while p <= string.len(input) do
 		local nextOpenIf = TRB.Functions.FindNextSymbolIndex(scan.all, '{', lastIndex)
         if nextOpenIf ~= nil then
-			local nextCloseIf = TRB.Functions.FindNextSymbolIndex(scan.closeIf, '}', nextOpenIf.index+1)
+			local matchedCloseIf = TRB.Functions.FindNextSymbolLevel(scan.closeIf, '}', nextOpenIf.index+1, nextOpenIf.level)
 
 			if nextOpenIf.position > p then
 				returnText = returnText .. string.sub(input, p, nextOpenIf.position-1)
 				p = nextOpenIf.position
 			end
+			
+            if matchedCloseIf ~= nil and matchedCloseIf.symbol == '}' and matchedCloseIf.level == nextOpenIf.level then -- no weird nesting of if logic, which is unsupported				
+				local nextOpenResult = TRB.Functions.FindNextSymbolLevel(scan.openResult, '[', matchedCloseIf.index+1, nextOpenIf.level)
 
-            if nextCloseIf ~= nil and nextCloseIf.symbol == '}' and nextCloseIf.level == nextOpenIf.level then -- no weird nesting of if logic, which is unsupported
-				local nextOpenResult = TRB.Functions.FindNextSymbolIndex(scan.openResult, '[', nextCloseIf.index+1) --scan.all[nextOpenIf.index + 2]
-				if nextOpenResult ~= nil and nextOpenResult.symbol == '[' and nextCloseIf.position + 1 == nextOpenResult.position then -- no weird spacing/nesting
-					local nextCloseResult = TRB.Functions.FindNextSymbolIndex(scan.closeResult, ']', nextOpenResult.index)
+				if nextOpenResult ~= nil and nextOpenResult.symbol == '[' and matchedCloseIf.position + 1 == nextOpenResult.position then -- no weird spacing/nesting
+					local nextCloseResult = TRB.Functions.FindNextSymbolLevel(scan.closeResult, ']', nextOpenResult.index, nextOpenResult.level)
 					if nextCloseResult ~= nil then
 						local hasElse = false
-						local elseOpenResult = TRB.Functions.FindNextSymbolIndex(scan.openResult, '[', nextCloseResult.index)
+						local elseOpenResult = TRB.Functions.FindNextSymbolLevel(scan.openResult, '[', nextCloseResult.index, nextOpenResult.level)
 						local elseCloseResult
 
 						if elseOpenResult ~= nil and elseOpenResult.position == nextCloseResult.position + 1 then
-							elseCloseResult = TRB.Functions.FindNextSymbolIndex(scan.closeResult, ']', elseOpenResult.index)
+							elseCloseResult = TRB.Functions.FindNextSymbolLevel(scan.closeResult, ']', elseOpenResult.index, nextOpenResult.level)
 
 							if elseCloseResult ~= nil then
 							-- We have if/else
@@ -1513,7 +1539,7 @@ local function RemoveInvalidVariablesFromBarText(input)
 							end
 						end
 
-						local logicString = string.trim(string.sub(input, nextOpenIf.position+1, nextCloseIf.position-1))
+						local logicString = string.trim(string.sub(input, nextOpenIf.position+1, matchedCloseIf.position-1))
 						local s = 0
 						local outputString = ""
 						local logicScan = TRB.Functions.ScanForLogicSymbols(logicString)
@@ -1521,7 +1547,6 @@ local function RemoveInvalidVariablesFromBarText(input)
 						while s <= string.len(logicString) do
 							local nextVariable = TRB.Functions.FindNextSymbolIndex(logicScan.all, '$', lastLogicIndex)
 							
-							local pathString = ""
 							if nextVariable ~= nil then
 								local nextSymbol = TRB.Functions.FindNextSymbolIndex(logicScan.all, '$', nextVariable.index, true)
 								local variableEnd = string.len(logicString)
@@ -1534,7 +1559,12 @@ local function RemoveInvalidVariablesFromBarText(input)
 								local valid = TRB.Data.IsValidVariableForSpec(var)
 								local beforeVar = string.trim(string.sub(logicString, s, nextVariable.position-1))
 
-								outputString = outputString .. " " .. beforeVar .. " " .. tostring(valid)
+								if string.sub(beforeVar, string.len(beforeVar)) == "!" then
+									outputString = outputString .. " " .. string.sub(beforeVar, 0, string.len(beforeVar)-1) .. " (not " .. tostring(valid) .. ") "									
+								else
+									outputString = outputString .. " " .. beforeVar .. " " .. tostring(valid)
+								end
+
 								s = variableEnd + 1
 								lastLogicIndex = nextVariable.index + 1
 							else
@@ -1555,10 +1585,12 @@ local function RemoveInvalidVariablesFromBarText(input)
 							local resultCode2, result = pcall(resultFunc)
 							if result == true then
 								-- TODO: Recursion goes here for "IF", once we find the matched ]
-								returnText = returnText .. string.sub(input, nextOpenResult.position+1, nextCloseResult.position-1)
+								local trueText = string.sub(input, nextOpenResult.position+1, nextCloseResult.position-1)
+								returnText = returnText .. TRB.Functions.RemoveInvalidVariablesFromBarText(trueText)
 							elseif result == false and hasElse == true then
 								-- TODO: Recursion goes here for "ELSE", once we find to matched ]
-								returnText = returnText .. string.sub(input, elseOpenResult.position+1, elseCloseResult.position-1)
+								local falseText = string.sub(input, elseOpenResult.position+1, elseCloseResult.position-1)
+								returnText = returnText .. TRB.Functions.RemoveInvalidVariablesFromBarText(falseText)
 							end
 						else -- Something went wrong, show the error text instead
 							returnText = returnText .. "{INVALID IF/ELSE LOGIC}"
@@ -1577,14 +1609,14 @@ local function RemoveInvalidVariablesFromBarText(input)
 						lastIndex = nextOpenResult.index
 					end
 				else -- Dump all of the previous "if" stuff verbatim
-					returnText = returnText .. string.sub(input, p, nextCloseIf.position)
-					p = nextCloseIf.position + 1
-					lastIndex = nextCloseIf.index
+					returnText = returnText .. string.sub(input, p, matchedCloseIf.position)
+					p = matchedCloseIf.position + 1
+					lastIndex = matchedCloseIf.index
 				end
-			elseif nextCloseIf ~= nil then --nextCloseIf.position+1 is not [
-				returnText = returnText .. string.sub(input, p, nextCloseIf.position)
-				p = nextCloseIf.position + 1
-				lastIndex = nextCloseIf.index
+			elseif matchedCloseIf ~= nil then --nextCloseIf.position+1 is not [
+				returnText = returnText .. string.sub(input, p, matchedCloseIf.position)
+				p = matchedCloseIf.position + 1
+				lastIndex = matchedCloseIf.index
             else -- End of string
 				returnText = returnText .. string.sub(input, p)
 				p = string.len(input) + 1
