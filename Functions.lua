@@ -2014,24 +2014,12 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 	end
 
 	if includeBarText then
-		if classId == 5 and specId == 3 then -- Shadow Priest
-			configuration.displayText.left = configuration.displayText.left or {}
-			configuration.displayText.left.outVoidformText = settings.displayText.left.outVoidformText
-			configuration.displayText.left.inVoidformText = settings.displayText.left.inVoidformText
-			configuration.displayText.middle = configuration.displayText.middle or {}
-			configuration.displayText.middle.outVoidformText = settings.displayText.middle.outVoidformText
-			configuration.displayText.middle.inVoidformText = settings.displayText.middle.inVoidformText
-			configuration.displayText.right = configuration.displayText.right or {}
-			configuration.displayText.right.outVoidformText = settings.displayText.right.outVoidformText
-			configuration.displayText.right.inVoidformText = settings.displayText.right.inVoidformText
-		else
-			configuration.displayText.left = configuration.displayText.left or {}
-			configuration.displayText.left.text = settings.displayText.left.text
-			configuration.displayText.middle = configuration.displayText.middle or {}
-			configuration.displayText.middle.text = settings.displayText.middle.text
-			configuration.displayText.right = configuration.displayText.right or {}
-			configuration.displayText.right.text = settings.displayText.right.text
-		end
+		configuration.displayText.left = configuration.displayText.left or {}
+		configuration.displayText.left.text = settings.displayText.left.text
+		configuration.displayText.middle = configuration.displayText.middle or {}
+		configuration.displayText.middle.text = settings.displayText.middle.text
+		configuration.displayText.right = configuration.displayText.right or {}
+		configuration.displayText.right.text = settings.displayText.right.text
 	end
 
 	return configuration
