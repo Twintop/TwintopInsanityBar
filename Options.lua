@@ -886,6 +886,48 @@ local function PortForwardPriestSettings()
         TwintopInsanityBarSettings.core.audio.channel = tempSettings.audio.channel
         TwintopInsanityBarSettings.core.strata = tempSettings.strata
     end
+
+    if TwintopInsanityBarSettings ~= nil and
+        TwintopInsanityBarSettings.priest ~= nil and
+        TwintopInsanityBarSettings.priest.shadow ~= nil and
+        TwintopInsanityBarSettings.priest.shadow.displayText ~= nil and
+        TwintopInsanityBarSettings.priest.shadow.displayText.left ~= nil and
+        TwintopInsanityBarSettings.priest.shadow.displayText.left.text == nil then
+        print("Forward Porting Voidform text...")
+        local leftText = ""
+        local middleText = ""
+        local rightText = ""
+        
+        if TwintopInsanityBarSettings.priest.shadow.displayText.left.outVoidformText == TwintopInsanityBarSettings.priest.shadow.displayText.left.inVoidformText then
+            leftText = TwintopInsanityBarSettings.priest.shadow.displayText.left.outVoidformText
+            print("left match")
+        else
+            leftText = "{$vfTime}[" .. TwintopInsanityBarSettings.priest.shadow.displayText.left.inVoidformText .. "][" .. TwintopInsanityBarSettings.priest.shadow.displayText.left.outVoidformText .. "]"
+        end
+        TwintopInsanityBarSettings.priest.shadow.displayText.left.text = leftText
+        TwintopInsanityBarSettings.priest.shadow.displayText.left.inVoidformText = nil
+        TwintopInsanityBarSettings.priest.shadow.displayText.left.outVoidformText = nil
+        
+        if TwintopInsanityBarSettings.priest.shadow.displayText.middle.outVoidformText == TwintopInsanityBarSettings.priest.shadow.displayText.middle.inVoidformText then
+            middleText = TwintopInsanityBarSettings.priest.shadow.displayText.middle.outVoidformText
+            print("middle match")
+        else
+            middleText = "{$vfTime}[" .. TwintopInsanityBarSettings.priest.shadow.displayText.middle.inVoidformText .. "][" .. TwintopInsanityBarSettings.priest.shadow.displayText.middle.outVoidformText .. "]"
+        end
+        TwintopInsanityBarSettings.priest.shadow.displayText.middle.text = middleText
+        TwintopInsanityBarSettings.priest.shadow.displayText.middle.inVoidformText = nil
+        TwintopInsanityBarSettings.priest.shadow.displayText.middle.outVoidformText = nil
+        
+        if TwintopInsanityBarSettings.priest.shadow.displayText.right.outVoidformText == TwintopInsanityBarSettings.priest.shadow.displayText.right.inVoidformText then
+            rightText = TwintopInsanityBarSettings.priest.shadow.displayText.right.outVoidformText
+            print("right match")
+        else
+            rightText = "{$vfTime}[" .. TwintopInsanityBarSettings.priest.shadow.displayText.right.inVoidformText .. "][" .. TwintopInsanityBarSettings.priest.shadow.displayText.right.outVoidformText .. "]"
+        end
+        TwintopInsanityBarSettings.priest.shadow.displayText.right.text = rightText
+        TwintopInsanityBarSettings.priest.shadow.displayText.right.inVoidformText = nil
+        TwintopInsanityBarSettings.priest.shadow.displayText.right.outVoidformText = nil
+    end
 end
 TRB.Options.PortForwardPriestSettings = PortForwardPriestSettings
 

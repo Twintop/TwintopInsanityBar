@@ -1387,6 +1387,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
 
+	--[[
 	local function IsTtdActive(settings)
 		local specId = GetSpecialization()
 		if specId == 3 then
@@ -1419,6 +1420,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 	end
     TRB.Functions.IsTtdActive = IsTtdActive
+	]]
 
 	local function EventRegistration()
 		local specId = GetSpecialization()
@@ -2805,6 +2807,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.lookup = lookup
 	end
 
+	--[[
 	local function UpdateResourceBarShadow(settings, refreshText)
 		TRB.Functions.RefreshLookupDataBase(settings)
 		TRB.Functions.RefreshLookupData()
@@ -2834,6 +2837,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		TRB.Functions.UpdateResourceBarText(settings, leftText, middleText, rightText)
 	end
+	]]
 
 	local function UpdateCastingResourceFinal_Holy()
 		-- Do nothing for now
@@ -3995,9 +3999,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 				end
 			end
-			--Normally we'd just call the base, but Shadow has special dual text output because of Voidform. Make manual calls instead
-			--TRB.Functions.UpdateResourceBar(TRB.Data.settings.priest.shadow, not TRB.Data.settings.priest.shadow.displayBar.neverShow)
-			UpdateResourceBarShadow(TRB.Data.settings.priest.shadow, refreshText)
+			TRB.Functions.UpdateResourceBar(TRB.Data.settings.priest.shadow, refreshText)
 		end
 	end
 
