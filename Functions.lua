@@ -1243,17 +1243,7 @@ local function ScanForLogicSymbols(input)
 		notLogic = {},
 		allLogic = {},
 		variable = {},
-		all = {},
-		openIfLength = 0,
-		closeIfLength = 0,
-		openResultLength = 0,
-		closeResultLength = 0,
-		orLogicLength = 0,
-		andLogicLength = 0,
-		notLogicLegnth = 0,
-		allLogicLength = 0,
-		variableLength = 0,
-		allLength = 0
+		all = {}
 	}
 
 	if input == nil or string.len(input) == 0 then
@@ -1387,17 +1377,6 @@ local function ScanForLogicSymbols(input)
 			break
 		end
 	end
-
-	returnTable.openIfLength = TRB.Functions.TableLength(openIf)
-	returnTable.closeIfLength = TRB.Functions.TableLength(closeIf)
-	returnTable.openResultLength = TRB.Functions.TableLength(openResult)
-	returnTable.closeResultLength = TRB.Functions.TableLength(closeResult)
-	returnTable.orLogicLength = TRB.Functions.TableLength(orLogic)
-	returnTable.andLogicLength = TRB.Functions.TableLength(andLogic)
-	returnTable.notLogicLength = TRB.Functions.TableLength(notLogic)
-	returnTable.allLogicLength = TRB.Functions.TableLength(allLogic)
-	returnTable.variableLength = TRB.Functions.TableLength(variable)
-	returnTable.allLength = TRB.Functions.TableLength(all)
 
 	returnTable.openIf = openIf
 	returnTable.closeIf = closeIf

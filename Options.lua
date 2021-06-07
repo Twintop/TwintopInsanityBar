@@ -893,14 +893,12 @@ local function PortForwardPriestSettings()
         TwintopInsanityBarSettings.priest.shadow.displayText ~= nil and
         TwintopInsanityBarSettings.priest.shadow.displayText.left ~= nil and
         TwintopInsanityBarSettings.priest.shadow.displayText.left.text == nil then
-        print("Forward Porting Voidform text...")
         local leftText = ""
         local middleText = ""
         local rightText = ""
         
         if TwintopInsanityBarSettings.priest.shadow.displayText.left.outVoidformText == TwintopInsanityBarSettings.priest.shadow.displayText.left.inVoidformText then
             leftText = TwintopInsanityBarSettings.priest.shadow.displayText.left.outVoidformText
-            print("left match")
         else
             leftText = "{$vfTime}[" .. TwintopInsanityBarSettings.priest.shadow.displayText.left.inVoidformText .. "][" .. TwintopInsanityBarSettings.priest.shadow.displayText.left.outVoidformText .. "]"
         end
@@ -910,7 +908,6 @@ local function PortForwardPriestSettings()
         
         if TwintopInsanityBarSettings.priest.shadow.displayText.middle.outVoidformText == TwintopInsanityBarSettings.priest.shadow.displayText.middle.inVoidformText then
             middleText = TwintopInsanityBarSettings.priest.shadow.displayText.middle.outVoidformText
-            print("middle match")
         else
             middleText = "{$vfTime}[" .. TwintopInsanityBarSettings.priest.shadow.displayText.middle.inVoidformText .. "][" .. TwintopInsanityBarSettings.priest.shadow.displayText.middle.outVoidformText .. "]"
         end
@@ -920,7 +917,6 @@ local function PortForwardPriestSettings()
         
         if TwintopInsanityBarSettings.priest.shadow.displayText.right.outVoidformText == TwintopInsanityBarSettings.priest.shadow.displayText.right.inVoidformText then
             rightText = TwintopInsanityBarSettings.priest.shadow.displayText.right.outVoidformText
-            print("right match")
         else
             rightText = "{$vfTime}[" .. TwintopInsanityBarSettings.priest.shadow.displayText.right.inVoidformText .. "][" .. TwintopInsanityBarSettings.priest.shadow.displayText.right.outVoidformText .. "]"
         end
