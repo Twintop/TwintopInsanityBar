@@ -21,9 +21,10 @@ TRB.Options.fonts.options.exportSpec = f4
 TRB.Options.variables = {}
 local barTextInstructions = string.format("For more detailed information about Bar Text customization, see the TRB Wiki on GitHub.\n\n")
 barTextInstructions = string.format("%sFor conditional display (only if $VARIABLE is active/non-zero):\n    {$VARIABLE}[$VARIABLE is TRUE output]\n\n", barTextInstructions)
-barTextInstructions = string.format("%sLimited Boolean NOT logic for conditional display is supported:\n    {!$VARIABLE}[$VARIABLE is FALSE output]\n\n", barTextInstructions)
+barTextInstructions = string.format("%sBoolean AND (&), OR (|), NOT (!), and parenthises in logic for conditional display is supported:\n    {$A&$B}[Both are TRUE output]\n    {$A|$B}[One or both is TRUE output]\n    {!$A}[$A is FALSE output]\n    {!$A&($B|$C)}[$A is FALSE and $B or $C is TRUE output]\n\n", barTextInstructions)
 barTextInstructions = string.format("%sIF/ELSE is supported:\n    {$VARIABLE}[$VARIABLE is TRUE output][$VARIABLE is FALSE output]\n\n", barTextInstructions)
 barTextInstructions = string.format("%sIF/ELSE includes NOT support:\n    {!$VARIABLE}[$VARIABLE is FALSE output][$VARIABLE is TRUE output]\n\n", barTextInstructions)
+barTextInstructions = string.format("%sLogic can be nexted inside IF/ELSE blocks:\n    {$A}[$A is TRUE output][$A is FALSE and {$B}[$B is TRUE][$B is FALSE] output]\n\n", barTextInstructions)
 barTextInstructions = string.format("%sTo display icons use:\n    #ICONVARIABLENAME", barTextInstructions)
 TRB.Options.variables.barTextInstructions = barTextInstructions
 
@@ -959,7 +960,7 @@ local function CreateBarTextInstructions(cache, parent, xCoord, yCoord, variable
     end
 
     local maxOptionsWidth = 550
-    local barTextInstructionsHeight = 200
+    local barTextInstructionsHeight = 300
     TRB.UiFunctions.BuildLabel(parent, TRB.Options.variables.barTextInstructions, xCoord+5, yCoord, maxOptionsWidth-(2*(xCoord+5)), barTextInstructionsHeight, GameFontHighlight, "LEFT")
 
     yCoord = yCoord - barTextInstructionsHeight - 10

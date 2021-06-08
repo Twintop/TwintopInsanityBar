@@ -1234,15 +1234,6 @@ TRB.Functions.IsValidVariableBase = IsValidVariableBase
 
 local function ScanForLogicSymbols(input)
 	local returnTable = {
-		openIf = {},
-		closeIf = {},
-		openResult = {},
-		closeResult = {},
-		orLogic = {},
-		andLogic = {},
-		notLogic = {},
-		allLogic = {},
-		variable = {},
 		all = {}
 	}
 
@@ -1256,15 +1247,6 @@ local function ScanForLogicSymbols(input)
 	local min
 	local index = 0
 
-	local openIf = {}
-	local closeIf = {}
-	local openResult = {}
-	local closeResult = {}
-	local orLogic = {}
-	local andLogic = {}
-	local notLogic = {}
-	local allLogic = {}
-	local variable = {}
 	local all = {}
 
 	local endLength = (string.len(input) + 1)
@@ -1318,53 +1300,40 @@ local function ScanForLogicSymbols(input)
 				currentLevel = currentLevel + 1
 				ins.level = currentLevel
 				ins.symbol = "{"
-				table.insert(openIf, ins)
 				currentPosition = a + 1
 			elseif min == b then
 				currentLevel = currentLevel - 1
 				ins.symbol = "}"
-				table.insert(closeIf, ins)
 				currentPosition = b + 1
 			elseif min == c then
 				currentLevel = currentLevel + 1
 				ins.level = currentLevel
 				ins.symbol = "["
-				table.insert(openResult, ins)
 				currentPosition = c + 1
 			elseif min == d then
 				currentLevel = currentLevel - 1
 				ins.symbol = "]"
-				table.insert(closeResult, ins)
 				currentPosition = d + 1
 			elseif min == e then
 				ins.symbol = "|"
-				table.insert(orLogic, ins)
-				table.insert(allLogic, ins)
 				currentPosition = e + 1
 			elseif min == f then
 				ins.symbol = "&"
-				table.insert(andLogic, ins)
-				table.insert(allLogic, ins)
 				currentPosition = f + 1
 			elseif min == g then
 				ins.symbol = "!"
-				table.insert(notLogic, ins)
-				table.insert(allLogic, ins)
 				currentPosition = g + 1
 			elseif min == h then
 				ins.symbol = "$"
-				table.insert(variable, ins)
 				currentPosition = h + 1
 			elseif min == i then
 				currentLevel = currentLevel + 1
 				ins.level = currentLevel
 				ins.symbol = "("
-				table.insert(variable, ins)
 				currentPosition = i + 1
 			elseif min == j then
 				ins.symbol = ")"
 				currentLevel = currentLevel - 1
-				table.insert(variable, ins)
 				currentPosition = j + 1
 			else -- Something went wrong. Break for safety
 				currentPosition = string.len(input) + 1
@@ -1377,16 +1346,6 @@ local function ScanForLogicSymbols(input)
 			break
 		end
 	end
-
-	returnTable.openIf = openIf
-	returnTable.closeIf = closeIf
-	returnTable.openResult = openResult
-	returnTable.closeResult = closeResult
-	returnTable.orLogic = orLogic
-	returnTable.andLogic = andLogic
-	returnTable.notLogic = notLogic
-	returnTable.allLogic = allLogic
-	returnTable.variable = variable
 	returnTable.all = all
 
 	return returnTable
@@ -1492,7 +1451,7 @@ local function RemoveInvalidVariablesFromBarText(input)
     while p <= string.len(input) do
 		local nextOpenIf = TRB.Functions.FindNextSymbolIndex(scan.all, '{', lastIndex)
         if nextOpenIf ~= nil then
-			local matchedCloseIf = TRB.Functions.FindNextSymbolLevel(scan.closeIf, '}', nextOpenIf.index+1, nextOpenIf.level)
+			local matchedCloseIf = TRB.Functions.FindNextSymbolLevel(scan.all, '}', nextOpenIf.index+1, nextOpenIf.level)
 
 			if nextOpenIf.position > p then
 				returnText = returnText .. string.sub(input, p, nextOpenIf.position-1)
@@ -1500,17 +1459,17 @@ local function RemoveInvalidVariablesFromBarText(input)
 			end
 			
             if matchedCloseIf ~= nil and matchedCloseIf.symbol == '}' and matchedCloseIf.level == nextOpenIf.level then -- no weird nesting of if logic, which is unsupported				
-				local nextOpenResult = TRB.Functions.FindNextSymbolLevel(scan.openResult, '[', matchedCloseIf.index+1, nextOpenIf.level)
+				local nextOpenResult = TRB.Functions.FindNextSymbolLevel(scan.all, '[', matchedCloseIf.index+1, nextOpenIf.level)
 
 				if nextOpenResult ~= nil and nextOpenResult.symbol == '[' and matchedCloseIf.position + 1 == nextOpenResult.position then -- no weird spacing/nesting
-					local nextCloseResult = TRB.Functions.FindNextSymbolLevel(scan.closeResult, ']', nextOpenResult.index, nextOpenResult.level)
+					local nextCloseResult = TRB.Functions.FindNextSymbolLevel(scan.all, ']', nextOpenResult.index, nextOpenResult.level)
 					if nextCloseResult ~= nil then
 						local hasElse = false
-						local elseOpenResult = TRB.Functions.FindNextSymbolLevel(scan.openResult, '[', nextCloseResult.index, nextOpenResult.level)
+						local elseOpenResult = TRB.Functions.FindNextSymbolLevel(scan.all, '[', nextCloseResult.index, nextOpenResult.level)
 						local elseCloseResult
 
 						if elseOpenResult ~= nil and elseOpenResult.position == nextCloseResult.position + 1 then
-							elseCloseResult = TRB.Functions.FindNextSymbolLevel(scan.closeResult, ']', elseOpenResult.index, nextOpenResult.level)
+							elseCloseResult = TRB.Functions.FindNextSymbolLevel(scan.all, ']', elseOpenResult.index, nextOpenResult.level)
 
 							if elseCloseResult ~= nil then
 							-- We have if/else
