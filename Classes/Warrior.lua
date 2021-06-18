@@ -297,7 +297,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				ticks = 4,
 				rage = 4,
 				idTick = 326062
-			}
+			},
+
+			-- Torghast
+			voraciousCullingBlade = {
+				id = 329214, --Maybe 329213
+				name = "",
+				icon = ""
+			},
 		}
 
 		specCache.arms.snapshotData.audio = {
@@ -373,6 +380,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			targetsHit = 0,
 			hitTime = nil
 		}
+		specCache.arms.snapshotData.voraciousCullingBlade = {
+			isActive = false
+		}
 	end
 
 	local function Setup_Arms()
@@ -413,6 +423,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#slam", icon = spells.slam.icon, description = "Slam", printInSettings = true },
             { variable = "#spearOfBastion", icon = spells.spearOfBastion.icon, description = "Spear of Bastion", printInSettings = true },
 			{ variable = "#victoryRush", icon = spells.victoryRush.icon, description = "Victory Rush", printInSettings = true },
+			{ variable = "#voraciousCullingBlade", icon = spells.voraciousCullingBlade.icon, description = spells.voraciousCullingBlade.name, printInSettings = true },
 			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = "Whirlwind", printInSettings = true },			
         }
 		specCache.arms.barTextVariables.values = {
@@ -687,7 +698,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					valid = true
 				end
 			elseif var == "$rendTime" then
-				if not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining > 0 then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining > 0 then
 					valid = true
 				end
 			elseif var == "$deepWoundsCount" then
@@ -695,7 +711,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					valid = true
 				end
 			elseif var == "$deepWoundsTime" then
-				if not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining > 0 then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining > 0 then
 					valid = true
 				end
             end
@@ -1069,6 +1090,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local function UpdateSnapshot()
 		TRB.Functions.UpdateSnapshot()
 		local currentTime = GetTime()
+		TRB.Data.spells.voraciousCullingBlade.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.voraciousCullingBlade.id))
 	end
 
 	local function UpdateSnapshot_Arms()
@@ -1261,13 +1283,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, math.min(math.max(-rageAmount, normalizedRage), -TRB.Data.spells.execute.rageMax), TRB.Data.character.maxResource)
 									end
 
-									if not showThis then
+									if not showThis or UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
 										showThreshold = false
 										isUsable = false
-									elseif spell.id == TRB.Data.spells.condemn.id and (UnitIsDeadOrGhost("target") or targetUnitHealth == nil or (targetUnitHealth <= TRB.Data.spells.condemn.healthAbove and targetUnitHealth >= TRB.Data.spells.execute.healthMinimum)) then
+									elseif spell.id == TRB.Data.spells.condemn.id and not TRB.Data.spells.voraciousCullingBlade.isActive and ((targetUnitHealth <= TRB.Data.spells.condemn.healthAbove and targetUnitHealth >= TRB.Data.spells.execute.healthMinimum)) then
 										showThreshold = false
 										isUsable = false
-									elseif spell.id == TRB.Data.spells.execute.id and (UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.execute.healthMinimum) then
+									elseif spell.id == TRB.Data.spells.execute.id and not TRB.Data.spells.voraciousCullingBlade.isActive and (targetUnitHealth >= TRB.Data.spells.execute.healthMinimum) then
 										showThreshold = false
 										isUsable = false
 									elseif currentRage >= -rageAmount then

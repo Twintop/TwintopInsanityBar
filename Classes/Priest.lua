@@ -1395,39 +1395,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
 
-	local function IsTtdActive(settings)
-		local specId = GetSpecialization()
-		if specId == 3 then
-			if TRB.Data.settings.priest ~= nil and TRB.Data.settings.priest.shadow ~= nil and TRB.Data.settings.priest.shadow.displayText ~= nil then
-				if string.find(TRB.Data.settings.priest.shadow.displayText.left.outVoidformText, "$ttd") or
-					string.find(TRB.Data.settings.priest.shadow.displayText.left.inVoidformText, "$ttd") or
-					string.find(TRB.Data.settings.priest.shadow.displayText.middle.outVoidformText, "$ttd") or
-					string.find(TRB.Data.settings.priest.shadow.displayText.middle.inVoidformText, "$ttd") or
-					string.find(TRB.Data.settings.priest.shadow.displayText.right.outVoidformText, "$ttd") or
-					string.find(TRB.Data.settings.priest.shadow.displayText.right.inVoidformText, "$ttd") then
-					TRB.Data.snapshotData.targetData.ttdIsActive = true
-				else
-					TRB.Data.snapshotData.targetData.ttdIsActive = false
-				end
-			else
-				TRB.Data.snapshotData.targetData.ttdIsActive = false
-			end
-		else
-			if settings ~= nil and settings.displayText ~= nil then
-				if string.find(settings.displayText.left.text, "$ttd") or
-					string.find(settings.displayText.middle.text, "$ttd") or
-					string.find(settings.displayText.right.text, "$ttd") then
-					TRB.Data.snapshotData.targetData.ttdIsActive = true
-				else
-					TRB.Data.snapshotData.targetData.ttdIsActive = false
-				end
-			else
-				TRB.Data.snapshotData.targetData.ttdIsActive = false
-			end
-		end
-	end
-    TRB.Functions.IsTtdActive = IsTtdActive
-
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 2 then
@@ -2078,7 +2045,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$vtTime" then
-				if not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouchRemaining > 0 then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouchRemaining > 0 then
 					valid = true
 				end
 			elseif var == "$dpCount" then
@@ -2086,7 +2058,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$dpTime" then
-				if not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].devouringPlagueRemaining > 0 then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].devouringPlagueRemaining > 0 then
 					valid = true
 				end
 			elseif var == "$mdTime" then
@@ -2120,7 +2097,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				valid = true
 			end
 		elseif var == "$swpTime" then
-			if not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining > 0 then
+			if not UnitIsDeadOrGhost("target") and
+				UnitCanAttack("player", "target") and
+				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+				TRB.Data.snapshotData.targetData.targets ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining > 0 then
 				valid = true
 			end
 		end
@@ -2811,36 +2793,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$s2m"] = ""
 		lookup["$surrenderToMadness"] = ""
 		TRB.Data.lookup = lookup
-	end
-
-	local function UpdateResourceBarShadow(settings, refreshText)
-		TRB.Functions.RefreshLookupDataBase(settings)
-		TRB.Functions.RefreshLookupData()
-		local leftText, middleText, rightText = "", "", ""
-
-		if refreshText then
-			local returnText = {}
-			returnText[0] = {}
-			returnText[1] = {}
-			returnText[2] = {}
-			if TRB.Data.snapshotData.voidform.spellId then
-				returnText[0].text = settings.displayText.left.inVoidformText
-				returnText[1].text = settings.displayText.middle.inVoidformText
-				returnText[2].text = settings.displayText.right.inVoidformText
-			else
-				returnText[0].text = settings.displayText.left.outVoidformText
-				returnText[1].text = settings.displayText.middle.outVoidformText
-				returnText[2].text = settings.displayText.right.outVoidformText
-			end
-
-			returnText[0].color = string.format("|c%s", settings.colors.text.left)
-			returnText[1].color = string.format("|c%s", settings.colors.text.middle)
-			returnText[2].color = string.format("|c%s", settings.colors.text.right)
-
-			leftText, middleText, rightText = TRB.Functions.GetReturnText(returnText[0]), TRB.Functions.GetReturnText(returnText[1]), TRB.Functions.GetReturnText(returnText[2])
-		end
-
-		TRB.Functions.UpdateResourceBarText(settings, leftText, middleText, rightText)
 	end
 
 	local function UpdateCastingResourceFinal_Holy()
@@ -4003,9 +3955,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 				end
 			end
-			--Normally we'd just call the base, but Shadow has special dual text output because of Voidform. Make manual calls instead
-			--TRB.Functions.UpdateResourceBar(TRB.Data.settings.priest.shadow, not TRB.Data.settings.priest.shadow.displayBar.neverShow)
-			UpdateResourceBarShadow(TRB.Data.settings.priest.shadow, refreshText)
+			TRB.Functions.UpdateResourceBar(TRB.Data.settings.priest.shadow, refreshText)
 		end
 	end
 

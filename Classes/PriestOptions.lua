@@ -245,22 +245,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			fontSizeLock=true,
 			fontFaceLock=true,
 			left={
-				outVoidformText="$haste%",
-				inVoidformText="$haste%",
+				text="$haste%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
 			},
 			middle={
-				outVoidformText="",
-				inVoidformText="{$hvTime}[$hvTime sec. (+$vbCasts)][$vfTime]",
+				text="{$vfTime}[{$hvTime}[$hvTime sec. (+$vbCasts)][$vfTime]]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
 			},
 			right={
-				outVoidformText="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
-				inVoidformText="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
+				text="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -275,22 +272,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				outVoidformText = "#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][       ]   {$ttd}[TTD: $ttd]",
-				inVoidformText = "#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][       ]   {$ttd}[TTD: $ttd]",
+				text="#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][       ]   {$ttd}[TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			middle = {
-				outVoidformText = "{$mdTime}[#mDev $mdTime #mDev]",
-				inVoidformText = "{$mdTime}[#mDev $mdTime #mDev||n]{$hvAvgTime}[$hvAvgTime (+$vbAvgCasts)][$vfTime]",
+				text="{$mdTime}[#mDev $mdTime #mDev{$vfTime}[||n]]{$vfTime}[{$hvAvgTime}[$hvAvgTime (+$vbAvgCasts)][$vfTime]]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			right = {
-				outVoidformText = "{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$wfInsanity}[#wf$wfInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$damInsanity}[#dam$damInsanity+]$insanity",
-				inVoidformText = "{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$wfInsanity}[#wf$wfInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$damInsanity}[#dam$damInsanity+]$insanity",
+				text="{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$wfInsanity}[#wf$wfInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$damInsanity}[#dam$damInsanity+]$insanity",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
@@ -305,22 +299,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				outVoidformText = "#swp $swpCount   $haste% ($gcd)||n#vt $vtCount   {$ttd}[TTD: $ttd]",
-				inVoidformText = "#swp $swpCount   $haste% ($gcd)||n#vt $vtCount   {$ttd}[TTD: $ttd]",
+				text="#swp $swpCount   $haste% ($gcd)||n#vt $vtCount   {$ttd}[TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			middle = {
-				outVoidformText = "{$mdTime}[#mDev $mdTime #mDev]",
-				inVoidformText = "{$mdTime}[#mDev $mdTime #mDev||n]{$hvAvgTime}[$hvAvgTime (+$vbAvgCasts)][$vfTime]",
+				text="{$mdTime}[#mDev $mdTime #mDev{$vfTime}[||n]]{$vfTime}[{$hvAvgTime}[$hvAvgTime (+$vbAvgCasts)][$vfTime]]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			right = {
-				outVoidformText = "{$casting}[#casting$casting+]{$passive}[$passive+]$insanity",
-				inVoidformText = "{$casting}[#casting$casting+]{$passive}[$passive+]$insanity",
+				text="{$casting}[#casting$casting+]{$passive}[$passive+]$insanity",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
@@ -6077,30 +6068,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions.BuildLabel(parent, "Out of Voidform", xCoord+95, yCoord, 220, 20, nil, "CENTER")
-		TRB.UiFunctions.BuildLabel(parent, "In Voidform", xCoord2+35, yCoord, 220, 20, nil, "CENTER")
-
-		yCoord = yCoord - 20
 		TRB.UiFunctions.BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.voidformOutLeft = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.left.outVoidformText,
-														500, 220, 24, xCoord+95, yCoord)
-		f = controls.textbox.voidformOutLeft
+		controls.textbox.left = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.left.text,
+														500, 440, 24, xCoord+95, yCoord)
+		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.priest.shadow.displayText.left.outVoidformText = self:GetText()
+			TRB.Data.settings.priest.shadow.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
-			end
-		end)
-
-		controls.textbox.voidformInLeft = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.left.inVoidformText,
-														500, 220, 24, xCoord2+35, yCoord)
-		f = controls.textbox.voidformInLeft
-		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.priest.shadow.displayText.left.inVoidformText = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 3 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
 			end
 		end)
@@ -6108,49 +6084,27 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 30
 		controls.labels.middleText = TRB.UiFunctions.BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.voidformOutMiddle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.middle.outVoidformText,
-														500, 220, 24, xCoord+95, yCoord)
-		f = controls.textbox.voidformOutMiddle
+		controls.textbox.middle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.middle.text,
+														500, 440, 24, xCoord+95, yCoord)
+		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.priest.shadow.displayText.middle.outVoidformText = self:GetText()
+			TRB.Data.settings.priest.shadow.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
-			end
-		end)
-
-		controls.textbox.voidformInMiddle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.middle.inVoidformText,
-														500, 220, 24, xCoord2+35, yCoord)
-		f = controls.textbox.voidformInMiddle
-		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.priest.shadow.displayText.middle.inVoidformText = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 3 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
 			end
 		end)
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions.BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions.BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.voidformOutRight = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.right.outVoidformText,
-														500, 220, 24, xCoord+95, yCoord)
-		f = controls.textbox.voidformOutRight
+		controls.textbox.right = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.right.text,
+														500, 440, 24, xCoord+95, yCoord)
+		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.priest.shadow.displayText.right.outVoidformText = self:GetText()
+			TRB.Data.settings.priest.shadow.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
-			end
-		end)
-
-		controls.textbox.voidformInRight = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.priest.shadow.displayText.right.inVoidformText,
-														500, 220, 24, xCoord2+35, yCoord)
-		f = controls.textbox.voidformInRight
-		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.priest.shadow.displayText.right.inVoidformText = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 3 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
 			end
 		end)
