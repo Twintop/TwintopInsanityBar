@@ -111,6 +111,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					},
 					scareBeast = {
 						enabled = false, -- 9
+					},
+					wailingArrow = {
+						enabled = true, -- 10
 					}
 			},
 			generation = {
@@ -314,6 +317,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				},
 				revivePet = {
 					enabled = false, -- 11
+				},
+				wailingArrow = {
+					enabled = true, -- 12
 				}
 			},
 			generation = {
@@ -1877,6 +1883,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.scareBeast.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.beastMastery.thresholds.scareBeast.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.wailingArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_wailingArrow", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.wailingArrowThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Wailing Arrow (if Rae'shalare, Death's Whisper equipped")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Wailing Arrow. Only visible when Rae'shalare, Death's Whisper is equipped. If on cooldown will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.wailingArrow.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.beastMastery.thresholds.wailingArrow.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
@@ -4307,6 +4324,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.serpentSting.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.marksmanship.thresholds.serpentSting.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.wailingArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_wailingArrow", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.wailingArrowThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Wailing Arrow (if Rae'shalare, Death's Whisper equipped")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Wailing Arrow. Only visible when Rae'shalare, Death's Whisper is equipped. If on cooldown will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.wailingArrow.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.thresholds.wailingArrow.enabled = self:GetChecked()
 		end)
 
 
