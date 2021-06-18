@@ -2192,7 +2192,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor"))
 
 		--$manaPercent
-		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.RoundTo((normalizedMana/(TRB.Data.character.maxResource or 1))*100, manaPrecision, "floor"))
+		local maxResource = TRB.Data.character.maxResource
+
+		if maxResource == 0 then
+			maxResource = 1
+		end
+		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.RoundTo((normalizedMana/maxResource)*100, manaPrecision, "floor"))
 
 		--$hwChastiseTime
 		local _hwChastiseTime = GetHolyWordChastiseCooldownRemainingTime()
