@@ -1,6 +1,6 @@
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
-
+local EXPORT_STRING_PREFIX = "!TRB!"
 
 -- Table Functions
 
@@ -1750,6 +1750,12 @@ local function Import(input)
 	local json = TRB.Functions.GetJsonLibrary()
 	local base64 = TRB.Functions.GetBase64Library()
 
+	local prefix = string.sub(input, 1, 5)
+
+	if prefix == EXPORT_STRING_PREFIX then
+		input = string.sub(input, 6)
+	end
+
 	local decoded, configuration, mergedSettings, result
 
 	result, decoded = pcall(base64.decode, input)
@@ -2035,7 +2041,7 @@ local function Export(configuration)
 	local encoded = json.encode(configuration)
 	local output = base64.encode(encoded)
 
-	return output
+	return EXPORT_STRING_PREFIX .. output
 end
 TRB.Functions.Export = Export
 
