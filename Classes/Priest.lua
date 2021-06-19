@@ -198,8 +198,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				duration = 5.0, --Hasted
-				manaPercent = 0.02,
-				ticks = 5, -- initial + 5 ticks, 12% total restored
+				manaPercent = 0.03,
+				ticks = 5, -- initial + 5 ticks, 18% total restored
 				tickId = 265144
 			},
 
