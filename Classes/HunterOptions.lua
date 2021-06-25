@@ -838,8 +838,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.bar.width = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.beastMastery.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 1 then
 				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.beastMastery)
@@ -867,8 +874,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.bar.height = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.beastMastery.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 1 then
 				TRB.Functions.UpdateBarHeight(TRB.Data.settings.hunter.beastMastery)
@@ -3225,8 +3239,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.bar.width = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.marksmanship.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 2 then
 				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.marksmanship)
@@ -3254,8 +3275,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.bar.height = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.marksmanship.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 2 then				
 				TRB.Functions.UpdateBarHeight(TRB.Data.settings.hunter.marksmanship)
@@ -6048,8 +6076,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.survival.bar.width = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.survival.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
 				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.survival)
@@ -6077,8 +6112,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.survival.bar.height = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.survival.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
 				TRB.Functions.UpdateBarHeight(TRB.Data.settings.hunter.survival)

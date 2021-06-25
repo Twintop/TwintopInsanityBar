@@ -373,8 +373,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.bar.width = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.druid.balance.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			TRB.Functions.UpdateBarWidth(TRB.Data.settings.druid.balance)
 
@@ -398,8 +405,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.bar.height = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.druid.balance.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			TRB.Functions.UpdateBarHeight(TRB.Data.settings.druid.balance)
 		end)

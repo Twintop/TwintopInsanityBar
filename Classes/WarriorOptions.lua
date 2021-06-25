@@ -398,8 +398,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.warrior.arms.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.warrior.arms.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.warrior.arms.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
+
+			TRB.Functions.UpdateBarWidth(TRB.Data.settings.warrior.arms)
 		end)
 
 		title = "Bar Height"
@@ -431,8 +440,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.warrior.arms.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.warrior.arms.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.warrior.arms.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
+
+			TRB.Functions.UpdateBarHeight(TRB.Data.settings.warrior.arms)
 		end)
 
 		title = "Bar Horizontal Position"

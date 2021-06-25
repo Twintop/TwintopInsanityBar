@@ -655,8 +655,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.holy.bar.width = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.holy.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.holy.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.priest.holy.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 2 then
 				TRB.Functions.UpdateBarWidth(TRB.Data.settings.priest.holy)
@@ -677,8 +684,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.holy.bar.height = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.holy.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.holy.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.priest.holy.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 2 then
 				TRB.Functions.UpdateBarHeight(TRB.Data.settings.priest.holy)
@@ -3461,8 +3475,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.bar.width = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.shadow.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.priest.shadow.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
 				TRB.Functions.UpdateBarWidth(TRB.Data.settings.priest.shadow)
@@ -3486,8 +3507,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.bar.height = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.shadow.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.shadow.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.priest.shadow.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
 				TRB.Functions.UpdateBarHeight(TRB.Data.settings.priest.shadow)
