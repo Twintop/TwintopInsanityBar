@@ -198,8 +198,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				duration = 5.0, --Hasted
-				manaPercent = 0.02,
-				ticks = 5, -- initial + 5 ticks, 12% total restored
+				manaPercent = 0.03,
+				ticks = 5, -- initial + 5 ticks, 18% total restored
 				tickId = 265144
 			},
 
@@ -296,6 +296,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				idLegendaryBonus = 6974,
 				maxStacks = 5
+			},
+			hauntedMask = {
+				id = 356968,
+				name = "",
+				icon = "",
+				manaPercent = 0.005,
+				duration = 20,
+				icd = 0.75,
+				--energizeId = 327703
 			},
 
 			-- Potions
@@ -435,6 +444,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				},
 				resourceRaw = 0,
 				resourceFinal = 0
+			},
+			hauntedMask = {
+				isActive = false
 			},
 			resourceRaw = 0,
 			resourceFinal = 0,
@@ -762,6 +774,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				conduitId = 101,
 				conduitRanks = {}
 			},
+			hauntedMask = {
+				id = 356968,
+				name = "",
+				icon = "",
+				insanity = 3,
+				fotm = false,
+				duration = 20,
+				icd = 0.75,
+				--energizeId = 327703
+			},
+
 			rabidShadows = {
 				id = 338338,
 				name = "",
@@ -1387,39 +1410,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
 
-	local function IsTtdActive(settings)
-		local specId = GetSpecialization()
-		if specId == 3 then
-			if TRB.Data.settings.priest ~= nil and TRB.Data.settings.priest.shadow ~= nil and TRB.Data.settings.priest.shadow.displayText ~= nil then
-				if string.find(TRB.Data.settings.priest.shadow.displayText.left.outVoidformText, "$ttd") or
-					string.find(TRB.Data.settings.priest.shadow.displayText.left.inVoidformText, "$ttd") or
-					string.find(TRB.Data.settings.priest.shadow.displayText.middle.outVoidformText, "$ttd") or
-					string.find(TRB.Data.settings.priest.shadow.displayText.middle.inVoidformText, "$ttd") or
-					string.find(TRB.Data.settings.priest.shadow.displayText.right.outVoidformText, "$ttd") or
-					string.find(TRB.Data.settings.priest.shadow.displayText.right.inVoidformText, "$ttd") then
-					TRB.Data.snapshotData.targetData.ttdIsActive = true
-				else
-					TRB.Data.snapshotData.targetData.ttdIsActive = false
-				end
-			else
-				TRB.Data.snapshotData.targetData.ttdIsActive = false
-			end
-		else
-			if settings ~= nil and settings.displayText ~= nil then
-				if string.find(settings.displayText.left.text, "$ttd") or
-					string.find(settings.displayText.middle.text, "$ttd") or
-					string.find(settings.displayText.right.text, "$ttd") then
-					TRB.Data.snapshotData.targetData.ttdIsActive = true
-				else
-					TRB.Data.snapshotData.targetData.ttdIsActive = false
-				end
-			else
-				TRB.Data.snapshotData.targetData.ttdIsActive = false
-			end
-		end
-	end
-    TRB.Functions.IsTtdActive = IsTtdActive
-
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 2 then
@@ -1494,6 +1484,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Functions.InitializeTarget(guid)
 				TRB.Data.snapshotData.targetData.targets[guid].shadowWordPain = false
 				TRB.Data.snapshotData.targetData.targets[guid].shadowWordPainRemaining = 0
+				TRB.Data.snapshotData.targetData.targets[guid].hauntedMask = false
 			end
 		elseif specId == 3 then
 			if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
@@ -1505,6 +1496,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.targetData.targets[guid].vampiricTouchRemaining = 0
 				TRB.Data.snapshotData.targetData.targets[guid].devouringPlague = false
 				TRB.Data.snapshotData.targetData.targets[guid].devouringPlagueRemaining = 0
+				TRB.Data.snapshotData.targetData.targets[guid].hauntedMask = false
 			end
 		end
 	end
@@ -1516,23 +1508,30 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		if specId == 2 then -- Holy
 			local swpTotal = 0
+			local hauntedMask = false
 			for tguid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
 				if (currentTime - TRB.Data.snapshotData.targetData.targets[tguid].lastUpdate) > 10 then
 					TRB.Data.snapshotData.targetData.targets[tguid].shadowWordPain = false
 					TRB.Data.snapshotData.targetData.targets[tguid].shadowWordPainRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[tguid].hauntedMask = false
 				else
 					if TRB.Data.snapshotData.targetData.targets[tguid].shadowWordPain == true then
 						swpTotal = swpTotal + 1
+					end
+					if TRB.Data.snapshotData.targetData.targets[tguid].hauntedMask == true then
+						hauntedMask = true
 					end
 				end
 			end
 
 			TRB.Data.snapshotData.targetData.shadowWordPain = swpTotal
+			specCache.holy.snapshotData.wrathfulFaerie.hauntedMask.isActive = hauntedMask
 		elseif specId == 3 then -- Shadow
 			local swpTotal = 0
 			local vtTotal = 0
 			local asTotal = 0
 			local dpTotal = 0
+			local hauntedMask = false
 			for tguid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
 				if (currentTime - TRB.Data.snapshotData.targetData.targets[tguid].lastUpdate) > 10 then
 					TRB.Data.snapshotData.targetData.targets[tguid].auspiciousSpirits = 0
@@ -1542,6 +1541,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					TRB.Data.snapshotData.targetData.targets[tguid].vampiricTouchRemaining = 0
 					TRB.Data.snapshotData.targetData.targets[tguid].devouringPlague = false
 					TRB.Data.snapshotData.targetData.targets[tguid].devouringPlagueRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[tguid].hauntedMask = false
 				else
 					asTotal = asTotal + TRB.Data.snapshotData.targetData.targets[tguid].auspiciousSpirits
 					if TRB.Data.snapshotData.targetData.targets[tguid].shadowWordPain == true then
@@ -1552,6 +1552,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 					if TRB.Data.snapshotData.targetData.targets[tguid].devouringPlague == true then
 						dpTotal = dpTotal + 1
+					end
+					if TRB.Data.snapshotData.targetData.targets[tguid].hauntedMask == true then
+						hauntedMask = true
 					end
 				end
 			end
@@ -1564,6 +1567,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.snapshotData.targetData.shadowWordPain = swpTotal
 			TRB.Data.snapshotData.targetData.vampiricTouch = vtTotal
 			TRB.Data.snapshotData.targetData.devouringPlague = dpTotal
+			specCache.holy.snapshotData.wrathfulFaerie.hauntedMask.isActive = hauntedMask
 		end
 	end
 
@@ -1579,6 +1583,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.targetData.devouringPlague = 0
 				TRB.Data.snapshotData.targetData.auspiciousSpirits = 0
 			end
+			specCache.holy.snapshotData.wrathfulFaerie.hauntedMask.isActive = false
 		end
 	end
 
@@ -2070,7 +2075,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$vtTime" then
-				if not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouchRemaining > 0 then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouchRemaining > 0 then
 					valid = true
 				end
 			elseif var == "$dpCount" then
@@ -2078,7 +2088,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$dpTime" then
-				if not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].devouringPlagueRemaining > 0 then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].devouringPlagueRemaining > 0 then
 					valid = true
 				end
 			elseif var == "$mdTime" then
@@ -2112,7 +2127,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				valid = true
 			end
 		elseif var == "$swpTime" then
-			if not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining > 0 then
+			if not UnitIsDeadOrGhost("target") and
+				UnitCanAttack("player", "target") and
+				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+				TRB.Data.snapshotData.targetData.targets ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining > 0 then
 				valid = true
 			end
 		end
@@ -2202,7 +2222,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor"))
 
 		--$manaPercent
-		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.RoundTo((normalizedMana/(TRB.Data.character.maxResource or 1))*100, manaPrecision, "floor"))
+		local maxResource = TRB.Data.character.maxResource
+
+		if maxResource == 0 then
+			maxResource = 1
+		end
+		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.RoundTo((normalizedMana/maxResource)*100, manaPrecision, "floor"))
 
 		--$hwChastiseTime
 		local _hwChastiseTime = GetHolyWordChastiseCooldownRemainingTime()
@@ -2805,36 +2830,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.lookup = lookup
 	end
 
-	local function UpdateResourceBarShadow(settings, refreshText)
-		TRB.Functions.RefreshLookupDataBase(settings)
-		TRB.Functions.RefreshLookupData()
-		local leftText, middleText, rightText = "", "", ""
-
-		if refreshText then
-			local returnText = {}
-			returnText[0] = {}
-			returnText[1] = {}
-			returnText[2] = {}
-			if TRB.Data.snapshotData.voidform.spellId then
-				returnText[0].text = settings.displayText.left.inVoidformText
-				returnText[1].text = settings.displayText.middle.inVoidformText
-				returnText[2].text = settings.displayText.right.inVoidformText
-			else
-				returnText[0].text = settings.displayText.left.outVoidformText
-				returnText[1].text = settings.displayText.middle.outVoidformText
-				returnText[2].text = settings.displayText.right.outVoidformText
-			end
-
-			returnText[0].color = string.format("|c%s", settings.colors.text.left)
-			returnText[1].color = string.format("|c%s", settings.colors.text.middle)
-			returnText[2].color = string.format("|c%s", settings.colors.text.right)
-
-			leftText, middleText, rightText = TRB.Functions.GetReturnText(returnText[0]), TRB.Functions.GetReturnText(returnText[1]), TRB.Functions.GetReturnText(returnText[2])
-		end
-
-		TRB.Functions.UpdateResourceBarText(settings, leftText, middleText, rightText)
-	end
-
 	local function UpdateCastingResourceFinal_Holy()
 		-- Do nothing for now
 		TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceRaw
@@ -3132,6 +3127,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local specId = GetSpecialization()
 		local settings
 
+		local mainMod = 1
+
+		-- We can't actually track procs from Haunted Mask as there's no SPELL_ENERGIZE event for them as of 9.1 RC.
+		-- We'll piggy back off the main Wrathful Faerie and double it's value instead.
+		-- Twintop 2021-06-19
+		if specCache.holy.snapshotData.wrathfulFaerie.hauntedMask.isActive == true then
+			mainMod = 2
+		end
+
 		if specId == 2 then
 			settings = TRB.Data.settings.priest.holy
 		elseif specId == 3 then
@@ -3184,10 +3188,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 				if TRB.Data.snapshotData.targetData.wrathfulFaerieGuid then
 					if specId == 2 then
-						TRB.Data.snapshotData.wrathfulFaerie.main.resourceRaw = countValue * TRB.Data.spells.wrathfulFaerie.manaPercent * TRB.Data.character.maxResource
+						TRB.Data.snapshotData.wrathfulFaerie.main.resourceRaw = countValue * TRB.Data.spells.wrathfulFaerie.manaPercent * TRB.Data.character.maxResource * mainMod
 						TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal = TRB.Data.snapshotData.wrathfulFaerie.main.resourceRaw
 					elseif specId == 3 then
-						TRB.Data.snapshotData.wrathfulFaerie.main.resourceRaw = countValue * TRB.Data.spells.wrathfulFaerie.insanity
+						TRB.Data.snapshotData.wrathfulFaerie.main.resourceRaw = countValue * TRB.Data.spells.wrathfulFaerie.insanity * mainMod
 						TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal = CalculateInsanityGain(TRB.Data.snapshotData.wrathfulFaerie.main.resourceRaw, false)
 					end
 				else
@@ -3207,7 +3211,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.snapshotData.wrathfulFaerie.main.resourceRaw = 0
 			TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal = 0
 		end
-
+		
 		if settings.wrathfulFaerie.enabled and TRB.Data.snapshotData.wrathfulFaerie.fermata.endTime and TRB.Data.snapshotData.wrathfulFaerie.fermata.endTime > currentTime then
 			local timeRemaining = TRB.Data.snapshotData.wrathfulFaerie.fermata.endTime - currentTime
 
@@ -3995,9 +3999,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 				end
 			end
-			--Normally we'd just call the base, but Shadow has special dual text output because of Voidform. Make manual calls instead
-			--TRB.Functions.UpdateResourceBar(TRB.Data.settings.priest.shadow, not TRB.Data.settings.priest.shadow.displayBar.neverShow)
-			UpdateResourceBarShadow(TRB.Data.settings.priest.shadow, refreshText)
+			TRB.Functions.UpdateResourceBar(TRB.Data.settings.priest.shadow, refreshText)
 		end
 	end
 
@@ -4027,7 +4029,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local specId = GetSpecialization()
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
+			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName, _, auraType = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
 			local s2mDeath = false
 
@@ -4327,9 +4329,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 				elseif settings.wrathfulFaerie.enabled and spellId == TRB.Data.spells.wrathfulFaerieFermata.energizeId and type == "SPELL_ENERGIZE" then
 					TRB.Data.snapshotData.wrathfulFaerie.fermata.procTime = currentTime
-				elseif spellId == TRB.Data.spells.shadowWordPain.id then
+				elseif settings.wrathfulFaerie.enabled and spellId == TRB.Data.spells.hauntedMask.id then
 					InitializeTarget(destGUID)
 					TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
+					if type == "SPELL_AURA_APPLIED" and auraType == "DEBUFF" then
+						TRB.Data.snapshotData.targetData.targets[destGUID].hauntedMask = true
+					elseif type == "SPELL_AURA_REMOVED" and auraType == "DEBUFF" then
+						TRB.Data.snapshotData.targetData.targets[destGUID].hauntedMask = false
+					end
+				elseif spellId == TRB.Data.spells.shadowWordPain.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SWP Applied to Target
 						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = true
 						TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain + 1

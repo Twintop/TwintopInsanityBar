@@ -1,6 +1,6 @@
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
-
+local EXPORT_STRING_PREFIX = "!TRB!"
 
 -- Table Functions
 
@@ -1234,55 +1234,39 @@ TRB.Functions.IsValidVariableBase = IsValidVariableBase
 
 local function ScanForLogicSymbols(input)
 	local returnTable = {
-		openIf = {},
-		closeIf = {},
-		openResult = {},
-		closeResult = {},
-		orLogic = {},
-		andLogic = {},
-		allLogic = {},
-		all = {},
-		openIfLength = 0,
-		closeIfLength = 0,
-		openResultLength = 0,
-		closeResultLength = 0,
-		orLogicLength = 0,
-		andLogicLength = 0,
-		allLogicLength = 0
+		all = {}
 	}
 
 	if input == nil or string.len(input) == 0 then
 		return returnTable
 	end
 
-    local p = 0
-	local a, b, c, d, e, e_1, e_2, e_3, f, a1, b1, c1, d1, e1, e1_1, e1_2, e1_3, f1
-	local currentIf = 0
-	local currentResult = 0
+	local a, b, c, d, e, e_1, e_2, e_3, f, g, h, i, j
+	local _
+	local currentLevel = 0
 	local min
-	local i = 0
+	local index = 0
 
-	local openIf = {}
-	local closeIf = {}
-	local openResult = {}
-	local closeResult = {}
-	local orLogic = {}
-	local andLogic = {}
-	local allLogic = {}
 	local all = {}
 
 	local endLength = (string.len(input) + 1)
 
-    while p <= string.len(input) do
-        a, a1 = string.find(input, "{", p)
-        b, b1 = string.find(input, "}", p)
-        c, c1 = string.find(input, "%[", p)
-        d, d1 = string.find(input, "]", p)
-		e, e1 = string.find(input, "|", p)
-		e_1, e1_1 = string.find(input, "|n", p)
-		e_2, e1_2 = string.find(input, "|c", p)
-		e_3, e1_3 = string.find(input, "|r", p)
-		f, f1 = string.find(input, "&", p)
+	local currentPosition = 0
+    while currentPosition <= string.len(input) do
+        a, _ = string.find(input, "{", currentPosition)
+        b, _ = string.find(input, "}", currentPosition)
+        c, _ = string.find(input, "%[", currentPosition)
+        d, _ = string.find(input, "]", currentPosition)
+		e, _ = string.find(input, "||", currentPosition)
+		e_1, _ = string.find(input, "|n", currentPosition)
+		e_2, _ = string.find(input, "|c", currentPosition)
+		e_3, _ = string.find(input, "|r", currentPosition)
+		f, _ = string.find(input, "&", currentPosition)
+		g, _ = string.find(input, "!", currentPosition)
+		h, _ = string.find(input, "%$", currentPosition)
+		i, _ = string.find(input, "%(", currentPosition)
+		j, _ = string.find(input, ")", currentPosition)
+
 
 		a = a or endLength
 		b = b or endLength
@@ -1293,87 +1277,127 @@ local function ScanForLogicSymbols(input)
 		e_2 = e_2 or endLength
 		e_3 = e_3 or endLength
 		f = f or endLength
+		g = g or endLength
+		h = h or endLength
+		i = i or endLength
+		j = j or endLength
 
 		if e == e_1 or e == e_2 or e == e_3 then
 			e = endLength
 		end
 
-		min = math.min(a, b, c, d, e, f)
-		i = i + 1
+		min = math.min(a, b, c, d, e, f, g, h, i, j)
+		index = index + 1
 
 		if min <= string.len(input) then
 			local ins = {
 				position = min,
-				level = currentIf,
-				index = i
+				level = currentLevel,
+				index = index
 			}
 
 			if min == a then
-				currentIf = currentIf + 1
+				currentLevel = currentLevel + 1
+				ins.level = currentLevel
 				ins.symbol = "{"
-				table.insert(openIf, ins)
-				p = a + 1
+				currentPosition = a + 1
 			elseif min == b then
-				currentIf = currentIf - 1
+				currentLevel = currentLevel - 1
 				ins.symbol = "}"
-				table.insert(closeIf, ins)
-				p = b + 1
+				currentPosition = b + 1
 			elseif min == c then
-				currentResult = currentResult + 1
+				currentLevel = currentLevel + 1
+				ins.level = currentLevel
 				ins.symbol = "["
-				table.insert(openResult, ins)
-				p = c + 1
+				currentPosition = c + 1
 			elseif min == d then
-				currentResult = currentResult - 1
+				currentLevel = currentLevel - 1
 				ins.symbol = "]"
-				table.insert(closeResult, ins)
-				p = d + 1
+				currentPosition = d + 1
 			elseif min == e then
-				currentResult = currentResult - 1
 				ins.symbol = "|"
-				table.insert(orLogic, ins)
-				table.insert(allLogic, ins)
-				p = e + 1
+				currentPosition = e + 1
 			elseif min == f then
-				currentResult = currentResult - 1
 				ins.symbol = "&"
-				table.insert(andLogic, ins)
-				table.insert(allLogic, ins)
-				p = f + 1
+				currentPosition = f + 1
+			elseif min == g then
+				ins.symbol = "!"
+				currentPosition = g + 1
+			elseif min == h then
+				ins.symbol = "$"
+				currentPosition = h + 1
+			elseif min == i then
+				currentLevel = currentLevel + 1
+				ins.level = currentLevel
+				ins.symbol = "("
+				currentPosition = i + 1
+			elseif min == j then
+				ins.symbol = ")"
+				currentLevel = currentLevel - 1
+				currentPosition = j + 1
 			else -- Something went wrong. Break for safety
-				p = string.len(input) + 1
+				currentPosition = string.len(input) + 1
 				break
 			end
 
 			table.insert(all, ins)
 		else
-			p = string.len(input) + 1
+			currentPosition = string.len(input) + 1
 			break
 		end
 	end
-
-	returnTable.openIfLength = TRB.Functions.TableLength(openIf)
-	returnTable.closeIfLength = TRB.Functions.TableLength(closeIf)
-	returnTable.openResultLength = TRB.Functions.TableLength(openResult)
-	returnTable.closeResultLength = TRB.Functions.TableLength(closeResult)
-	returnTable.orLogic = TRB.Functions.TableLength(orLogic)
-	returnTable.andLogic = TRB.Functions.TableLength(andLogic)
-	returnTable.allLogic = TRB.Functions.TableLength(allLogic)
-
-	returnTable.openIf = openIf
-	returnTable.closeIf = closeIf
-	returnTable.openResult = openResult
-	returnTable.closeResult = closeResult
-	returnTable.orLogic = orLogic
-	returnTable.andLogic = andLogic
 	returnTable.all = all
 
 	return returnTable
 end
 TRB.Functions.ScanForLogicSymbols = ScanForLogicSymbols
 
-local function FindNextSymbolIndex(t, symbol, minIndex)
-	if t == nil then
+local function FindNextSymbolIndex(t, symbol, notSymbol, minIndex, maxIndex, minPosition, maxPosition)
+	if t == nil or symbol == nil then
+		return nil
+	end
+
+	local len = TRB.Functions.TableLength(t)
+	if len == 0 then
+		return nil
+	end
+
+	if minIndex == nil then
+		minIndex = 0
+	end
+
+	if minPosition == nil then
+		minPosition = 0
+	end
+
+	if notSymbol == nil then
+		notSymbol = false
+	end
+
+	if maxIndex == nil then
+		maxIndex = t[len].index
+	end
+
+	if maxPosition == nil then
+		maxPosition = t[len].position
+	end
+
+	for k, v in ipairs(t) do
+		if t[k] ~= nil and
+			((t[k].symbol == symbol and not notSymbol) or (t[k].symbol ~= symbol and notSymbol)) and
+			t[k].index >= minIndex and
+			t[k].index <= maxIndex and
+			t[k].position >= minPosition and
+			t[k].position <= maxPosition then
+			return t[k]
+		end
+	end
+	return nil
+end
+TRB.Functions.FindNextSymbolIndex = FindNextSymbolIndex
+
+local function FindNextSymbolLevel(t, symbol, minIndex, level)
+	if t == nil or symbol == nil or level == nil or level < 0 then
 		return nil
 	end
 
@@ -1385,224 +1409,158 @@ local function FindNextSymbolIndex(t, symbol, minIndex)
 
 	if len > 0 then
 		for k, v in ipairs(t) do
-			if t[k] ~= nil and t[k].index >= minIndex and t[k].symbol == symbol then
+			if t[k] ~= nil and t[k].level ~= nil and t[k].index >= minIndex and t[k].symbol == symbol and t[k].level == level then
 				return t[k]
 			end
 		end
 	end
 	return nil
 end
-TRB.Functions.FindNextSymbolIndex = FindNextSymbolIndex
+TRB.Functions.FindNextSymbolLevel = FindNextSymbolLevel
 
-local function ParseVariablesFromString(input)
-    local returnText = ""
+local function RemoveInvalidVariablesFromBarText(inputString)
+	local scan = TRB.Functions.ScanForLogicSymbols(inputString)
 
-	if string.trim(string.len(input)) == 0 then
-		return returnText
-	end
+    local function RemoveInvalidVariablesFromBarText_Inner(input, indexOffset, maxIndex, positionOffset, maxPosition)
+		local returnText = ""
 
-	local vars = {}
-	local logic = {}
-
-	local scan = TRB.Functions.ScanForLogicSymbols(input)
-
-	local lastIndex = 0
-	local p = 0
-	while p <= string.len(input) do
-		local nextLogic1 = TRB.Functions.FindNextSymbolIndex(scan.orLogic, '|', lastIndex)
-		local nextLogic2 = TRB.Functions.FindNextSymbolIndex(scan.andLogic, '&', lastIndex)
-
-		if nextLogic1 ~= nil and nextLogic2 ~= nil then
-			if nextLogic1.position > nextLogic2.position then
-				table.insert(logic, "or")
-			else
-				table.insert(logic, "and")
-			end
-		elseif nextLogic1 ~= nil then
-		elseif nextLogic2 ~= nil then
-		else
-			p = string.len(input) + 1
+		if string.trim(string.len(input)) == 0 then
+			return returnText
 		end
-	end
 
-	return returnText
-end
-TRB.Functions.ParseVariablesFromString = ParseVariablesFromString
+		local p = 0
 
-local function RemoveInvalidVariablesFromBarText(input)
-    local returnText = ""
+		if indexOffset == nil then
+			indexOffset = 0
+		end
 
-	if string.trim(string.len(input)) == 0 then
+		if positionOffset == nil then
+			positionOffset = 0
+		end
+
+		local lastIndex = indexOffset
+		while p <= string.len(input) do
+			local nextOpenIf = TRB.Functions.FindNextSymbolIndex(scan.all, '{', nil, lastIndex, maxIndex)
+			if nextOpenIf ~= nil then
+				local matchedCloseIf = TRB.Functions.FindNextSymbolLevel(scan.all, '}', nextOpenIf.index+1, nextOpenIf.level)
+
+				if nextOpenIf.position - positionOffset > p then
+					returnText = returnText .. string.sub(input, p, nextOpenIf.position - positionOffset - 1)
+					p = nextOpenIf.position - positionOffset
+				end
+				
+				if matchedCloseIf ~= nil and matchedCloseIf.symbol == '}' and matchedCloseIf.level == nextOpenIf.level then -- no weird nesting of if logic, which is unsupported
+					local nextOpenResult = TRB.Functions.FindNextSymbolLevel(scan.all, '[', matchedCloseIf.index+1, nextOpenIf.level)
+
+					if nextOpenResult ~= nil and nextOpenResult.symbol == '[' and matchedCloseIf.position - positionOffset + 1 == nextOpenResult.position - positionOffset then -- no weird spacing/nesting
+						local nextCloseResult = TRB.Functions.FindNextSymbolLevel(scan.all, ']', nextOpenResult.index, nextOpenResult.level)
+						if nextCloseResult ~= nil then
+							local hasElse = false
+							local elseOpenResult = TRB.Functions.FindNextSymbolLevel(scan.all, '[', nextCloseResult.index, nextOpenResult.level)
+							local elseCloseResult
+
+							if elseOpenResult ~= nil and elseOpenResult.position - positionOffset == nextCloseResult.position - positionOffset + 1 then
+								elseCloseResult = TRB.Functions.FindNextSymbolLevel(scan.all, ']', elseOpenResult.index, nextOpenResult.level)
+
+								if elseCloseResult ~= nil then
+								-- We have if/else
+									hasElse = true
+								end
+							end
+
+							local logicString = string.trim(string.sub(input, nextOpenIf.position - positionOffset + 1, matchedCloseIf.position - positionOffset - 1))
+							local s = nextOpenIf.position - positionOffset + 1
+							local outputString = ""
+							local lastLogicIndex = nextOpenIf.index+1
+							while s-p-1 <= string.len(logicString) do
+								local nextVariable = TRB.Functions.FindNextSymbolIndex(scan.all, '$', nil, lastLogicIndex, nil, nil, matchedCloseIf.position + 1)
+								
+								if nextVariable ~= nil then
+									local nextSymbol = TRB.Functions.FindNextSymbolIndex(scan.all, '$', true, nextVariable.index, nil, nil, matchedCloseIf.position + 1)
+									local variableEnd = string.len(logicString)
+
+									if nextSymbol ~= nil then
+										variableEnd = nextSymbol.position - positionOffset - p - 1
+									end
+
+									local var = string.trim(string.sub(logicString, nextVariable.position - positionOffset - p, variableEnd))
+									local valid = TRB.Data.IsValidVariableForSpec(var)
+									local beforeVar = string.trim(string.sub(logicString, s-p, nextVariable.position - positionOffset - p - 1))
+
+									if string.sub(beforeVar, string.len(beforeVar)) == "!" then
+										outputString = outputString .. " " .. string.sub(beforeVar, 0, string.len(beforeVar)-1) .. " (not " .. tostring(valid) .. ") "
+									else
+										outputString = outputString .. " " .. beforeVar .. " " .. tostring(valid)
+									end
+
+									s = p + variableEnd + 1
+									lastLogicIndex = nextVariable.index + 1
+								else
+									local remainder = string.trim(string.sub(logicString, s-p))
+									outputString = outputString .. " " .. remainder
+									s = p + string.len(logicString) + 2
+								end
+							end
+
+							outputString = string.lower(outputString)
+							outputString = string.gsub(outputString, "!", " not ")
+							outputString = string.gsub(outputString, "&", " and ")
+							outputString = string.gsub(outputString, "||", " or ")
+
+							local resultCode, resultFunc = pcall(assert, loadstring("return (" .. outputString .. ")"))
+							
+							if resultCode then
+								local resultCode2, result = pcall(resultFunc)
+								if result == true then
+									-- Recursive call for "IF", once we find the matched ]
+									local trueText = string.sub(input, nextOpenResult.position - positionOffset + 1, nextCloseResult.position - positionOffset - 1)
+									returnText = returnText .. RemoveInvalidVariablesFromBarText_Inner(trueText, nextOpenResult.index, nextCloseResult.index - 1, nextOpenResult.position, nextCloseResult.position - 1)
+								elseif result == false and hasElse == true then
+									-- Recursive call for "ELSE", once we find the matched ]
+									local falseText = string.sub(input, elseOpenResult.position - positionOffset + 1, elseCloseResult.position - positionOffset - 1)
+									returnText = returnText .. RemoveInvalidVariablesFromBarText_Inner(falseText, elseOpenResult.index, elseCloseResult.index - 1, elseOpenResult.position, elseCloseResult.position - 1)
+								end
+							else -- Something went wrong, show the error text instead
+								returnText = returnText .. "{INVALID IF/ELSE LOGIC}"
+							end
+
+							if hasElse == true then
+								p = elseCloseResult.position - positionOffset + 1
+								lastIndex = elseCloseResult.index
+							else
+								p = nextCloseResult.position - positionOffset + 1
+								lastIndex = nextCloseResult.index
+							end
+						else -- TRUE result block doesn't close, no matching ]
+							returnText = returnText .. string.sub(input, p, nextOpenResult.position - positionOffset)
+							p = nextOpenResult.position - positionOffset + 1
+							lastIndex = nextOpenResult.index
+						end
+					else -- Dump all of the previous "if" stuff verbatim
+						returnText = returnText .. string.sub(input, p, matchedCloseIf.position - positionOffset)
+						p = matchedCloseIf.position - positionOffset + 1
+						lastIndex = matchedCloseIf.index
+					end
+				elseif matchedCloseIf ~= nil then --nextCloseIf.position+1 is not [
+					returnText = returnText .. string.sub(input, p, matchedCloseIf.position - positionOffset)
+					p = matchedCloseIf.position - positionOffset + 1
+					lastIndex = matchedCloseIf.index
+				else -- End of string
+					returnText = returnText .. string.sub(input, p)
+					p = string.len(input) + 1
+				end
+			else
+				returnText = returnText .. string.sub(input, p)
+				p = string.len(input)
+				break
+			end
+		end
 		return returnText
 	end
 
-    local p = 0
-	local scan = TRB.Functions.ScanForLogicSymbols(input)
-
-	local lastIndex = 0
-    while p <= string.len(input) do
-		local nextOpenIf = TRB.Functions.FindNextSymbolIndex(scan.all, '{', lastIndex)
-        if nextOpenIf ~= nil then
-			local nextCloseIf = TRB.Functions.FindNextSymbolIndex(scan.closeIf, '}', nextOpenIf.index+1)
-
-			if nextOpenIf.position > p then
-				returnText = returnText .. string.sub(input, p, nextOpenIf.position-1)
-				p = nextOpenIf.position
-			end
-
-            if nextCloseIf ~= nil and nextCloseIf.symbol == '}' and nextCloseIf.index == nextOpenIf.index + 1 then -- no weird nesting of if logic, which is unsupported
-				local nextOpenResult = scan.all[nextOpenIf.index + 2]
-				if nextOpenResult ~= nil and nextOpenResult.symbol == '[' and nextCloseIf.position + 1 == nextOpenResult.position then -- no weird spacing/nesting
-					local nextCloseResult = TRB.Functions.FindNextSymbolIndex(scan.closeResult, ']', nextOpenResult.index)
-					if nextCloseResult ~= nil then
-						local hasElse = false
-						local elseOpenResult = TRB.Functions.FindNextSymbolIndex(scan.openResult, '[', nextCloseResult.index)
-						local elseCloseResult
-
-						if elseOpenResult ~= nil and elseOpenResult.position == nextCloseResult.position + 1 then
-							elseCloseResult = TRB.Functions.FindNextSymbolIndex(scan.closeResult, ']', elseOpenResult.index)
-
-							if elseCloseResult ~= nil then
-							-- We have if/else
-								hasElse = true
-							end
-						end
-
-						local valid = false
-						local useNot = false
-						local var = string.trim(string.sub(input, nextOpenIf.position+1, nextCloseIf.position-1))
-						local notVar = string.sub(var, 1, 1)
-
-						if notVar == "!" then
-							useNot = true
-							var = string.trim(string.sub(var, 2))
-						end
-
-						valid = TRB.Data.IsValidVariableForSpec(var)
-
-						if useNot == true then
-							valid = not valid
-						end
-
-						if valid == true then
-							-- TODO: Recursion goes here for "IF", once we find the matched ]
-							returnText = returnText .. string.sub(input, nextOpenResult.position+1, nextCloseResult.position-1)
-						elseif hasElse == true then
-							-- TODO: Recursion goes here for "ELSE", once we find to matched ]
-							returnText = returnText .. string.sub(input, elseOpenResult.position+1, elseCloseResult.position-1)
-						end
-
-						if hasElse == true then
-							p = elseCloseResult.position+1
-							lastIndex = elseCloseResult.index
-						else
-							p = nextCloseResult.position+1
-							lastIndex = nextCloseResult.index
-						end
-					else -- TRUE result block doesn't close, no matching ]
-						returnText = returnText .. string.sub(input, p, nextOpenResult.position)
-						p = nextOpenResult.position+1
-						lastIndex = nextOpenResult.index
-					end
-				else -- Dump all of the previous "if" stuff verbatim
-					returnText = returnText .. string.sub(input, p, nextCloseIf.position)
-					p = nextCloseIf.position + 1
-					lastIndex = nextCloseIf.index
-				end
-			elseif nextCloseIf ~= nil then --nextCloseIf.position+1 is not [
-				returnText = returnText .. string.sub(input, p, nextCloseIf.position)
-				p = nextCloseIf.position + 1
-				lastIndex = nextCloseIf.index
-            else -- End of string
-				returnText = returnText .. string.sub(input, p)
-				p = string.len(input) + 1
-            end
-        else
-            returnText = returnText .. string.sub(input, p)
-			p = string.len(input)
-			break
-        end
-    end
-    return returnText
+	return RemoveInvalidVariablesFromBarText_Inner(inputString)
 end
 TRB.Functions.RemoveInvalidVariablesFromBarText = RemoveInvalidVariablesFromBarText
-
-local function RemoveInvalidVariablesFromBarText_Old(input)
-    --1         11                       36     43
-    --v         v                        v      v
-    --a         b                        c      d
-    --{$liStacks}[$liStacks - $liTime sec][No LI]
-    local returnText = ""
-    local p = 0
-    while p <= string.len(input) do
-        local a, b, c, d, e, a1, b1, c1, d1, e1
-        a, a1 = string.find(input, "{", p)
-        if a ~= nil then
-            b, b1 = string.find(input, "}", a)
-
-            if b ~= nil and string.sub(input, b+1, b+1) == "[" then
-                c, c1 = string.find(input, "]", b+1)
-
-                if c ~= nil then
-                    local hasElse = false
-                    if string.sub(input, c+1, c+1) == "[" then
-                        d, d1 = string.find(input, "]", c+1)
-                        if d ~= nil then
-                            hasElse = true
-                        end
-                    end
-
-                    if p ~= a then
-                        returnText = returnText .. string.sub(input, p, a-1)
-                    end
-
-                    local valid = false
-                    local useNot = false
-                    local var = string.trim(string.sub(input, a+1, b-1))
-                    local notVar = string.sub(var, 1, 1)
-
-                    if notVar == "!" then
-                        useNot = true
-                        var = string.trim(string.sub(var, 2))
-                    end
-
-                    valid = TRB.Data.IsValidVariableForSpec(var)
-
-                    if useNot == true then
-                        valid = not valid
-                    end
-
-                    if valid == true then
-                        returnText = returnText .. string.sub(input, b+2, c-1)
-                    elseif hasElse == true then
-                        returnText = returnText .. string.sub(input, c+2, d-1)
-                    end
-
-                    if hasElse == true then
-                        p = d+1
-                    else
-                        p = c+1
-                    end
-                else -- No matching ]
-                    returnText = returnText .. string.sub(input, p, b+1)
-                    p = b+2
-                end
-			elseif b ~= nil then --b+1 is not [
-				returnText = returnText .. string.sub(input, p, b)
-				p = b + 1
-            else -- End of string
-				returnText = returnText .. string.sub(input, p)
-				p = string.len(input) + 1
-			end
-        else
-            returnText = returnText .. string.sub(input, p)
-			p = string.len(input)
-			break
-        end
-    end
-    return returnText
-end
-TRB.Functions.RemoveInvalidVariablesFromBarText_Old = RemoveInvalidVariablesFromBarText_Old
 
 
 -- Character Functions
@@ -1739,6 +1697,18 @@ local function DoesItemLinkMatchMatchIdAndHaveBonus(itemLink, id, bonusId)
 end
 TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus = DoesItemLinkMatchMatchIdAndHaveBonus
 
+local function DoesItemLinkMatchId(itemLink, id)
+	local parts = { strsplit(":", itemLink) }
+	-- Note for Future Twintop:
+	--  1  = Item Name
+	--  2  = Item Id
+	if tonumber(parts[2]) == id then
+		return true
+	end
+	return false
+end
+TRB.Functions.DoesItemLinkMatchId = DoesItemLinkMatchId
+
 local function IsSoulbindActive(id)
 	local soulbindId = C_Soulbinds.GetActiveSoulbindID()
     local soulbindData = C_Soulbinds.GetSoulbindData(soulbindId)
@@ -1779,6 +1749,12 @@ TRB.Functions.GetSoulbindRank = GetSoulbindRank
 local function Import(input)
 	local json = TRB.Functions.GetJsonLibrary()
 	local base64 = TRB.Functions.GetBase64Library()
+
+	local prefix = string.sub(input, 1, 5)
+
+	if prefix == EXPORT_STRING_PREFIX then
+		input = string.sub(input, 6)
+	end
 
 	local decoded, configuration, mergedSettings, result
 
@@ -1931,24 +1907,12 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 	end
 
 	if includeBarText then
-		if classId == 5 and specId == 3 then -- Shadow Priest
-			configuration.displayText.left = configuration.displayText.left or {}
-			configuration.displayText.left.outVoidformText = settings.displayText.left.outVoidformText
-			configuration.displayText.left.inVoidformText = settings.displayText.left.inVoidformText
-			configuration.displayText.middle = configuration.displayText.middle or {}
-			configuration.displayText.middle.outVoidformText = settings.displayText.middle.outVoidformText
-			configuration.displayText.middle.inVoidformText = settings.displayText.middle.inVoidformText
-			configuration.displayText.right = configuration.displayText.right or {}
-			configuration.displayText.right.outVoidformText = settings.displayText.right.outVoidformText
-			configuration.displayText.right.inVoidformText = settings.displayText.right.inVoidformText
-		else
-			configuration.displayText.left = configuration.displayText.left or {}
-			configuration.displayText.left.text = settings.displayText.left.text
-			configuration.displayText.middle = configuration.displayText.middle or {}
-			configuration.displayText.middle.text = settings.displayText.middle.text
-			configuration.displayText.right = configuration.displayText.right or {}
-			configuration.displayText.right.text = settings.displayText.right.text
-		end
+		configuration.displayText.left = configuration.displayText.left or {}
+		configuration.displayText.left.text = settings.displayText.left.text
+		configuration.displayText.middle = configuration.displayText.middle or {}
+		configuration.displayText.middle.text = settings.displayText.middle.text
+		configuration.displayText.right = configuration.displayText.right or {}
+		configuration.displayText.right.text = settings.displayText.right.text
 	end
 
 	return configuration
@@ -2077,7 +2041,7 @@ local function Export(configuration)
 	local encoded = json.encode(configuration)
 	local output = base64.encode(encoded)
 
-	return output
+	return EXPORT_STRING_PREFIX .. output
 end
 TRB.Functions.Export = Export
 

@@ -342,8 +342,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.elemental.bar.width = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.shaman.elemental.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.shaman.elemental.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			TRB.Functions.UpdateBarWidth(TRB.Data.settings.shaman.elemental)
 
@@ -364,8 +371,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.elemental.bar.height = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.shaman.elemental.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.shaman.elemental.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			TRB.Functions.UpdateBarHeight(TRB.Data.settings.shaman.elemental)
 		end)

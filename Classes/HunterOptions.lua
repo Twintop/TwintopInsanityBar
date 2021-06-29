@@ -111,6 +111,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					},
 					scareBeast = {
 						enabled = false, -- 9
+					},
+					wailingArrow = {
+						enabled = true, -- 10
 					}
 			},
 			generation = {
@@ -314,6 +317,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				},
 				revivePet = {
 					enabled = false, -- 11
+				},
+				wailingArrow = {
+					enabled = true, -- 12
 				}
 			},
 			generation = {
@@ -838,8 +844,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.bar.width = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.beastMastery.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 1 then
 				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.beastMastery)
@@ -867,8 +880,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.bar.height = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.beastMastery.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 1 then
 				TRB.Functions.UpdateBarHeight(TRB.Data.settings.hunter.beastMastery)
@@ -1877,6 +1897,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.scareBeast.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.beastMastery.thresholds.scareBeast.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.wailingArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_wailingArrow", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.wailingArrowThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Wailing Arrow (if Rae'shalare, Death's Whisper equipped")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Wailing Arrow. Only visible when Rae'shalare, Death's Whisper is equipped. If on cooldown will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.wailingArrow.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.beastMastery.thresholds.wailingArrow.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
@@ -3225,8 +3256,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.bar.width = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.marksmanship.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 2 then
 				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.marksmanship)
@@ -3254,8 +3292,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.bar.height = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.marksmanship.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 2 then				
 				TRB.Functions.UpdateBarHeight(TRB.Data.settings.hunter.marksmanship)
@@ -4307,6 +4352,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.serpentSting.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.marksmanship.thresholds.serpentSting.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.wailingArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_wailingArrow", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.wailingArrowThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Wailing Arrow (if Rae'shalare, Death's Whisper equipped")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Wailing Arrow. Only visible when Rae'shalare, Death's Whisper is equipped. If on cooldown will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.wailingArrow.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.thresholds.wailingArrow.enabled = self:GetChecked()
 		end)
 
 
@@ -6048,8 +6104,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.survival.bar.width = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.survival.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
 				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.survival)
@@ -6077,8 +6140,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.survival.bar.height = value
 
 			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.survival.bar.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
 			controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
 				TRB.Functions.UpdateBarHeight(TRB.Data.settings.hunter.survival)

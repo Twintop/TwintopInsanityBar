@@ -85,9 +85,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				},
 				ravager = {
 					isSelected = false
-				},				
+				},
 			},
 			items = {
+				glory = false,
+				naturesFury = false
 			}
 		}
 
@@ -238,7 +240,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "cleave",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false					
+				thresholdUsable = false
 			},
 			deadlyCalm = {
 				id = 262228,
@@ -287,7 +289,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				icon = "",
 				duration = 15,
 				ticks = 15,
-				rage = 4
+				rage = 4,
+				idLegendaryBonus = 7469
 			},
 			ancientAftershock = {
 				id = 325886,
@@ -296,8 +299,18 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				duration = 12,
 				ticks = 4,
 				rage = 4,
-				idTick = 326062
-			}
+				idTick = 326062,
+				idLegendaryBonus = 7471,
+				legendaryDuration = 3,
+				legendaryTicks = 1
+			},
+
+			-- Torghast
+			voraciousCullingBlade = {
+				id = 329214, --Maybe 329213
+				name = "",
+				icon = ""
+			},
 		}
 
 		specCache.arms.snapshotData.audio = {
@@ -373,6 +386,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			targetsHit = 0,
 			hitTime = nil
 		}
+		specCache.arms.snapshotData.voraciousCullingBlade = {
+			isActive = false
+		}
 	end
 
 	local function Setup_Arms()
@@ -413,6 +429,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#slam", icon = spells.slam.icon, description = "Slam", printInSettings = true },
             { variable = "#spearOfBastion", icon = spells.spearOfBastion.icon, description = "Spear of Bastion", printInSettings = true },
 			{ variable = "#victoryRush", icon = spells.victoryRush.icon, description = "Victory Rush", printInSettings = true },
+			{ variable = "#voraciousCullingBlade", icon = spells.voraciousCullingBlade.icon, description = spells.voraciousCullingBlade.name, printInSettings = true },
 			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = "Whirlwind", printInSettings = true },			
         }
 		specCache.arms.barTextVariables.values = {
@@ -485,6 +502,38 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
             TRB.Data.character.talents.cleave.isSelected = select(4, GetTalentInfo(5, 3, TRB.Data.character.specGroup))
             TRB.Data.character.talents.deadlyCalm.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
             TRB.Data.character.talents.ravager.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
+
+			-- Legendaries
+			local chestItemLink = GetInventoryItemLink("player", 5)
+			local waistItemLink = GetInventoryItemLink("player", 6)
+			local wristItemLink = GetInventoryItemLink("player", 9)
+			local handItemLink = GetInventoryItemLink("player", 10)
+			local backItemLink = GetInventoryItemLink("player", 15)
+
+			local naturesFury = false
+			if wristItemLink ~= nil  then
+				naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(wristItemLink, 171419, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+			end
+			
+			if naturesFury == false and handItemLink ~= nil  then
+				naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(handItemLink, 171414, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+			end
+			
+			if naturesFury == false and backItemLink ~= nil  then
+				naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(backItemLink, 173242, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+			end
+
+			local glory = false
+			if chestItemLink ~= nil  then
+				glory = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(chestItemLink, 171412, TRB.Data.spells.conquerorsBanner.idLegendaryBonus)
+			end
+			
+			if glory == false and waistItemLink ~= nil  then
+				glory = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(waistItemLink, 171418, TRB.Data.spells.conquerorsBanner.idLegendaryBonus)
+			end
+
+			TRB.Data.character.items.naturesFury = naturesFury
+			TRB.Data.character.items.glory = glory
         elseif GetSpecialization() == 2 then
 		elseif GetSpecialization() == 3 then
 		end
@@ -687,7 +736,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					valid = true
 				end
 			elseif var == "$rendTime" then
-				if not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining > 0 then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining > 0 then
 					valid = true
 				end
 			elseif var == "$deepWoundsCount" then
@@ -695,7 +749,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					valid = true
 				end
 			elseif var == "$deepWoundsTime" then
-				if not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining > 0 then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining > 0 then
 					valid = true
 				end
             end
@@ -1054,12 +1113,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local function UpdateConquerorsBanner()
 		if TRB.Data.snapshotData.conquerorsBanner.isActive then
 			local currentTime = GetTime()
-			if TRB.Data.snapshotData.conquerorsBanner.endTime == nil or currentTime > TRB.Data.snapshotData.conquerorsBanner.endTime then
+			if TRB.Data.snapshotData.conquerorsBanner.endTime ~= nil and currentTime > TRB.Data.snapshotData.conquerorsBanner.endTime then
 				TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = 0
 				TRB.Data.snapshotData.conquerorsBanner.endTime = nil
+				TRB.Data.snapshotData.conquerorsBanner.duration = 0
 				TRB.Data.snapshotData.conquerorsBanner.rage = 0
 				TRB.Data.snapshotData.conquerorsBanner.isActive = false
-			else
+			elseif TRB.Data.snapshotData.conquerorsBanner.endTime ~= nil then
+				_, _, _, _, TRB.Data.snapshotData.conquerorsBanner.duration, TRB.Data.snapshotData.conquerorsBanner.endTime, _, _, _, TRB.Data.snapshotData.conquerorsBanner.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.conquerorsBanner.id)
 				TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = math.ceil((TRB.Data.snapshotData.conquerorsBanner.endTime - currentTime) / (TRB.Data.spells.conquerorsBanner.duration / TRB.Data.spells.conquerorsBanner.ticks))
 				TRB.Data.snapshotData.conquerorsBanner.rage = TRB.Data.snapshotData.conquerorsBanner.ticksRemaining * TRB.Data.spells.conquerorsBanner.rage
 			end
@@ -1069,6 +1130,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local function UpdateSnapshot()
 		TRB.Functions.UpdateSnapshot()
 		local currentTime = GetTime()
+		TRB.Data.spells.voraciousCullingBlade.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.voraciousCullingBlade.id))
 	end
 
 	local function UpdateSnapshot_Arms()
@@ -1261,13 +1323,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, math.min(math.max(-rageAmount, normalizedRage), -TRB.Data.spells.execute.rageMax), TRB.Data.character.maxResource)
 									end
 
-									if not showThis then
+									if not showThis or UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
 										showThreshold = false
 										isUsable = false
-									elseif spell.id == TRB.Data.spells.condemn.id and (UnitIsDeadOrGhost("target") or targetUnitHealth == nil or (targetUnitHealth <= TRB.Data.spells.condemn.healthAbove and targetUnitHealth >= TRB.Data.spells.execute.healthMinimum)) then
+									elseif spell.id == TRB.Data.spells.condemn.id and not TRB.Data.spells.voraciousCullingBlade.isActive and ((targetUnitHealth <= TRB.Data.spells.condemn.healthAbove and targetUnitHealth >= TRB.Data.spells.execute.healthMinimum)) then
 										showThreshold = false
 										isUsable = false
-									elseif spell.id == TRB.Data.spells.execute.id and (UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.execute.healthMinimum) then
+									elseif spell.id == TRB.Data.spells.execute.id and not TRB.Data.spells.voraciousCullingBlade.isActive and (targetUnitHealth >= TRB.Data.spells.execute.healthMinimum) then
 										showThreshold = false
 										isUsable = false
 									elseif currentRage >= -rageAmount then
@@ -1489,13 +1551,20 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						--elseif type == "SPELL_PERIODIC_DAMAGE" then
 						end
 					elseif spellId == TRB.Data.spells.ancientAftershock.id then
+						local legendaryDuration = 0
+						local legendaryTicks = 0
+						if TRB.Data.character.items.naturesFury == true then
+							legendaryDuration = TRB.Data.snapshotData.ancientAftershock.legendaryDuration
+							legendaryTicks = TRB.Data.snapshotData.ancientAftershock.legendaryTicks
+						end
+
 						if type == "SPELL_CAST_SUCCESS" then -- This is incase it doesn't hit any targets
 							if TRB.Data.snapshotData.ancientAftershock.hitTime == nil then --This is a new cast without target data. Use the initial number hit to seed predictions
 								TRB.Data.snapshotData.ancientAftershock.targetsHit = 0
 							end
 							TRB.Data.snapshotData.ancientAftershock.hitTime = currentTime
-							TRB.Data.snapshotData.ancientAftershock.endTime = currentTime + TRB.Data.spells.ancientAftershock.duration
-							TRB.Data.snapshotData.ancientAftershock.ticksRemaining = TRB.Data.spells.ancientAftershock.ticks
+							TRB.Data.snapshotData.ancientAftershock.endTime = currentTime + TRB.Data.spells.ancientAftershock.duration + legendaryDuration
+							TRB.Data.snapshotData.ancientAftershock.ticksRemaining = TRB.Data.spells.ancientAftershock.ticks + legendaryTicks
 							TRB.Data.snapshotData.ancientAftershock.isActive = true
 						elseif type == "SPELL_AURA_APPLIED" then
 							if TRB.Data.snapshotData.ancientAftershock.hitTime == nil then --This is a new cast without target data. Use the initial number hit to seed predictions
@@ -1504,7 +1573,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								TRB.Data.snapshotData.ancientAftershock.targetsHit = TRB.Data.snapshotData.ancientAftershock.targetsHit + 1
 							end
 							TRB.Data.snapshotData.ancientAftershock.hitTime = currentTime
-							TRB.Data.snapshotData.ancientAftershock.endTime = currentTime + TRB.Data.spells.ancientAftershock.duration
+							TRB.Data.snapshotData.ancientAftershock.endTime = currentTime + TRB.Data.spells.ancientAftershock.duration + legendaryDuration
 							TRB.Data.snapshotData.ancientAftershock.isActive = true
 						end
 					elseif spellId == TRB.Data.spells.ancientAftershock.idTick then
