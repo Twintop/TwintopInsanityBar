@@ -1697,6 +1697,18 @@ local function DoesItemLinkMatchMatchIdAndHaveBonus(itemLink, id, bonusId)
 end
 TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus = DoesItemLinkMatchMatchIdAndHaveBonus
 
+local function DoesItemLinkMatchId(itemLink, id)
+	local parts = { strsplit(":", itemLink) }
+	-- Note for Future Twintop:
+	--  1  = Item Name
+	--  2  = Item Id
+	if tonumber(parts[2]) == id then
+		return true
+	end
+	return false
+end
+TRB.Functions.DoesItemLinkMatchId = DoesItemLinkMatchId
+
 local function IsSoulbindActive(id)
 	local soulbindId = C_Soulbinds.GetActiveSoulbindID()
     local soulbindData = C_Soulbinds.GetSoulbindData(soulbindId)
