@@ -4338,6 +4338,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.targetData.targets[destGUID].hauntedMask = false
 					end
 				elseif spellId == TRB.Data.spells.shadowWordPain.id then
+					InitializeTarget(destGUID)
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SWP Applied to Target
 						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = true
 						TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain + 1
