@@ -474,7 +474,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
-	local function InitializeTarget(guid)
+	local function InitializeTarget(guid, selfInitializeAllowed)
+		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
+			return false
+		end
+
 		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
 			TRB.Functions.InitializeTarget(guid)
 			TRB.Data.snapshotData.targetData.targets[guid].sunfire = false
@@ -484,6 +488,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.snapshotData.targetData.targets[guid].stellarFlare = false
 			TRB.Data.snapshotData.targetData.targets[guid].stellarFlareRemaining = 0
 		end
+
+		return true
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 
@@ -1304,42 +1310,42 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
-			if sourceGUID == TRB.Data.character.guid then 
+			if sourceGUID == TRB.Data.character.guid then
 				if spellId == TRB.Data.spells.sunfire.id then
-					InitializeTarget(destGUID)
-					TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Sunfire Applied to Target
-						TRB.Data.snapshotData.targetData.targets[destGUID].sunfire = true
-						TRB.Data.snapshotData.targetData.sunfire = TRB.Data.snapshotData.targetData.sunfire + 1
-					elseif type == "SPELL_AURA_REMOVED" then
-						TRB.Data.snapshotData.targetData.targets[destGUID].sunfire = false
-						TRB.Data.snapshotData.targetData.targets[destGUID].sunfireRemaining = 0
-						TRB.Data.snapshotData.targetData.sunfire = TRB.Data.snapshotData.targetData.sunfire - 1
-					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+					if InitializeTarget(destGUID) then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Sunfire Applied to Target
+							TRB.Data.snapshotData.targetData.targets[destGUID].sunfire = true
+							TRB.Data.snapshotData.targetData.sunfire = TRB.Data.snapshotData.targetData.sunfire + 1
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.targetData.targets[destGUID].sunfire = false
+							TRB.Data.snapshotData.targetData.targets[destGUID].sunfireRemaining = 0
+							TRB.Data.snapshotData.targetData.sunfire = TRB.Data.snapshotData.targetData.sunfire - 1
+						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						end
 					end
 				elseif spellId == TRB.Data.spells.moonfire.id then
-					InitializeTarget(destGUID)
-					TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Moonfire Applied to Target
-						TRB.Data.snapshotData.targetData.targets[destGUID].moonfire = true
-						TRB.Data.snapshotData.targetData.moonfire = TRB.Data.snapshotData.targetData.moonfire + 1
-					elseif type == "SPELL_AURA_REMOVED" then
-						TRB.Data.snapshotData.targetData.targets[destGUID].moonfire = false
-						TRB.Data.snapshotData.targetData.targets[destGUID].moonfireRemaining = 0
-						TRB.Data.snapshotData.targetData.moonfire = TRB.Data.snapshotData.targetData.moonfire - 1
-                    --elseif type == "SPELL_PERIODIC_DAMAGE" then
+					if InitializeTarget(destGUID) then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Moonfire Applied to Target
+							TRB.Data.snapshotData.targetData.targets[destGUID].moonfire = true
+							TRB.Data.snapshotData.targetData.moonfire = TRB.Data.snapshotData.targetData.moonfire + 1
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.targetData.targets[destGUID].moonfire = false
+							TRB.Data.snapshotData.targetData.targets[destGUID].moonfireRemaining = 0
+							TRB.Data.snapshotData.targetData.moonfire = TRB.Data.snapshotData.targetData.moonfire - 1
+						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						end
 					end
 				elseif spellId == TRB.Data.spells.stellarFlare.id then
-					InitializeTarget(destGUID)
-					TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Stellar Flare Applied to Target
-						TRB.Data.snapshotData.targetData.targets[destGUID].stellarFlare = true
-						TRB.Data.snapshotData.targetData.stellarFlare = TRB.Data.snapshotData.targetData.stellarFlare + 1
-					elseif type == "SPELL_AURA_REMOVED" then
-						TRB.Data.snapshotData.targetData.targets[destGUID].stellarFlare = false
-						TRB.Data.snapshotData.targetData.targets[destGUID].stellarFlareRemaining = 0
-						TRB.Data.snapshotData.targetData.stellarFlare = TRB.Data.snapshotData.targetData.stellarFlare - 1
-					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+					if InitializeTarget(destGUID) then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Stellar Flare Applied to Target
+							TRB.Data.snapshotData.targetData.targets[destGUID].stellarFlare = true
+							TRB.Data.snapshotData.targetData.stellarFlare = TRB.Data.snapshotData.targetData.stellarFlare + 1
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.targetData.targets[destGUID].stellarFlare = false
+							TRB.Data.snapshotData.targetData.targets[destGUID].stellarFlareRemaining = 0
+							TRB.Data.snapshotData.targetData.stellarFlare = TRB.Data.snapshotData.targetData.stellarFlare - 1
+						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						end
 					end
 				elseif spellId == TRB.Data.spells.furyOfElune.id then
 					if type == "SPELL_AURA_APPLIED" then -- Gain Death and Madness

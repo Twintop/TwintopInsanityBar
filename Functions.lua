@@ -441,7 +441,7 @@ TRB.Functions.RemoveTarget = RemoveTarget
 local function InitializeTarget(guid)
 	if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
 		TRB.Data.snapshotData.targetData.targets[guid] = {}
-		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = 0
+		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
 		TRB.Data.snapshotData.targetData.targets[guid].snapshot = {}
 		TRB.Data.snapshotData.targetData.targets[guid].ttd = 0
 	end

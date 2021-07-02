@@ -318,13 +318,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
-	local function InitializeTarget(guid)
+	local function InitializeTarget(guid, selfInitializeAllowed)
+		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
+			return false
+		end
+
 		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
 			TRB.Functions.InitializeTarget(guid)
 			TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
 			TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
 			TRB.Data.snapshotData.targetData.targets[guid].echoingShockSpell = nil
 		end
+
+		return true
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 
@@ -820,16 +826,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			if sourceGUID == TRB.Data.character.guid then 
 				if spellId == TRB.Data.spells.flameShock.id then
-					InitializeTarget(destGUID)
-					TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- FS Applied to Target
-						TRB.Data.snapshotData.targetData.targets[destGUID].flameShock = true
-						TRB.Data.snapshotData.targetData.flameShock = TRB.Data.snapshotData.targetData.flameShock + 1
-					elseif type == "SPELL_AURA_REMOVED" then
-						TRB.Data.snapshotData.targetData.targets[destGUID].flameShock = false
-						TRB.Data.snapshotData.targetData.targets[destGUID].flameShockRemaining = 0
-						TRB.Data.snapshotData.targetData.flameShock = TRB.Data.snapshotData.targetData.flameShock - 1
-					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+					if InitializeTarget(destGUID) then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- FS Applied to Target
+							TRB.Data.snapshotData.targetData.targets[destGUID].flameShock = true
+							TRB.Data.snapshotData.targetData.flameShock = TRB.Data.snapshotData.targetData.flameShock + 1
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.targetData.targets[destGUID].flameShock = false
+							TRB.Data.snapshotData.targetData.targets[destGUID].flameShockRemaining = 0
+							TRB.Data.snapshotData.targetData.flameShock = TRB.Data.snapshotData.targetData.flameShock - 1
+						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						end
 					end
 				elseif spellId == TRB.Data.spells.chainLightning.id or spellId == TRB.Data.spells.lavaBeam.id then
 					if type == "SPELL_DAMAGE" then
@@ -899,12 +905,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						spell = TRB.Data.spells.lavaBeam
 					end
 
-					InitializeTarget(destGUID)
-
-					TRB.Data.snapshotData.targetData.targets[destGUID].echoingShockSpell = spell
-					TRB.Data.snapshotData.targetData.targets[destGUID].echoingShockExpiration = currentTime + TRB.Data.character.talents.echoingShock.duration - TRB.Functions.GetLatency()
-					TRB.Data.snapshotData.echoingShock.isActive = false
-					TRB.Data.snapshotData.echoingShock.spell = spell
+					if InitializeTarget(destGUID) then
+						TRB.Data.snapshotData.targetData.targets[destGUID].echoingShockSpell = spell
+						TRB.Data.snapshotData.targetData.targets[destGUID].echoingShockExpiration = currentTime + TRB.Data.character.talents.echoingShock.duration - TRB.Functions.GetLatency()
+						TRB.Data.snapshotData.echoingShock.isActive = false
+						TRB.Data.snapshotData.echoingShock.spell = spell
+					end
 				end
             end
 
