@@ -1503,6 +1503,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.targetData.targets[guid].hauntedMask = false
 			end
 		end
+		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
 
 		return true
 	end

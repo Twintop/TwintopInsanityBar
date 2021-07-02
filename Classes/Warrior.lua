@@ -623,6 +623,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.snapshotData.targetData.targets[guid].deepWounds = false
 			TRB.Data.snapshotData.targetData.targets[guid].deepWoundsRemaining = 0
 		end
+		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
 
 		return true
 	end

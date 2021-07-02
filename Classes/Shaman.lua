@@ -329,6 +329,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
 			TRB.Data.snapshotData.targetData.targets[guid].echoingShockSpell = nil
 		end
+		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
 
 		return true
 	end

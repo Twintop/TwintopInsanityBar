@@ -1368,6 +1368,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.snapshotData.targetData.targets[guid].serpentSting = false
 			TRB.Data.snapshotData.targetData.targets[guid].serpentStingRemaining = 0
 		end
+		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
 
 		return true
 	end

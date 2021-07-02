@@ -488,6 +488,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.snapshotData.targetData.targets[guid].stellarFlare = false
 			TRB.Data.snapshotData.targetData.targets[guid].stellarFlareRemaining = 0
 		end
+		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
 
 		return true
 	end

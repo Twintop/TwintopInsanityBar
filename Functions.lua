@@ -445,7 +445,6 @@ local function InitializeTarget(guid)
 			TRB.Data.snapshotData.targetData.targets[guid].snapshot = {}
 			TRB.Data.snapshotData.targetData.targets[guid].ttd = 0
 		end
-		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
 	end
 end
 TRB.Functions.InitializeTarget = InitializeTarget
