@@ -2534,7 +2534,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					TRB.Frames.barContainerFrame:Show()
 				end
 			end
-		elseif specId == 3 then
+		elseif specId == 3 then			
 			if force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.hunter.survival.displayBar.alwaysShow) and (
