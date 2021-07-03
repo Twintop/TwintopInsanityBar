@@ -183,10 +183,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	}
 	TRB.Data.snapshotData.stormkeeper = {
 		isActive = false,
-		spell = nil
-	}
-	TRB.Data.snapshotData.echoingShock = {
-		isActive = false,
+		stacksRemaining = 0,
+		startTime = nil,
 		spell = nil
 	}
 	TRB.Data.snapshotData.echoingShock = {
