@@ -106,6 +106,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				notZeroShow=true,
 				neverShow=false
 			},
+			endOfMetamorphosis = {
+				enabled=true,
+				mode="gcd",
+				gcdsMax=2,
+				timeMax=3.0
+			},
 			bar = {
 				width=555,
 				height=34,
@@ -146,6 +152,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FFE29CFD",
+					metamorphosis="FF67F100",
+					metamorphosisEnding="FFFF0000",
 					overcapEnabled=true,
 				},
 				threshold = {
@@ -1055,11 +1063,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			end
 		end)
 
-		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.demonhunter.havoc.colors.bar.border, 225, 25, xCoord2, yCoord)
-		f = controls.colors.border
+		controls.colors.metamorphosis = TRB.UiFunctions.BuildColorPicker(parent, "Fury while Metamorphosis is active", TRB.Data.settings.demonhunter.havoc.colors.bar.metamorphosis, 225, 25, xCoord2, yCoord)
+		f = controls.colors.metamorphosis
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.demonhunter.havoc.colors.bar.border, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.demonhunter.havoc.colors.bar.metamorphosis, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -1069,9 +1077,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
                         a = OpacitySliderFrame:GetValue()
                     end
 
-                    controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.demonhunter.havoc.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
+                    controls.colors.metamorphosis.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.demonhunter.havoc.colors.bar.metamorphosis = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -1098,28 +1105,72 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			end
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when you are overcapping Fury", TRB.Data.settings.demonhunter.havoc.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
-		f = controls.colors.borderOvercap
+		controls.colors.metamorphosisEnding = TRB.UiFunctions.BuildColorPicker(parent, "Fury while Metamorphosis is ending", TRB.Data.settings.demonhunter.havoc.colors.bar.metamorphosisEnding, 225, 25, xCoord2, yCoord)
+		f = controls.colors.metamorphosisEnding
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.demonhunter.havoc.colors.bar.borderOvercap, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.demonhunter.havoc.colors.bar.metamorphosisEnding, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
 
-					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.demonhunter.havoc.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
+                    controls.colors.metamorphosisEnding.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.demonhunter.havoc.colors.bar.metamorphosis = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
 			end
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.demonhunter.havoc.colors.bar.background, 275, 25, xCoord2, yCoord)
+		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Fury gain from hardcasting/channeling abilities", TRB.Data.settings.demonhunter.havoc.colors.bar.casting, 275, 25, xCoord, yCoord)
+		f = controls.colors.casting
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.demonhunter.havoc.colors.bar.casting, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.casting.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.demonhunter.havoc.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    castingFrame:SetStatusBarColor(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.demonhunter.havoc.colors.bar.border, 225, 25, xCoord2, yCoord)
+		f = controls.colors.border
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.demonhunter.havoc.colors.bar.border, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+
+                    controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.demonhunter.havoc.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		
+		yCoord = yCoord - 30
+		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.demonhunter.havoc.colors.bar.background, 275, 25, xCoord, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1137,6 +1188,26 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
                     TRB.Data.settings.demonhunter.havoc.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barContainerFrame:SetBackdropColor(r, g, b, 1-a)
                 end)
+			end
+		end)
+
+		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when you are overcapping Fury", TRB.Data.settings.demonhunter.havoc.colors.bar.borderOvercap, 225, 25, xCoord2, yCoord)
+		f = controls.colors.borderOvercap
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.demonhunter.havoc.colors.bar.borderOvercap, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.demonhunter.havoc.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
 			end
 		end)
 
@@ -1281,6 +1352,87 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.demonhunter.havoc.thresholds.glaiveTempest.enabled = self:GetChecked()
 		end)
+		
+
+
+		yCoord = yCoord - 30
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Metamorphosis Configuration", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.endOfMetamorphosis = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfMetamorphosis
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Metamorphosis")
+		f.tooltip = "Changes the bar color when Metamorphosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 40
+		controls.checkBoxes.endOfMetamorphosisModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfMetamorphosisModeGCDs
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Metamorphosis ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many GCDs remain until Metamorphosis ends."
+		if TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfMetamorphosisModeGCDs:SetChecked(true)
+			controls.checkBoxes.endOfMetamorphosisModeTime:SetChecked(false)
+			TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.mode = "gcd"
+		end)
+
+		title = "Metamorphosis GCDs - 0.75sec Floor"
+		controls.endOfMetamorphosisGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 20, TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.gcdsMax, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.endOfMetamorphosisGCDs:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			self.EditBox:SetText(value)
+			TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.gcdsMax = value
+		end)
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.endOfMetamorphosisModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_TIME", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfMetamorphosisModeTime
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Time until Metamorphosis ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many seconds remain until Metamorphosis ends."
+		if TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfMetamorphosisModeGCDs:SetChecked(false)
+			controls.checkBoxes.endOfMetamorphosisModeTime:SetChecked(true)
+			TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.mode = "time"
+		end)
+
+		title = "Metamorphosis Time Remaining (sec)"
+		controls.endOfMetamorphosisTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.timeMax, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.endOfMetamorphosisTime:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 2)
+			self.EditBox:SetText(value)
+			TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.timeMax = value
+		end)
+
 
 		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)

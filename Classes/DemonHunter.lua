@@ -78,13 +78,18 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		}
 
 		specCache.havoc.spells = {
-			--DemonHunter base abilities
+			--Demon Hunter base abilities
 			immolationAura = {
 				id = 258920,
 				name = "",
 				icon = "",
 				fury = 20,
                 cooldown = 30
+			},
+			metamorphosis = {
+				id = 162264,
+				name = "",
+				icon = "",
 			},
 
 			--Havoc base abilities
@@ -293,6 +298,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			duration = 0,
 			enabled = false
 		}
+		specCache.havoc.snapshotData.metamorphosis = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil
+		}
 		--[[
 		specCache.havoc.snapshotData.deadlyCalm = {
 			endTime = nil,
@@ -354,7 +364,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-            --[[
+			{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = "Metamorphosis", printInSettings = true },
+
+			--[[
             { variable = "#ancientAftershock", icon = spells.ancientAftershock.icon, description = "Ancient Aftershock", printInSettings = true },
 			{ variable = "#charge", icon = spells.charge.icon, description = "Charge", printInSettings = true },
 			{ variable = "#cleave", icon = spells.cleave.icon, description = "Cleave", printInSettings = true },
@@ -402,9 +414,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "$resourcePlusPassive", description = "Current + Passive Fury Total", printInSettings = false, color = false },
 			{ variable = "$furyTotal", description = "Current + Passive + Casting Fury Total", printInSettings = true, color = false },   
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Fury Total", printInSettings = false, color = false },   
-            --[[
-			{ variable = "$rend", description = "Is Rend currently talented. Logic variable only!", printInSettings = true, color = false },
-
+           
+			{ variable = "$metamorphosisTime", description = "Time remaining on Metamorphosis buff", printInSettings = true, color = false },
+ --[[
 			{ variable = "$deepWoundsCount", description = "Number of Deep Wounds active on targets", printInSettings = true, color = false },
 			{ variable = "$deepWoundsTime", description = "Time remaining on Deep Wounds on your current target", printInSettings = true, color = false },
 			{ variable = "$rendCount", description = "Number of Rends active on targets", printInSettings = true, color = false },
@@ -496,8 +508,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 
-	local function GetSuddenDeathRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.suddenDeath)
+	local function GetMetamorphosisRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.metamorphosis)
 	end
 
     local function CalculateAbilityResourceValue(resource)
@@ -595,9 +607,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			settings = TRB.Data.settings.demonhunter.havoc
 		end
 
-        --[[
+        
         if specId == 1 then --Havoc
-			if var == "$ravagerTicks" then
+			if var == "$metamorphosisTime" then
+				if GetMetamorphosisRemainingTime() > 0 then
+					valid = true
+				end
+			--[[elseif var == "$ravagerTicks" then
 				if TRB.Data.snapshotData.ravager.isActive then
 					valid = true
 				end
@@ -652,9 +668,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			elseif var == "$deepWoundsTime" then
 				if not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining > 0 then
 					valid = true
-				end
+				end]]
             end
-		end]]
+		end
 
 		if var == "$resource" or var == "$fury" then
 			if normalizedFury > 0 then
@@ -728,6 +744,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		if TRB.Data.snapshotData.casting.resourceFinal < 0 then
 			castingFuryColor = TRB.Data.settings.demonhunter.havoc.colors.text.spending
+		end
+
+		--$metamorphosisTime
+		local _metamorphosisTime = GetMetamorphosisRemainingTime()
+		local metamorphosisTime = 0
+		if _metamorphosisTime ~= nil then
+			metamorphosisTime = string.format("%.1f", _metamorphosisTime)
 		end
 
         --[[
@@ -879,6 +902,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
         ]]
 
 		local lookup = TRB.Data.lookup or {}
+        lookup["#metamorphosis"] = TRB.Data.spells.metamorphosis.icon
 		--[[
         lookup["#ancientAftershock"] = TRB.Data.spells.ancientAftershock.icon
 		lookup["#charge"] = TRB.Data.spells.charge.icon
@@ -920,6 +944,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookup["$covenantAbilityTicks"] = covenantAbilityTicks
 		lookup["$covenantTicks"] = covenantAbilityTicks
         ]]
+		lookup["$metamorphosisTime"] = metamorphosisTime
 		lookup["$furyPlusCasting"] = furyPlusCasting
 		lookup["$furyTotal"] = furyTotal
 		lookup["$furyMax"] = TRB.Data.character.maxResource
@@ -1322,7 +1347,28 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							end
 						end
 					end
+					
 					local barColor = TRB.Data.settings.demonhunter.havoc.colors.bar.base
+					if TRB.Data.spells.metamorphosis.isActive then
+						local timeThreshold = 0
+						local useEndOfMetamorphosisColor = false
+
+						if TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.enabled then
+							useEndOfMetamorphosisColor = true
+							if TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.mode == "gcd" then
+								local gcd = TRB.Functions.GetCurrentGCDTime()
+								timeThreshold = gcd * TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.gcdsMax
+							elseif TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.mode == "time" then
+								timeThreshold = TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.timeMax
+							end
+						end
+
+						if useEndOfMetamorphosisColor and GetMetamorphosisRemainingTime() <= timeThreshold then
+							barColor = TRB.Data.settings.demonhunter.havoc.colors.bar.metamorphosisEnding
+						else
+							barColor = TRB.Data.settings.demonhunter.havoc.colors.bar.metamorphosis
+						end
+					end
 
 					local barBorderColor = TRB.Data.settings.demonhunter.havoc.colors.bar.border
 
@@ -1397,6 +1443,16 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.felEruption.startTime, TRB.Data.snapshotData.felEruption.duration, _, _ = GetSpellCooldown(TRB.Data.spells.felEruption.id)
 						end
+					elseif spellId == TRB.Data.spells.metamorphosis.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.metamorphosis.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.metamorphosis.duration, TRB.Data.snapshotData.metamorphosis.endTime, _, _, _, TRB.Data.snapshotData.metamorphosis.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.metamorphosis.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.metamorphosis.isActive = false
+							TRB.Data.snapshotData.metamorphosis.spellId = nil
+							TRB.Data.snapshotData.metamorphosis.duration = 0
+							TRB.Data.snapshotData.metamorphosis.endTime = nil
+						end
 					--[[
 					elseif spellId == TRB.Data.spells.deadlyCalm.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
@@ -1414,7 +1470,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							TRB.Data.spells.suddenDeath.isActive = true
 							
 							if TRB.Data.settings.demonhunter.havoc.audio.suddenDeath.enabled then
-								PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.aimedShot.sound, TRB.Data.settings.core.audio.channel.channel)
+								PlaySoundFile(TRB.Data.settings.demonhunter.havoc.audio.aimedShot.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.deadlyCalm.endTime = nil
