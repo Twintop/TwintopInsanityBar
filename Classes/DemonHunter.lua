@@ -33,8 +33,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			resource = {
 				resource = 0,
 				passive = 0,
+				burningHatred = 0,
 			},
 			dots = {
+			},
+			burningHatred = {
+				fury = 0,
+				ticks = 0
 			}
 		}
 
@@ -170,7 +175,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				fury = 40
 			},
 			burningHatred = {
-				id = 320374,
+				id = 258920,
 				name = "",
 				icon = "",
                 fury = 5,
@@ -303,6 +308,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			duration = 0,
 			endTime = nil
 		}
+		specCache.havoc.snapshotData.burningHatred = {
+			isActive = false,
+			ticksRemaining = 0,
+			fury = 0,
+			endTime = nil,
+			lastTick = nil
+		}
 		--[[
 		specCache.havoc.snapshotData.deadlyCalm = {
 			endTime = nil,
@@ -364,7 +376,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-			{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = "Metamorphosis", printInSettings = true },
+			{ variable = "#bh", icon = spells.metamorphosis.icon, description = "Burning Hatred", printInSettings = true },
+			{ variable = "#burningHatred", icon = spells.metamorphosis.icon, description = "Burning Hatred", printInSettings = false },
+			{ variable = "#meta", icon = spells.metamorphosis.icon, description = "Metamorphosis", printInSettings = true },
+			{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = "Metamorphosis", printInSettings = false },
 
 			--[[
             { variable = "#ancientAftershock", icon = spells.ancientAftershock.icon, description = "Ancient Aftershock", printInSettings = true },
@@ -415,7 +430,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "$furyTotal", description = "Current + Passive + Casting Fury Total", printInSettings = true, color = false },   
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Fury Total", printInSettings = false, color = false },   
            
-			{ variable = "$metamorphosisTime", description = "Time remaining on Metamorphosis buff", printInSettings = true, color = false },
+			{ variable = "$metaTime", description = "Time remaining on Metamorphosis buff", printInSettings = true, color = false },
+			{ variable = "$metamorphosisTime", description = "Time remaining on Metamorphosis buff", printInSettings = false, color = false },
+
+			{ variable = "$bhFury", description = "Fury from Burning Hatred", printInSettings = true, color = false },
+			{ variable = "$bhTicks", description = "Number of ticks left on Burning Hatred", printInSettings = true, color = false },
+
  --[[
 			{ variable = "$deepWoundsCount", description = "Number of Deep Wounds active on targets", printInSettings = true, color = false },
 			{ variable = "$deepWoundsTime", description = "Time remaining on Deep Wounds on your current target", printInSettings = true, color = false },
@@ -613,6 +633,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				if GetMetamorphosisRemainingTime() > 0 then
 					valid = true
 				end
+			elseif var == "$bhFury" then
+				if TRB.Data.snapshotData.burningHatred.fury > 0 then
+					valid = true
+				end
+			elseif var == "$bhTicks" then
+				if TRB.Data.snapshotData.burningHatred.ticksRemaining > 0 then
+					valid = true
+				end
 			--[[elseif var == "$ravagerTicks" then
 				if TRB.Data.snapshotData.ravager.isActive then
 					valid = true
@@ -679,7 +707,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		elseif var == "$resourceMax" or var == "$furyMax" then
 			valid = true
 		elseif var == "$resourceTotal" or var == "$furyTotal" then
-			if normalizedFury > 0  or IsValidVariableForSpec("$passive") or
+			if normalizedFury > 0  or IsValidVariableForSpec("$passive") or IsValidVariableForSpec("$bhFury") or
 				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
 				then
 				valid = true
@@ -694,7 +722,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				valid = true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$furyPlusPassive" then
-			if normalizedFury > 0 or IsValidVariableForSpec("$passive") then
+			if normalizedFury > 0 or IsValidVariableForSpec("$passive") or IsValidVariableForSpec("$bhFury") then
 				valid = true
 			end
 		elseif var == "$casting" then
@@ -702,9 +730,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				valid = true
 			end
 		elseif var == "$passive" then
-			--[[if TRB.Data.snapshotData.ravager.fury > 0 or TRB.Data.snapshotData.ancientAftershock.fury > 0 then
+			if IsValidVariableForSpec("$bhFury") then
 				valid = true
-			end]]
+			end
 		end
 
 		return valid
@@ -753,6 +781,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			metamorphosisTime = string.format("%.1f", _metamorphosisTime)
 		end
 
+		--$bhFury
+		local bhFury = TRB.Data.snapshotData.burningHatred.fury
+
+		--$bhTicks
+		local bhTicks = TRB.Data.snapshotData.burningHatred.ticksRemaining
+
         --[[
 		--$ravagerFury
 		local _ravagerFury = TRB.Data.snapshotData.ravager.fury
@@ -786,7 +820,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		--$casting
 		local castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, furyPrecision, "floor"))
 		--$passive
-		local _passiveFury = 0-- _ravagerFury + _ancientAftershockFury + _conquerorsBannerFury
+		local _passiveFury = bhFury
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
@@ -879,6 +913,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		Global_TwintopResourceBar.resource.resource = normalizedFury
 		Global_TwintopResourceBar.resource.passive = _passiveFury
+		Global_TwintopResourceBar.resource.burningHatred = bhFury
+		Global_TwintopResourceBar.burningHatred = {
+			fury = bhFury,
+			ticks = bhTicks
+		}
 		--[[Global_TwintopResourceBar.resource.ravager = _ravagerFury
 		Global_TwintopResourceBar.resource.ancientAftershock = _ancientAftershockFury
 		Global_TwintopResourceBar.resource.conquerorsBanner = _conquerorsBannerFury
@@ -902,6 +941,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
         ]]
 
 		local lookup = TRB.Data.lookup or {}
+        lookup["#bh"] = TRB.Data.spells.burningHatred.icon
+        lookup["#burningHatred"] = TRB.Data.spells.burningHatred.icon
+        lookup["#meta"] = TRB.Data.spells.metamorphosis.icon
         lookup["#metamorphosis"] = TRB.Data.spells.metamorphosis.icon
 		--[[
         lookup["#ancientAftershock"] = TRB.Data.spells.ancientAftershock.icon
@@ -944,7 +986,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookup["$covenantAbilityTicks"] = covenantAbilityTicks
 		lookup["$covenantTicks"] = covenantAbilityTicks
         ]]
+		lookup["$metaTime"] = metamorphosisTime
 		lookup["$metamorphosisTime"] = metamorphosisTime
+		lookup["$bhFury"] = bhFury
+		lookup["$bhTicks"] = bhTicks
 		lookup["$furyPlusCasting"] = furyPlusCasting
 		lookup["$furyTotal"] = furyTotal
 		lookup["$furyMax"] = TRB.Data.character.maxResource
@@ -1056,6 +1101,21 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	end
     ]]
 
+	local function UpdateBurningHatred()
+		if TRB.Data.snapshotData.burningHatred.isActive then
+			local currentTime = GetTime()
+			if TRB.Data.snapshotData.burningHatred.endTime == nil or currentTime > TRB.Data.snapshotData.burningHatred.endTime then
+				TRB.Data.snapshotData.burningHatred.ticksRemaining = 0
+				TRB.Data.snapshotData.burningHatred.endTime = nil
+				TRB.Data.snapshotData.burningHatred.fury = 0
+				TRB.Data.snapshotData.burningHatred.isActive = false
+			else
+				TRB.Data.snapshotData.burningHatred.ticksRemaining = math.ceil((TRB.Data.snapshotData.burningHatred.endTime - currentTime) / (TRB.Data.spells.burningHatred.duration / TRB.Data.spells.burningHatred.ticks))
+				TRB.Data.snapshotData.burningHatred.fury = TRB.Data.snapshotData.burningHatred.ticksRemaining * TRB.Data.spells.burningHatred.fury
+			end
+		end
+	end
+
 	local function UpdateSnapshot()
 		TRB.Functions.UpdateSnapshot()
 		local currentTime = GetTime()
@@ -1063,6 +1123,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 	local function UpdateSnapshot_Havoc()
 		UpdateSnapshot()
+		UpdateBurningHatred()
 		--UpdateRavager()
 		--UpdateAncientAftershock()
 		--UpdateConquerorsBanner()
@@ -1180,14 +1241,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 					local passiveValue = 0
 					if TRB.Data.settings.demonhunter.havoc.bar.showPassive then
-						--[[if TRB.Data.snapshotData.ravager.fury > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshotData.ravager.fury 
+						if TRB.Data.snapshotData.burningHatred.fury > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.burningHatred.fury
 						end
-
-						if TRB.Data.snapshotData.ancientAftershock.fury > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshotData.ancientAftershock.fury 
-						end
-                        ]]
 					end
 
 					if CastingSpell() and TRB.Data.settings.demonhunter.havoc.bar.showCasting then
@@ -1452,6 +1508,29 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							TRB.Data.snapshotData.metamorphosis.spellId = nil
 							TRB.Data.snapshotData.metamorphosis.duration = 0
 							TRB.Data.snapshotData.metamorphosis.endTime = nil
+						end
+					elseif spellId == TRB.Data.spells.burningHatred.id then
+						if type == "SPELL_AURA_APPLIED" then -- Gain Death and Madness
+							TRB.Data.snapshotData.burningHatred.isActive = true
+							TRB.Data.snapshotData.burningHatred.ticksRemaining = TRB.Data.spells.burningHatred.ticks
+							TRB.Data.snapshotData.burningHatred.fury = TRB.Data.snapshotData.burningHatred.ticksRemaining * TRB.Data.spells.burningHatred.fury
+							TRB.Data.snapshotData.burningHatred.endTime = currentTime + TRB.Data.spells.burningHatred.duration
+							TRB.Data.snapshotData.burningHatred.lastTick = currentTime
+						elseif type == "SPELL_AURA_REFRESH" then
+							TRB.Data.snapshotData.burningHatred.ticksRemaining = TRB.Data.spells.burningHatred.ticks + 1
+							TRB.Data.snapshotData.burningHatred.fury = TRB.Data.snapshotData.burningHatred.ticksRemaining * TRB.Data.spells.burningHatred.fury
+							TRB.Data.snapshotData.burningHatred.endTime = currentTime + TRB.Data.spells.burningHatred.duration + ((TRB.Data.spells.burningHatred.duration / TRB.Data.spells.burningHatred.ticks) - (currentTime - TRB.Data.snapshotData.burningHatred.lastTick))
+							TRB.Data.snapshotData.burningHatred.lastTick = currentTime
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.burningHatred.isActive = false
+							TRB.Data.snapshotData.burningHatred.ticksRemaining = 0
+							TRB.Data.snapshotData.burningHatred.fury = 0
+							TRB.Data.snapshotData.burningHatred.endTime = nil
+							TRB.Data.snapshotData.burningHatred.lastTick = nil
+						elseif type == "SPELL_PERIODIC_ENERGIZE" then
+							TRB.Data.snapshotData.burningHatred.ticksRemaining = TRB.Data.snapshotData.burningHatred.ticksRemaining - 1
+							TRB.Data.snapshotData.burningHatred.fury = TRB.Data.snapshotData.burningHatred.ticksRemaining * TRB.Data.spells.burningHatred.fury
+							TRB.Data.snapshotData.burningHatred.lastTick = currentTime
 						end
 					--[[
 					elseif spellId == TRB.Data.spells.deadlyCalm.id then
