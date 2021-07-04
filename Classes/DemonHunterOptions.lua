@@ -82,36 +82,21 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			thresholdWidth=2,
 			overcapThreshold=120,
 			thresholds = {
-				--[[execute = {
+				bladeDance = {
 					enabled = true, -- 1
 				},
-				ignorePain = {
+				chaosStrike = {
 					enabled = true, -- 2
 				},
-				shieldBlock = {
-					enabled = false, -- 3
+				eyeBeam = {
+					enabled = true, -- 3
 				},
-				slam = {
+				glaiveTempest = {
 					enabled = true, -- 4
 				},
-				whirlwind = {
+				felEruption = {
 					enabled = true, -- 5
 				},
-				mortalStrike = {
-					enabled = true, -- 6
-				},
-				impendingVictory = {
-					enabled = true, -- 7
-				},
-				rend = {
-					enabled = true, -- 8
-				},
-				cleave = {
-					enabled = true, -- 9
-				},
-				condemn = {
-					enabled = true, -- 10
-				},]]
 			},
 			displayBar = {
 				alwaysShow=false,
@@ -136,7 +121,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FFE29CFD",
-					overcap="FF800000",
+					overcap="FFFF0000",
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
 					overcapEnabled=true,
@@ -152,7 +137,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				},
 				bar = {
 					border="FFA330C9",
-					borderOvercap="FF800000",
+					borderOvercap="FFFF0000",
 					background="66000000",
 					base="FFC942FD",
 					casting="FFFFFFFF",
@@ -1218,7 +1203,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			end
 		end)
 
-        --[[
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
@@ -1230,105 +1214,59 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.demonhunter.havoc)
 		end)
 
-		controls.checkBoxes.cleaveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_cleave", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.cleaveThresholdShow
+		controls.checkBoxes.bladeDanceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_bladeDance", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.bladeDanceThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Cleave (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Cleave. Only visible if talented."
-		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.cleave.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Blade Dance")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Blade Dance."
+		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.bladeDance.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.demonhunter.havoc.thresholds.cleave.enabled = self:GetChecked()
+			TRB.Data.settings.demonhunter.havoc.thresholds.bladeDance.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.executeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_execute", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.executeThresholdShow
+		controls.checkBoxes.chaosStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_chaosStrike", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.chaosStrikeThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Execute / Condemn (if Venthyr)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Execute or Condemn (if Venthyr). Only visible when the current target is in Execute health range or available from a Sudden Death proc. Will move along the bar between the current minimum and maximum Fury cost amounts."
-		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.execute.enabled or TRB.Data.settings.demonhunter.havoc.thresholds.condemn.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Chaos Strike")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Chaos Strike"
+		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.chaosStrike.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.demonhunter.havoc.thresholds.execute.enabled = self:GetChecked()
-			TRB.Data.settings.demonhunter.havoc.thresholds.condemn.enabled = self:GetChecked()
+			TRB.Data.settings.demonhunter.havoc.thresholds.chaosStrike.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.ignorePainThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_ignorePain", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.ignorePainThresholdShow
+		controls.checkBoxes.eyeBeamThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_eyeBeam", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.eyeBeamThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Ignore Pain")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Ignore Pain."
-		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.ignorePain.enabled)
+		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Eye Beam."
+		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.eyeBeam.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.demonhunter.havoc.thresholds.ignorePain.enabled = self:GetChecked()
+			TRB.Data.settings.demonhunter.havoc.thresholds.eyeBeam.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.impendingVictoryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_impendingVictory", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.impendingVictoryThresholdShow
+		controls.checkBoxes.felEruptionVictoryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_felEruption", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.felEruptionVictoryThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Impending Victory (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Impending Victory. Only visible if talented."
-		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.impendingVictory.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Fel Eruption (if talented)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Fel Eruption. Only visible if talented."
+		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.felEruption.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.demonhunter.havoc.thresholds.impendingVictory.enabled = self:GetChecked()
+			TRB.Data.settings.demonhunter.havoc.thresholds.felEruption.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.mortalStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_mortalStrike", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.mortalStrikeThresholdShow
+		controls.checkBoxes.glaiveTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_glaiveTempest", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.glaiveTempestThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mortal Strike")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Mortal Strike."
-		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.mortalStrike.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Glaive Tempest (if talented)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Glaive Tempest. Only visible if talented."
+		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.glaiveTempest.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.demonhunter.havoc.thresholds.mortalStrike.enabled = self:GetChecked()
+			TRB.Data.settings.demonhunter.havoc.thresholds.glaiveTempest.enabled = self:GetChecked()
 		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.rendThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_rend", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.rendThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Rend (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Rend. Only visible if talented."
-		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.rend.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.demonhunter.havoc.thresholds.rend.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.shieldBlockThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_shieldBlock", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.shieldBlockThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Shield Block")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Shield Block. This does not check to see if you have a shield equipped!"
-		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.shieldBlock.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.demonhunter.havoc.thresholds.shieldBlock.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.slamThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_slam", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.slamThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Slam")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Slam."
-		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.slam.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.demonhunter.havoc.thresholds.slam.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.whirlwindThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_whirlwind", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.whirlwindThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Whirlwind")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Whirlwind."
-		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.whirlwind.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.demonhunter.havoc.thresholds.whirlwind.enabled = self:GetChecked()
-		end)
-        ]]
 
 		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)

@@ -33,9 +33,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			resource = {
 				resource = 0,
 				passive = 0,
-				ravager = 0,
-				ancientAftershock = 0,
-				conquerorsBanner = 0
 			},
 			dots = {
 			}
@@ -48,7 +45,28 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			maxResource = 120,
 			covenantId = 0,
 			talents = {
-				suddenDeath = {
+				blindFury = {
+					isSelected = false
+				},
+				demonicAppetite = {
+					isSelected = false
+				},
+				felBlade = {
+					isSelected = false
+				},
+				burningHatred = {
+					isSelected = false
+				},
+				glaiveTempest = {
+					isSelected = false
+				},
+				unleashedPower = {
+					isSelected = false
+				},
+				felEruption = {
+					isSelected = false
+				},
+				momentum = {
 					isSelected = false
 				},
 			},
@@ -63,7 +81,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				name = "",
 				icon = "",
 				fury = 20,
-                cooldown = 25
+                cooldown = 30
 			},
 
 			--Havoc base abilities
@@ -72,13 +90,23 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				name = "",
 				icon = "",
 				fury = -35,
-                cooldown = 9
+                cooldown = 9,
+				thresholdId = 1,
+				settingKey = "bladeDance",
+				isTalent = false,
+				hasCooldown = true,
+				thresholdUsable = false
 			},
             chaosStrike = {
                id = 162794,
                name = "",
                icon = "",
-               fury = -40
+               fury = -40,
+			   thresholdId = 2,
+			   settingKey = "chaosStrike",
+			   isTalent = false,
+			   hasCooldown = false,
+			   thresholdUsable = false
             },
             demonsBite = {
                id = 162243,
@@ -92,9 +120,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
                name = "",
                icon = "",
                fury = -30,
-               duration = 2
+               duration = 2,
+			   thresholdId = 3,
+			   settingKey = "eyeBeam",
+			   isTalent = false,
+			   hasCooldown = true,
+			   thresholdUsable = false
             },
-			
+
 			--Talents
 			blindFury = {
 				id = 203550,
@@ -129,8 +162,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 342817,
 				name = "",
 				icon = "",
-                fury = 30,
-                cooldown = 20
+                fury = -30,
+                cooldown = 20,
+				thresholdId = 4,
+				settingKey = "glaiveTempest",
+				isTalent = true,
+				hasCooldown = true,
+				thresholdUsable = false
 			},
 			unleashedPower = {
 				id = 206477,
@@ -142,7 +180,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 211881,
 				name = "",
 				icon = "",
-				fury = -10
+				fury = -10,
+				cooldown = 30,
+				thresholdId = 5,
+				settingKey = "felEruption",
+				isTalent = true,
+				hasCooldown = true,
+				thresholdUsable = false
 			},
 			momentum = {
 				id = 206476,
@@ -199,38 +243,32 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		specCache.havoc.snapshotData.audio = {
 			overcapCue = false
 		}
-        --[[
 		specCache.havoc.snapshotData.targetData = {
 			ttdIsActive = false,
 			currentTargetGuid = nil,
 			targets = {},
-			rend = 0,
 		}
-		specCache.havoc.snapshotData.mortalStrike = {
+		specCache.havoc.snapshotData.bladeDance = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.havoc.snapshotData.impendingVictory = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}
-		specCache.havoc.snapshotData.victoryRush = {
+		specCache.havoc.snapshotData.eyeBeam = {
 			endTime = nil,
 			duration = 0,
 			spellId = nil
 		}
-		specCache.havoc.snapshotData.ignorePain = {
+		specCache.havoc.snapshotData.glaiveTempest = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.havoc.snapshotData.cleave = {
+		specCache.havoc.snapshotData.felEruption = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
+		--[[
 		specCache.havoc.snapshotData.deadlyCalm = {
 			endTime = nil,
 			duration = 0,
@@ -377,17 +415,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
         if GetSpecialization() == 1 then
 			TRB.Data.character.specName = "havoc"
-			--[[
-            TRB.Data.character.talents.suddenDeath.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.skullsplitter.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.impendingVictory.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.massacre.isSelected = select(4, GetTalentInfo(3, 1, TRB.Data.character.specGroup))
-            TRB.Data.character.talents.rend.isSelected = select(4, GetTalentInfo(3, 3, TRB.Data.character.specGroup))
-            TRB.Data.character.talents.cleave.isSelected = select(4, GetTalentInfo(5, 3, TRB.Data.character.specGroup))
-            TRB.Data.character.talents.deadlyCalm.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
-            TRB.Data.character.talents.ravager.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
-            ]]
-        elseif GetSpecialization() == 2 then
+            TRB.Data.character.talents.blindFury.isSelected = select(4, GetTalentInfo(1, 1, TRB.Data.character.specGroup))
+			TRB.Data.character.talents.demonicAppetite.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
+			TRB.Data.character.talents.felBlade.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
+			TRB.Data.character.talents.burningHatred.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
+            TRB.Data.character.talents.glaiveTempest.isSelected = select(4, GetTalentInfo(3, 3, TRB.Data.character.specGroup))
+            TRB.Data.character.talents.unleashedPower.isSelected = select(4, GetTalentInfo(6, 1, TRB.Data.character.specGroup))
+            TRB.Data.character.talents.felEruption.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
+            TRB.Data.character.talents.momentum.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 		end
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
@@ -439,21 +474,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.suddenDeath)
 	end
 
-    local function CalculateAbilityResourceValue(resource, includeDeadlyCalm)
-        if includeDeadlyCalm == nil then
-			includeDeadlyCalm = false
-		end
-
+    local function CalculateAbilityResourceValue(resource)
 		local modifier = 1.0
 		
 		if resource > 0 then
 
 		else
-			if GetSpecialization() == 1 then
-				if TRB.Data.spells.deadlyCalm.isActive and includeDeadlyCalm then
-					modifier = modifier * TRB.Data.spells.deadlyCalm.modifier
-				end
-			end
+			
 		end
 
         return resource * modifier
@@ -505,10 +532,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	end
 
 	local function ConstructResourceBar(settings)
-		local entries = TRB.Functions.TableLength(resourceFrame.thresholds)
+		local entries = TRB.Functions.TableLength(TRB.Frames.resourceFrame.thresholds)
 		if entries > 0 then
 			for x = 1, entries do
-				resourceFrame.thresholds[x]:Hide()
+				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 		end
 
@@ -525,7 +552,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:Hide()
                 resourceFrameCounter = resourceFrameCounter + 1
             end
-        end
+        end		
 
 		TRB.Functions.ConstructResourceBar(settings)
 	end
@@ -992,35 +1019,35 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local currentTime = GetTime()
 		local _
 
-        --[[
-        if TRB.Data.snapshotData.mortalStrike.startTime ~= nil and currentTime > (TRB.Data.snapshotData.mortalStrike.startTime + TRB.Data.snapshotData.mortalStrike.duration) then
-			TRB.Data.snapshotData.mortalStrike.startTime = nil
-            TRB.Data.snapshotData.mortalStrike.duration = 0
-		elseif TRB.Data.snapshotData.mortalStrike.startTime ~= nil then
-			TRB.Data.snapshotData.mortalStrike.startTime, TRB.Data.snapshotData.mortalStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.mortalStrike.id)
+        if TRB.Data.snapshotData.bladeDance.startTime ~= nil and currentTime > (TRB.Data.snapshotData.bladeDance.startTime + TRB.Data.snapshotData.bladeDance.duration) then
+			TRB.Data.snapshotData.bladeDance.startTime = nil
+            TRB.Data.snapshotData.bladeDance.duration = 0
+		elseif TRB.Data.snapshotData.bladeDance.startTime ~= nil then
+			TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.bladeDance.id)
         end
 
-		if TRB.Data.snapshotData.impendingVictory.startTime ~= nil and currentTime > (TRB.Data.snapshotData.impendingVictory.startTime + TRB.Data.snapshotData.impendingVictory.duration) then
-			TRB.Data.snapshotData.impendingVictory.startTime = nil
-            TRB.Data.snapshotData.impendingVictory.duration = 0
-		elseif TRB.Data.snapshotData.impendingVictory.startTime ~= nil then
-			TRB.Data.snapshotData.impendingVictory.startTime, TRB.Data.snapshotData.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
+		if TRB.Data.snapshotData.eyeBeam.startTime ~= nil and currentTime > (TRB.Data.snapshotData.eyeBeam.startTime + TRB.Data.snapshotData.eyeBeam.duration) then
+            TRB.Data.snapshotData.eyeBeam.startTime = nil
+            TRB.Data.snapshotData.eyeBeam.duration = 0
+		elseif TRB.Data.snapshotData.eyeBeam.startTime ~= nil then
+			TRB.Data.snapshotData.eyeBeam.startTime, TRB.Data.snapshotData.eyeBeam.duration, _, _ = GetSpellCooldown(TRB.Data.spells.eyeBeam.id)
         end
 
-		if TRB.Data.snapshotData.ignorePain.startTime ~= nil and currentTime > (TRB.Data.snapshotData.ignorePain.startTime + TRB.Data.snapshotData.ignorePain.duration) then
-            TRB.Data.snapshotData.ignorePain.startTime = nil
-            TRB.Data.snapshotData.ignorePain.duration = 0
-		elseif TRB.Data.snapshotData.ignorePain.startTime ~= nil then
-			TRB.Data.snapshotData.ignorePain.startTime, TRB.Data.snapshotData.ignorePain.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ignorePain.id)
+		if TRB.Data.snapshotData.glaiveTempest.startTime ~= nil and currentTime > (TRB.Data.snapshotData.glaiveTempest.startTime + TRB.Data.snapshotData.glaiveTempest.duration) then
+            TRB.Data.snapshotData.glaiveTempest.startTime = nil
+            TRB.Data.snapshotData.glaiveTempest.duration = 0
+		elseif TRB.Data.snapshotData.glaiveTempest.startTime ~= nil then
+			TRB.Data.snapshotData.glaiveTempest.startTime, TRB.Data.snapshotData.glaiveTempest.duration, _, _ = GetSpellCooldown(TRB.Data.spells.glaiveTempest.id)
         end
 
-		if TRB.Data.snapshotData.cleave.startTime ~= nil and currentTime > (TRB.Data.snapshotData.cleave.startTime + TRB.Data.snapshotData.cleave.duration) then
-            TRB.Data.snapshotData.cleave.startTime = nil
-            TRB.Data.snapshotData.cleave.duration = 0
-		elseif TRB.Data.snapshotData.cleave.startTime ~= nil then
-			TRB.Data.snapshotData.cleave.startTime, TRB.Data.snapshotData.cleave.duration, _, _ = GetSpellCooldown(TRB.Data.spells.cleave.id)
+		if TRB.Data.snapshotData.felEruption.startTime ~= nil and currentTime > (TRB.Data.snapshotData.felEruption.startTime + TRB.Data.snapshotData.felEruption.duration) then
+            TRB.Data.snapshotData.felEruption.startTime = nil
+            TRB.Data.snapshotData.felEruption.duration = 0
+		elseif TRB.Data.snapshotData.felEruption.startTime ~= nil then
+			TRB.Data.snapshotData.felEruption.startTime, TRB.Data.snapshotData.felEruption.duration, _, _ = GetSpellCooldown(TRB.Data.spells.felEruption.id)
         end
 
+		--[[
 		_, _, TRB.Data.snapshotData.suddenDeath.stacks, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.suddenDeath.id, "player")
 		_, _, TRB.Data.snapshotData.deadlyCalm.stacks, _, TRB.Data.snapshotData.deadlyCalm.duration, TRB.Data.snapshotData.deadlyCalm.endTime, _, _, _, TRB.Data.snapshotData.deadlyCalm.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.deadlyCalm.id, "player")
 
@@ -1042,7 +1069,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				end
 			end
 		end
-        ]]
+		]]
 	end
 
 	local function HideResourceBar(force)
@@ -1138,13 +1165,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.fury ~= nil and spell.fury < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then							
+						if spell ~= nil and spell.id ~= nil and spell.fury ~= nil and spell.fury < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local furyAmount = CalculateAbilityResourceValue(spell.fury)
 							local normalizedFury = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
-
-							if spell.id ~= TRB.Data.spells.execute.id then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.demonhunter.havoc, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.demonhunter.havoc.thresholdWidth, -furyAmount, TRB.Data.character.maxResource)
-							end
+							
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.demonhunter.havoc, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.demonhunter.havoc.thresholdWidth, -furyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local isUsable = true -- Could use it if we had enough fury, e.g. not on CD
@@ -1155,7 +1180,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 								showThreshold = false
 								isUsable = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-								if spell.id == TRB.Data.spells.execute.id or spell.id == TRB.Data.spells.condemn.id then
+								--[[if spell.id == TRB.Data.spells.execute.id or spell.id == TRB.Data.spells.condemn.id then
 									local showThis = true
 									if spell.id == TRB.Data.spells.execute.id and TRB.Data.character.covenantId == 2 then
 										showThis = false
@@ -1201,7 +1226,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
 										frameLevel = 128
 									end
-								end
+								end]]
 							elseif spell.hasCooldown then
 								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 									thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
@@ -1222,12 +1247,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 								end
 							end
 
-							if TRB.Data.settings.demonhunter.havoc.thresholds[spell.settingKey].enabled and showThreshold then								
-								if isUsable and TRB.Data.snapshotData.deadlyCalm.stacks ~= nil and TRB.Data.snapshotData.deadlyCalm.stacks > 0 then
-									thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
-									frameLevel = 129
-								end
-
+							if TRB.Data.settings.demonhunter.havoc.thresholds[spell.settingKey].enabled and showThreshold then				
+								print("Show Threshold:", spell.name, spell.id, frameLevel)
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
 ---@diagnostic disable-next-line: undefined-field
@@ -1244,8 +1265,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 						end
 					end
 					local barColor = TRB.Data.settings.demonhunter.havoc.colors.bar.base
-
-					local latency = TRB.Functions.GetLatency()
 
 					local barBorderColor = TRB.Data.settings.demonhunter.havoc.colors.bar.border
 
@@ -1300,33 +1319,23 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 			if sourceGUID == TRB.Data.character.guid then 
 				if specId == 1 then --Havoc
-                    --[[
-                    if spellId == TRB.Data.spells.mortalStrike.id then
+                    if spellId == TRB.Data.spells.bladeDance.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.mortalStrike.startTime, TRB.Data.snapshotData.mortalStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.mortalStrike.id)
+							TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.bladeDance.id)
 						end
-					elseif spellId == TRB.Data.spells.impendingVictory.id then
+					elseif spellId == TRB.Data.spells.eyeBeam.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.impendingVictory.startTime, TRB.Data.snapshotData.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
+							TRB.Data.snapshotData.eyeBeam.startTime, TRB.Data.snapshotData.eyeBeam.duration, _, _ = GetSpellCooldown(TRB.Data.spells.eyeBeam.id)
 						end
-					elseif spellId == TRB.Data.spells.victoryRush.id then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshotData.victoryRush.duration, TRB.Data.snapshotData.victoryRush.endTime, _, _, _, TRB.Data.snapshotData.victoryRush.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.victoryRush.id)
-							TRB.Data.spells.victoryRush.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshotData.victoryRush.endTime = nil
-							TRB.Data.snapshotData.victoryRush.duration = 0
-							TRB.Data.snapshotData.victoryRush.stacks = 0
-							TRB.Data.spells.victoryRush.isActive = false
-						end
-					elseif spellId == TRB.Data.spells.ignorePain.id then
+					elseif spellId == TRB.Data.spells.glaiveTempest.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.ignorePain.startTime, TRB.Data.snapshotData.ignorePain.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ignorePain.id)
+							TRB.Data.snapshotData.glaiveTempest.startTime, TRB.Data.snapshotData.glaiveTempest.duration, _, _ = GetSpellCooldown(TRB.Data.spells.glaiveTempest.id)
 						end
-					elseif spellId == TRB.Data.spells.cleave.id then
+					elseif spellId == TRB.Data.spells.felEruption.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.cleave.startTime, TRB.Data.snapshotData.cleave.duration, _, _ = GetSpellCooldown(TRB.Data.spells.cleave.id)
+							TRB.Data.snapshotData.felEruption.startTime, TRB.Data.snapshotData.felEruption.duration, _, _ = GetSpellCooldown(TRB.Data.spells.felEruption.id)
 						end
+					--[[
 					elseif spellId == TRB.Data.spells.deadlyCalm.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
 							_, _, TRB.Data.snapshotData.deadlyCalm.stacks, _, TRB.Data.snapshotData.deadlyCalm.duration, TRB.Data.snapshotData.deadlyCalm.endTime, _, _, _, TRB.Data.snapshotData.deadlyCalm.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.deadlyCalm.id, "player")
@@ -1454,8 +1463,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							TRB.Data.snapshotData.conquerorsBanner.fury = TRB.Data.snapshotData.conquerorsBanner.ticksRemaining * TRB.Data.spells.conquerorsBanner.fury
 							TRB.Data.snapshotData.conquerorsBanner.lastTick = currentTime
 						end
-					end
                     ]]
+					end
 				end
 			end
 

@@ -157,7 +157,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "whirlwind",
 				isTalent = false,
 				hasCooldown = false,
-				thresholdUsable = false				
+				thresholdUsable = false
 			},
 			
 			--Arms base abilities
@@ -1469,7 +1469,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.victoryRush.endTime = nil
 							TRB.Data.snapshotData.victoryRush.duration = 0
-							TRB.Data.snapshotData.victoryRush.stacks = 0
 							TRB.Data.spells.victoryRush.isActive = false
 						end
 					elseif spellId == TRB.Data.spells.ignorePain.id then
