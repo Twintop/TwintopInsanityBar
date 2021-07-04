@@ -611,7 +611,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
 	end
 
-	local function InitializeTarget(guid)
+	local function InitializeTarget(guid, selfInitializeAllowed)
+		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
+			return false
+		end
+
 		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
 			TRB.Functions.InitializeTarget(guid)
 			TRB.Data.snapshotData.targetData.targets[guid].rend = false
@@ -619,6 +623,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.snapshotData.targetData.targets[guid].deepWounds = false
 			TRB.Data.snapshotData.targetData.targets[guid].deepWoundsRemaining = 0
 		end
+		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+
+		return true
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 
@@ -1527,28 +1534,28 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							end
 						end
 					elseif spellId == TRB.Data.spells.rend.id then
-						InitializeTarget(destGUID)
-						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rend Applied to Target
-							TRB.Data.snapshotData.targetData.targets[destGUID].rend = true
-							TRB.Data.snapshotData.targetData.rend = TRB.Data.snapshotData.targetData.rend + 1
-						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshotData.targetData.targets[destGUID].rend = false
-							TRB.Data.snapshotData.targetData.targets[destGUID].rendRemaining = 0
-							TRB.Data.snapshotData.targetData.rend = TRB.Data.snapshotData.targetData.rend - 1
-						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						if InitializeTarget(destGUID) then
+							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rend Applied to Target
+								TRB.Data.snapshotData.targetData.targets[destGUID].rend = true
+								TRB.Data.snapshotData.targetData.rend = TRB.Data.snapshotData.targetData.rend + 1
+							elseif type == "SPELL_AURA_REMOVED" then
+								TRB.Data.snapshotData.targetData.targets[destGUID].rend = false
+								TRB.Data.snapshotData.targetData.targets[destGUID].rendRemaining = 0
+								TRB.Data.snapshotData.targetData.rend = TRB.Data.snapshotData.targetData.rend - 1
+							--elseif type == "SPELL_PERIODIC_DAMAGE" then
+							end
 						end
 					elseif spellId == TRB.Data.spells.deepWounds.id then
-						InitializeTarget(destGUID)
-						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Deep Wounds Applied to Target
-							TRB.Data.snapshotData.targetData.targets[destGUID].deepWounds = true
-							TRB.Data.snapshotData.targetData.deepWounds = TRB.Data.snapshotData.targetData.deepWounds + 1
-						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshotData.targetData.targets[destGUID].deepWounds = false
-							TRB.Data.snapshotData.targetData.targets[destGUID].deepWoundsRemaining = 0
-							TRB.Data.snapshotData.targetData.deepWounds = TRB.Data.snapshotData.targetData.deepWounds - 1
-						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						if InitializeTarget(destGUID) then
+							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Deep Wounds Applied to Target
+								TRB.Data.snapshotData.targetData.targets[destGUID].deepWounds = true
+								TRB.Data.snapshotData.targetData.deepWounds = TRB.Data.snapshotData.targetData.deepWounds + 1
+							elseif type == "SPELL_AURA_REMOVED" then
+								TRB.Data.snapshotData.targetData.targets[destGUID].deepWounds = false
+								TRB.Data.snapshotData.targetData.targets[destGUID].deepWoundsRemaining = 0
+								TRB.Data.snapshotData.targetData.deepWounds = TRB.Data.snapshotData.targetData.deepWounds - 1
+							--elseif type == "SPELL_PERIODIC_DAMAGE" then
+							end
 						end
 					elseif spellId == TRB.Data.spells.ancientAftershock.id then
 						local legendaryDuration = 0

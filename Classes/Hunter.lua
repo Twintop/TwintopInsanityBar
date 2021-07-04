@@ -1358,12 +1358,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
-	local function InitializeTarget(guid)
+	local function InitializeTarget(guid, selfInitializeAllowed)
+		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
+			return false
+		end
+
 		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
 			TRB.Functions.InitializeTarget(guid)
 			TRB.Data.snapshotData.targetData.targets[guid].serpentSting = false
 			TRB.Data.snapshotData.targetData.targets[guid].serpentStingRemaining = 0
 		end
+		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+
+		return true
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 
@@ -2528,7 +2535,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					TRB.Frames.barContainerFrame:Show()
 				end
 			end
-		elseif specId == 3 then
+		elseif specId == 3 then			
 			if force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.hunter.survival.displayBar.alwaysShow) and (
@@ -3339,16 +3346,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.serpentSting.id then
-						InitializeTarget(destGUID)
-						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SS Applied to Target
-							TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = true
-							TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
-						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = false
-							TRB.Data.snapshotData.targetData.targets[destGUID].serpentStingRemaining = 0
-							TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting - 1
-						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						if InitializeTarget(destGUID) then
+							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SS Applied to Target
+								TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = true
+								TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
+							elseif type == "SPELL_AURA_REMOVED" then
+								TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = false
+								TRB.Data.snapshotData.targetData.targets[destGUID].serpentStingRemaining = 0
+								TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting - 1
+							--elseif type == "SPELL_PERIODIC_DAMAGE" then
+							end
 						end
 					elseif spellId == TRB.Data.spells.wailingArrow.id then
 						if type == "SPELL_CAST_SUCCESS" then
@@ -3398,16 +3405,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.coordinatedAssault.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.serpentSting.id then
-						InitializeTarget(destGUID)
-						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SS Applied to Target
-							TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = true
-							TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
-						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = false
-							TRB.Data.snapshotData.targetData.targets[destGUID].serpentStingRemaining = 0
-							TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting - 1
-						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						if InitializeTarget(destGUID) then
+							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SS Applied to Target
+								TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = true
+								TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
+							elseif type == "SPELL_AURA_REMOVED" then
+								TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = false
+								TRB.Data.snapshotData.targetData.targets[destGUID].serpentStingRemaining = 0
+								TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting - 1
+							--elseif type == "SPELL_PERIODIC_DAMAGE" then
+							end
 						end
 					end
 				end

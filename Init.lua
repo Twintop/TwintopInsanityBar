@@ -68,7 +68,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 		TRB.Data.snapshotData.targetData.currentTargetGuid = guid
 	end
 
-	if TRB.Data.snapshotData.targetData.ttdIsActive and self.ttdSinceLastUpdate >= TRB.Data.settings.core.ttd.sampleRate then -- in seconds
+	if guid ~= TRB.Data.character.guid and TRB.Data.snapshotData.targetData.ttdIsActive and self.ttdSinceLastUpdate >= TRB.Data.settings.core.ttd.sampleRate then -- in seconds
 		local currentTime = GetTime()
 
 		if guid ~= nil then
@@ -81,11 +81,14 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 			local timeDelta = 0
 			local dps = 0
 			local ttd = 0
+			local count = 0
 
-			local count = TRB.Functions.TableLength(TRB.Data.snapshotData.targetData.targets[guid].snapshot)
-			if count > 0 and TRB.Data.snapshotData.targetData.targets[guid].snapshot[1] ~= nil then
-				healthDelta = math.max(TRB.Data.snapshotData.targetData.targets[guid].snapshot[1].health - currentHealth, 0)
-				timeDelta = math.max(currentTime - TRB.Data.snapshotData.targetData.targets[guid].snapshot[1].time, 0)
+			if TRB.Data.snapshotData.targetData.targets[guid] ~= nil then
+				count = TRB.Functions.TableLength(TRB.Data.snapshotData.targetData.targets[guid].snapshot)
+				if count > 0 and TRB.Data.snapshotData.targetData.targets[guid].snapshot[1] ~= nil then
+					healthDelta = math.max(TRB.Data.snapshotData.targetData.targets[guid].snapshot[1].health - currentHealth, 0)
+					timeDelta = math.max(currentTime - TRB.Data.snapshotData.targetData.targets[guid].snapshot[1].time, 0)
+				end
 			end
 
 			if isDead then

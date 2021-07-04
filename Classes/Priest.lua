@@ -1476,7 +1476,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 	end
 
-	local function InitializeTarget(guid)
+	local function InitializeTarget(guid, selfInitializeAllowed)
+		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
+			return false
+		end
+
 		local specId = GetSpecialization()
 
 		if specId == 2 then
@@ -1499,6 +1503,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.targetData.targets[guid].hauntedMask = false
 			end
 		end
+		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+
+		return true
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 
@@ -4230,39 +4237,37 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.mindSear.hasStruckTargets = true
 						end
 					elseif spellId == TRB.Data.spells.vampiricTouch.id then
-						InitializeTarget(destGUID)
-						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- VT Applied to Target
-							TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouch = true
-							TRB.Data.snapshotData.targetData.vampiricTouch = TRB.Data.snapshotData.targetData.vampiricTouch + 1
-						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouch = false
-							TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouchRemaining = 0
-							TRB.Data.snapshotData.targetData.vampiricTouch = TRB.Data.snapshotData.targetData.vampiricTouch - 1
-						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						if InitializeTarget(destGUID) then
+							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- VT Applied to Target
+								TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouch = true
+								TRB.Data.snapshotData.targetData.vampiricTouch = TRB.Data.snapshotData.targetData.vampiricTouch + 1
+							elseif type == "SPELL_AURA_REMOVED" then
+								TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouch = false
+								TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouchRemaining = 0
+								TRB.Data.snapshotData.targetData.vampiricTouch = TRB.Data.snapshotData.targetData.vampiricTouch - 1
+							--elseif type == "SPELL_PERIODIC_DAMAGE" then
+							end
 						end
 					elseif spellId == TRB.Data.spells.devouringPlague.id then
-						InitializeTarget(destGUID)
-						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- DP Applied to Target
-							TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlague = true
-							TRB.Data.snapshotData.targetData.devouringPlague = TRB.Data.snapshotData.targetData.devouringPlague + 1
-						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlague = false
-							TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlagueRemaining = 0
-							TRB.Data.snapshotData.targetData.devouringPlague = TRB.Data.snapshotData.targetData.devouringPlague - 1
-						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						if InitializeTarget(destGUID) then
+							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- DP Applied to Target
+								TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlague = true
+								TRB.Data.snapshotData.targetData.devouringPlague = TRB.Data.snapshotData.targetData.devouringPlague + 1
+							elseif type == "SPELL_AURA_REMOVED" then
+								TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlague = false
+								TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlagueRemaining = 0
+								TRB.Data.snapshotData.targetData.devouringPlague = TRB.Data.snapshotData.targetData.devouringPlague - 1
+							--elseif type == "SPELL_PERIODIC_DAMAGE" then
+							end
 						end
 					elseif settings.auspiciousSpiritsTracker and TRB.Data.character.talents.as.isSelected and spellId == TRB.Data.spells.auspiciousSpirits.idSpawn and type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
 						InitializeTarget(destGUID)
 						TRB.Data.snapshotData.targetData.targets[destGUID].auspiciousSpirits = TRB.Data.snapshotData.targetData.targets[destGUID].auspiciousSpirits + 1
-						TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
 						TRB.Data.snapshotData.targetData.auspiciousSpirits = TRB.Data.snapshotData.targetData.auspiciousSpirits + 1
 						triggerUpdate = true
 					elseif settings.auspiciousSpiritsTracker and TRB.Data.character.talents.as.isSelected and spellId == TRB.Data.spells.auspiciousSpirits.idImpact and (type == "SPELL_DAMAGE" or type == "SPELL_MISSED" or type == "SPELL_ABSORBED") then --Auspicious Spirit Hit
 						if TRB.Functions.CheckTargetExists(destGUID) then
 							TRB.Data.snapshotData.targetData.targets[destGUID].auspiciousSpirits = TRB.Data.snapshotData.targetData.targets[destGUID].auspiciousSpirits - 1
-							TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
 							TRB.Data.snapshotData.targetData.auspiciousSpirits = TRB.Data.snapshotData.targetData.auspiciousSpirits - 1
 						end
 						triggerUpdate = true
@@ -4330,22 +4335,24 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				elseif settings.wrathfulFaerie.enabled and spellId == TRB.Data.spells.wrathfulFaerieFermata.energizeId and type == "SPELL_ENERGIZE" then
 					TRB.Data.snapshotData.wrathfulFaerie.fermata.procTime = currentTime
 				elseif settings.wrathfulFaerie.enabled and spellId == TRB.Data.spells.hauntedMask.id then
-					InitializeTarget(destGUID)
-					TRB.Data.snapshotData.targetData.targets[destGUID].lastUpdate = currentTime
-					if type == "SPELL_AURA_APPLIED" and auraType == "DEBUFF" then
-						TRB.Data.snapshotData.targetData.targets[destGUID].hauntedMask = true
-					elseif type == "SPELL_AURA_REMOVED" and auraType == "DEBUFF" then
-						TRB.Data.snapshotData.targetData.targets[destGUID].hauntedMask = false
+					if InitializeTarget(destGUID) then
+						if type == "SPELL_AURA_APPLIED" and auraType == "DEBUFF" then
+							TRB.Data.snapshotData.targetData.targets[destGUID].hauntedMask = true
+						elseif type == "SPELL_AURA_REMOVED" and auraType == "DEBUFF" then
+							TRB.Data.snapshotData.targetData.targets[destGUID].hauntedMask = false
+						end
 					end
 				elseif spellId == TRB.Data.spells.shadowWordPain.id then
-					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SWP Applied to Target
-						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = true
-						TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain + 1
-					elseif type == "SPELL_AURA_REMOVED" then
-						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = false
-						TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPainRemaining = 0
-						TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain - 1
-					--elseif type == "SPELL_PERIODIC_DAMAGE" then
+					if InitializeTarget(destGUID) then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SWP Applied to Target
+							TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = true
+							TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain + 1
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = false
+							TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPainRemaining = 0
+							TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain - 1
+						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						end
 					end
 				end
 			elseif specId == 3 and settings.voidTendrilTracker and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.idTick or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.idTick) and CheckVoidTendrilExists(sourceGUID) then
