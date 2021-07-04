@@ -1247,8 +1247,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 								end
 							end
 
-							if TRB.Data.settings.demonhunter.havoc.thresholds[spell.settingKey].enabled and showThreshold then				
-								print("Show Threshold:", spell.name, spell.id, frameLevel)
+							if TRB.Data.settings.demonhunter.havoc.thresholds[spell.settingKey].enabled and showThreshold then
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
 ---@diagnostic disable-next-line: undefined-field
