@@ -60,6 +60,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				glaiveTempest = {
 					isSelected = false
 				},
+				firstBlood = {
+					isSelected = false
+				},
 				unleashedPower = {
 					isSelected = false
 				},
@@ -106,8 +109,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			   settingKey = "chaosNova",
 			   isTalent = false,
 			   hasCooldown = true,
-			   thresholdUsable = false,
-			   isSnowflake = true
+			   thresholdUsable = false
             },
             chaosStrike = {
                id = 162794,
@@ -181,6 +183,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				isTalent = true,
 				hasCooldown = true,
 				thresholdUsable = false
+			},
+			firstBlood = {
+				id = 206416,
+				name = "",
+				icon = "",
+                furyAdjustment = -20
 			},
 			unleashedPower = {
 				id = 206477,
@@ -437,6 +445,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Data.character.talents.felBlade.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.burningHatred.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
             TRB.Data.character.talents.glaiveTempest.isSelected = select(4, GetTalentInfo(3, 3, TRB.Data.character.specGroup))
+            TRB.Data.character.talents.firstBlood.isSelected = select(4, GetTalentInfo(5, 2, TRB.Data.character.specGroup))
             TRB.Data.character.talents.unleashedPower.isSelected = select(4, GetTalentInfo(6, 1, TRB.Data.character.specGroup))
             TRB.Data.character.talents.felEruption.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
             TRB.Data.character.talents.momentum.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
@@ -1193,6 +1202,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							local furyAmount = CalculateAbilityResourceValue(spell.fury)
 							local normalizedFury = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 							
+							if spell.id == TRB.Data.spells.bladeDance.id and TRB.Data.character.talents.firstBlood.isSelected then
+								furyAmount = furyAmount - TRB.Data.spells.firstBlood.furyAdjustment
+							end
+
 							TRB.Functions.RepositionThreshold(TRB.Data.settings.demonhunter.havoc, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.demonhunter.havoc.thresholdWidth, -furyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
@@ -1201,6 +1214,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							local frameLevel = 129
 
 							if spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
+								showThreshold = false
+								isUsable = false
+							elseif spell.id == TRB.Data.spells.chaosNova.id and TRB.Data.character.talents.unleashedPower.isSelected then
 								showThreshold = false
 								isUsable = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
@@ -1240,7 +1256,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
 										frameLevel = 128
 									end
-								else]]
+								else
 								if spell.id == TRB.Data.spells.chaosNova.id then
 									if TRB.Data.character.talents.unleashedPower.isSelected then
 										showThreshold = false
@@ -1256,7 +1272,20 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 											frameLevel = 128
 										end
 									end
-								end
+								elseif spell.id == TRB.Data.spells.chaosNova.id then
+									if TRB.Data.character.talents.firstBlood.isSelected then
+									end
+
+									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
+										frameLevel = 127
+									elseif currentFury >= -furyAmount then
+										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
+										frameLevel = 128
+									end
+								end]]
 							elseif spell.hasCooldown then
 								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 									thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
