@@ -97,12 +97,24 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				hasCooldown = true,
 				thresholdUsable = false
 			},
+            chaosNova = {
+               id = 179057,
+               name = "",
+               icon = "",
+               fury = -30,
+			   thresholdId = 2,
+			   settingKey = "chaosNova",
+			   isTalent = false,
+			   hasCooldown = true,
+			   thresholdUsable = false,
+			   isSnowflake = true
+            },
             chaosStrike = {
                id = 162794,
                name = "",
                icon = "",
                fury = -40,
-			   thresholdId = 2,
+			   thresholdId = 3,
 			   settingKey = "chaosStrike",
 			   isTalent = false,
 			   hasCooldown = false,
@@ -121,7 +133,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
                icon = "",
                fury = -30,
                duration = 2,
-			   thresholdId = 3,
+			   thresholdId = 4,
 			   settingKey = "eyeBeam",
 			   isTalent = false,
 			   hasCooldown = true,
@@ -164,7 +176,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				icon = "",
                 fury = -30,
                 cooldown = 20,
-				thresholdId = 4,
+				thresholdId = 5,
 				settingKey = "glaiveTempest",
 				isTalent = true,
 				hasCooldown = true,
@@ -182,7 +194,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				icon = "",
 				fury = -10,
 				cooldown = 30,
-				thresholdId = 5,
+				thresholdId = 6,
 				settingKey = "felEruption",
 				isTalent = true,
 				hasCooldown = true,
@@ -249,6 +261,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			targets = {},
 		}
 		specCache.havoc.snapshotData.bladeDance = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		specCache.havoc.snapshotData.chaosNova = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
@@ -1026,6 +1043,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.bladeDance.id)
         end
 
+        if TRB.Data.snapshotData.chaosNova.startTime ~= nil and currentTime > (TRB.Data.snapshotData.chaosNova.startTime + TRB.Data.snapshotData.chaosNova.duration) then
+			TRB.Data.snapshotData.chaosNova.startTime = nil
+            TRB.Data.snapshotData.chaosNova.duration = 0
+		elseif TRB.Data.snapshotData.chaosNova.startTime ~= nil then
+			TRB.Data.snapshotData.chaosNova.startTime, TRB.Data.snapshotData.chaosNova.duration, _, _ = GetSpellCooldown(TRB.Data.spells.chaosNova.id)
+        end
+
 		if TRB.Data.snapshotData.eyeBeam.startTime ~= nil and currentTime > (TRB.Data.snapshotData.eyeBeam.startTime + TRB.Data.snapshotData.eyeBeam.duration) then
             TRB.Data.snapshotData.eyeBeam.startTime = nil
             TRB.Data.snapshotData.eyeBeam.duration = 0
@@ -1216,17 +1240,23 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
 										frameLevel = 128
 									end
-								elseif spell.id == TRB.Data.spells.impendingVictory.id then
-									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
-										frameLevel = 127
-									elseif currentFury >= -furyAmount or TRB.Data.spells.victoryRush.isActive then
-										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
+								else]]
+								if spell.id == TRB.Data.spells.chaosNova.id then
+									if TRB.Data.character.talents.unleashedPower.isSelected then
+										showThreshold = false
+										isUsable = false
 									else
-										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
-										frameLevel = 128
+										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+											thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
+											frameLevel = 127
+										elseif currentFury >= -furyAmount then
+											thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
+											frameLevel = 128
+										end
 									end
-								end]]
+								end
 							elseif spell.hasCooldown then
 								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 									thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
@@ -1321,6 +1351,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
                     if spellId == TRB.Data.spells.bladeDance.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.bladeDance.id)
+						end
+					elseif spellId == TRB.Data.spells.chaosNova.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.chaosNova.startTime, TRB.Data.snapshotData.chaosNova.duration, _, _ = GetSpellCooldown(TRB.Data.spells.chaosNova.id)
 						end
 					elseif spellId == TRB.Data.spells.eyeBeam.id then
 						if type == "SPELL_CAST_SUCCESS" then

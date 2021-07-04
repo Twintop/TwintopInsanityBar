@@ -85,17 +85,20 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				bladeDance = {
 					enabled = true, -- 1
 				},
-				chaosStrike = {
+				chaosNova = {
 					enabled = true, -- 2
 				},
-				eyeBeam = {
+				chaosStrike = {
 					enabled = true, -- 3
 				},
-				glaiveTempest = {
+				eyeBeam = {
 					enabled = true, -- 4
 				},
-				felEruption = {
+				glaiveTempest = {
 					enabled = true, -- 5
+				},
+				felEruption = {
+					enabled = true, -- 6
 				},
 			},
 			displayBar = {
@@ -1225,11 +1228,22 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end)
 
 		yCoord = yCoord - 25
+		controls.checkBoxes.chaosNovaThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_chaosNova", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.chaosNovaThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Chaos Nova (no Unleashed Power)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Chaos Nova. Only shown if Unleashed Power is not talented."
+		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.chaosNova.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.demonhunter.havoc.thresholds.chaosNova.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
 		controls.checkBoxes.chaosStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_chaosStrike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.chaosStrikeThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Chaos Strike")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Chaos Strike"
+		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Chaos Strike."
 		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.chaosStrike.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.demonhunter.havoc.thresholds.chaosStrike.enabled = self:GetChecked()
