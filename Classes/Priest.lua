@@ -103,7 +103,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					}
 				},
 				harmoniousApparatus = false,
-				flashConcentration = false
+				flashConcentration = false,
+				alchemyStone = false
 			},
 			torghast = {
 				dreamspunMushroomsModifier = 1,
@@ -316,6 +317,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				mana = 1000,
 				duration = 10,
 				ticks = 10
+			},
+
+			-- Alchemist Stone
+			alchemistStone = {
+				id = 17619,
+				name = "",
+				icon = "",
+				manaModifier = 1.4,
+				itemIds = {
+					171323,
+					175941,
+					175942,
+					175943
+				}
 			},
 			--[[
 			spiritualRejuvenationPotion = {
@@ -1315,9 +1330,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			local wristItemLink = GetInventoryItemLink("player", 9)
 			local ring1ItemLink = GetInventoryItemLink("player", 11)
 			local ring2ItemLink = GetInventoryItemLink("player", 12)
+			local trinket1ItemLink = GetInventoryItemLink("player", 13)
+			local trinket2ItemLink = GetInventoryItemLink("player", 14)
 
 			local harmoniousApparatus = false
 			local flashConcentration = false
+			local alchemyStone = false
 			if neckItemLink ~= nil then
 				flashConcentration = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(neckItemLink, 178927, TRB.Data.spells.flashConcentration.idLegendaryBonus)
 			end
@@ -1339,7 +1357,28 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				harmoniousApparatus = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(ring2ItemLink, 178926, TRB.Data.spells.harmoniousApparatus.idLegendaryBonus)
 			end
 			TRB.Data.character.items.harmoniousApparatus = harmoniousApparatus
+			
+			if trinket1ItemLink ~= nil then
+				for x = 1, TRB.Functions.TableLength(TRB.Data.spells.alchemistStone.itemIds) do
+					if alchemyStone == false then
+						alchemyStone = TRB.Functions.DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+					else
+						break
+					end
+				end
+			end
 
+			if alchemyStone == false and trinket2ItemLink ~= nil then
+				for x = 1, TRB.Functions.TableLength(TRB.Data.spells.alchemistStone.itemIds) do
+					if alchemyStone == false then
+						alchemyStone = TRB.Functions.DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+					else
+						break
+					end
+				end
+			end
+
+			TRB.Data.character.items.alchemyStone = alchemyStone
 			-- Torghast
 			if IsInJailersTower() then
 				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1 + ((select(16, TRB.Functions.FindAuraById(TRB.Data.spells.dreamspunMushrooms.id, "player", "MAW")) or 0) / 100)
@@ -1827,8 +1866,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return mod * base
 	end
 
-	local function CalculateManaGain(mana)
+	local function CalculateManaGain(mana, isPotion)
+		if isPotion == nil then
+			isPotion = false
+		end
+
 		local modifier = 1.0
+
+		if isPotion then
+			if TRB.Data.character.items.alchemyStone then
+				modifier = modifier * TRB.Data.spells.alchemistStone.manaModifier
+			end
+		end
 
 		return mana * modifier
 	end
@@ -2205,7 +2254,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local potionCooldown = string.format("%d:%0.2d", _potionCooldownMinutes, _potionCooldownSeconds)
 
 		--$pscMana
-		local _pscMana = CalculateManaGain(TRB.Data.snapshotData.potionOfSpiritualClarity.mana)
+		local _pscMana = CalculateManaGain(TRB.Data.snapshotData.potionOfSpiritualClarity.mana, true)
 		local pscMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_pscMana, manaPrecision, "floor"))
 		--$pscTicks
 		local pscTicks = string.format("%.0f", TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining)
@@ -3303,7 +3352,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			else
 				TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining = math.ceil((TRB.Data.snapshotData.potionOfSpiritualClarity.endTime - currentTime) / (TRB.Data.spells.potionOfSpiritualClarity.duration / TRB.Data.spells.potionOfSpiritualClarity.ticks))
 				local nextTickRemaining = TRB.Data.snapshotData.potionOfSpiritualClarity.endTime - currentTime - math.floor((TRB.Data.snapshotData.potionOfSpiritualClarity.endTime - currentTime) / (TRB.Data.spells.potionOfSpiritualClarity.duration / TRB.Data.spells.potionOfSpiritualClarity.ticks))
-				TRB.Data.snapshotData.potionOfSpiritualClarity.mana = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining * TRB.Data.spells.potionOfSpiritualClarity.mana + ((TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining - 1 + nextTickRemaining) * TRB.Data.snapshotData.manaRegen)
+				TRB.Data.snapshotData.potionOfSpiritualClarity.mana = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfSpiritualClarity.mana, true) + ((TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining - 1 + nextTickRemaining) * TRB.Data.snapshotData.manaRegen)
 			end
 		end
 	end
@@ -3342,7 +3391,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 
 				--Revisit if we get mana modifiers added
-				TRB.Data.snapshotData.symbolOfHope.resourceFinal = CalculateManaGain(TRB.Data.snapshotData.symbolOfHope.resourceRaw)
+				TRB.Data.snapshotData.symbolOfHope.resourceFinal = CalculateManaGain(TRB.Data.snapshotData.symbolOfHope.resourceRaw, false)
 			end
 		end
 	end
@@ -3649,7 +3698,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						if TRB.Data.snapshotData.potion.onCooldown then
 							potionThresholdColor = TRB.Data.settings.priest.holy.colors.threshold.unusable
 						end
-						local poscTotal = TRB.Data.character.items.potions.potionOfSpiritualClarity.mana + (TRB.Data.spells.potionOfSpiritualClarity.duration * TRB.Data.snapshotData.manaRegen)
+						local poscTotal = CalculateManaGain(TRB.Data.character.items.potions.potionOfSpiritualClarity.mana, true) + (TRB.Data.spells.potionOfSpiritualClarity.duration * TRB.Data.snapshotData.manaRegen)
 						if TRB.Data.settings.priest.holy.thresholds.potionOfSpiritualClarity.enabled and (castingBarValue + poscTotal) < TRB.Data.character.maxResource then
 							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (castingBarValue + poscTotal), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
@@ -3659,8 +3708,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Frames.resourceFrame.thresholds[1]:Hide()
 						end
 
-						if TRB.Data.settings.priest.holy.thresholds.spiritualRejuvenationPotion.enabled and (castingBarValue + TRB.Data.character.items.potions.spiritualRejuvenationPotion.mana) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (castingBarValue + TRB.Data.character.items.potions.spiritualRejuvenationPotion.mana), TRB.Data.character.maxResource)
+						local srpTotal = CalculateManaGain(TRB.Data.character.items.potions.spiritualRejuvenationPotion.mana, true)
+						if TRB.Data.settings.priest.holy.thresholds.spiritualRejuvenationPotion.enabled and (castingBarValue + srpTotal) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (castingBarValue + srpTotal), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[2]:Show()
@@ -3668,8 +3718,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Frames.resourceFrame.thresholds[2]:Hide()
 						end
 
-						if TRB.Data.settings.priest.holy.thresholds.spiritualManaPotion.enabled and (castingBarValue + TRB.Data.character.items.potions.spiritualManaPotion.mana) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (castingBarValue + TRB.Data.character.items.potions.spiritualManaPotion.mana), TRB.Data.character.maxResource)
+						local smpTotal = CalculateManaGain(TRB.Data.character.items.potions.spiritualManaPotion.mana, true)
+						if TRB.Data.settings.priest.holy.thresholds.spiritualManaPotion.enabled and (castingBarValue + smpTotal) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (castingBarValue + smpTotal), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[3]:Show()
@@ -3677,8 +3728,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Frames.resourceFrame.thresholds[3]:Hide()
 						end
 
-						if TRB.Data.settings.priest.holy.thresholds.soulfulManaPotion.enabled and (castingBarValue + TRB.Data.character.items.potions.soulfulManaPotion.mana) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (castingBarValue + TRB.Data.character.items.potions.soulfulManaPotion.mana), TRB.Data.character.maxResource)
+						local sompTotal = CalculateManaGain(TRB.Data.character.items.potions.soulfulManaPotion.mana, true)
+						if TRB.Data.settings.priest.holy.thresholds.soulfulManaPotion.enabled and (castingBarValue + sompTotal) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.priest.holy.thresholdWidth, (castingBarValue + sompTotal), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[4]:Show()
@@ -4088,7 +4140,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.symbolOfHope.previousTickTime = currentTime
 						end
 						TRB.Data.snapshotData.symbolOfHope.resourceRaw = TRB.Data.snapshotData.symbolOfHope.ticksRemaining * TRB.Data.spells.symbolOfHope.manaPercent * TRB.Data.character.maxResource
-						TRB.Data.snapshotData.symbolOfHope.resourceFinal = CalculateManaGain(TRB.Data.snapshotData.symbolOfHope.resourceRaw)
+						TRB.Data.snapshotData.symbolOfHope.resourceFinal = CalculateManaGain(TRB.Data.snapshotData.symbolOfHope.resourceRaw, false)
 					elseif spellId == TRB.Data.spells.innervate.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.innervate.isActive = true
@@ -4139,7 +4191,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						if type == "SPELL_AURA_APPLIED" then -- Gain Potion of Spiritual Clarity
 							TRB.Data.snapshotData.potionOfSpiritualClarity.isActive = true
 							TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining = TRB.Data.spells.potionOfSpiritualClarity.ticks
-							TRB.Data.snapshotData.potionOfSpiritualClarity.mana = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining * TRB.Data.spells.potionOfSpiritualClarity.mana
+							TRB.Data.snapshotData.potionOfSpiritualClarity.mana = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfSpiritualClarity.mana, true)
 							TRB.Data.snapshotData.potionOfSpiritualClarity.endTime = currentTime + TRB.Data.spells.potionOfSpiritualClarity.duration
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Spiritual Clarity channel
 							-- Let UpdatePotionOfSpiritualClarity() clean this up
