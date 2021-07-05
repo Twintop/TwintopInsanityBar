@@ -291,7 +291,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		specCache.havoc.snapshotData.eyeBeam = {
 			endTime = nil,
 			duration = 0,
-			spellId = nil
+			spellId = nil,
+			ticksRemaining = 0,
+			fury = 0
 		}
 		specCache.havoc.snapshotData.glaiveTempest = {
 			startTime = nil,
@@ -378,8 +380,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 			{ variable = "#bh", icon = spells.metamorphosis.icon, description = "Burning Hatred", printInSettings = true },
 			{ variable = "#burningHatred", icon = spells.metamorphosis.icon, description = "Burning Hatred", printInSettings = false },
-			{ variable = "#meta", icon = spells.metamorphosis.icon, description = "Metamorphosis", printInSettings = true },
 			{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = "Metamorphosis", printInSettings = false },
+			{ variable = "#meta", icon = spells.metamorphosis.icon, description = "Metamorphosis", printInSettings = true },
 
 			--[[
             { variable = "#ancientAftershock", icon = spells.ancientAftershock.icon, description = "Ancient Aftershock", printInSettings = true },
@@ -1017,24 +1019,40 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
     end
 
 	local function CastingSpell()
+		local currentTime = GetTime()
+		local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
+		local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
 		local specId = GetSpecialization()
-		local currentSpell = UnitCastingInfo("player")
-		local currentChannel = UnitChannelInfo("player")
-        TRB.Functions.ResetCastingSnapshotData()
 
-		if currentSpell == nil and currentChannel == nil then
+		if currentSpellName == nil and currentChannelName == nil then
 			TRB.Functions.ResetCastingSnapshotData()
 			return false
 		else
 			if specId == 1 then
-				if currentSpell == nil then
-					TRB.Functions.ResetCastingSnapshotData()
-					return false
-					--See Priest implementation for handling channeled spells
+				if currentSpellName == nil then
+					if currentChannelId == TRB.Data.spells.eyeBeam.id and TRB.Data.character.talents.blindFury.isSelected then
+						local gcd = TRB.Functions.GetCurrentGCDTime(true)
+						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.eyeBeam.id
+						TRB.Data.snapshotData.casting.startTime = currentChannelStartTime / 1000
+						TRB.Data.snapshotData.casting.endTime = currentChannelEndTime / 1000
+						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.eyeBeam.icon
+						local remainingTime = TRB.Data.snapshotData.casting.endTime - currentTime
+						local ticks = TRB.Functions.RoundTo(remainingTime / (TRB.Data.spells.blindFury.tickRate * (gcd / 1.5)), 0, "ceil")
+						local fury = ticks * TRB.Data.spells.blindFury.fury
+						TRB.Data.snapshotData.casting.resourceRaw = fury
+						TRB.Data.snapshotData.casting.resourceFinal = fury
+						TRB.Data.snapshotData.eyeBeam.ticksRemaining = ticks
+						TRB.Data.snapshotData.eyeBeam.fury = fury
+					else
+						TRB.Functions.ResetCastingSnapshotData()
+						return false
+						--See Priest implementation for handling channeled spells
+					end
+					return true
 				else
 					TRB.Functions.ResetCastingSnapshotData()
 					return false
-				end						
+				end
 			end
 			TRB.Functions.ResetCastingSnapshotData()
 			return false

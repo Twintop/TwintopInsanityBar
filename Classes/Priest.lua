@@ -2906,9 +2906,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.ResetCastingSnapshotData()
 			return false
 		else
-			if specId == 2 then
+			if specId == 2 then				
 				if currentSpellName == nil then
-					if currentSpellId == TRB.Data.spells.symbolOfHope.id then
+					if currentChannelId == TRB.Data.spells.symbolOfHope.id then
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.symbolOfHope.id
 						TRB.Data.snapshotData.casting.startTime = currentChannelStartTime / 1000
 						TRB.Data.snapshotData.casting.endTime = currentChannelEndTime / 1000

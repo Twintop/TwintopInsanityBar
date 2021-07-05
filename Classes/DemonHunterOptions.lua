@@ -129,20 +129,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					current="FFC942FD",
 					casting="FFFFFFFF",
 					spending="FF555555",
-					passive="FFE29CFD",
+					passive="FF660066",
 					overcap="FFFF0000",
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
 					overcapEnabled=true,
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
-					right="FFFFFFFF",
-					dots={
-						enabled=true,
-						up="FFFFFFFF",
-						down="FFFF0000",
-						pandemic="FFFFFF00"
-					}
+					right="FFFFFFFF"
 				},
 				bar = {
 					border="FFA330C9",
@@ -151,7 +145,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					base="FFC942FD",
 					casting="FFFFFFFF",
 					spending="FF555555",
-					passive="FFE29CFD",
+					passive="FF660066",
 					metamorphosis="FF67F100",
 					metamorphosisEnding="FFFF0000",
 					overcapEnabled=true,
@@ -2001,82 +1995,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.demonhunter.havoc.colors.text.overcapEnabled = self:GetChecked()
 		end)
-
-
-		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.UiFunctions.BuildSectionHeader(parent, "DoT Count Tracking", 0, yCoord)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_dotColor", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.dotColor
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter color based on DoT status?")
-		f.tooltip = "When checked, the color of total DoTs up colors counters ($deepWoundsCount, $rendCount) will change based on whether or not the DoT is on the current target."
-		f:SetChecked(TRB.Data.settings.demonhunter.havoc.colors.text.dots.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.demonhunter.havoc.colors.text.dots.enabled = self:GetChecked()
-		end)
-
-		controls.colors.dotUp = TRB.UiFunctions.BuildColorPicker(parent, "DoT is active on current target", TRB.Data.settings.demonhunter.havoc.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
-		f = controls.colors.dotUp
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.demonhunter.havoc.colors.text.dots.up, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.dotUp.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.demonhunter.havoc.colors.text.dots.up = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)
-
-		controls.colors.dotPandemic = TRB.UiFunctions.BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", TRB.Data.settings.demonhunter.havoc.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
-		f = controls.colors.dotPandemic
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.demonhunter.havoc.colors.text.dots.pandemic, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.dotPandemic.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.demonhunter.havoc.colors.text.dots.pandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)
-
-		controls.colors.dotDown = TRB.UiFunctions.BuildColorPicker(parent, "DoT is not active on current target", TRB.Data.settings.demonhunter.havoc.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
-		f = controls.colors.dotDown
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.demonhunter.havoc.colors.text.dots.down, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.dotDown.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.demonhunter.havoc.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)
-
 
 		yCoord = yCoord - 130
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
