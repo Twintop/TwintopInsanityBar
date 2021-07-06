@@ -1323,7 +1323,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.eyeBeamThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_eyeBeam", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.eyeBeamThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Ignore Pain")
+		getglobal(f:GetName() .. 'Text'):SetText("Eye Beam")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Eye Beam."
 		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.eyeBeam.enabled)
 		f:SetScript("OnClick", function(self, ...)
