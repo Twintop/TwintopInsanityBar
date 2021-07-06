@@ -432,7 +432,6 @@ local function ConstructImportExportPanel()
 
 
     yCoord = yCoord - 35
-    --controls.labels.druid = TRB.UiFunctions.BuildLabel(parent, "Everything", xCoord, yCoord, 110, 20)
 
     buttonOffset = xCoord + xPadding + 100
     controls.buttons.exportButton_Everything = TRB.UiFunctions.BuildButton(parent, "All Classes/Specs + Global Options", buttonOffset, yCoord, 230, 20)
@@ -478,6 +477,46 @@ local function ConstructImportExportPanel()
     controls.exportButton_All_BarText:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for All Classes/Specs (Bar Text).", 11, 1, false, false, false, true, false)
     end)
+
+    yCoord = yCoord - 35
+    controls.labels.demonhunter = TRB.UiFunctions.BuildLabel(parent, "Demon Hunter", xCoord, yCoord, 110, 20)
+
+    yCoord = yCoord - 25
+    specName = "Havoc"
+    controls.labels.demonhunterHavoc = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+
+    buttonOffset = xCoord + xPadding + 100
+    controls.buttons.exportButton_DemonHunter_Havoc_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.buttons.exportButton_DemonHunter_Havoc_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Havoc Demon Hunter (All).", 12, 1, true, true, true, true, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 50
+    controls.exportButton_DemonHunter_Havoc_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_DemonHunter_Havoc_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Havoc Demon Hunter (Bar Display).", 12, 1, true, false, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 80
+    controls.exportButton_DemonHunter_Havoc_FontAndText = TRB.UiFunctions.BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_DemonHunter_Havoc_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Havoc Demon Hunter (Font & Text).", 12, 1, false, true, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 90
+    controls.exportButton_DemonHunter_Havoc_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_DemonHunter_Havoc_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Havoc Demon Hunter (Audio & Tracking).", 12, 1, false, false, true, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 120
+    controls.exportButton_DemonHunter_Havoc_BarText = TRB.UiFunctions.BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_DemonHunter_Havoc_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Havoc Demon Hunter (Bar Text).", 12, 1, false, false, false, true, false)
+    end)
+
+
+
 
     yCoord = yCoord - 35
     controls.labels.druid = TRB.UiFunctions.BuildLabel(parent, "Druid", xCoord, yCoord, 110, 20)

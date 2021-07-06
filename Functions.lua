@@ -1836,6 +1836,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			configuration.starsurgeThresholdOnlyOverShow = settings.starsurgeThresholdOnlyOverShow
 			configuration.starfallThreshold = settings.starfallThreshold
 			configuration.endOfEclipse = settings.endOfEclipse
+		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
+			configuration.thresholds = settings.thresholds
+			configuration.endOfMetamorphosis = settings.endOfMetamorphosis
 		end
 	end
 
@@ -1879,6 +1882,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 7 and specId == 1 then -- Elemental Shaman
 		elseif classId == 11 and specId == 1 then -- Balance Druid
 			configuration.astralPowerPrecision = settings.astralPowerPrecision
+		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 		end
 	end
 
@@ -1904,6 +1908,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 7 and specId == 1 then -- Elemental Shaman
 		elseif classId == 11 and specId == 1 then -- Balance Druid
+		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 		end
 	end
 
@@ -1987,6 +1992,12 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.druid.balance) > 0 then -- Balance
 				configuration.druid.balance = TRB.Functions.ExportConfigurationSections(11, 1, settings.druid.balance, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
+		elseif classId == 12 and settings.demonhunter ~= nil then -- Demon Hunter
+			configuration.demonhunter = {}
+			
+			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.demonhunter.havoc) > 0 then -- Balance
+				configuration.demonhunter.havoc = TRB.Functions.ExportConfigurationSections(12, 1, settings.demonhunter.havoc, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
 		end
 	elseif classId == nil and specId == nil then -- Everything
 		-- Instead of just dumping the whole table, let's clean it up
@@ -2013,6 +2024,9 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 
 		-- Balance Druid
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		
+		-- Havoc Demon Hunter
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(12, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
 	end
 
 	if includeCore then
