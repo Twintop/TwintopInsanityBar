@@ -3,6 +3,7 @@
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 9.1.0.5
+## X-ReleaseType: alpha
 ## X-ReleaseDate: July 06, 2021
 ## SavedVariables: TwintopInsanityBarSettings
 ## DefaultState: enabled

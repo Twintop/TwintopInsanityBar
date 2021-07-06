@@ -1024,9 +1024,19 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Functions.HideResourceBar()
 		end)
 
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when Eye Beam (with Blind Fury) is being channeled. Uncheck to hide this bar."
+		f:SetChecked(TRB.Data.settings.demonhunter.havoc.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.demonhunter.havoc.bar.showCasting = self:GetChecked()
+		end)
+
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
 		f:SetChecked(TRB.Data.settings.demonhunter.havoc.bar.showPassive)
@@ -1099,7 +1109,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			end
 		end)
 
-		controls.colors.metamorphosisEnding = TRB.UiFunctions.BuildColorPicker(parent, "Fury while Metamorphosis is ending", TRB.Data.settings.demonhunter.havoc.colors.bar.metamorphosisEnding, 225, 25, xCoord2, yCoord)
+		controls.colors.metamorphosisEnding = TRB.UiFunctions.BuildColorPicker(parent, "Fury when Metamorphosis is ending", TRB.Data.settings.demonhunter.havoc.colors.bar.metamorphosisEnding, 250, 25, xCoord2, yCoord)
 		f = controls.colors.metamorphosisEnding
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1120,7 +1130,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Fury gain from hardcasting/channeling abilities", TRB.Data.settings.demonhunter.havoc.colors.bar.casting, 275, 25, xCoord, yCoord)
+		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Fury gain from Eye Beam with Blind Fury", TRB.Data.settings.demonhunter.havoc.colors.bar.casting, 275, 25, xCoord, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1141,7 +1151,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			end
 		end)
 
-		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.demonhunter.havoc.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.demonhunter.havoc.colors.bar.border, 250, 25, xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1185,7 +1195,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			end
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when you are overcapping Fury", TRB.Data.settings.demonhunter.havoc.colors.bar.borderOvercap, 225, 25, xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your next builder will overcap Fury", TRB.Data.settings.demonhunter.havoc.colors.bar.borderOvercap, 250, 25, xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1435,8 +1445,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_CB1_8", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapEnabled
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
-		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Fury. Setting accepts values up to 130 to accomidate the Deadly Calm talent."
+		getglobal(f:GetName() .. 'Text'):SetText("Change border color when your next builder ability will overcap Fury")
+		f.tooltip = "This will change the bar's border color when your next builder ability will result in overcapping maximum Fury. Setting accepts values up to 130 to accomidate the Deadly Calm talent."
 		f:SetChecked(TRB.Data.settings.demonhunter.havoc.colors.bar.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.demonhunter.havoc.colors.bar.overcapEnabled = self:GetChecked()
@@ -1990,7 +2000,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
-		f.tooltip = "This will change the Fury text color when your current hardcast spell will result in overcapping maximum Fury."
+		f.tooltip = "This will change the Fury text color when your next builder ability will result in overcapping maximum Fury."
 		f:SetChecked(TRB.Data.settings.demonhunter.havoc.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.demonhunter.havoc.colors.text.overcapEnabled = self:GetChecked()

@@ -2,12 +2,12 @@ local addonName, TRB = ...
 
 -- Addon details data
 TRB.Details = {}
-TRB.Details.addonVersion = GetAddOnMetadata(addonName, "Version")
+TRB.Details.addonVersion = GetAddOnMetadata(addonName, "Version") .. "-" .. GetAddOnMetadata(addonName, "X-ReleaseType")
 TRB.Details.addonAuthor = GetAddOnMetadata(addonName, "Author")
 TRB.Details.addonAuthorServer = GetAddOnMetadata(addonName, "X-AuthorServer")
 TRB.Details.addonTitle = GetAddOnMetadata(addonName, "Title")
 TRB.Details.addonReleaseDate = GetAddOnMetadata(addonName, "X-ReleaseDate")
-TRB.Details.supportedSpecs = "|cFFFF7C0ADruid|r - Balance\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFFFFFFFFPriest|r - Holy, Shadow\n|cFF0070DDShaman|r - Elemental\n|cFFC69B6DWarrior|r - Arms"
+TRB.Details.supportedSpecs = "|cFFA330C9Demon Hunter|r - Havoc\n|cFFFF7C0ADruid|r - Balance\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFFFFFFFFPriest|r - Holy, Shadow\n|cFF0070DDShaman|r - Elemental\n|cFFC69B6DWarrior|r - Arms"
 
 local addonData = {
 	loaded = false,
