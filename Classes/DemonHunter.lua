@@ -62,6 +62,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				burningHatred = {
 					isSelected = false
 				},
+				unboundChaos = {
+					isSelected = false
+				},
 				glaiveTempest = {
 					isSelected = false
 				},
@@ -181,6 +184,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
                 fury = 5,
                 ticks = 12,
                 duration = 12
+			},
+			unboundChaos = {
+				id = 347462,
+				name = "",
+				icon = "",
+                duration = 20
 			},
 			glaiveTempest = {
 				id = 342817,
@@ -378,34 +387,27 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-			{ variable = "#bh", icon = spells.metamorphosis.icon, description = "Burning Hatred", printInSettings = true },
-			{ variable = "#burningHatred", icon = spells.metamorphosis.icon, description = "Burning Hatred", printInSettings = false },
-			{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = "Metamorphosis", printInSettings = false },
-			{ variable = "#meta", icon = spells.metamorphosis.icon, description = "Metamorphosis", printInSettings = true },
 
-			--[[
-            { variable = "#ancientAftershock", icon = spells.ancientAftershock.icon, description = "Ancient Aftershock", printInSettings = true },
-			{ variable = "#charge", icon = spells.charge.icon, description = "Charge", printInSettings = true },
-			{ variable = "#cleave", icon = spells.cleave.icon, description = "Cleave", printInSettings = true },
-            { variable = "#condemn", icon = spells.condemn.icon, description = "Condemn", printInSettings = true },
-            { variable = "#conquerorsBanner", icon = spells.conquerorsBanner.icon, description = "Conqueror's Banner", printInSettings = true },
-			{ variable = "#covenantAbility", icon = spells.spearOfBastion.icon .. spells.condemn.icon .. spells.ancientAftershock.icon .. spells.conquerorsBanner.icon, description = "Covenant on-use Ability", printInSettings = true},
-			{ variable = "#deadlyCalm", icon = spells.deadlyCalm.icon, description = "Deadly Calm", printInSettings = true },
-			{ variable = "#deepWounds", icon = spells.deepWounds.icon, description = "Deep Wounds", printInSettings = true },
-			{ variable = "#execute", icon = spells.execute.icon, description = "Execute", printInSettings = true },
-			{ variable = "#ignorePain", icon = spells.ignorePain.icon, description = "Ignore Pain", printInSettings = true },
-			{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = "Impending Victory", printInSettings = true },
-			{ variable = "#massacre", icon = spells.massacre.icon, description = "Massacre", printInSettings = true },
-			{ variable = "#mortalStrike", icon = spells.mortalStrike.icon, description = "Mortal Strike", printInSettings = true },
-			{ variable = "#ravager", icon = spells.ravager.icon, description = "Ravager", printInSettings = true },
-			{ variable = "#rend", icon = spells.rend.icon, description = "Rend", printInSettings = true },
-			{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = "Shield Block", printInSettings = true },
-			{ variable = "#skullsplitter", icon = spells.skullsplitter.icon, description = "Skullsplitter", printInSettings = true },
-			{ variable = "#slam", icon = spells.slam.icon, description = "Slam", printInSettings = true },
-            { variable = "#spearOfBastion", icon = spells.spearOfBastion.icon, description = "Spear of Bastion", printInSettings = true },
-			{ variable = "#victoryRush", icon = spells.victoryRush.icon, description = "Victory Rush", printInSettings = true },
-			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = "Whirlwind", printInSettings = true },
-            ]]		
+			{ variable = "#bladeDance", icon = spells.bladeDance.icon, description = spells.bladeDance.name, printInSettings = true },
+			{ variable = "#blindFury", icon = spells.blindFury.icon, description = spells.blindFury.name, printInSettings = true },
+			{ variable = "#bh", icon = spells.burningHatred.icon, description = spells.burningHatred.name, printInSettings = false },
+			{ variable = "#burningHatred", icon = spells.burningHatred.icon, description = spells.burningHatred.name, printInSettings = true },
+			{ variable = "#chaosNova", icon = spells.chaosNova.icon, description = spells.chaosNova.name, printInSettings = true },
+            { variable = "#chaosStrike", icon = spells.chaosStrike.icon, description = spells.chaosStrike.name, printInSettings = true },
+			{ variable = "#demonicAppetite", icon = spells.demonicAppetite.icon, description = spells.demonicAppetite.name, printInSettings = true },
+            { variable = "#demonsBite", icon = spells.demonsBite.icon, description = spells.demonsBite.name, printInSettings = true },
+			{ variable = "#eyeBeam", icon = spells.eyeBeam.icon, description = spells.eyeBeam.name, printInSettings = true },
+			{ variable = "#felBlade", icon = spells.felBlade.icon, description = spells.felBlade.name, printInSettings = true },
+			{ variable = "#felEruption", icon = spells.felEruption.icon, description = spells.felEruption.name, printInSettings = true },
+			{ variable = "#firstBlood", icon = spells.firstBlood.icon, description = spells.firstBlood.name, printInSettings = true },
+			{ variable = "#glaiveTempest", icon = spells.glaiveTempest.icon, description = spells.glaiveTempest.name, printInSettings = true },
+            { variable = "#immolationAura", icon = spells.immolationAura.icon, description = spells.immolationAura.name, printInSettings = true },
+			{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
+			{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
+			{ variable = "#momentum", icon = spells.momentum.icon, description = spells.momentum.name, printInSettings = true },
+			{ variable = "#unboundChaos", icon = spells.unboundChaos.icon, description = spells.unboundChaos.name, printInSettings = true },
+			{ variable = "#unleashedPower", icon = spells.unleashedPower.icon, description = spells.unleashedPower.name, printInSettings = true },
+
         }
 		specCache.havoc.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -422,9 +424,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
             { variable = "$resource", description = "Current Fury", printInSettings = false, color = false },
 			{ variable = "$furyMax", description = "Maximum Fury", printInSettings = true, color = false },
 			{ variable = "$resourceMax", description = "Maximum Fury", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Builder Fury from Hardcasting Spells", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Spender Fury from Hardcasting Spells", printInSettings = false, color = false },
-			{ variable = "$passive", description = "Fury from Passive Sources including Ravager and Covenant abilities", printInSettings = true, color = false },
+			{ variable = "$casting", description = "Builder Fury from Hardcasting Spells", printInSettings = true, color = false },
+			{ variable = "$passive", description = "Fury from Passive Sources", printInSettings = true, color = false },
 			{ variable = "$furyPlusCasting", description = "Current + Casting Fury Total", printInSettings = false, color = false },
 			{ variable = "$resourcePlusCasting", description = "Current + Casting Fury Total", printInSettings = false, color = false },
 			{ variable = "$furyPlusPassive", description = "Current + Passive Fury Total", printInSettings = true, color = false },
@@ -478,6 +479,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Data.character.talents.demonicAppetite.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.felBlade.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.burningHatred.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
+            TRB.Data.character.talents.unboundChaos.isSelected = select(4, GetTalentInfo(3, 2, TRB.Data.character.specGroup))
             TRB.Data.character.talents.glaiveTempest.isSelected = select(4, GetTalentInfo(3, 3, TRB.Data.character.specGroup))
             TRB.Data.character.talents.firstBlood.isSelected = select(4, GetTalentInfo(5, 2, TRB.Data.character.specGroup))
             TRB.Data.character.talents.unleashedPower.isSelected = select(4, GetTalentInfo(6, 1, TRB.Data.character.specGroup))
@@ -943,34 +945,32 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
         ]]
 
 		local lookup = TRB.Data.lookup or {}
+        lookup["#bladeDance"] = TRB.Data.spells.bladeDance.icon
+		lookup["#blindFury"] = TRB.Data.spells.blindFury.icon
         lookup["#bh"] = TRB.Data.spells.burningHatred.icon
         lookup["#burningHatred"] = TRB.Data.spells.burningHatred.icon
+		lookup["#chaosNova"] = TRB.Data.spells.chaosNova.icon
+		lookup["#chaosStrike"] = TRB.Data.spells.chaosStrike.icon
+		lookup["#demonicAppetite"] = TRB.Data.spells.demonicAppetite.icon
+		lookup["#demonsBite"] = TRB.Data.spells.demonsBite.icon
+		lookup["#eyeBeam"] = TRB.Data.spells.eyeBeam.icon
+		lookup["#felBlade"] = TRB.Data.spells.felBlade.icon
+		lookup["#felEruption"] = TRB.Data.spells.felEruption.icon
+		lookup["#firstBlood"] = TRB.Data.spells.firstBlood.icon
+		lookup["#glaiveTempest"] = TRB.Data.spells.glaiveTempest.icon
+		lookup["#immolationAura"] = TRB.Data.spells.immolationAura.icon
         lookup["#meta"] = TRB.Data.spells.metamorphosis.icon
         lookup["#metamorphosis"] = TRB.Data.spells.metamorphosis.icon
+		lookup["#momentum"] = TRB.Data.spells.momentum.icon
+		lookup["#unboundChaos"] = TRB.Data.spells.unboundChaos.icon
+		lookup["#unleashedPower"] = TRB.Data.spells.unleashedPower.icon
 		--[[
-        lookup["#ancientAftershock"] = TRB.Data.spells.ancientAftershock.icon
-		lookup["#charge"] = TRB.Data.spells.charge.icon
-		lookup["#cleave"] = TRB.Data.spells.cleave.icon
-		lookup["#condemn"] = TRB.Data.spells.condemn.icon
-		lookup["#conquerorsBanner"] = TRB.Data.spells.conquerorsBanner.icon
-		lookup["#covenantAbility"] = covenantAbilityIcon
-		lookup["#deadlyCalm"] = TRB.Data.spells.deadlyCalm.icon
-		lookup["#deepWounds"] = TRB.Data.spells.deadlyCalm.icon
-		lookup["#execute"] = TRB.Data.spells.execute.icon
-		lookup["#ignorePain"] = TRB.Data.spells.ignorePain.icon
-		lookup["#impendingVictory"] = TRB.Data.spells.impendingVictory.icon
-		lookup["#massacre"] = TRB.Data.spells.massacre.icon
-		lookup["#mortalStrike"] = TRB.Data.spells.mortalStrike.icon
-		lookup["#ravager"] = TRB.Data.spells.ravager.icon
-		lookup["#rend"] = TRB.Data.spells.rend.icon
-		lookup["#shieldBlock"] = TRB.Data.spells.shieldBlock.icon
 		lookup["#skullsplitter"] = TRB.Data.spells.skullsplitter.icon
 		lookup["#slam"] = TRB.Data.spells.slam.icon
 		lookup["#spearOfBastion"] = TRB.Data.spells.spearOfBastion.icon
 		lookup["#victoryRush"] = TRB.Data.spells.victoryRush.icon
 		lookup["#whirlwind"] = TRB.Data.spells.whirlwind.icon
-        ]]
-        --[[
+
 		lookup["$rend"] = TRB.Data.character.talents.rend.isSelected
 		lookup["$rendCount"] = rendCount
 		lookup["$rendTime"] = rendTime
