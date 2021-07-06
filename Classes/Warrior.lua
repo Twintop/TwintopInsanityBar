@@ -993,7 +993,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#conquerorsBanner"] = TRB.Data.spells.conquerorsBanner.icon
 		lookup["#covenantAbility"] = covenantAbilityIcon
 		lookup["#deadlyCalm"] = TRB.Data.spells.deadlyCalm.icon
-		lookup["#deepWounds"] = TRB.Data.spells.deadlyCalm.icon
+		lookup["#deepWounds"] = TRB.Data.spells.deepWounds.icon
 		lookup["#execute"] = TRB.Data.spells.execute.icon
 		lookup["#ignorePain"] = TRB.Data.spells.ignorePain.icon
 		lookup["#impendingVictory"] = TRB.Data.spells.impendingVictory.icon
