@@ -65,7 +65,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				fontSize = 13
 			},
 			right = {
-				text = "{$bhFury}[{]#bh$bhFury+]{$casting}[#casting$casting+]$fury",
+				text = "{$preparedFury}[#prepared$preparedFury+]{$bhFury}[#bh$bhFury+]{$casting}[#casting$casting+]$fury",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
