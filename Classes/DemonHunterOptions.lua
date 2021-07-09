@@ -26,7 +26,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			fontSizeLock=true,
 			fontFaceLock=true,
 			left={
-				text="",
+				text="{$ucTime}[$ucTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -59,7 +59,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				fontSize = 13
 			},
 			middle = {
-				text="{$metamorphosisTime}[#metamorphosis $metamorphosisTime #metamorphosis]",
+				text="{$ucTime}[#unboundChaos $ucTime #unboundChaos||n]{$metamorphosisTime}[#metamorphosis $metamorphosisTime #metamorphosis]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
