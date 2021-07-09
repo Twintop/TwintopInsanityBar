@@ -321,6 +321,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			endTime = nil,
 			lastTick = nil
 		}
+		specCache.havoc.snapshotData.unboundChaos = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil
+		}
 		--[[
 		specCache.havoc.snapshotData.deadlyCalm = {
 			endTime = nil,
@@ -439,6 +444,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "$bhTime", description = "Time remaining on Immolation Aura / Burning Hatred", printInSettings = false, color = false },
 			{ variable = "$iaTime", description = "Time remaining on Immolation Aura / Burning Hatred", printInSettings = true, color = false },
 
+			{ variable = "$ucTime", description = "Time remaining on Unbound Chaos", printInSettings = true, color = false },
+
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
             { variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
@@ -511,22 +518,20 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 
-	local function GetMetamorphosisRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.metamorphosis)
-	end
-
 	local function GetImmolationAuraRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.immolationAura)
 	end
 
+	local function GetMetamorphosisRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.metamorphosis)
+	end
+	
+	local function GetUnboundChaosRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.unboundChaos)
+	end
+
     local function CalculateAbilityResourceValue(resource)
 		local modifier = 1.0
-		
-		if resource > 0 then
-
-		else
-			
-		end
 
         return resource * modifier
     end
@@ -606,6 +611,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				end
 			elseif var == "$bhTime" or var == "$iaTime" then
 				if GetImmolationAuraRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$ucTime" then
+				if GetUnboundChaosRemainingTime() > 0 then
 					valid = true
 				end
             end
@@ -698,6 +707,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			metamorphosisTime = string.format("%.1f", _metamorphosisTime)
 		end
 
+		--$metamorphosisTime
+		local _unboundChaosTime = GetUnboundChaosRemainingTime()
+		local unboundChaosTime = 0
+		if _unboundChaosTime ~= nil then
+			unboundChaosTime = string.format("%.1f", _unboundChaosTime)
+		end
+
 		--$bhFury
 		local bhFury = TRB.Data.snapshotData.immolationAura.fury
 
@@ -772,6 +788,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookup["$iaTicks"] = bhTicks
 		lookup["$iaTime"] = bhTime
 		lookup["$bhTime"] = bhTime
+		lookup["$ucTime"] = unboundChaosTime
 		lookup["$furyPlusCasting"] = furyPlusCasting
 		lookup["$furyTotal"] = furyTotal
 		lookup["$furyMax"] = TRB.Data.character.maxResource
@@ -1205,6 +1222,16 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							TRB.Data.snapshotData.immolationAura.ticksRemaining = TRB.Data.snapshotData.immolationAura.ticksRemaining - 1
 							TRB.Data.snapshotData.immolationAura.fury = TRB.Data.snapshotData.immolationAura.ticksRemaining * TRB.Data.spells.burningHatred.fury
 							TRB.Data.snapshotData.immolationAura.lastTick = currentTime
+						end
+					elseif spellId == TRB.Data.spells.unboundChaos.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.unboundChaos.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.unboundChaos.duration, TRB.Data.snapshotData.unboundChaos.endTime, _, _, _, TRB.Data.snapshotData.unboundChaos.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.unboundChaos.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.unboundChaos.isActive = false
+							TRB.Data.snapshotData.unboundChaos.spellId = nil
+							TRB.Data.snapshotData.unboundChaos.duration = 0
+							TRB.Data.snapshotData.unboundChaos.endTime = nil
 						end
 					end
 				end
