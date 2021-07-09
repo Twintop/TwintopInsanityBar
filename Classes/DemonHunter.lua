@@ -382,13 +382,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-
+			{ variable = "#annihilation", icon = spells.annihilation.icon, description = spells.annihilation.name, printInSettings = true },
 			{ variable = "#bladeDance", icon = spells.bladeDance.icon, description = spells.bladeDance.name, printInSettings = true },
 			{ variable = "#blindFury", icon = spells.blindFury.icon, description = spells.blindFury.name, printInSettings = true },
 			{ variable = "#bh", icon = spells.burningHatred.icon, description = spells.burningHatred.name, printInSettings = false },
 			{ variable = "#burningHatred", icon = spells.burningHatred.icon, description = spells.burningHatred.name, printInSettings = true },
 			{ variable = "#chaosNova", icon = spells.chaosNova.icon, description = spells.chaosNova.name, printInSettings = true },
             { variable = "#chaosStrike", icon = spells.chaosStrike.icon, description = spells.chaosStrike.name, printInSettings = true },
+            { variable = "#deathSweep", icon = spells.deathSweep.icon, description = spells.deathSweep.name, printInSettings = true },
 			{ variable = "#demonicAppetite", icon = spells.demonicAppetite.icon, description = spells.demonicAppetite.name, printInSettings = true },
             { variable = "#demonsBite", icon = spells.demonsBite.icon, description = spells.demonsBite.name, printInSettings = true },
 			{ variable = "#eyeBeam", icon = spells.eyeBeam.icon, description = spells.eyeBeam.name, printInSettings = true },
@@ -742,12 +743,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		}
 
 		local lookup = TRB.Data.lookup or {}
+        lookup["#annihilation"] = TRB.Data.spells.annihilation.icon
         lookup["#bladeDance"] = TRB.Data.spells.bladeDance.icon
 		lookup["#blindFury"] = TRB.Data.spells.blindFury.icon
         lookup["#bh"] = TRB.Data.spells.burningHatred.icon
         lookup["#burningHatred"] = TRB.Data.spells.burningHatred.icon
 		lookup["#chaosNova"] = TRB.Data.spells.chaosNova.icon
 		lookup["#chaosStrike"] = TRB.Data.spells.chaosStrike.icon
+		lookup["#deathSweep"] = TRB.Data.spells.deathSweep.icon
 		lookup["#demonicAppetite"] = TRB.Data.spells.demonicAppetite.icon
 		lookup["#demonsBite"] = TRB.Data.spells.demonsBite.icon
 		lookup["#eyeBeam"] = TRB.Data.spells.eyeBeam.icon
@@ -1012,11 +1015,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							if metaTime > 0 and (spell.demonForm ~= nil and spell.demonForm == false) then
 								showThreshold = false
 								isUsable = false
-								print("Unusable (in demon):", spell.name)
 							elseif metaTime == 0 and (spell.demonForm ~= nil and spell.demonForm == true) then
 								showThreshold = false
 								isUsable = false
-								print("Unusable (out demon):", spell.name)
 							elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
 								showThreshold = false
 								isUsable = false
