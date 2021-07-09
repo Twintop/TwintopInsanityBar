@@ -1425,6 +1425,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
     local function RemoveInvalidVariablesFromBarText_Inner(input, indexOffset, maxIndex, positionOffset, maxPosition)
 		local returnText = ""
 
+---@diagnostic disable-next-line: undefined-field
 		if string.trim(string.len(input)) == 0 then
 			return returnText
 		end
@@ -1464,11 +1465,12 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 								elseCloseResult = TRB.Functions.FindNextSymbolLevel(scan.all, ']', elseOpenResult.index, nextOpenResult.level)
 
 								if elseCloseResult ~= nil then
-								-- We have if/else
+									-- We have if/else
 									hasElse = true
 								end
 							end
 
+---@diagnostic disable-next-line: undefined-field
 							local logicString = string.trim(string.sub(input, nextOpenIf.position - positionOffset + 1, matchedCloseIf.position - positionOffset - 1))
 							local s = nextOpenIf.position - positionOffset + 1
 							local outputString = ""
@@ -1484,8 +1486,10 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 										variableEnd = nextSymbol.position - positionOffset - p - 1
 									end
 
+---@diagnostic disable-next-line: undefined-field
 									local var = string.trim(string.sub(logicString, nextVariable.position - positionOffset - p, variableEnd))
 									local valid = TRB.Data.IsValidVariableForSpec(var)
+---@diagnostic disable-next-line: undefined-field
 									local beforeVar = string.trim(string.sub(logicString, s-p, nextVariable.position - positionOffset - p - 1))
 
 									if string.sub(beforeVar, string.len(beforeVar)) == "!" then
@@ -1497,6 +1501,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 									s = p + variableEnd + 1
 									lastLogicIndex = nextVariable.index + 1
 								else
+---@diagnostic disable-next-line: undefined-field
 									local remainder = string.trim(string.sub(logicString, s-p))
 									outputString = outputString .. " " .. remainder
 									s = p + string.len(logicString) + 2
@@ -1511,7 +1516,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 							local resultCode, resultFunc = pcall(assert, loadstring("return (" .. outputString .. ")"))
 							
 							if resultCode then
-								local resultCode2, result = pcall(resultFunc)
+								local _, result = pcall(resultFunc)
 								if result == true then
 									-- Recursive call for "IF", once we find the matched ]
 									local trueText = string.sub(input, nextOpenResult.position - positionOffset + 1, nextCloseResult.position - positionOffset - 1)

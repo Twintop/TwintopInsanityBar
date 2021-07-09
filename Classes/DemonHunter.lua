@@ -104,24 +104,37 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			},
 
 			--Havoc base abilities
+            annihilation = {
+				id = 201427,
+				name = "",
+				icon = "",
+				fury = -40,
+				thresholdId = 1,
+				settingKey = "annihilation",
+				isTalent = false,
+				hasCooldown = false,
+				thresholdUsable = false,
+				demonForm = true
+			},
 			bladeDance = {
 				id = 188499,
 				name = "",
 				icon = "",
 				fury = -35,
                 cooldown = 9,
-				thresholdId = 1,
+				thresholdId = 2,
 				settingKey = "bladeDance",
 				isTalent = false,
 				hasCooldown = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				demonForm = false
 			},
             chaosNova = {
                id = 179057,
                name = "",
                icon = "",
                fury = -30,
-			   thresholdId = 2,
+			   thresholdId = 3,
 			   settingKey = "chaosNova",
 			   isTalent = false,
 			   hasCooldown = true,
@@ -132,12 +145,26 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
                name = "",
                icon = "",
                fury = -40,
-			   thresholdId = 3,
+			   thresholdId = 4,
 			   settingKey = "chaosStrike",
 			   isTalent = false,
 			   hasCooldown = false,
-			   thresholdUsable = false
+			   thresholdUsable = false,
+			   demonForm = false
             },
+			deathSweep = {
+				id = 210152,
+				name = "",
+				icon = "",
+				fury = -35,
+                cooldown = 9,
+				thresholdId = 5,
+				settingKey = "bladeDance", --Same as bladeDance
+				isTalent = false,
+				hasCooldown = true,
+				thresholdUsable = false,
+				demonForm = true
+			},
             demonsBite = {
                id = 162243,
                name = "",
@@ -151,7 +178,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
                icon = "",
                fury = -30,
                duration = 2,
-			   thresholdId = 4,
+			   thresholdId = 6,
 			   settingKey = "eyeBeam",
 			   isTalent = false,
 			   hasCooldown = true,
@@ -207,7 +234,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				icon = "",
                 fury = -30,
                 cooldown = 20,
-				thresholdId = 5,
+				thresholdId = 7,
 				settingKey = "glaiveTempest",
 				isTalent = true,
 				hasCooldown = true,
@@ -231,7 +258,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				icon = "",
 				fury = -10,
 				cooldown = 30,
-				thresholdId = 6,
+				thresholdId = 8,
 				settingKey = "felEruption",
 				isTalent = true,
 				hasCooldown = true,
@@ -844,7 +871,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Data.snapshotData.bladeDance.startTime = nil
             TRB.Data.snapshotData.bladeDance.duration = 0
 		elseif TRB.Data.snapshotData.bladeDance.startTime ~= nil then
-			TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.bladeDance.id)
+			if GetMetamorphosisRemainingTime() > 0 then
+				TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.deathSweep.id)
+			else
+				TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.bladeDance.id)
+			end
         end
 
         if TRB.Data.snapshotData.chaosNova.startTime ~= nil and currentTime > (TRB.Data.snapshotData.chaosNova.startTime + TRB.Data.snapshotData.chaosNova.duration) then
@@ -922,6 +953,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					local passiveBarValue = 0
 					local castingBarValue = 0
 					local currentFury = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
+					local metaTime = GetMetamorphosisRemainingTime()
 
 					local passiveValue = 0
 					if TRB.Data.settings.demonhunter.havoc.bar.showPassive then
@@ -977,8 +1009,15 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							local isUsable = true -- Could use it if we had enough fury, e.g. not on CD
 							local thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
 							local frameLevel = 129
-
-							if spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
+							if metaTime > 0 and (spell.demonForm ~= nil and spell.demonForm == false) then
+								showThreshold = false
+								isUsable = false
+								print("Unusable (in demon):", spell.name)
+							elseif metaTime == 0 and (spell.demonForm ~= nil and spell.demonForm == true) then
+								showThreshold = false
+								isUsable = false
+								print("Unusable (out demon):", spell.name)
+							elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
 								showThreshold = false
 								isUsable = false
 							elseif spell.id == TRB.Data.spells.chaosNova.id and TRB.Data.character.talents.unleashedPower.isSelected then
@@ -1037,7 +1076,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							end
 						end
 
-						if useEndOfMetamorphosisColor and GetMetamorphosisRemainingTime() <= timeThreshold then
+						if useEndOfMetamorphosisColor and metaTime <= timeThreshold then
 							barColor = TRB.Data.settings.demonhunter.havoc.colors.bar.metamorphosisEnding
 						else
 							barColor = TRB.Data.settings.demonhunter.havoc.colors.bar.metamorphosis
@@ -1100,6 +1139,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
                     if spellId == TRB.Data.spells.bladeDance.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.bladeDance.id)
+						end
+					elseif spellId == TRB.Data.spells.deathSweep.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.deathSweep.id)
 						end
 					elseif spellId == TRB.Data.spells.chaosNova.id then
 						if type == "SPELL_CAST_SUCCESS" then

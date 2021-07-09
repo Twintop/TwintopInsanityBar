@@ -82,23 +82,30 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			thresholdWidth=2,
 			overcapThreshold=120,
 			thresholds = {
-				bladeDance = {
+				annihilation = {
 					enabled = true, -- 1
 				},
-				chaosNova = {
+				bladeDance = {
 					enabled = true, -- 2
 				},
-				chaosStrike = {
+				chaosNova = {
 					enabled = true, -- 3
 				},
-				eyeBeam = {
+				chaosStrike = {
 					enabled = true, -- 4
 				},
-				glaiveTempest = {
+				deathSweep = {
 					enabled = true, -- 5
 				},
-				felEruption = {
+				eyeBeam = {
 					enabled = true, -- 6
+				},
+				-- Talents
+				glaiveTempest = {
+					enabled = true, -- 7
+				},
+				felEruption = {
+					enabled = true, -- 8
 				},
 			},
 			displayBar = {
@@ -1290,11 +1297,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.bladeDanceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_bladeDance", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.bladeDanceThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Blade Dance")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Blade Dance."
+		getglobal(f:GetName() .. 'Text'):SetText("Blade Dance / Death Sweep")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Blade Dance. Shows for Death Sweep while in Demon Form."
 		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.bladeDance.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.demonhunter.havoc.thresholds.bladeDance.enabled = self:GetChecked()
+			TRB.Data.settings.demonhunter.havoc.thresholds.deathSweep.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -1312,11 +1320,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.chaosStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_chaosStrike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.chaosStrikeThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Chaos Strike")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Chaos Strike."
+		getglobal(f:GetName() .. 'Text'):SetText("Chaos Strike / Annihilation")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Chaos Strike. Shows for Annihilation while in Demon Form."
 		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.chaosStrike.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.demonhunter.havoc.thresholds.chaosStrike.enabled = self:GetChecked()
+			TRB.Data.settings.demonhunter.havoc.thresholds.annihilation.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25

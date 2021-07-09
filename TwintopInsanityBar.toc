@@ -3,8 +3,8 @@
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 9.1.0.5
-## X-ReleaseType: alpha-01
-## X-ReleaseDate: July 06, 2021
+## X-ReleaseType: alpha-02
+## X-ReleaseDate: July 09, 2021
 ## SavedVariables: TwintopInsanityBarSettings
 ## DefaultState: enabled
 ## Notes: Multi-class Resource Bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
