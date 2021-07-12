@@ -3252,7 +3252,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		parent = interfaceSettingsFrame.holyDisplayPanel
 
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Holy Priest", xCoord+xPadding, yCoord)
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Holy Priest", xCoord+xPadding, yCoord-5)	
+		
+		controls.checkBoxes.holyPriestEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyPriestEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.holyPriestEnabled
+		f:SetPoint("TOPLEFT", 250, yCoord-10)
+		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
+		f.tooltip = "Is Twintop's Resource Bar enabled for the Holy Priest specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		f:SetChecked(TRB.Data.settings.core.enabled.priest.holy)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.enabled.priest.holy = self:GetChecked()
+			TRB.Functions.EventRegistration()
+			TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.holyPriestEnabled, TRB.Data.settings.core.enabled.priest.holy, true)
+		end)
+		
+		TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.holyPriestEnabled, TRB.Data.settings.core.enabled.priest.holy, true)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
@@ -6171,6 +6185,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		parent = interfaceSettingsFrame.shadowDisplayPanel
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Shadow Priest", xCoord+xPadding, yCoord-5)
+	
+		controls.checkBoxes.shadowPriestEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_shadowPriestEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.shadowPriestEnabled
+		f:SetPoint("TOPLEFT", 250, yCoord-10)
+		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
+		f.tooltip = "Is Twintop's Resource Bar enabled for the Shadow Priest specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		f:SetChecked(TRB.Data.settings.core.enabled.priest.shadow)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.enabled.priest.shadow = self:GetChecked()
+			TRB.Functions.EventRegistration()
+			TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.shadowPriestEnabled, TRB.Data.settings.core.enabled.priest.shadow, true)
+		end)
+
+		TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.shadowPriestEnabled, TRB.Data.settings.core.enabled.priest.shadow, true)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)

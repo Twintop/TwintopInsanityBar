@@ -422,3 +422,20 @@ local function ToggleCheckboxEnabled(checkbox, enable)
     end
 end
 TRB.UiFunctions.ToggleCheckboxEnabled = ToggleCheckboxEnabled
+
+local function ToggleCheckboxOnOff(checkbox, enable, changeText)
+    if enable then
+        getglobal(checkbox:GetName().."Text"):SetTextColor(0, 1, 0)
+
+        if changeText == true then
+            getglobal(checkbox:GetName().."Text"):SetText("Enabled")
+        end
+    else
+        getglobal(checkbox:GetName().."Text"):SetTextColor(1, 0, 0)
+        
+        if changeText == true then
+            getglobal(checkbox:GetName().."Text"):SetText("Disabled")
+        end
+    end
+end
+TRB.UiFunctions.ToggleCheckboxOnOff = ToggleCheckboxOnOff

@@ -1465,7 +1465,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.specSupported = false
 		end
 
-		if TRB.Data.specSupported then
+		if TRB.Data.specSupported and
+			((specId == 2 and TRB.Data.settings.core.enabled.priest.holy) or
+			 (specId == 3 and TRB.Data.settings.core.enabled.priest.shadow)) then
             CheckCharacter()
 
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)

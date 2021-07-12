@@ -46,6 +46,29 @@ local function LoadDefaultSettings()
             strata={
                 level="BACKGROUND",
                 name="Background"
+            },
+            enabled = {
+                demonhunter = {
+                    havoc = true
+                },
+                druid = {
+                    balance = true
+                },
+                hunter = {
+                    beastMastery = true,
+                    marksmanship = true,
+                    survival = true
+                },
+                priest = {
+                    holy = true,
+                    shadow = true
+                },
+                shaman = {
+                    elemental = true
+                },
+                warrior = {
+                    arms = true
+                }
             }
         },
         demonhunter = {

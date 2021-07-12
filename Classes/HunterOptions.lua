@@ -4072,49 +4072,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.hunter.marksmanship.colors.bar.background, 275, 25, xCoord2, yCoord)
-		f = controls.colors.background
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.background, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.hunter.marksmanship.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
-                end)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from Passive Sources", TRB.Data.settings.hunter.marksmanship.colors.bar.passive, 525, 25, xCoord, yCoord)
-		f = controls.colors.passive
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.passive, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    
-					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
-					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
-                    TRB.Data.settings.hunter.marksmanship.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)
-
 		controls.colors.trueshot = TRB.UiFunctions.BuildColorPicker(parent, "Focus while Trueshot is active", TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot, 275, 25, xCoord2, yCoord)
 		f = controls.colors.trueshot
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -4136,6 +4093,26 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
+		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from Passive Sources", TRB.Data.settings.hunter.marksmanship.colors.bar.passive, 275, 25, xCoord, yCoord)
+		f = controls.colors.passive
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.passive, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+                    
+					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
+					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
 
 		controls.colors.trueshotEnding = TRB.UiFunctions.BuildColorPicker(parent, "Focus when Trueshot is ending", TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding, 275, 25, xCoord2, yCoord)
 		f = controls.colors.trueshotEnding
@@ -4154,6 +4131,29 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					controls.colors.eclipse1GCD.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
+			end
+		end)
+
+		yCoord = yCoord - 30
+
+		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.hunter.marksmanship.colors.bar.background, 275, 25, xCoord, yCoord)
+		f = controls.colors.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.background, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
+                end)
 			end
 		end)
 

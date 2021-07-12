@@ -369,6 +369,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				explosiveShot = {
 					isSelected = false
 				},
+				steadyFocus = {
+					isSelected = false
+				},
 				chimaeraShot = {
 					isSelected = false
 				},
@@ -529,6 +532,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				isTalent = true,
 				hasCooldown = true,
 				thresholdUsable = false
+			},
+			steadyFocus = {
+				id = 193533,
+				name = "",
+				icon = "",
+				duration = 15
 			},
 			chimaeraShot = {
 				id = 342049,
@@ -1133,6 +1142,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
 			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
 			{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
+			{ variable = "#steadyFocus", icon = spells.steadyFocus.icon, description = "Steady Focus", printInSettings = true },
 			{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = "Steady Shot", printInSettings = true },
 			{ variable = "#trickShots", icon = spells.trickShots.icon, description = "Trick Shots", printInSettings = true },
 			{ variable = "#trueshot", icon = spells.trueshot.icon, description = "Trueshot", printInSettings = true },
@@ -1288,6 +1298,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.character.talents.aMurderOfCrows.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.barrage.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.explosiveShot.isSelected = select(4, GetTalentInfo(2, 3, TRB.Data.character.specGroup))
+			TRB.Data.character.talents.steadyFocus.isSelected = select(4, GetTalentInfo(4, 1, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.chimaeraShot.isSelected = select(4, GetTalentInfo(4, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.deadEye.isSelected = select(4, GetTalentInfo(6, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.lockAndLoad.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
@@ -1973,6 +1984,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#revivePet"] = TRB.Data.spells.revivePet.icon
 		lookup["#scareBeast"] = TRB.Data.spells.scareBeast.icon
 		lookup["#serpentSting"] = TRB.Data.spells.serpentSting.icon
+		lookup["#steadyFocus"] = TRB.Data.spells.steadyFocus.icon
 		lookup["#steadyShot"] = TRB.Data.spells.steadyShot.icon
 		lookup["#trickShots"] = TRB.Data.spells.trickShots.icon
 		lookup["#trueshot"] = TRB.Data.spells.trueshot.icon

@@ -250,7 +250,8 @@ end
 TRB.Functions.ResetCastingSnapshotData = ResetCastingSnapshotData
 
 local function GetLatency()
-	local down, up, lagHome, lagWorld = GetNetStats()
+	--local down, up, lagHome, lagWorld = GetNetStats()
+	local _, _, _, lagWorld = GetNetStats()
 	local latency = lagWorld / 1000
 	return latency
 end
@@ -837,7 +838,6 @@ local function RepositionBar(settings)
 	end
 end
 TRB.Functions.RepositionBar = RepositionBar
-
 
 local function TriggerResourceBarUpdates()
 	--To be implemented in each class/spec module
