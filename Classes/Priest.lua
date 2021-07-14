@@ -1432,7 +1432,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				callToTheVoid = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(handsItemLink, 173244, TRB.Data.spells.eternalCallToTheVoid_Tendril.idLegendaryBonus)
 			end
 			TRB.Data.character.items.callToTheVoid = callToTheVoid
-
+			
 			-- Torghast
 			if IsInJailersTower() then
 				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1 + ((select(16, TRB.Functions.FindAuraById(TRB.Data.spells.dreamspunMushrooms.id, "player", "MAW")) or 0) / 100)
