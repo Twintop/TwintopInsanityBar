@@ -542,8 +542,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function EventRegistration()
 		local specId = GetSpecialization()
-		if specId == 1 then
+		if specId == 1 and TRB.Data.settings.core.enabled.warrior.arms == true then
 			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
+			TRB.Data.resource = Enum.PowerType.Rage
+			TRB.Data.resourceFactor = 10
 			TRB.Data.specSupported = true
 		else
 			--TRB.Data.resource = MANA
@@ -559,8 +561,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 
 		if TRB.Data.specSupported then
-			TRB.Data.resource = Enum.PowerType.Rage
-			TRB.Data.resourceFactor = 10
             CheckCharacter()
             
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
@@ -570,8 +570,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 
-			TRB.Details.addonData.registered = true			
+			TRB.Details.addonData.registered = true
 		end
+		TRB.Functions.HideResourceBar()
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
@@ -1205,7 +1206,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local specId = GetSpecialization()
 
 		if specId == 1 then
-			if force or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.warrior.arms.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.warrior.arms.displayBar.notZeroShow) or
@@ -1714,7 +1715,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						end
 					end
 					EventRegistration()
-					TRB.Functions.HideResourceBar()
 				end
 			end
 		end

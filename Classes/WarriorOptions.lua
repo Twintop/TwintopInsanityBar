@@ -2292,6 +2292,20 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.buttons = controls.buttons or {}
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Arms Warrior", xCoord+xPadding, yCoord-5)
+	
+		controls.checkBoxes.armsWarriorEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_armsWarriorEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.armsWarriorEnabled
+		f:SetPoint("TOPLEFT", 250, yCoord-10)
+		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
+		f.tooltip = "Is Twintop's Resource Bar enabled for the Arms Warrior specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		f:SetChecked(TRB.Data.settings.core.enabled.warrior.arms)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.enabled.warrior.arms = self:GetChecked()
+			TRB.Functions.EventRegistration()
+			TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.armsWarriorEnabled, TRB.Data.settings.core.enabled.warrior.arms, true)
+		end)
+
+		TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.armsWarriorEnabled, TRB.Data.settings.core.enabled.warrior.arms, true)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)

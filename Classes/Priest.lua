@@ -1451,12 +1451,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function EventRegistration()
 		local specId = GetSpecialization()
-		if specId == 2 then
+		if specId == 2 and TRB.Data.settings.core.enabled.priest.holy == true then
 			TRB.Functions.IsTtdActive(TRB.Data.settings.priest.holy)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
-		elseif specId == 3 then
+		elseif specId == 3 and TRB.Data.settings.core.enabled.priest.shadow == true then
 			TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Insanity
@@ -1465,15 +1465,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.specSupported = false
 		end
 
-		if TRB.Data.specSupported and
-			((specId == 2 and TRB.Data.settings.core.enabled.priest.holy) or
-			 (specId == 3 and TRB.Data.settings.core.enabled.priest.shadow)) then
+		if TRB.Data.specSupported then
             CheckCharacter()
 
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-			barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			TRB.Frames.barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
+			TRB.Frames.barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 
@@ -1483,13 +1481,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.specSupported = false
 			targetsTimerFrame:SetScript("OnUpdate", nil)
 			timerFrame:SetScript("OnUpdate", nil)
-			barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
-			barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			TRB.Frames.barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+			TRB.Frames.barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
 			TRB.Details.addonData.registered = false
-			barContainerFrame:Hide()
+			TRB.Frames.barContainerFrame:Hide()
 		end
+		TRB.Functions.HideResourceBar()
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
@@ -3554,7 +3553,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local affectingCombat = UnitAffectingCombat("player")
 
 		if specId == 2 then
-			if force or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.priest.holy.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.priest.holy.displayBar.notZeroShow) or
@@ -3572,7 +3571,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			end
 		elseif specId == 3 then
-			if force or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.priest.shadow.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.priest.shadow.displayBar.notZeroShow) or
@@ -4546,7 +4545,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					end
 					EventRegistration()
-					TRB.Functions.HideResourceBar()
 				end
 			end
 		end

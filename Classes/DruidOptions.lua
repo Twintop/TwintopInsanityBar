@@ -2559,6 +2559,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.buttons = controls.buttons or {}
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Balance Druid", xCoord+xPadding, yCoord-5)
+	
+		controls.checkBoxes.balanceDruidEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_balanceDruidEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.balanceDruidEnabled
+		f:SetPoint("TOPLEFT", 250, yCoord-10)
+		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
+		f.tooltip = "Is Twintop's Resource Bar enabled for the Balance Druid specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		f:SetChecked(TRB.Data.settings.core.enabled.druid.balance)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.enabled.druid.balance = self:GetChecked()
+			TRB.Functions.EventRegistration()
+			TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.balanceDruidEnabled, TRB.Data.settings.core.enabled.druid.balance, true)
+		end)
+
+		TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.balanceDruidEnabled, TRB.Data.settings.core.enabled.druid.balance, true)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)

@@ -442,8 +442,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
 
 	local function EventRegistration()
-		if GetSpecialization() == 1 then
+		local specId = GetSpecialization()
+		if specId == 1 and TRB.Data.settings.core.enabled.druid.balance == true then
 			TRB.Data.specSupported = true
+			TRB.Data.resource = Enum.PowerType.LunarPower
+			TRB.Data.resourceFactor = 10
 		else
 			--TRB.Data.resource = MANA
 			TRB.Data.specSupported = false
@@ -458,8 +461,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		if TRB.Data.specSupported then
-			TRB.Data.resource = Enum.PowerType.LunarPower
-			TRB.Data.resourceFactor = 10
             CheckCharacter()
             
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
@@ -469,8 +470,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 
-			TRB.Details.addonData.registered = true			
-		end
+			TRB.Details.addonData.registered = true
+		end		
+		TRB.Functions.HideResourceBar()
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
@@ -1059,7 +1061,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function HideResourceBar(force)
 		local affectingCombat = UnitAffectingCombat("player")
 
-		if force or GetSpecialization() ~= 1 or (not affectingCombat) and
+		if not TRB.Data.specSupported or force or GetSpecialization() ~= 1 or (not affectingCombat) and
 			(not UnitInVehicle("player")) and (
 				(not TRB.Data.settings.druid.balance.displayBar.alwaysShow) and (
 					(not TRB.Data.settings.druid.balance.displayBar.notZeroShow) or
@@ -1533,7 +1535,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			if TRB.Details.addonData.registered == true and event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
 				EventRegistration()
-				TRB.Functions.HideResourceBar()
 			end
 		end
 	end)

@@ -2295,6 +2295,20 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.buttons = controls.buttons or {}
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Havoc Demon Hunter", xCoord+xPadding, yCoord-5)
+	
+		controls.checkBoxes.havocDemonHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_havocDemonHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.havocDemonHunterEnabled
+		f:SetPoint("TOPLEFT", 250, yCoord-10)
+		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
+		f.tooltip = "Is Twintop's Resource Bar enabled for the Havoc Demon Hunter specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		f:SetChecked(TRB.Data.settings.core.enabled.demonhunter.havoc)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.enabled.demonhunter.havoc = self:GetChecked()
+			TRB.Functions.EventRegistration()
+			TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.havocDemonHunterEnabled, TRB.Data.settings.core.enabled.demonhunter.havoc, true)
+		end)
+
+		TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.havocDemonHunterEnabled, TRB.Data.settings.core.enabled.demonhunter.havoc, true)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)

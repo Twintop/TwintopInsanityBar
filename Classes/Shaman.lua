@@ -284,7 +284,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
 
 	local function EventRegistration()
-		if GetSpecialization() == 1 then
+		if GetSpecialization() == 1 and TRB.Data.settings.core.enabled.shaman.elemental == true then
 			TRB.Data.specSupported = true
 		else
 			--TRB.Data.resource = MANA
@@ -311,8 +311,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 
-			TRB.Details.addonData.registered = true			
+			TRB.Details.addonData.registered = true
 		end
+		TRB.Functions.HideResourceBar()
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
@@ -698,7 +699,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function HideResourceBar(force)
 		local affectingCombat = UnitAffectingCombat("player")
 
-		if force or GetSpecialization() ~= 1 or ((not affectingCombat) and
+		if not TRB.Data.specSupported or force or GetSpecialization() ~= 1 or ((not affectingCombat) and
 			(not UnitInVehicle("player")) and (
 				(not TRB.Data.settings.shaman.elemental.displayBar.alwaysShow) and (
 					(not TRB.Data.settings.shaman.elemental.displayBar.notZeroShow) or
@@ -994,7 +995,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			if TRB.Details.addonData.registered == true and event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
 				EventRegistration()
-				TRB.Functions.HideResourceBar()
 			end
 		end
 	end)

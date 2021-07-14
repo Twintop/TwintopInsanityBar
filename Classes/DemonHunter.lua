@@ -494,7 +494,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 	local function EventRegistration()
 		local specId = GetSpecialization()
-		if specId == 1 then
+		if specId == 1 and TRB.Data.settings.core.enabled.demonhunter.havoc == true then
 			TRB.Functions.IsTtdActive(TRB.Data.settings.demonhunter.havoc)
 			TRB.Data.specSupported = true
 		else
@@ -522,8 +522,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 
-			TRB.Details.addonData.registered = true			
+			TRB.Details.addonData.registered = true
 		end
+		TRB.Functions.HideResourceBar()
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
@@ -1004,7 +1005,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local specId = GetSpecialization()
 
 		if specId == 1 then
-			if force or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.demonhunter.havoc.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.demonhunter.havoc.displayBar.notZeroShow) or
@@ -1433,7 +1434,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 						end
 					end
 					EventRegistration()
-					TRB.Functions.HideResourceBar()
 				end
 			end
 		end

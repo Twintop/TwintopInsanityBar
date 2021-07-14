@@ -1329,13 +1329,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	local function EventRegistration()
 		local specId = GetSpecialization()
-		if specId == 1 then
+		if specId == 1 and TRB.Data.settings.core.enabled.hunter.beastMastery == true then
 			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.beastMastery)
 			TRB.Data.specSupported = true
-		elseif specId == 2 then
+		elseif specId == 2 and TRB.Data.settings.core.enabled.hunter.marksmanship == true then
 			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.marksmanship)
 			TRB.Data.specSupported = true
-		elseif specId == 3 then
+		elseif specId == 3 and TRB.Data.settings.core.enabled.hunter.survival == true then
 			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.survival)
 			TRB.Data.specSupported = true
 		else
@@ -1366,6 +1366,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			TRB.Details.addonData.registered = true
 		end
+		TRB.Functions.HideResourceBar()
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
@@ -2512,7 +2513,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local specId = GetSpecialization()
 
 		if specId == 1 then
-			if force or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.hunter.beastMastery.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.hunter.beastMastery.displayBar.notZeroShow) or
@@ -2530,7 +2531,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				end
 			end
 		elseif specId == 2 then
-			if force or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.hunter.marksmanship.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.hunter.marksmanship.displayBar.notZeroShow) or
@@ -2548,7 +2549,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				end
 			end
 		elseif specId == 3 then			
-			if force or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.hunter.survival.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.hunter.survival.displayBar.notZeroShow) or
@@ -3614,7 +3615,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						end
 					end
 					EventRegistration()
-					TRB.Functions.HideResourceBar()
 				end
 			end
 		end

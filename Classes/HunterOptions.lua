@@ -3035,6 +3035,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		parent = interfaceSettingsFrame.beastMasteryDisplayPanel
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Beast Mastery Hunter", xCoord+xPadding, yCoord-5)
+	
+		controls.checkBoxes.beastMasteryHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_beastMasteryHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.beastMasteryHunterEnabled
+		f:SetPoint("TOPLEFT", 250, yCoord-10)
+		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
+		f.tooltip = "Is Twintop's Resource Bar enabled for the Beast Mastery Hunter specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		f:SetChecked(TRB.Data.settings.core.enabled.hunter.beastMastery)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.enabled.hunter.beastMastery = self:GetChecked()
+			TRB.Functions.EventRegistration()
+			TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.beastMasteryHunterEnabled, TRB.Data.settings.core.enabled.hunter.beastMastery, true)
+		end)
+
+		TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.beastMasteryHunterEnabled, TRB.Data.settings.core.enabled.hunter.beastMastery, true)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
@@ -5882,6 +5896,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		parent = interfaceSettingsFrame.marksmanshipDisplayPanel
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Marksmanship Hunter", xCoord+xPadding, yCoord-5)
+	
+		controls.checkBoxes.marksmanshipHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_marksmanshipHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.marksmanshipHunterEnabled
+		f:SetPoint("TOPLEFT", 250, yCoord-10)
+		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
+		f.tooltip = "Is Twintop's Resource Bar enabled for the Marksmanship Hunter specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		f:SetChecked(TRB.Data.settings.core.enabled.hunter.marksmanship)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.enabled.hunter.marksmanship = self:GetChecked()
+			TRB.Functions.EventRegistration()
+			TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.marksmanshipHunterEnabled, TRB.Data.settings.core.enabled.hunter.marksmanship, true)
+		end)
+
+		TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.marksmanshipHunterEnabled, TRB.Data.settings.core.enabled.hunter.marksmanship, true)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
@@ -8418,6 +8446,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		parent = interfaceSettingsFrame.survivalDisplayPanel
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Survival Hunter", xCoord+xPadding, yCoord-5)
+	
+		controls.checkBoxes.survivalHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_survivalHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.survivalHunterEnabled
+		f:SetPoint("TOPLEFT", 250, yCoord-10)
+		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
+		f.tooltip = "Is Twintop's Resource Bar enabled for the Survival Hunter specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		f:SetChecked(TRB.Data.settings.core.enabled.hunter.survival)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.enabled.hunter.survival = self:GetChecked()
+			TRB.Functions.EventRegistration()
+			TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.survivalHunterEnabled, TRB.Data.settings.core.enabled.hunter.survival, true)
+		end)
+
+		TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.survivalHunterEnabled, TRB.Data.settings.core.enabled.hunter.survival, true)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
