@@ -142,7 +142,8 @@ TRB.Frames.interfaceSettingsFrameContainer.controls = {}
 TRB.Data = {}
 
 TRB.Data.constants = {
-	borderWidthFactor = 4
+	borderWidthFactor = 4,
+	sanctumOfDominationZoneId = 1998 --zoneGroupId = "g426"
 }
 
 TRB.Data.settings = {}

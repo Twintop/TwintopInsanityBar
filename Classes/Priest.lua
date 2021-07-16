@@ -69,6 +69,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			guid = UnitGUID("player"),
 			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
+			effects = {
+				overgrowthSeedlingModifier = 1
+			},
 			talents = {
 				surgeOfLight = {
 					isSelected = false
@@ -360,7 +363,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 319276,
 				name = "",
 				icon = ""
-			}
+			},
+
+			-- Sanctum of Domination
+			overgrowthSeedling = {
+				id = 347934,
+				name = "",
+				icon = ""
+			},
 		}
 
 		specCache.holy.snapshotData.manaRegen = 0
@@ -549,6 +559,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			maxResource = 100,
 			devouringPlagueThreshold = 50,
 			searingNightmareThreshold = 30,
+			effects = {
+				overgrowthSeedlingModifier = 1
+			},
 			talents = {
 				fotm = {
 					isSelected = false,
@@ -815,6 +828,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				conduitRanks = {}
 			},
 
+			-- Torghast
 			dreamspunMushrooms = {
 				id = 342409,
 				name = "",
@@ -824,7 +838,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 319276,
 				name = "",
 				icon = ""
-			}
+			},
+			phantasmicInfuser = {
+				id = 347240,
+				name = "",
+				icon = ""
+			},
+
+			-- Sanctum of Domination
+			-- zoneId = 1998
+			-- zoneGroup = g426
+			overgrowthSeedling = {
+				id = 347934,
+				name = "",
+				icon = ""
+			},
 		}
 
 		specCache.shadow.snapshotData.voidform = {
@@ -1382,7 +1410,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			-- Torghast
 			if IsInJailersTower() then
 				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1 + ((select(16, TRB.Functions.FindAuraById(TRB.Data.spells.dreamspunMushrooms.id, "player", "MAW")) or 0) / 100)
-			else
+			elseif C_Map.GetBestMapForUnit("player") == TRB.Data.constants.sanctumOfDominationZoneId then
+				-- Sanctum of Domination
+				if TRB.Functions.FindAuraById(TRB.Data.spells.overgrowthSeedling.id, "player") then
+					TRB.Data.character.effects.overgrowthSeedlingModifier = 0.7
+				else
+					TRB.Data.character.effects.overgrowthSeedlingModifier = 1
+				end
+			else -- Elsewhere
 				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1
 			end
 		elseif specId == 3 then
@@ -1394,30 +1429,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.character.talents.mindbender.isSelected = select(4, GetTalentInfo(6, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.hungeringVoid.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.surrenderToMadeness.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
-
-			TRB.Data.character.devouringPlagueThreshold = 50
-			TRB.Data.character.searingNightmareThreshold = 30
-
-			-- Threshold lines
-			if TRB.Data.settings.priest.shadow.devouringPlagueThreshold and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
-				TRB.Frames.resourceFrame.thresholds[1]:Show()
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			else
-				TRB.Frames.resourceFrame.thresholds[1]:Hide()
-			end
-
-			if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then
-				TRB.Frames.resourceFrame.thresholds[2]:Show()
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
-			else
-				TRB.Frames.resourceFrame.thresholds[2]:Hide()
-			end
-
-			TRB.Frames.resourceFrame.thresholds[3]:Hide()
-			TRB.Frames.resourceFrame.thresholds[4]:Hide()
-			TRB.Frames.passiveFrame.thresholds[3]:Hide()
-			TRB.Frames.passiveFrame.thresholds[4]:Hide()
-			TRB.Frames.passiveFrame.thresholds[5]:Hide()
 
 			-- Legendaries
 			local wristItemLink = GetInventoryItemLink("player", 9)
@@ -1441,10 +1452,50 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				else
 					TRB.Data.character.torghast.elethiumMuzzleModifier = 1
 				end
-			else
+
+				if TRB.Functions.FindAuraById(TRB.Data.spells.phantasmicInfuser.id, "player", "MAW") then
+					TRB.Data.character.torghast.phantasmicInfuserModifier = 0.9
+				else
+					TRB.Data.character.torghast.phantasmicInfuserModifier = 1
+				end
+			elseif C_Map.GetBestMapForUnit("player") == TRB.Data.constants.sanctumOfDominationZoneId then
+				-- Sanctum of Domination
+				if TRB.Functions.FindAuraById(TRB.Data.spells.overgrowthSeedling.id, "player") then
+					TRB.Data.character.effects.overgrowthSeedlingModifier = 0.7
+				else
+					TRB.Data.character.effects.overgrowthSeedlingModifier = 1
+				end
+			else -- Elsewhere
 				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1
 				TRB.Data.character.torghast.elethiumMuzzleModifier = 1
+				TRB.Data.character.torghast.phantasmicInfuserModifier = 1
+				TRB.Data.character.effects.overgrowthSeedlingModifier = 1
 			end
+
+			TRB.Data.character.devouringPlagueThreshold = 50 * TRB.Data.character.effects.overgrowthSeedlingModifier
+			TRB.Data.character.searingNightmareThreshold = 30 * TRB.Data.character.effects.overgrowthSeedlingModifier
+
+			-- Threshold lines
+			if TRB.Data.settings.priest.shadow.devouringPlagueThreshold and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
+				TRB.Frames.resourceFrame.thresholds[1]:Show()
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+			else
+				TRB.Frames.resourceFrame.thresholds[1]:Hide()
+			end
+
+			if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then
+				TRB.Frames.resourceFrame.thresholds[2]:Show()
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			else
+				TRB.Frames.resourceFrame.thresholds[2]:Hide()
+			end
+
+			TRB.Frames.resourceFrame.thresholds[3]:Hide()
+			TRB.Frames.resourceFrame.thresholds[4]:Hide()
+			TRB.Frames.passiveFrame.thresholds[3]:Hide()
+			TRB.Frames.passiveFrame.thresholds[4]:Hide()
+			TRB.Frames.passiveFrame.thresholds[5]:Hide()
+
 		end
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
@@ -1659,7 +1710,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				local latency = TRB.Functions.GetLatency()
 				local vbStart, vbDuration, _, _ = GetSpellCooldown(TRB.Data.spells.voidBolt.id)
 				local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(TRB.Data.spells.voidBolt.id)
-				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier), 0.75) + latency
+				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier * TRB.Data.character.torghast.phantasmicInfuserModifier), 0.75) + latency
 				local gcdLockRemaining = TRB.Functions.GetCurrentGCDLockRemaining()
 
 				local castGrantsExtension = true
@@ -2923,7 +2974,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 					if spellId then
-						local manaCost = -TRB.Functions.GetSpellManaCost(spellId)
+						local manaCost = -TRB.Functions.GetSpellManaCost(spellId) * TRB.Data.character.effects.overgrowthSeedlingModifier
 
 						TRB.Data.snapshotData.casting.startTime = currentSpellStartTime / 1000
 						TRB.Data.snapshotData.casting.endTime = currentSpellEndTime / 1000
