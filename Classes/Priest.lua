@@ -111,6 +111,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			torghast = {
 				dreamspunMushroomsModifier = 1,
+				phantasmicInfuserModifier = 1
 			}
 		}
 
@@ -589,6 +590,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			torghast = {
 				dreamspunMushroomsModifier = 1,
 				elethiumMuzzleModifier = 1,
+				phantasmicInfuserModifier = 1
 			}
 		}
 
@@ -1412,7 +1414,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1 + ((select(16, TRB.Functions.FindAuraById(TRB.Data.spells.dreamspunMushrooms.id, "player", "MAW")) or 0) / 100)
 			elseif C_Map.GetBestMapForUnit("player") == TRB.Data.constants.sanctumOfDominationZoneId then
 				-- Sanctum of Domination
-				if TRB.Functions.FindAuraById(TRB.Data.spells.overgrowthSeedling.id, "player") then
+				if TRB.Functions.FindAuraById(TRB.Data.spells.overgrowthSeedling.id, "player", "MAW") then
 					TRB.Data.character.effects.overgrowthSeedlingModifier = 0.7
 				else
 					TRB.Data.character.effects.overgrowthSeedlingModifier = 1
@@ -1460,7 +1462,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif C_Map.GetBestMapForUnit("player") == TRB.Data.constants.sanctumOfDominationZoneId then
 				-- Sanctum of Domination
-				if TRB.Functions.FindAuraById(TRB.Data.spells.overgrowthSeedling.id, "player") then
+				if TRB.Functions.FindAuraById(TRB.Data.spells.overgrowthSeedling.id, "player", "MAW") then
 					TRB.Data.character.effects.overgrowthSeedlingModifier = 0.7
 				else
 					TRB.Data.character.effects.overgrowthSeedlingModifier = 1
