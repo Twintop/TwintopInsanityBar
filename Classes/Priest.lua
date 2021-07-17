@@ -4346,11 +4346,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						if InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- VT Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouch = true
-								TRB.Data.snapshotData.targetData.vampiricTouch = TRB.Data.snapshotData.targetData.vampiricTouch + 1
+								if type == "SPELL_AURA_APPLIED" then
+									TRB.Data.snapshotData.targetData.vampiricTouch = TRB.Data.snapshotData.targetData.vampiricTouch + 1
+								end
+								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
 								TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouch = false
 								TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouchRemaining = 0
 								TRB.Data.snapshotData.targetData.vampiricTouch = TRB.Data.snapshotData.targetData.vampiricTouch - 1
+								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
 						end
@@ -4358,11 +4362,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						if InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- DP Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlague = true
-								TRB.Data.snapshotData.targetData.devouringPlague = TRB.Data.snapshotData.targetData.devouringPlague + 1
+								if type == "SPELL_AURA_APPLIED" then
+									TRB.Data.snapshotData.targetData.devouringPlague = TRB.Data.snapshotData.targetData.devouringPlague + 1
+								end
+								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
 								TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlague = false
 								TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlagueRemaining = 0
 								TRB.Data.snapshotData.targetData.devouringPlague = TRB.Data.snapshotData.targetData.devouringPlague - 1
+								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
 						end
@@ -4452,11 +4460,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SWP Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = true
-							TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain + 1
+							if type == "SPELL_AURA_APPLIED" then
+								TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain + 1
+							end
+							triggerUpdate = true
 						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = false
 							TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPainRemaining = 0
 							TRB.Data.snapshotData.targetData.shadowWordPain = TRB.Data.snapshotData.targetData.shadowWordPain - 1
+							triggerUpdate = true
 						--elseif type == "SPELL_PERIODIC_DAMAGE" then
 						end
 					end
