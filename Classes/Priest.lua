@@ -364,14 +364,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 319276,
 				name = "",
 				icon = ""
-			},
-
-			-- Sanctum of Domination
-			overgrowthSeedling = {
-				id = 347934,
-				name = "",
-				icon = ""
-			},
+			}
 		}
 
 		specCache.holy.snapshotData.manaRegen = 0
@@ -845,16 +838,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 347240,
 				name = "",
 				icon = ""
-			},
-
-			-- Sanctum of Domination
-			-- zoneId = 1998
-			-- zoneGroup = g426
-			overgrowthSeedling = {
-				id = 347934,
-				name = "",
-				icon = ""
-			},
+			}
 		}
 
 		specCache.shadow.snapshotData.voidform = {

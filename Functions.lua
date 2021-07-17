@@ -1670,8 +1670,8 @@ local function CheckCharacter()
 	TRB.Data.character.covenantId = C_Covenants.GetActiveCovenantID()
 
 	-- Sanctum of Domination
-	if C_Map.GetBestMapForUnit("player") == TRB.Data.constants.sanctumOfDominationZoneId and TRB.Functions.FindAuraById(TRB.Data.spells.overgrowthSeedling.id, "player", "MAW") then
-		TRB.Data.character.effects.overgrowthSeedlingModifier = 0.7
+	if C_Map.GetBestMapForUnit("player") == TRB.Data.constants.sanctumOfDominationZoneId and TRB.Functions.FindAuraById(TRB.Data.constants.overgrowthSeedling.id, "player", "MAW") then
+		TRB.Data.character.effects.overgrowthSeedlingModifier = TRB.Data.constants.overgrowthSeedling.resourceModifier
 	else
 		TRB.Data.character.effects.overgrowthSeedlingModifier = 1
 	end
