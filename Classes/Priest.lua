@@ -1468,8 +1468,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.character.torghast.phantasmicInfuserModifier = 1
 			end
 
-			TRB.Data.character.devouringPlagueThreshold = 50 * TRB.Data.character.effects.overgrowthSeedlingModifier
-			TRB.Data.character.searingNightmareThreshold = 30 * TRB.Data.character.effects.overgrowthSeedlingModifier
+			-- Don't include Overgrowth Seedling until Blizzard fixes it to scale with Insanity.
+			TRB.Data.character.devouringPlagueThreshold = 50 --* TRB.Data.character.effects.overgrowthSeedlingModifier
+			TRB.Data.character.searingNightmareThreshold = 30 --* TRB.Data.character.effects.overgrowthSeedlingModifier
 
 			-- Threshold lines
 			if TRB.Data.settings.priest.shadow.devouringPlagueThreshold and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
