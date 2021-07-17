@@ -43,6 +43,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		maxResource = 100,
 		starsurgeThreshold = 30,
 		starfallThreshold = 50,
+		effects = {
+			overgrowthSeedling = 1.0
+		},
 		talents = {
             naturesBalance = {
                 isSelected = false
@@ -417,8 +420,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Data.character.talents.furyOfElune.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.newMoon.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 
-		TRB.Data.character.starsurgeThreshold = TRB.Data.spells.starsurge.astralPower
-		TRB.Data.character.starfallThreshold = TRB.Data.spells.starfall.astralPower
+		TRB.Data.character.starsurgeThreshold = TRB.Data.spells.starsurge.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier
+		TRB.Data.character.starfallThreshold = TRB.Data.spells.starfall.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier
 
 		if TRB.Data.settings.druid ~= nil and TRB.Data.settings.druid.balance ~= nil then
 			local currentResource = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor

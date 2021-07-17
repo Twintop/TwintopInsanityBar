@@ -51,6 +51,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			specId = 1,
 			maxResource = 100,
 			covenantId = 0,
+			effects = {
+				overgrowthSeedling = 1.0
+			},
 			talents = {
 				scentOfBlood = {
 					isSelected = false
@@ -356,6 +359,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			specId = 2,
 			maxResource = 100,
 			covenantId = 0,
+			effects = {
+				overgrowthSeedling = 1.0
+			},
 			talents = {
 				serpentSting = {
 					isSelected = false
@@ -720,6 +726,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			specId = 3,
 			maxResource = 100,
 			covenantId = 0,
+			effects = {
+				overgrowthSeedling = 1.0
+			},
 			talents = {
 				vipersVenom = {
 					isSelected = false
@@ -1442,6 +1451,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Data.spells.nesingwarysTrappingApparatus.isActive and not threshold then
 				modifier = modifier * TRB.Data.spells.nesingwarysTrappingApparatus.modifier
 			end
+		else
+			modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier
 		end
 
         return resource * modifier

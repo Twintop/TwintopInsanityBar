@@ -1412,13 +1412,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			-- Torghast
 			if IsInJailersTower() then
 				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1 + ((select(16, TRB.Functions.FindAuraById(TRB.Data.spells.dreamspunMushrooms.id, "player", "MAW")) or 0) / 100)
-			elseif C_Map.GetBestMapForUnit("player") == TRB.Data.constants.sanctumOfDominationZoneId then
-				-- Sanctum of Domination
-				if TRB.Functions.FindAuraById(TRB.Data.spells.overgrowthSeedling.id, "player", "MAW") then
-					TRB.Data.character.effects.overgrowthSeedlingModifier = 0.7
-				else
-					TRB.Data.character.effects.overgrowthSeedlingModifier = 1
-				end
 			else -- Elsewhere
 				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1
 			end
@@ -1460,18 +1453,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				else
 					TRB.Data.character.torghast.phantasmicInfuserModifier = 1
 				end
-			elseif C_Map.GetBestMapForUnit("player") == TRB.Data.constants.sanctumOfDominationZoneId then
-				-- Sanctum of Domination
-				if TRB.Functions.FindAuraById(TRB.Data.spells.overgrowthSeedling.id, "player", "MAW") then
-					TRB.Data.character.effects.overgrowthSeedlingModifier = 0.7
-				else
-					TRB.Data.character.effects.overgrowthSeedlingModifier = 1
-				end
 			else -- Elsewhere
 				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1
 				TRB.Data.character.torghast.elethiumMuzzleModifier = 1
 				TRB.Data.character.torghast.phantasmicInfuserModifier = 1
-				TRB.Data.character.effects.overgrowthSeedlingModifier = 1
 			end
 
 			TRB.Data.character.devouringPlagueThreshold = 50 * TRB.Data.character.effects.overgrowthSeedlingModifier

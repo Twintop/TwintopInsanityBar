@@ -35,6 +35,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		specGroup = GetActiveSpecGroup(),
 		maxResource = 100,
 		earthShockThreshold = 60,
+		effects = {
+			overgrowthSeedling = 1.0
+		},
 		talents = {
 			echoingShock = {
 				isSelected = false,
@@ -272,7 +275,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Data.character.talents.stormkeeper.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.ascendance.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 
-		TRB.Data.character.earthShockThreshold = 60
+		TRB.Data.character.earthShockThreshold = 60 * TRB.Data.character.effects.overgrowthSeedlingModifier
 
 		if TRB.Data.settings.shaman ~= nil and TRB.Data.settings.shaman.elemental ~= nil and TRB.Data.settings.shaman.elemental.earthShockThreshold and TRB.Data.character.earthShockThreshold < TRB.Data.character.maxResource then
 			resourceFrame.thresholds[1]:Show()

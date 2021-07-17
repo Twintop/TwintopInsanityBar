@@ -49,6 +49,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			specId = 1,
 			maxResource = 120,
 			covenantId = 0,
+			effects = {
+				overgrowthSeedling = 1.0
+			},
 			talents = {
 				blindFury = {
 					isSelected = false
@@ -552,7 +555,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	end
 
     local function CalculateAbilityResourceValue(resource)
-		local modifier = 1.0
+		local modifier = 1.0 * TRB.Data.character.effects.overgrowthSeedlingModifier
 
         return resource * modifier
     end

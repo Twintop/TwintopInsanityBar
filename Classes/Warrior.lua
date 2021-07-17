@@ -61,6 +61,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			specId = 1,
 			maxResource = 100,
 			covenantId = 0,
+			effects = {
+				overgrowthSeedling = 1.0
+			},
 			talents = {
 				suddenDeath = {
 					isSelected = false
@@ -594,10 +597,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 
 		local modifier = 1.0
-		
+
 		if resource > 0 then
 
 		else
+			modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier
 			if GetSpecialization() == 1 then
 				if TRB.Data.spells.deadlyCalm.isActive and includeDeadlyCalm then
 					modifier = modifier * TRB.Data.spells.deadlyCalm.modifier
@@ -819,14 +823,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local currentRageColor = TRB.Data.settings.warrior.arms.colors.text.current
 		local castingRageColor = TRB.Data.settings.warrior.arms.colors.text.casting
 
-		if TRB.Data.settings.warrior.arms.colors.text.overcapEnabled and overcap then 
+		if TRB.Data.settings.warrior.arms.colors.text.overcapEnabled and overcap then
 			currentRageColor = TRB.Data.settings.warrior.arms.colors.text.overcap
             castingRageColor = TRB.Data.settings.warrior.arms.colors.text.overcap
 		elseif TRB.Data.settings.warrior.arms.colors.text.overThresholdEnabled then
 			local _overThreshold = false
 			for k, v in pairs(TRB.Data.spells) do
 				local spell = TRB.Data.spells[k]
-				if	spell ~= nil and spell.thresholdUsable == true then
+				if spell ~= nil and spell.thresholdUsable == true then
 					_overThreshold = true
 					break
 				end
