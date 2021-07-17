@@ -4564,7 +4564,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Steady Focus Time Remaining (sec)"
-		controls.steadyFocusTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 20, TRB.Data.settings.hunter.marksmanship.steadyFocus.timeMax, 0.25, 2,
+		controls.steadyFocusTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.hunter.marksmanship.steadyFocus.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.steadyFocusTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
