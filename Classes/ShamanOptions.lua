@@ -140,11 +140,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			displayText = {},
 			audio = {
 				esReady={
+					name = "Earth Shock Ready",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				overcap={
+					name = "Overcap",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"

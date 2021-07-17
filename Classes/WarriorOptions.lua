@@ -173,11 +173,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			displayText = {},
 			audio = {
 				overcap={
+					name = "Overcap",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				suddenDeath={
+					name = "Sudden Death Proc",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"

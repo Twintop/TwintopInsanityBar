@@ -4600,8 +4600,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Details.addonData.loaded and specId > 0 then
 				if not TRB.Details.addonData.optionsPanel then
 					TRB.Details.addonData.optionsPanel = true
-					TRB.Data.settings.priest.holy = TRB.Functions.ValidateLsmValue("Holy Priest", TRB.Data.settings.priest.holy)
-					TRB.Data.settings.priest.shadow = TRB.Functions.ValidateLsmValue("Shadow Priest", TRB.Data.settings.priest.shadow)
+					TRB.Data.settings.priest.holy = TRB.Functions.ValidateLsmValues("Holy Priest", TRB.Data.settings.priest.holy)
+					TRB.Data.settings.priest.shadow = TRB.Functions.ValidateLsmValues("Shadow Priest", TRB.Data.settings.priest.shadow)
 					TRB.Options.Priest.ConstructOptionsPanel(specCache)
 				end
 

@@ -1420,6 +1420,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			if TRB.Details.addonData.loaded and specId > 0 then
 				if not TRB.Details.addonData.optionsPanel then
 					TRB.Details.addonData.optionsPanel = true
+					TRB.Data.settings.demonhunter.havoc = TRB.Functions.ValidateLsmValues("Havoc Demon Hunter", TRB.Data.settings.demonhunter.havoc)
 					TRB.Options.DemonHunter.ConstructOptionsPanel(specCache)
 				end
 

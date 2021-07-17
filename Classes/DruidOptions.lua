@@ -160,21 +160,25 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			displayText = {},
 			audio = {
 				ssReady={
+					name = "Starsurge Ready",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				sfReady={
+					name = "Starfall Ready",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				onethsReady={
+					name = "Oneth's Clear Vision Ready",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				overcap={
+					name = "Overcap",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"

@@ -1702,6 +1702,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			if TRB.Details.addonData.loaded and specId > 0 then
 				if not TRB.Details.addonData.optionsPanel then
 					TRB.Details.addonData.optionsPanel = true
+					TRB.Data.settings.warrior.arms = TRB.Functions.ValidateLsmValues("Arms Warrior", TRB.Data.settings.warrior.arms)
 					TRB.Options.Warrior.ConstructOptionsPanel(specCache)
 				end
 

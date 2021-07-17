@@ -1516,6 +1516,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.druid.balance)
 					TRB.Functions.IsTtdActive(TRB.Data.settings.druid.balance)
 					FillSpellData()
+					TRB.Data.settings.druid.balance = TRB.Functions.ValidateLsmValues("Balance Druid", TRB.Data.settings.druid.balance)
 					ConstructResourceBar()
 					TRB.Options.Druid.ConstructOptionsPanel()
 

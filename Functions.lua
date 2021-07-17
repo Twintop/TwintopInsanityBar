@@ -1758,7 +1758,7 @@ TRB.Functions.GetSoulbindRank = GetSoulbindRank
 
 -- LibSharedMedia Support Functions
 
-local function ValidateLsmValue(specName, settings)
+local function ValidateLsmValues(specName, settings)
 	-- Text
 	if not TRB.Details.addonData.libs.SharedMedia:IsValid("font", settings.displayText.left.fontFaceName) then
 		print("TRB: |cFFFF5555Invalid font (" .. specName .. " left bar text): '|r" .. settings.displayText.left.fontFaceName .. "|cFFFF5555'. Resetting to a default font.|r")
@@ -1818,7 +1818,7 @@ local function ValidateLsmValue(specName, settings)
 	end
 	return settings
 end
-TRB.Functions.ValidateLsmValue = ValidateLsmValue
+TRB.Functions.ValidateLsmValues = ValidateLsmValues
 
 -- Import/Export Functions
 

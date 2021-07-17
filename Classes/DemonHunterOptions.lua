@@ -166,6 +166,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			displayText = {},
 			audio = {
 				overcap={
+					name = "Overcap",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"

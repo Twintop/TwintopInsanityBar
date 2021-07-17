@@ -3587,6 +3587,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Details.addonData.loaded and specId > 0 then
 				if not TRB.Details.addonData.optionsPanel then
 					TRB.Details.addonData.optionsPanel = true
+					TRB.Data.settings.hunter.beastMastery = TRB.Functions.ValidateLsmValues("Beast Mastery Hunter", TRB.Data.settings.hunter.beastMastery)
+					TRB.Data.settings.hunter.marksmanship = TRB.Functions.ValidateLsmValues("Marksmanship Hunter", TRB.Data.settings.hunter.marksmanship)
+					TRB.Data.settings.hunter.survival = TRB.Functions.ValidateLsmValues("Survival Hunter", TRB.Data.settings.hunter.survival)
 					TRB.Options.Hunter.ConstructOptionsPanel(specCache)
 				end
 
