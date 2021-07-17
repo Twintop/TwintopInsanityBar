@@ -343,6 +343,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				gcdsMax=2,
 				timeMax=3.0
 			},
+			steadyFocus = {
+				enabled=true,
+				mode="gcd",
+				gcdsMax=3,
+				timeMax=4.5
+			},
 			bar = {
 				width=555,
 				height=34,
@@ -378,6 +384,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				bar = {
 					border="FFAB5124",
 					borderOvercap="FFFF0000",
+					borderSteadyFocus="FFFFFF00",
 					background="66000000",
 					base="FFFF8040",
 					trueshot="FF00B60E",
@@ -4101,23 +4108,23 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.trueshot = TRB.UiFunctions.BuildColorPicker(parent, "Focus while Trueshot is active", TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot, 275, 25, xCoord2, yCoord)
-		f = controls.colors.trueshot
+		controls.colors.steadyFocus = TRB.UiFunctions.BuildColorPicker(parent, "Border when Steady Focus is expiring or not up (per settings)", TRB.Data.settings.hunter.marksmanship.colors.bar.borderSteadyFocus, 275, 25, xCoord2, yCoord)
+		f = controls.colors.steadyFocus
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.borderSteadyFocus, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.trueshot.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.steadyFocus.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.hunter.marksmanship.colors.bar.borderSteadyFocus = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
 			end
 		end)
 
@@ -4143,23 +4150,23 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.trueshotEnding = TRB.UiFunctions.BuildColorPicker(parent, "Focus when Trueshot is ending", TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding, 275, 25, xCoord2, yCoord)
-		f = controls.colors.trueshotEnding
+		controls.colors.trueshot = TRB.UiFunctions.BuildColorPicker(parent, "Focus while Trueshot is active", TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot, 275, 25, xCoord2, yCoord)
+		f = controls.colors.trueshot
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.eclipse1GCD.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.trueshot.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
 			end
 		end)
 
@@ -4183,6 +4190,26 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
                     TRB.Data.settings.hunter.marksmanship.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barContainerFrame:SetBackdropColor(r, g, b, 1-a)
                 end)
+			end
+		end)
+
+		controls.colors.trueshotEnding = TRB.UiFunctions.BuildColorPicker(parent, "Focus when Trueshot is ending", TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding, 275, 25, xCoord2, yCoord)
+		f = controls.colors.trueshotEnding
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.eclipse1GCD.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
 			end
 		end)
 
@@ -4471,6 +4498,85 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			TRB.Data.settings.hunter.marksmanship.endOfTrueshot.timeMax = value
+		end)
+
+		yCoord = yCoord - 40
+		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Steady Focus Expiration Configuration", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.steadyFocus = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.steadyFocus
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar border when your Steady Focus buff is close to expiring or not up (if talented)")
+		f.tooltip = "Changes the bar border color when your Steady Focus buff is not up or is expiring in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.steadyFocus.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.steadyFocus.enabled = self:GetChecked()
+		end)
+
+
+		yCoord = yCoord - 40
+		controls.checkBoxes.steadyFocusModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_M_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.steadyFocusModeGCDs
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("GCDs left on Steady Focus buff")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar border color based on how many GCDs remain until Steady Focus will end."
+		if TRB.Data.settings.hunter.marksmanship.steadyFocus.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.steadyFocusModeGCDs:SetChecked(true)
+			controls.checkBoxes.steadyFocusModeTime:SetChecked(false)
+			TRB.Data.settings.hunter.marksmanship.steadyFocus.mode = "gcd"
+		end)
+
+		title = "Steady Focus GCDs - 0.75sec Floor"
+		controls.steadyFocusGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0, 30, TRB.Data.settings.hunter.marksmanship.steadyFocus.gcdsMax, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.steadyFocusGCDs:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.marksmanship.steadyFocus.gcdsMax = value
+		end)
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.steadyFocusModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_M_TIME", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.steadyFocusModeTime
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Time left on Steady Focus buff")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar border color based on how many seconds remain until Steady Focus will end."
+		if TRB.Data.settings.hunter.marksmanship.steadyFocus.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.steadyFocusModeGCDs:SetChecked(false)
+			controls.checkBoxes.steadyFocusModeTime:SetChecked(true)
+			TRB.Data.settings.hunter.marksmanship.steadyFocus.mode = "time"
+		end)
+
+		title = "Steady Focus Time Remaining (sec)"
+		controls.steadyFocusTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 20, TRB.Data.settings.hunter.marksmanship.steadyFocus.timeMax, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.steadyFocusTime:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 2)
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.marksmanship.steadyFocus.timeMax = value
 		end)
 
 		yCoord = yCoord - 40

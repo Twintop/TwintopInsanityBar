@@ -11,7 +11,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local timerFrame = TRB.Frames.timerFrame
     local combatFrame = TRB.Frames.combatFrame
 
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
 
@@ -540,10 +539,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdUsable = false
 			},
 			steadyFocus = {
-				id = 193533,
+				id = 193534,
 				name = "",
 				icon = "",
-				duration = 15
+				duration = 15,
+				isActive = false
 			},
 			chimaeraShot = {
 				id = 342049,
@@ -624,6 +624,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			endTime = nil
 		}
 		specCache.marksmanship.snapshotData.trueshot = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil
+		}
+		specCache.marksmanship.snapshotData.steadyFocus = {
 			spellId = nil,
 			duration = 0,
 			endTime = nil
@@ -1187,7 +1192,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Focus Total", printInSettings = false, color = false },
 
 			{ variable = "$trueshotTime", description = "Time remaining on Trueshot buff", printInSettings = true, color = false },
-			{ variable = "lockAndLoadTime", description = "Time remaining on Lock and Load buff", printInSettings = true, color = false },
+			{ variable = "$lockAndLoadTime", description = "Time remaining on Lock and Load buff", printInSettings = true, color = false },
+
+			{ variable = "$steadyFocusTime", description = "Time remaining on Steady Focus buff", printInSettings = true, color = false },
 
 			{ variable = "$serpentSting", description = "Is Serpent Sting talented? Logic variable only!", printInSettings = true, color = false },
 			
@@ -1425,6 +1432,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.trueshot)
 	end
 
+	local function GetSteadyFocusRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.steadyFocus)
+	end
+
 	local function GetCoordinatedAssaultRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.coordinatedAssault)
 	end
@@ -1555,6 +1566,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		elseif specId == 2 then --Marksmanship
 			if var == "$trueshotTime" then
 				if GetTrueshotRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$steadyFocusTime" then
+				if GetSteadyFocusRemainingTime() > 0 then
 					valid = true
 				end
 			elseif var == "$lockAndLoadTime" then
@@ -1914,6 +1929,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			trueshotTime = string.format("%.1f", _trueshotTime)
 		end
 
+		--$steadyFocusTime
+		local _steadyFocusTime = GetSteadyFocusRemainingTime()
+		local steadyFocusTime = 0
+		if _steadyFocusTime ~= nil then
+			steadyFocusTime = string.format("%.1f", _steadyFocusTime)
+		end
+
 		--$lockAndLoadTime
 		local _lockAndLoadTime = GetLockAndLoadRemainingTime()
 		local lockAndLoadTime = 0
@@ -2001,6 +2023,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#trickShots"] = TRB.Data.spells.trickShots.icon
 		lookup["#trueshot"] = TRB.Data.spells.trueshot.icon
 		lookup["#vigil"] = TRB.Data.spells.secretsOfTheUnblinkingVigil.icon
+		lookup["$steadyFocusTime"] = steadyFocusTime
 		lookup["$trueshotTime"] = trueshotTime
 		lookup["$lockAndLoadTime"] = lockAndLoadTime
 		lookup["$vigilTime"] = vigilTime
@@ -2824,17 +2847,34 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					local passiveBarValue = 0
 					local castingBarValue = 0
 					local gcd = TRB.Functions.GetCurrentGCDTime(true)
+					local borderColor = TRB.Data.settings.hunter.marksmanship.colors.bar.border
 					if TRB.Data.settings.hunter.marksmanship.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.borderOvercap, true))
+						borderColor = TRB.Data.settings.hunter.marksmanship.colors.bar.borderOvercap
 
 						if TRB.Data.settings.hunter.marksmanship.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
 							PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.border, true))
 						TRB.Data.snapshotData.audio.overcapCue = false
 					end
+
+					if UnitAffectingCombat("player") and TRB.Data.settings.hunter.marksmanship.steadyFocus.enabled and TRB.Data.character.talents.steadyFocus.isSelected then
+						local timeThreshold = 0
+
+						if TRB.Data.settings.hunter.marksmanship.steadyFocus.mode == "gcd" then
+							local gcd = TRB.Functions.GetCurrentGCDTime()
+							timeThreshold = gcd * TRB.Data.settings.hunter.marksmanship.steadyFocus.gcdsMax
+						elseif TRB.Data.settings.hunter.marksmanship.steadyFocus.mode == "time" then
+							timeThreshold = TRB.Data.settings.hunter.marksmanship.steadyFocus.timeMax
+						end
+
+						if GetSteadyFocusRemainingTime() <= timeThreshold then
+							borderColor = TRB.Data.settings.hunter.marksmanship.colors.bar.borderSteadyFocus
+						end
+					end
+
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(borderColor, true))
 
 					local passiveValue = 0
 					if TRB.Data.settings.hunter.marksmanship.bar.showPassive then
@@ -3323,6 +3363,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.trueshot.spellId = nil
 							TRB.Data.snapshotData.trueshot.duration = 0
 							TRB.Data.snapshotData.trueshot.endTime = nil
+						end
+					elseif spellId == TRB.Data.spells.steadyFocus.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.steadyFocus.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.steadyFocus.duration, TRB.Data.snapshotData.steadyFocus.endTime, _, _, _, TRB.Data.snapshotData.steadyFocus.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.steadyFocus.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.steadyFocus.isActive = false
+							TRB.Data.snapshotData.steadyFocus.spellId = nil
+							TRB.Data.snapshotData.steadyFocus.duration = 0
+							TRB.Data.snapshotData.steadyFocus.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.lockAndLoad.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed

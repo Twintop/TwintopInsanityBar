@@ -1603,7 +1603,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					controls.colors.innervate.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.holy.colors.bar.innervate = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -1664,7 +1663,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					controls.colors.flashConcentration.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.priest.holy.colors.bar.flashConcentration = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
 				end)
 			end
 		end)
