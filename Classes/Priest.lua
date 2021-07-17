@@ -1252,9 +1252,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#sa", icon = spells.shadowyApparition.icon, description = spells.shadowyApparition.name, printInSettings = true },
 			{ variable = "#shadowyApparition", icon = spells.shadowyApparition.icon, description = spells.shadowyApparition.name, printInSettings = false },
 																					  
-			{ variable = "#mindbender", icon = spells.mindbender.icon, description = spells.mindbender.name, printInSettings = false },
-			{ variable = "#shadowfiend", icon = spells.shadowfiend.icon, description = spells.shadowfiend.name, printInSettings = false },
-			{ variable = "#sf", icon = spells.shadowfiend.icon, description = spells.shadowfiend.name .. "/" .. spells.mindbender.name, printInSettings = true },
+			{ variable = "#mindbender", icon = spells.mindbender.icon, description = "Mindbender", printInSettings = false },
+			{ variable = "#shadowfiend", icon = spells.shadowfiend.icon, description = "Shadowfiend", printInSettings = false },
+			{ variable = "#sf", icon = spells.shadowfiend.icon, description = "Shadowfiend / Mindbender", printInSettings = true },
 																															  
 			{ variable = "#tof", icon = spells.twistOfFate.icon, description = spells.twistOfFate.name, printInSettings = true },
 			{ variable = "#twistOfFate", icon = spells.twistOfFate.icon, description = spells.twistOfFate.name, printInSettings = false },
@@ -1262,8 +1262,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#wf", icon = spells.wrathfulFaerie.icon, description = spells.wrathfulFaerie.name, printInSettings = true },
 			{ variable = "#wrathfulFaerie", icon = spells.wrathfulFaerie.icon, description = spells.wrathfulFaerie.name, printInSettings = false },
 																															  
-			{ variable = "#s2m", icon = spells.s2m.icon, description = spells.s2m.name, printInSettings = true },
-			{ variable = "#surrenderToMadness", icon = spells.s2m.icon, description = spells.s2m.name, printInSettings = false },
+			{ variable = "#s2m", icon = spells.s2m.icon, description = "Surrender to Madness", printInSettings = true },
+			{ variable = "#surrenderToMadness", icon = spells.s2m.icon, description = "Surrender to Madness", printInSettings = false },
 																															  
 			{ variable = "#ecttv", icon = spells.eternalCallToTheVoid_Tendril.icon, description = spells.eternalCallToTheVoid_Tendril.name, printInSettings = true },
 			{ variable = "#tb", icon = spells.eternalCallToTheVoid_Tendril.icon, description = spells.eternalCallToTheVoid_Tendril.name, printInSettings = false },
@@ -4600,6 +4600,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Details.addonData.loaded and specId > 0 then
 				if not TRB.Details.addonData.optionsPanel then
 					TRB.Details.addonData.optionsPanel = true
+					TRB.Data.settings.priest.holy = TRB.Functions.ValidateLsmValue("Holy Priest", TRB.Data.settings.priest.holy)
+					TRB.Data.settings.priest.shadow = TRB.Functions.ValidateLsmValue("Shadow Priest", TRB.Data.settings.priest.shadow)
 					TRB.Options.Priest.ConstructOptionsPanel(specCache)
 				end
 
@@ -4623,7 +4625,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Functions.LoadFromSpecCache(specCache.shadow)
 						TRB.Functions.RefreshLookupData = RefreshLookupData_Shadow
 
-						if TRB.Data.barConstructedForSpec ~= "shadow" then
+						if TRB.Data.barConstructedForSpec ~= "shadow" then							
 							TRB.Data.barConstructedForSpec = "shadow"
 							ConstructResourceBar(TRB.Data.settings.priest.shadow)
 						end

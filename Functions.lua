@@ -1053,7 +1053,6 @@ end
 TRB.Functions.GetReturnText = GetReturnText
 
 -- Implemented separately in older 1-spec modules like Balance Druid and Elemental Shaman
--- Implemented separately in Priest because Shadow is (still) a special snowflake with bar text to check
 local function IsTtdActive(settings)
 	if settings ~= nil and settings.displayText ~= nil then
 		if string.find(settings.displayText.left.text, "$ttd") or
@@ -1756,6 +1755,70 @@ local function GetSoulbindRank(id)
 	return 0
 end
 TRB.Functions.GetSoulbindRank = GetSoulbindRank
+
+-- LibSharedMedia Support Functions
+
+local function ValidateLsmValue(specName, settings)
+	-- Text
+	if not TRB.Details.addonData.libs.SharedMedia:IsValid("font", settings.displayText.left.fontFaceName) then
+		print("TRB: |cFFFF5555Invalid font (" .. specName .. " left bar text): '|r" .. settings.displayText.left.fontFaceName .. "|cFFFF5555'. Resetting to a default font.|r")
+		settings.displayText.left.fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
+		settings.displayText.left.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
+	end
+	
+	if not TRB.Details.addonData.libs.SharedMedia:IsValid("font", settings.displayText.middle.fontFaceName) then
+		print("TRB: |cFFFF5555Invalid font (" .. specName .. " middle bar text): '|r" .. settings.displayText.middle.fontFaceName .. "|cFFFF5555'. Resetting to a default font.|r")
+		settings.displayText.middle.fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
+		settings.displayText.middle.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
+	end
+	
+	if not TRB.Details.addonData.libs.SharedMedia:IsValid("font", settings.displayText.right.fontFaceName) then
+		print("TRB: |cFFFF5555Invalid font (" .. specName .. " right bar text): '|r" .. settings.displayText.right.fontFaceName .. "|cFFFF5555'. Resetting to a default font.|r")
+		settings.displayText.right.fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
+		settings.displayText.right.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
+	end
+
+	-- Textures
+	if not TRB.Details.addonData.libs.SharedMedia:IsValid("background", settings.textures.backgroundName) then
+		print("TRB: |cFFFF5555Invalid texture (" .. specName .. " bar background): '|r" .. settings.textures.backgroundName .. "|cFFFF5555'. Resetting to a default texture.|r")
+		settings.textures.background = TRB.Data.constants.defaultSettings.textures.background
+		settings.textures.backgroundName = TRB.Data.constants.defaultSettings.textures.backgroundName
+	end
+
+	if not TRB.Details.addonData.libs.SharedMedia:IsValid("border", settings.textures.borderName) then
+		print("TRB: |cFFFF5555Invalid texture (" .. specName .. " bar border): '|r" .. settings.textures.borderName .. "|cFFFF5555'. Resetting to a default texture.|r")
+		settings.textures.border = TRB.Data.constants.defaultSettings.textures.border
+		settings.textures.borderName = TRB.Data.constants.defaultSettings.textures.borderName
+	end
+
+	if not TRB.Details.addonData.libs.SharedMedia:IsValid("statusbar", settings.textures.resourceBarName) then
+		print("TRB: |cFFFF5555Invalid texture (" .. specName .. " resource bar): '|r" .. settings.textures.resourceBarName .. "|cFFFF5555'. Resetting to a default texture.|r")
+		settings.textures.resourceBar = TRB.Data.constants.defaultSettings.textures.resourceBar
+		settings.textures.resourceBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
+	end
+
+	if not TRB.Details.addonData.libs.SharedMedia:IsValid("statusbar", settings.textures.passiveBarName) then
+		print("TRB: |cFFFF5555Invalid texture (" .. specName .. " passive bar): '|r" .. settings.textures.passiveBarName .. "|cFFFF5555'. Resetting to a default texture.|r")
+		settings.textures.passiveBar = TRB.Data.constants.defaultSettings.textures.resourceBar
+		settings.textures.passiveBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
+	end
+
+	if not TRB.Details.addonData.libs.SharedMedia:IsValid("statusbar", settings.textures.castingBarName) then
+		print("TRB: |cFFFF5555Invalid texture (" .. specName .. " casting bar): '|r" .. settings.textures.castingBarName .. "|cFFFF5555'. Resetting to a default texture.|r")
+		settings.textures.castingBar = TRB.Data.constants.defaultSettings.textures.resourceBar
+		settings.textures.castingBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
+	end
+
+	for k, v in pairs(settings.audio) do
+		if not TRB.Details.addonData.libs.SharedMedia:IsValid("sound", v.soundName) then
+			print("TRB: |cFFFF5555Invalid sound (" .. specName .. " '" .. v.name .. "'): '|r" .. v.soundName .. "|cFFFF5555'. Resetting to a default sound.|r")
+			settings.audio[k].sound = TRB.Data.constants.defaultSettings.sounds.sound
+			settings.audio[k].soundName = TRB.Data.constants.defaultSettings.sounds.soundName
+		end
+	end
+	return settings
+end
+TRB.Functions.ValidateLsmValue = ValidateLsmValue
 
 -- Import/Export Functions
 

@@ -147,6 +147,24 @@ TRB.Data.constants = {
 	overgrowthSeedling = {
 		id = 347934,
 		resourceModifier = 0.7
+	},
+	defaultSettings = {
+		fonts = {
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+		},
+		textures = {
+			background="Interface\\Tooltips\\UI-Tooltip-Background",
+			backgroundName="Blizzard Tooltip",
+			border="Interface\\Buttons\\WHITE8X8",
+			borderName="1 Pixel",
+			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
+			resourceBarName="Blizzard",
+		},
+		sounds = {
+			sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+			soundName="TRB: Air Horn"
+		}
 	}
 }
 

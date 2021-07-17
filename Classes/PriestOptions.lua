@@ -20,7 +20,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	TRB.Options.Priest.Shadow = {}
 
 
-
 	local function HolyLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
@@ -194,21 +193,25 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			displayText={},
 			audio={
 				innervate={
+					name = "Innervate",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				surgeOfLight={
+					name = "Innervate (1 stack)",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				surgeOfLight2={
+					name = "Innervate (2 stacks)",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				flashConcentration={
+					name = "Flash Concentration",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -427,26 +430,32 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			displayText={},
 			audio={
 				s2mDeath={
+					name = "Surrender to Madness Death",
 					enabled=true,
 					sound="Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg",
 					soundName="TRB: Wilhelm Scream"
 				},
 				overcap={
+					name = "Overcap",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				mdProc={
+					name = "Mind Devourer Proc",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				dpReady={
+					name = "Devouring Plague Ready",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				mindbender={
+					name = "Mindbender Ready",
+					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				}
