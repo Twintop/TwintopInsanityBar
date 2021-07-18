@@ -1813,8 +1813,12 @@ local function ValidateLsmValues(specName, settings)
 		if v.soundName == nil or not TRB.Details.addonData.libs.SharedMedia:IsValid("sound", v.soundName) then
 			if v.name ~= nil and v.soundName ~= nil then
 				print("TRB: |cFFFF5555Invalid sound (" .. specName .. " '" .. v.name .. "'): '|r" .. v.soundName .. "|cFFFF5555'. Resetting to a default sound.|r")
-			else
+			elseif v.soundName ~= nil then
 				print("TRB: |cFFFF5555Invalid sound (" .. specName .. "): '|r" .. v.soundName .. "|cFFFF5555'. Resetting to a default sound.|r")
+			elseif v.name ~= nil then
+				print("TRB: |cFFFF5555Invalid sound (" .. specName .. " '" .. v.name .. "'). Resetting to a default sound.|r")
+			else
+				print("TRB: |cFFFF5555Invalid sound (" .. specName .. "). Resetting to a default sound.|r")
 			end
 			settings.audio[k].sound = TRB.Data.constants.defaultSettings.sounds.sound
 			settings.audio[k].soundName = TRB.Data.constants.defaultSettings.sounds.soundName
