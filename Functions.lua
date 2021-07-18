@@ -1889,6 +1889,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 1 then -- Beast Mastery
 			elseif specId == 2 then -- Marksmanship
 				configuration.endOfTrueshot = settings.endOfTrueshot
+				configuration.steadyFocus = settings.steadyFocus
 			elseif specId == 3 then -- Survival
 				configuration.endOfCoordinatedAssault = settings.endOfCoordinatedAssault
 			end
