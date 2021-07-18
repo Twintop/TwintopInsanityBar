@@ -1321,11 +1321,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Sunfire Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].sunfire = true
-							TRB.Data.snapshotData.targetData.sunfire = TRB.Data.snapshotData.targetData.sunfire + 1
+							if type == "SPELL_AURA_APPLIED" then
+								TRB.Data.snapshotData.targetData.sunfire = TRB.Data.snapshotData.targetData.sunfire + 1
+							end
+							triggerUpdate = true
 						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshotData.targetData.targets[destGUID].sunfire = false
 							TRB.Data.snapshotData.targetData.targets[destGUID].sunfireRemaining = 0
 							TRB.Data.snapshotData.targetData.sunfire = TRB.Data.snapshotData.targetData.sunfire - 1
+							triggerUpdate = true
 						--elseif type == "SPELL_PERIODIC_DAMAGE" then
 						end
 					end
@@ -1333,11 +1337,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Moonfire Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].moonfire = true
-							TRB.Data.snapshotData.targetData.moonfire = TRB.Data.snapshotData.targetData.moonfire + 1
+							if type == "SPELL_AURA_APPLIED" then
+								TRB.Data.snapshotData.targetData.moonfire = TRB.Data.snapshotData.targetData.moonfire + 1
+							end
+							triggerUpdate = true
 						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshotData.targetData.targets[destGUID].moonfire = false
 							TRB.Data.snapshotData.targetData.targets[destGUID].moonfireRemaining = 0
 							TRB.Data.snapshotData.targetData.moonfire = TRB.Data.snapshotData.targetData.moonfire - 1
+							triggerUpdate = true
 						--elseif type == "SPELL_PERIODIC_DAMAGE" then
 						end
 					end
@@ -1345,11 +1353,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Stellar Flare Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].stellarFlare = true
-							TRB.Data.snapshotData.targetData.stellarFlare = TRB.Data.snapshotData.targetData.stellarFlare + 1
+							if type == "SPELL_AURA_APPLIED" then
+								TRB.Data.snapshotData.targetData.stellarFlare = TRB.Data.snapshotData.targetData.stellarFlare + 1
+							end
+							triggerUpdate = true
 						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshotData.targetData.targets[destGUID].stellarFlare = false
 							TRB.Data.snapshotData.targetData.targets[destGUID].stellarFlareRemaining = 0
 							TRB.Data.snapshotData.targetData.stellarFlare = TRB.Data.snapshotData.targetData.stellarFlare - 1
+							triggerUpdate = true
 						--elseif type == "SPELL_PERIODIC_DAMAGE" then
 						end
 					end

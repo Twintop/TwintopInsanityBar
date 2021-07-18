@@ -832,11 +832,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					if InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- FS Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].flameShock = true
-							TRB.Data.snapshotData.targetData.flameShock = TRB.Data.snapshotData.targetData.flameShock + 1
+							if type == "SPELL_AURA_APPLIED" then
+								TRB.Data.snapshotData.targetData.flameShock = TRB.Data.snapshotData.targetData.flameShock + 1
+							end
+							triggerUpdate = true
 						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshotData.targetData.targets[destGUID].flameShock = false
 							TRB.Data.snapshotData.targetData.targets[destGUID].flameShockRemaining = 0
 							TRB.Data.snapshotData.targetData.flameShock = TRB.Data.snapshotData.targetData.flameShock - 1
+							triggerUpdate = true
 						--elseif type == "SPELL_PERIODIC_DAMAGE" then
 						end
 					end

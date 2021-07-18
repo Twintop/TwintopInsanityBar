@@ -1541,11 +1541,15 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						if InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rend Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].rend = true
-								TRB.Data.snapshotData.targetData.rend = TRB.Data.snapshotData.targetData.rend + 1
+								if type == "SPELL_AURA_APPLIED" then
+									TRB.Data.snapshotData.targetData.rend = TRB.Data.snapshotData.targetData.rend + 1
+								end
+								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
 								TRB.Data.snapshotData.targetData.targets[destGUID].rend = false
 								TRB.Data.snapshotData.targetData.targets[destGUID].rendRemaining = 0
 								TRB.Data.snapshotData.targetData.rend = TRB.Data.snapshotData.targetData.rend - 1
+								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
 						end
@@ -1553,11 +1557,15 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						if InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Deep Wounds Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].deepWounds = true
-								TRB.Data.snapshotData.targetData.deepWounds = TRB.Data.snapshotData.targetData.deepWounds + 1
+								if type == "SPELL_AURA_APPLIED" then
+									TRB.Data.snapshotData.targetData.deepWounds = TRB.Data.snapshotData.targetData.deepWounds + 1
+								end
+								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
 								TRB.Data.snapshotData.targetData.targets[destGUID].deepWounds = false
 								TRB.Data.snapshotData.targetData.targets[destGUID].deepWoundsRemaining = 0
 								TRB.Data.snapshotData.targetData.deepWounds = TRB.Data.snapshotData.targetData.deepWounds - 1
+								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
 						end

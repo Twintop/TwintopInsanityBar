@@ -3423,11 +3423,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						if InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SS Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = true
-								TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
+								if type == "SPELL_AURA_APPLIED" then
+									TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
+								end
+								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
 								TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = false
 								TRB.Data.snapshotData.targetData.targets[destGUID].serpentStingRemaining = 0
 								TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting - 1
+								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
 						end
@@ -3482,11 +3486,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						if InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SS Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = true
-								TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
+								if type == "SPELL_AURA_APPLIED" then
+									TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting + 1
+								end
+								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
 								TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = false
 								TRB.Data.snapshotData.targetData.targets[destGUID].serpentStingRemaining = 0
 								TRB.Data.snapshotData.targetData.serpentSting = TRB.Data.snapshotData.targetData.serpentSting - 1
+								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
 						end
