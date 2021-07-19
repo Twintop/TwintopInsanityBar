@@ -1906,8 +1906,13 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		configuration.thresholdWidth = settings.thresholdWidth
 		configuration.overcapThreshold = settings.overcapThreshold
 
-		if classId == 1 and specId == 1 then -- Arms Warrior
-			configuration.thresholds = settings.thresholds
+		if classId == 1 then -- Warrior
+			if specId == 1 then -- Arms
+				configuration.thresholds = settings.thresholds
+			elseif specId == 2 then -- Fury
+				configuration.thresholds = settings.thresholds
+				configuration.endOfEnrage = settings.endOfEnrage
+			end
 		elseif classId == 3 then -- Hunters
 			configuration.thresholds = settings.thresholds
 			if specId == 1 then -- Beast Mastery
@@ -1963,8 +1968,12 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			fontSize = settings.displayText.right.fontSize
 		}
 
-		if classId == 1 and specId == 1 then -- Arms Warrior
-			configuration.ragePrecision = settings.ragePrecision
+		if classId == 1 then -- Warrior
+			if specId == 1 then -- Arms 
+				configuration.ragePrecision = settings.ragePrecision
+			elseif specId == 2 then -- Fury
+				configuration.ragePrecision = settings.ragePrecision
+			end
 		elseif classId == 3 then -- Hunters
 			if specId == 1 then -- Beast Mastery
 			elseif specId == 2 then -- Marksmanship
@@ -1989,7 +1998,12 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 	if includeAudioAndTracking then
 		configuration.audio = settings.audio
 
-		if classId == 1 and specId == 1 then -- Arms Warrior
+		if classId == 1 then -- Warrior
+			if specId == 1 then -- Arms 
+				configuration.ragePrecision = settings.ragePrecision
+			elseif specId == 2 then -- Fury
+				configuration.ragePrecision = settings.ragePrecision
+			end
 		elseif classId == 3 then -- Hunters
 			configuration.generation = settings.generation
 			if specId == 1 then -- Beast Mastery
@@ -2056,6 +2070,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.warrior.arms) > 0 then -- Arms
 				configuration.warrior.arms = TRB.Functions.ExportConfigurationSections(1, 1, settings.warrior.arms, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
+
+			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.warrior.fury) > 0 then -- Fury
+				configuration.warrior.fury = TRB.Functions.ExportConfigurationSections(1, 2, settings.warrior.fury, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
 		elseif classId == 3 and settings.hunter ~= nil then -- Hunter
 			configuration.hunter = {}
 
@@ -2095,15 +2113,18 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		elseif classId == 12 and settings.demonhunter ~= nil then -- Demon Hunter
 			configuration.demonhunter = {}
 			
-			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.demonhunter.havoc) > 0 then -- Balance
+			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.demonhunter.havoc) > 0 then -- Havoc
 				configuration.demonhunter.havoc = TRB.Functions.ExportConfigurationSections(12, 1, settings.demonhunter.havoc, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		end
 	elseif classId == nil and specId == nil then -- Everything
 		-- Instead of just dumping the whole table, let's clean it up
 
-		-- Arms Warrior
+		-- Warriors
+		-- Arms
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(1, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		-- Fury
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(1, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
 
 		-- Hunters
 		-- Beast Mastery

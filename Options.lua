@@ -67,7 +67,8 @@ local function LoadDefaultSettings()
                     elemental = true
                 },
                 warrior = {
-                    arms = true
+                    arms = true,
+                    fury = true
                 }
             }
         },
@@ -90,7 +91,8 @@ local function LoadDefaultSettings()
             elemental = {}
         },
         warrior = {
-            arms = {}
+            arms = {},
+            fury = {}
         }
     }
 
@@ -856,6 +858,36 @@ local function ConstructImportExportPanel()
     yCoord = yCoord - 35
     controls.labels.warrior = TRB.UiFunctions.BuildLabel(parent, "Warrior", xCoord, yCoord, 110, 20)
 
+    buttonOffset = xCoord + xPadding + 100
+    controls.buttons.exportButton_Warrior_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.buttons.exportButton_Warrior_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Warrior specializations (All).", 1, nil, true, true, true, true, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 50
+    controls.exportButton_Warrior_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Warrior_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Warrior specializations (Bar Display).", 1, nil, true, false, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 80
+    controls.exportButton_Warrior_FontAndText = TRB.UiFunctions.BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Warrior_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Warrior specializations (Font & Text).", 1, nil, false, true, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 90
+    controls.exportButton_Warrior_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Warrior_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Warrior specializations (Audio & Tracking).", 1, nil, false, false, true, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 120
+    controls.exportButton_Warrior_BarText = TRB.UiFunctions.BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Warrior_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Warrior specializations (Bar Text).", 1, nil, false, false, false, true, false)
+    end)
+
     yCoord = yCoord - 25
     specName = "Arms"
     controls.labels.warriorArms = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
@@ -890,6 +922,40 @@ local function ConstructImportExportPanel()
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Arms Warrior (Bar Text).", 1, 1, false, false, false, true, false)
     end)
 
+
+    yCoord = yCoord - 25
+    specName = "Fury"
+    controls.labels.warriorFury = TRB.UiFunctions.BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+
+    buttonOffset = xCoord + xPadding + 100
+    controls.buttons.exportButton_Warrior_Fury_All = TRB.UiFunctions.BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.buttons.exportButton_Warrior_Fury_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Fury Warrior (All).", 1, 2, true, true, true, true, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 50
+    controls.exportButton_Warrior_Fury_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Warrior_Fury_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Fury Warrior (Bar Display).", 1, 2, true, false, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 80
+    controls.exportButton_Warrior_Fury_FontAndText = TRB.UiFunctions.BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Warrior_Fury_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Fury Warrior (Font & Text).", 1, 2, false, true, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 90
+    controls.exportButton_Warrior_Fury_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Warrior_Fury_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Fury Warrior (Audio & Tracking).", 1, 2, false, false, true, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 120
+    controls.exportButton_Warrior_Fury_BarText = TRB.UiFunctions.BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Warrior_Fury_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Fury Warrior (Bar Text).", 1, 2, false, false, false, true, false)
+    end)
 
     TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
     TRB.Frames.interfaceSettingsFrameContainer.controls.importExport = controls
