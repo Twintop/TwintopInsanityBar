@@ -1086,6 +1086,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
+			{ variable = "$vers", description = "Current Versatility% (damage increase/offensive)", printInSettings = true, color = false },
+			{ variable = "$versatility", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
 
 			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },
@@ -1168,6 +1172,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
+			{ variable = "$vers", description = "Current Versatility% (damage increase/offensive)", printInSettings = true, color = false },
+			{ variable = "$versatility", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
 
 			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },
@@ -1253,6 +1261,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
 			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
 			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
+			{ variable = "$vers", description = "Current Versatility% (damage increase/offensive)", printInSettings = true, color = false },
+			{ variable = "$versatility", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
 
 			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },

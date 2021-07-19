@@ -375,6 +375,8 @@ local function ResetSnapshotData()
 		haste = 0,
 		crit = 0,
 		mastery = 0,
+		versatilityOffensive = 0,
+		versatilityDefensive = 0,
 		isTracking = false,
 		casting = {
 			spellId = nil,
@@ -1099,7 +1101,6 @@ local function RefreshLookupDataBase(settings)
 	--$mastery
 	local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.mastery, settings.hastePrecision))
 
-	--$haste
 
 	--$gcd
 	local _gcd = 1.5 / (1 + (TRB.Data.snapshotData.haste/100))
@@ -1110,7 +1111,12 @@ local function RefreshLookupDataBase(settings)
 	end
 	local gcd = string.format("%.2f", _gcd)
 
+	--$haste
 	local hastePercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.haste, settings.hastePrecision))
+
+	--$vers
+	local versOff = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.versatilityOffensive, settings.hastePrecision))
+	local versDef = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.versatilityDefensive, settings.hastePrecision))
 
 	--$ttd
 	local _ttd = ""
@@ -1136,6 +1142,10 @@ local function RefreshLookupDataBase(settings)
 	lookup["$haste"] = hastePercent
 	lookup["$crit"] = critPercent
 	lookup["$mastery"] = masteryPercent
+	lookup["$vers"] = versOff
+	lookup["$versatility"] = versOff
+	lookup["$oVers"] = versOff
+	lookup["$dVers"] = versDef
 	lookup["$isKyrian"] = tostring(TRB.Functions.IsValidVariableBase("$isKyrian"))
 	lookup["$isVenthyr"] = tostring(TRB.Functions.IsValidVariableBase("$isVenthyr"))
 	lookup["$isNightFae"] = tostring(TRB.Functions.IsValidVariableBase("$isNightFae"))
@@ -1205,6 +1215,10 @@ local function IsValidVariableBase(var)
 	elseif var == "$haste" then
 		valid = true
 	elseif var == "$gcd" then
+		valid = true
+	elseif var == "$vers" or var == "$versatility" or var == "$oVers" then
+		valid = true
+	elseif var == "$dVers" then
 		valid = true
 	elseif var == "$ttd" or var == "$ttdSeconds" then
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
@@ -1688,6 +1702,8 @@ local function UpdateSnapshot()
 	TRB.Data.snapshotData.haste = UnitSpellHaste("player")
 	TRB.Data.snapshotData.crit = GetCritChance("player")
 	TRB.Data.snapshotData.mastery = GetMasteryEffect("player")
+	TRB.Data.snapshotData.versatilityOffensive = GetCombatRatingBonus(29)
+	TRB.Data.snapshotData.versatilityDefensive = GetCombatRatingBonus(31)
 end
 TRB.Functions.UpdateSnapshot = UpdateSnapshot
 
