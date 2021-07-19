@@ -1127,7 +1127,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
                     end
 
                     controls.colors.metamorphosisEnding.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.demonhunter.havoc.colors.bar.metamorphosis = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    TRB.Data.settings.demonhunter.havoc.colors.bar.metamorphosisEnding = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
