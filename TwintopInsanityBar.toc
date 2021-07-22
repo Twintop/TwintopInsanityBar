@@ -2,7 +2,7 @@
 ## Title: Twintop's Resource Bar
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 9.1.0.10
+## Version: 9.1.0.11
 ## X-ReleaseType: release
 ## X-ReleaseDate: July 22, 2021
 ## SavedVariables: TwintopInsanityBarSettings
@@ -12,6 +12,7 @@
 ## X-Website: https://github.com/Twintop/TwintopInsanityBar
 ## X-Curse-Project-ID: 293075
 ## X-WoWI-ID: 24628
+## X-Wago-ID: as3Dfg57
 
 Libs\TaintLess.xml
 Libs\LibStub.lua
