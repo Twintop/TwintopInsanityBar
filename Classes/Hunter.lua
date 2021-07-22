@@ -3657,10 +3657,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if TRB.Details.addonData.loaded and specId > 0 then
 				if not TRB.Details.addonData.optionsPanel then
 					TRB.Details.addonData.optionsPanel = true
-					TRB.Data.settings.hunter.beastMastery = TRB.Functions.ValidateLsmValues("Beast Mastery Hunter", TRB.Data.settings.hunter.beastMastery)
-					TRB.Data.settings.hunter.marksmanship = TRB.Functions.ValidateLsmValues("Marksmanship Hunter", TRB.Data.settings.hunter.marksmanship)
-					TRB.Data.settings.hunter.survival = TRB.Functions.ValidateLsmValues("Survival Hunter", TRB.Data.settings.hunter.survival)
-					TRB.Options.Hunter.ConstructOptionsPanel(specCache)
+					-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
+					C_Timer.After(0, function()
+						C_Timer.After(5, function()
+							TRB.Data.settings.hunter.beastMastery = TRB.Functions.ValidateLsmValues("Beast Mastery Hunter", TRB.Data.settings.hunter.beastMastery)
+							TRB.Data.settings.hunter.marksmanship = TRB.Functions.ValidateLsmValues("Marksmanship Hunter", TRB.Data.settings.hunter.marksmanship)
+							TRB.Data.settings.hunter.survival = TRB.Functions.ValidateLsmValues("Survival Hunter", TRB.Data.settings.hunter.survival)
+							TRB.Options.Hunter.ConstructOptionsPanel(specCache)
+							-- Reconstruct just in case
+							ConstructResourceBar(TRB.Data.settings.hunter[TRB.Data.barConstructedForSpec])
+							EventRegistration()
+						end)
+					end)
 				end
 
 				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then

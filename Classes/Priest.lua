@@ -4608,9 +4608,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Details.addonData.loaded and specId > 0 then
 				if not TRB.Details.addonData.optionsPanel then
 					TRB.Details.addonData.optionsPanel = true
-					TRB.Data.settings.priest.holy = TRB.Functions.ValidateLsmValues("Holy Priest", TRB.Data.settings.priest.holy)
-					TRB.Data.settings.priest.shadow = TRB.Functions.ValidateLsmValues("Shadow Priest", TRB.Data.settings.priest.shadow)
-					TRB.Options.Priest.ConstructOptionsPanel(specCache)
+					-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
+					C_Timer.After(0, function()
+						C_Timer.After(5, function()
+							TRB.Data.settings.priest.holy = TRB.Functions.ValidateLsmValues("Holy Priest", TRB.Data.settings.priest.holy)
+							TRB.Data.settings.priest.shadow = TRB.Functions.ValidateLsmValues("Shadow Priest", TRB.Data.settings.priest.shadow)
+							TRB.Options.Priest.ConstructOptionsPanel(specCache)
+							-- Reconstruct just in case
+							ConstructResourceBar(TRB.Data.settings.priest[TRB.Data.barConstructedForSpec])
+							EventRegistration()
+						end)
+					end)
 				end
 
 				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then

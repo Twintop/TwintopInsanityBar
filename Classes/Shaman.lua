@@ -984,9 +984,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.shaman.elemental)
 					TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.elemental)
 					FillSpellData()
-					TRB.Data.settings.shaman.elemental = TRB.Functions.ValidateLsmValues("Elemental Shaman", TRB.Data.settings.shaman.elemental)
+					-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
+					C_Timer.After(0, function()
+						C_Timer.After(5, function()
+							TRB.Data.settings.shaman.elemental = TRB.Functions.ValidateLsmValues("Elemental Shaman", TRB.Data.settings.shaman.elemental)
+							TRB.Options.Shaman.ConstructOptionsPanel()
+							-- Reconstruct just in case
+							ConstructResourceBar(TRB.Data.settings.shaman.elemental)--[TRB.Data.barConstructedForSpec])
+							EventRegistration()
+						end)
+					end)
+					
 					ConstructResourceBar()
-					TRB.Options.Shaman.ConstructOptionsPanel()
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"
