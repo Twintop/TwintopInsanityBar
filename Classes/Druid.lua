@@ -1532,9 +1532,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.druid.balance)
 					TRB.Functions.IsTtdActive(TRB.Data.settings.druid.balance)
 					FillSpellData()
-					TRB.Data.settings.druid.balance = TRB.Functions.ValidateLsmValues("Balance Druid", TRB.Data.settings.druid.balance)
+
+					-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
+					C_Timer.After(0, function()
+						C_Timer.After(5, function()
+							TRB.Data.settings.druid.balance = TRB.Functions.ValidateLsmValues("Balance Druid", TRB.Data.settings.druid.balance)
+							TRB.Options.Druid.ConstructOptionsPanel()
+							-- Reconstruct just in case
+							ConstructResourceBar(TRB.Data.settings.druid.balance)--[TRB.Data.barConstructedForSpec])
+							EventRegistration()
+						end)
+					end)
 					ConstructResourceBar()
-					TRB.Options.Druid.ConstructOptionsPanel()
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"
