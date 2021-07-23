@@ -225,7 +225,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 281001,
 				name = "",
 				icon = "",
-				healthMinimum = 0.35			
+				healthMinimum = 0.35
 			},
 			rend = {
 				id = 772,
@@ -462,7 +462,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 100,
 				name = "",
 				icon = "",
-				rage = 20				
+				rage = 20
 			},
 			execute = {
 				id = 163201,
@@ -471,9 +471,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				healthMinimum = 0.2,
 				rage = 20,
 				isTalent = false,
-				hasCooldown = false,
-				thresholdUsable = false,
-				isSnowflake = true
+				hasCooldown = false
 			},
 			ignorePain = {
 				id = 190456,
@@ -495,7 +493,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "shieldBlock",
 				isTalent = false,
 				hasCooldown = false,
-				thresholdUsable = false			
+				thresholdUsable = false
 			},
 			slam = {
 				id = 1464,
@@ -509,7 +507,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdUsable = false				
 			},
 			whirlwind = {
-				id = 1680,
+				id = 85739, --buff ID
 				name = "",
 				icon = "",
 				rage = -30,
@@ -566,7 +564,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 206315,
 				name = "",
 				icon = "",
-				healthMinimum = 0.35			
+				healthMinimum = 0.35
 			},
 
 			-- Covenant
@@ -863,7 +861,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
             { variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
 
-		specCache.arms.spells = spells
+		specCache.fury.spells = spells
 	end
 
 
@@ -1956,8 +1954,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local gcd = TRB.Functions.GetCurrentGCDTime(true)
-					local currentRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor	
+					local currentRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
 					local passiveValue = 0
 					if TRB.Data.settings.warrior.arms.bar.showPassive then
@@ -2029,10 +2026,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									end
 
 									local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
-									local healthThreshold = TRB.Data.spells.execute.healthThreshold
+									local healthMinimum = TRB.Data.spells.execute.healthMinimum
 									
 									if TRB.Data.character.talents.massacre.isSelected then
-										healthThreshold = TRB.Data.spells.massacre.healthThreshold
+										healthMinimum = TRB.Data.spells.massacre.healthMinimum
 									end
 
 									if GetSuddenDeathRemainingTime() > 0 then
@@ -2044,10 +2041,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									if not showThis or UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
 										showThreshold = false
 										isUsable = false
-									elseif spell.id == TRB.Data.spells.condemn.id and not TRB.Data.spells.voraciousCullingBlade.isActive and ((targetUnitHealth <= TRB.Data.spells.condemn.healthAbove and targetUnitHealth >= TRB.Data.spells.execute.healthMinimum)) then
+									elseif spell.id == TRB.Data.spells.condemn.id and not TRB.Data.spells.voraciousCullingBlade.isActive and ((targetUnitHealth <= TRB.Data.spells.condemn.healthAbove and targetUnitHealth >= healthMinimum)) then
 										showThreshold = false
 										isUsable = false
-									elseif spell.id == TRB.Data.spells.execute.id and not TRB.Data.spells.voraciousCullingBlade.isActive and (targetUnitHealth >= TRB.Data.spells.execute.healthMinimum) then
+									elseif spell.id == TRB.Data.spells.execute.id and not TRB.Data.spells.voraciousCullingBlade.isActive and (targetUnitHealth >= healthMinimum) then
 										showThreshold = false
 										isUsable = false
 									elseif currentRage >= -rageAmount then
@@ -2110,8 +2107,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					end
 					local barColor = TRB.Data.settings.warrior.arms.colors.bar.base
 
-					local latency = TRB.Functions.GetLatency()
-
 					local barBorderColor = TRB.Data.settings.warrior.arms.colors.bar.border
 
 					if TRB.Data.settings.warrior.arms.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
@@ -2144,13 +2139,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local gcd = TRB.Functions.GetCurrentGCDTime(true)
 					local currentRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
 					local passiveValue = 0
 					if TRB.Data.settings.warrior.fury.bar.showPassive then
 						if TRB.Data.snapshotData.ancientAftershock.rage > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshotData.ancientAftershock.rage 
+							passiveValue = passiveValue + TRB.Data.snapshotData.ancientAftershock.rage
 						end
 					end
 
@@ -2187,13 +2181,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+						if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then							
 							local rageAmount = CalculateAbilityResourceValue(spell.rage)
-							local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
-
-							if spell.id ~= TRB.Data.spells.execute.id then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.fury, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.fury.thresholdWidth, -rageAmount, TRB.Data.character.maxResource)
-							end
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.fury, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.fury.thresholdWidth, -rageAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local isUsable = true -- Could use it if we had enough rage, e.g. not on CD
@@ -2235,12 +2225,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								end
 							end
 
-							if TRB.Data.settings.warrior.fury.thresholds[spell.settingKey].enabled and showThreshold then								
-								if isUsable then
-									thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.over
-									frameLevel = 129
-								end
-
+							if TRB.Data.settings.warrior.fury.thresholds[spell.settingKey].enabled and showThreshold then
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
 ---@diagnostic disable-next-line: undefined-field
@@ -2257,8 +2242,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						end
 					end
 					local barColor = TRB.Data.settings.warrior.fury.colors.bar.base
-
-					local latency = TRB.Functions.GetLatency()
 
 					local barBorderColor = TRB.Data.settings.warrior.fury.colors.bar.border
 
@@ -2579,7 +2562,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							EventRegistration()
 						end)
 					end)
-					TRB.Options.Warrior.ConstructOptionsPanel(specCache)
 				end
 
 				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
