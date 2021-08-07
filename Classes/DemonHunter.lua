@@ -319,6 +319,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		}
 		specCache.havoc.snapshotData.metamorphosis = {
 			spellId = nil,
+			isActive = false,
 			duration = 0,
 			endTime = nil
 		}
@@ -954,6 +955,19 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end
 	end
 
+	local function UpdateMetamorphosis()
+		if TRB.Data.snapshotData.metamorphosis.isActive then
+			local currentTime = GetTime()
+			if TRB.Data.snapshotData.metamorphosis.endTime ~= nil and currentTime > TRB.Data.snapshotData.metamorphosis.endTime then
+				TRB.Data.snapshotData.metamorphosis.endTime = nil
+				TRB.Data.snapshotData.metamorphosis.duration = 0
+				TRB.Data.snapshotData.metamorphosis.isActive = false
+			elseif TRB.Data.snapshotData.metamorphosis.endTime ~= nil then
+				_, _, _, _, TRB.Data.snapshotData.metamorphosis.duration, TRB.Data.snapshotData.metamorphosis.endTime, _, _, _, TRB.Data.snapshotData.metamorphosis.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.metamorphosis.id)
+			end
+		end
+	end
+
 	local function UpdateSnapshot()
 		TRB.Functions.UpdateSnapshot()
 		local currentTime = GetTime()
@@ -961,6 +975,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 	local function UpdateSnapshot_Havoc()
 		UpdateSnapshot()
+		UpdateMetamorphosis()
 		UpdateBurningHatred()
 		UpdatePrepared()
 
@@ -1164,7 +1179,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					end
 					
 					local barColor = TRB.Data.settings.demonhunter.havoc.colors.bar.base
-					if TRB.Data.spells.metamorphosis.isActive then
+					if TRB.Data.snapshotData.metamorphosis.isActive then
 						local timeThreshold = 0
 						local useEndOfMetamorphosisColor = false
 
@@ -1264,10 +1279,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 						end
 					elseif spellId == TRB.Data.spells.metamorphosis.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.spells.metamorphosis.isActive = true
+							TRB.Data.snapshotData.metamorphosis.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.metamorphosis.duration, TRB.Data.snapshotData.metamorphosis.endTime, _, _, _, TRB.Data.snapshotData.metamorphosis.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.metamorphosis.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.spells.metamorphosis.isActive = false
+							TRB.Data.snapshotData.metamorphosis.isActive = false
 							TRB.Data.snapshotData.metamorphosis.spellId = nil
 							TRB.Data.snapshotData.metamorphosis.duration = 0
 							TRB.Data.snapshotData.metamorphosis.endTime = nil
