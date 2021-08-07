@@ -408,17 +408,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			resource = {
 				resource = 0,
 				passive = 0,
-				ravager = 0,
 				ancientAftershock = 0,
 				conquerorsBanner = 0
 			},
 			dots = {
 				rendCount = 0,
 				deepWoundsCount = 0
-			},
-			ravager = {
-				rage = 0,
-				ticks = 0
 			},
 			ancientAftershock = {
 				rage = 0,
@@ -528,7 +523,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "rampage",
 				isTalent = false,
 				hasCooldown = false,
-				thresholdUsable = false	
+				thresholdUsable = false
 			},
 			enrage = {
 				id = 184361,
@@ -565,6 +560,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				healthMinimum = 0.35
+			},
+			bladestorm = {
+				id = 46924,
+				name = "",
+				icon = "",
+				rage = 5,
+				duration = 4,
+				ticks = 4 -- On hit + 4 = 5
 			},
 
 			-- Covenant
@@ -629,6 +632,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			endTime = nil,
 			duration = 0,
 			spellId = nil
+		}
+		specCache.fury.snapshotData.bladestorm = {
+			endTime = nil,
+			duration = 0,
+			originalDuration = 0,
+			spellId = nil,
+			ticksRemaining = 0,
+			rage = 0
 		}
 		specCache.fury.snapshotData.ignorePain = {
 			startTime = nil,
@@ -780,8 +791,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
             { variable = "#ancientAftershock", icon = spells.ancientAftershock.icon, description = "Ancient Aftershock", printInSettings = true },
+			{ variable = "#bladestorm", icon = spells.bladestorm.icon, description = "Bladestorm", printInSettings = true },
 			{ variable = "#charge", icon = spells.charge.icon, description = "Charge", printInSettings = true },
-			--{ variable = "#cleave", icon = spells.cleave.icon, description = "Cleave", printInSettings = true },
             { variable = "#condemn", icon = spells.condemn.icon, description = "Condemn", printInSettings = true },
             { variable = "#conquerorsBanner", icon = spells.conquerorsBanner.icon, description = "Conqueror's Banner", printInSettings = true },
 			{ variable = "#covenantAbility", icon = spells.spearOfBastion.icon .. spells.condemn.icon .. spells.ancientAftershock.icon .. spells.conquerorsBanner.icon, description = "Covenant on-use Ability", printInSettings = true},
@@ -1670,8 +1681,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#ancientAftershock"] = TRB.Data.spells.ancientAftershock.icon
+		lookup["#bladestorm"] = TRB.Data.spells.bladestorm.icon
 		lookup["#charge"] = TRB.Data.spells.charge.icon
-		--lookup["#cleave"] = TRB.Data.spells.cleave.icon
 		lookup["#condemn"] = TRB.Data.spells.condemn.icon
 		lookup["#conquerorsBanner"] = TRB.Data.spells.conquerorsBanner.icon
 		lookup["#covenantAbility"] = covenantAbilityIcon
@@ -1735,24 +1746,36 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
     end
 
 	local function CastingSpell()
+		local currentTime = GetTime()
+		local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
+		local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
 		local specId = GetSpecialization()
-		local currentSpell = UnitCastingInfo("player")
-		local currentChannel = UnitChannelInfo("player")
-        TRB.Functions.ResetCastingSnapshotData()
 
-		if currentSpell == nil and currentChannel == nil then
+		if currentSpellName == nil and currentChannelName == nil then
+			if specId == 2 and TRB.Data.snapshotData.bladestorm.isActive then
+				return true
+			end
 			TRB.Functions.ResetCastingSnapshotData()
 			return false
 		else
 			if specId == 1 then
-				if currentSpell == nil then
+				if currentSpellName == nil then
 					TRB.Functions.ResetCastingSnapshotData()
 					return false
 					--See Priest implementation for handling channeled spells
 				else
 					TRB.Functions.ResetCastingSnapshotData()
 					return false
-				end						
+				end
+			elseif specId == 2 then
+				if currentSpellName == nil then
+					TRB.Functions.ResetCastingSnapshotData()
+					return false
+					--See Priest implementation for handling channeled spells
+				else
+					TRB.Functions.ResetCastingSnapshotData()
+					return false
+				end
 			end
 			TRB.Functions.ResetCastingSnapshotData()
 			return false
@@ -1815,6 +1838,25 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				_, _, _, _, TRB.Data.snapshotData.conquerorsBanner.duration, TRB.Data.snapshotData.conquerorsBanner.endTime, _, _, _, TRB.Data.snapshotData.conquerorsBanner.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.conquerorsBanner.id)
 				TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = math.ceil((TRB.Data.snapshotData.conquerorsBanner.endTime - currentTime) / (TRB.Data.spells.conquerorsBanner.duration / TRB.Data.spells.conquerorsBanner.ticks))
 				TRB.Data.snapshotData.conquerorsBanner.rage = TRB.Data.snapshotData.conquerorsBanner.ticksRemaining * TRB.Data.spells.conquerorsBanner.rage
+			end
+		end
+	end
+
+	local function UpdateBladestorm()
+		if TRB.Data.snapshotData.bladestorm.isActive then
+			local currentTime = GetTime()
+			if TRB.Data.snapshotData.bladestorm.endTime ~= nil and currentTime > TRB.Data.snapshotData.bladestorm.endTime then
+				TRB.Data.snapshotData.bladestorm.ticksRemaining = 0
+				TRB.Data.snapshotData.bladestorm.endTime = nil
+				TRB.Data.snapshotData.bladestorm.duration = 0
+				TRB.Data.snapshotData.bladestorm.rage = 0
+				TRB.Data.snapshotData.bladestorm.isActive = false
+			elseif TRB.Data.snapshotData.bladestorm.endTime ~= nil then
+				_, _, _, _, TRB.Data.snapshotData.bladestorm.duration, TRB.Data.snapshotData.bladestorm.endTime, _, _, _, TRB.Data.snapshotData.bladestorm.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.bladestorm.id)
+				TRB.Data.snapshotData.bladestorm.ticksRemaining = math.ceil((TRB.Data.snapshotData.bladestorm.endTime - currentTime) / (TRB.Data.snapshotData.bladestorm.originalDuration / TRB.Data.spells.bladestorm.ticks))
+				TRB.Data.snapshotData.bladestorm.rage = TRB.Data.snapshotData.bladestorm.ticksRemaining * TRB.Data.spells.bladestorm.rage
+				TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.snapshotData.bladestorm.rage
+				TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.bladestorm.rage
 			end
 		end
 	end
@@ -1886,6 +1928,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function UpdateSnapshot_Fury()
 		UpdateSnapshot()
+		UpdateBladestorm()
 
 		local currentTime = GetTime()
 		local _
@@ -2388,6 +2431,24 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
+						end
+					end
+				elseif specId == 2 then
+					if spellId == TRB.Data.spells.bladestorm.id then
+						if type == "SPELL_AURA_APPLIED" then
+							_, _, _, _, TRB.Data.snapshotData.bladestorm.duration, TRB.Data.snapshotData.bladestorm.endTime, _, _, _, TRB.Data.snapshotData.bladestorm.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.bladestorm.id)
+							TRB.Data.snapshotData.bladestorm.originalDuration = TRB.Data.snapshotData.bladestorm.duration
+							TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.bladestorm.id
+							TRB.Data.snapshotData.casting.icon = TRB.Data.spells.bladestorm.icon
+							TRB.Data.snapshotData.bladestorm.isActive = true
+							UpdateBladestorm()
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.bladestorm.ticksRemaining = 0
+							TRB.Data.snapshotData.bladestorm.endTime = nil
+							TRB.Data.snapshotData.bladestorm.duration = 0
+							TRB.Data.snapshotData.bladestorm.originalDuration = 0
+							TRB.Data.snapshotData.bladestorm.rage = 0
+							TRB.Data.snapshotData.bladestorm.isActive = false
 						end
 					end
 				end

@@ -299,12 +299,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					enabled = true, -- 6
 				},
 			},
-			endOfEnrage = {
-				enabled=true,
-				mode="gcd",
-				gcdsMax=2,
-				timeMax=3.0
-			},
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
@@ -1250,6 +1244,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.arms.displayBar.neverShow = true
 			TRB.Functions.HideResourceBar()
 		end)
+
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when Bladestorm is being channeled. Uncheck to hide this bar."
+		f:SetChecked(TRB.Data.settings.warrior.fury.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.warrior.fury.bar.showCasting = self:GetChecked()
+		end)
+
 
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
@@ -3713,86 +3718,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.warrior.fury.colors.bar.overcapEnabled = self:GetChecked()
 		end)
-		
-
-		yCoord = yCoord - 30
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Enrage Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.endOfEnrage = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfEnrage
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Enrage")
-		f.tooltip = "Changes the bar color when Enrage is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(TRB.Data.settings.warrior.fury.endOfEnrage.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.fury.endOfEnrage.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 40
-		controls.checkBoxes.endOfEnrageModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_GCD", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.endOfEnrageModeGCDs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Enrage ends")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many GCDs remain until Enrage ends."
-		if TRB.Data.settings.warrior.fury.endOfEnrage.mode == "gcd" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.endOfEnrageModeGCDs:SetChecked(true)
-			controls.checkBoxes.endOfEnrageModeTime:SetChecked(false)
-			TRB.Data.settings.warrior.fury.endOfEnrage.mode = "gcd"
-		end)
-
-		title = "Enrage GCDs - 0.75sec Floor"
-		controls.endOfEnrageGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 20, TRB.Data.settings.warrior.fury.endOfEnrage.gcdsMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.endOfEnrageGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
-			TRB.Data.settings.warrior.fury.endOfEnrage.gcdsMax = value
-		end)
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.endOfEnrageModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_TIME", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.endOfEnrageModeTime
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time until Enrage ends")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many seconds remain until Enrage ends."
-		if TRB.Data.settings.warrior.fury.endOfEnrage.mode == "time" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.endOfEnrageModeGCDs:SetChecked(false)
-			controls.checkBoxes.endOfEnrageModeTime:SetChecked(true)
-			TRB.Data.settings.warrior.fury.endOfEnrage.mode = "time"
-		end)
-
-		title = "Enrage Time Remaining (sec)"
-		controls.endOfEnrageTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.warrior.fury.endOfEnrage.timeMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.endOfEnrageTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.warrior.fury.endOfEnrage.timeMax = value
-		end)
-
 
 
 		yCoord = yCoord - 40
