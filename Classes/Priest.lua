@@ -926,6 +926,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			endTime = nil,
 			duration = 0
 		}
+		specCache.shadow.snapshotData.voidBolt = {
+			lastSuccess = nil,
+			flightTime = 1.0
+		}
 		specCache.shadow.snapshotData.wrathfulFaerie = {
 			main = {
 				isActive = false,
@@ -1712,10 +1716,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			local remainingTime = (expirationTime - currentTime) or 0
 
 			if TRB.Data.character.talents.hungeringVoid.isSelected == true then
+				local reaction = 0.10
 				local latency = TRB.Functions.GetLatency()
 				local vbStart, vbDuration, _, _ = GetSpellCooldown(TRB.Data.spells.voidBolt.id)
 				local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(TRB.Data.spells.voidBolt.id)
-				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier * TRB.Data.character.torghast.phantasmicInfuserModifier), 0.75) + latency
+				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier * TRB.Data.character.torghast.phantasmicInfuserModifier), 0.75) + latency + reaction
 				local gcdLockRemaining = TRB.Functions.GetCurrentGCDLockRemaining()
 
 				local castGrantsExtension = true
@@ -1748,7 +1753,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						castDelay = gcdLockRemaining
 					end
 
-					castDelay = castDelay + latency
+					castDelay = castDelay + latency + reaction
 
 					if remainingTimeTmp > castDelay then
 						if castGrantsExtension == true then
@@ -1765,6 +1770,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							remainingTimeTmpAverage = remainingTimeTmpAverage - castDelay
 							castGrantsExtension = true
 						end
+					end
+				end
+
+				if TRB.Data.snapshotData.voidBolt.lastSuccess ~= nil and TRB.Data.snapshotData.voidBolt.flightTime ~= nil then
+					local flightRemaining = math.max(TRB.Data.snapshotData.voidBolt.flightTime - (currentTime - TRB.Data.snapshotData.voidBolt.lastSuccess), 0)
+					if flightRemaining < remainingTimeTmp then
+						remainingTimeTmp = remainingTimeTmp + 1
+					end
+
+					if flightRemaining < remainingTimeTmpAverage then
+						remainingTimeTmpAverage = remainingTimeTmpAverage + critValue
 					end
 				end
 
@@ -4358,6 +4374,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.mindSear.targetsHit = TRB.Data.snapshotData.mindSear.targetsHit + 1
 							TRB.Data.snapshotData.mindSear.hitTime = currentTime
 							TRB.Data.snapshotData.mindSear.hasStruckTargets = true
+						end
+					elseif spellId == TRB.Data.spells.voidBolt.id and TRB.Data.character.talents.hungeringVoid.isSelected then
+						-- Rather than mess with projectile speeds and distance approximations, cache the flight time of the last Void Bolt cast and use it for determining how long the next has left in flight
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.voidBolt.lastSuccess = currentTime
+						elseif type == "SPELL_DAMAGE" then
+							TRB.Data.snapshotData.voidBolt.flightTime = currentTime - TRB.Data.snapshotData.voidBolt.lastSuccess
+							TRB.Data.snapshotData.voidBolt.lastSuccess = nil
 						end
 					elseif spellId == TRB.Data.spells.vampiricTouch.id then
 						if InitializeTarget(destGUID) then
