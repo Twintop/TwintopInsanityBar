@@ -32,6 +32,7 @@ local function LoadDefaultSettings()
     local settings = {
         core = {
             dataRefreshRate = 5.0,
+            reactionTime = 0.1,
             ttd = {
                 sampleRate = 0.2,
                 numEntries = 50,
@@ -141,7 +142,7 @@ local function ConstructAddonOptionsPanel()
 
     controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Time To Die", 0, yCoord)
 
-    yCoord = yCoord - 60
+    yCoord = yCoord - 50
 
     title = "Sampling Rate (seconds)"
     controls.ttdSamplingRate = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 2, TRB.Data.settings.core.ttd.sampleRate, 0.05, 2,
@@ -176,7 +177,7 @@ local function ConstructAddonOptionsPanel()
     end)
 
     yCoord = yCoord - 60
-    title = "Time To Die Precision (ms)"
+    title = "Time To Die Precision"
     controls.ttdPrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.ttd.precision, 1, 0,
                                     sliderWidth, sliderHeight, xCoord, yCoord)
     controls.ttdPrecision:SetScript("OnValueChanged", function(self, value)
@@ -193,11 +194,11 @@ local function ConstructAddonOptionsPanel()
     end)
 
     yCoord = yCoord - 40
-    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Character Data Refresh Rate", 0, yCoord)
+    controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Character and Player Settings", 0, yCoord)
 
-    yCoord = yCoord - 60
+    yCoord = yCoord - 50
 
-    title = "Refresh Rate (seconds)"
+    title = "Character Data Refresh Rate (seconds)"
     controls.characterRefreshRate = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 60, TRB.Data.settings.core.dataRefreshRate, 0.05, 2,
                                     sliderWidth, sliderHeight, xCoord, yCoord)
     controls.characterRefreshRate:SetScript("OnValueChanged", function(self, value)
@@ -212,6 +213,23 @@ local function ConstructAddonOptionsPanel()
 
         self.EditBox:SetText(value)
         TRB.Data.settings.core.dataRefreshRate = value
+    end)
+
+    title = "Player Reaction Time Latency (seconds)"
+    controls.reactionTime = TRB.UiFunctions.BuildSlider(parent, title, 0.00, 1, TRB.Data.settings.core.reactionTime, 0.05, 2,
+                                    sliderWidth, sliderHeight, xCoord2, yCoord)
+    controls.reactionTime:SetScript("OnValueChanged", function(self, value)
+        local min, max = self:GetMinMaxValues()
+        if value > max then
+            value = max
+        elseif value < min then
+            value = min
+        else
+            value = TRB.Functions.RoundTo(value, 2)
+        end
+
+        self.EditBox:SetText(value)
+        TRB.Data.settings.core.reactionTime = value
     end)
 
     yCoord = yCoord - 40

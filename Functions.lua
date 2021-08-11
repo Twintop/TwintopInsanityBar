@@ -1101,7 +1101,6 @@ local function RefreshLookupDataBase(settings)
 	--$mastery
 	local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.mastery, settings.hastePrecision))
 
-
 	--$gcd
 	local _gcd = 1.5 / (1 + (TRB.Data.snapshotData.haste/100))
 	if _gcd > 1.5 then

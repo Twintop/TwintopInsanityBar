@@ -1716,7 +1716,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			local remainingTime = (expirationTime - currentTime) or 0
 
 			if TRB.Data.character.talents.hungeringVoid.isSelected == true then
-				local reaction = 0.10
+				local reaction = TRB.Data.settings.core.reactionTime
 				local latency = TRB.Functions.GetLatency()
 				local vbStart, vbDuration, _, _ = GetSpellCooldown(TRB.Data.spells.voidBolt.id)
 				local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(TRB.Data.spells.voidBolt.id)
@@ -1743,7 +1743,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				local remainingTimeTotalAverage = remainingTime
 				local moreCasts = 0
 				local moreCastsAverage = 0
-				local critValue = math.min((1.0 + (TRB.Data.snapshotData.crit / 100)), 2)
+				local critValue = math.max(math.min((1.0 + (TRB.Data.snapshotData.crit / 100)), 2), 0)
 
 				if vbDuration > 0 or gcdLockRemaining > 0 then
 					local vbRemaining = vbStart + vbDuration - currentTime
