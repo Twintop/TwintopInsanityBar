@@ -209,7 +209,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             id = 274281,
             name = "",
             icon = "",
-            astralPower = 10
+            astralPower = 10,
+			recharge = 20
         },
         halfMoon = {
             id = 274282,
@@ -288,6 +289,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		cdStartTime = nil, --Start of CD with Stellar Drift
 		cdDuration = 0, --Duration of CD with Stellar Drift
 	}
+	TRB.Data.snapshotData.newMoon = {
+		currentSpellId = nil,
+		currentIcon = "",
+		currentKey = "",
+		checkAfter = nil,
+		charges = 3,
+		maxCharges = 3,
+		startTime = nil,
+		duration = 0
+	}
 	TRB.Data.snapshotData.onethsClearVision = {
 		spellId = nil,
 		endTime = nil,
@@ -356,7 +367,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			{ variable = "#newMoon", icon = TRB.Data.spells.newMoon.icon, description = "New Moon", printInSettings = true },
 			{ variable = "#halfMoon", icon = TRB.Data.spells.halfMoon.icon, description = "Half Moon", printInSettings = true },
-			{ variable = "#fullMoon", icon = TRB.Data.spells.fullMoon.icon, description = "Full Moon", printInSettings = true }
+			{ variable = "#fullMoon", icon = TRB.Data.spells.fullMoon.icon, description = "Full Moon", printInSettings = true },
+			{ variable = "#moon", icon = TRB.Data.spells.newMoon.icon .. TRB.Data.spells.halfMoon.icon .. TRB.Data.spells.fullMoon.icon, description = "Current Moon", printInSettings = true },
 		}
 		TRB.Data.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -407,6 +419,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$stellarFlareCount", description = "Number of Stellar Flares active on targets", printInSettings = true, color = false },
 			{ variable = "$stellarFlareTime", description = "Time remaining on Stellar Flare on your current target", printInSettings = true, color = false },
 
+			{ variable = "$moonAstralPower", description = "Amount of Astral Power your next New/Half/Full Moon cast will generate", printInSettings = true, color = false },   
+			{ variable = "$moonCharges", description = "Number of charges you currently have for New/Half/Full Moon", printInSettings = true, color = false },   
+			{ variable = "$moonCooldown", description = "Time remaining until your next New/Half/Full Moon recharge", printInSettings = true, color = false },
+			{ variable = "$moonCooldownTotal", description = "Time remaining until New/Half/Full Moon has full charges", printInSettings = true, color = false },
+
 			{ variable = "$onethsTime", description = "Time remaining on Oneth's Clear Vision/Perception buff", printInSettings = true, color = false },
 			{ variable = "$oneths", description = "Oneth's Clear Vision/Perception proc is active. Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$onethsClearVision", description = "Oneth's Clear Vision proc is active. Logic variable only!", printInSettings = true, color = false },
@@ -415,6 +432,30 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
+	end
+
+	local function GetCurrentMoonSpell()
+		local currentTime = GetTime()
+		if TRB.Data.character.talents.newMoon.isSelected and (TRB.Data.snapshotData.newMoon.checkAfter == nil or currentTime >= TRB.Data.snapshotData.newMoon.checkAfter) then
+			TRB.Data.snapshotData.newMoon.currentSpellId = select(7, GetSpellInfo(TRB.Data.spells.newMoon.name))
+
+			if TRB.Data.snapshotData.newMoon.currentSpellId == TRB.Data.spells.newMoon.id then
+				TRB.Data.snapshotData.newMoon.currentKey = "newMoon"
+			elseif TRB.Data.snapshotData.newMoon.currentSpellId == TRB.Data.spells.halfMoon.id then
+				TRB.Data.snapshotData.newMoon.currentKey = "halfMoon"
+			elseif TRB.Data.snapshotData.newMoon.currentSpellId == TRB.Data.spells.fullMoon.id then
+				TRB.Data.snapshotData.newMoon.currentKey = "fullMoon"
+			else
+				TRB.Data.snapshotData.newMoon.currentKey = "newMoon"
+			end
+			TRB.Data.snapshotData.newMoon.checkAfter = nil
+			TRB.Data.snapshotData.newMoon.currentIcon = TRB.Data.spells[TRB.Data.snapshotData.newMoon.currentKey].icon
+		else
+			TRB.Data.snapshotData.newMoon.currentSpellId = TRB.Data.spells.newMoon.id
+			TRB.Data.snapshotData.newMoon.currentKey = "newMoon"
+			TRB.Data.snapshotData.newMoon.checkAfter = nil
+		end
+			--print(GetTime(), TRB.Data.snapshotData.newMoon.currentSpellId, TRB.Data.spells[TRB.Data.snapshotData.newMoon.currentKey].icon)
 	end
 
 	local function CheckCharacter()
@@ -431,6 +472,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Data.character.talents.stellarFlare.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.furyOfElune.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.newMoon.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
+
+		GetCurrentMoonSpell()
 
 		TRB.Data.character.starsurgeThreshold = TRB.Data.spells.starsurge.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier
 		TRB.Data.character.starfallThreshold = TRB.Data.spells.starfall.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier
@@ -724,6 +767,28 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if TRB.Data.spells.onethsClearVision.isActive then
 				valid = true
 			end
+		elseif var == "$moonAstralPower" then
+			if TRB.Data.character.talents.newMoon.isSelected then
+				valid = true
+			end
+		elseif var == "$moonCharges" then
+			if TRB.Data.character.talents.newMoon.isSelected then
+				if TRB.Data.snapshotData.newMoon.charges > 0 then
+					valid = true
+				end
+			end
+		elseif var == "$moonCooldown" then
+			if TRB.Data.character.talents.newMoon.isSelected then
+				if TRB.Data.snapshotData.newMoon.cooldown > 0 then
+					valid = true
+				end
+			end
+		elseif var == "$moonCooldownTotal" then
+			if TRB.Data.character.talents.newMoon.isSelected then
+				if TRB.Data.snapshotData.newMoon.charges < TRB.Data.snapshotData.newMoon.maxCharges then
+					valid = true
+				end
+			end
 		else
 			valid = false
 		end
@@ -880,6 +945,28 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			foeTime = string.format("%.1f", math.abs(currentTime - (TRB.Data.snapshotData.furyOfElune.startTime + TRB.Data.spells.furyOfElune.duration)))
 		end
 
+		--New Moon
+		local currentMoonIcon = TRB.Data.spells.newMoon.icon
+		--$moonAstralPower
+		local moonAstralPower = 0
+		--$moonCharges
+		local moonCharges = TRB.Data.snapshotData.newMoon.charges
+		--$moonCooldown
+		local _moonCooldown = 0
+		--$moonCooldownTotal
+		local _moonCooldownTotal = 0
+		if TRB.Data.snapshotData.newMoon.currentKey ~= "" and TRB.Data.snapshotData.newMoon.currentSpellId ~= nil then
+			currentMoonIcon = TRB.Data.spells[TRB.Data.snapshotData.newMoon.currentKey].icon
+			moonAstralPower = TRB.Data.spells[TRB.Data.snapshotData.newMoon.currentKey].astralPower
+
+			if TRB.Data.snapshotData.newMoon.startTime ~= nil and TRB.Data.snapshotData.newMoon.charges < TRB.Data.snapshotData.newMoon.maxCharges then
+				_moonCooldown = math.max(0, TRB.Data.snapshotData.newMoon.startTime + TRB.Data.snapshotData.newMoon.duration - currentTime)
+				_moonCooldownTotal = _moonCooldown + ((TRB.Data.snapshotData.newMoon.maxCharges - TRB.Data.snapshotData.newMoon.charges - 1) * TRB.Data.snapshotData.newMoon.duration)
+			end
+		end
+		local moonCooldown = string.format("%.1f", _moonCooldown)
+		local moonCooldownTotal = string.format("%.1f", _moonCooldownTotal)
+
 		--$eclipseTime
 		local _eclispeTime, eclipseIcon = GetEclipseRemainingTime()
 		local eclipseTime = 0
@@ -940,6 +1027,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#newMoon"] = TRB.Data.spells.newMoon.icon
 		lookup["#halfMoon"] = TRB.Data.spells.halfMoon.icon
 		lookup["#fullMoon"] = TRB.Data.spells.fullMoon.icon
+		lookup["#moon"] = currentMoonIcon
 		lookup["#oneths"] = onethsIcon
 		lookup["#onethsClearVision"] = TRB.Data.spells.onethsClearVision.icon
 		lookup["#onethsPerception"] = TRB.Data.spells.onethsPerception.icon
@@ -956,6 +1044,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$onethsTime"] = onethsTime
 		lookup["$onethsClearVision"] = ""
 		lookup["$onethsPerception"] = ""
+		lookup["$moonAstralPower"] = moonAstralPower
+		lookup["$moonCharges"] = moonCharges
+		lookup["$moonCooldown"] = moonCooldown
+		lookup["$moonCooldownTotal"] = moonCooldownTotal
 		lookup["$sunfireCount"] = sunfireCount
 		lookup["$sunfireTime"] = sunfireTime
 		lookup["$moonfireCount"] = moonfireCount
@@ -1059,6 +1151,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))
 
         UpdateFuryOfElune()
+		GetCurrentMoonSpell()
 
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].sunfire then
@@ -1085,7 +1178,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			end
 		end
-	end    
+
+		TRB.Data.snapshotData.newMoon.charges, TRB.Data.snapshotData.newMoon.maxCharges, TRB.Data.snapshotData.newMoon.startTime, TRB.Data.snapshotData.newMoon.duration, _ = GetSpellCharges(TRB.Data.spells.newMoon.id)
+	end
 
 	local function HideResourceBar(force)
 		local affectingCombat = UnitAffectingCombat("player")
@@ -1499,6 +1594,26 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 					CheckCharacter()
 					triggerUpdate = true
+				elseif spellId == TRB.Data.spells.newMoon.id then
+					if type == "SPELL_CAST_SUCCESS" then
+						TRB.Data.snapshotData.newMoon.currentSpellId = TRB.Data.spells.halfMoon.id
+						TRB.Data.snapshotData.newMoon.currentKey = "halfMoon"
+						TRB.Data.snapshotData.newMoon.checkAfter = currentTime + 20
+					end
+				elseif spellId == TRB.Data.spells.halfMoon.id then
+					if type == "SPELL_CAST_SUCCESS" then
+						TRB.Data.snapshotData.newMoon.currentSpellId = TRB.Data.spells.fullMoon.id
+						TRB.Data.snapshotData.newMoon.currentKey = "fullMoon"
+						TRB.Data.snapshotData.newMoon.checkAfter = currentTime + 20
+					end
+				elseif spellId == TRB.Data.spells.fullMoon.id then
+					if type == "SPELL_CAST_SUCCESS" then
+						-- New Moon doesn't like to behave when we do this
+						TRB.Data.snapshotData.newMoon.currentSpellId = TRB.Data.spells.newMoon.id
+						TRB.Data.snapshotData.newMoon.currentKey = "newMoon"
+						TRB.Data.snapshotData.newMoon.checkAfter = currentTime + 20
+						TRB.Data.spells.newMoon.currentIcon = select(3, GetSpellInfo(202767)) -- Use the old Legion artiface spell ID since New Moon's icon returns incorrect for several seconds after casting Full Moon
+					end
 				else
                 end
             end
