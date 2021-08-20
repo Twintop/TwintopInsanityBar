@@ -1329,7 +1329,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		end)
 
-		controls.colors.starfallPandemic = TRB.UiFunctions.BuildColorPicker(parent, "Starfall outside Pandemic refresh range", TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, 275, 25, xCoord2, yCoord-60)
+		controls.colors.starfallPandemic = TRB.UiFunctions.BuildColorPicker(parent, "Starfall outside Pandemic refresh range or on cooldown w/Stellar Drift", TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, 275, 25, xCoord2, yCoord-60)
 		f = controls.colors.starfallPandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1375,7 +1375,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.checkBoxes.ssThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurgeEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ssThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Starsurge threshold line (30 AP)")
+		getglobal(f:GetName() .. 'Text'):SetText("Show Starsurge threshold line")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast Starsurge."
 		f:SetChecked(TRB.Data.settings.druid.balance.starsurgeThreshold)
 		f:SetScript("OnClick", function(self, ...)

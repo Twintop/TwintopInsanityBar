@@ -4259,6 +4259,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						((TRB.Data.character.talents.mindbender.isSelected and sourceName == TRB.Data.spells.mindbender.name) or
 						(not TRB.Data.character.talents.mindbender.isSelected and sourceName == TRB.Data.spells.shadowfiend.name)) then
 						TRB.Data.snapshotData.mindbender.swingTime = currentTime
+						triggerUpdate = true
 					elseif (type == "SPELL_INSTAKILL" or type == "UNIT_DIED" or type == "UNIT_DESTROYED") then
 						if TRB.Data.snapshotData.voidform.s2m.active then -- Surrender to Madness ended
 							s2mDeath = true

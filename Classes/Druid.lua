@@ -59,6 +59,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             soulOfTheForest = {
                 isSelected = false
             },
+			stellarDrift = {
+				isSelected = false
+			},
             stellarFlare = {
                 isSelected = false
             },
@@ -97,7 +100,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			id = 164815,
 			name = "",
 			icon = "",
-			astralPower = 2, 
+			astralPower = 2,
 			baseDuration = 18,
 			pandemic = true,
 			pandemicTime = 18 * 0.3
@@ -106,7 +109,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			id = 164812,
 			name = "",
 			icon = "",
-			astralPower = 2, 
+			astralPower = 2,
 			baseDuration = 22,
 			pandemic = true,
 			pandemicTime = 22 * 0.3
@@ -123,10 +126,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			name = "",
 			icon = "",
 			astralPower = 50,
-			isActive = false, 
+			isActive = false,
 			baseDuration = 8,
 			pandemic = true,
-			pandemicTime = 8 * 0.3
+			pandemicTime = 8 * 0.3,
+			stellarDriftCooldown = 12
         },
         
         celestialAlignment = {
@@ -174,13 +178,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             name = "",
             icon = "",
             modifier = 1.5
-        },        
+        },
         incarnationChosenOfElune = {
 			id = 102560,
 			name = "",
 			icon = "",
 			isActive = false
-        }, 
+        },
 
         stellarFlare = {
             id = 202347,
@@ -279,7 +283,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	}
 	TRB.Data.snapshotData.starfall = {
 		spellId = nil,
-		endTime = nil
+		endTime = nil, --End of buff
+		duration = 0, --Duration of buff
+		cdStartTime = nil, --Start of CD with Stellar Drift
+		cdDuration = 0, --Duration of CD with Stellar Drift
 	}
 	TRB.Data.snapshotData.onethsClearVision = {
 		spellId = nil,
@@ -420,6 +427,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Data.character.talents.warriorOfElune.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.forceOfNature.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.soulOfTheForest.isSelected = select(4, GetTalentInfo(5, 1, TRB.Data.character.specGroup))
+		TRB.Data.character.talents.stellarDrift.isSelected = select(4, GetTalentInfo(6, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.stellarFlare.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.furyOfElune.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.newMoon.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
@@ -568,7 +576,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			icon = TRB.Data.spells.eclipseLunar.icon
 		end
 
+		if remainingTime < 0 then
+			remainingTime = 0
+		end
+
 		return remainingTime, icon
+	end
+
+	local function GetStarfallCooldownRemainingTime()
+		if TRB.Data.snapshotData.starfall.cdStartTime == nil then
+			return 0
+		end
+
+		local currentTime = GetTime()
+		local cdRemaining = math.max(0, TRB.Data.snapshotData.starfall.cdDuration - (currentTime - TRB.Data.snapshotData.starfall.cdStartTime))
+		return cdRemaining
 	end
 
     local function IsValidVariableForSpec(var)
@@ -1037,7 +1059,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))
 
         UpdateFuryOfElune()
-		
+
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].sunfire then
 				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.sunfire.id, "target", "player"))
@@ -1221,7 +1243,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 
 
-				if currentResource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.onethsPerception.isActive then
+				if TRB.Data.character.talents.stellarDrift.isSelected and GetStarfallCooldownRemainingTime() > 0 then
+---@diagnostic disable-next-line: undefined-field
+					resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
+				elseif currentResource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.onethsPerception.isActive then
 					if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > TRB.Data.spells.starfall.pandemicTime then
 ---@diagnostic disable-next-line: undefined-field
 						resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
@@ -1430,6 +1455,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 						TRB.Data.spells.starfall.isActive = true
 						_, _, _, _, TRB.Data.snapshotData.starfall.duration, TRB.Data.snapshotData.starfall.endTime, _, _, _, TRB.Data.snapshotData.starfall.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.starfall.id)
+						
+						if TRB.Data.character.talents.stellarDrift.isSelected then
+							TRB.Data.snapshotData.starfall.cdStartTime = currentTime
+							TRB.Data.snapshotData.starfall.cdDuration = TRB.Data.spells.starfall.stellarDriftCooldown
+						end
 					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 						TRB.Data.spells.starfall.isActive = false
 						TRB.Data.snapshotData.starfall.spellId = nil
