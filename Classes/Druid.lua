@@ -73,6 +73,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             }
 		},
 		items = {
+			primordialArcanicPulsar = false
 		}
 	}
 
@@ -243,6 +244,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			icon = "",
 			isActive = false,
 			modifier = -0.15
+		},
+		primordialArcanicPulsar = {
+			id = 338825,
+			name = "",
+			icon = "",
+			maxAstralPower = 300,
+			idLegendaryBonus = 7088
 		}
     }
     
@@ -315,6 +323,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		duration = 0,
 		stacks = 0
 	}
+	TRB.Data.snapshotData.primordialArcanicPulsar = {
+		currentAstralPower = 0
+	}
 
 	local function FillSpellData()
 		TRB.Functions.FillSpellData()
@@ -338,6 +349,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "#oneths", icon = TRB.Data.spells.onethsClearVision.icon .. " or " .. TRB.Data.spells.onethsPerception.icon, description = "Oneth's Clear Vision or Perception, whichever is active", printInSettings = true },
 			{ variable = "#onethsClearVision", icon = TRB.Data.spells.onethsClearVision.icon, description = "Oneth's Clear Vision", printInSettings = true },
 			{ variable = "#onethsPerception", icon = TRB.Data.spells.onethsPerception.icon, description = "Oneth's Perception", printInSettings = true },
+
+			{ variable = "#pulsar", icon = TRB.Data.spells.primordialArcanicPulsar.icon, description = "Primordial Arcanic Pulsar", printInSettings = true },
+			{ variable = "#pap", icon = TRB.Data.spells.primordialArcanicPulsar.icon, description = "Primordial Arcanic Pulsar", printInSettings = false },
+			{ variable = "#primordialArcanicPulsar", icon = TRB.Data.spells.primordialArcanicPulsar.icon, description = "Primordial Arcanic Pulsar", printInSettings = false },
 
 			{ variable = "#eclipse", icon = TRB.Data.spells.incarnationChosenOfElune.icon .. TRB.Data.spells.celestialAlignment.icon .. TRB.Data.spells.eclipseSolar.icon .. " or " .. TRB.Data.spells.eclipseLunar.icon, description = "Current active Eclipse", printInSettings = true },
 			{ variable = "#celestialAlignment", icon = TRB.Data.spells.celestialAlignment.icon, description = "Celestial Alignment", printInSettings = true },            
@@ -395,6 +410,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$solarEclipse", description = "Currently in Eclipse (Solar). Logic variable only!", printInSettings = false, color = false },
 			{ variable = "$eclipseSolar", description = "Currently in Eclipse (Solar). Logic variable only!", printInSettings = false, color = false },
 			{ variable = "$celestialAlignment", description = "Currently in/using CA/I: CoE. Logic variable only!", printInSettings = true, color = false },
+
+			{ variable = "$pulsarCollected", description = "Current amount of Astral Power that Primordial Arcanic Pulsar has collected", printInSettings = true, color = false },
+			{ variable = "$pulsarCollectedPercent", description = "Current percentage of Astral Power that Primordial Arcanic Pulsar has collected before triggering", printInSettings = true, color = false },
+			{ variable = "$pulsarRemaining", description = "Amount of Astral Power remaining until Primordial Arcanic Pulsar grants Celestial Alignment", printInSettings = true, color = false },
+			{ variable = "$pulsarRemainingPercent", description = "Percentage of Astral Power remaining until Primordial Arcanic Pulsar grants Celestial Alignment", printInSettings = true, color = false },
+			{ variable = "$pulsarNextStarsurge", description = "Will the next Starsurge grant Celestial Alignment from Pulsar? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$pulsarNextStarfall", description = "Will the next Starfall grant Celestial Alignment from Pulsar? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$pulsarStarsurgeCount", description = "How many more Starsurges are required to grant Celestial Alignment from Pulsar", printInSettings = true, color = false },
+			{ variable = "$pulsarStarfallCount", description = "How many more Starfalls are required to grant Celestial Alignment from Pulsar", printInSettings = true, color = false },
 
 			{ variable = "$astralPower", description = "Current Astral Power", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Astral Power", printInSettings = false, color = false },
@@ -496,6 +520,32 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				resourceFrame.thresholds[4]:Hide()
 			end
 		end
+
+		-- Legendaries		
+		local shoulderItemLink = GetInventoryItemLink("player", 3)
+		local handItemLink = GetInventoryItemLink("player", 10)
+		local ring1ItemLink = GetInventoryItemLink("player", 11)
+		local ring2ItemLink = GetInventoryItemLink("player", 12)
+
+		local primordialArcanicPulsar = false
+
+		if shoulderItemLink ~= nil then
+			primordialArcanicPulsar = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(shoulderItemLink, 172319, TRB.Data.spells.primordialArcanicPulsar.idLegendaryBonus)
+		end
+		
+		if primordialArcanicPulsar == false and handItemLink ~= nil then
+			primordialArcanicPulsar = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(handItemLink, 172316, TRB.Data.spells.primordialArcanicPulsar.idLegendaryBonus)
+		end
+		
+		if primordialArcanicPulsar == false and ring1ItemLink ~= nil then
+			primordialArcanicPulsar = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(ring1ItemLink, 178926, TRB.Data.spells.primordialArcanicPulsar.idLegendaryBonus)
+		end
+
+		if primordialArcanicPulsar == false and ring2ItemLink ~= nil then
+			primordialArcanicPulsar = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(ring2ItemLink, 178926, TRB.Data.spells.primordialArcanicPulsar.idLegendaryBonus)
+		end
+
+		TRB.Data.character.items.primordialArcanicPulsar = primordialArcanicPulsar
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
 
@@ -789,6 +839,38 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			end
+		elseif var == "$pulsarCollected" then
+			if TRB.Data.character.items.primordialArcanicPulsar then
+				valid = true
+			end
+		elseif var == "$pulsarCollectedPercent" then
+			if TRB.Data.character.items.primordialArcanicPulsar then
+				valid = true
+			end
+		elseif var == "$pulsarRemaining" then
+			if TRB.Data.character.items.primordialArcanicPulsar then
+				valid = true
+			end
+		elseif var == "$pulsarRemainingPercent" then
+			if TRB.Data.character.items.primordialArcanicPulsar then
+				valid = true
+			end
+		elseif var == "$pulsarStarsurgeCount" then
+			if TRB.Data.character.items.primordialArcanicPulsar then
+				valid = true
+			end
+		elseif var == "$pulsarStarfallCount" then
+			if TRB.Data.character.items.primordialArcanicPulsar then
+				valid = true
+			end
+		elseif var == "$pulsarNextStarsurge" then
+			if TRB.Data.character.items.primordialArcanicPulsar and ((TRB.Data.spells.primordialArcanicPulsar.maxAstralPower - TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower) <= TRB.Data.character.starsurgeThreshold) then
+				valid = true
+			end
+		elseif var == "$pulsarNextStarfall" then
+			if TRB.Data.character.items.primordialArcanicPulsar and ((TRB.Data.spells.primordialArcanicPulsar.maxAstralPower - TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower) <= TRB.Data.character.starfallThreshold) then
+				valid = true
+			end
 		else
 			valid = false
 		end
@@ -980,6 +1062,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if TRB.Data.spells.onethsPerception.isActive then
 			onethsIcon = TRB.Data.spells.onethsPerception.icon
 		end
+
+		--$pulsar variables
+		local pulsarCollected = TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower
+		local pulsarCollectedPercent = string.format("%.1f", TRB.Functions.RoundTo((pulsarCollected / TRB.Data.spells.primordialArcanicPulsar.maxAstralPower) * 100, 1))
+		local pulsarRemaining = TRB.Data.spells.primordialArcanicPulsar.maxAstralPower - pulsarCollected
+		local pulsarRemainingPercent = string.format("%.1f", TRB.Functions.RoundTo((pulsarRemaining / TRB.Data.spells.primordialArcanicPulsar.maxAstralPower) * 100, 1))
+		local pulsarNextStarsurge = ""
+		local pulsarNextStarfall = ""
+		local pulsarStarsurgeCount = TRB.Functions.RoundTo(pulsarRemaining / TRB.Data.character.starsurgeThreshold, 0, ceil)
+		local pulsarStarfallCount = TRB.Functions.RoundTo(pulsarRemaining / TRB.Data.character.starfallThreshold, 0, ceil)
+		
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveAstralPower or 0
@@ -1031,6 +1124,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#oneths"] = onethsIcon
 		lookup["#onethsClearVision"] = TRB.Data.spells.onethsClearVision.icon
 		lookup["#onethsPerception"] = TRB.Data.spells.onethsPerception.icon
+		lookup["#pulsar"] = TRB.Data.spells.primordialArcanicPulsar.icon
+		lookup["#pap"] = TRB.Data.spells.primordialArcanicPulsar.icon
+		lookup["#primordialArcanicPulsar"] = TRB.Data.spells.primordialArcanicPulsar.icon
+		lookup["$pulsarCollected"] = pulsarCollected
+		lookup["$pulsarCollectedPercent"] = pulsarCollectedPercent
+		lookup["$pulsarRemaining"] = pulsarRemaining
+		lookup["$pulsarRemainingPercent"] = pulsarRemainingPercent
+		lookup["$pulsarNextStarsurge"] = pulsarNextStarsurge
+		lookup["$pulsarNextStarfall"] = pulsarNextStarfall
+		lookup["$pulsarStarsurgeCount"] = pulsarStarsurgeCount
+		lookup["$pulsarStarfallCount"] = pulsarStarfallCount
 		lookup["$moonkinForm"] = ""
 		lookup["$eclipseTime"] = eclipseTime
 		lookup["$eclipse"] = ""
@@ -1180,6 +1284,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		TRB.Data.snapshotData.newMoon.charges, TRB.Data.snapshotData.newMoon.maxCharges, TRB.Data.snapshotData.newMoon.startTime, TRB.Data.snapshotData.newMoon.duration, _ = GetSpellCharges(TRB.Data.spells.newMoon.id)
+
+		if TRB.Data.character.items.primordialArcanicPulsar then
+			TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower = select(16, TRB.Functions.FindBuffById(TRB.Data.spells.primordialArcanicPulsar.id))
+		end
 	end
 
 	local function HideResourceBar(force)
