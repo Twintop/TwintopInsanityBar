@@ -416,6 +416,8 @@ local function GetSpellRemainingTime(snapshotSpell)
 	local currentTime = GetTime()
 	local remainingTime = 0
 
+	print(snapshotSpell.duration, snapshotSpell.endTime, currentTime)
+
 	if snapshotSpell.endTime ~= nil and (snapshotSpell.isActive or snapshotSpell.endTime > currentTime) then
 		remainingTime = snapshotSpell.endTime - currentTime
 	end

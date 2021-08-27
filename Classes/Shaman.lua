@@ -61,6 +61,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			}
 		},
 		items = {
+		},
+		torghast = {
+			depletedTeslaCoil = false
 		}
 	}
 
@@ -164,12 +167,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			id = 114050,
 			name = "", 
 			icon = ""
-		}   
+		},
+
+		-- Torghast
+		depletedTeslaCoil = {
+			id = 350248,
+			name = "",
+			icon = ""
+		}
     }
     
 	TRB.Data.snapshotData.audio = {
 		playedEsCue = false
-    }    
+    }
 	TRB.Data.snapshotData.chainLightning = {
 		targetsHit = 0,
 		hitTime = nil,
@@ -180,14 +190,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	}
 	TRB.Data.snapshotData.icefury = {
 		isActive = false,
-		stacksRemaining = 0,
+		stacks = 0,
 		startTime = nil,
 		maelstrom = 0
 	}
 	TRB.Data.snapshotData.stormkeeper = {
 		isActive = false,
-		stacksRemaining = 0,
-		startTime = nil,
+		stacks = 0,
+		duration = 0,
+		endTime = nil,
 		spell = nil
 	}
 	TRB.Data.snapshotData.echoingShock = {
@@ -287,6 +298,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		else
 			resourceFrame.thresholds[1]:Hide()
 		end
+		
+		-- Torghast
+		if IsInJailersTower() then			
+			if TRB.Functions.FindAuraById(TRB.Data.spells.depletedTeslaCoil.id, "player", "MAW") then
+				TRB.Data.character.torghast.depletedTeslaCoil = true
+			else
+				TRB.Data.character.torghast.depletedTeslaCoil = false
+			end
+		else -- Elsewhere
+			TRB.Data.character.torghast.depletedTeslaCoil = false
+		end
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
 
@@ -380,6 +402,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function ConstructResourceBar()
 		TRB.Functions.ConstructResourceBar(TRB.Data.settings.shaman.elemental)
 	end
+	
+	local function GetStormkeeperRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.stormkeeper)
+	end
 
     local function IsValidVariableForSpec(var)
 		local valid = TRB.Functions.IsValidVariableBase(var)
@@ -438,7 +464,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				valid = true
 			end
 		elseif var == "$ifStacks" then
-			if TRB.Data.snapshotData.icefury.stacksRemaining > 0 then
+			if TRB.Data.snapshotData.icefury.stacks > 0 then
 				valid = true
 			end
 		elseif var == "$ifTime" then
@@ -446,11 +472,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				valid = true
 			end
 		elseif var == "$skStacks" then
-			if TRB.Data.snapshotData.stormkeeper.stacksRemaining > 0 then
+			if TRB.Data.snapshotData.stormkeeper.stacks > 0 then
 				valid = true
 			end
 		elseif var == "$skTime" then
-			if TRB.Data.snapshotData.stormkeeper.startTime ~= nil and TRB.Data.snapshotData.stormkeeper.startTime > 0 then
+			if TRB.Data.snapshotData.stormkeeper.stacks > 0 then
 				valid = true
 			end
 		else
@@ -537,7 +563,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		--$ifMaelstrom
 		local icefuryMaelstrom = TRB.Data.snapshotData.icefury.maelstrom or 0
 		--$ifStacks
-		local icefuryStacks = TRB.Data.snapshotData.icefury.stacksRemaining or 0
+		local icefuryStacks = TRB.Data.snapshotData.icefury.stacks or 0
 		--$ifStacks
 		local icefuryTime = 0
 		if TRB.Data.snapshotData.icefury.startTime ~= nil then
@@ -545,11 +571,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		--$skStacks
-		local stormkeeperStacks = TRB.Data.snapshotData.stormkeeper.stacksRemaining or 0
+		local stormkeeperStacks = TRB.Data.snapshotData.stormkeeper.stacks or 0
 		--$skStacks
 		local stormkeeperTime = 0
-		if TRB.Data.snapshotData.stormkeeper.startTime ~= nil then
-			stormkeeperTime = string.format("%.1f", math.abs(currentTime - (TRB.Data.snapshotData.stormkeeper.startTime + TRB.Data.spells.stormkeeper.duration)))
+		if stormkeeperStacks > 0 then
+			stormkeeperTime = string.format("%.1f", GetStormkeeperRemainingTime())
 		end
 		----------------------------
 
@@ -679,12 +705,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		if TRB.Data.snapshotData.icefury.isActive then
 			local currentTime = GetTime()
 			if TRB.Data.snapshotData.icefury.startTime == nil or currentTime > (TRB.Data.snapshotData.icefury.startTime + TRB.Data.spells.icefury.duration) then
-				TRB.Data.snapshotData.icefury.stacksRemaining = 0
+				TRB.Data.snapshotData.icefury.stacks = 0
 				TRB.Data.snapshotData.icefury.startTime = nil
 				TRB.Data.snapshotData.icefury.astralPower = 0
 				TRB.Data.snapshotData.icefury.isActive = false
 			end
 		end
+	end
+
+	local function UpdateStormkeeper()
+		print("Update Stormkeeper")
+		_, _, TRB.Data.snapshotData.stormkeeper.stacks, _, TRB.Data.snapshotData.stormkeeper.duration, TRB.Data.snapshotData.stormkeeper.endTime, _, _, _, TRB.Data.snapshotData.stormkeeper.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.stormkeeper.id)
+		TRB.Data.snapshotData.stormkeeper.remainingTime = GetStormkeeperRemainingTime()
+		TRB.Data.snapshotData.stormkeeper.maelstrom = TRB.Data.snapshotData.stormkeeper.stacks * TRB.Data.spells.frostShock.maelstrom
 	end
 
 	local function UpdateSnapshot()
@@ -700,7 +733,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining = expiration - currentTime
 				end
 			end
-		end    
+		end
+
+		if TRB.Data.character.talents.stormkeeper.isSelected or TRB.Data.character.torghast.depletedTeslaCoil then
+			UpdateStormkeeper()
+		end
 	end
 
 	local function HideResourceBar(force)
@@ -860,32 +897,27 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				elseif spellId == TRB.Data.spells.icefury.id then
 					if type == "SPELL_AURA_APPLIED" then -- Icefury
 						TRB.Data.snapshotData.icefury.isActive = true
-						TRB.Data.snapshotData.icefury.stacksRemaining = TRB.Data.spells.icefury.stacks
-						TRB.Data.snapshotData.icefury.maelstrom = TRB.Data.snapshotData.icefury.stacksRemaining * TRB.Data.spells.frostShock.maelstrom
+						TRB.Data.snapshotData.icefury.stacks = TRB.Data.spells.icefury.stacks
+						TRB.Data.snapshotData.icefury.maelstrom = TRB.Data.snapshotData.icefury.stacks * TRB.Data.spells.frostShock.maelstrom
 						TRB.Data.snapshotData.icefury.startTime = currentTime
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.icefury.isActive = false
-						TRB.Data.snapshotData.icefury.stacksRemaining = 0
+						TRB.Data.snapshotData.icefury.stacks = 0
 						TRB.Data.snapshotData.icefury.maelstrom = 0
 						TRB.Data.snapshotData.icefury.startTime = nil
 					elseif type == "SPELL_AURA_REMOVED_DOSE" then
-						TRB.Data.snapshotData.icefury.stacksRemaining = TRB.Data.snapshotData.icefury.stacksRemaining - 1
-						TRB.Data.snapshotData.icefury.maelstrom = TRB.Data.snapshotData.icefury.stacksRemaining * TRB.Data.spells.frostShock.maelstrom
+						TRB.Data.snapshotData.icefury.stacks = TRB.Data.snapshotData.icefury.stacks - 1
+						TRB.Data.snapshotData.icefury.maelstrom = TRB.Data.snapshotData.icefury.stacks * TRB.Data.spells.frostShock.maelstrom
 					end
 				elseif spellId == TRB.Data.spells.stormkeeper.id then
 					if type == "SPELL_AURA_APPLIED" then -- Stormkeeper
 						TRB.Data.snapshotData.stormkeeper.isActive = true
-						TRB.Data.snapshotData.stormkeeper.stacksRemaining = TRB.Data.spells.stormkeeper.stacks
-						TRB.Data.snapshotData.stormkeeper.maelstrom = TRB.Data.snapshotData.stormkeeper.stacksRemaining * TRB.Data.spells.frostShock.maelstrom
-						TRB.Data.snapshotData.stormkeeper.startTime = currentTime
+						UpdateStormkeeper()
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshotData.stormkeeper.isActive = false
-						TRB.Data.snapshotData.stormkeeper.stacksRemaining = 0
-						TRB.Data.snapshotData.stormkeeper.maelstrom = 0
-						TRB.Data.snapshotData.stormkeeper.startTime = nil
+						UpdateStormkeeper()
 					elseif type == "SPELL_AURA_REMOVED_DOSE" then
-						TRB.Data.snapshotData.stormkeeper.stacksRemaining = TRB.Data.snapshotData.stormkeeper.stacksRemaining - 1
-						TRB.Data.snapshotData.stormkeeper.maelstrom = TRB.Data.snapshotData.stormkeeper.stacksRemaining * TRB.Data.spells.frostShock.maelstrom
+						UpdateStormkeeper()
 					end
 				elseif spellId == TRB.Data.spells.surgeOfPower.id then
 					if type == "SPELL_AURA_APPLIED" then -- Surge of Power
