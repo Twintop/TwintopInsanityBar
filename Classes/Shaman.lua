@@ -169,11 +169,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			icon = ""
 		},
 
+		-- Legendaries
+		echoesOfGreatSundering = {
+			id = 114050,
+			name = "", 
+			icon = ""
+		},
+
 		-- Torghast
 		depletedTeslaCoil = {
 			id = 350248,
 			name = "",
-			icon = ""
+			icon = "",
+			duration = 25
 		}
     }
     
@@ -205,6 +213,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		isActive = false,
 		spell = nil
 	}
+	TRB.Data.snapshotData.echoesOfGreatSundering = {
+		isActive = false,
+		duration = 0,
+		endTime = nil
+	}
 	TRB.Data.snapshotData.targetData = {
 		ttdIsActive = false,
 		currentTargetGuid = nil,
@@ -225,6 +238,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "#chainLightning", icon = TRB.Data.spells.chainLightning.icon, description = TRB.Data.spells.chainLightning.name, printInSettings = true },
 			{ variable = "#echoingShock", icon = TRB.Data.spells.echoingShock.icon, description = TRB.Data.spells.echoingShock.name, printInSettings = true },
 			{ variable = "#elementalBlast", icon = TRB.Data.spells.elementalBlast.icon, description = TRB.Data.spells.elementalBlast.name, printInSettings = true },
+			{ variable = "#eogs", icon = TRB.Data.spells.echoesOfGreatSundering.icon, description = TRB.Data.spells.echoesOfGreatSundering.name, printInSettings = true },
 			{ variable = "#flameShock", icon = TRB.Data.spells.flameShock.icon, description = TRB.Data.spells.flameShock.name, printInSettings = true },
 			{ variable = "#frostShock", icon = TRB.Data.spells.frostShock.icon, description = TRB.Data.spells.frostShock.name, printInSettings = true },
 			{ variable = "#icefury", icon = TRB.Data.spells.icefury.icon, description = TRB.Data.spells.icefury.name, printInSettings = true },
@@ -271,6 +285,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			{ variable = "$skStacks", description = "Number of Stormkeeper stacks remaining", printInSettings = true, color = false },
 			{ variable = "$skTime", description = "Time remaining on Stormkeeper buff", printInSettings = true, color = false },
+
+			{ variable = "$eogsTime", description = "Time remaining on Echoes of Great Sundering buff", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -406,6 +422,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function GetStormkeeperRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.stormkeeper)
 	end
+	
+	local function GetEchoesOfGreatSunderingRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.echoesOfGreatSundering)
+	end
 
     local function IsValidVariableForSpec(var)
 		local valid = TRB.Functions.IsValidVariableBase(var)
@@ -477,6 +497,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		elseif var == "$skTime" then
 			if TRB.Data.snapshotData.stormkeeper.stacks ~= nil and TRB.Data.snapshotData.stormkeeper.stacks > 0 then
+				valid = true
+			end
+		elseif var == "$eogsTime" then
+			if GetEchoesOfGreatSunderingRemainingTime() > 0 then
 				valid = true
 			end
 		else
@@ -577,6 +601,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		if stormkeeperStacks > 0 then
 			stormkeeperTime = string.format("%.1f", GetStormkeeperRemainingTime())
 		end
+
+		--$eogsTime
+		local eogsTime = 0
+		if GetEchoesOfGreatSunderingRemainingTime() > 0 then
+			eogsTime = string.format("%.1f", GetEchoesOfGreatSunderingRemainingTime())
+		end
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveMaelstrom
@@ -598,6 +628,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["#chainLightning"] = TRB.Data.spells.chainLightning.icon
 		lookup["#echoingShock"] = TRB.Data.spells.echoingShock.icon
 		lookup["#elementalBlast"] = TRB.Data.spells.elementalBlast.icon
+		lookup["#eogs"] = TRB.Data.spells.echoesOfGreatSundering.icon
 		lookup["#flameShock"] = TRB.Data.spells.flameShock.icon
 		lookup["#frostShock"] = TRB.Data.spells.frostShock.icon
 		lookup["#icefury"] = TRB.Data.spells.icefury.icon
@@ -628,6 +659,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["$ifTime"] = icefuryTime
 		lookup["$skStacks"] = stormkeeperStacks
 		lookup["$skTime"] = stormkeeperTime
+		lookup["$eogsTime"] = eogsTime
 		TRB.Data.lookup = lookup
 	end
 	TRB.Functions.RefreshLookupData = RefreshLookupData
@@ -813,10 +845,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					resourceFrame.thresholds[1]:Hide()
 				end
 
+				local thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.under
+
 				if TRB.Data.snapshotData.resource >= TRB.Data.character.earthShockThreshold then
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.earthShock, true))
----@diagnostic disable-next-line: undefined-field
-					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.over, true))
+					thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.over
 					if TRB.Data.settings.shaman.elemental.colors.bar.flashEnabled then
 						TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.shaman.elemental.colors.bar.flashAlpha, TRB.Data.settings.shaman.elemental.colors.bar.flashPeriod)
 					else
@@ -828,12 +861,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
 					end
 				else
----@diagnostic disable-next-line: undefined-field
-					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.under, true))
+					thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.under
 					barContainerFrame:SetAlpha(1.0)
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.base, true))
 					TRB.Data.snapshotData.audio.playedEsCue = false
 				end
+
+				if TRB.Data.snapshotData.echoesOfGreatSundering.isActive then
+					thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.echoesOfGreatSundering
+				end
+
+---@diagnostic disable-next-line: undefined-field
+				resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 			end
 		end
 		TRB.Functions.UpdateResourceBar(TRB.Data.settings.shaman.elemental, refreshText)
@@ -925,6 +964,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				elseif spellId == TRB.Data.spells.echoingShock.id then
 					if type == "SPELL_AURA_APPLIED" then -- Echoing Shock
 						TRB.Data.snapshotData.echoingShock.isActive = true
+					end
+				elseif spellId == TRB.Data.spells.echoesOfGreatSundering.id then
+					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						TRB.Data.snapshotData.echoesOfGreatSundering.isActive = true
+						_, _, _, _, TRB.Data.snapshotData.echoesOfGreatSundering.duration, TRB.Data.snapshotData.echoesOfGreatSundering.endTime, _, _, _, TRB.Data.snapshotData.echoesOfGreatSundering.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.echoesOfGreatSundering.id)
+					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						TRB.Data.snapshotData.echoesOfGreatSundering.isActive = false
+						TRB.Data.snapshotData.echoesOfGreatSundering.spellId = nil
+						TRB.Data.snapshotData.echoesOfGreatSundering.duration = 0
+						TRB.Data.snapshotData.echoesOfGreatSundering.endTime = nil
 					end
 				end
 

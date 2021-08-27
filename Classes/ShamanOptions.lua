@@ -134,7 +134,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				},
 				threshold = {
 					under="FFFFFFFF",
-					over="FF00FF00"
+					over="FF00FF00",
+					echoesOfGreatSundering="FFFF00FF"
 				}
 			},
 			displayText = {},
@@ -1193,9 +1194,30 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)
 
+
+		controls.colors.thresholdEogs = TRB.UiFunctions.BuildColorPicker(parent, "Echoes of Great Sundering proc is up", TRB.Data.settings.shaman.elemental.colors.threshold.echoesOfGreatSundering, 275, 25, xCoord2, yCoord-60)
+		f = controls.colors.thresholdEogs
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.threshold.echoesOfGreatSundering, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+
+                    controls.colors.thresholdEogs.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.shaman.elemental.colors.threshold.echoesOfGreatSundering = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(TRB.Data.settings.shaman.elemental.bar.thresholdOverlapBorder)
