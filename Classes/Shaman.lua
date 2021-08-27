@@ -472,11 +472,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				valid = true
 			end
 		elseif var == "$skStacks" then
-			if TRB.Data.snapshotData.stormkeeper.stacks > 0 then
+			if TRB.Data.snapshotData.stormkeeper.stacks ~= nil and TRB.Data.snapshotData.stormkeeper.stacks > 0 then
 				valid = true
 			end
 		elseif var == "$skTime" then
-			if TRB.Data.snapshotData.stormkeeper.stacks > 0 then
+			if TRB.Data.snapshotData.stormkeeper.stacks ~= nil and TRB.Data.snapshotData.stormkeeper.stacks > 0 then
 				valid = true
 			end
 		else
@@ -714,10 +714,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function UpdateStormkeeper()
-		print("Update Stormkeeper")
 		_, _, TRB.Data.snapshotData.stormkeeper.stacks, _, TRB.Data.snapshotData.stormkeeper.duration, TRB.Data.snapshotData.stormkeeper.endTime, _, _, _, TRB.Data.snapshotData.stormkeeper.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.stormkeeper.id)
-		TRB.Data.snapshotData.stormkeeper.remainingTime = GetStormkeeperRemainingTime()
-		TRB.Data.snapshotData.stormkeeper.maelstrom = TRB.Data.snapshotData.stormkeeper.stacks * TRB.Data.spells.frostShock.maelstrom
 	end
 
 	local function UpdateSnapshot()
@@ -735,7 +732,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end
 
-		if TRB.Data.character.talents.stormkeeper.isSelected or TRB.Data.character.torghast.depletedTeslaCoil then
+		if TRB.Data.character.torghast.depletedTeslaCoil then
 			UpdateStormkeeper()
 		end
 	end
