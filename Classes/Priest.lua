@@ -1744,6 +1744,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				local moreCasts = 0
 				local moreCastsAverage = 0
 				local critValue = math.max(math.min((1.0 + (TRB.Data.snapshotData.crit / 100)), 2), 0)
+				local isInfinite = false
+				local isAverageInfinite = false
 
 				if vbDuration > 0 or gcdLockRemaining > 0 then
 					local vbRemaining = vbStart + vbDuration - currentTime
@@ -1845,17 +1847,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.voidform.additionalVbAvgCasts = moreCastsAverage
 
 				if sanityCheckCounter == maxCounter and sanityCheckCounter ~= infinityCounter and sanityCheckCounter ~= infinityAverageCounter then
-					TRB.Data.snapshotData.voidform.isInfinite = true
-					TRB.Data.snapshotData.voidform.isAverageInfinite = true
+					isInfinite = true
+					isAverageInfinite = true
 				end
 
 				if infiniteExtensions or infinityCounter == maxCounter then
-					TRB.Data.snapshotData.voidform.isInfinite = true
+					isInfinite = true
 				end
 
 				if infiniteAverageExtensions or infinityAverageCounter == maxCounter then
-					TRB.Data.snapshotData.voidform.isAverageInfinite = true
+					isAverageInfinite = true
 				end
+
+				TRB.Data.snapshotData.voidform.isInfinite = isInfinite
+				TRB.Data.snapshotData.voidform.isAverageInfinite = isAverageInfinite
 			else
 				TRB.Data.snapshotData.voidform.remainingTime = remainingTime or 0
 				TRB.Data.snapshotData.voidform.remainingHvTime = 0
