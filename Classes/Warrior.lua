@@ -1224,7 +1224,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					valid = true
 				end
 			elseif var == "$whirlwindStacks" then
-				if TRB.Data.snapshotData.whirlwind.stacks > 0 then
+				if TRB.Data.snapshotData.whirlwind.stacks ~= nil and TRB.Data.snapshotData.whirlwind.stacks > 0 then
 					valid = true
 				end
 			end

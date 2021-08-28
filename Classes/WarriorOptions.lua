@@ -230,7 +230,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				fontSize=18
 			},
 			middle={
-				text="",
+				text="{$enrageTime}[$enrageTime sec]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -251,19 +251,19 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "#deepWounds $deepWoundsCount   $haste% ($gcd)||n{$rend}[#rend $rendCount   ][          ]{$ttd}[TTD: $ttd][ ]",
+				text = "$haste% ($gcd)||n{$ttd}[TTD: $ttd][ ]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			middle = {
-				text="{$suddenDeathTime}[#suddenDeath $suddenDeathTime #suddenDeath]",
+				text="{$enrageTime}[#enrage $enrageTime #enrage][ ]||n{$whirlwindStacks}[#whirlwind $whirlwindTime ($whirlwindStacks) #whirlwind]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			right = {
-				text = "{$ravagerRage}[#ravager$ravagerRage+]{$covenantRage}[#covenantAbility$covenantRage+]{$casting}[#casting$casting+]$rage",
+				text = "{$covenantRage}[#covenantAbility$covenantRage+]{$casting}[#casting$casting+]$rage",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
@@ -361,12 +361,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-				--[[suddenDeath={
-					name = "Sudden Death Proc",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},]]
             },
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
