@@ -322,8 +322,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FFEA3C53",
-					enrage="FFFFFF00",
-					enrageEnding="FFFF8000",
 					overcap="FF800000",
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
@@ -346,6 +344,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FFEA3C53",
+					enrage="FFFFCC55",
 					overcapEnabled=true,
 				},
 				threshold = {
@@ -3540,28 +3539,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		end)
 
-		yCoord = yCoord - 30
-
-		controls.colors.enrageEnding = TRB.UiFunctions.BuildColorPicker(parent, "Fury when Enrage is ending", TRB.Data.settings.warrior.fury.colors.bar.enrageEnding, 250, 25, xCoord2, yCoord)
-		f = controls.colors.enrageEnding
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.enrageEnding, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.enrageEnding.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.warrior.fury.colors.bar.enrageEnding = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)
-
 		yCoord = yCoord - 40
 
 		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
@@ -3639,7 +3616,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.warrior.fury)
 		end)
 
-		yCoord = yCoord - 25
 		controls.checkBoxes.ignorePainThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_ignorePain", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ignorePainThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -3723,7 +3699,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 40
 
 		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.UiFunctions.BuildSlider(parent, title, 0, 130, TRB.Data.settings.warrior.fury.overcapThreshold, 1, 1,
+		controls.overcapAt = TRB.UiFunctions.BuildSlider(parent, title, 0, 100, TRB.Data.settings.warrior.fury.overcapThreshold, 1, 1,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()

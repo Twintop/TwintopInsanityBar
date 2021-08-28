@@ -535,7 +535,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdUsable = false
 			},
 			enrage = {
-				id = 184361,
+				id = 184362,
 				name = "",
 				icon = ""
 			},
@@ -641,6 +641,18 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			endTime = nil,
 			duration = 0,
 			spellId = nil
+		}
+		specCache.fury.snapshotData.enrage = {
+			endTime = nil,
+			duration = 0,
+			spellId = nil
+		}
+		specCache.fury.snapshotData.whirlwind = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0,
+			stacks = 0
 		}
 		specCache.fury.snapshotData.bladestorm = {
 			endTime = nil,
@@ -811,7 +823,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
             { variable = "#conquerorsBanner", icon = spells.conquerorsBanner.icon, description = "Conqueror's Banner", printInSettings = true },
 			{ variable = "#covenantAbility", icon = spells.spearOfBastion.icon .. spells.condemn.icon .. spells.ancientAftershock.icon .. spells.conquerorsBanner.icon, description = "Covenant on-use Ability", printInSettings = true},
 			--{ variable = "#deadlyCalm", icon = spells.deadlyCalm.icon, description = "Deadly Calm", printInSettings = true },
-			--{ variable = "#deepWounds", icon = spells.deepWounds.icon, description = "Deep Wounds", printInSettings = true },
+			{ variable = "#enrage", icon = spells.enrage.icon, description = "Enrage", printInSettings = true },
 			{ variable = "#execute", icon = spells.execute.icon, description = "Execute", printInSettings = true },
 			{ variable = "#ignorePain", icon = spells.ignorePain.icon, description = "Ignore Pain", printInSettings = true },
 			{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = "Impending Victory", printInSettings = true },
@@ -857,6 +869,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$rageTotal", description = "Current + Passive + Casting Rage Total", printInSettings = true, color = false },   
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Rage Total", printInSettings = false, color = false },   
 
+			{ variable = "$enrageTime", description = "Time remaining on Enrage", printInSettings = true, color = false },
 			--[[
 			{ variable = "$rend", description = "Is Rend currently talented. Logic variable only!", printInSettings = true, color = false },
 
@@ -1036,6 +1049,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local function GetSuddenDeathRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.suddenDeath)
 	end
+	
+	local function GetEnrageRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.enrage)
+	end
 
     local function CalculateAbilityResourceValue(resource, includeDeadlyCalm)
         if includeDeadlyCalm == nil then
@@ -1213,6 +1230,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				end
 			elseif var == "$passive" then
 				if TRB.Data.snapshotData.ancientAftershock.rage > 0 or TRB.Data.snapshotData.conquerorsBanner.isActive then
+					valid = true
+				end
+			elseif var == "$enrageTime" then
+				if GetEnrageRemainingTime() > 0 then
 					valid = true
 				end
 			end
@@ -1595,6 +1616,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local _ragePlusPassive = math.min(_passiveRage + normalizedRage, TRB.Data.character.maxResource)
 		local ragePlusPassive = string.format("|c%s%s|r", currentRageColor, TRB.Functions.RoundTo(_ragePlusPassive, ragePrecision, "floor"))
 
+		--$enrageTime
+		local enrageTime = string.format("%.1f", GetEnrageRemainingTime())
+
 		--[[
 		--$rendCount and $rendTime
 		local _rendCount = TRB.Data.snapshotData.targetData.rend or 0
@@ -1701,7 +1725,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#conquerorsBanner"] = TRB.Data.spells.conquerorsBanner.icon
 		lookup["#covenantAbility"] = covenantAbilityIcon
 		--lookup["#deadlyCalm"] = TRB.Data.spells.deadlyCalm.icon
-		--lookup["#deepWounds"] = TRB.Data.spells.deepWounds.icon
+		lookup["#enrage"] = TRB.Data.spells.enrage.icon
 		lookup["#execute"] = TRB.Data.spells.execute.icon
 		lookup["#ignorePain"] = TRB.Data.spells.ignorePain.icon
 		lookup["#impendingVictory"] = TRB.Data.spells.impendingVictory.icon
@@ -1715,6 +1739,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#spearOfBastion"] = TRB.Data.spells.spearOfBastion.icon
 		lookup["#victoryRush"] = TRB.Data.spells.victoryRush.icon
 		lookup["#whirlwind"] = TRB.Data.spells.whirlwind.icon
+		lookup["$enrageTime"] = enrageTime
 		--[[
 		lookup["$rend"] = TRB.Data.character.talents.rend.isSelected
 		lookup["$rendCount"] = rendCount
@@ -2322,6 +2347,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					end
 					local barColor = TRB.Data.settings.warrior.fury.colors.bar.base
 
+					if GetEnrageRemainingTime() > 0 then
+						barColor = TRB.Data.settings.warrior.fury.colors.bar.enrage
+					end
+
 					local barBorderColor = TRB.Data.settings.warrior.fury.colors.bar.border
 
 					if TRB.Data.settings.warrior.fury.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
@@ -2486,90 +2515,99 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							TRB.Data.snapshotData.bladestorm.rage = 0
 							TRB.Data.snapshotData.bladestorm.isActive = false
 						end
+					elseif spellId == TRB.Data.spells.enrage.id then
+						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
+							_, _, _, _, TRB.Data.snapshotData.enrage.duration, TRB.Data.snapshotData.enrage.endTime, _, _, _, TRB.Data.snapshotData.enrage.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.enrage.id)
+							TRB.Data.spells.enrage.isActive = true
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.enrage.endTime = nil
+							TRB.Data.snapshotData.enrage.duration = 0
+							TRB.Data.spells.enrage.isActive = false
+						end
 					end
 				end
-			end
 
-			-- Spec Agnostic
-			if spellId == TRB.Data.spells.impendingVictory.id then
-				if type == "SPELL_CAST_SUCCESS" then
-					TRB.Data.snapshotData.impendingVictory.startTime, TRB.Data.snapshotData.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
-				end
-			elseif spellId == TRB.Data.spells.victoryRush.id then
-				if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-					_, _, _, _, TRB.Data.snapshotData.victoryRush.duration, TRB.Data.snapshotData.victoryRush.endTime, _, _, _, TRB.Data.snapshotData.victoryRush.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.victoryRush.id)
-					TRB.Data.spells.victoryRush.isActive = true
-				elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-					TRB.Data.snapshotData.victoryRush.endTime = nil
-					TRB.Data.snapshotData.victoryRush.duration = 0
-					TRB.Data.spells.victoryRush.isActive = false
-				end
-			elseif spellId == TRB.Data.spells.ignorePain.id then
-				print(type)
-				if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" then
-					TRB.Data.snapshotData.ignorePain.startTime = currentTime
-					TRB.Data.snapshotData.ignorePain.duration = TRB.Data.spells.ignorePain.cooldown
-				end
-			elseif spellId == TRB.Data.spells.shieldBlock.id then
-				if type == "SPELL_CAST_SUCCESS" then
-					TRB.Data.snapshotData.shieldBlock.charges, _, TRB.Data.snapshotData.shieldBlock.startTime, TRB.Data.snapshotData.shieldBlock.duration, _ = GetSpellCharges(TRB.Data.spells.shieldBlock.id)
-				end
-			elseif spellId == TRB.Data.spells.ancientAftershock.id then
-				local legendaryDuration = 0
-				local legendaryTicks = 0
-				if TRB.Data.character.items.naturesFury == true then
-					legendaryDuration = TRB.Data.snapshotData.ancientAftershock.legendaryDuration
-					legendaryTicks = TRB.Data.snapshotData.ancientAftershock.legendaryTicks
-				end
-
-				if type == "SPELL_CAST_SUCCESS" then -- This is incase it doesn't hit any targets
-					if TRB.Data.snapshotData.ancientAftershock.hitTime == nil then --This is a new cast without target data. Use the initial number hit to seed predictions
-						TRB.Data.snapshotData.ancientAftershock.targetsHit = 0
+				-- Spec Agnostic
+				if spellId == TRB.Data.spells.impendingVictory.id then
+					if type == "SPELL_CAST_SUCCESS" then
+						TRB.Data.snapshotData.impendingVictory.startTime, TRB.Data.snapshotData.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
 					end
-					TRB.Data.snapshotData.ancientAftershock.hitTime = currentTime
-					TRB.Data.snapshotData.ancientAftershock.endTime = currentTime + TRB.Data.spells.ancientAftershock.duration + legendaryDuration
-					TRB.Data.snapshotData.ancientAftershock.ticksRemaining = TRB.Data.spells.ancientAftershock.ticks + legendaryTicks
-					TRB.Data.snapshotData.ancientAftershock.isActive = true
-				elseif type == "SPELL_AURA_APPLIED" then
-					if TRB.Data.snapshotData.ancientAftershock.hitTime == nil then --This is a new cast without target data. Use the initial number hit to seed predictions
-						TRB.Data.snapshotData.ancientAftershock.targetsHit = 1
-					else
+				elseif spellId == TRB.Data.spells.victoryRush.id then
+					if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
+						_, _, _, _, TRB.Data.snapshotData.victoryRush.duration, TRB.Data.snapshotData.victoryRush.endTime, _, _, _, TRB.Data.snapshotData.victoryRush.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.victoryRush.id)
+						TRB.Data.spells.victoryRush.isActive = true
+					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						TRB.Data.snapshotData.victoryRush.endTime = nil
+						TRB.Data.snapshotData.victoryRush.duration = 0
+						TRB.Data.spells.victoryRush.isActive = false
+					end
+				elseif spellId == TRB.Data.spells.ignorePain.id then
+					print(type)
+					if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" then
+						TRB.Data.snapshotData.ignorePain.startTime = currentTime
+						TRB.Data.snapshotData.ignorePain.duration = TRB.Data.spells.ignorePain.cooldown
+					end
+				elseif spellId == TRB.Data.spells.shieldBlock.id then
+					if type == "SPELL_CAST_SUCCESS" then
+						TRB.Data.snapshotData.shieldBlock.charges, _, TRB.Data.snapshotData.shieldBlock.startTime, TRB.Data.snapshotData.shieldBlock.duration, _ = GetSpellCharges(TRB.Data.spells.shieldBlock.id)
+					end
+				elseif spellId == TRB.Data.spells.ancientAftershock.id then
+					local legendaryDuration = 0
+					local legendaryTicks = 0
+					if TRB.Data.character.items.naturesFury == true then
+						legendaryDuration = TRB.Data.snapshotData.ancientAftershock.legendaryDuration
+						legendaryTicks = TRB.Data.snapshotData.ancientAftershock.legendaryTicks
+					end
+
+					if type == "SPELL_CAST_SUCCESS" then -- This is incase it doesn't hit any targets
+						if TRB.Data.snapshotData.ancientAftershock.hitTime == nil then --This is a new cast without target data. Use the initial number hit to seed predictions
+							TRB.Data.snapshotData.ancientAftershock.targetsHit = 0
+						end
+						TRB.Data.snapshotData.ancientAftershock.hitTime = currentTime
+						TRB.Data.snapshotData.ancientAftershock.endTime = currentTime + TRB.Data.spells.ancientAftershock.duration + legendaryDuration
+						TRB.Data.snapshotData.ancientAftershock.ticksRemaining = TRB.Data.spells.ancientAftershock.ticks + legendaryTicks
+						TRB.Data.snapshotData.ancientAftershock.isActive = true
+					elseif type == "SPELL_AURA_APPLIED" then
+						if TRB.Data.snapshotData.ancientAftershock.hitTime == nil then --This is a new cast without target data. Use the initial number hit to seed predictions
+							TRB.Data.snapshotData.ancientAftershock.targetsHit = 1
+						else
+							TRB.Data.snapshotData.ancientAftershock.targetsHit = TRB.Data.snapshotData.ancientAftershock.targetsHit + 1
+						end
+						TRB.Data.snapshotData.ancientAftershock.hitTime = currentTime
+						TRB.Data.snapshotData.ancientAftershock.endTime = currentTime + TRB.Data.spells.ancientAftershock.duration + legendaryDuration
+						TRB.Data.snapshotData.ancientAftershock.isActive = true
+					end
+				elseif spellId == TRB.Data.spells.ancientAftershock.idTick then
+					if type == "SPELL_DAMAGE" and TRB.Data.snapshotData.ancientAftershock.hitTime ~= nil then
+						if currentTime > (TRB.Data.snapshotData.ancientAftershock.hitTime + 0.1) then --This is a new tick
+							TRB.Data.snapshotData.ancientAftershock.targetsHit = 0
+						end
 						TRB.Data.snapshotData.ancientAftershock.targetsHit = TRB.Data.snapshotData.ancientAftershock.targetsHit + 1
+						TRB.Data.snapshotData.ancientAftershock.hitTime = currentTime
 					end
-					TRB.Data.snapshotData.ancientAftershock.hitTime = currentTime
-					TRB.Data.snapshotData.ancientAftershock.endTime = currentTime + TRB.Data.spells.ancientAftershock.duration + legendaryDuration
-					TRB.Data.snapshotData.ancientAftershock.isActive = true
-				end
-			elseif spellId == TRB.Data.spells.ancientAftershock.idTick then
-				if type == "SPELL_DAMAGE" and TRB.Data.snapshotData.ancientAftershock.hitTime ~= nil then
-					if currentTime > (TRB.Data.snapshotData.ancientAftershock.hitTime + 0.1) then --This is a new tick
-						TRB.Data.snapshotData.ancientAftershock.targetsHit = 0
+				elseif spellId == TRB.Data.spells.conquerorsBanner.id then
+					if type == "SPELL_AURA_APPLIED" then -- Gain Conqueror's Banner
+						TRB.Data.snapshotData.conquerorsBanner.isActive = true
+						TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = TRB.Data.spells.conquerorsBanner.ticks
+						TRB.Data.snapshotData.conquerorsBanner.rage = TRB.Data.snapshotData.conquerorsBanner.ticksRemaining * TRB.Data.spells.conquerorsBanner.rage
+						TRB.Data.snapshotData.conquerorsBanner.endTime = currentTime + TRB.Data.spells.conquerorsBanner.duration
+						TRB.Data.snapshotData.conquerorsBanner.lastTick = currentTime
+					elseif type == "SPELL_AURA_REFRESH" then
+						TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = TRB.Data.spells.conquerorsBanner.ticks + 1
+						TRB.Data.snapshotData.conquerorsBanner.rage = TRB.Data.snapshotData.conquerorsBanner.rage * TRB.Data.spells.conquerorsBanner.rage
+						TRB.Data.snapshotData.conquerorsBanner.endTime = currentTime + TRB.Data.spells.conquerorsBanner.duration + ((TRB.Data.spells.conquerorsBanner.duration / TRB.Data.spells.conquerorsBanner.ticks) - (currentTime - TRB.Data.snapshotData.conquerorsBanner.lastTick))
+						TRB.Data.snapshotData.conquerorsBanner.lastTick = currentTime
+					elseif type == "SPELL_AURA_REMOVED" then
+						TRB.Data.snapshotData.conquerorsBanner.isActive = false
+						TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = 0
+						TRB.Data.snapshotData.conquerorsBanner.rage = 0
+						TRB.Data.snapshotData.conquerorsBanner.endTime = nil
+						TRB.Data.snapshotData.conquerorsBanner.lastTick = nil
+					elseif type == "SPELL_PERIODIC_ENERGIZE" then
+						TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = TRB.Data.snapshotData.conquerorsBanner.ticksRemaining - 1
+						TRB.Data.snapshotData.conquerorsBanner.rage = TRB.Data.snapshotData.conquerorsBanner.ticksRemaining * TRB.Data.spells.conquerorsBanner.rage
+						TRB.Data.snapshotData.conquerorsBanner.lastTick = currentTime
 					end
-					TRB.Data.snapshotData.ancientAftershock.targetsHit = TRB.Data.snapshotData.ancientAftershock.targetsHit + 1
-					TRB.Data.snapshotData.ancientAftershock.hitTime = currentTime
-				end
-			elseif spellId == TRB.Data.spells.conquerorsBanner.id then
-				if type == "SPELL_AURA_APPLIED" then -- Gain Conqueror's Banner
-					TRB.Data.snapshotData.conquerorsBanner.isActive = true
-					TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = TRB.Data.spells.conquerorsBanner.ticks
-					TRB.Data.snapshotData.conquerorsBanner.rage = TRB.Data.snapshotData.conquerorsBanner.ticksRemaining * TRB.Data.spells.conquerorsBanner.rage
-					TRB.Data.snapshotData.conquerorsBanner.endTime = currentTime + TRB.Data.spells.conquerorsBanner.duration
-					TRB.Data.snapshotData.conquerorsBanner.lastTick = currentTime
-				elseif type == "SPELL_AURA_REFRESH" then
-					TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = TRB.Data.spells.conquerorsBanner.ticks + 1
-					TRB.Data.snapshotData.conquerorsBanner.rage = TRB.Data.snapshotData.conquerorsBanner.rage * TRB.Data.spells.conquerorsBanner.rage
-					TRB.Data.snapshotData.conquerorsBanner.endTime = currentTime + TRB.Data.spells.conquerorsBanner.duration + ((TRB.Data.spells.conquerorsBanner.duration / TRB.Data.spells.conquerorsBanner.ticks) - (currentTime - TRB.Data.snapshotData.conquerorsBanner.lastTick))
-					TRB.Data.snapshotData.conquerorsBanner.lastTick = currentTime
-				elseif type == "SPELL_AURA_REMOVED" then
-					TRB.Data.snapshotData.conquerorsBanner.isActive = false
-					TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = 0
-					TRB.Data.snapshotData.conquerorsBanner.rage = 0
-					TRB.Data.snapshotData.conquerorsBanner.endTime = nil
-					TRB.Data.snapshotData.conquerorsBanner.lastTick = nil
-				elseif type == "SPELL_PERIODIC_ENERGIZE" then
-					TRB.Data.snapshotData.conquerorsBanner.ticksRemaining = TRB.Data.snapshotData.conquerorsBanner.ticksRemaining - 1
-					TRB.Data.snapshotData.conquerorsBanner.rage = TRB.Data.snapshotData.conquerorsBanner.ticksRemaining * TRB.Data.spells.conquerorsBanner.rage
-					TRB.Data.snapshotData.conquerorsBanner.lastTick = currentTime
 				end
 			end
 
