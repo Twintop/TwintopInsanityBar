@@ -685,7 +685,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				lowerBoundFury = lowerBoundFury + TRB.Data.spells.trailOfRuin.fury
 			end
 
-			if TRB.Data.snapshotData.casting.resourceFinal == 0 and ((normalizedFury / TRB.Data.resourceFactor) + lowerBoundFury) > settings.overcapThreshold then
+			if TRB.Data.snapshotData.casting.resourceFinal == 0 and (normalizedFury + lowerBoundFury) > settings.overcapThreshold then
 				valid = true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$furyPlusPassive" then

@@ -651,7 +651,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			spellId = nil,
 			duration = 0,
 			endTime = nil,
-			remainingTime = 0,
 			stacks = 0
 		}
 		specCache.fury.snapshotData.bladestorm = {
@@ -870,6 +869,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Rage Total", printInSettings = false, color = false },   
 
 			{ variable = "$enrageTime", description = "Time remaining on Enrage", printInSettings = true, color = false },
+			
+			{ variable = "$whirlwindTime", description = "Time remaining on Whirlwind buff", printInSettings = true, color = false },
+			{ variable = "$whirlwindStacks", description = "Number of stacks remaining on Whirlwind buff", printInSettings = true, color = false },
+			
 			--[[
 			{ variable = "$rend", description = "Is Rend currently talented. Logic variable only!", printInSettings = true, color = false },
 
@@ -1052,6 +1055,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	
 	local function GetEnrageRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.enrage)
+	end
+	
+	local function GetWhirlwindRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.whirlwind)
 	end
 
     local function CalculateAbilityResourceValue(resource, includeDeadlyCalm)
@@ -1236,6 +1243,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				if GetEnrageRemainingTime() > 0 then
 					valid = true
 				end
+			elseif var == "$whirlwindTime" then
+				if GetWhirlwindRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$whirlwindStacks" then
+				if TRB.Data.snapshotData.whirlwind.stacks > 0 then
+					valid = true
+				end
 			end
 		end
 
@@ -1255,7 +1270,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				valid = true
 			end
 		elseif var == "$overcap" or var == "$rageOvercap" or var == "$resourceOvercap" then
-			if ((normalizedRage / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
+			print(normalizedRage, settings.overcapThreshold)
+			if (normalizedRage + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
 				valid = true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
@@ -1618,6 +1634,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		--$enrageTime
 		local enrageTime = string.format("%.1f", GetEnrageRemainingTime())
+		
+		--$whirlwindTime
+		local whirlwindTime = string.format("%.1f", GetWhirlwindRemainingTime())
+		--$whirlwindStacks
+		local whirlwindStacks = TRB.Data.snapshotData.whirlwind.stacks or 0
 
 		--[[
 		--$rendCount and $rendTime
@@ -1740,6 +1761,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#victoryRush"] = TRB.Data.spells.victoryRush.icon
 		lookup["#whirlwind"] = TRB.Data.spells.whirlwind.icon
 		lookup["$enrageTime"] = enrageTime
+		lookup["$whirlwindTime"] = whirlwindTime
+		lookup["$whirlwindStacks"] = whirlwindStacks
 		--[[
 		lookup["$rend"] = TRB.Data.character.talents.rend.isSelected
 		lookup["$rendCount"] = rendCount
@@ -1973,6 +1996,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		local currentTime = GetTime()
 		local _
+
+		_, _, TRB.Data.snapshotData.whirlwind.stacks, _, TRB.Data.snapshotData.whirlwind.duration, TRB.Data.snapshotData.whirlwind.endTime, _, _, _, TRB.Data.snapshotData.whirlwind.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.whirlwind.id, "player")
 	end
 
 	local function HideResourceBar(force)
@@ -2523,6 +2548,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							TRB.Data.snapshotData.enrage.endTime = nil
 							TRB.Data.snapshotData.enrage.duration = 0
 							TRB.Data.spells.enrage.isActive = false
+						end
+					elseif spellId == TRB.Data.spells.whirlwind.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							_, _, TRB.Data.snapshotData.whirlwind.stacks, _, TRB.Data.snapshotData.whirlwind.duration, TRB.Data.snapshotData.whirlwind.endTime, _, _, _, TRB.Data.snapshotData.whirlwind.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.whirlwind.id, "player")
 						end
 					end
 				end
