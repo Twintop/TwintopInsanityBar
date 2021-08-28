@@ -130,10 +130,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -40,
+				cooldown = 12,
 				thresholdId = 2,
 				settingKey = "ignorePain",
 				isTalent = false,
-				hasCooldown = false,
+				hasCooldown = true,
 				thresholdUsable = false
 			},
 			shieldBlock = {
@@ -144,8 +145,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 3,
 				settingKey = "shieldBlock",
 				isTalent = false,
-				hasCooldown = false,
-				thresholdUsable = false			
+				hasCooldown = true,
+				thresholdUsable = false,
+				isSnowflake = true
 			},
 			slam = {
 				id = 1464,
@@ -352,6 +354,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			duration = 0,
 			enabled = false
 		}
+		specCache.arms.snapshotData.shieldBlock = {
+			charges = 0,
+			startTime = nil,
+			duration = 0
+		}
 		specCache.arms.snapshotData.cleave = {
 			startTime = nil,
 			duration = 0,
@@ -473,10 +480,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -40,
+				cooldown = 12,
 				thresholdId = 1,
 				settingKey = "ignorePain",
 				isTalent = false,
-				hasCooldown = false,
+				hasCooldown = true,
 				thresholdUsable = false
 			},
 			shieldBlock = {
@@ -487,8 +495,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 2,
 				settingKey = "shieldBlock",
 				isTalent = false,
-				hasCooldown = false,
-				thresholdUsable = false
+				hasCooldown = true,
+				thresholdUsable = false,
+				isSnowflake = true
 			},
 			slam = {
 				id = 1464,
@@ -645,6 +654,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			startTime = nil,
 			duration = 0,
 			enabled = false
+		}
+		specCache.fury.snapshotData.shieldBlock = {
+			charges = 0,
+			startTime = nil,
+			duration = 0
 		}
 		specCache.fury.snapshotData.condemn = {
 			startTime = nil,
@@ -1881,6 +1895,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		elseif TRB.Data.snapshotData.ignorePain.startTime ~= nil then
 			TRB.Data.snapshotData.ignorePain.startTime, TRB.Data.snapshotData.ignorePain.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ignorePain.id)
         end
+
+		TRB.Data.snapshotData.shieldBlock.charges, _, TRB.Data.snapshotData.shieldBlock.startTime, TRB.Data.snapshotData.shieldBlock.duration, _ = GetSpellCharges(TRB.Data.spells.shieldBlock.id)
 	end
 
 	local function UpdateSnapshot_Arms()
@@ -2106,6 +2122,16 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
 										frameLevel = 128
 									end
+								elseif spell.id == TRB.Data.spells.shieldBlock.id then
+									if TRB.Data.snapshotData.shieldBlock.charges == 0 then
+										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.unusable
+										frameLevel = 127
+									elseif currentRage >= -rageAmount then
+										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
+										frameLevel = 128
+									end
 								end
 							elseif spell.hasCooldown then
 								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
@@ -2242,6 +2268,16 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.unusable
 										frameLevel = 127
 									elseif currentRage >= -rageAmount or TRB.Data.spells.victoryRush.isActive then
+										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.under
+										frameLevel = 128
+									end
+								elseif spell.id == TRB.Data.spells.shieldBlock.id then
+									if TRB.Data.snapshotData.shieldBlock.charges == 0 then
+										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.unusable
+										frameLevel = 127
+									elseif currentRage >= -rageAmount then
 										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.under
@@ -2469,8 +2505,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					TRB.Data.spells.victoryRush.isActive = false
 				end
 			elseif spellId == TRB.Data.spells.ignorePain.id then
+				print(type)
+				if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" then
+					TRB.Data.snapshotData.ignorePain.startTime = currentTime
+					TRB.Data.snapshotData.ignorePain.duration = TRB.Data.spells.ignorePain.cooldown
+				end
+			elseif spellId == TRB.Data.spells.shieldBlock.id then
 				if type == "SPELL_CAST_SUCCESS" then
-					TRB.Data.snapshotData.ignorePain.startTime, TRB.Data.snapshotData.ignorePain.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ignorePain.id)
+					TRB.Data.snapshotData.shieldBlock.charges, _, TRB.Data.snapshotData.shieldBlock.startTime, TRB.Data.snapshotData.shieldBlock.duration, _ = GetSpellCharges(TRB.Data.spells.shieldBlock.id)
 				end
 			elseif spellId == TRB.Data.spells.ancientAftershock.id then
 				local legendaryDuration = 0
