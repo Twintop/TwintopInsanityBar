@@ -725,9 +725,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			s2m = {
 				isActive = false,
-				isDebuffActive = false,
 				modifier = 2.0,
-				modifierDebuff = 0.0,
 				id = 319952,
 				name = "",
 				icon = ""
@@ -744,7 +742,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			-- Conduits
 			mindDevourer = {
 				id = 338333,
-				--id = 17, --PWS for testing
 				name = "",
 				icon = "",
 				isActive = false
