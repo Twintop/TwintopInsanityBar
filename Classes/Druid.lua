@@ -864,11 +864,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				valid = true
 			end
 		elseif var == "$pulsarNextStarsurge" then
-			if TRB.Data.character.items.primordialArcanicPulsar and ((TRB.Data.spells.primordialArcanicPulsar.maxAstralPower - TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower) <= TRB.Data.character.starsurgeThreshold) then
+			if TRB.Data.character.items.primordialArcanicPulsar and
+				(((TRB.Data.spells.primordialArcanicPulsar.maxAstralPower or 0) - (TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower or 0)) <= TRB.Data.character.starsurgeThreshold) then
 				valid = true
 			end
 		elseif var == "$pulsarNextStarfall" then
-			if TRB.Data.character.items.primordialArcanicPulsar and ((TRB.Data.spells.primordialArcanicPulsar.maxAstralPower - TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower) <= TRB.Data.character.starfallThreshold) then
+			if TRB.Data.character.items.primordialArcanicPulsar and
+				(((TRB.Data.spells.primordialArcanicPulsar.maxAstralPower or 0) - (TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower or 0)) <= TRB.Data.character.starfallThreshold) then
 				valid = true
 			end
 		else
@@ -1064,7 +1066,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		--$pulsar variables
-		local pulsarCollected = TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower
+		local pulsarCollected = TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower or 0
 		local pulsarCollectedPercent = string.format("%.1f", TRB.Functions.RoundTo((pulsarCollected / TRB.Data.spells.primordialArcanicPulsar.maxAstralPower) * 100, 1))
 		local pulsarRemaining = TRB.Data.spells.primordialArcanicPulsar.maxAstralPower - pulsarCollected
 		local pulsarRemainingPercent = string.format("%.1f", TRB.Functions.RoundTo((pulsarRemaining / TRB.Data.spells.primordialArcanicPulsar.maxAstralPower) * 100, 1))
