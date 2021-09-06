@@ -111,7 +111,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			torghast = {
 				dreamspunMushroomsModifier = 1,
-				phantasmicInfuserModifier = 1
+				phantasmicInfuserModifier = 1,
+				rampaging = {
+					spellCostModifier = 1.0,
+					coolDownReduction = 1.0
+				}
 			}
 		}
 
@@ -583,7 +587,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			torghast = {
 				dreamspunMushroomsModifier = 1,
 				elethiumMuzzleModifier = 1,
-				phantasmicInfuserModifier = 1
+				phantasmicInfuserModifier = 1,
+				rampaging = {
+					spellCostModifier = 1.0,
+					coolDownReduction = 1.0
+				}
 			}
 		}
 
@@ -1461,13 +1469,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if IsInJailersTower() then
 				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1 + ((select(16, TRB.Functions.FindAuraById(TRB.Data.spells.dreamspunMushrooms.id, "player", "MAW")) or 0) / 100)
 				if TRB.Functions.FindAuraById(TRB.Data.spells.elethiumMuzzle.id, "player", "MAW") then
-					TRB.Data.character.torghast.elethiumMuzzleModifier = 0.75
+					TRB.Data.character.torghast.elethiumMuzzleModifier = 1 / 1.25
 				else
 					TRB.Data.character.torghast.elethiumMuzzleModifier = 1
 				end
 
 				if TRB.Functions.FindAuraById(TRB.Data.spells.phantasmicInfuser.id, "player", "MAW") then
-					TRB.Data.character.torghast.phantasmicInfuserModifier = 0.9
+					TRB.Data.character.torghast.phantasmicInfuserModifier = 1 / 1.1
 				else
 					TRB.Data.character.torghast.phantasmicInfuserModifier = 1
 				end
@@ -1717,7 +1725,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				local latency = TRB.Functions.GetLatency()
 				local vbStart, vbDuration, _, _ = GetSpellCooldown(TRB.Data.spells.voidBolt.id)
 				local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(TRB.Data.spells.voidBolt.id)
-				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier * TRB.Data.character.torghast.phantasmicInfuserModifier), 0.75) + latency + reaction
+				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier * TRB.Data.character.torghast.phantasmicInfuserModifier * TRB.Data.character.torghast.rampaging.coolDownReduction), 0.75) + latency + reaction
 				local gcdLockRemaining = TRB.Functions.GetCurrentGCDLockRemaining()
 
 				local castGrantsExtension = true
@@ -1926,7 +1934,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function CalculateHolyWordCooldown(base)
 		local holyOrationValue = TRB.Data.spells.holyOration.conduitRanks[TRB.Functions.GetSoulbindRank(TRB.Data.spells.holyOration.conduitId)]
-		local mod = 1
+		local mod = 1 * TRB.Data.character.torghast.rampaging.coolDownReduction
 
 		if TRB.Data.spells.apotheosis.isActive then
 			mod = mod * TRB.Data.spells.apotheosis.holyWordModifier
@@ -1935,7 +1943,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		if TRB.Data.character.talents.lightOfTheNaaru.isSelected then
 			mod = mod * TRB.Data.spells.lightOfTheNaaru.holyWordModifier
 		end
-
 		mod = mod + holyOrationValue
 
 		return mod * base
@@ -3011,7 +3018,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 					if spellId then
-						local manaCost = -TRB.Functions.GetSpellManaCost(spellId) * TRB.Data.character.effects.overgrowthSeedlingModifier
+						local manaCost = -TRB.Functions.GetSpellManaCost(spellId) * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
 
 						TRB.Data.snapshotData.casting.startTime = currentSpellStartTime / 1000
 						TRB.Data.snapshotData.casting.endTime = currentSpellEndTime / 1000

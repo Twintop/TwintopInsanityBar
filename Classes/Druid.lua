@@ -74,6 +74,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		},
 		items = {
 			primordialArcanicPulsar = false
+		},
+		torghast = {
+			rampaging = {
+				spellCostModifier = 1.0,
+				coolDownReduction = 1.0
+			}
 		}
 	}
 
@@ -498,9 +504,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Data.character.talents.newMoon.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 
 		GetCurrentMoonSpell()
-
-		TRB.Data.character.starsurgeThreshold = TRB.Data.spells.starsurge.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier
-		TRB.Data.character.starfallThreshold = TRB.Data.spells.starfall.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier
 
 		if TRB.Data.settings.druid ~= nil and TRB.Data.settings.druid.balance ~= nil then
 			local currentResource = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
@@ -1253,6 +1256,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function UpdateSnapshot()
 		TRB.Functions.UpdateSnapshot()
 		local currentTime = GetTime()
+
+		TRB.Data.character.starsurgeThreshold = TRB.Data.spells.starsurge.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
+		TRB.Data.character.starfallThreshold = TRB.Data.spells.starfall.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
 
 		TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))
 

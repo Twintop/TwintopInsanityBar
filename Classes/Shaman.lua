@@ -63,6 +63,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		items = {
 		},
 		torghast = {
+			rampaging = {
+				spellCostModifier = 1.0,
+				coolDownReduction = 1.0
+			},
 			depletedTeslaCoil = false
 		}
 	}
@@ -305,8 +309,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Data.character.talents.icefury.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.stormkeeper.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.ascendance.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
-
-		TRB.Data.character.earthShockThreshold = 60 * TRB.Data.character.effects.overgrowthSeedlingModifier
 
 		if TRB.Data.settings.shaman ~= nil and TRB.Data.settings.shaman.elemental ~= nil and TRB.Data.settings.shaman.elemental.earthShockThreshold and TRB.Data.character.earthShockThreshold < TRB.Data.character.maxResource then
 			resourceFrame.thresholds[1]:Show()
@@ -753,6 +755,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local currentTime = GetTime()
 		TRB.Functions.UpdateSnapshot()
 		UpdateIcefury()
+
+		if IsInJailersTower() then
+			TRB.Data.character.torghast.rampaging.spellCostModifier, TRB.Data.character.torghast.rampaging.coolDownReduction = TRB.Functions.GetRampagingBuff()
+		else
+			TRB.Data.character.torghast.rampaging.spellCostModifier = 1
+			TRB.Data.character.torghast.rampaging.coolDownReduction = 1
+		end
+		
+		TRB.Data.character.earthShockThreshold = 60 * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
 		
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShock then

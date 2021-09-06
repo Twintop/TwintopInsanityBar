@@ -70,6 +70,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			items = {
 				raeshalareDeathsWhisper = false
 			},
+			torghast = {
+				rampaging = {
+					spellCostModifier = 1.0,
+					coolDownReduction = 1.0
+				}
+			}
 		}
 
 		specCache.beastMastery.spells = {
@@ -389,6 +395,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			},
 			items = {
 				raeshalareDeathsWhisper = false
+			},
+			torghast = {
+				rampaging = {
+					spellCostModifier = 1.0,
+					coolDownReduction = 1.0
+				}
 			}
 		}
 
@@ -758,6 +770,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				}
 			},
 			items = {
+			},
+			torghast = {
+				rampaging = {
+					spellCostModifier = 1.0,
+					coolDownReduction = 1.0
+				}
 			}
 		}
 
@@ -1475,7 +1493,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				modifier = modifier * TRB.Data.spells.nesingwarysTrappingApparatus.modifier
 			end
 		else
-			modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier
+			modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
 		end
 
         return resource * modifier

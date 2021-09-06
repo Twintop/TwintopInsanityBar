@@ -100,6 +100,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			items = {
 				glory = false,
 				naturesFury = false
+			},
+			torghast = {
+				rampaging = {
+					spellCostModifier = 1.0,
+					coolDownReduction = 1.0
+				}
 			}
 		}
 
@@ -451,6 +457,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			items = {
 				glory = false,
 				naturesFury = false
+			},
+			torghast = {
+				rampaging = {
+					spellCostModifier = 1.0,
+					coolDownReduction = 1.0
+				}
 			}
 		}
 
@@ -1047,7 +1059,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		if resource > 0 then
 
 		else
-			modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier
+			modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
 			if GetSpecialization() == 1 then
 				if TRB.Data.spells.deadlyCalm.isActive and includeDeadlyCalm then
 					modifier = modifier * TRB.Data.spells.deadlyCalm.modifier

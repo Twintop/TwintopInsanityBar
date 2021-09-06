@@ -88,6 +88,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				},
 			},
 			items = {
+			},
+			torghast = {
+				rampaging = {
+					spellCostModifier = 1.0,
+					coolDownReduction = 1.0
+				}
 			}
 		}
 
@@ -560,7 +566,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	end
 
     local function CalculateAbilityResourceValue(resource)
-		local modifier = 1.0 * TRB.Data.character.effects.overgrowthSeedlingModifier
+		local modifier = 1.0 * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
 
         return resource * modifier
     end

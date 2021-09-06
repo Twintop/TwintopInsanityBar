@@ -1683,7 +1683,8 @@ local function CheckCharacter()
 
 	-- Sanctum of Domination
 	if C_Map.GetBestMapForUnit("player") == TRB.Data.constants.sanctumOfDominationZoneId and TRB.Functions.FindAuraById(TRB.Data.constants.overgrowthSeedling.id, "player", "MAW") then
-		TRB.Data.character.effects.overgrowthSeedlingModifier = TRB.Data.constants.overgrowthSeedling.resourceModifier
+		TRB.Data.character.effects.overgrowthSeedlingModifier = 
+		TRB.Data.constants.overgrowthSeedling.resourceModifier
 	else
 		TRB.Data.character.effects.overgrowthSeedlingModifier = 1
 	end
@@ -1703,6 +1704,13 @@ local function UpdateSnapshot()
 	TRB.Data.snapshotData.mastery = GetMasteryEffect("player")
 	TRB.Data.snapshotData.versatilityOffensive = GetCombatRatingBonus(29)
 	TRB.Data.snapshotData.versatilityDefensive = GetCombatRatingBonus(31)
+
+	if IsInJailersTower() then
+		TRB.Data.character.torghast.rampaging.spellCostModifier, TRB.Data.character.torghast.rampaging.coolDownReduction = TRB.Functions.GetRampagingBuff()
+	else
+		TRB.Data.character.torghast.rampaging.spellCostModifier = 1
+		TRB.Data.character.torghast.rampaging.coolDownReduction = 1
+	end
 end
 TRB.Functions.UpdateSnapshot = UpdateSnapshot
 
@@ -1770,6 +1778,19 @@ local function GetSoulbindRank(id)
 	return 0
 end
 TRB.Functions.GetSoulbindRank = GetSoulbindRank
+
+-- Torghast specific
+
+local function GetRampagingBuff()
+	local name, _, _, _, _, _, _, _, _, _, _, _, _, _, _, manaCost, cdr = TRB.Functions.FindBuffById(TRB.Data.constants.rampagingId)
+
+	if name == nil then
+		return 1, 1
+	else
+		return 1 + (manaCost/100), 1 / (1 + (cdr/100))
+	end
+end
+TRB.Functions.GetRampagingBuff = GetRampagingBuff
 
 -- LibSharedMedia Support Functions
 
