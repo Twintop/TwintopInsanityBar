@@ -175,7 +175,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		-- Legendaries
 		echoesOfGreatSundering = {
-			id = 114050,
+			id = 336217,
 			name = "", 
 			icon = ""
 		},
@@ -762,7 +762,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.character.torghast.rampaging.spellCostModifier = 1
 			TRB.Data.character.torghast.rampaging.coolDownReduction = 1
 		end
-		
+
 		TRB.Data.character.earthShockThreshold = 60 * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
 		
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
