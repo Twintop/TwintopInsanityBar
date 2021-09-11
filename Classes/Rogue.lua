@@ -374,6 +374,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		}
 
 		specCache.assassination.snapshotData.energyRegen = 0
+		specCache.assassination.snapshotData.comboPoints = 0
 		specCache.assassination.snapshotData.audio = {
 			overcapCue = false,
 			--playedKillShotCue = false
@@ -1529,6 +1530,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		if TRB.Data.specSupported then
 			TRB.Data.resource = Enum.PowerType.Energy
 			TRB.Data.resourceFactor = 1
+			TRB.Data.resource2 = Enum.PowerType.ComboPoints
+			TRB.Data.resource2Factor = 1
 
             CheckCharacter()
 
@@ -2918,6 +2921,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 									frameLevel = 128
 								end
 							end
+                            
+                            if spell.comboPoints == true and TRB.Data.snapshotData.resource2 == 0 then
+                                thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
+                                frameLevel = 127
+                            end
 
 							if TRB.Data.settings.rogue.assassination.thresholds[spell.settingKey].enabled and showThreshold then
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()

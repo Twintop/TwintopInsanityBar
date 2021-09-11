@@ -1699,6 +1699,11 @@ TRB.Functions.CheckCharacter_Class = CheckCharacter_Class
 
 local function UpdateSnapshot()
 	TRB.Data.snapshotData.resource = UnitPower("player", TRB.Data.resource, true)
+
+	if TRB.Data.resource2 ~= nil then
+		TRB.Data.snapshotData.resource2 = UnitPower("player", TRB.Data.resource2, true)
+	end
+
 	TRB.Data.snapshotData.haste = UnitSpellHaste("player")
 	TRB.Data.snapshotData.crit = GetCritChance("player")
 	TRB.Data.snapshotData.mastery = GetMasteryEffect("player")
