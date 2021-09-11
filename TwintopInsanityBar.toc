@@ -2,9 +2,9 @@
 ## Title: Twintop's Resource Bar
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 9.1.0.15
-## X-ReleaseType: release
-## X-ReleaseDate: September 09, 2021
+## Version: 9.1.0.16
+## X-ReleaseType: beta
+## X-ReleaseDate: September 11, 2021
 ## SavedVariables: TwintopInsanityBarSettings
 ## DefaultState: enabled
 ## Notes: Multi-class Resource Bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
@@ -35,6 +35,8 @@ Classes\HunterOptions.lua
 Classes\Hunter.lua
 Classes\PriestOptions.lua
 Classes\Priest.lua
+Classes\RogueOptions.lua
+Classes\Rogue.lua
 Classes\ShamanOptions.lua
 Classes\Shaman.lua
 Classes\Warrior.lua

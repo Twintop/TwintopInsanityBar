@@ -64,6 +64,9 @@ local function LoadDefaultSettings()
                     holy = true,
                     shadow = true
                 },
+                rogue = {
+                    assassination = true
+                },
                 shaman = {
                     elemental = true
                 },
@@ -87,6 +90,11 @@ local function LoadDefaultSettings()
         priest = {
             holy = {},
             shadow = {}
+        },
+        rogue = {
+            assassination = {},
+            --outlaw = {},
+            --subtlety = {}
         },
         shaman = {
             elemental = {}
