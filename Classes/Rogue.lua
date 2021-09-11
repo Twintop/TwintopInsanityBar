@@ -78,80 +78,191 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		}
 
 		specCache.assassination.spells = {
-			--[[arcaneShot = {
-				id = 185358,
+			-- Rogue Class Abilities
+            ambush = {
+				id = 8676,
 				name = "",
 				icon = "",
-				energy = -20,
+				energy = -50,
+                comboPointsGenerated = 2,
+                stealth = true,
 				thresholdId = 1,
-				settingKey = "arcaneShot",
+				settingKey = "ambush",
+                --isSnowflake = true
 				thresholdUsable = false
 			},
-			cobraShot = {
-				id = 193455,
-				name = "",
-				icon = "",
-				energy = -35,
-				thresholdId = 4,
-				settingKey = "cobraShot",
-				isSnowflake = false,
-				thresholdUsable = false
-			},
-			killCommand = {
-				id = 34026,
-				name = "",
-				icon = "",
-				energy = -30,
-				thresholdId = 5,
-				settingKey = "killCommand",
-				isSnowflake = true,
-				hasCooldown = true,
-				thresholdUsable = false
-			},
-			killShot = {
-				id = 53351,
-				name = "",
-				icon = "",
-				energy = -10,
-				thresholdId = 6,
-				settingKey = "killShot",
-				healthMinimum = 0.2,
-				isSnowflake = true,
-				thresholdUsable = false
-			},
-			multiShot = {
-				id = 2643,
+			cheapShot = {
+				id = 1833,
 				name = "",
 				icon = "",
 				energy = -40,
-				thresholdId = 7,
-				settingKey = "multiShot",
+                comboPointsGenerated = 1,
+                stealth = true,
+				thresholdId = 2,
+				settingKey = "cheapShot",
+				--isSnowflake = false,
 				thresholdUsable = false
 			},
-			revivePet = {
-				id = 982,
+			crimsonVial = {
+				id = 185311,
+				name = "",
+				icon = "",
+				energy = -20,
+                comboPointsGenerated = 0,
+				thresholdId = 3,
+				settingKey = "crimsonVial",
+				hasCooldown = true,
+                cooldown = 30,
+				thresholdUsable = false
+			},
+			distract = {
+				id = 1725,
+				name = "",
+				icon = "",
+				energy = -30,
+                comboPointsGenerated = 0,
+				thresholdId = 4,
+				settingKey = "distract",
+				hasCooldown = true,
+                cooldown = 30,
+				thresholdUsable = false
+			},
+			feint = {
+				id = 1966,
 				name = "",
 				icon = "",
 				energy = -35,
-				thresholdId = 8,
-				settingKey = "revivePet",
+                comboPointsGenerated = 0,
+				thresholdId = 5,
+				settingKey = "feint",
+                hasCooldown = true,
+                cooldown = 15,
 				thresholdUsable = false
 			},
-			scareBeast = {
-				id = 1513,
+			kidneyShot = {
+				id = 408,
 				name = "",
 				icon = "",
 				energy = -25,
-				thresholdId = 9,
-				settingKey = "scareBeast",
+                comboPoints = true,
+				thresholdId = 6,
+				settingKey = "kidneyShot",
+                hasCooldown = true,
+                cooldown = 20,
 				thresholdUsable = false
 			},
-			beastialWrath = {
-				id = 19574,
+			sap = {
+				id = 6770,
 				name = "",
 				icon = "",
+				energy = -35,
+                comboPointsGenerated = 0,
+				thresholdId = 7,
+				settingKey = "sap",
+				thresholdUsable = false
+			},
+			shiv = {
+				id = 5938,
+				name = "",
+				icon = "",
+				energy = -20,
+                comboPointsGenerated = 1,
+				thresholdId = 8,
+				settingKey = "shiv",
+                hasCooldown = true,
+                cooldown = 25,
+				thresholdUsable = false
+			},
+			sliceAndDice = {
+				id = 315496,
+				name = "",
+				icon = "",
+				energy = -25,
+                comboPoints = true,
+				thresholdId = 9,
+				settingKey = "sliceAndDice",
+                hasCooldown = false,
+				thresholdUsable = false
 			},
 
+            -- Assassination Spec Abilities
+
+			envenom = {
+				id = 32645,
+				name = "",
+				icon = "",
+				energy = -35,
+                comboPoints = true,
+				thresholdId = 10,
+				settingKey = "envenom",
+                hasCooldown = false,
+				thresholdUsable = false
+			},
+			fanOfKnives = {
+				id = 51723,
+				name = "",
+				icon = "",
+				energy = -35,
+                comboPointsGenerated = 1,
+				thresholdId = 11,
+				settingKey = "fanOfKnives",
+                hasCooldown = false,
+				thresholdUsable = false
+			},
+			garrote = {
+				id = 703,
+				name = "",
+				icon = "",
+				energy = -45,
+                comboPointsGenerated = 1,
+				thresholdId = 12,
+				settingKey = "garrote",
+                hasCooldown = true,
+                cooldown = 6,
+				thresholdUsable = false
+			},
+			mutilate = {
+				id = 1329,
+				name = "",
+				icon = "",
+				energy = -50,
+                comboPointsGenerated = 2,
+				thresholdId = 13,
+				settingKey = "mutilate",
+                hasCooldown = false,
+				thresholdUsable = false
+			},
+			poisonedKnife = {
+				id = 185565,
+				name = "",
+				icon = "",
+				energy = -40,
+                comboPointsGenerated = 1,
+				thresholdId = 14,
+				settingKey = "poisonedKnife",
+                hasCooldown = false,
+				thresholdUsable = false
+			},
+			rupture = {
+				id = 1943,
+				name = "",
+				icon = "",
+				energy = -25,
+                comboPoints = true,
+				thresholdId = 15,
+				settingKey = "rupture",
+                hasCooldown = false,
+				thresholdUsable = false
+			},
+			vendetta = {
+				id = 79140,
+				name = "",
+				icon = "",
+				energy = 60,
+                duration = 3
+			},
+
+            --[[
 			barbedShot = {
 				id = 217200,
 				buffId = {
@@ -260,8 +371,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				itemId = 186414
 			},
             ]]
-
-
 		}
 
 		specCache.assassination.snapshotData.energyRegen = 0
@@ -274,32 +383,42 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			currentTargetGuid = nil,
 			targets = {}
 		}
-		--[[1specCache.assassination.snapshotData.flayersMark = {
+		--[[specCache.assassination.snapshotData.flayersMark = {
 			spellId = nil,
 			duration = 0,
 			endTime = nil
-		}
-		specCache.assassination.snapshotData.killShot = {
+		}]]
+		specCache.assassination.snapshotData.crimsonVial = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.assassination.snapshotData.killCommand = {
+		specCache.assassination.snapshotData.distract = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.assassination.snapshotData.barrage = {
+		specCache.assassination.snapshotData.feint = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.assassination.snapshotData.aMurderOfCrows = {
+		specCache.assassination.snapshotData.kidneyShot = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.assassination.snapshotData.flayedShot = {
+		specCache.assassination.snapshotData.shiv = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		specCache.assassination.snapshotData.garrote = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		--[[specCache.assassination.snapshotData.flayedShot = {
 			startTime = nil,
 			duration = 0
 		}
@@ -2666,6 +2785,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local refreshText = false
 		local specId = GetSpecialization()
 
+
 		if specId == 1 then
 			UpdateSnapshot_Assassination()
 			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.rogue.assassination)
@@ -3348,12 +3468,38 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 			if sourceGUID == TRB.Data.character.guid then
 				if specId == 1 then --Assassination
-					--[[if spellId == TRB.Data.spells.barrage.id then
+					if spellId == TRB.Data.spells.crimsonVial.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.barrage.startTime = currentTime
-							TRB.Data.snapshotData.barrage.duration = TRB.Data.spells.barrage.cooldown
+							TRB.Data.snapshotData.crimsonVial.startTime = currentTime
+							TRB.Data.snapshotData.crimsonVial.duration = TRB.Data.spells.crimsonVial.cooldown
 						end
-					elseif spellId == TRB.Data.spells.barbedShot.id then
+                    elseif spellId == TRB.Data.spells.distract.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.distract.startTime = currentTime
+							TRB.Data.snapshotData.distract.duration = TRB.Data.spells.distract.cooldown
+						end
+                    elseif spellId == TRB.Data.spells.feint.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.feint.startTime = currentTime
+							TRB.Data.snapshotData.feint.duration = TRB.Data.spells.feint.cooldown
+						end
+                    elseif spellId == TRB.Data.spells.kidneyShot.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.kidneyShot.startTime = currentTime
+							TRB.Data.snapshotData.kidneyShot.duration = TRB.Data.spells.kidneyShot.cooldown
+						end
+                    elseif spellId == TRB.Data.spells.shiv.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.shiv.startTime = currentTime
+							TRB.Data.snapshotData.shiv.duration = TRB.Data.spells.shiv.cooldown
+						end
+                    elseif spellId == TRB.Data.spells.garrote.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.garrote.startTime = currentTime
+							TRB.Data.snapshotData.garrote.duration = TRB.Data.spells.garrote.cooldown
+						end
+                    end
+					--[[elseif spellId == TRB.Data.spells.barbedShot.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Barbed Shot
 							TRB.Data.snapshotData.barbedShot.charges, _, TRB.Data.snapshotData.barbedShot.startTime, TRB.Data.snapshotData.barbedShot.duration, _ = GetSpellCharges(TRB.Data.spells.barbedShot.id)
 						end
