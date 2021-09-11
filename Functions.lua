@@ -1,4 +1,5 @@
 local _, TRB = ...
+local _, _, classIndexId = UnitClass("player")
 TRB.Functions = TRB.Functions or {}
 local EXPORT_STRING_PREFIX = "!TRB!"
 
@@ -603,11 +604,12 @@ local function CaptureBarPosition(settings)
 end
 TRB.Functions.CaptureBarPosition = CaptureBarPosition
 
-local function SetBarCurrentValue(settings, bar, value)
+local function SetBarCurrentValue(settings, bar, value, maxResource)
+	maxResource = maxResource or TRB.Data.character.maxResource
 	value = value or 0
 	if settings ~= nil and settings.bar ~= nil and bar ~= nil and TRB.Data.character.maxResource ~= nil and TRB.Data.character.maxResource > 0 then
 		local min, max = bar:GetMinMaxValues()
-		local factor = max / TRB.Data.character.maxResource
+		local factor = max / maxResource
 		bar:SetValue(value * factor)
 	end
 end
@@ -683,7 +685,6 @@ local function ConstructResourceBar(settings)
             edgeSize = 1,
             insets = {0, 0, 0, 0}
         })
-        TRB.Functions.RepositionBar(settings)
         barContainerFrame:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))
         barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
         barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
@@ -779,6 +780,82 @@ local function ConstructResourceBar(settings)
         passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		passiveFrame:SetFrameLevel(80)
 
+		if TRB.Frames.resource2Frames ~= nil then
+			local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+			local nodes = TRB.Data.character.maxResource2
+
+			if nodes == nil or nodes == 0 then
+				nodes = length
+			end
+	
+			local nodeWidth = settings.bar.width / (nodes+1)
+
+			for x = 1, length do
+				local container = TRB.Frames.resource2Frames[x].containerFrame
+				local border = TRB.Frames.resource2Frames[x].borderFrame
+				local resource = TRB.Frames.resource2Frames[x].resourceFrame
+
+				container:Show()
+				container:SetBackdrop({
+					bgFile = settings.textures.background,
+					tile = true,
+					tileSize = nodeWidth,
+					edgeSize = 1,
+					insets = {0, 0, 0, 0}
+				})
+				
+				container:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))
+				container:SetWidth(nodeWidth-(settings.bar.border*2))
+				container:SetHeight(settings.bar.height-(settings.bar.border*2))
+				container:SetFrameStrata(TRB.Data.settings.core.strata.level)
+				container:SetFrameLevel(0)
+
+				if settings.bar.border < 1 then
+					border:Show()
+					border.backdropInfo = {
+						edgeFile = settings.textures.border,
+						tile = true,
+						tileSize=4,
+						edgeSize = 1,
+						insets = {0, 0, 0, 0}
+					}
+					border:ApplyBackdrop()
+					border:Hide()
+				else
+					border:Show()
+					border.backdropInfo = {
+						edgeFile = settings.textures.border,
+						tile = true,
+						tileSize = 4,
+						edgeSize = settings.bar.border,
+						insets = {0, 0, 0, 0}
+					}
+					border:ApplyBackdrop()
+				end
+		
+				border:ClearAllPoints()
+				border:SetPoint("CENTER", container)
+				border:SetPoint("CENTER", 0, 0)
+				border:SetBackdropColor(0, 0, 0, 0)
+				border:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
+				border:SetWidth(nodeWidth)
+				border:SetHeight(settings.bar.height)
+				border:SetFrameStrata(TRB.Data.settings.core.strata.level)
+				border:SetFrameLevel(126)
+		
+				resource:Show()
+				resource:SetMinMaxValues(0, 1)
+				resource:SetHeight(settings.bar.height-(settings.bar.border*2))
+				resource:SetPoint("LEFT", container, "LEFT", 0, 0)
+				resource:SetPoint("RIGHT", container, "RIGHT", 0, 0)
+				resource:SetStatusBarTexture(settings.textures.resourceBar)
+				resource:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
+				resource:SetFrameStrata(TRB.Data.settings.core.strata.level)
+				resource:SetFrameLevel(125)
+			end
+		end
+
+        TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
 		TRB.Functions.RedrawThresholdLines(settings)
 
 		SetBarMinMaxValues(settings)
@@ -822,21 +899,46 @@ local function ConstructResourceBar(settings)
 end
 TRB.Functions.ConstructResourceBar = ConstructResourceBar
 
-local function RepositionBarForPRD(settings)
+local function RepositionBarForPRD(settings, containerFrame)
 	if settings.bar.pinToPersonalResourceDisplay then
-		TRB.Frames.barContainerFrame:ClearAllPoints()
-		TRB.Frames.barContainerFrame:SetPoint("CENTER", C_NamePlate.GetNamePlateForUnit("player"), "CENTER", settings.bar.xPos, settings.bar.yPos)
+		containerFrame:ClearAllPoints()
+		containerFrame:SetPoint("CENTER", C_NamePlate.GetNamePlateForUnit("player"), "CENTER", settings.bar.xPos, settings.bar.yPos)
 	end
 end
 TRB.Functions.RepositionBarForPRD = RepositionBarForPRD
 
-local function RepositionBar(settings)
+local function RepositionBar(settings, containerFrame)
 	if settings.bar.pinToPersonalResourceDisplay then
-		TRB.Functions.RepositionBarForPRD(settings)
+		TRB.Functions.RepositionBarForPRD(settings, containerFrame)
 	else
-		TRB.Frames.barContainerFrame:ClearAllPoints()
-		TRB.Frames.barContainerFrame:SetPoint("CENTER", UIParent)
-		TRB.Frames.barContainerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+		containerFrame:ClearAllPoints()
+		containerFrame:SetPoint("CENTER", UIParent)
+		containerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+	end
+
+	if TRB.Frames.resource2Frames ~= nil then
+		local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+		local nodes = TRB.Data.character.maxResource2
+
+		if nodes == nil or nodes == 0 then
+			nodes = length
+		end
+
+		local nodeWidth = settings.bar.width / (nodes+1)
+		local nodeSpacing = nodeWidth / (nodes-1)
+
+		for x = 1, length do
+			local left = (nodeWidth + nodeSpacing) * (x - 1)
+			local container = TRB.Frames.resource2Frames[x].containerFrame
+
+			if x <= nodes then
+				container:Show()
+				container:SetWidth(nodeWidth-(settings.bar.border*2))
+				container:SetPoint("BOTTOMLEFT", containerFrame, "BOTTOMLEFT", left, settings.bar.height + settings.bar.border)
+			else
+				container:Hide()
+			end
+		end
 	end
 end
 TRB.Functions.RepositionBar = RepositionBar

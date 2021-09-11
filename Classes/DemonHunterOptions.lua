@@ -577,7 +577,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.demonhunter.havoc.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.demonhunter.havoc.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.demonhunter.havoc.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.demonhunter.havoc.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.demonhunter.havoc)
+			TRB.Functions.RepositionBar(TRB.Data.settings.demonhunter.havoc, TRB.Frames.barContainerFrame)
 		end)
 
 

@@ -3697,7 +3697,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		if specId == 2 then
 			UpdateSnapshot_Holy()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.priest.holy)
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.priest.holy, TRB.Frames.barContainerFrame)
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
@@ -4013,7 +4013,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		elseif specId == 3 then
 			UpdateSnapshot_Shadow()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.priest.shadow)
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.priest.shadow, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()

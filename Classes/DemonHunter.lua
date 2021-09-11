@@ -1064,7 +1064,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		if specId == 1 then
 			UpdateSnapshot_Havoc()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.demonhunter.havoc)
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.demonhunter.havoc, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()

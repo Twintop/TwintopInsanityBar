@@ -518,7 +518,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.shaman.elemental.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.shaman.elemental.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.shaman.elemental.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.shaman.elemental)
+			TRB.Functions.RepositionBar(TRB.Data.settings.shaman.elemental, TRB.Frames.barContainerFrame)
 		end)
 
 

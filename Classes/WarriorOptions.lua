@@ -788,7 +788,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.warrior.arms.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.warrior.arms.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.warrior.arms.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.warrior.arms)
+			TRB.Functions.RepositionBar(TRB.Data.settings.warrior.arms, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -2945,7 +2945,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.warrior.fury.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.warrior.fury.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.warrior.fury.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.warrior.fury.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.warrior.fury)
+			TRB.Functions.RepositionBar(TRB.Data.settings.warrior.fury, TRB.Frames.barContainerFrame)
 		end)
 
 

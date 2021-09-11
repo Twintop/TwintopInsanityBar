@@ -2644,7 +2644,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		if specId == 1 then
 			UpdateSnapshot_BeastMastery()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.hunter.beastMastery)
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.hunter.beastMastery, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
@@ -2867,7 +2867,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.UpdateResourceBar(TRB.Data.settings.hunter.beastMastery, refreshText)
 		elseif specId == 2 then
 			UpdateSnapshot_Marksmanship()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.hunter.marksmanship)
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.hunter.marksmanship, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
@@ -3091,7 +3091,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.UpdateResourceBar(TRB.Data.settings.hunter.marksmanship, refreshText)
 		elseif specId == 3 then
 			UpdateSnapshot_Survival()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.hunter.survival)
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.hunter.survival, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()

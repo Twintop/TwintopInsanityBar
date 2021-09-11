@@ -2,6 +2,7 @@ local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 4 then --Only do this if we're on a Rogue!
 	local barContainerFrame = TRB.Frames.barContainerFrame
+    local resource2Frame = TRB.Frames.resource2Frame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
 	local passiveFrame = TRB.Frames.passiveFrame
@@ -48,6 +49,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
+            maxResource2 = 5,
 			covenantId = 0,
 			effects = {
 				overgrowthSeedling = 1.0
@@ -1459,6 +1461,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Functions.CheckCharacter()
 		TRB.Data.character.className = "rogue"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy)
+		TRB.Data.character.maxResource2 = UnitPowerMax("player", Enum.PowerType.ComboPoints)
 
 		if specId == 1 then
 			TRB.Data.character.specName = "assassination"
@@ -2788,10 +2791,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local refreshText = false
 		local specId = GetSpecialization()
 
-
 		if specId == 1 then
 			UpdateSnapshot_Assassination()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.rogue.assassination)
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
@@ -2921,7 +2923,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 									frameLevel = 128
 								end
 							end
-                            
+
                             if spell.comboPoints == true and TRB.Data.snapshotData.resource2 == 0 then
                                 thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
                                 frameLevel = 127
@@ -3014,12 +3016,20 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
+            
+                    for x = 1, TRB.Data.character.maxResource2 do
+                        if TRB.Data.snapshotData.resource2 >= x then
+                            TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+                        else
+                            TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+                        end
+                    end
 				end
 			end
 			TRB.Functions.UpdateResourceBar(TRB.Data.settings.rogue.assassination, refreshText)
 		--[[elseif specId == 2 then
 			UpdateSnapshot_Outlaw()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.rogue.outlaw)
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
@@ -3243,7 +3253,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.UpdateResourceBar(TRB.Data.settings.rogue.outlaw, refreshText)
 		elseif specId == 3 then
 			UpdateSnapshot_Subtlety()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.rogue.subtlety)
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.rogue.subtlety, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()

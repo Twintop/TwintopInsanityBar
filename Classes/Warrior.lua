@@ -1946,7 +1946,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		if specId == 1 then
 			UpdateSnapshot_Arms()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.warrior.arms)
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.warrior.arms, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
@@ -2141,7 +2141,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.UpdateResourceBar(TRB.Data.settings.warrior.arms, refreshText)
 		elseif specId == 2 then
 			UpdateSnapshot_Fury()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.warrior.fury)
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.warrior.fury, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()

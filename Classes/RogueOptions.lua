@@ -1087,7 +1087,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.rogue.assassination.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.rogue.assassination.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination)
+			TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -3512,7 +3512,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.rogue.outlaw.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.rogue.outlaw.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.rogue.outlaw.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.rogue.outlaw.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw)
+			TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -6472,7 +6472,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.rogue.subtlety.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.rogue.subtlety.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.rogue.subtlety.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.rogue.subtlety.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.rogue.subtlety)
+			TRB.Functions.RepositionBar(TRB.Data.settings.rogue.subtlety, TRB.Frames.barContainerFrame)
 		end)
 
 

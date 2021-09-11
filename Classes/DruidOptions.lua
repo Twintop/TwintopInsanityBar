@@ -559,7 +559,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.balance.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.balance.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.druid.balance)
+			TRB.Functions.RepositionBar(TRB.Data.settings.druid.balance, TRB.Frames.barContainerFrame)
 		end)
 
 

@@ -1070,7 +1070,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.hunter.beastMastery)
+			TRB.Functions.RepositionBar(TRB.Data.settings.hunter.beastMastery, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -3496,7 +3496,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.hunter.marksmanship)
+			TRB.Functions.RepositionBar(TRB.Data.settings.hunter.marksmanship, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -6456,7 +6456,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.survival.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.survival.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.hunter.survival)
+			TRB.Functions.RepositionBar(TRB.Data.settings.hunter.survival, TRB.Frames.barContainerFrame)
 		end)
 
 

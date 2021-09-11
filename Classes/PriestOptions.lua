@@ -858,7 +858,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.priest.holy.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.priest.holy.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.priest.holy.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.priest.holy)
+			TRB.Functions.RepositionBar(TRB.Data.settings.priest.holy, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -3690,7 +3690,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.priest.shadow.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.priest.shadow.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.priest.shadow.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.priest.shadow)
+			TRB.Functions.RepositionBar(TRB.Data.settings.priest.shadow, TRB.Frames.barContainerFrame)
 		end)
 
 
