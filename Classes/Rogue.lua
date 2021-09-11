@@ -1461,9 +1461,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Functions.CheckCharacter()
 		TRB.Data.character.className = "rogue"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy)
-		TRB.Data.character.maxResource2 = UnitPowerMax("player", Enum.PowerType.ComboPoints)
+        local maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
+        local settings = nil
 
 		if specId == 1 then
+            settings = TRB.Data.settings.rogue.assassination
 			TRB.Data.character.specName = "assassination"
 			--TRB.Data.character.talents.scentOfBlood.isSelected = select(4, GetTalentInfo(2, 1, TRB.Data.character.specGroup))
 			--TRB.Data.character.talents.chimaeraShot.isSelected = select(4, GetTalentInfo(2, 3, TRB.Data.character.specGroup))
@@ -1489,6 +1491,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.character.talents.flankingStrike.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.chakrams.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))]]
 		end
+
+        
+        if settings ~= nil and maxComboPoints ~= TRB.Data.character.maxResource2 then
+            TRB.Data.character.maxResource2 = maxComboPoints
+            TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+        end
 
         --[[
 		if specId == 1 or specId == 2 then
