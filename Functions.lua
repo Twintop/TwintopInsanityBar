@@ -267,11 +267,20 @@ TRB.Functions.EventRegistration = EventRegistration
 
 local function GetSanityCheckValues(settings)
 	local sc = {}
-    if settings ~= nil and settings.bar ~= nil then
-        sc.barMaxWidth = math.floor(GetScreenWidth())
-        sc.barMinWidth = math.max(math.ceil(settings.bar.border * 2), 120)
-        sc.barMaxHeight = math.floor(GetScreenHeight())
-        sc.barMinHeight = math.max(math.ceil(settings.bar.border * 2), 1)
+    if settings ~= nil then
+		if settings.bar ~= nil then
+        	sc.barMaxWidth = math.floor(GetScreenWidth())
+        	sc.barMinWidth = math.max(math.ceil(settings.bar.border * 2), 120)
+    	    sc.barMaxHeight = math.floor(GetScreenHeight())
+	        sc.barMinHeight = math.max(math.ceil(settings.bar.border * 2), 1)
+		end
+
+		if settings.comboPoints ~= nil then
+        	sc.comboPointsMaxWidth = math.floor(GetScreenWidth() / 6)
+        	sc.comboPointsMinWidth = math.max(math.ceil(settings.comboPoints.border * 2), 1)
+    	    sc.comboPointsMaxHeight = math.floor(GetScreenHeight())
+	        sc.comboPointsMinHeight = math.max(math.ceil(settings.comboPoints.border * 2), 1)
+		end
 	end
 	return sc
 end
@@ -788,7 +797,7 @@ local function ConstructResourceBar(settings)
 				nodes = length
 			end
 	
-			local nodeWidth = settings.bar.width / (nodes+1)
+			local nodeWidth = settings.comboPoints.width
 
 			for x = 1, length do
 				local container = TRB.Frames.resource2Frames[x].containerFrame
@@ -797,23 +806,24 @@ local function ConstructResourceBar(settings)
 
 				container:Show()
 				container:SetBackdrop({
-					bgFile = settings.textures.background,
+					bgFile = settings.textures.comboPointsBackground,
 					tile = true,
 					tileSize = nodeWidth,
 					edgeSize = 1,
 					insets = {0, 0, 0, 0}
 				})
 				
-				container:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))
-				container:SetWidth(nodeWidth-(settings.bar.border*2))
-				container:SetHeight(settings.bar.height-(settings.bar.border*2))
+				container:SetBackdropColor(GetRGBAFromString(settings.colors.comboPoints.background, true))
+				--container:SetWidth(nodeWidth-(settings.comboPoints.border*2))
+				container:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
 				container:SetFrameStrata(TRB.Data.settings.core.strata.level)
 				container:SetFrameLevel(0)
 
-				if settings.bar.border < 1 then
+				--[[
+				if settings.comboPoints.border < 1 then
 					border:Show()
 					border.backdropInfo = {
-						edgeFile = settings.textures.border,
+						edgeFile = settings.textures.comboPointsBorder,
 						tile = true,
 						tileSize=4,
 						edgeSize = 1,
@@ -824,34 +834,35 @@ local function ConstructResourceBar(settings)
 				else
 					border:Show()
 					border.backdropInfo = {
-						edgeFile = settings.textures.border,
+						edgeFile = settings.textures.comboPointsBorder,
 						tile = true,
 						tileSize = 4,
-						edgeSize = settings.bar.border,
+						edgeSize = settings.comboPoints.border,
 						insets = {0, 0, 0, 0}
 					}
 					border:ApplyBackdrop()
 				end
+				]]
 		
 				border:ClearAllPoints()
 				border:SetPoint("CENTER", container)
 				border:SetPoint("CENTER", 0, 0)
 				border:SetBackdropColor(0, 0, 0, 0)
-				border:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
-				border:SetWidth(nodeWidth)
-				border:SetHeight(settings.bar.height)
+				border:SetBackdropBorderColor(GetRGBAFromString(settings.colors.comboPoints.border, true))
+				--border:SetWidth(nodeWidth)
+				--border:SetHeight(settings.comboPoints.height)
 				border:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				border:SetFrameLevel(126)
+				border:SetFrameLevel(128)
 		
 				resource:Show()
 				resource:SetMinMaxValues(0, 1)
-				resource:SetHeight(settings.bar.height-(settings.bar.border*2))
+				--resource:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
 				resource:SetPoint("LEFT", container, "LEFT", 0, 0)
 				resource:SetPoint("RIGHT", container, "RIGHT", 0, 0)
-				resource:SetStatusBarTexture(settings.textures.resourceBar)
-				resource:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
+				resource:SetStatusBarTexture(settings.textures.comboPointsBar)
+				resource:SetStatusBarColor(GetRGBAFromString(settings.colors.comboPoints.base))
 				resource:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				resource:SetFrameLevel(125)
+				resource:SetFrameLevel(127)
 			end
 		end
 
@@ -917,24 +928,95 @@ local function RepositionBar(settings, containerFrame)
 	end
 
 	if TRB.Frames.resource2Frames ~= nil then
+		local containerFrame2 = TRB.Frames.resource2ContainerFrame
 		local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 		local nodes = TRB.Data.character.maxResource2
 
 		if nodes == nil or nodes == 0 then
 			nodes = length
 		end
+	
+		local nodeWidth = settings.comboPoints.width-- - settings.comboPoints.border * 2
+		local nodeSpacing = settings.comboPoints.spacing + settings.comboPoints.border * 2
+		local xPos = settings.comboPoints.xPos-- + settings.comboPoints.border
+		local yPos = settings.bar.border + settings.comboPoints.yPos - settings.comboPoints.border
+		local setPoint
+		local totalWidth = nodes * settings.comboPoints.width + (nodes-1) * settings.comboPoints.spacing
+		
+		if settings.comboPoints.fullWidth then
+			nodeSpacing = settings.comboPoints.spacing
+			nodeWidth = ((settings.bar.width - ((nodes - 1) * (nodeSpacing - settings.comboPoints.border * 2))) / nodes)
+			xPos = 0
+			totalWidth = settings.bar.width
+			--nodeSpacing = ((settings.bar.width - (nodes * (nodeWidth))) / (nodes - 1)) + (settings.comboPoints.border * 2)
+		end
 
-		local nodeWidth = settings.bar.width / (nodes+1)
-		local nodeSpacing = nodeWidth / (nodes-1)
+		containerFrame2:Show()
+        --[[containerFrame2:SetBackdrop({
+            --bgFile = settings.textures.background,
+            tile = true,
+            tileSize = settings.bar.width,
+            edgeSize = 1,
+            insets = {0, 0, 0, 0}
+        })
+        containerFrame2:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))]]
+        containerFrame2:SetWidth(totalWidth)
+        containerFrame2:SetHeight(settings.comboPoints.height)
+        containerFrame2:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        containerFrame2:SetFrameLevel(0)
+		containerFrame2:ClearAllPoints()
+		containerFrame2:SetPoint("BOTTOM", containerFrame, "TOP", xPos, yPos)
 
 		for x = 1, length do
-			local left = (nodeWidth + nodeSpacing) * (x - 1)
+			--local left = (nodeWidth + nodeSpacing) * (x - 1) + settings.comboPoints.xPos-- - settings.comboPoints.border + 1
+			--local left = -settings.comboPoints.border
 			local container = TRB.Frames.resource2Frames[x].containerFrame
+			local border = TRB.Frames.resource2Frames[x].borderFrame
+			local resource = TRB.Frames.resource2Frames[x].resourceFrame
 
 			if x <= nodes then
 				container:Show()
-				container:SetWidth(nodeWidth-(settings.bar.border*2))
-				container:SetPoint("BOTTOMLEFT", containerFrame, "BOTTOMLEFT", left, settings.bar.height + settings.bar.border)
+				container:SetWidth(nodeWidth-(settings.comboPoints.border*2))
+				container:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
+				container:ClearAllPoints()
+				
+				if x == 1 then
+					--container:SetPoint("LEFT", containerFrame, settings.comboPoints.relativeTo, left, settings.bar.height + settings.comboPoints.yPos)
+					--container:SetPoint("BOTTOMLEFT", containerFrame, "TOPLEFT", firstNodeY, settings.bar.border + settings.comboPoints.yPos + settings.comboPoints.border)					
+					container:SetPoint("TOPLEFT", containerFrame2, "TOPLEFT", settings.comboPoints.border, 0)
+				else
+					container:SetPoint("LEFT", TRB.Frames.resource2Frames[x-1].containerFrame, "RIGHT", nodeSpacing, 0)
+				end
+			
+				if settings.comboPoints.border < 1 then
+					border:Show()
+					border.backdropInfo = {
+						edgeFile = settings.textures.comboPointsBorder,
+						tile = true,
+						tileSize=4,
+						edgeSize = 1,
+						insets = {0, 0, 0, 0}
+					}
+					border:ApplyBackdrop()
+					border:Hide()
+				else
+					border:Show()
+					border.backdropInfo = {
+						edgeFile = settings.textures.comboPointsBorder,
+						tile = true,
+						tileSize = 4,
+						edgeSize = settings.comboPoints.border,
+						insets = {0, 0, 0, 0}
+					}
+					border:ApplyBackdrop()
+				end
+				border:SetBackdropColor(0, 0, 0, 0)
+				border:SetBackdropBorderColor(GetRGBAFromString(settings.colors.comboPoints.border, true))
+
+				border:SetWidth(nodeWidth)
+				border:SetHeight(settings.comboPoints.height)
+				
+				resource:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
 			else
 				container:Hide()
 			end

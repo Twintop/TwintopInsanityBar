@@ -53,10 +53,11 @@ TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 -- We're going to make these as StatusBars so we can use them for Death Knight runes and Warlock soulshards in the future
 if classIndexId == 4 then
 	TRB.Frames.resource2Frames = {}
+	TRB.Frames.resource2ContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame2", TRB.Frames.barContainerFrame, "BackdropTemplate")
 	
 	for x = 1, 6 do
 		TRB.Frames.resource2Frames[x] = {}
-		TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", "TwintopResourceBarFrame", TRB.Frames.barContainerFrame, "BackdropTemplate")
+		TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", nil, TRB.Frames.resource2ContainerFrame, "BackdropTemplate")
 		TRB.Frames.resource2Frames[x].borderFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
 		TRB.Frames.resource2Frames[x].resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
 	end

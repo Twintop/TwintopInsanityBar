@@ -3898,6 +3898,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						if TRB.Data.barConstructedForSpec ~= "assassination" then
 							TRB.Data.barConstructedForSpec = "assassination"
 							ConstructResourceBar(TRB.Data.settings.rogue.assassination)
+                        else
+                            TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
 						end
 					--[[elseif specId == 2 then
 						TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.rogue.outlaw)

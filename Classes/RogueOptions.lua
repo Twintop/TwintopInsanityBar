@@ -156,6 +156,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				showPassive=true,
 				showCasting=true
 			},
+            comboPoints = {
+                width=100,
+                height=10,
+				xPos=0,
+				yPos=50,
+				border=1,
+                spacing=10,
+                relativeTo="BOTTOMLEFT",                
+                fullWidth=true,
+            },
 			colors = {
 				text = {
 					current="FFFFFF00",
@@ -185,7 +195,24 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					flashPeriod=0.5,
 					flashEnabled=true,
 					overcapEnabled=true,
-					beastialWrathEnabled=true
+				},
+				comboPoints = {
+					border="FFFFD300",
+					--borderOvercap="FFFF0000",
+					--borderBeastialWrath="FF005500",
+					background="66000000",
+					base="FFFFFF00",
+					penultimate="FFFF9900",
+					final="FFFF0000",
+					--frenzyUse="FF00B60E",
+					--frenzyHold="FFFF0000",
+					--casting="FFFFFFFF",
+					--spending="FF555555",
+					--passive="FFD59900",
+					--flashAlpha=0.70,
+					--flashPeriod=0.5,
+					--flashEnabled=true,
+					--overcapEnabled=true,
 				},
 				threshold = {
 					under="FFFFFFFF",
@@ -231,7 +258,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				passiveBarName="Blizzard",
 				castingBar="Interface\\TargetingFrame\\UI-StatusBar",
 				castingBarName="Blizzard",
-				textureLock=true
+				textureLock=true,
+				comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+				comboPointsBackgroundName="Blizzard Tooltip",
+				comboPointsBorder="Interface\\Buttons\\WHITE8X8",
+				comboPointsBorderName="1 Pixel",
+				comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
+				comboPointsBarName="Blizzard",
 			}
 		}
 
@@ -895,6 +928,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 			if GetSpecialization() == 1 then
 				TRB.Functions.UpdateBarWidth(TRB.Data.settings.rogue.assassination)
+				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["energy"] ~= nil and TRB.Data.spells[k]["energy"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
@@ -931,6 +965,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 			if GetSpecialization() == 1 then
 				TRB.Functions.UpdateBarHeight(TRB.Data.settings.rogue.assassination)
+				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -952,6 +987,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
 				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.rogue.assassination.bar.xPos, TRB.Data.settings.rogue.assassination.bar.yPos)
+				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -972,6 +1008,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
 				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.rogue.assassination.bar.xPos, TRB.Data.settings.rogue.assassination.bar.yPos)
+				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -1016,7 +1053,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.border, true))
 
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.rogue.assassination)
+				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.rogue.assassination)                
+				TRB.Functions.UpdateBarHeight(TRB.Data.settings.rogue.assassination)
+				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["energy"] ~= nil and TRB.Data.spells[k]["energy"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
@@ -1089,6 +1128,232 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			barContainerFrame:EnableMouse((not TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.rogue.assassination.bar.dragAndDrop)
 			TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
 		end)
+
+
+		yCoord = yCoord - 30
+		controls.comboPointPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Combo Points Position and Size", 0, yCoord)
+
+		yCoord = yCoord - 40
+		title = "Combo Point Width"
+		controls.comboPointWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), TRB.Data.settings.rogue.assassination.comboPoints.width, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.comboPointWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.rogue.assassination.comboPoints.width = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.rogue.assassination.comboPoints.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.rogue.assassination.comboPoints.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.rogue.assassination.comboPoints.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.comboPointBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.comboPointBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.comboPointBorderWidth.EditBox:SetText(borderSize)
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+			end
+		end)
+
+		title = "Combo Point Height"
+		controls.comboPointHeight = TRB.UiFunctions.BuildSlider(parent, title, 1, sanityCheckValues.barMaxHeight, TRB.Data.settings.rogue.assassination.comboPoints.height, 1, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.comboPointHeight:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.rogue.assassination.comboPoints.height = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.rogue.assassination.comboPoints.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.rogue.assassination.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.rogue.assassination.comboPoints.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.comboPointBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.comboPointBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.comboPointBorderWidth.EditBox:SetText(borderSize)
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+			end
+		end)
+
+
+
+		title = "Combo Points Horizontal Position (Relative)"
+		yCoord = yCoord - 60
+		controls.comboPointHorizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.rogue.assassination.comboPoints.xPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.comboPointHorizontal:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.rogue.assassination.comboPoints.xPos = value
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+			end
+		end)
+
+		title = "Combo Points Vertical Position (Relative)"
+		controls.comboPointVertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.rogue.assassination.comboPoints.yPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.comboPointVertical:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.rogue.assassination.comboPoints.yPos = value
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+			end
+		end)
+
+
+
+		title = "Combo Point Border Width"
+		yCoord = yCoord - 60
+		controls.comboPointBorderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.rogue.assassination.comboPoints.border, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.comboPointBorderWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.rogue.assassination.comboPoints.border = value
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+
+				--TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.rogue.assassination)
+			end
+
+			local minsliderWidth = math.max(TRB.Data.settings.rogue.assassination.comboPoints.border*2, 1)
+			local minsliderHeight = math.max(TRB.Data.settings.rogue.assassination.comboPoints.border*2, 1)
+
+			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.rogue.assassination)
+			controls.comboPointHeight:SetMinMaxValues(minsliderHeight, scValues.comboPointsMaxHeight)
+			controls.comboPointHeight.MinLabel:SetText(minsliderHeight)
+			controls.comboPointWidth:SetMinMaxValues(minsliderWidth, scValues.comboPointsMaxWidth)
+			controls.comboPointWidth.MinLabel:SetText(minsliderWidth)
+		end)
+
+		title = "Combo Points Spacing"
+		controls.comboPointSpacing = TRB.UiFunctions.BuildSlider(parent, title, 1, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), TRB.Data.settings.rogue.assassination.comboPoints.spacing, 1, 2,
+									sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.comboPointSpacing:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.rogue.assassination.comboPoints.spacing = value
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+			end
+		end)
+
+		yCoord = yCoord - 40
+        controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.lockPosition
+		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Combo Points are full bar width?")
+		f.tooltip = "Makes the Combo Point bars take up the same total width of the bar, spaced according to Combo Point Spacing (above). The horizontal position adjustment will be ignored and the width of Combo Point bars will be automatically calculated and will ignore the value set above."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.comboPoints.fullWidth)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.comboPoints.fullWidth = self:GetChecked()
+            
+			if GetSpecialization() == 1 then
+				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+			end
+		end)
+
+        --[[
+		title = "Threshold Line Width"
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.rogue.assassination.thresholdWidth, 1, 2,
+									sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.rogue.assassination.thresholdWidth = value
+
+			if GetSpecialization() == 1 then
+				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
+					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.rogue.assassination.thresholdWidth)
+				end
+			end
+		end)
+
+		yCoord = yCoord - 40
+
+		--NOTE: the order of these checkboxes is reversed!
+
+		controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.lockPosition
+		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
+		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.bar.dragAndDrop)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.bar.dragAndDrop = self:GetChecked()
+			barContainerFrame:SetMovable((not TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.rogue.assassination.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.rogue.assassination.bar.dragAndDrop)
+		end)
+			
+		TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay)
+
+		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.pinToPRD
+		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
+		f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay = self:GetChecked()
+			
+			TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay)
+
+			barContainerFrame:SetMovable((not TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.rogue.assassination.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.rogue.assassination.bar.dragAndDrop)
+			TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+		end)
+
+        ]]
+
+
 
 
 
