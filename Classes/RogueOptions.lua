@@ -157,12 +157,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				showCasting=true
 			},
             comboPoints = {
-                width=100,
-                height=10,
+                width=30,
+                height=13,
 				xPos=0,
-				yPos=50,
+				yPos=4,
 				border=1,
-                spacing=10,
+                spacing=14,
                 relativeTo="TOP",
                 relativeToName="Above - Middle",
                 fullWidth=true,
