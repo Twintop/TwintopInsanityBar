@@ -852,7 +852,7 @@ local function ConstructResourceBar(settings)
 				--border:SetWidth(nodeWidth)
 				--border:SetHeight(settings.comboPoints.height)
 				border:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				border:SetFrameLevel(128)
+				border:SetFrameLevel(151)
 		
 				resource:Show()
 				resource:SetMinMaxValues(0, 1)
@@ -862,7 +862,7 @@ local function ConstructResourceBar(settings)
 				resource:SetStatusBarTexture(settings.textures.comboPointsBar)
 				resource:SetStatusBarColor(GetRGBAFromString(settings.colors.comboPoints.base))
 				resource:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				resource:SetFrameLevel(127)
+				resource:SetFrameLevel(150)
 			end
 		end
 
@@ -876,7 +876,7 @@ local function ConstructResourceBar(settings)
         leftTextFrame:SetHeight(settings.bar.height * 3.5)
         leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 2, 0)
         leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        leftTextFrame:SetFrameLevel(129)
+        leftTextFrame:SetFrameLevel(200)
         leftTextFrame.font:SetPoint("LEFT", 0, 0)
         leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
         leftTextFrame.font:SetJustifyH("LEFT")
@@ -888,7 +888,7 @@ local function ConstructResourceBar(settings)
         middleTextFrame:SetHeight(settings.bar.height * 3.5)
         middleTextFrame:SetPoint("CENTER", barContainerFrame, "CENTER", 0, 0)
         middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        middleTextFrame:SetFrameLevel(129)
+        middleTextFrame:SetFrameLevel(200)
         middleTextFrame.font:SetPoint("CENTER", 0, 0)
         middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
         middleTextFrame.font:SetJustifyH("CENTER")
@@ -900,7 +900,7 @@ local function ConstructResourceBar(settings)
         rightTextFrame:SetHeight(settings.bar.height * 3.5)
         rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        rightTextFrame:SetFrameLevel(129)
+        rightTextFrame:SetFrameLevel(200)
         rightTextFrame.font:SetPoint("RIGHT", 0, 0)
         rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
         rightTextFrame.font:SetJustifyH("RIGHT")
@@ -936,40 +936,82 @@ local function RepositionBar(settings, containerFrame)
 			nodes = length
 		end
 	
-		local nodeWidth = settings.comboPoints.width-- - settings.comboPoints.border * 2
+		local nodeWidth = settings.comboPoints.width
 		local nodeSpacing = settings.comboPoints.spacing + settings.comboPoints.border * 2
-		local xPos = settings.comboPoints.xPos-- + settings.comboPoints.border
-		local yPos = settings.bar.border + settings.comboPoints.yPos - settings.comboPoints.border
-		local setPoint
+		local xPos
+		local yPos
 		local totalWidth = nodes * settings.comboPoints.width + (nodes-1) * settings.comboPoints.spacing
+		local setPoint = "BOTTOM"
+		local setPointRelativeTo = "TOP"
+		local topBottom = "TOP"
+		local leftCenterRight = "CENTER"
 		
+		if settings.comboPoints.relativeTo == "TOPLEFT" then
+			setPoint = "BOTTOMLEFT"
+			setPointRelativeTo = "TOPLEFT"
+			leftCenterRight = "LEFT"
+		elseif settings.comboPoints.relativeTo == "TOP" then
+			setPoint = "BOTTOM"
+			setPointRelativeTo = "TOP"
+		elseif settings.comboPoints.relativeTo == "TOPRIGHT" then
+			setPoint = "BOTTOMRIGHT"
+			setPointRelativeTo = "TOPRIGHT"
+			leftCenterRight = "RIGHT"
+		elseif settings.comboPoints.relativeTo == "BOTTOMLEFT" then
+			setPoint = "TOPLEFT"
+			setPointRelativeTo = "BOTTOMLEFT"
+			topBottom = "BOTTOM"
+			leftCenterRight = "LEFT"
+		elseif settings.comboPoints.relativeTo == "BOTTOM" then
+			setPoint = "TOP"
+			setPointRelativeTo = "BOTTOM"
+			topBottom = "BOTTOM"
+		elseif settings.comboPoints.relativeTo == "BOTTOMRIGHT" then
+			setPoint = "TOPRIGHT"
+			setPointRelativeTo = "BOTTOMRIGHT"
+			topBottom = "BOTTOM"
+			leftCenterRight = "RIGHT"
+		end
+
 		if settings.comboPoints.fullWidth then
-			nodeSpacing = settings.comboPoints.spacing
 			nodeWidth = ((settings.bar.width - ((nodes - 1) * (nodeSpacing - settings.comboPoints.border * 2))) / nodes)
+
 			xPos = 0
 			totalWidth = settings.bar.width
-			--nodeSpacing = ((settings.bar.width - (nodes * (nodeWidth))) / (nodes - 1)) + (settings.comboPoints.border * 2)
+
+			if topBottom == "BOTTOM" then
+				setPoint = "TOP"
+				setPointRelativeTo = "BOTTOM"
+			else
+				setPoint = "BOTTOM"
+				setPointRelativeTo = "TOP"
+			end
+			leftCenterRight = "CENTER"
+		else
+			if leftCenterRight == "LEFT" then
+				xPos = -settings.bar.border + settings.comboPoints.xPos
+			elseif leftCenterRight == "RIGHT" then
+				xPos = settings.bar.border + settings.comboPoints.xPos
+			else
+				xPos = settings.comboPoints.xPos
+			end
+		end
+
+		if topBottom == "BOTTOM" then
+			yPos = -settings.bar.border + settings.comboPoints.yPos - settings.comboPoints.border
+		else
+			yPos = settings.bar.border + settings.comboPoints.yPos - settings.comboPoints.border
 		end
 
 		containerFrame2:Show()
-        --[[containerFrame2:SetBackdrop({
-            --bgFile = settings.textures.background,
-            tile = true,
-            tileSize = settings.bar.width,
-            edgeSize = 1,
-            insets = {0, 0, 0, 0}
-        })
-        containerFrame2:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))]]
         containerFrame2:SetWidth(totalWidth)
         containerFrame2:SetHeight(settings.comboPoints.height)
         containerFrame2:SetFrameStrata(TRB.Data.settings.core.strata.level)
         containerFrame2:SetFrameLevel(0)
 		containerFrame2:ClearAllPoints()
-		containerFrame2:SetPoint("BOTTOM", containerFrame, "TOP", xPos, yPos)
+		containerFrame2:SetPoint(setPoint, containerFrame, setPointRelativeTo, xPos, yPos)
 
 		for x = 1, length do
-			--local left = (nodeWidth + nodeSpacing) * (x - 1) + settings.comboPoints.xPos-- - settings.comboPoints.border + 1
-			--local left = -settings.comboPoints.border
 			local container = TRB.Frames.resource2Frames[x].containerFrame
 			local border = TRB.Frames.resource2Frames[x].borderFrame
 			local resource = TRB.Frames.resource2Frames[x].resourceFrame
@@ -981,8 +1023,6 @@ local function RepositionBar(settings, containerFrame)
 				container:ClearAllPoints()
 				
 				if x == 1 then
-					--container:SetPoint("LEFT", containerFrame, settings.comboPoints.relativeTo, left, settings.bar.height + settings.comboPoints.yPos)
-					--container:SetPoint("BOTTOMLEFT", containerFrame, "TOPLEFT", firstNodeY, settings.bar.border + settings.comboPoints.yPos + settings.comboPoints.border)					
 					container:SetPoint("TOPLEFT", containerFrame2, "TOPLEFT", settings.comboPoints.border, 0)
 				else
 					container:SetPoint("LEFT", TRB.Frames.resource2Frames[x-1].containerFrame, "RIGHT", nodeSpacing, 0)

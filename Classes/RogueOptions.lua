@@ -163,7 +163,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				yPos=50,
 				border=1,
                 spacing=10,
-                relativeTo="BOTTOMLEFT",                
+                relativeTo="TOP",
+                relativeToName="Above - Middle",
                 fullWidth=true,
             },
 			colors = {
@@ -1264,7 +1265,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		title = "Combo Points Spacing"
-		controls.comboPointSpacing = TRB.UiFunctions.BuildSlider(parent, title, 1, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), TRB.Data.settings.rogue.assassination.comboPoints.spacing, 1, 2,
+		controls.comboPointSpacing = TRB.UiFunctions.BuildSlider(parent, title, 0, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), TRB.Data.settings.rogue.assassination.comboPoints.spacing, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.comboPointSpacing:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1281,9 +1282,61 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end)
 
-		yCoord = yCoord - 40
-        controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.lockPosition
+		yCoord = yCoord - 40        
+        -- Create the dropdown, and configure its appearance
+        controls.dropDown.comboPointsRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_comboPointsRelativeTo", parent, "UIDropDownMenuTemplate")
+        controls.dropDown.comboPointsRelativeTo.label = TRB.UiFunctions.BuildSectionHeader(parent, "Relative Position of Combo Points to Energy Bar", xCoord, yCoord)
+        controls.dropDown.comboPointsRelativeTo.label.font:SetFontObject(GameFontNormal)
+        controls.dropDown.comboPointsRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.comboPointsRelativeTo, dropdownWidth)
+        UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, TRB.Data.settings.rogue.assassination.comboPoints.relativeToName)
+        UIDropDownMenu_JustifyText(controls.dropDown.comboPointsRelativeTo, "LEFT")
+
+        -- Create and bind the initialization function to the dropdown menu
+        UIDropDownMenu_Initialize(controls.dropDown.comboPointsRelativeTo, function(self, level, menuList)
+            local entries = 25
+            local info = UIDropDownMenu_CreateInfo()
+            local relativeTo = {}
+            relativeTo["Above - Left"] = "TOPLEFT"
+            relativeTo["Above - Middle"] = "TOP"
+            relativeTo["Above - Right"] = "TOPRIGHT"
+            relativeTo["Below - Left"] = "BOTTOMLEFT"
+            relativeTo["Below - Middle"] = "BOTTOM"
+            relativeTo["Below - Right"] = "BOTTOMRIGHT"
+            local relativeToList = {
+                "Above - Left",
+                "Above - Middle",
+                "Above - Right",
+                "Below - Left",
+                "Below - Middle",
+                "Below - Right"
+            }
+
+            for k, v in pairs(relativeToList) do
+                info.text = v
+                info.value = relativeTo[v]
+                info.checked = relativeTo[v] == TRB.Data.settings.rogue.assassination.comboPoints.relativeTo
+                info.func = self.SetValue
+                info.arg1 = relativeTo[v]
+                info.arg2 = v
+                UIDropDownMenu_AddButton(info, level)
+            end
+        end)
+
+        function controls.dropDown.comboPointsRelativeTo:SetValue(newValue, newName)
+            TRB.Data.settings.rogue.assassination.comboPoints.relativeTo = newValue
+            TRB.Data.settings.rogue.assassination.comboPoints.relativeToName = newName
+            UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, newName)
+            CloseDropDownMenus()
+
+            if GetSpecialization() == 1 then
+                TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+            end
+        end
+
+
+        controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_comboPointsFullWidth", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.comboPointsFullWidth
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Combo Points are full bar width?")
 		f.tooltip = "Makes the Combo Point bars take up the same total width of the bar, spaced according to Combo Point Spacing (above). The horizontal position adjustment will be ignored and the width of Combo Point bars will be automatically calculated and will ignore the value set above."
@@ -1296,6 +1349,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end)
 
+        yCoord = yCoord - 60
         --[[
 		title = "Threshold Line Width"
 		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.rogue.assassination.thresholdWidth, 1, 2,
@@ -1358,7 +1412,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 
 
-		yCoord = yCoord - 30
+		--yCoord = yCoord - 30
 		controls.textBarTexturesSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Textures", 0, yCoord)
 		yCoord = yCoord - 30
 
