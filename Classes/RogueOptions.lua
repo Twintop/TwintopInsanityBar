@@ -1337,7 +1337,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
         controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_comboPointsFullWidth", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.comboPointsFullWidth
-		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Combo Points are full bar width?")
 		f.tooltip = "Makes the Combo Point bars take up the same total width of the bar, spaced according to Combo Point Spacing (above). The horizontal position adjustment will be ignored and the width of Combo Point bars will be automatically calculated and will ignore the value set above."
 		f:SetChecked(TRB.Data.settings.rogue.assassination.comboPoints.fullWidth)
@@ -1350,70 +1350,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
         yCoord = yCoord - 60
-        --[[
-		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.rogue.assassination.thresholdWidth, 1, 2,
-									sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
-			TRB.Data.settings.rogue.assassination.thresholdWidth = value
-
-			if GetSpecialization() == 1 then
-				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.rogue.assassination.thresholdWidth)
-				end
-			end
-		end)
-
-		yCoord = yCoord - 40
-
-		--NOTE: the order of these checkboxes is reversed!
-
-		controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.lockPosition
-		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
-		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
-		f:SetChecked(TRB.Data.settings.rogue.assassination.bar.dragAndDrop)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.assassination.bar.dragAndDrop = self:GetChecked()
-			barContainerFrame:SetMovable((not TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.rogue.assassination.bar.dragAndDrop)
-			barContainerFrame:EnableMouse((not TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.rogue.assassination.bar.dragAndDrop)
-		end)
-			
-		TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay)
-
-		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.pinToPRD
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
-		f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
-		f:SetChecked(TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay = self:GetChecked()
-			
-			TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay)
-
-			barContainerFrame:SetMovable((not TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.rogue.assassination.bar.dragAndDrop)
-			barContainerFrame:EnableMouse((not TRB.Data.settings.rogue.assassination.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.rogue.assassination.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
-		end)
-
-        ]]
-
-
-
-
-
-
-		--yCoord = yCoord - 30
-		controls.textBarTexturesSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Textures", 0, yCoord)
+		controls.textBarTexturesSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar and Combo Point Textures", 0, yCoord)
 		yCoord = yCoord - 30
 
 		-- Create the dropdown, and configure its appearance
@@ -1470,6 +1407,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				TRB.Data.settings.rogue.assassination.textures.passiveBar = newValue
 				TRB.Data.settings.rogue.assassination.textures.passiveBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
+				TRB.Data.settings.rogue.assassination.textures.comboPointsBar = newValue
+				TRB.Data.settings.rogue.assassination.textures.comboPointsBarName = newName
+				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, newName)
 			end
 
 			if GetSpecialization() == 1 then
@@ -1477,6 +1417,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				if TRB.Data.settings.rogue.assassination.textures.textureLock then
 					castingFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.castingBar)
 					passiveFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.passiveBar)
+					
+					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+					for x = 1, length do
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.comboPointsBar)
+					end
 				end
 			end
 
@@ -1529,17 +1474,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		function controls.dropDown.castingBarTexture:SetValue(newValue, newName)
 			TRB.Data.settings.rogue.assassination.textures.castingBar = newValue
 			TRB.Data.settings.rogue.assassination.textures.castingBarName = newName
-			castingFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.castingBar)
 			UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
 			if TRB.Data.settings.rogue.assassination.textures.textureLock then
 				TRB.Data.settings.rogue.assassination.textures.resourceBar = newValue
 				TRB.Data.settings.rogue.assassination.textures.resourceBarName = newName
-				resourceFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.resourceBar)
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
 				TRB.Data.settings.rogue.assassination.textures.passiveBar = newValue
 				TRB.Data.settings.rogue.assassination.textures.passiveBarName = newName
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.passiveBar)
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
+				TRB.Data.settings.rogue.assassination.textures.comboPointsBar = newValue
+				TRB.Data.settings.rogue.assassination.textures.comboPointsBarName = newName
+				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, newName)
 			end
 
 			if GetSpecialization() == 1 then
@@ -1547,6 +1492,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				if TRB.Data.settings.rogue.assassination.textures.textureLock then
 					resourceFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.resourceBar)
 					passiveFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.passiveBar)
+					
+					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+					for x = 1, length do
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.comboPointsBar)
+					end
 				end
 			end
 
@@ -1602,17 +1552,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		function controls.dropDown.passiveBarTexture:SetValue(newValue, newName)
 			TRB.Data.settings.rogue.assassination.textures.passiveBar = newValue
 			TRB.Data.settings.rogue.assassination.textures.passiveBarName = newName
-			passiveFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.passiveBar)
 			UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
 			if TRB.Data.settings.rogue.assassination.textures.textureLock then
 				TRB.Data.settings.rogue.assassination.textures.resourceBar = newValue
 				TRB.Data.settings.rogue.assassination.textures.resourceBarName = newName
-				resourceFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.resourceBar)
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
 				TRB.Data.settings.rogue.assassination.textures.castingBar = newValue
 				TRB.Data.settings.rogue.assassination.textures.castingBarName = newName
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.castingBar)
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
+				TRB.Data.settings.rogue.assassination.textures.comboPointsBar = newValue
+				TRB.Data.settings.rogue.assassination.textures.comboPointsBarName = newName
+				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, newName)
 			end
 
 			if GetSpecialization() == 1 then
@@ -1620,34 +1570,91 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				if TRB.Data.settings.rogue.assassination.textures.textureLock then
 					resourceFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.resourceBar)
 					castingFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.castingBar)
+					
+					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+					for x = 1, length do
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.comboPointsBar)
+					end
 				end
 			end
 
 			CloseDropDownMenus()
 		end
 
-		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_CB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.textureLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
-		f.tooltip = "This will lock the texture for each part of the bar to be the same."
-		f:SetChecked(TRB.Data.settings.rogue.assassination.textures.textureLock)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.assassination.textures.textureLock = self:GetChecked()
-			if TRB.Data.settings.rogue.assassination.textures.textureLock then
-				TRB.Data.settings.rogue.assassination.textures.passiveBar = TRB.Data.settings.rogue.assassination.textures.resourceBar
-				TRB.Data.settings.rogue.assassination.textures.passiveBarName = TRB.Data.settings.rogue.assassination.textures.resourceBarName
-				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, TRB.Data.settings.rogue.assassination.textures.passiveBarName)
-				TRB.Data.settings.rogue.assassination.textures.castingBar = TRB.Data.settings.rogue.assassination.textures.resourceBar
-				TRB.Data.settings.rogue.assassination.textures.castingBarName = TRB.Data.settings.rogue.assassination.textures.resourceBarName
-				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.rogue.assassination.textures.castingBarName)
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.comboPointsBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_ComboPointsBarTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.comboPointsBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Combo Points Texture", xCoord2, yCoord)
+		controls.dropDown.comboPointsBarTexture.label.font:SetFontObject(GameFontNormal)
+		controls.dropDown.comboPointsBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBarTexture, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, TRB.Data.settings.rogue.assassination.textures.comboPointsBarName)
+		UIDropDownMenu_JustifyText(controls.dropDown.comboPointsBarTexture, "LEFT")
 
-				if GetSpecialization() == 1 then
-					passiveFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.passiveBar)
-					castingFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.castingBar)
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.comboPointsBarTexture, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local textures = TRB.Details.addonData.libs.SharedMedia:HashTable("statusbar")
+			local texturesList = TRB.Details.addonData.libs.SharedMedia:List("statusbar")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(textures) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Status Bar Textures " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(texturesList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = textures[v]
+						info.checked = textures[v] == TRB.Data.settings.rogue.assassination.textures.comboPointsBar
+						info.func = self.SetValue
+						info.arg1 = textures[v]
+						info.arg2 = v
+						info.icon = textures[v]
+						UIDropDownMenu_AddButton(info, level)
+					end
 				end
 			end
 		end)
+
+		-- Implement the function to change the texture
+		function controls.dropDown.comboPointsBarTexture:SetValue(newValue, newName)
+			TRB.Data.settings.rogue.assassination.textures.comboPointsBar = newValue
+			TRB.Data.settings.rogue.assassination.textures.comboPointsBarName = newName
+			UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, newName)
+			if TRB.Data.settings.rogue.assassination.textures.textureLock then
+				TRB.Data.settings.rogue.assassination.textures.resourceBar = newValue
+				TRB.Data.settings.rogue.assassination.textures.resourceBarName = newName
+				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
+				TRB.Data.settings.rogue.assassination.textures.passiveBar = newValue
+				TRB.Data.settings.rogue.assassination.textures.passiveBarName = newName
+				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
+				TRB.Data.settings.rogue.assassination.textures.castingBar = newValue
+				TRB.Data.settings.rogue.assassination.textures.castingBarName = newName
+				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
+			end
+
+			if GetSpecialization() == 1 then					
+				local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+				for x = 1, length do
+					TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.comboPointsBar)
+				end
+
+				if TRB.Data.settings.rogue.assassination.textures.textureLock then
+				    castingFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.castingBar)
+					resourceFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.resourceBar)
+					passiveFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.passiveBar)
+				end
+			end
+
+			CloseDropDownMenus()
+		end
 
 
 		yCoord = yCoord - 60
@@ -1715,6 +1722,31 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 
 			UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
+
+			if TRB.Data.settings.rogue.assassination.textures.textureLock then
+				TRB.Data.settings.rogue.assassination.textures.comboPointsBorder = newValue
+				TRB.Data.settings.rogue.assassination.textures.comboPointsBorderName = newName
+	
+				if GetSpecialization() == 1 then
+					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+					for x = 1, length do
+						if TRB.Data.settings.rogue.assassination.comboPoints.border < 1 then
+							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
+						else
+							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.rogue.assassination.textures.comboPointsBorder,
+														tile = true,
+														tileSize=4,
+														edgeSize=TRB.Data.settings.rogue.assassination.comboPoints.border,
+														insets = {0, 0, 0, 0}
+														})
+						end
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropColor(0, 0, 0, 0)
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.border, true))
+					end
+				end
+				UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, newName)
+			end
+
 			CloseDropDownMenus()
 		end
 
@@ -1773,18 +1805,276 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					edgeSize = 1,
 					insets = {0, 0, 0, 0}
 				})
-				barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.background, true))
+				barContainerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.background, true))
 			end
 
 			UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, newName)
+			
+			if TRB.Data.settings.rogue.assassination.textures.textureLock then
+				TRB.Data.settings.rogue.assassination.textures.comboPointsBackground = newValue
+				TRB.Data.settings.rogue.assassination.textures.comboPointsBackgroundName = newName
+	
+				if GetSpecialization() == 1 then
+					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+					for x = 1, length do
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
+							bgFile = TRB.Data.settings.rogue.assassination.textures.comboPointsBackground,
+							tile = true,
+							tileSize = TRB.Data.settings.rogue.assassination.comboPoints.width,
+							edgeSize = 1,
+							insets = {0, 0, 0, 0}
+						})
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.background, true))
+					end
+				end
+
+				UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, newName)
+			end
+
 			CloseDropDownMenus()
 		end
 
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 60
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.comboPointsBorderTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_CB1_ComboPointsBorderTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.comboPointsBorderTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Combo Point Border Texture", xCoord, yCoord)
+		controls.dropDown.comboPointsBorderTexture.label.font:SetFontObject(GameFontNormal)
+		controls.dropDown.comboPointsBorderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBorderTexture, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, TRB.Data.settings.rogue.assassination.textures.comboPointsBorderName)
+		UIDropDownMenu_JustifyText(controls.dropDown.comboPointsBorderTexture, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.comboPointsBorderTexture, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local textures = TRB.Details.addonData.libs.SharedMedia:HashTable("border")
+			local texturesList = TRB.Details.addonData.libs.SharedMedia:List("border")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(textures) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Border Textures " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(texturesList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = textures[v]
+						info.checked = textures[v] == TRB.Data.settings.rogue.assassination.textures.comboPointsBorder
+						info.func = self.SetValue
+						info.arg1 = textures[v]
+						info.arg2 = v
+						info.icon = textures[v]
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the texture
+		function controls.dropDown.comboPointsBorderTexture:SetValue(newValue, newName)
+			TRB.Data.settings.rogue.assassination.textures.comboPointsBorder = newValue
+			TRB.Data.settings.rogue.assassination.textures.comboPointsBorderName = newName
+
+			if GetSpecialization() == 1 then
+				local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+				for x = 1, length do
+					if TRB.Data.settings.rogue.assassination.comboPoints.border < 1 then
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
+					else
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.rogue.assassination.textures.comboPointsBorder,
+													tile = true,
+													tileSize=4,
+													edgeSize=TRB.Data.settings.rogue.assassination.comboPoints.border,
+													insets = {0, 0, 0, 0}
+													})
+					end
+					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropColor(0, 0, 0, 0)
+					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.border, true))
+				end
+			end
+
+			UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, newName)
+
+			if TRB.Data.settings.rogue.assassination.textures.textureLock then
+				TRB.Data.settings.rogue.assassination.textures.border = newValue
+				TRB.Data.settings.rogue.assassination.textures.borderName = newName
+
+				if TRB.Data.settings.rogue.assassination.bar.border < 1 then
+					barBorderFrame:SetBackdrop({ })
+				else
+					barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.rogue.assassination.textures.border,
+												tile = true,
+												tileSize=4,
+												edgeSize=TRB.Data.settings.rogue.assassination.bar.border,
+												insets = {0, 0, 0, 0}
+												})
+				end
+				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
+				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.border, true))
+				UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
+			end
+
+			CloseDropDownMenus()
+		end
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.comboPointsBackgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_ComboPointsBackgroundTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.comboPointsBackgroundTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Background (Empty Combo Point) Texture", xCoord2, yCoord)
+		controls.dropDown.comboPointsBackgroundTexture.label.font:SetFontObject(GameFontNormal)
+		controls.dropDown.comboPointsBackgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBackgroundTexture, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, TRB.Data.settings.rogue.assassination.textures.comboPointsBackgroundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.comboPointsBackgroundTexture, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.comboPointsBackgroundTexture, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local textures = TRB.Details.addonData.libs.SharedMedia:HashTable("background")
+			local texturesList = TRB.Details.addonData.libs.SharedMedia:List("background")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(textures) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Background Textures " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(texturesList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = textures[v]
+						info.checked = textures[v] == TRB.Data.settings.rogue.assassination.textures.comboPointsBackground
+						info.func = self.SetValue
+						info.arg1 = textures[v]
+						info.arg2 = v
+						info.icon = textures[v]
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the texture
+		function controls.dropDown.comboPointsBackgroundTexture:SetValue(newValue, newName)
+			TRB.Data.settings.rogue.assassination.textures.comboPointsBackground = newValue
+			TRB.Data.settings.rogue.assassination.textures.comboPointsBackgroundName = newName
+
+			if GetSpecialization() == 1 then
+				local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+				for x = 1, length do
+					TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
+						bgFile = TRB.Data.settings.rogue.assassination.textures.comboPointsBackground,
+						tile = true,
+						tileSize = TRB.Data.settings.rogue.assassination.comboPoints.width,
+						edgeSize = 1,
+						insets = {0, 0, 0, 0}
+					})
+					TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.background, true))
+				end
+			end
+
+			UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, newName)
+			
+			if TRB.Data.settings.rogue.assassination.textures.textureLock then
+				TRB.Data.settings.rogue.assassination.textures.background = newValue
+				TRB.Data.settings.rogue.assassination.textures.backgroundName = newName
+
+				if GetSpecialization() == 1 then
+					barContainerFrame:SetBackdrop({ 
+						bgFile = TRB.Data.settings.rogue.assassination.textures.background,
+						tile = true,
+						tileSize = TRB.Data.settings.rogue.assassination.bar.width,
+						edgeSize = 1,
+						insets = {0, 0, 0, 0}
+					})
+					barContainerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.background, true))
+				end
+
+				UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, newName)
+			end
+
+			CloseDropDownMenus()
+		end
+
+		
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_CB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.textureLock
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars, borders, and backgrounds (respectively)")
+		f.tooltip = "This will lock the texture for each type of texture to be the same for all parts of the bar. E.g.: All bar textures will be the same, all border textures will be the same, and all background textures will be the same."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.textures.textureLock)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.textures.textureLock = self:GetChecked()
+			if TRB.Data.settings.rogue.assassination.textures.textureLock then
+				TRB.Data.settings.rogue.assassination.textures.passiveBar = TRB.Data.settings.rogue.assassination.textures.resourceBar
+				TRB.Data.settings.rogue.assassination.textures.passiveBarName = TRB.Data.settings.rogue.assassination.textures.resourceBarName
+				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, TRB.Data.settings.rogue.assassination.textures.passiveBarName)
+				TRB.Data.settings.rogue.assassination.textures.castingBar = TRB.Data.settings.rogue.assassination.textures.resourceBar
+				TRB.Data.settings.rogue.assassination.textures.castingBarName = TRB.Data.settings.rogue.assassination.textures.resourceBarName
+				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.rogue.assassination.textures.castingBarName)
+				TRB.Data.settings.rogue.assassination.textures.comboPointsBar = TRB.Data.settings.rogue.assassination.textures.resourceBar
+				TRB.Data.settings.rogue.assassination.textures.comboPointsBarName = TRB.Data.settings.rogue.assassination.textures.resourceBarName
+				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, TRB.Data.settings.rogue.assassination.textures.resourceBarName)
+				TRB.Data.settings.rogue.assassination.textures.comboPointsBorder = TRB.Data.settings.rogue.assassination.textures.border
+				TRB.Data.settings.rogue.assassination.textures.comboPointsBorderName = TRB.Data.settings.rogue.assassination.textures.borderName
+				UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, TRB.Data.settings.rogue.assassination.textures.comboPointsBorderName)
+				TRB.Data.settings.rogue.assassination.textures.comboPointsBackground = TRB.Data.settings.rogue.assassination.textures.background
+				TRB.Data.settings.rogue.assassination.textures.comboPointsBackgroundName = TRB.Data.settings.rogue.assassination.textures.backgroundName
+				UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, TRB.Data.settings.rogue.assassination.textures.comboPointsBackgroundName)
+
+				if GetSpecialization() == 1 then
+					resourceFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.resourceBar)
+					passiveFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.passiveBar)
+					castingFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.castingBar)
+
+					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+					for x = 1, length do
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(TRB.Data.settings.rogue.assassination.textures.comboPointsBar)
+						
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
+							bgFile = TRB.Data.settings.rogue.assassination.textures.comboPointsBackground,
+							tile = true,
+							tileSize = TRB.Data.settings.rogue.assassination.comboPoints.width,
+							edgeSize = 1,
+							insets = {0, 0, 0, 0}
+						})
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.background, true))
+						
+						if TRB.Data.settings.rogue.assassination.comboPoints.border < 1 then
+							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
+						else
+							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.rogue.assassination.textures.comboPointsBorder,
+														tile = true,
+														tileSize=4,
+														edgeSize=TRB.Data.settings.rogue.assassination.comboPoints.border,
+														insets = {0, 0, 0, 0}
+														})
+						end
+					end
+				end
+			end
+		end)
+
+		yCoord = yCoord - 30
 		controls.barDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display", 0, yCoord)
 
-		yCoord = yCoord - 50
+		yCoord = yCoord - 40
 
         --[[
 		title = "Beastial Wrath Flash Alpha"
@@ -1842,9 +2132,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_RB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord-15)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Energy < 120")
+		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Energy is not capped")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar show out of combat only if Energy < 120, hidden otherwise when out of combat."
+		f.tooltip = "This will make the Resource Bar show out of combat only if Energy is not capped, hidden otherwise when out of combat."
 		f:SetChecked(TRB.Data.settings.rogue.assassination.displayBar.notZeroShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
@@ -2088,6 +2378,111 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				end)
 			end
 		end)]]
+
+		yCoord = yCoord - 40
+
+		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Combo Point Colors", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.colors.comboPointBase = TRB.UiFunctions.BuildColorPicker(parent, "Combo Points", TRB.Data.settings.rogue.assassination.colors.comboPoints.base, 300, 25, xCoord, yCoord)
+		f = controls.colors.comboPointBase
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+                local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.base, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+                    controls.colors.comboPointBase.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.rogue.assassination.colors.comboPoints.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		controls.colors.comboPointBorder = TRB.UiFunctions.BuildColorPicker(parent, "Combo Point's border", TRB.Data.settings.rogue.assassination.colors.comboPoints.border, 225, 25, xCoord2, yCoord)
+		f = controls.colors.comboPointBorder
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.border, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+
+                    controls.colors.comboPointBorder.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.rogue.assassination.colors.comboPoints.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		yCoord = yCoord - 30		
+		controls.colors.comboPointPenultimate = TRB.UiFunctions.BuildColorPicker(parent, "Penultimate Combo Point", TRB.Data.settings.rogue.assassination.colors.comboPoints.penultimate, 300, 25, xCoord, yCoord)
+		f = controls.colors.comboPointPenultimate
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+                local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.penultimate, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+                    controls.colors.comboPointPenultimate.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.rogue.assassination.colors.comboPoints.penultimate = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		controls.colors.comboPointBackground = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled Combo Point background", TRB.Data.settings.rogue.assassination.colors.bar.background, 275, 25, xCoord2, yCoord)
+		f = controls.colors.comboPointBackground
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.background, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.comboPointBackground.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.rogue.assassination.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		yCoord = yCoord - 30		
+		controls.colors.comboPointFinal = TRB.UiFunctions.BuildColorPicker(parent, "Final Combo Point", TRB.Data.settings.rogue.assassination.colors.comboPoints.final, 300, 25, xCoord, yCoord)
+		f = controls.colors.comboPointFinal
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+                local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.final, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+                    controls.colors.comboPointFinal.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.rogue.assassination.colors.comboPoints.final = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
 
 		yCoord = yCoord - 40
 

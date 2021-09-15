@@ -3028,6 +3028,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                     for x = 1, TRB.Data.character.maxResource2 do
                         if TRB.Data.snapshotData.resource2 >= x then
                             TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+							if x == (TRB.Data.character.maxResource2 - 1) then
+								TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.penultimate, true))
+							elseif x == TRB.Data.character.maxResource2 then
+								TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.final, true))
+							else
+								TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.base, true))
+							end
                         else
                             TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
                         end
