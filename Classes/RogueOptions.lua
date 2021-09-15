@@ -2443,11 +2443,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end)
 
-		controls.colors.comboPointBackground = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled Combo Point background", TRB.Data.settings.rogue.assassination.colors.bar.background, 275, 25, xCoord2, yCoord)
+		controls.colors.comboPointBackground = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled Combo Point background", TRB.Data.settings.rogue.assassination.colors.comboPoints.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.comboPointBackground
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.background, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.background, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -2458,8 +2458,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                     end
         
                     controls.colors.comboPointBackground.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.rogue.assassination.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
+                    TRB.Data.settings.rogue.assassination.colors.comboPoints.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    
+					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+					for x = 1, length do
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.background, true))
+					end
                 end)
 			end
 		end)
