@@ -159,6 +159,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -35,
                 comboPointsGenerated = 0,
+                stealth = true,
 				thresholdId = 7,
 				settingKey = "sap",
 				thresholdUsable = false
@@ -2856,100 +2857,104 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							local energyAmount = CalculateAbilityResourceValue(spell.energy, true)
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.assassination, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.rogue.assassination.thresholdWidth, -energyAmount, TRB.Data.character.maxResource)
+						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then							
+							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed. TODO: add override check for certain buffs.
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
+							else
+								local energyAmount = CalculateAbilityResourceValue(spell.energy, true)
+								TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.assassination, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.rogue.assassination.thresholdWidth, -energyAmount, TRB.Data.character.maxResource)
 
-							local showThreshold = true
-							local thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
-							local frameLevel = 129
+								local showThreshold = true
+								local thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+								local frameLevel = 129
 
-							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-								--[[if spell.id == TRB.Data.spells.killShot.id then
-									local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
-									local flayersMarkTime = GetFlayersMarkRemainingTime()
-									if (UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum) and flayersMarkTime == 0 then
-										showThreshold = false
-										TRB.Data.snapshotData.audio.playedKillShotCue = false
-									elseif flayersMarkTime == 0 and (TRB.Data.snapshotData.killShot.startTime ~= nil and currentTime < (TRB.Data.snapshotData.killShot.startTime + TRB.Data.snapshotData.killShot.duration)) then
-										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
-										frameLevel = 127
-										TRB.Data.snapshotData.audio.playedKillShotCue = false
-									elseif TRB.Data.snapshotData.resource >= -energyAmount or flayersMarkTime > 0 then
-										if TRB.Data.settings.rogue.assassination.audio.killShot.enabled and not TRB.Data.snapshotData.audio.playedKillShotCue then
-											TRB.Data.snapshotData.audio.playedKillShotCue = true
-											PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+								if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+									--[[if spell.id == TRB.Data.spells.killShot.id then
+										local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
+										local flayersMarkTime = GetFlayersMarkRemainingTime()
+										if (UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum) and flayersMarkTime == 0 then
+											showThreshold = false
+											TRB.Data.snapshotData.audio.playedKillShotCue = false
+										elseif flayersMarkTime == 0 and (TRB.Data.snapshotData.killShot.startTime ~= nil and currentTime < (TRB.Data.snapshotData.killShot.startTime + TRB.Data.snapshotData.killShot.duration)) then
+											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
+											frameLevel = 127
+											TRB.Data.snapshotData.audio.playedKillShotCue = false
+										elseif TRB.Data.snapshotData.resource >= -energyAmount or flayersMarkTime > 0 then
+											if TRB.Data.settings.rogue.assassination.audio.killShot.enabled and not TRB.Data.snapshotData.audio.playedKillShotCue then
+												TRB.Data.snapshotData.audio.playedKillShotCue = true
+												PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+											end
+											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+											frameLevel = 128
+											TRB.Data.snapshotData.audio.playedKillShotCue = false
 										end
-										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
-									else
-										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
-										frameLevel = 128
-										TRB.Data.snapshotData.audio.playedKillShotCue = false
-									end
-								elseif spell.id == TRB.Data.spells.killCommand.id then
-									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
-										frameLevel = 127
-									elseif TRB.Data.snapshotData.resource >= -energyAmount or TRB.Data.spells.flamewakersCobraSting.isActive then
-										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
-									else
-										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
-										frameLevel = 128
-									end
-								elseif spell.id == TRB.Data.spells.wailingArrow.id then
-									if TRB.Data.character.items.raeshalareDeathsWhisper then
+									elseif spell.id == TRB.Data.spells.killCommand.id then
 										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
 											frameLevel = 127
-										elseif TRB.Data.snapshotData.resource >= -energyAmount then
+										elseif TRB.Data.snapshotData.resource >= -energyAmount or TRB.Data.spells.flamewakersCobraSting.isActive then
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
 										else
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
 											frameLevel = 128
 										end
+									elseif spell.id == TRB.Data.spells.wailingArrow.id then
+										if TRB.Data.character.items.raeshalareDeathsWhisper then
+											if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+												thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
+												frameLevel = 127
+											elseif TRB.Data.snapshotData.resource >= -energyAmount then
+												thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+											else
+												thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+												frameLevel = 128
+											end
+										else
+											showThreshold = false
+										end
+									end]]
+								elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
+									showThreshold = false
+								elseif spell.hasCooldown then
+									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
+										frameLevel = 127
+									elseif TRB.Data.snapshotData.resource >= -energyAmount then
+										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
 									else
-										showThreshold = false
+										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+										frameLevel = 128
 									end
-								end]]
-							elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
-								showThreshold = false
-							elseif spell.hasCooldown then
-								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+								else -- This is an active/available/normal spell threshold
+									if TRB.Data.snapshotData.resource >= -energyAmount then
+										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+										frameLevel = 128
+									end
+								end
+
+								if spell.comboPoints == true and TRB.Data.snapshotData.resource2 == 0 then
 									thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
 									frameLevel = 127
-								elseif TRB.Data.snapshotData.resource >= -energyAmount then
-									thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
-								else
-									thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
-									frameLevel = 128
 								end
-							else -- This is an active/available/normal spell threshold
-								if TRB.Data.snapshotData.resource >= -energyAmount then
-									thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
-								else
-									thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
-									frameLevel = 128
-								end
-							end
 
-                            if spell.comboPoints == true and TRB.Data.snapshotData.resource2 == 0 then
-                                thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
-                                frameLevel = 127
-                            end
-
-							if TRB.Data.settings.rogue.assassination.thresholds[spell.settingKey].enabled and showThreshold then
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
----@diagnostic disable-next-line: undefined-field
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
-								if frameLevel == 129 then
-									spell.thresholdUsable = true
+								if TRB.Data.settings.rogue.assassination.thresholds[spell.settingKey].enabled and showThreshold then
+									TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
+									TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
+	---@diagnostic disable-next-line: undefined-field
+									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+									if frameLevel == 129 then
+										spell.thresholdUsable = true
+									else
+										spell.thresholdUsable = false
+									end
 								else
+									TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
 									spell.thresholdUsable = false
 								end
-							else
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
-								spell.thresholdUsable = false
 							end
 						end
 					end
