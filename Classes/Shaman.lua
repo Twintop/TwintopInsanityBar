@@ -757,11 +757,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		UpdateIcefury()
 
 		if IsInJailersTower() then
-			TRB.Data.character.torghast.rampaging.spellCostModifier, TRB.Data.character.torghast.rampaging.coolDownReduction = TRB.Functions.GetRampagingBuff()
+			TRB.Data.character.torghast.rampaging.spellCostModifier = 1
+			-- Doesn't change ability costs for Maelstrom abilities.
+			_, TRB.Data.character.torghast.rampaging.coolDownReduction = TRB.Functions.GetRampagingBuff()
 		else
 			TRB.Data.character.torghast.rampaging.spellCostModifier = 1
 			TRB.Data.character.torghast.rampaging.coolDownReduction = 1
 		end
+		
 
 		TRB.Data.character.earthShockThreshold = 60 * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
 		
