@@ -1745,6 +1745,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
+	local function IsTargetBleeding(guid)
+		if guid == nil then
+			guid = TRB.Data.snapshotData.targetData.currentTargetGuid
+		end
+
+		if TRB.Data.snapshotData.targetData.targets[guid] == nil then
+			return false
+		end
+
+		local specId = GetSpecialization()
+
+		if specId == 1 then -- Assassination
+			return TRB.Data.snapshotData.targetData.targets[guid].garrote or TRB.Data.snapshotData.targetData.targets[guid].rupture or TRB.Data.snapshotData.targetData.targets[guid].internalBleeding or TRB.Data.snapshotData.targetData.targets[guid].crimsonTempest
+		end
+	end
+
 	local function InitializeTarget(guid, selfInitializeAllowed)
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
 			return false
@@ -1858,7 +1874,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local currentTime = GetTime()
 		local specId = GetSpecialization()
         
-		if specId == 1 or specId == 3 then -- Assassination
+		if specId == 1 then -- Assassination
 			-- Bleeds
 			local garroteTotal = 0
 			local ruptureTotal = 0
@@ -2467,7 +2483,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			_sadTime = math.abs(TRB.Data.snapshotData.sliceAndDice.endTime - currentTime)
 		end
 		
-		if _sadTime > TRB.Data.spells.rupture.pandemicTime then
+		if _sadTime > TRB.Data.spells.sliceAndDice.pandemicTimes[TRB.Data.snapshotData.resource2 + 1] then
 			sadTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _sadTime)
 		elseif _sadTime > 0 then
 			sadTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.pandemic, _sadTime)
@@ -3559,28 +3575,20 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								end
 							else
 								if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-									--[[if spell.id == TRB.Data.spells.ambush.id then
-										local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
-										local flayersMarkTime = GetFlayersMarkRemainingTime()
-										if (UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum) and flayersMarkTime == 0 then
+									if spell.id == TRB.Data.spells.exsanguinate.id then
+										if spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
 											showThreshold = false
-											TRB.Data.snapshotData.audio.playedKillShotCue = false
-										elseif flayersMarkTime == 0 and (TRB.Data.snapshotData.killShot.startTime ~= nil and currentTime < (TRB.Data.snapshotData.killShot.startTime + TRB.Data.snapshotData.killShot.duration)) then
+										elseif not IsTargetBleeding(TRB.Data.snapshotData.targetData.currentTargetGuid) or (TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
 											frameLevel = 127
-											TRB.Data.snapshotData.audio.playedKillShotCue = false
-										elseif TRB.Data.snapshotData.resource >= -energyAmount or flayersMarkTime > 0 then
-											if TRB.Data.settings.rogue.assassination.audio.killShot.enabled and not TRB.Data.snapshotData.audio.playedKillShotCue then
-												TRB.Data.snapshotData.audio.playedKillShotCue = true
-												PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
-											end
+										elseif TRB.Data.snapshotData.resource >= -energyAmount then
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
 										else
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
 											frameLevel = 128
 											TRB.Data.snapshotData.audio.playedKillShotCue = false
 										end
-									elseif spell.id == TRB.Data.spells.killCommand.id then
+									--[[elseif spell.id == TRB.Data.spells.killCommand.id then
 										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
 											frameLevel = 127
@@ -3603,8 +3611,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											end
 										else
 											showThreshold = false
-										end
-									end]]
+										end]]
+									end
 								elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
 									showThreshold = false
 								elseif spell.hasCooldown then
