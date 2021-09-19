@@ -213,7 +213,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 9,
 				settingKey = "sliceAndDice",
                 hasCooldown = false,
-				thresholdUsable = false
+				thresholdUsable = false,
+				pandemicTimes = {
+					12 * 0.3,
+					12 * 0.3,
+					18 * 0.3,
+					24 * 0.3,
+					30 * 0.3,
+					36 * 0.3,
+					42 * 0.3
+				}
 			},
 
             -- Assassination Spec Abilities
@@ -250,7 +259,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "garrote",
                 hasCooldown = true,
                 cooldown = 6,
-				thresholdUsable = false
+				thresholdUsable = false,
+				pandemicTime = 18 * 0.3
 			},
 			mutilate = {
 				id = 1329,
@@ -283,7 +293,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 15,
 				settingKey = "rupture",
                 hasCooldown = false,
-				thresholdUsable = false
+				thresholdUsable = false,
+				pandemicTimes = {
+					8 * 0.3,
+					8 * 0.3,
+					12 * 0.3,
+					16 * 0.3,
+					20 * 0.3,
+					24 * 0.3,
+					28 * 0.3
+				}
 			},
 			vendetta = {
 				id = 79140,
@@ -339,7 +358,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "crimsonTempest",
 				hasCooldown = false,
 				isTalent = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				pandemicTimes = {
+					4 * 0.3,
+					4 * 0.3,
+					6 * 0.3,
+					8 * 0.3,
+					10 * 0.3,
+					12 * 0.3,
+					14 * 0.3
+				}
 			},
 
             --[[
@@ -513,6 +541,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			startTime = nil,
 			duration = 0,
 			enabled = false
+		}
+		specCache.assassination.snapshotData.sliceAndDice = {
+			spellId = nil,
+			endTime = nil,
+			duration = 0
 		}
 		--[[specCache.assassination.snapshotData.flayedShot = {
 			startTime = nil,
@@ -1332,6 +1365,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "#numbingPoison", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = true },
 			{ variable = "#np", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = false },
 			{ variable = "#rupture", icon = spells.rupture.icon, description = spells.rupture.name, printInSettings = true },
+			{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
+			{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
 			{ variable = "#woundPoison", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = true },
 			{ variable = "#wp", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = false },
         }
@@ -1367,6 +1402,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$resourcePlusPassive", description = "Current + Passive Energy Total", printInSettings = false, color = false },
 			{ variable = "$energyTotal", description = "Current + Passive + Casting Energy Total", printInSettings = true, color = false },
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Energy Total", printInSettings = false, color = false },
+			
+			{ variable = "$sadTime", description = "Time remaining on Slice and Dice buff", printInSettings = true, color = false },
+			{ variable = "$sliceAndDiceTime", description = "Time remaining on Slice and Dice buff", printInSettings = false, color = false },
 
 			-- Bleeds
 			{ variable = "$ctCount", description = "Number of Crimson Tempest bleeds active on targets", printInSettings = true, color = false },
@@ -2060,6 +2098,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].woundPoisonRemaining > 0 then
 					valid = true
 				end
+			-- Other abilities
+			elseif var == "$sadTime" or var == "$sliceAndDiceTime" then
+				if TRB.Data.snapshotData.sliceAndDice.spellId ~= nil then
+					valid = true
+				end
 			end
 		--[[elseif specId == 2 then --Outlaw
 			if var == "$trueshotTime" then
@@ -2330,43 +2373,28 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		if TRB.Data.settings.rogue.assassination.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			-- Bleeds
-			--[[if _ctTime > TRB.Data.spells.crimsonTempest.pandemicTime then
+			if _ctTime > TRB.Data.spells.crimsonTempest.pandemicTimes[TRB.Data.snapshotData.resource2 + 1] then
 				ctCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _ctCount)
 				ctTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _ctTime)
 			elseif _ctTime > 0 then
 				ctCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.pandemic, _ctCount)
 				ctTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.pandemic, _ctTime)
-			else]]
-			if _ctTime > 0 then
-				ctCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _ctCount)
-				ctTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _ctTime)
 			else
 				ctCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, _ctCount)
 				ctTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, 0)
 			end
 
-			--[[if _garroteTime > TRB.Data.spells.garrote.pandemicTime then
+			if _garroteTime > TRB.Data.spells.garrote.pandemicTime then
 				garroteCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _garroteCount)
 				garroteTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _garroteTime)
 			elseif _garroteTime > 0 then
 				garroteCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.pandemic, _garroteCount)
 				garroteTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.pandemic, _garroteTime)
-			else]]
-			if _garroteTime > 0 then
-				garroteCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _garroteCount)
-				garroteTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _garroteTime)
 			else
 				garroteCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, _garroteCount)
 				garroteTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, 0)
 			end
-			
-			--[[if _ibTime > TRB.Data.spells.internalBleeding.pandemicTime then
-				ibCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _ibCount)
-				ibTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _ibTime)
-			elseif _ibTime > 0 then
-				ibCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.pandemic, _ibCount)
-				ibTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.pandemic, _ibTime)
-			else]]
+						
 			if _ibTime > 0 then
 				ibCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _ibCount)
 				ibTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _ibTime)
@@ -2375,16 +2403,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				ibTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, 0)
 			end
 
-			--[[if _ruptureTime > TRB.Data.spells.rupture.pandemicTime then
+			if _ruptureTime > TRB.Data.spells.rupture.pandemicTimes[TRB.Data.snapshotData.resource2 + 1] then
 				ruptureCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _ruptureCount)
 				ruptureTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _ruptureTime)
 			elseif _ruptureTime > 0 then
 				ruptureCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.pandemic, _ruptureCount)
 				ruptureTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.pandemic, _ruptureTime)
-			else]]
-			if _ruptureTime > 0 then
-				ruptureCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _ruptureCount)
-				ruptureTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _ruptureTime)
 			else
 				ruptureCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, _ruptureCount)
 				ruptureTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, 0)
@@ -2434,6 +2458,21 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			dpTime = string.format("%.1f", _dpTime)
 			npTime = string.format("%.1f", _npTime)
 			wpTime = string.format("%.1f", _wpTime)
+		end
+		
+		--$sadTime
+		local _sadTime = 0
+		local sadTime
+		if TRB.Data.snapshotData.sliceAndDice.spellId ~= nil then
+			_sadTime = math.abs(TRB.Data.snapshotData.sliceAndDice.endTime - currentTime)
+		end
+		
+		if _sadTime > TRB.Data.spells.rupture.pandemicTime then
+			sadTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _sadTime)
+		elseif _sadTime > 0 then
+			sadTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.pandemic, _sadTime)
+		else
+			sadTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, 0)
 		end
 
         --[[
@@ -2488,6 +2527,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["#rupture"] = TRB.Data.spells.rupture.icon
 		lookup["#woundPoison"] = TRB.Data.spells.woundPoison.icon
 		lookup["#wp"] = TRB.Data.spells.woundPoison.icon
+		lookup["#sad"] = TRB.Data.spells.sliceAndDice.icon
+		lookup["#sliceAndDice"] = TRB.Data.spells.sliceAndDice.icon
 		--[[lookup["#aMurderOfCrows"] = TRB.Data.spells.aMurderOfCrows.icon
 		lookup["#arcaneShot"] = TRB.Data.spells.arcaneShot.icon
 		lookup["#barbedShot"] = TRB.Data.spells.barbedShot.icon
@@ -2546,6 +2587,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$internalBleedingTime"] = ibTime
 		lookup["$ruptureCount"] = ruptureCount
 		lookup["$ruptureTime"] = ruptureTime
+		lookup["$sadTime"] = sadTime
+		lookup["$sliceAndDiceTime"] = sadTime
 
 		if TRB.Data.character.maxResource == TRB.Data.snapshotData.resource then
 			lookup["$passive"] = passiveEnergyMinusRegen
@@ -4325,6 +4368,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
+						end
+					elseif spellId == TRB.Data.spells.sliceAndDice.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
+							TRB.Data.spells.sliceAndDice.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.sliceAndDice.duration, TRB.Data.snapshotData.sliceAndDice.endTime, _, _, _, TRB.Data.snapshotData.sliceAndDice.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.sliceAndDice.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.sliceAndDice.isActive = false
+							TRB.Data.snapshotData.sliceAndDice.spellId = nil
+							TRB.Data.snapshotData.sliceAndDice.duration = 0
+							TRB.Data.snapshotData.sliceAndDice.endTime = nil
 						end
                     end
 					--[[elseif spellId == TRB.Data.spells.barbedShot.id then
