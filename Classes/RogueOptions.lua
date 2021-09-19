@@ -242,13 +242,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-				--[[killShot={
-					name = "Kill Shot Ready",
+				blindside={
+					name = "Blindside Proc",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-				flayersMark={
+				--[[flayersMark={
 					name = "Flayer's Mark Proc",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
@@ -3440,31 +3440,30 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
-        --[[
 		yCoord = yCoord - 30
-		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.killShotAudio
+		controls.checkBoxes.blindsideAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_blindside_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.blindsideAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Kill Shot is usable")
-		f.tooltip = "Play an audio cue when Kill Shot is usable and off of cooldown. If you also have Flayer's Mark proc audio enabled, that sound takes priority when a proc occurs."
-		f:SetChecked(TRB.Data.settings.rogue.assassination.audio.killShot.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Blidside proc occurs")
+		f.tooltip = "Play an audio cue when a Blindside proc occurs, allowing Ambush to be used outside of stealth."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.audio.blindside.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.assassination.audio.killShot.enabled = self:GetChecked()
+			TRB.Data.settings.rogue.assassination.audio.blindside.enabled = self:GetChecked()
 
-			if TRB.Data.settings.rogue.assassination.audio.killShot.enabled then
-				PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+			if TRB.Data.settings.rogue.assassination.audio.blindside.enabled then
+				PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.killShotAudio = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_killShot_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.killShotAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.killShotAudio, TRB.Data.settings.rogue.assassination.audio.killShot.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
+		controls.dropDown.blindsideAudio = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_blindside_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.blindsideAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.blindsideAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.blindsideAudio, TRB.Data.settings.rogue.assassination.audio.blindside.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.blindsideAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.killShotAudio, function(self, level, menuList)
+		UIDropDownMenu_Initialize(controls.dropDown.blindsideAudio, function(self, level, menuList)
 			local entries = 25
 			local info = UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
@@ -3485,7 +3484,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.rogue.assassination.audio.killShot.sound
+						info.checked = sounds[v] == TRB.Data.settings.rogue.assassination.audio.blindside.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -3496,12 +3495,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.killShotAudio:SetValue(newValue, newName)
-			TRB.Data.settings.rogue.assassination.audio.killShot.sound = newValue
-			TRB.Data.settings.rogue.assassination.audio.killShot.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
+		function controls.dropDown.blindsideAudio:SetValue(newValue, newName)
+			TRB.Data.settings.rogue.assassination.audio.blindside.sound = newValue
+			TRB.Data.settings.rogue.assassination.audio.blindside.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.blindsideAudio, newName)
 			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
@@ -3519,7 +3518,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
-        ]]
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_overcapAudio", parent, "UIDropDownMenuTemplate")

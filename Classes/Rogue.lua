@@ -317,7 +317,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				id = 121153,
 				name = "",
 				icon = "",
-				isActive = false
+				duration = 10,
+				isActive = false,
 			},
 			subterfuge = {
 				id = 115192,
@@ -541,6 +542,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			startTime = nil,
 			duration = 0,
 			enabled = false
+		}
+		specCache.assassination.snapshotData.blindside = {
+			spellId = nil,
+			endTime = nil,
+			duration = 0
 		}
 		specCache.assassination.snapshotData.sliceAndDice = {
 			spellId = nil,
@@ -1407,6 +1413,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$sliceAndDiceTime", description = "Time remaining on Slice and Dice buff", printInSettings = false, color = false },
 
 			-- Bleeds
+			{ variable = "$isBleeding", description = "Does your current target have a bleed active on it? Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$ctCount", description = "Number of Crimson Tempest bleeds active on targets", printInSettings = true, color = false },
 			{ variable = "$crimsonTempestCount", description = "Number of Crimson Tempest bleeds active on targets", printInSettings = false, color = false },
 			{ variable = "$ctTime", description = "Time remaining on Crimson Tempest on your current target", printInSettings = true, color = false },
@@ -1444,6 +1451,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$wpTime", description = "Time remaining on Wound Poison on your current target", printInSettings = true, color = false },
 			{ variable = "$woundPoisonTime", description = "Time remaining on Wound Poison on your current target", printInSettings = false, color = false },
 
+			{ variable = "$blindsideTime", description = "Time remaining on Blindside proc", printInSettings = true, color = false },
 
             --[[
 			{ variable = "$frenzyTime", description = "Time remaining on your pet's Frenzy buff", printInSettings = true, color = false },
@@ -1765,6 +1773,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.sliceAndDice)
 	end
 
+	local function GetBlindsideRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.blindside)
+	end
+
 	local function InitializeTarget(guid, selfInitializeAllowed)
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
 			return false
@@ -2013,7 +2025,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		if specId == 1 then --Assassination
 			-- Bleeds
-			if var == "$ctCount" or var == "$crimsonTempestCount" then
+			if var == "$isBleeding" then
+				if IsTargetBleeding() then
+					valid = true
+				end
+			elseif var == "$ctCount" or var == "$crimsonTempestCount" then
 				if TRB.Data.snapshotData.targetData.crimsonTempest > 0 then
 					valid = true
 				end
@@ -2121,6 +2137,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			-- Other abilities
 			elseif var == "$sadTime" or var == "$sliceAndDiceTime" then
 				if TRB.Data.snapshotData.sliceAndDice.spellId ~= nil then
+					valid = true
+				end
+			elseif var == "$blindsideTime" then
+				if TRB.Data.snapshotData.blindside.spellId ~= nil then
 					valid = true
 				end
 			end
@@ -2496,6 +2516,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			sadTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, 0)
 		end
 
+		
+		--$blindsideTime
+		local _blindsideTime = GetBlindsideRemainingTime()
+		local blindsideTime = 0
+		if _blindsideTime ~= nil then
+			blindsideTime = string.format("%.1f", _blindsideTime)
+		end
+
         --[[
 		--$frenzyTime
 		local _frenzyTime = GetFrenzyRemainingTime()
@@ -2534,6 +2562,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		}]]
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#blindside"] = TRB.Data.spells.blindside.icon
 		lookup["#crimsonTempest"] = TRB.Data.spells.crimsonTempest.icon
 		lookup["#ct"] = TRB.Data.spells.crimsonTempest.icon
 		lookup["#cripplingPoison"] = TRB.Data.spells.cripplingPoison.icon
@@ -2550,26 +2579,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["#wp"] = TRB.Data.spells.woundPoison.icon
 		lookup["#sad"] = TRB.Data.spells.sliceAndDice.icon
 		lookup["#sliceAndDice"] = TRB.Data.spells.sliceAndDice.icon
-		--[[lookup["#aMurderOfCrows"] = TRB.Data.spells.aMurderOfCrows.icon
-		lookup["#arcaneShot"] = TRB.Data.spells.arcaneShot.icon
-		lookup["#barbedShot"] = TRB.Data.spells.barbedShot.icon
-		lookup["#barrage"] = TRB.Data.spells.barrage.icon
-		lookup["#beastialWrath"] = TRB.Data.spells.beastialWrath.icon
-		lookup["#chimaeraShot"] = TRB.Data.spells.chimaeraShot.icon
-		lookup["#cobraShot"] = TRB.Data.spells.cobraShot.icon
-		lookup["#flayedShot"] = TRB.Data.spells.flayedShot.icon
-		lookup["#flayersMark"] = TRB.Data.spells.flayersMark.icon
-		lookup["#frenzy"] = TRB.Data.spells.frenzy.icon
-		lookup["#killCommand"] = TRB.Data.spells.killCommand.icon
-		lookup["#killShot"] = TRB.Data.spells.killShot.icon
-		lookup["#multiShot"] = TRB.Data.spells.multiShot.icon
-		lookup["#nesingwarys"] = TRB.Data.spells.nesingwarysTrappingApparatus.icon
-		lookup["#revivePet"] = TRB.Data.spells.revivePet.icon
-		lookup["#scareBeast"] = TRB.Data.spells.scareBeast.icon
-		lookup["$frenzyTime"] = frenzyTime
-		lookup["$frenzyStacks"] = frenzyStacks
-		lookup["$nesingwarysTime"] = nesingwarysTime
-		lookup["$flayersMarkTime"] = flayersMarkTime]]
+
 		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$energyTotal"] = energyTotal
 		lookup["$energyMax"] = TRB.Data.character.maxResource
@@ -2610,6 +2620,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$ruptureTime"] = ruptureTime
 		lookup["$sadTime"] = sadTime
 		lookup["$sliceAndDiceTime"] = sadTime
+		lookup["$blindsideTime"] = blindsideTime
+		lookup["$isBleeding"] = ""
 
 		if TRB.Data.character.maxResource == TRB.Data.snapshotData.resource then
 			lookup["$passive"] = passiveEnergyMinusRegen
@@ -2617,9 +2629,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			lookup["$passive"] = passiveEnergy
 		end
 
-		--lookup["$barbedShotEnergy"] = barbedShotEnergy
-		--lookup["$barbedShotTicks"] = barbedShotTicks
-		--lookup["$barbedShotTime"] = barbedShotTime
 		lookup["$regen"] = regenEnergy
 		lookup["$regenEnergy"] = regenEnergy
 		lookup["$energyRegen"] = regenEnergy
@@ -4252,8 +4261,15 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					elseif spellId == TRB.Data.spells.blindside.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.blindside.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.blindside.duration, TRB.Data.snapshotData.blindside.endTime, _, _, _, TRB.Data.snapshotData.blindside.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.blindside.id)
+							if TRB.Data.settings.rogue.assassination.audio.blindside.enabled then
+								PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.blindside.isActive = false
+							TRB.Data.snapshotData.blindside.spellId = nil
+							TRB.Data.snapshotData.blindside.duration = 0
+							TRB.Data.snapshotData.blindside.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.subterfuge.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
@@ -4264,8 +4280,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					elseif spellId == TRB.Data.spells.garrote.id then
 						if InitializeTarget(destGUID) then
 							if type == "SPELL_CAST_SUCCESS" then
-								TRB.Data.snapshotData.garrote.startTime = currentTime
-								TRB.Data.snapshotData.garrote.duration = TRB.Data.spells.garrote.cooldown
+								if not((TRB.Data.character.talents.subterfuge.isSelected and IsStealthed()) or TRB.Data.spells.subterfuge.isActive) then
+									TRB.Data.snapshotData.garrote.startTime = currentTime
+									TRB.Data.snapshotData.garrote.duration = TRB.Data.spells.garrote.cooldown
+								end
 							elseif type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Garrote Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].garrote = true
 								if type == "SPELL_AURA_APPLIED" then
