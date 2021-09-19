@@ -1760,6 +1760,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			return TRB.Data.snapshotData.targetData.targets[guid].garrote or TRB.Data.snapshotData.targetData.targets[guid].rupture or TRB.Data.snapshotData.targetData.targets[guid].internalBleeding or TRB.Data.snapshotData.targetData.targets[guid].crimsonTempest
 		end
 	end
+	
+	local function GetSliceAndDiceRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.sliceAndDice)
+	end
 
 	local function InitializeTarget(guid, selfInitializeAllowed)
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
@@ -2476,11 +2480,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			wpTime = string.format("%.1f", _wpTime)
 		end
 		
+
 		--$sadTime
 		local _sadTime = 0
 		local sadTime
 		if TRB.Data.snapshotData.sliceAndDice.spellId ~= nil then
-			_sadTime = math.abs(TRB.Data.snapshotData.sliceAndDice.endTime - currentTime)
+			_sadTime = GetSliceAndDiceRemainingTime()
 		end
 		
 		if _sadTime > TRB.Data.spells.sliceAndDice.pandemicTimes[TRB.Data.snapshotData.resource2 + 1] then
@@ -3662,6 +3667,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					local latency = TRB.Functions.GetLatency()
 
 					local affectingCombat = UnitAffectingCombat("player")
+
+					if affectingCombat then
+						local sadTime = GetSliceAndDiceRemainingTime()
+						if sadTime == 0 then
+							barColor = TRB.Data.settings.rogue.assassination.colors.bar.noSliceAndDice
+						elseif sadTime < TRB.Data.spells.sliceAndDice.pandemicTimes[TRB.Data.snapshotData.resource2 + 1] then
+							barColor = TRB.Data.settings.rogue.assassination.colors.bar.sliceAndDicePandemic
+						end
+					end
+
 					--[[local barbedShotRechargeRemaining = -(currentTime - (TRB.Data.snapshotData.barbedShot.startTime + TRB.Data.snapshotData.barbedShot.duration))
 					local barbedShotTotalRechargeRemaining = barbedShotRechargeRemaining + ((1 - TRB.Data.snapshotData.barbedShot.charges) * TRB.Data.snapshotData.barbedShot.duration)
 					local barbedShotPartialCharges = TRB.Data.snapshotData.barbedShot.charges + (barbedShotRechargeRemaining / TRB.Data.snapshotData.barbedShot.duration)

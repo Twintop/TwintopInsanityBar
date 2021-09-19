@@ -200,8 +200,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					--borderBeastialWrath="FF005500",
 					background="66000000",
 					base="FFFFFF00",
-					--frenzyUse="FF00B60E",
-					--frenzyHold="FFFF0000",
+					noSliceAndDice="FFFF0000",
+					sliceAndDicePandemic="FFFF9900",
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FFD59900",
@@ -451,8 +451,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					borderSteadyEnergy="FFFFFF00",
 					background="66000000",
 					base="FFFF8040",
-					trueshot="FF00B60E",
-					trueshotEnding="FFFF0000",
+					noSliceAndDice="FFFF0000",
+					sliceAndDicePandemic="FFFF0000",
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FF005500",
@@ -2284,7 +2284,27 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Energy gain from Passive Sources", TRB.Data.settings.rogue.assassination.colors.bar.passive, 275, 25, xCoord, yCoord)
+		controls.colors.sliceAndDicePandemic = TRB.UiFunctions.BuildColorPicker(parent, "Energy when Slice and Dice is within Pandemic refresh range (current CPs)", TRB.Data.settings.rogue.assassination.colors.bar.sliceAndDicePandemic, 275, 25, xCoord, yCoord)
+		f = controls.colors.sliceAndDicePandemic
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.sliceAndDicePandemic, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.sliceAndDicePandemic.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.rogue.assassination.colors.bar.sliceAndDicePandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)
+
+		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Energy gain from Passive Sources", TRB.Data.settings.rogue.assassination.colors.bar.passive, 275, 25, xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -2305,49 +2325,27 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end)
 
-        --[[
-		controls.colors.borderBeastialWrath = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when you can use Beastial Wrath", TRB.Data.settings.rogue.assassination.colors.bar.borderBeastialWrath, 275, 25, xCoord2, yCoord)
-		f = controls.colors.borderBeastialWrath
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.borderBeastialWrath, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.rogue.assassination.colors.bar.borderBeastialWrath = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
-                end)
-			end
-		end)
 
 		yCoord = yCoord - 30
-		controls.colors.frenzyUse = TRB.UiFunctions.BuildColorPicker(parent, "Energy when Barbed Shot should be used", TRB.Data.settings.rogue.assassination.colors.bar.frenzyUse, 275, 25, xCoord, yCoord)
-		f = controls.colors.frenzyUse
+		controls.colors.noSliceAndDice = TRB.UiFunctions.BuildColorPicker(parent, "Energy when Slice and Dice is not up", TRB.Data.settings.rogue.assassination.colors.bar.noSliceAndDice, 275, 25, xCoord, yCoord)
+		f = controls.colors.noSliceAndDice
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.frenzyUse, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.noSliceAndDice, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.frenzyUse.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.rogue.assassination.colors.bar.frenzyUse = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.noSliceAndDice.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.rogue.assassination.colors.bar.noSliceAndDice = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
 			end
 		end)
-        ]]
 
 		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.rogue.assassination.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
@@ -2369,28 +2367,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 end)
 			end
 		end)
-
-        --[[
-		yCoord = yCoord - 30
-		controls.colors.frenzyHold = TRB.UiFunctions.BuildColorPicker(parent, "Energy when Barbed Shot charges should be held", TRB.Data.settings.rogue.assassination.colors.bar.frenzyHold, 275, 25, xCoord, yCoord)
-		f = controls.colors.frenzyHold
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.frenzyHold, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.frenzyHold.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.rogue.assassination.colors.bar.frenzyHold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)]]
 
 		yCoord = yCoord - 40
 
@@ -3334,6 +3310,82 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		
 
 		yCoord = yCoord - 30
+		controls.dotColorSection = TRB.UiFunctions.BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+
+		yCoord = yCoord - 25
+
+		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_dotColor", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.dotColor
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter, DoT timer, and Slice and Dice color based on time remaining?")
+		f.tooltip = "When checked, the color of total DoTs up counters, DoT timers, and Slice and Dice's timer will change based on whether or not the DoT is on the current target."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.colors.text.dots.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.colors.text.dots.enabled = self:GetChecked()
+		end)
+
+		controls.colors.dotUp = TRB.UiFunctions.BuildColorPicker(parent, "DoT is active on current target", TRB.Data.settings.rogue.assassination.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
+		f = controls.colors.dotUp
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.text.dots.up, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.dotUp.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.rogue.assassination.colors.text.dots.up = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		controls.colors.dotPandemic = TRB.UiFunctions.BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", TRB.Data.settings.rogue.assassination.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
+		f = controls.colors.dotPandemic
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.text.dots.pandemic, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.dotPandemic.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.rogue.assassination.colors.text.dots.pandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		controls.colors.dotDown = TRB.UiFunctions.BuildColorPicker(parent, "DoT is not active on current target", TRB.Data.settings.rogue.assassination.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
+		f = controls.colors.dotDown
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.text.dots.down, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.dotDown.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.rogue.assassination.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+
+		yCoord = yCoord - 130
 		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 
 		yCoord = yCoord - 50
@@ -5963,15 +6015,15 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.UiFunctions.BuildSectionHeader(parent, "DoT Count Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.UiFunctions.BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
 
 		yCoord = yCoord - 25
 
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter color based on DoT status?")
-		f.tooltip = "When checked, the color of total DoTs up colors counters ($ssCount) will change based on whether or not the DoT is on the current target."
+		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter and DoT timer color based on DoT status?")
+		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($ssCount) will change based on whether or not the DoT is on the current target."
 		f:SetChecked(TRB.Data.settings.rogue.outlaw.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.rogue.outlaw.colors.text.dots.enabled = self:GetChecked()
@@ -8770,15 +8822,15 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.UiFunctions.BuildSectionHeader(parent, "DoT Count Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.UiFunctions.BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
 
 		yCoord = yCoord - 25
 
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter color based on DoT status?")
-		f.tooltip = "When checked, the color of total DoTs up colors counters ($ssCount) will change based on whether or not the DoT is on the current target."
+		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter and DoT timer color based on DoT status?")
+		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($ssCount) will change based on whether or not the DoT is on the current target."
 		f:SetChecked(TRB.Data.settings.rogue.subtlety.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.rogue.subtlety.colors.text.dots.enabled = self:GetChecked()
