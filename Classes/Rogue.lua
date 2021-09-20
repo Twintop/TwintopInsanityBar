@@ -215,7 +215,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 hasCooldown = false,
 				thresholdUsable = false,
 				pandemicTimes = {
-					12 * 0.3,
+					12 * 0.3, -- 0 CP, show same as if we had 1
 					12 * 0.3,
 					18 * 0.3,
 					24 * 0.3,
@@ -295,13 +295,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 hasCooldown = false,
 				thresholdUsable = false,
 				pandemicTimes = {
-					8 * 0.3,
+					8 * 0.3, -- 0 CP, show same as if we had 1
 					8 * 0.3,
 					12 * 0.3,
 					16 * 0.3,
 					20 * 0.3,
 					24 * 0.3,
-					28 * 0.3
+					28 * 0.3,
+					32 * 0.3, -- 7 CP Kyrian ability buff
 				}
 			},
 			vendetta = {
@@ -361,16 +362,54 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				isTalent = true,
 				thresholdUsable = false,
 				pandemicTimes = {
-					4 * 0.3,
+					4 * 0.3, -- 0 CP, show same as if we had 1
 					4 * 0.3,
 					6 * 0.3,
 					8 * 0.3,
 					10 * 0.3,
 					12 * 0.3,
-					14 * 0.3
+					14 * 0.3,
+					16 * 0.3, -- Kyrian ability buff
 				}
 			},
 
+			-- Covenants
+			echoingReprimand = { -- Kyrian
+				id = 323547,
+				name = "",
+				icon = "",
+				energy = -10,
+				comboPointsGenerated = 2,
+				thresholdId = 18,
+				settingKey = "echoingReprimand",
+				hasCooldown = true,
+				isSnowflake = true,
+				thresholdUsable = false,
+				isActive = false,
+				cooldown = 45,
+				buffId = {
+					323558, -- 2
+					323559, -- 3
+					323560, -- 4
+					354835, -- 4
+					354838, -- 5
+				}
+			},
+			sepsis = { -- Night Fae
+				id = 328305,
+				name = "",
+				icon = "",
+				energy = -25,
+				comboPointsGenerated = 1,
+				thresholdId = 19,
+				settingKey = "sepsis",
+				hasCooldown = true,
+				isSnowflake = true,
+				cooldown = 90,
+				buffId = 347037,
+				isActive = false
+			},
+			
             --[[
 			barbedShot = {
 				id = 217200,
@@ -552,6 +591,19 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spellId = nil,
 			endTime = nil,
 			duration = 0
+		}
+		specCache.assassination.snapshotData.echoingReprimand = {
+			startTime = nil,
+			endTime = nil,
+			duration = 0,
+			enabled = false,
+			comboPoints = 0
+		}
+		specCache.assassination.snapshotData.sepsis = {
+			startTime = nil,
+			endTime = nil,
+			duration = 0,
+			enabled = false
 		}
 		--[[specCache.assassination.snapshotData.flayedShot = {
 			startTime = nil,
@@ -1359,6 +1411,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
 			{ variable = "#wailingArrow", icon = spells.wailingArrow.icon, description = "Wailing Arrow", printInSettings = true }
             ]]
+			{ variable = "#blindside", icon = spells.blindside.icon, description = spells.blindside.name, printInSettings = true },
 			{ variable = "#crimsonTempest", icon = spells.crimsonTempest.icon, description = spells.crimsonTempest.name, printInSettings = true },
 			{ variable = "#ct", icon = spells.crimsonTempest.icon, description = spells.crimsonTempest.name, printInSettings = false },
 			{ variable = "#cripplingPoison", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = true },
@@ -1776,6 +1829,15 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	local function GetBlindsideRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.blindside)
 	end
+
+	local function GetEchoingReprimandRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.echoingReprimand)
+	end
+
+	local function GetSepsisRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.sepsis)
+	end
+
 
 	local function InitializeTarget(guid, selfInitializeAllowed)
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
@@ -3283,6 +3345,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
             TRB.Data.snapshotData.garrote.duration = 0
         end
 
+        if TRB.Data.snapshotData.echoingReprimand.startTime ~= nil and currentTime > (TRB.Data.snapshotData.echoingReprimand.startTime + TRB.Data.snapshotData.echoingReprimand.duration) then
+            TRB.Data.snapshotData.echoingReprimand.startTime = nil
+            TRB.Data.snapshotData.echoingReprimand.duration = 0
+        end
+
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].crimsonTempest then
 				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.crimsonTempest.id, "target", "player"))
@@ -3577,7 +3644,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 									else
 										showThreshold = false
 									end
-								elseif TRB.Data.spells.subterfuge.isActive then
+								elseif TRB.Data.spells.subterfuge.isActive or TRB.Data.spells.sepsis.isActive then
 									if TRB.Data.snapshotData.resource >= -energyAmount then
 										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
 									else
@@ -3590,7 +3657,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							else
 								if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 									if spell.id == TRB.Data.spells.exsanguinate.id then
-										if spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
+										if not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
 											showThreshold = false
 										elseif not IsTargetBleeding(TRB.Data.snapshotData.targetData.currentTargetGuid) or (TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
@@ -3600,7 +3667,30 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 										else
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
 											frameLevel = 128
-											TRB.Data.snapshotData.audio.playedKillShotCue = false
+										end
+									elseif spell.id == TRB.Data.spells.echoingReprimand.id then
+										if TRB.Data.character.covenantId ~= 1 then -- Not Kyrian
+											showThreshold = false
+										elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+												thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
+												frameLevel = 127
+										elseif TRB.Data.snapshotData.resource >= -energyAmount then
+											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+											frameLevel = 128
+										end
+									elseif spell.id == TRB.Data.spells.sepsis.id then
+										if TRB.Data.character.covenantId ~= 3 then -- Not Kyrian
+											showThreshold = false
+										elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+												thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
+												frameLevel = 127
+										elseif TRB.Data.snapshotData.resource >= -energyAmount then
+											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+											frameLevel = 128
 										end
 									--[[elseif spell.id == TRB.Data.spells.killCommand.id then
 										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
@@ -3753,19 +3843,31 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
             
                     for x = 1, TRB.Data.character.maxResource2 do
+						local cpBorderColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.border
+						local cpColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.base
+						local cpBackgroundColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.background
+
                         if TRB.Data.snapshotData.resource2 >= x then
                             TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
 							if x == (TRB.Data.character.maxResource2 - 1) then
-								TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.penultimate, true))
+								cpColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.penultimate
 							elseif x == TRB.Data.character.maxResource2 then
-								TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.final, true))
-							else
-								TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.base, true))
+								cpColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.final
 							end
                         else
                             TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
                         end
+
+						if x == TRB.Data.snapshotData.echoingReprimand.comboPoints then
+							cpColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand
+							cpBorderColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand
+							--cpBackgroundColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand
+						end
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(cpBorderColor, true))
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(cpBackgroundColor, true))
                     end
+					--print(TRB.Data.snapshotData.echoingReprimand.comboPoints)
 				end
 			end
 			TRB.Functions.UpdateResourceBar(TRB.Data.settings.rogue.assassination, refreshText)
@@ -4420,7 +4522,37 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							TRB.Data.snapshotData.sliceAndDice.duration = 0
 							TRB.Data.snapshotData.sliceAndDice.endTime = nil
 						end
-                    end
+					elseif spellId == TRB.Data.spells.echoingReprimand.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.echoingReprimand.startTime = currentTime
+							TRB.Data.snapshotData.echoingReprimand.duration = TRB.Data.spells.echoingReprimand.cooldown
+						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						end						
+					elseif spellId == TRB.Data.spells.echoingReprimand.buffId[1] or spellId == TRB.Data.spells.echoingReprimand.buffId[2] or spellId == TRB.Data.spells.echoingReprimand.buffId[3] or spellId == TRB.Data.spells.echoingReprimand.buffId[4] or spellId == TRB.Data.spells.echoingReprimand.buffId[5] then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Echoing Reprimand Applied to Target
+							TRB.Data.spells.echoingReprimand.isActive = true
+							_, _, TRB.Data.snapshotData.echoingReprimand.comboPoints, _, TRB.Data.snapshotData.echoingReprimand.duration, TRB.Data.snapshotData.echoingReprimand.endTime, _, _, _, TRB.Data.snapshotData.echoingReprimand.spellId = TRB.Functions.FindBuffById(spellId)
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.spells.echoingReprimand.isActive = false
+							TRB.Data.snapshotData.echoingReprimand.spellId = nil
+							TRB.Data.snapshotData.echoingReprimand.endTime = nil
+							TRB.Data.snapshotData.echoingReprimand.comboPoints = 0
+						end
+					elseif spellId == TRB.Data.spells.sepsis.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.sepsis.startTime = currentTime
+							TRB.Data.snapshotData.sepsis.duration = TRB.Data.spells.sepsis.cooldown
+						end
+					elseif spellId == TRB.Data.spells.sepsis.buffId then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.sepsis.isActive = true
+							if TRB.Data.settings.rogue.assassination.audio.sepsis.enabled then
+								PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.sepsis.isActive = false
+						end
+					end
 					--[[elseif spellId == TRB.Data.spells.barbedShot.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Barbed Shot
 							TRB.Data.snapshotData.barbedShot.charges, _, TRB.Data.snapshotData.barbedShot.startTime, TRB.Data.snapshotData.barbedShot.duration, _ = GetSpellCharges(TRB.Data.spells.barbedShot.id)

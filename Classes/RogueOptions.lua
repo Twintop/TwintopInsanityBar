@@ -139,6 +139,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					crimsonTempest = {
 						enabled = true, -- 17
 					},
+					-- Covenants
+					echoingReprimand = { -- Kyrian
+						enabled = true, -- 18
+					},
+					sepsis = { -- Night Fae
+						enabled = true, -- 19
+					},
 			},
 			generation = {
 				mode="gcd",
@@ -218,6 +225,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					base="FFFFFF00",
 					penultimate="FFFF9900",
 					final="FFFF0000",
+					echoingReprimand="FF68CCEF",
 					--frenzyUse="FF00B60E",
 					--frenzyHold="FFFF0000",
 					--casting="FFFFFFFF",
@@ -248,13 +256,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-				--[[flayersMark={
+				sepsis={
 					name = "Flayer's Mark Proc",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-				nesingwarysTrappingApparatus={
+				--[[nesingwarysTrappingApparatus={
 					name = "Nesingwary's Trapping Apparatus Proc",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
@@ -2432,6 +2440,46 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end)
 
+		controls.colors.comboPointEchoingReprimand = TRB.UiFunctions.BuildColorPicker(parent, "Combo Point border and fill when Echoing Reprimand (Kyrian) buff is up", TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand, 275, 25, xCoord2, yCoord)
+		f = controls.colors.comboPointEchoingReprimand
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.comboPointEchoingReprimand.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		yCoord = yCoord - 30		
+		controls.colors.comboPointFinal = TRB.UiFunctions.BuildColorPicker(parent, "Final Combo Point", TRB.Data.settings.rogue.assassination.colors.comboPoints.final, 300, 25, xCoord, yCoord)
+		f = controls.colors.comboPointFinal
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+                local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.final, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+                    controls.colors.comboPointFinal.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.rogue.assassination.colors.comboPoints.final = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
 		controls.colors.comboPointBackground = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled Combo Point background", TRB.Data.settings.rogue.assassination.colors.comboPoints.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.comboPointBackground
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2453,26 +2501,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					for x = 1, length do
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.background, true))
 					end
-                end)
-			end
-		end)
-
-		yCoord = yCoord - 30		
-		controls.colors.comboPointFinal = TRB.UiFunctions.BuildColorPicker(parent, "Final Combo Point", TRB.Data.settings.rogue.assassination.colors.comboPoints.final, 300, 25, xCoord, yCoord)
-		f = controls.colors.comboPointFinal
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-                local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.final, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    controls.colors.comboPointFinal.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.rogue.assassination.colors.comboPoints.final = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -2738,6 +2766,28 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.crimsonTempest.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.rogue.assassination.thresholds.crimsonTempest.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.echoingReprimandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_echoingReprimand", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.echoingReprimandThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand (if Kyrian)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand. Only visible if Kyrian. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.echoingReprimand.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.thresholds.echoingReprimand.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.sepsisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sepsis", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.sepsisThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Sepsis (if Night Fae)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis. Only visible if Night Fae. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.sepsis.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.thresholds.sepsis.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
@@ -3567,31 +3617,31 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
-        --[[
+		
 		yCoord = yCoord - 60
-		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flayersMarkAudio
+		controls.checkBoxes.sepsisAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_sepsis_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.sepsisAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if Venthyr)")
-		f.tooltip = "Play an audio cue when you get a Flayer's Mark proc that allows you to cast Kill Shot for 0 Energy and above normal execute range enemy health."
-		f:SetChecked(TRB.Data.settings.rogue.assassination.audio.flayersMark.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you gain Sepsis buff (if Kyrian)")
+		f.tooltip = "Play an audio cue when you gain Sepsis buff that allows you to use a stealth ability outside of steath."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.audio.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.assassination.audio.flayersMark.enabled = self:GetChecked()
+			TRB.Data.settings.rogue.assassination.audio.sepsis.enabled = self:GetChecked()
 
-			if TRB.Data.settings.rogue.assassination.audio.flayersMark.enabled then
-				PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
+			if TRB.Data.settings.rogue.assassination.audio.sepsis.enabled then
+				PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.flayersMarkAudio = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_flayersMark_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, TRB.Data.settings.rogue.assassination.audio.flayersMark.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
+		controls.dropDown.sepsisAudio = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_sepsis_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.sepsisAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.sepsisAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.sepsisAudio, TRB.Data.settings.rogue.assassination.audio.sepsis.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.sepsisAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.flayersMarkAudio, function(self, level, menuList)
+		UIDropDownMenu_Initialize(controls.dropDown.sepsisAudio, function(self, level, menuList)
 			local entries = 25
 			local info = UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
@@ -3612,7 +3662,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.rogue.assassination.audio.flayersMark.sound
+						info.checked = sounds[v] == TRB.Data.settings.rogue.assassination.audio.sepsis.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -3623,16 +3673,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.flayersMarkAudio:SetValue(newValue, newName)
-			TRB.Data.settings.rogue.assassination.audio.flayersMark.sound = newValue
-			TRB.Data.settings.rogue.assassination.audio.flayersMark.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
+		function controls.dropDown.sepsisAudio:SetValue(newValue, newName)
+			TRB.Data.settings.rogue.assassination.audio.sepsis.sound = newValue
+			TRB.Data.settings.rogue.assassination.audio.sepsis.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.sepsisAudio, newName)
 			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
-
+        --[[
 		yCoord = yCoord - 60
 		controls.checkBoxes.nesingwarysTrappingApparatusAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_nesingwarysTrappingApparatus_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.nesingwarysTrappingApparatusAudio
