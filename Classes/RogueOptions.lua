@@ -146,6 +146,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					sepsis = { -- Night Fae
 						enabled = true, -- 19
 					},
+					serratedBoneSpike = { -- Necrolord
+						enabled = true, -- 20
+					},
 			},
 			generation = {
 				mode="gcd",
@@ -226,6 +229,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					penultimate="FFFF9900",
 					final="FFFF0000",
 					echoingReprimand="FF68CCEF",
+					serratedBoneSpike="FF40BF40",
 					--frenzyUse="FF00B60E",
 					--frenzyHold="FFFF0000",
 					--casting="FFFFFFFF",
@@ -2440,7 +2444,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end)
 
-		controls.colors.comboPointEchoingReprimand = TRB.UiFunctions.BuildColorPicker(parent, "Combo Point border and fill when Echoing Reprimand (Kyrian) buff is up", TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand, 275, 25, xCoord2, yCoord)
+		controls.colors.comboPointEchoingReprimand = TRB.UiFunctions.BuildColorPicker(parent, "Combo Point when Echoing Reprimand (Kyrian) buff is up", TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand, 275, 25, xCoord2, yCoord)
 		f = controls.colors.comboPointEchoingReprimand
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -2480,6 +2484,27 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end)
 
+		controls.colors.comboPointSerratedBoneSpike = TRB.UiFunctions.BuildColorPicker(parent, "Combo Point that wil generate on next Serrated Bone Spike (Necrolord) use", TRB.Data.settings.rogue.assassination.colors.comboPoints.serratedBoneSpike, 275, 25, xCoord2, yCoord)
+		f = controls.colors.comboPointSerratedBoneSpike
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.serratedBoneSpike, true)
+				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.comboPointSerratedBoneSpike.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.rogue.assassination.colors.comboPoints.serratedBoneSpike = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		yCoord = yCoord - 30
 		controls.colors.comboPointBackground = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled Combo Point background", TRB.Data.settings.rogue.assassination.colors.comboPoints.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.comboPointBackground
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2788,6 +2813,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.rogue.assassination.thresholds.sepsis.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.serratedBoneSpikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_serratedBoneSpike", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.serratedBoneSpikeThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Serrated Bone Spike (if Necrolord)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Serrated Bone Spike. Only visible if Necrolord. If no available charges, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.serratedBoneSpike.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.thresholds.serratedBoneSpike.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40

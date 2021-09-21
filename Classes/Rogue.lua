@@ -409,6 +409,18 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				buffId = 347037,
 				isActive = false
 			},
+			serratedBoneSpike = {
+				id = 328547,
+				name = "",
+				icon = "",
+				energy = -15,
+				comboPointsGenerated = 2,
+				thresholdId = 20,
+				settingKey = "serratedBoneSpike",
+				hasCooldown = true,
+				isSnowflake = true,
+				debuffId = 324073
+			},
 			
             --[[
 			barbedShot = {
@@ -540,6 +552,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			cripplingPoison = 0,
 			woundPoison = 0,
 			numbingPoison = 0,
+			--Covenant
+			serratedBoneSpike = 0,
 			targets = {}
 		}
 		--[[specCache.assassination.snapshotData.flayersMark = {
@@ -604,6 +618,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			endTime = nil,
 			duration = 0,
 			enabled = false
+		}
+		specCache.assassination.snapshotData.serratedBoneSpike = {
+			isActive = false,
+			-- Charges
+			charges = 0,
+			startTime = nil,
+			duration = 0
 		}
 		--[[specCache.assassination.snapshotData.flayedShot = {
 			startTime = nil,
@@ -1867,6 +1888,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				TRB.Data.snapshotData.targetData.targets[guid].woundPoisonRemaining = 0
 				TRB.Data.snapshotData.targetData.targets[guid].numbingPoison = false
 				TRB.Data.snapshotData.targetData.targets[guid].numbingPoisonRemaining = 0
+				-- Covenant
+				TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpike = false
 			end
 		end
 		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
@@ -1963,6 +1986,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			local cripplingPoisonTotal = 0
 			local woundPoisonTotal = 0
 			local numbingPoisonTotal = 0
+			-- Covenant
+			local serratedBoneSpikeTotal = 0
 			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
 				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
 					-- Bleeds
@@ -1983,6 +2008,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					TRB.Data.snapshotData.targetData.targets[guid].woundPoisonRemaining = 0
 					TRB.Data.snapshotData.targetData.targets[guid].numbingPoison = false
 					TRB.Data.snapshotData.targetData.targets[guid].numbingPoisonRemaining = 0
+					-- Covenant
+					TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpike = false
 				else
 					-- Bleeds
 					if TRB.Data.snapshotData.targetData.targets[guid].garrote == true then
@@ -2010,6 +2037,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					if TRB.Data.snapshotData.targetData.targets[guid].numbingPoison == true then
 						numbingPoisonTotal = numbingPoisonTotal + 1
 					end
+					-- Covenant
+					if TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpike == true then
+						serratedBoneSpikeTotal = serratedBoneSpikeTotal + 1
+					end
 				end
 			end
 			--Bleeds
@@ -2022,6 +2053,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.snapshotData.targetData.cripplingPoison = cripplingPoisonTotal
 			TRB.Data.snapshotData.targetData.woundPoison = woundPoisonTotal
 			TRB.Data.snapshotData.targetData.numbingPoison = numbingPoisonTotal
+			--Covenant
+			TRB.Data.snapshotData.targetData.serratedBoneSpike = serratedBoneSpikeTotal
 		end
 	end
 
@@ -2040,6 +2073,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				TRB.Data.snapshotData.targetData.cripplingPoison = 0
 				TRB.Data.snapshotData.targetData.woundPoison = 0
 				TRB.Data.snapshotData.targetData.numbingPoison = 0
+				--Covenant
+				TRB.Data.snapshotData.targetData.serratedBoneSpike = 0
 			end
 		end
 	end
@@ -3269,6 +3304,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Functions.UpdateSnapshot()
 		local currentTime = GetTime()
 
+		if TRB.Data.character.covenantId == 4 then
+			TRB.Data.snapshotData.serratedBoneSpike.charges, _, TRB.Data.snapshotData.serratedBoneSpike.startTime, TRB.Data.snapshotData.serratedBoneSpike.duration, _ = GetSpellCharges(TRB.Data.spells.serratedBoneSpike.id)
+		else
+			TRB.Data.snapshotData.serratedBoneSpike.charges = 0
+			TRB.Data.snapshotData.serratedBoneSpike.startTime = nil
+			TRB.Data.snapshotData.serratedBoneSpike.duration = 0
+		end
+
         if TRB.Data.snapshotData.distract.startTime ~= nil and currentTime > (TRB.Data.snapshotData.distract.startTime + TRB.Data.snapshotData.distract.duration) then
             TRB.Data.snapshotData.distract.startTime = nil
             TRB.Data.snapshotData.distract.duration = 0
@@ -3287,7 +3330,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
         if TRB.Data.snapshotData.shiv.startTime ~= nil and currentTime > (TRB.Data.snapshotData.shiv.startTime + TRB.Data.snapshotData.shiv.duration) then
             TRB.Data.snapshotData.shiv.startTime = nil
             TRB.Data.snapshotData.shiv.duration = 0
-        end		
+        end
 
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].cripplingPoison then
@@ -3681,9 +3724,21 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											frameLevel = 128
 										end
 									elseif spell.id == TRB.Data.spells.sepsis.id then
-										if TRB.Data.character.covenantId ~= 3 then -- Not Kyrian
+										if TRB.Data.character.covenantId ~= 3 then -- Not Night Fae
 											showThreshold = false
 										elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+												thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
+												frameLevel = 127
+										elseif TRB.Data.snapshotData.resource >= -energyAmount then
+											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+											frameLevel = 128
+										end
+									elseif spell.id == TRB.Data.spells.serratedBoneSpike.id then
+										if TRB.Data.character.covenantId ~= 4 then -- Not Necrolord
+											showThreshold = false
+										elseif TRB.Data.snapshotData[spell.settingKey].charges == 0 then
 												thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
 												frameLevel = 127
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
@@ -3841,11 +3896,26 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
-            
+					
+					local sbsCp = 0
+					
+					if TRB.Data.character.covenantId == 4 and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.serratedBoneSpike.charges > 0 then
+						sbsCp = 1 + TRB.Data.snapshotData.targetData.serratedBoneSpike
+
+						if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] == nil or
+							TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serratedBoneSpike == false then
+							sbsCp = sbsCp + 1
+						end
+					end
+
+					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.background, true)
+
                     for x = 1, TRB.Data.character.maxResource2 do
 						local cpBorderColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.border
 						local cpColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.base
-						local cpBackgroundColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.background
+						local cpBR = cpBackgroundRed
+						local cpBG = cpBackgroundGreen
+						local cpBB = cpBackgroundBlue
 
                         if TRB.Data.snapshotData.resource2 >= x then
                             TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
@@ -3861,11 +3931,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						if x == TRB.Data.snapshotData.echoingReprimand.comboPoints then
 							cpColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand
 							cpBorderColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand
+							cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand, true)
 							--cpBackgroundColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand
+						elseif sbsCp > 0 and x > TRB.Data.snapshotData.resource2 and x <= (TRB.Data.snapshotData.resource2 + sbsCp) then
+							--cpColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.serratedBoneSpike
+							cpBorderColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.serratedBoneSpike
+							cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.serratedBoneSpike, true)
 						end
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(cpBorderColor, true))
-						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(cpBackgroundColor, true))
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
                     end
 					--print(TRB.Data.snapshotData.echoingReprimand.comboPoints)
 				end
@@ -4551,6 +4626,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.sepsis.isActive = false
+						end
+					elseif spellId == TRB.Data.spells.serratedBoneSpike.id then
+						if type == "SPELL_CAST_SUCCESS" then -- Barbed Shot
+							TRB.Data.snapshotData.serratedBoneSpike.charges, _, TRB.Data.snapshotData.serratedBoneSpike.startTime, TRB.Data.snapshotData.serratedBoneSpike.duration, _ = GetSpellCharges(TRB.Data.spells.serratedBoneSpike.id)
+						end
+					elseif spellId == TRB.Data.spells.serratedBoneSpike.debuffId then
+						if InitializeTarget(destGUID) then
+							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- NP Applied to Target
+								TRB.Data.snapshotData.targetData.targets[destGUID].serratedBoneSpike = true
+								triggerUpdate = true
+							elseif type == "SPELL_AURA_REMOVED" then
+								TRB.Data.snapshotData.targetData.targets[destGUID].serratedBoneSpike = false
+								TRB.Data.snapshotData.targetData.serratedBoneSpike = TRB.Data.snapshotData.targetData.serratedBoneSpike - 1
+								triggerUpdate = true
+							--elseif type == "SPELL_PERIODIC_DAMAGE" then
+							end
 						end
 					end
 					--[[elseif spellId == TRB.Data.spells.barbedShot.id then
