@@ -2614,7 +2614,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					TRB.Details.addonData.optionsPanel = true
 					-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
 					C_Timer.After(0, function()
-						C_Timer.After(5, function()
+						C_Timer.After(1, function()
 							TRB.Data.settings.warrior.arms = TRB.Functions.ValidateLsmValues("Arms Warrior", TRB.Data.settings.warrior.arms)
 							TRB.Data.settings.warrior.fury = TRB.Functions.ValidateLsmValues("Fury Warrior", TRB.Data.settings.warrior.fury)
 							TRB.Options.Warrior.ConstructOptionsPanel(specCache)

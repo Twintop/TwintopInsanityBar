@@ -2173,6 +2173,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.endOfCoordinatedAssault = settings.endOfCoordinatedAssault
 			end
 		elseif classId == 4 and specId == 1 then -- Assassination Rogue
+			configuration.colors.comboPoints = settings.colors.comboPoints
 			configuration.comboPoints = settings.comboPoints
 			configuration.thresholds = settings.thresholds
 		elseif classId == 5 then -- Priests
@@ -2343,6 +2344,12 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 
 			if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.hunter.survival) > 0 then -- Survival
 				configuration.hunter.survival = TRB.Functions.ExportConfigurationSections(3, 3, settings.hunter.survival, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+		elseif classId == 4 and settings.rogue ~= nil then -- Rogue
+			configuration.rogue = {}
+
+			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.rogue.assassination) > 0 then -- Assassination
+				configuration.rogue.assassination = TRB.Functions.ExportConfigurationSections(4, 1, settings.rogue.assassination, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 5 and settings.priest ~= nil then -- Priest
 			configuration.priest = {}

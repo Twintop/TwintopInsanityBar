@@ -36,13 +36,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				fontSize=18
 			},
 			middle={
-				text="",
+				text="{$sadTime}[$sadTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
 			},
 			right={
-				text="{$casting}[$casting + ]{$passive}[$passive + ]$energy",
+				text="{$passive}[$passive + ]$energy",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -57,13 +57,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "$haste% ($gcd)||n{$ttd}[TTD: $ttd] ",
+				text = "#garrote $garroteCount {$garroteTime}[ $garroteTime]|n#rupture $ruptureCount {$ruptureTime}[ $ruptureTime] {$ttd}[{!$ruptureTime}[        ]  TTD: $ttd] ",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			middle = {
-				text="",
+				text="{$sadTime}[#sad $sadTime #sad]|n{$blindsideTime}[#blindside $blindsideTime #blindside]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -87,28 +87,28 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			thresholds = {
                     -- Core Rogue
 					ambush = {
-						enabled = true, -- 1 -- TODO: Make this only show up when in stealth or when usable due to talents/mechanics outside of stealth.
+						enabled = true, -- 1
 					},
 					cheapShot = {
-						enabled = true, -- 2
+						enabled = false, -- 2
 					},
 					crimsonVial = {
 						enabled = true, -- 3
 					},
 					distract = {
-						enabled = true, -- 4
+						enabled = false, -- 4
 					},
 					feint = {
 						enabled = true, -- 5
 					},
 					kidneyShot = {
-						enabled = true, -- 6
+						enabled = false, -- 6
 					},
 					sap = {
-						enabled = true, -- 7
+						enabled = false, -- 7
 					},
 					shiv = {
-						enabled = true, -- 8
+						enabled = false, -- 8
 					},
 					sliceAndDice = {
 						enabled = true, -- 9
@@ -127,7 +127,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						enabled = true, -- 13
 					},
 					poisonedKnife = {
-						enabled = true, -- 14
+						enabled = false, -- 14
 					},
 					rupture = {
 						enabled = true, -- 15
@@ -174,7 +174,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				showCasting=true
 			},
             comboPoints = {
-                width=30,
+                width=25,
                 height=13,
 				xPos=0,
 				yPos=4,
@@ -182,7 +182,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 spacing=14,
                 relativeTo="TOP",
                 relativeToName="Above - Middle",
-                fullWidth=true,
+                fullWidth=false,
             },
 			colors = {
 				text = {
@@ -207,7 +207,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				bar = {
 					border="FFFFD300",
 					borderOvercap="FFFF0000",
-					--borderBeastialWrath="FF005500",
 					background="66000000",
 					base="FFFFFF00",
 					noSliceAndDice="FFFF0000",
@@ -215,30 +214,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FFD59900",
-					flashAlpha=0.70,
-					flashPeriod=0.5,
-					flashEnabled=true,
 					overcapEnabled=true,
 				},
 				comboPoints = {
 					border="FFFFD300",
-					--borderOvercap="FFFF0000",
-					--borderBeastialWrath="FF005500",
 					background="66000000",
 					base="FFFFFF00",
 					penultimate="FFFF9900",
 					final="FFFF0000",
 					echoingReprimand="FF68CCEF",
-					serratedBoneSpike="FF40BF40",
-					--frenzyUse="FF00B60E",
-					--frenzyHold="FFFF0000",
-					--casting="FFFFFFFF",
-					--spending="FF555555",
-					--passive="FFD59900",
-					--flashAlpha=0.70,
-					--flashPeriod=0.5,
-					--flashEnabled=true,
-					--overcapEnabled=true,
+					serratedBoneSpike="FF40BF40"
 				},
 				threshold = {
 					under="FFFFFFFF",
@@ -266,12 +251,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-				--[[nesingwarysTrappingApparatus={
-					name = "Nesingwary's Trapping Apparatus Proc",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				}]]
             },
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -310,7 +289,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			fontSizeLock=true,
 			fontFaceLock=true,
 			left={
-				text="{$trueshotTime}[$trueshotTime sec]",
+				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -337,13 +316,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "{$serpentSting}[#serpentSting $ssCount   ]$haste% ($gcd)||n{$serpentSting}[          ]{$ttd}[TTD: $ttd][ ]",
+				text = "",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			middle = {
-				text="{$flayersMarkTime}[#flayersMark $flayersMarkTime #flayersMark||n]{$trueshotTime}[#trueshot $trueshotTime #trueshot]",
+				text="",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -363,44 +342,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local settings = {
 			hastePrecision=2,
 			thresholdWidth=2,
-			overcapThreshold=100,
+			overcapThreshold=120,
 			thresholds = {
-				aimedShot = {
-					enabled = true, -- 1
-				},
-				arcaneShot = {
-					enabled = true, -- 2 --Also Chimera Shot @ 13
-				},
-				serpentSting = {
-					enabled = false, -- 3
-				},
-				crimsonVial = {
-					enabled = true, -- 4
-				},
-				killShot = {
-					enabled = true, -- 5
-				},
-				sap = {
-					enabled = true, -- 6
-				},
-				cheapShot = {
-					enabled = true, -- 7
-				},
-				explosiveShot = {
-					enabled = false, -- 8
-				},
-				sliceAndDice = {
-					enabled = false, -- 9
-				},
-				burstingShot = {
-					enabled = false, -- 10
-				},
-				shiv = {
-					enabled = false, -- 11
-				},
-				fanOfKnives = {
-					enabled = true, -- 12
-				}
 			},
 			generation = {
 				mode="gcd",
@@ -412,18 +355,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				alwaysShow=false,
 				notZeroShow=true,
 				neverShow=false
-			},
-			endOfTrueshot = {
-				enabled=true,
-				mode="gcd",
-				gcdsMax=2,
-				timeMax=3.0
-			},
-			steadyEnergy = {
-				enabled=true,
-				mode="gcd",
-				gcdsMax=3,
-				timeMax=4.5
 			},
 			bar = {
 				width=555,
@@ -460,17 +391,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				bar = {
 					border="FFAB5124",
 					borderOvercap="FFFF0000",
-					borderSteadyEnergy="FFFFFF00",
 					background="66000000",
 					base="FFFF8040",
-					noSliceAndDice="FFFF0000",
-					sliceAndDicePandemic="FFFF0000",
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FF005500",
-					flashAlpha=0.70,
-					flashPeriod=0.5,
-					flashEnabled=true,
 					overcapEnabled=true
 				},
 				threshold = {
@@ -481,51 +406,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			},
 			displayText = {},
 			audio = {
-				aimedShot={
-					name = "Aimed Shot Capping",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
-					soundName="TRB: Air Horn",
-					mode="gcd",
-					gcds=1,
-					time=1.5
-				},
-				lockAndLoad={
-					name = "Lock and Load Proc",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},
 				overcap={
 					name = "Overcap",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-				secretsOfTheUnblinkingVigil={
-					name = "Secrets of the Unblinking Vigil Proc",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},
-				nesingwarysTrappingApparatus={
-					name = "Nesingwary's Trapping Apparatus Proc",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},
-				killShot={
-					name = "Kill Shot Ready",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},
-				flayersMark={
-					name = "Flayer's Mark Proc",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				}
             },
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -558,7 +444,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			fontSizeLock=true,
 			fontFaceLock=true,
 			left={
-				text="{$coordinatedAssaultTime}[$coordinatedAssaultTime sec]",
+				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -585,19 +471,19 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "#serpentSting $ssCount   $haste% ($gcd)||n          {$ttd}[TTD: $ttd][ ]",
+				text = "",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			middle = {
-				text="{$flayersMarkTime}[#flayersMark $flayersMarkTime #flayersMark||n]{$coordinatedAssaultTime}[#coordinatedAssault $coordinatedAssaultTime #coordinatedAssault]",
+				text="",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			right = {
-				text = "{$casting}[#casting$casting+]{$toeEnergy}[#termsOfEngagement$toeEnergy+]{$regen}[$regen+]$energy",
+				text = "",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
@@ -611,38 +497,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local settings = {
 			hastePrecision=2,
 			thresholdWidth=2,
-			overcapThreshold=100,
+			overcapThreshold=120,
 			thresholds = {
-					arcaneShot = {
-						enabled = false, -- 1
-					},
-					killShot = {
-						enabled = true, -- 2
-					},
-					sliceAndDice = {
-						enabled = false, -- 3
-					},
-					shiv = {
-						enabled = false, -- 4
-					},
-					wingClip = {
-						enabled = false, -- 5
-					},
-					carve = {
-						enabled = true, -- 6, Butchery = 7
-					},
-					raptorStrike = {
-						enabled = true, -- 8, also Mongoose Bite
-					},
-					serpentSting = {
-						enabled = false, -- 9
-					},
-					cheapShot = {
-						enabled = true, -- 10
-					},
-					chakrams = {
-						enabled = true, -- 11
-					}
 			},
 			generation = {
 				mode="gcd",
@@ -654,12 +510,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				alwaysShow=false,
 				notZeroShow=true,
 				neverShow=false
-			},
-			endOfCoordinatedAssault = {
-				enabled=true,
-				mode="gcd",
-				gcdsMax=2,
-				timeMax=3.0
 			},
 			bar = {
 				width=555,
@@ -698,14 +548,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					borderOvercap="FFFF0000",
 					background="66000000",
 					base="FFFF8040",
-					coordinatedAssault="FF00B60E",
-					coordinatedAssaultEnding="FFFF0000",
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FF005500",
-					flashAlpha=0.70,
-					flashPeriod=0.5,
-					flashEnabled=true,
 					overcapEnabled=true
 				},
 				threshold = {
@@ -718,24 +563,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			audio = {
 				overcap={
 					name = "Overcap",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},
-				killShot={
-					name = "Kill Shot Ready",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},
-				flayersMark={
-					name = "Flayer's Mark Proc",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},
-				nesingwarysTrappingApparatus={
-					name = "Nesingwary's Trapping Apparatus Proc",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -3982,7 +3809,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	
 		controls.checkBoxes.assassinationRogueEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_assassinationRogueEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.assassinationRogueEnabled
-		f:SetPoint("TOPLEFT", 250, yCoord-10)
+		f:SetPoint("TOPLEFT", 250, yCoord-10)		
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
 		f.tooltip = "Is Twintop's Resource Bar enabled for the Assassination Rogue specialization? If unchecked, the bar will not function (including the population of global variables!)."
 		f:SetChecked(TRB.Data.settings.core.enabled.rogue.assassination)
@@ -3995,6 +3822,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.assassinationRogueEnabled, TRB.Data.settings.core.enabled.rogue.assassination, true)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
@@ -6955,6 +6783,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.outlawRogueEnabled, TRB.Data.settings.core.enabled.rogue.outlaw, true)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
@@ -9505,6 +9334,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.subtletyRogueEnabled, TRB.Data.settings.core.enabled.rogue.subtlety, true)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)

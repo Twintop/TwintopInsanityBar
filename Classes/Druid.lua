@@ -1796,7 +1796,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 					-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
 					C_Timer.After(0, function()
-						C_Timer.After(5, function()
+						C_Timer.After(1, function()
 							TRB.Data.settings.druid.balance = TRB.Functions.ValidateLsmValues("Balance Druid", TRB.Data.settings.druid.balance)
 							TRB.Options.Druid.ConstructOptionsPanel()
 							-- Reconstruct just in case
