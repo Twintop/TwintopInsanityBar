@@ -2121,6 +2121,7 @@ local function Import(input)
 
 	if not (configuration.core ~= nil or
 		(configuration.warrior ~= nil and configuration.warrior.arms ~= nil) or
+		(configuration.rogue ~= nil and configuration.rogue.assassination ~= nil) or
 		(configuration.hunter ~= nil and (configuration.hunter.beastMastery ~= nil or configuration.hunter.marksmanship ~= nil or configuration.hunter.survival ~= nil)) or
 		(configuration.priest ~= nil and (configuration.priest.holy ~= nil or configuration.priest.shadow ~= nil)) or
 		(configuration.shaman ~= nil and configuration.shaman.elemental ~= nil) or
@@ -2171,6 +2172,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Survival
 				configuration.endOfCoordinatedAssault = settings.endOfCoordinatedAssault
 			end
+		elseif classId == 4 and specId == 1 then -- Assassination Rogue
+			configuration.comboPoints = settings.comboPoints
+			configuration.thresholds = settings.thresholds
 		elseif classId == 5 then -- Priests
 			if specId == 2 then -- Holy
 				configuration.thresholds = settings.thresholds
@@ -2218,7 +2222,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		}
 
 		if classId == 1 then -- Warrior
-			if specId == 1 then -- Arms 
+			if specId == 1 then -- Arms
 				configuration.ragePrecision = settings.ragePrecision
 			elseif specId == 2 then -- Fury
 				configuration.ragePrecision = settings.ragePrecision
@@ -2228,6 +2232,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Marksmanship
 			elseif specId == 3 then -- Survival
 			end
+		elseif classId == 4 and specId == 1 then -- Assassination Rogue
 		elseif classId == 5 then -- Priests
 			if specId == 2 then -- Holy
 			elseif specId == 3 then -- Shadow
@@ -2248,7 +2253,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		configuration.audio = settings.audio
 
 		if classId == 1 then -- Warrior
-			if specId == 1 then -- Arms 
+			if specId == 1 then -- Arms
 				configuration.ragePrecision = settings.ragePrecision
 			elseif specId == 2 then -- Fury
 				configuration.ragePrecision = settings.ragePrecision
@@ -2259,6 +2264,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Marksmanship
 			elseif specId == 3 then -- Survival
 			end
+		elseif classId == 4 and specId == 1 then -- Assassination Rogue
+			configuration.generation = settings.generation
 		elseif classId == 5 then -- Priests
 			if specId == 2 then -- Holy
 				configuration.wrathfulFaerie = settings.wrathfulFaerie
@@ -2388,6 +2395,9 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(5, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
 		-- Shadow
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(5, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+
+		-- Assassination Rogue
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
 
 		-- Elemental Shaman
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
