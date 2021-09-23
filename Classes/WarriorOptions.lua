@@ -1458,8 +1458,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.executeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_execute", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.executeThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Execute / Condemn (if Venthyr)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute or Condemn (if Venthyr). Only visible when the current target is in Execute health range or available from a Sudden Death proc. Will move along the bar between the current minimum and maximum Rage cost amounts."
+		getglobal(f:GetName() .. 'Text'):SetText("Execute / Condemn (if |cFFFF4040Venthyr|r)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute or Condemn (if |cFFFF4040Venthyr|r). Only visible when the current target is in Execute health range or available from a Sudden Death proc. Will move along the bar between the current minimum and maximum Rage cost amounts."
 		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.execute.enabled or TRB.Data.settings.warrior.arms.thresholds.condemn.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.warrior.arms.thresholds.execute.enabled = self:GetChecked()

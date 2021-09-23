@@ -1109,10 +1109,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
 			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isKyrian", description = "Is the character a member of the  |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the  |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the  |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the  |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
@@ -1195,10 +1195,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
 			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isKyrian", description = "Is the character a member of the  |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the  |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the  |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the  |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
@@ -1284,10 +1284,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
 			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isKyrian", description = "Is the character a member of the  |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the  |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the  |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the  |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },

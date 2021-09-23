@@ -2444,7 +2444,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end)
 
-		controls.colors.comboPointEchoingReprimand = TRB.UiFunctions.BuildColorPicker(parent, "Combo Point when Echoing Reprimand (Kyrian) buff is up", TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand, 275, 25, xCoord2, yCoord)
+		controls.colors.comboPointEchoingReprimand = TRB.UiFunctions.BuildColorPicker(parent, "Combo Point when Echoing Reprimand (|cFF68CCEFKyrian|r) buff is up", TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand, 275, 25, xCoord2, yCoord)
 		f = controls.colors.comboPointEchoingReprimand
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -2484,7 +2484,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end)
 
-		controls.colors.comboPointSerratedBoneSpike = TRB.UiFunctions.BuildColorPicker(parent, "Combo Point that wil generate on next Serrated Bone Spike (Necrolord) use", TRB.Data.settings.rogue.assassination.colors.comboPoints.serratedBoneSpike, 275, 25, xCoord2, yCoord)
+		controls.colors.comboPointSerratedBoneSpike = TRB.UiFunctions.BuildColorPicker(parent, "Combo Point that wil generate on next Serrated Bone Spike (|cFF40BF40Necrolord|r) use", TRB.Data.settings.rogue.assassination.colors.comboPoints.serratedBoneSpike, 275, 25, xCoord2, yCoord)
 		f = controls.colors.comboPointSerratedBoneSpike
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -2606,6 +2606,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.settings.rogue.assassination.bar.thresholdOverlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.rogue.assassination)
 		end)
+		
+		controls.labels.builders = TRB.UiFunctions.BuildLabel(parent, "Builders", 5, yCoord, 110, 20)
+		yCoord = yCoord - 20
 
 		controls.checkBoxes.ambushThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_ambush", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ambushThresholdShow
@@ -2626,94 +2629,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.cheapShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.rogue.assassination.thresholds.cheapShot.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.crimsonVialThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_crimsonVial", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.crimsonVialThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Crimson Vial")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Vial. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.crimsonVial.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.assassination.thresholds.crimsonVial.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.distractThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_distract", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.distractThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Distract")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Distract. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.distract.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.assassination.thresholds.distract.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.feintThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_feint", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.feintThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Feint")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feint. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.feint.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.assassination.thresholds.feint.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.kidneyShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_kidneyShot", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.kidneyShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Kidney Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Kidney Shot. Only visible when in Stealth or usable via the Subterfuge talent. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.kidneyShot.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.assassination.thresholds.kidneyShot.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.sapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sap", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.sapThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sap")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sap. Only visible when in Stealth or usable via the Subterfuge talent."
-		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.sap.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.assassination.thresholds.sap.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.shivThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_shiv", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.shivThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Shiv")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.shiv.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.assassination.thresholds.shiv.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.sliceAndDiceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sliceAndDice", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.sliceAndDiceThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Slice and Dice")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Slice and Dice."
-		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.sliceAndDice.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.assassination.thresholds.sliceAndDice.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.envenomThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_envenom", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.envenomThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Envenom")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Envenom."
-		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.envenom.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.assassination.thresholds.envenom.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -2761,6 +2676,65 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 25
+		controls.checkBoxes.shivThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_shiv", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.shivThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Shiv")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.shiv.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.thresholds.shiv.enabled = self:GetChecked()
+		end)
+
+
+		yCoord = yCoord - 25
+		controls.labels.finishers = TRB.UiFunctions.BuildLabel(parent, "Finishers", 5, yCoord, 110, 20)
+		yCoord = yCoord - 20
+
+		controls.checkBoxes.crimsonTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_crimsonTempest", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.crimsonTempestThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Crimson Tempest (if talented)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Tempest. Only visible if talented in to Crimson Tempest."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.crimsonTempest.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.thresholds.crimsonTempest.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.envenomThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_envenom", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.envenomThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Envenom")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Envenom."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.envenom.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.thresholds.envenom.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.kidneyShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_kidneyShot", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.kidneyShotThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Kidney Shot")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Kidney Shot. Only visible when in Stealth or usable via the Subterfuge talent. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.kidneyShot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.thresholds.kidneyShot.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.sliceAndDiceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sliceAndDice", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.sliceAndDiceThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Slice and Dice")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Slice and Dice."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.sliceAndDice.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.thresholds.sliceAndDice.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
 		controls.checkBoxes.ruptureThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_rupture", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ruptureThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -2769,6 +2743,31 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.rupture.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.rogue.assassination.thresholds.rupture.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25		
+		controls.labels.utility = TRB.UiFunctions.BuildLabel(parent, "General / Utility", 5, yCoord, 110, 20)
+		yCoord = yCoord - 20
+
+		controls.checkBoxes.crimsonVialThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_crimsonVial", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.crimsonVialThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Crimson Vial")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Vial. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.crimsonVial.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.thresholds.crimsonVial.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.distractThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_distract", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.distractThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Distract")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Distract. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.distract.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.thresholds.distract.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -2783,22 +2782,36 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.crimsonTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_crimsonTempest", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.crimsonTempestThresholdShow
+		controls.checkBoxes.feintThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_feint", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.feintThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Crimson Tempest (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Tempest. Only visible if talented in to Crimson Tempest."
-		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.crimsonTempest.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Feint")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feint. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.feint.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.assassination.thresholds.crimsonTempest.enabled = self:GetChecked()
+			TRB.Data.settings.rogue.assassination.thresholds.feint.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
+		controls.checkBoxes.sapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sap", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.sapThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Sap")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sap. Only visible when in Stealth or usable via the Subterfuge talent."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.sap.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.thresholds.sap.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.labels.covenant = TRB.UiFunctions.BuildLabel(parent, "Covenant", 5, yCoord, 110, 20)
+		yCoord = yCoord - 20
+
 		controls.checkBoxes.echoingReprimandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_echoingReprimand", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.echoingReprimandThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand (if Kyrian)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand. Only visible if Kyrian. If on cooldown, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand (if |cFF68CCEFKyrian|r)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand. Only visible if |cFF68CCEFKyrian|r. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.echoingReprimand.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.rogue.assassination.thresholds.echoingReprimand.enabled = self:GetChecked()
@@ -2808,8 +2821,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sepsisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sepsis", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sepsisThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sepsis (if Night Fae)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis. Only visible if Night Fae. If on cooldown, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText("Sepsis (if |cFFA330C9Night Fae|r)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis. Only visible if |cFFA330C9Night Fae|r. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.rogue.assassination.thresholds.sepsis.enabled = self:GetChecked()
@@ -2819,12 +2832,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.serratedBoneSpikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_serratedBoneSpike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.serratedBoneSpikeThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Serrated Bone Spike (if Necrolord)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Serrated Bone Spike. Only visible if Necrolord. If no available charges, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText("Serrated Bone Spike (if |cFF40BF40Necrolord|r)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Serrated Bone Spike. Only visible if |cFF40BF40Necrolord|r. If no available charges, will be colored as 'unusable'."
 		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.serratedBoneSpike.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.rogue.assassination.thresholds.serratedBoneSpike.enabled = self:GetChecked()
 		end)
+
+		yCoord = yCoord - 25
+		controls.labels.covenant = TRB.UiFunctions.BuildLabel(parent, "PvP Abilities", 5, yCoord, 110, 20)
+		yCoord = yCoord - 20
 
 		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
@@ -2843,7 +2860,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 40
 
 		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.UiFunctions.BuildSlider(parent, title, 0, 120, TRB.Data.settings.rogue.assassination.overcapThreshold, 1, 1,
+		controls.overcapAt = TRB.UiFunctions.BuildSlider(parent, title, 0, 170, TRB.Data.settings.rogue.assassination.overcapThreshold, 1, 1,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3658,7 +3675,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sepsisAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_sepsis_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sepsisAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you gain Sepsis buff (if Kyrian)")
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you gain Sepsis buff (if |cFF68CCEFKyrian|r)")
 		f.tooltip = "Play an audio cue when you gain Sepsis buff that allows you to use a stealth ability outside of steath."
 		f:SetChecked(TRB.Data.settings.rogue.assassination.audio.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -6553,7 +6570,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flayersMarkAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if Venthyr)")
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if |cFFFF4040Venthyr|r)")
 		f.tooltip = "Play an audio cue when you get a Flayer's Mark proc that allows you to cast Kill Shot for 0 Energy and above normal execute range enemy health."
 		f:SetChecked(TRB.Data.settings.rogue.outlaw.audio.flayersMark.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -9170,7 +9187,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flayersMarkAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if Venthyr)")
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if |cFFFF4040Venthyr|r)")
 		f.tooltip = "Play an audio cue when you get a Flayer's Mark proc that allows you to cast Kill Shot for 0 Energy and above normal execute range enemy health."
 		f:SetChecked(TRB.Data.settings.rogue.subtlety.audio.flayersMark.enabled)
 		f:SetScript("OnClick", function(self, ...)

@@ -2688,7 +2688,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flayersMarkAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if Venthyr)")
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if |cFFFF4040Venthyr|r)")
 		f.tooltip = "Play an audio cue when you get a Flayer's Mark proc that allows you to cast Kill Shot for 0 Focus and above normal execute range enemy health."
 		f:SetChecked(TRB.Data.settings.hunter.beastMastery.audio.flayersMark.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -5648,7 +5648,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flayersMarkAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if Venthyr)")
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if |cFFFF4040Venthyr|r)")
 		f.tooltip = "Play an audio cue when you get a Flayer's Mark proc that allows you to cast Kill Shot for 0 Focus and above normal execute range enemy health."
 		f:SetChecked(TRB.Data.settings.hunter.marksmanship.audio.flayersMark.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -8265,7 +8265,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flayersMarkAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if Venthyr)")
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if |cFFFF4040Venthyr|r)")
 		f.tooltip = "Play an audio cue when you get a Flayer's Mark proc that allows you to cast Kill Shot for 0 Focus and above normal execute range enemy health."
 		f:SetChecked(TRB.Data.settings.hunter.survival.audio.flayersMark.enabled)
 		f:SetScript("OnClick", function(self, ...)
