@@ -25,6 +25,7 @@ Currently supported specs:
 - Druid - Balance
 - Hunter - Beast Mastery, Marksmanship, Survival
 - Priest - Holy, Shadow
+- Rogue - Assassination
 - Shaman - Elemental
 - Warrior - Arms, Fury
 
