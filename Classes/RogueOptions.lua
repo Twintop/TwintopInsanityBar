@@ -2507,7 +2507,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.shivThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Shiv")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If on cooldown, will be colored as 'unusable'. If using the Tiny Toxic Blade legendary, no threshold will be shown."
 		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.shiv.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.rogue.assassination.thresholds.shiv.enabled = self:GetChecked()

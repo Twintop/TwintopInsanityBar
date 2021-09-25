@@ -75,7 +75,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				}
 			},
 			items = {
-				--raeshalareDeathsWhisper = false
+				tinyToxicBlade = false
 			},
 			torghast = {
 				rampaging = {
@@ -201,8 +201,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 8,
 				settingKey = "shiv",
                 hasCooldown = true,
+				isSnowflake = true,
                 cooldown = 25,
-				thresholdUsable = false
+				thresholdUsable = false,
+				idLegendaryBonus = 7112
 			},
 			sliceAndDice = {
 				id = 315496,
@@ -492,11 +494,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		}
 		specCache.assassination.snapshotData.echoingReprimand = {
 			startTime = nil,
-			endTime = nil,
 			duration = 0,
-			enabled = false,
-			comboPoints = 0
 		}
+		for x = 1, 6 do -- 1 and 6 CPs doesn't get it, but including it just in case it gets added/changed
+			specCache.assassination.snapshotData.echoingReprimand[x] = {
+				endTime = nil,
+				duration = 0,
+				enabled = false,
+				comboPoints = 0
+			}
+		end
+		
 		specCache.assassination.snapshotData.sepsis = {
 			startTime = nil,
 			endTime = nil,
@@ -1509,6 +1517,21 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.character.talents.exsanguinate.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.hiddenBlades.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.crimsonTempest.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
+			
+			-- Legendaries
+			local waistItemLink = GetInventoryItemLink("player", 6)
+			local feetItemLink = GetInventoryItemLink("player", 8)
+
+			local tinyToxicBlade = false
+			if waistItemLink ~= nil then
+				tinyToxicBlade = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(waistItemLink, 172320, TRB.Data.spells.shiv.idLegendaryBonus)
+			end
+
+			if tinyToxicBlade == false and waistItemLink ~= nil then
+				tinyToxicBlade = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(feetItemLink, 173244, TRB.Data.spells.shiv.idLegendaryBonus)
+			end
+			TRB.Data.character.items.tinyToxicBlade = tinyToxicBlade
+			
 		--[[elseif specId == 2 then
 			TRB.Data.character.specName = "outlaw"
 		elseif specId == 3 then
@@ -2891,6 +2914,15 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
 											frameLevel = 128
 										end
+									elseif spell.id == TRB.Data.spells.shiv.id then
+										if TRB.Data.character.items.tinyToxicBlade == true then -- Don't show this threshold
+											showThreshold = false
+										elseif TRB.Data.snapshotData.resource >= -energyAmount then
+											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+											frameLevel = 128
+										end
 									elseif spell.id == TRB.Data.spells.echoingReprimand.id then
 										if TRB.Data.character.covenantId ~= 1 then -- Not Kyrian
 											showThreshold = false
@@ -2919,8 +2951,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 										if TRB.Data.character.covenantId ~= 4 then -- Not Necrolord
 											showThreshold = false
 										elseif TRB.Data.snapshotData[spell.settingKey].charges == 0 then
-												thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
-												frameLevel = 127
+											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
+											frameLevel = 127
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
 										else
@@ -3037,7 +3069,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                             TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
                         end
 
-						if x == TRB.Data.snapshotData.echoingReprimand.comboPoints then
+						if TRB.Data.snapshotData.echoingReprimand[x].enabled then
 							cpColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand
 							cpBorderColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand
 							cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand, true)
@@ -3548,16 +3580,28 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						TRB.Data.snapshotData.echoingReprimand.startTime = currentTime
 						TRB.Data.snapshotData.echoingReprimand.duration = TRB.Data.spells.echoingReprimand.cooldown
 					--elseif type == "SPELL_PERIODIC_DAMAGE" then
-					end						
+					end
 				elseif spellId == TRB.Data.spells.echoingReprimand.buffId[1] or spellId == TRB.Data.spells.echoingReprimand.buffId[2] or spellId == TRB.Data.spells.echoingReprimand.buffId[3] or spellId == TRB.Data.spells.echoingReprimand.buffId[4] or spellId == TRB.Data.spells.echoingReprimand.buffId[5] then
+					local cpEntry = 1
+
+					if spellId == TRB.Data.spells.echoingReprimand.buffId[1] then
+						cpEntry = 2
+					elseif spellId == TRB.Data.spells.echoingReprimand.buffId[2] then
+						cpEntry = 3
+					elseif spellId == TRB.Data.spells.echoingReprimand.buffId[3] or spellId == TRB.Data.spells.echoingReprimand.buffId[4] then 
+						cpEntry = 4
+					elseif spellId == TRB.Data.spells.echoingReprimand.buffId[5] then
+						cpEntry = 5
+					end
+
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Echoing Reprimand Applied to Target
-						TRB.Data.spells.echoingReprimand.isActive = true
-						_, _, TRB.Data.snapshotData.echoingReprimand.comboPoints, _, TRB.Data.snapshotData.echoingReprimand.duration, TRB.Data.snapshotData.echoingReprimand.endTime, _, _, _, TRB.Data.snapshotData.echoingReprimand.spellId = TRB.Functions.FindBuffById(spellId)
+						TRB.Data.snapshotData.echoingReprimand[cpEntry].enabled = true
+						_, _, TRB.Data.snapshotData.echoingReprimand[cpEntry].comboPoints, _, TRB.Data.snapshotData.echoingReprimand[cpEntry].duration, TRB.Data.snapshotData.echoingReprimand[cpEntry].endTime, _, _, _, TRB.Data.snapshotData.echoingReprimand[cpEntry].spellId = TRB.Functions.FindBuffById(spellId)
 					elseif type == "SPELL_AURA_REMOVED" then
-						TRB.Data.spells.echoingReprimand.isActive = false
-						TRB.Data.snapshotData.echoingReprimand.spellId = nil
-						TRB.Data.snapshotData.echoingReprimand.endTime = nil
-						TRB.Data.snapshotData.echoingReprimand.comboPoints = 0
+						TRB.Data.snapshotData.echoingReprimand[cpEntry].enabled = false
+						TRB.Data.snapshotData.echoingReprimand[cpEntry].spellId = nil
+						TRB.Data.snapshotData.echoingReprimand[cpEntry].endTime = nil
+						TRB.Data.snapshotData.echoingReprimand[cpEntry].comboPoints = 0
 					end
 				elseif spellId == TRB.Data.spells.sepsis.id then
 					if type == "SPELL_CAST_SUCCESS" then

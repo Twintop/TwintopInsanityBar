@@ -501,7 +501,10 @@ local function RepositionThreshold(settings, thresholdLine, parentFrame, thresho
 	end
 
 	if resourceMax == nil or resourceMax == 0 then
-        resourceMax = TRB.Data.character.maxResource or 100
+        resourceMax = TRB.Data.character.maxResource		
+		if resourceMax == 0 then
+			resourceMax = 100
+		end
     end
 
 	local min, max = parentFrame:GetMinMaxValues()
