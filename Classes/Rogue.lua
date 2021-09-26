@@ -2246,20 +2246,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							end
 						end
 					elseif spellId == TRB.Data.spells.deathFromAbove.id then
-						print("DFA", type)
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.deathFromAbove.startTime = currentTime
 							TRB.Data.snapshotData.deathFromAbove.duration = TRB.Data.spells.deathFromAbove.cooldown
 						end
 					elseif spellId == TRB.Data.spells.dismantle.id then
-						print("Dist", type)
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.dismantle.startTime = currentTime
 							TRB.Data.snapshotData.dismantle.duration = TRB.Data.spells.dismantle.cooldown
 						end
 					end
-				--[[elseif specId == 2 then --Outlaw
-				elseif specId == 3 then --Subtlety]]
 				end
 
 				-- Spec agnostic
