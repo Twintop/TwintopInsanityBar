@@ -1731,6 +1731,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.HideResourceBar()
 		end)
 
+		--[[
 		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
@@ -1739,11 +1740,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetChecked(TRB.Data.settings.rogue.assassination.bar.showCasting)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.rogue.assassination.bar.showCasting = self:GetChecked()
-		end)
+		end)]]
 
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
 		f:SetChecked(TRB.Data.settings.rogue.assassination.bar.showPassive)
