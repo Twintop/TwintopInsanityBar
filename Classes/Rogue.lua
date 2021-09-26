@@ -411,6 +411,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				buffId = 347037,
 				isActive = false
 			},
+			adrenalineRush = {
+				id = 13750
+			},
 			serratedBoneSpike = {
 				id = 328547,
 				name = "",
@@ -3574,6 +3577,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					if type == "SPELL_CAST_SUCCESS" then
 						TRB.Data.snapshotData.shiv.startTime = currentTime
 						TRB.Data.snapshotData.shiv.duration = TRB.Data.spells.shiv.cooldown
+					end
+				elseif spellId == TRB.Data.spells.adrenalineRush.id then
+					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REMOVED" then -- For right now, just redo the CheckCharacter() to get update Energy values
+						CheckCharacter()
 					end
 				elseif spellId == TRB.Data.spells.echoingReprimand.id then
 					if type == "SPELL_CAST_SUCCESS" then

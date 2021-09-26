@@ -213,7 +213,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					sliceAndDicePandemic="FFFF9900",
 					casting="FFFFFFFF",
 					spending="FF555555",
-					passive="FFD59900",
+					passive="FF9F4500",
 					overcapEnabled=true,
 				},
 				comboPoints = {
