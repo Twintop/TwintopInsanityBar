@@ -41,7 +41,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				regen = 0
 			},
 			dots = {
-			}
+			},
+			isPvp = false
 		}
 
 		specCache.assassination.character = {
@@ -412,7 +413,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				isActive = false
 			},
 			adrenalineRush = {
-				id = 13750
+				id = 13750,
+				name = "",
+				icon = "",
 			},
 			serratedBoneSpike = {
 				id = 328547,
@@ -425,6 +428,38 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				hasCooldown = true,
 				isSnowflake = true,
 				debuffId = 324073
+			},
+			flagellation = {
+				id = 323654,
+				name = "",
+				icon = ""
+			},
+
+			-- PvP
+			deathFromAbove = {
+				id = 269513,
+				name = "",
+				icon = "",
+				energy = -25,
+				thresholdId = 21,
+				settingKey = "deathFromAbove",
+				comboPoints = true,
+				hasCooldown = true,
+				isPvp = true,
+				thresholdUsable = false,
+				cooldown = 30
+			},
+			dismantle = {
+				id = 207777,
+				name = "",
+				icon = "",
+				energy = -25,
+				thresholdId = 22,
+				settingKey = "dismantle",
+				hasCooldown = true,
+				isPvp = true,
+				thresholdUsable = false,
+				cooldown = 45
 			},
 		}
 
@@ -495,6 +530,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			endTime = nil,
 			duration = 0
 		}
+
 		specCache.assassination.snapshotData.echoingReprimand = {
 			startTime = nil,
 			duration = 0,
@@ -520,6 +556,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			charges = 0,
 			startTime = nil,
 			duration = 0
+		}
+		specCache.assassination.snapshotData.deathFromAbove = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		specCache.assassination.snapshotData.dismantle = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
 		}
 
 		specCache.assassination.barTextVariables = {
@@ -1269,32 +1315,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-            --[[
-			{ variable = "#aMurderOfCrows", icon = spells.aMurderOfCrows.icon, description = "A Murder of Crows", printInSettings = true },
-			{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = "Arcane Shot", printInSettings = true },
-			{ variable = "#barbedShot", icon = spells.barbedShot.icon, description = "Barbed Shot", printInSettings = true },
-			{ variable = "#barrage", icon = spells.barrage.icon, description = "Barrage", printInSettings = true },
-			{ variable = "#beastialWrath", icon = spells.beastialWrath.icon, description = "Beastial Wrath", printInSettings = true },
-			{ variable = "#chimaeraShot", icon = spells.chimaeraShot.icon, description = "Chimaera Shot", printInSettings = true },
-			{ variable = "#cobraShot", icon = spells.cobraShot.icon, description = "Cobra Shot", printInSettings = true },
-			{ variable = "#flayedShot", icon = spells.flayedShot.icon, description = "Flayed Shot", printInSettings = true },
-			{ variable = "#flayersMark", icon = spells.flayersMark.icon, description = "Flayer's Mark", printInSettings = true },
-			{ variable = "#frenzy", icon = spells.frenzy.icon, description = "Frenzy", printInSettings = true },
-			{ variable = "#killCommand", icon = spells.killCommand.icon, description = "Kill Command", printInSettings = true },
-			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
-			{ variable = "#multiShot", icon = spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
-			{ variable = "#nesingwarys", icon = spells.nesingwarysTrappingApparatus.icon, description = "Nesingwary'ss Trapping Apparatus", printInSettings = true },
-			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
-			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
-			{ variable = "#wailingArrow", icon = spells.wailingArrow.icon, description = "Wailing Arrow", printInSettings = true }
-            ]]
 			{ variable = "#blindside", icon = spells.blindside.icon, description = spells.blindside.name, printInSettings = true },
+			{ variable = "#covenantAbility", icon = spells.echoingReprimand.icon .. spells.flagellation.icon .. spells.sepsis.icon .. spells.serratedBoneSpike.icon, description = "Covenant on-use Ability", printInSettings = true},
 			{ variable = "#crimsonTempest", icon = spells.crimsonTempest.icon, description = spells.crimsonTempest.name, printInSettings = true },
 			{ variable = "#ct", icon = spells.crimsonTempest.icon, description = spells.crimsonTempest.name, printInSettings = false },
 			{ variable = "#cripplingPoison", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = true },
 			{ variable = "#cp", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = false },
 			{ variable = "#deadlyPoison", icon = spells.deadlyPoison.icon, description = spells.deadlyPoison.name, printInSettings = true },
 			{ variable = "#dp", icon = spells.deadlyPoison.icon, description = spells.deadlyPoison.name, printInSettings = false },
+			{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
+			{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
+			{ variable = "#echoingReprimand", icon = spells.echoingReprimand.icon, description = spells.echoingReprimand.name, printInSettings = true },
 			{ variable = "#garrote", icon = spells.garrote.icon, description = spells.garrote.name, printInSettings = true },
 			{ variable = "#internalBleeding", icon = spells.internalBleeding.icon, description = spells.internalBleeding.name, printInSettings = true },
 			{ variable = "#ib", icon = spells.internalBleeding.icon, description = spells.internalBleeding.name, printInSettings = false },
@@ -1303,6 +1334,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "#rupture", icon = spells.rupture.icon, description = spells.rupture.name, printInSettings = true },
 			{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
 			{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
+			{ variable = "#sepsis", icon = spells.sepsis.icon, description = spells.sepsis.name, printInSettings = true },
+			{ variable = "#serratedBoneSpike", icon = spells.serratedBoneSpike.icon, description = spells.serratedBoneSpike.name, printInSettings = true },
 			{ variable = "#woundPoison", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = true },
 			{ variable = "#wp", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = false },
         }
@@ -1316,10 +1349,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
 			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the  |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the  |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the  |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the  |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$energy", description = "Current Energy", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Energy", printInSettings = false, color = false },
@@ -1328,7 +1361,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$casting", description = "Builder Energy from Hardcasting Spells", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Spender Energy from Hardcasting Spells", printInSettings = false, color = false },
 			{ variable = "$passive", description = "Energy from Passive Sources including Regen and Barbed Shot buffs", printInSettings = true, color = false },
-			--{ variable = "$barbedShotEnergy", description = "Energy from Barbed Shot buffs", printInSettings = true, color = false },
 			{ variable = "$regen", description = "Energy from Passive Regen", printInSettings = true, color = false },
 			{ variable = "$regenEnergy", description = "Energy from Passive Regen", printInSettings = false, color = false },
 			{ variable = "$energyRegen", description = "Energy from Passive Regen", printInSettings = false, color = false },
@@ -1359,6 +1391,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 			{ variable = "$ruptureCount", description = "Number of Rupture bleeds active on targets", printInSettings = true, color = false },
 			{ variable = "$ruptureTime", description = "Time remaining on Rupture on your current target", printInSettings = true, color = false },
+		
+			{ variable = "$sbsCount", description = "Number of Serrated Bone Spike bleeds active on targets (if |cFF40BF40Necrolord|r)", printInSettings = true, color = false },
+			{ variable = "$serratedBoneSpikeCount", description = "Number of Serrated Bone Spike bleeds active on targets (if |cFF40BF40Necrolord|r)", printInSettings = false, color = false },
 
 			-- Poisons
 			{ variable = "$cpCount", description = "Number of Crippling Poisons active on targets", printInSettings = true, color = false },
@@ -1381,21 +1416,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$wpTime", description = "Time remaining on Wound Poison on your current target", printInSettings = true, color = false },
 			{ variable = "$woundPoisonTime", description = "Time remaining on Wound Poison on your current target", printInSettings = false, color = false },
 
+			-- Proc
 			{ variable = "$blindsideTime", description = "Time remaining on Blindside proc", printInSettings = true, color = false },
 
-            --[[
-			{ variable = "$frenzyTime", description = "Time remaining on your pet's Frenzy buff", printInSettings = true, color = false },
-			{ variable = "$frenzyStacks", description = "Current stack count on your pet's Frenzy buff", printInSettings = true, color = false },
-
-			{ variable = "$barbedShotTicks", description = "Total number of Barbed Shot buff ticks remaining", printInSettings = true, color = false },
-			{ variable = "$barbedShotTime", description = "Time remaining until the most recent Barbed Shot buff expires", printInSettings = true, color = false },
-
-			{ variable = "$flayersMarkTime", description = "Time remaining on Flayer's Mark buff", printInSettings = true, color = false },
-
-			{ variable = "$nesingwarysTime", description = "Time remaining on Nesingwary's Trapping Apparatus buff", printInSettings = true, color = false },
-
-			{ variable = "$raeshalareEquipped", description = "Checks if you have Rae'shalare, Death's Whisper equipped. Logic variable only!", printInSettings = true, color = false },
-            ]]
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -1425,10 +1448,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
 			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the  |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the  |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the  |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the  |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$energy", description = "Current Energy", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Energy", printInSettings = false, color = false },
@@ -1474,10 +1497,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
 			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the  |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the  |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the  |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the  |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$energy", description = "Current Energy", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Energy", printInSettings = false, color = false },
@@ -1542,9 +1565,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end
 
         
-        if settings ~= nil and maxComboPoints ~= TRB.Data.character.maxResource2 then
-            TRB.Data.character.maxResource2 = maxComboPoints
-            TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+        if settings ~= nil then
+			TRB.Data.character.isPvp = TRB.Functions.ArePvpTalentsActive()			
+			if maxComboPoints ~= TRB.Data.character.maxResource2 then
+				TRB.Data.character.maxResource2 = maxComboPoints
+            	TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+			end
         end
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
@@ -1938,10 +1964,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					valid = true
 				end
 			-- Other abilities
-			elseif var == "$sadTime" or var == "$sliceAndDiceTime" then
-				if TRB.Data.snapshotData.sliceAndDice.spellId ~= nil then
-					valid = true
-				end
 			elseif var == "$blindsideTime" then
 				if TRB.Data.snapshotData.blindside.spellId ~= nil then
 					valid = true
@@ -1991,6 +2013,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
 				((settings.generation.mode == "time" and settings.generation.time > 0) or
 				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+				valid = true
+			end
+		elseif var == "$sadTime" or var == "$sliceAndDiceTime" then
+			if TRB.Data.snapshotData.sliceAndDice.spellId ~= nil then
+				valid = true
+			end
+		elseif var == "$sbsCount" or var == "$serratedBoneSpikeCount" then
+			if TRB.Data.snapshotData.targetData.serratedBoneSpike > 0 then
 				valid = true
 			end
 		end
@@ -2127,6 +2157,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local _wpTime = 0
 		local wpTime
 		
+		--$sbsCount
+		local _sbsCount = TRB.Data.snapshotData.targetData.serratedBoneSpike or 0
+		local sbsCount = _sbsCount
+		local _sbsOnTarget = false
+
 
 		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
 			_ctTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].crimsonTempestRemaining or 0
@@ -2137,6 +2172,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			_dpTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deadlyPoisonRemaining or 0
 			_npTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].numbingPoisonRemaining or 0
 			_wpTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].woundPoisonRemaining or 0
+			_sbsOnTarget = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serratedBoneSpike or false
 		end
 
 
@@ -2215,6 +2251,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				wpCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, _wpCount)
 				wpTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, 0)
 			end
+
+			if _sbsOnTarget == false and TRB.Data.character.covenantId == 4 then
+				sbsCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, _sbsCount)
+			else
+				sbsCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _sbsCount)
+			end
 		else
 			-- Bleeds
 			ctTime = string.format("%.1f", _ctTime)
@@ -2252,36 +2294,60 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		if _blindsideTime ~= nil then
 			blindsideTime = string.format("%.1f", _blindsideTime)
 		end
+
+		--#covenantAbility
+		local covenantAbilityIcon = ""
+
+		if TRB.Data.character.covenantId == 1 then
+			covenantAbilityIcon = TRB.Data.spells.echoingReprimand.icon
+		elseif TRB.Data.character.covenantId == 2 then
+			covenantAbilityIcon = TRB.Data.spells.flagellation.icon
+		elseif TRB.Data.character.covenantId == 3 then
+			covenantAbilityIcon = TRB.Data.spells.sepsis.icon
+		elseif TRB.Data.character.covenantId == 4 then
+			covenantAbilityIcon = TRB.Data.spells.serratedBoneSpike.icon
+		end
+
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveEnergy
 		Global_TwintopResourceBar.resource.regen = _regenEnergy
-		--[[Global_TwintopResourceBar.resource.barbedShot = _barbedShotEnergy
-		Global_TwintopResourceBar.barbedShot = {
-			count = TRB.Data.snapshotData.barbedShot.count,
-			energy = TRB.Data.snapshotData.barbedShot.energy,
-			ticks = TRB.Data.snapshotData.barbedShot.ticksRemaining,
-			remaining = _barbedShotTime
-		}]]
+		Global_TwintopResourceBar.dots = {
+			cripplingPoisonCount = _cpCount,
+			deadlyPoisonCount = _dpCount,
+			numbingPoisonCount = _npCount,
+			woundPoisonCount = _wpCount,
+			crimsonTempestCount = _ctCount,
+			garroteCount = _garroteCount,
+			internalBleedingCount = _ibCount,
+			ruptureCount = _ruptureCount,
+			serratedBoneSpikeCount = _sbsCount
+		}
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#blindside"] = TRB.Data.spells.blindside.icon
+		lookup["#covenantAbility"] = covenantAbilityIcon
 		lookup["#crimsonTempest"] = TRB.Data.spells.crimsonTempest.icon
 		lookup["#ct"] = TRB.Data.spells.crimsonTempest.icon
 		lookup["#cripplingPoison"] = TRB.Data.spells.cripplingPoison.icon
 		lookup["#cp"] = TRB.Data.spells.cripplingPoison.icon
 		lookup["#deadlyPoison"] = TRB.Data.spells.deadlyPoison.icon
 		lookup["#dp"] = TRB.Data.spells.deadlyPoison.icon
+		lookup["#deathFromAbove"] = TRB.Data.spells.deathFromAbove.icon
+		lookup["#dismantle"] = TRB.Data.spells.dismantle.icon
+		lookup["#echoingReprimand"] = TRB.Data.spells.echoingReprimand.icon
 		lookup["#garrote"] = TRB.Data.spells.garrote.icon
 		lookup["#internalBleeding"] = TRB.Data.spells.internalBleeding.icon
 		lookup["#ib"] = TRB.Data.spells.internalBleeding.icon
 		lookup["#numbingPoison"] = TRB.Data.spells.numbingPoison.icon
 		lookup["#np"] = TRB.Data.spells.numbingPoison.icon
 		lookup["#rupture"] = TRB.Data.spells.rupture.icon
-		lookup["#woundPoison"] = TRB.Data.spells.woundPoison.icon
-		lookup["#wp"] = TRB.Data.spells.woundPoison.icon
 		lookup["#sad"] = TRB.Data.spells.sliceAndDice.icon
 		lookup["#sliceAndDice"] = TRB.Data.spells.sliceAndDice.icon
+		lookup["#sepsis"] = TRB.Data.spells.sepsis.icon
+		lookup["#serratedBoneSpike"] = TRB.Data.spells.serratedBoneSpike.icon
+		lookup["#woundPoison"] = TRB.Data.spells.woundPoison.icon
+		lookup["#wp"] = TRB.Data.spells.woundPoison.icon
 
 		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$energyTotal"] = energyTotal
@@ -2321,6 +2387,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$internalBleedingTime"] = ibTime
 		lookup["$ruptureCount"] = ruptureCount
 		lookup["$ruptureTime"] = ruptureTime
+		lookup["$sbsCount"] = sbsCount
+		lookup["$serratedBoneSpikeCount"] = sbsCount
 		lookup["$sadTime"] = sadTime
 		lookup["$sliceAndDiceTime"] = sadTime
 		lookup["$blindsideTime"] = blindsideTime
@@ -2732,6 +2800,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				end
 			end
 		end
+	
+        if TRB.Data.snapshotData.deathFromAbove.startTime ~= nil and currentTime > (TRB.Data.snapshotData.deathFromAbove.startTime + TRB.Data.snapshotData.deathFromAbove.duration) then
+            TRB.Data.snapshotData.deathFromAbove.startTime = nil
+            TRB.Data.snapshotData.deathFromAbove.duration = 0
+        end
+
+        if TRB.Data.snapshotData.dismantle.startTime ~= nil and currentTime > (TRB.Data.snapshotData.dismantle.startTime + TRB.Data.snapshotData.dismantle.duration) then
+            TRB.Data.snapshotData.dismantle.startTime = nil
+            TRB.Data.snapshotData.dismantle.duration = 0
+        end
 	end
 
 	local function UpdateSnapshot_Outlaw()
@@ -2963,6 +3041,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											frameLevel = 128
 										end
 									end
+								elseif spell.isPvp and not TRB.Data.character.isPvp then
+									showThreshold = false
 								elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
 									showThreshold = false
 								elseif spell.hasCooldown then
@@ -3536,6 +3616,18 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
+						end
+					elseif spellId == TRB.Data.spells.deathFromAbove.id then
+						print("DFA", type)
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.deathFromAbove.startTime = currentTime
+							TRB.Data.snapshotData.deathFromAbove.duration = TRB.Data.spells.deathFromAbove.cooldown
+						end
+					elseif spellId == TRB.Data.spells.dismantle.id then
+						print("Dist", type)
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.dismantle.startTime = currentTime
+							TRB.Data.snapshotData.dismantle.duration = TRB.Data.spells.dismantle.cooldown
 						end
 					end
 				--[[elseif specId == 2 then --Outlaw

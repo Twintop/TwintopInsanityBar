@@ -2011,6 +2011,25 @@ local function GetSoulbindRank(id)
 end
 TRB.Functions.GetSoulbindRank = GetSoulbindRank
 
+-- Source: https://www.wowinterface.com/forums/showpost.php?p=338665&postcount=5
+local function ArePvpTalentsActive()
+    local inInstance, instanceType = IsInInstance()
+    if inInstance and (instanceType == "pvp" or instanceType == "arena") then
+        return true
+    elseif inInstance and (instanceType == "party" or instanceType == "raid" or instanceType == "scenario") then
+        return false
+    else
+        local talents = C_SpecializationInfo.GetAllSelectedPvpTalentIDs()
+        for _, pvptalent in pairs(talents) do
+            local spellID = select(6, GetPvpTalentInfoByID(pvptalent))
+            if IsPlayerSpell(spellID) then
+                return true
+            end
+        end
+    end
+end
+TRB.Functions.ArePvpTalentsActive = ArePvpTalentsActive
+
 -- Torghast specific
 
 local function GetRampagingBuff()
