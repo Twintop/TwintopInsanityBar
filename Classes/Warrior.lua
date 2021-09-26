@@ -764,10 +764,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
 			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$rage", description = "Current Rage", printInSettings = true, color = false },
             { variable = "$resource", description = "Current Rage", printInSettings = false, color = false },
@@ -851,10 +851,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
 			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$rage", description = "Current Rage", printInSettings = true, color = false },
             { variable = "$resource", description = "Current Rage", printInSettings = false, color = false },
@@ -1946,7 +1946,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		if specId == 1 then
 			UpdateSnapshot_Arms()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.warrior.arms)
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.warrior.arms, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
@@ -2141,7 +2141,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.UpdateResourceBar(TRB.Data.settings.warrior.arms, refreshText)
 		elseif specId == 2 then
 			UpdateSnapshot_Fury()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.warrior.fury)
+			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.warrior.fury, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
@@ -2614,7 +2614,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					TRB.Details.addonData.optionsPanel = true
 					-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
 					C_Timer.After(0, function()
-						C_Timer.After(5, function()
+						C_Timer.After(1, function()
 							TRB.Data.settings.warrior.arms = TRB.Functions.ValidateLsmValues("Arms Warrior", TRB.Data.settings.warrior.arms)
 							TRB.Data.settings.warrior.fury = TRB.Functions.ValidateLsmValues("Fury Warrior", TRB.Data.settings.warrior.fury)
 							TRB.Options.Warrior.ConstructOptionsPanel(specCache)

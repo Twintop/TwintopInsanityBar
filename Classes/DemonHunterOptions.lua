@@ -577,7 +577,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.demonhunter.havoc.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.demonhunter.havoc.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.demonhunter.havoc.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.demonhunter.havoc.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.demonhunter.havoc)
+			TRB.Functions.RepositionBar(TRB.Data.settings.demonhunter.havoc, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -1579,7 +1579,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_DemonHunter_Havoc_fFontMiddle", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_DemonHunter_Havoc_FontMiddle", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontMiddle.label = TRB.UiFunctions.BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -2312,6 +2312,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.havocDemonHunterEnabled, TRB.Data.settings.core.enabled.demonhunter.havoc, true)
 
 		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)

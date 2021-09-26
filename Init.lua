@@ -1,4 +1,5 @@
 local addonName, TRB = ...
+local _, _, classIndexId = UnitClass("player")
 
 -- Addon details data
 TRB.Details = {}
@@ -7,7 +8,7 @@ TRB.Details.addonAuthor = GetAddOnMetadata(addonName, "Author")
 TRB.Details.addonAuthorServer = GetAddOnMetadata(addonName, "X-AuthorServer")
 TRB.Details.addonTitle = GetAddOnMetadata(addonName, "Title")
 TRB.Details.addonReleaseDate = GetAddOnMetadata(addonName, "X-ReleaseDate")
-TRB.Details.supportedSpecs = "|cFFA330C9Demon Hunter|r - Havoc\n|cFFFF7C0ADruid|r - Balance\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFFFFFFFFPriest|r - Holy, Shadow\n|cFF0070DDShaman|r - Elemental\n|cFFC69B6DWarrior|r - Arms, Fury"
+TRB.Details.supportedSpecs = "|cFFA330C9Demon Hunter|r - Havoc\n|cFFFF7C0ADruid|r - Balance\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFFFFFFFFPriest|r - Holy, Shadow\n|cFFFFF468Rogue|r - Assassination\n|cFF0070DDShaman|r - Elemental\n|cFFC69B6DWarrior|r - Arms, Fury"
 
 local addonData = {
 	loaded = false,
@@ -47,6 +48,20 @@ TRB.Frames.timerFrame = CreateFrame("Frame")
 TRB.Frames.timerFrame.sinceLastUpdate = 0
 TRB.Frames.timerFrame.ttdSinceLastUpdate = 0
 TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
+
+-- For the following specs, we need to have a secondary bar/bars created
+-- We're going to make these as StatusBars so we can use them for Death Knight runes and Warlock soulshards in the future
+if classIndexId == 4 then
+	TRB.Frames.resource2Frames = {}
+	TRB.Frames.resource2ContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame2", TRB.Frames.barContainerFrame, "BackdropTemplate")
+	
+	for x = 1, 6 do
+		TRB.Frames.resource2Frames[x] = {}
+		TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", nil, TRB.Frames.resource2ContainerFrame, "BackdropTemplate")
+		TRB.Frames.resource2Frames[x].borderFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
+		TRB.Frames.resource2Frames[x].resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
+	end
+end
 
 function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 	local currentTime = GetTime()

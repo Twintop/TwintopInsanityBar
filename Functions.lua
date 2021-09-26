@@ -1,4 +1,5 @@
 local _, TRB = ...
+local _, _, classIndexId = UnitClass("player")
 TRB.Functions = TRB.Functions or {}
 local EXPORT_STRING_PREFIX = "!TRB!"
 
@@ -266,11 +267,20 @@ TRB.Functions.EventRegistration = EventRegistration
 
 local function GetSanityCheckValues(settings)
 	local sc = {}
-    if settings ~= nil and settings.bar ~= nil then
-        sc.barMaxWidth = math.floor(GetScreenWidth())
-        sc.barMinWidth = math.max(math.ceil(settings.bar.border * 2), 120)
-        sc.barMaxHeight = math.floor(GetScreenHeight())
-        sc.barMinHeight = math.max(math.ceil(settings.bar.border * 2), 1)
+    if settings ~= nil then
+		if settings.bar ~= nil then
+        	sc.barMaxWidth = math.floor(GetScreenWidth())
+        	sc.barMinWidth = math.max(math.ceil(settings.bar.border * 2), 120)
+    	    sc.barMaxHeight = math.floor(GetScreenHeight())
+	        sc.barMinHeight = math.max(math.ceil(settings.bar.border * 2), 1)
+		end
+
+		if settings.comboPoints ~= nil then
+        	sc.comboPointsMaxWidth = math.floor(GetScreenWidth() / 6)
+        	sc.comboPointsMinWidth = math.max(math.ceil(settings.comboPoints.border * 2), 1)
+    	    sc.comboPointsMaxHeight = math.floor(GetScreenHeight())
+	        sc.comboPointsMinHeight = math.max(math.ceil(settings.comboPoints.border * 2), 1)
+		end
 	end
 	return sc
 end
@@ -491,7 +501,10 @@ local function RepositionThreshold(settings, thresholdLine, parentFrame, thresho
 	end
 
 	if resourceMax == nil or resourceMax == 0 then
-        resourceMax = TRB.Data.character.maxResource or 100
+        resourceMax = TRB.Data.character.maxResource		
+		if resourceMax == 0 then
+			resourceMax = 100
+		end
     end
 
 	local min, max = parentFrame:GetMinMaxValues()
@@ -603,11 +616,12 @@ local function CaptureBarPosition(settings)
 end
 TRB.Functions.CaptureBarPosition = CaptureBarPosition
 
-local function SetBarCurrentValue(settings, bar, value)
+local function SetBarCurrentValue(settings, bar, value, maxResource)
+	maxResource = maxResource or TRB.Data.character.maxResource
 	value = value or 0
 	if settings ~= nil and settings.bar ~= nil and bar ~= nil and TRB.Data.character.maxResource ~= nil and TRB.Data.character.maxResource > 0 then
 		local min, max = bar:GetMinMaxValues()
-		local factor = max / TRB.Data.character.maxResource
+		local factor = max / maxResource
 		bar:SetValue(value * factor)
 	end
 end
@@ -683,7 +697,6 @@ local function ConstructResourceBar(settings)
             edgeSize = 1,
             insets = {0, 0, 0, 0}
         })
-        TRB.Functions.RepositionBar(settings)
         barContainerFrame:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))
         barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
         barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
@@ -779,6 +792,84 @@ local function ConstructResourceBar(settings)
         passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		passiveFrame:SetFrameLevel(80)
 
+		if TRB.Frames.resource2Frames ~= nil then
+			local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+			local nodes = TRB.Data.character.maxResource2
+
+			if nodes == nil or nodes == 0 then
+				nodes = length
+			end
+	
+			local nodeWidth = settings.comboPoints.width
+
+			for x = 1, length do
+				local container = TRB.Frames.resource2Frames[x].containerFrame
+				local border = TRB.Frames.resource2Frames[x].borderFrame
+				local resource = TRB.Frames.resource2Frames[x].resourceFrame
+
+				container:Show()
+				container:SetBackdrop({
+					bgFile = settings.textures.comboPointsBackground,
+					tile = true,
+					tileSize = nodeWidth,
+					edgeSize = 1,
+					insets = {0, 0, 0, 0}
+				})
+				
+				container:SetBackdropColor(GetRGBAFromString(settings.colors.comboPoints.background, true))
+				--container:SetWidth(nodeWidth-(settings.comboPoints.border*2))
+				container:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
+				container:SetFrameStrata(TRB.Data.settings.core.strata.level)
+				container:SetFrameLevel(0)
+
+				--[[
+				if settings.comboPoints.border < 1 then
+					border:Show()
+					border.backdropInfo = {
+						edgeFile = settings.textures.comboPointsBorder,
+						tile = true,
+						tileSize=4,
+						edgeSize = 1,
+						insets = {0, 0, 0, 0}
+					}
+					border:ApplyBackdrop()
+					border:Hide()
+				else
+					border:Show()
+					border.backdropInfo = {
+						edgeFile = settings.textures.comboPointsBorder,
+						tile = true,
+						tileSize = 4,
+						edgeSize = settings.comboPoints.border,
+						insets = {0, 0, 0, 0}
+					}
+					border:ApplyBackdrop()
+				end
+				]]
+		
+				border:ClearAllPoints()
+				border:SetPoint("CENTER", container)
+				border:SetPoint("CENTER", 0, 0)
+				border:SetBackdropColor(0, 0, 0, 0)
+				border:SetBackdropBorderColor(GetRGBAFromString(settings.colors.comboPoints.border, true))
+				--border:SetWidth(nodeWidth)
+				--border:SetHeight(settings.comboPoints.height)
+				border:SetFrameStrata(TRB.Data.settings.core.strata.level)
+				border:SetFrameLevel(151)
+		
+				resource:Show()
+				resource:SetMinMaxValues(0, 1)
+				--resource:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
+				resource:SetPoint("LEFT", container, "LEFT", 0, 0)
+				resource:SetPoint("RIGHT", container, "RIGHT", 0, 0)
+				resource:SetStatusBarTexture(settings.textures.comboPointsBar)
+				resource:SetStatusBarColor(GetRGBAFromString(settings.colors.comboPoints.base))
+				resource:SetFrameStrata(TRB.Data.settings.core.strata.level)
+				resource:SetFrameLevel(150)
+			end
+		end
+
+        TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
 		TRB.Functions.RedrawThresholdLines(settings)
 
 		SetBarMinMaxValues(settings)
@@ -788,7 +879,7 @@ local function ConstructResourceBar(settings)
         leftTextFrame:SetHeight(settings.bar.height * 3.5)
         leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 2, 0)
         leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        leftTextFrame:SetFrameLevel(129)
+        leftTextFrame:SetFrameLevel(200)
         leftTextFrame.font:SetPoint("LEFT", 0, 0)
         leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
         leftTextFrame.font:SetJustifyH("LEFT")
@@ -800,7 +891,7 @@ local function ConstructResourceBar(settings)
         middleTextFrame:SetHeight(settings.bar.height * 3.5)
         middleTextFrame:SetPoint("CENTER", barContainerFrame, "CENTER", 0, 0)
         middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        middleTextFrame:SetFrameLevel(129)
+        middleTextFrame:SetFrameLevel(200)
         middleTextFrame.font:SetPoint("CENTER", 0, 0)
         middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
         middleTextFrame.font:SetJustifyH("CENTER")
@@ -812,7 +903,7 @@ local function ConstructResourceBar(settings)
         rightTextFrame:SetHeight(settings.bar.height * 3.5)
         rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        rightTextFrame:SetFrameLevel(129)
+        rightTextFrame:SetFrameLevel(200)
         rightTextFrame.font:SetPoint("RIGHT", 0, 0)
         rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
         rightTextFrame.font:SetJustifyH("RIGHT")
@@ -822,21 +913,157 @@ local function ConstructResourceBar(settings)
 end
 TRB.Functions.ConstructResourceBar = ConstructResourceBar
 
-local function RepositionBarForPRD(settings)
+local function RepositionBarForPRD(settings, containerFrame)
 	if settings.bar.pinToPersonalResourceDisplay then
-		TRB.Frames.barContainerFrame:ClearAllPoints()
-		TRB.Frames.barContainerFrame:SetPoint("CENTER", C_NamePlate.GetNamePlateForUnit("player"), "CENTER", settings.bar.xPos, settings.bar.yPos)
+		containerFrame:ClearAllPoints()
+		containerFrame:SetPoint("CENTER", C_NamePlate.GetNamePlateForUnit("player"), "CENTER", settings.bar.xPos, settings.bar.yPos)
 	end
 end
 TRB.Functions.RepositionBarForPRD = RepositionBarForPRD
 
-local function RepositionBar(settings)
+local function RepositionBar(settings, containerFrame)
 	if settings.bar.pinToPersonalResourceDisplay then
-		TRB.Functions.RepositionBarForPRD(settings)
+		TRB.Functions.RepositionBarForPRD(settings, containerFrame)
 	else
-		TRB.Frames.barContainerFrame:ClearAllPoints()
-		TRB.Frames.barContainerFrame:SetPoint("CENTER", UIParent)
-		TRB.Frames.barContainerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+		containerFrame:ClearAllPoints()
+		containerFrame:SetPoint("CENTER", UIParent)
+		containerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+	end
+
+	if TRB.Frames.resource2Frames ~= nil then
+		local containerFrame2 = TRB.Frames.resource2ContainerFrame
+		local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+		local nodes = TRB.Data.character.maxResource2
+
+		if nodes == nil or nodes == 0 then
+			nodes = length
+		end
+	
+		local nodeWidth = settings.comboPoints.width
+		local nodeSpacing = settings.comboPoints.spacing + settings.comboPoints.border * 2
+		local xPos
+		local yPos
+		local totalWidth = nodes * settings.comboPoints.width + (nodes-1) * settings.comboPoints.spacing
+		local setPoint = "BOTTOM"
+		local setPointRelativeTo = "TOP"
+		local topBottom = "TOP"
+		local leftCenterRight = "CENTER"
+		
+		if settings.comboPoints.relativeTo == "TOPLEFT" then
+			setPoint = "BOTTOMLEFT"
+			setPointRelativeTo = "TOPLEFT"
+			leftCenterRight = "LEFT"
+		elseif settings.comboPoints.relativeTo == "TOP" then
+			setPoint = "BOTTOM"
+			setPointRelativeTo = "TOP"
+		elseif settings.comboPoints.relativeTo == "TOPRIGHT" then
+			setPoint = "BOTTOMRIGHT"
+			setPointRelativeTo = "TOPRIGHT"
+			leftCenterRight = "RIGHT"
+		elseif settings.comboPoints.relativeTo == "BOTTOMLEFT" then
+			setPoint = "TOPLEFT"
+			setPointRelativeTo = "BOTTOMLEFT"
+			topBottom = "BOTTOM"
+			leftCenterRight = "LEFT"
+		elseif settings.comboPoints.relativeTo == "BOTTOM" then
+			setPoint = "TOP"
+			setPointRelativeTo = "BOTTOM"
+			topBottom = "BOTTOM"
+		elseif settings.comboPoints.relativeTo == "BOTTOMRIGHT" then
+			setPoint = "TOPRIGHT"
+			setPointRelativeTo = "BOTTOMRIGHT"
+			topBottom = "BOTTOM"
+			leftCenterRight = "RIGHT"
+		end
+
+		if settings.comboPoints.fullWidth then
+			nodeWidth = ((settings.bar.width - ((nodes - 1) * (nodeSpacing - settings.comboPoints.border * 2))) / nodes)
+
+			xPos = 0
+			totalWidth = settings.bar.width
+
+			if topBottom == "BOTTOM" then
+				setPoint = "TOP"
+				setPointRelativeTo = "BOTTOM"
+			else
+				setPoint = "BOTTOM"
+				setPointRelativeTo = "TOP"
+			end
+			leftCenterRight = "CENTER"
+		else
+			if leftCenterRight == "LEFT" then
+				xPos = -settings.bar.border + settings.comboPoints.xPos
+			elseif leftCenterRight == "RIGHT" then
+				xPos = settings.bar.border + settings.comboPoints.xPos
+			else
+				xPos = settings.comboPoints.xPos
+			end
+		end
+
+		if topBottom == "BOTTOM" then
+			yPos = -settings.bar.border + settings.comboPoints.yPos - settings.comboPoints.border
+		else
+			yPos = settings.bar.border + settings.comboPoints.yPos - settings.comboPoints.border
+		end
+
+		containerFrame2:Show()
+        containerFrame2:SetWidth(totalWidth)
+        containerFrame2:SetHeight(settings.comboPoints.height)
+        containerFrame2:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        containerFrame2:SetFrameLevel(0)
+		containerFrame2:ClearAllPoints()
+		containerFrame2:SetPoint(setPoint, containerFrame, setPointRelativeTo, xPos, yPos)
+
+		for x = 1, length do
+			local container = TRB.Frames.resource2Frames[x].containerFrame
+			local border = TRB.Frames.resource2Frames[x].borderFrame
+			local resource = TRB.Frames.resource2Frames[x].resourceFrame
+
+			if x <= nodes then
+				container:Show()
+				container:SetWidth(nodeWidth-(settings.comboPoints.border*2))
+				container:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
+				container:ClearAllPoints()
+				
+				if x == 1 then
+					container:SetPoint("TOPLEFT", containerFrame2, "TOPLEFT", settings.comboPoints.border, 0)
+				else
+					container:SetPoint("LEFT", TRB.Frames.resource2Frames[x-1].containerFrame, "RIGHT", nodeSpacing, 0)
+				end
+			
+				if settings.comboPoints.border < 1 then
+					border:Show()
+					border.backdropInfo = {
+						edgeFile = settings.textures.comboPointsBorder,
+						tile = true,
+						tileSize=4,
+						edgeSize = 1,
+						insets = {0, 0, 0, 0}
+					}
+					border:ApplyBackdrop()
+					border:Hide()
+				else
+					border:Show()
+					border.backdropInfo = {
+						edgeFile = settings.textures.comboPointsBorder,
+						tile = true,
+						tileSize = 4,
+						edgeSize = settings.comboPoints.border,
+						insets = {0, 0, 0, 0}
+					}
+					border:ApplyBackdrop()
+				end
+				border:SetBackdropColor(0, 0, 0, 0)
+				border:SetBackdropBorderColor(GetRGBAFromString(settings.colors.comboPoints.border, true))
+
+				border:SetWidth(nodeWidth)
+				border:SetHeight(settings.comboPoints.height)
+				
+				resource:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
+			else
+				container:Hide()
+			end
+		end
 	end
 end
 TRB.Functions.RepositionBar = RepositionBar
@@ -1699,6 +1926,11 @@ TRB.Functions.CheckCharacter_Class = CheckCharacter_Class
 
 local function UpdateSnapshot()
 	TRB.Data.snapshotData.resource = UnitPower("player", TRB.Data.resource, true)
+
+	if TRB.Data.resource2 ~= nil then
+		TRB.Data.snapshotData.resource2 = UnitPower("player", TRB.Data.resource2, true)
+	end
+
 	TRB.Data.snapshotData.haste = UnitSpellHaste("player")
 	TRB.Data.snapshotData.crit = GetCritChance("player")
 	TRB.Data.snapshotData.mastery = GetMasteryEffect("player")
@@ -1778,6 +2010,25 @@ local function GetSoulbindRank(id)
 	return 0
 end
 TRB.Functions.GetSoulbindRank = GetSoulbindRank
+
+-- Source: https://www.wowinterface.com/forums/showpost.php?p=338665&postcount=5
+local function ArePvpTalentsActive()
+    local inInstance, instanceType = IsInInstance()
+    if inInstance and (instanceType == "pvp" or instanceType == "arena") then
+        return true
+    elseif inInstance and (instanceType == "party" or instanceType == "raid" or instanceType == "scenario") then
+        return false
+    else
+        local talents = C_SpecializationInfo.GetAllSelectedPvpTalentIDs()
+        for _, pvptalent in pairs(talents) do
+            local spellID = select(6, GetPvpTalentInfoByID(pvptalent))
+            if IsPlayerSpell(spellID) then
+                return true
+            end
+        end
+    end
+end
+TRB.Functions.ArePvpTalentsActive = ArePvpTalentsActive
 
 -- Torghast specific
 
@@ -1892,6 +2143,7 @@ local function Import(input)
 
 	if not (configuration.core ~= nil or
 		(configuration.warrior ~= nil and configuration.warrior.arms ~= nil) or
+		(configuration.rogue ~= nil and configuration.rogue.assassination ~= nil) or
 		(configuration.hunter ~= nil and (configuration.hunter.beastMastery ~= nil or configuration.hunter.marksmanship ~= nil or configuration.hunter.survival ~= nil)) or
 		(configuration.priest ~= nil and (configuration.priest.holy ~= nil or configuration.priest.shadow ~= nil)) or
 		(configuration.shaman ~= nil and configuration.shaman.elemental ~= nil) or
@@ -1942,6 +2194,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Survival
 				configuration.endOfCoordinatedAssault = settings.endOfCoordinatedAssault
 			end
+		elseif classId == 4 and specId == 1 then -- Assassination Rogue
+			configuration.colors.comboPoints = settings.colors.comboPoints
+			configuration.comboPoints = settings.comboPoints
+			configuration.thresholds = settings.thresholds
 		elseif classId == 5 then -- Priests
 			if specId == 2 then -- Holy
 				configuration.thresholds = settings.thresholds
@@ -1989,7 +2245,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		}
 
 		if classId == 1 then -- Warrior
-			if specId == 1 then -- Arms 
+			if specId == 1 then -- Arms
 				configuration.ragePrecision = settings.ragePrecision
 			elseif specId == 2 then -- Fury
 				configuration.ragePrecision = settings.ragePrecision
@@ -1999,6 +2255,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Marksmanship
 			elseif specId == 3 then -- Survival
 			end
+		elseif classId == 4 and specId == 1 then -- Assassination Rogue
 		elseif classId == 5 then -- Priests
 			if specId == 2 then -- Holy
 			elseif specId == 3 then -- Shadow
@@ -2019,7 +2276,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		configuration.audio = settings.audio
 
 		if classId == 1 then -- Warrior
-			if specId == 1 then -- Arms 
+			if specId == 1 then -- Arms
 				configuration.ragePrecision = settings.ragePrecision
 			elseif specId == 2 then -- Fury
 				configuration.ragePrecision = settings.ragePrecision
@@ -2030,6 +2287,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Marksmanship
 			elseif specId == 3 then -- Survival
 			end
+		elseif classId == 4 and specId == 1 then -- Assassination Rogue
+			configuration.generation = settings.generation
 		elseif classId == 5 then -- Priests
 			if specId == 2 then -- Holy
 				configuration.wrathfulFaerie = settings.wrathfulFaerie
@@ -2108,6 +2367,12 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.hunter.survival) > 0 then -- Survival
 				configuration.hunter.survival = TRB.Functions.ExportConfigurationSections(3, 3, settings.hunter.survival, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
+		elseif classId == 4 and settings.rogue ~= nil then -- Rogue
+			configuration.rogue = {}
+
+			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.rogue.assassination) > 0 then -- Assassination
+				configuration.rogue.assassination = TRB.Functions.ExportConfigurationSections(4, 1, settings.rogue.assassination, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
 		elseif classId == 5 and settings.priest ~= nil then -- Priest
 			configuration.priest = {}
 
@@ -2159,6 +2424,9 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(5, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
 		-- Shadow
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(5, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+
+		-- Assassination Rogue
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
 
 		-- Elemental Shaman
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))

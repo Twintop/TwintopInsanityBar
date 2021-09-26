@@ -262,10 +262,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
 			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the Kyrian Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the Necrolord Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the Night Fae Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the Venthyr Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$maelstrom", description = "Current Maelstrom", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Maelstrom", printInSettings = false, color = false },
@@ -809,7 +809,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function UpdateResourceBar()
 		local refreshText = false
 		UpdateSnapshot()
-		TRB.Functions.RepositionBarForPRD(TRB.Data.settings.shaman.elemental)
+		TRB.Functions.RepositionBarForPRD(TRB.Data.settings.shaman.elemental, TRB.Frames.barContainerFrame)
 
 		if TRB.Data.snapshotData.isTracking then
 			TRB.Functions.HideResourceBar()
@@ -1078,7 +1078,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					FillSpellData()
 					-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
 					C_Timer.After(0, function()
-						C_Timer.After(5, function()
+						C_Timer.After(1, function()
 							TRB.Data.settings.shaman.elemental = TRB.Functions.ValidateLsmValues("Elemental Shaman", TRB.Data.settings.shaman.elemental)
 							TRB.Options.Shaman.ConstructOptionsPanel()
 							-- Reconstruct just in case
