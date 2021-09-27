@@ -895,12 +895,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 
 	local function CheckCharacter()
+		local specId = GetSpecialization()
 		TRB.Functions.CheckCharacter()
 		TRB.Data.character.className = "warrior"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Rage)
 
-        if GetSpecialization() == 1 then		
-			TRB.Data.character.specName = "arms"            
+        if specId == 1 then		
+			TRB.Data.character.specName = "arms"
 			TRB.Data.character.talents.suddenDeath.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.skullsplitter.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.impendingVictory.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
@@ -941,7 +942,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 			TRB.Data.character.items.naturesFury = naturesFury
 			TRB.Data.character.items.glory = glory
-        elseif GetSpecialization() == 2 then
+        elseif specId == 2 then
 			TRB.Data.character.specName = "fury"
 			TRB.Data.character.talents.suddenDeath.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
 			--TRB.Data.character.talents.skullsplitter.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
@@ -983,7 +984,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 			TRB.Data.character.items.naturesFury = naturesFury
 			TRB.Data.character.items.glory = glory
-		elseif GetSpecialization() == 3 then
+		elseif specId == 3 then
 		end
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
@@ -1079,12 +1080,16 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return false
 		end
 
-		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
-			TRB.Functions.InitializeTarget(guid)
-			TRB.Data.snapshotData.targetData.targets[guid].rend = false
-			TRB.Data.snapshotData.targetData.targets[guid].rendRemaining = 0
-			TRB.Data.snapshotData.targetData.targets[guid].deepWounds = false
-			TRB.Data.snapshotData.targetData.targets[guid].deepWoundsRemaining = 0
+		local specId = GetSpecialization()
+
+		if specId == 1 then
+			if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
+				TRB.Functions.InitializeTarget(guid)
+				TRB.Data.snapshotData.targetData.targets[guid].rend = false
+				TRB.Data.snapshotData.targetData.targets[guid].rendRemaining = 0
+				TRB.Data.snapshotData.targetData.targets[guid].deepWounds = false
+				TRB.Data.snapshotData.targetData.targets[guid].deepWoundsRemaining = 0
+			end
 		end
 		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
 
@@ -1094,31 +1099,41 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
-		local rendTotal = 0
-		local deepWoundsTotal = 0
-    	for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
-			if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
-				TRB.Data.snapshotData.targetData.targets[guid].rend = false
-				TRB.Data.snapshotData.targetData.targets[guid].rendRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].deepWounds = false
-				TRB.Data.snapshotData.targetData.targets[guid].deepWoundsRemaining = 0
-			else
-				if TRB.Data.snapshotData.targetData.targets[guid].rend == true then
-					rendTotal = rendTotal + 1
-				end
-				if TRB.Data.snapshotData.targetData.targets[guid].deepWounds == true then
-					deepWoundsTotal = deepWoundsTotal + 1
+		
+		local specId = GetSpecialization()
+
+		if specId == 1 then
+			local rendTotal = 0
+			local deepWoundsTotal = 0
+			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
+				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
+					TRB.Data.snapshotData.targetData.targets[guid].rend = false
+					TRB.Data.snapshotData.targetData.targets[guid].rendRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].deepWounds = false
+					TRB.Data.snapshotData.targetData.targets[guid].deepWoundsRemaining = 0
+				else
+					if TRB.Data.snapshotData.targetData.targets[guid].rend == true then
+						rendTotal = rendTotal + 1
+					end
+					if TRB.Data.snapshotData.targetData.targets[guid].deepWounds == true then
+						deepWoundsTotal = deepWoundsTotal + 1
+					end
 				end
 			end
+			TRB.Data.snapshotData.targetData.rend = rendTotal
+			TRB.Data.snapshotData.targetData.deepWounds = deepWoundsTotal
 		end
-		TRB.Data.snapshotData.targetData.rend = rendTotal
-		TRB.Data.snapshotData.targetData.deepWounds = deepWoundsTotal
 	end
 
 	local function TargetsCleanup(clearAll)
 		TRB.Functions.TargetsCleanup(clearAll)
-		if clearAll == true then
-			TRB.Data.snapshotData.targetData.rend = 0
+		local specId = GetSpecialization()
+
+		if specId == 1 then
+			if clearAll == true then
+				TRB.Data.snapshotData.targetData.rend = 0
+				TRB.Data.snapshotData.targetData.deepWounds = 0
+			end
 		end
 	end
 

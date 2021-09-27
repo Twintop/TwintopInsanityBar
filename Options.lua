@@ -53,7 +53,8 @@ local function LoadDefaultSettings()
                     havoc = true
                 },
                 druid = {
-                    balance = true
+                    balance = true,
+                    feral = true
                 },
                 hunter = {
                     beastMastery = true,
@@ -80,7 +81,8 @@ local function LoadDefaultSettings()
             havoc = {}
         },
         druid = {
-            balance = {}
+            balance = {},
+            feral = {}
         },
         hunter = {
             beastMastery = {},

@@ -739,7 +739,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
         
         if settings ~= nil then
-			TRB.Data.character.isPvp = TRB.Functions.ArePvpTalentsActive()			
+			TRB.Data.character.isPvp = TRB.Functions.ArePvpTalentsActive()
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
             	TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
@@ -811,6 +811,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.blindside)
 	end
 
+    local function CalculateAbilityResourceValue(resource, threshold)
+        local modifier = 1.0
+
+		modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
+
+        return resource * modifier
+    end
+	
 	local function InitializeTarget(guid, selfInitializeAllowed)
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
 			return false
@@ -849,13 +857,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 
-    local function CalculateAbilityResourceValue(resource, threshold)
-        local modifier = 1.0
-
-		modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
-
-        return resource * modifier
-    end
 
 	local function UpdateCastingResourceFinal()
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)

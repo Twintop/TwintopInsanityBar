@@ -792,7 +792,7 @@ local function ConstructResourceBar(settings)
         passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		passiveFrame:SetFrameLevel(80)
 
-		if TRB.Frames.resource2Frames ~= nil then
+		if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil then
 			local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 			local nodes = TRB.Data.character.maxResource2
 
@@ -930,7 +930,7 @@ local function RepositionBar(settings, containerFrame)
 		containerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
 	end
 
-	if TRB.Frames.resource2Frames ~= nil then
+	if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil then
 		local containerFrame2 = TRB.Frames.resource2ContainerFrame
 		local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 		local nodes = TRB.Data.character.maxResource2
