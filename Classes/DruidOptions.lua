@@ -280,61 +280,49 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			thresholdWidth=2,
 			overcapThreshold=120,
 			thresholds = {
-                    --[[
 					-- Core Druid
-					ambush = {
+					ferociousBite = {
 						enabled = true, -- 1
 					},
-					cheapShot = {
-						enabled = false, -- 2
+					shred = {
+						enabled = true, -- 2
 					},
-					crimsonVial = {
+                    -- Feral
+					maim = {
 						enabled = true, -- 3
 					},
-					distract = {
-						enabled = false, -- 4
+					rake = {
+						enabled = true, -- 4
 					},
-					feint = {
+					rip = {
 						enabled = true, -- 5
 					},
-					kidneyShot = {
-						enabled = false, -- 6
+					swipe = {
+						enabled = true, -- 6
 					},
-					sap = {
-						enabled = false, -- 7
-					},
-					shiv = {
-						enabled = false, -- 8
-					},
-					sliceAndDice = {
-						enabled = true, -- 9
-					},
-                    -- Assassination
-					envenom = {
-						enabled = true, -- 10
-					},
-					fanOfKnives = {
-						enabled = true, -- 11
-					},
-					garrote = {
-						enabled = true, -- 12
-					},
-					mutilate = {
-						enabled = true, -- 13
-					},
-					poisonedKnife = {
-						enabled = false, -- 14
-					},
-					rupture = {
-						enabled = true, -- 15
+					thrash = {
+						enabled = true, -- 7
 					},
 					-- Talents
-					exsanguinate = {
-						enabled = true, -- 16
+					moonfire = {
+						enabled = true, -- 8
 					},
-					crimsonTempest = {
-						enabled = true, -- 17
+					savageRoar = {
+						enabled = true, -- 9
 					},
+					brutalSlash = {
+						enabled = true, -- 10
+					},
+					primalWrath = {
+						enabled = true, -- 11
+					},
+					bloodtalons = {
+						enabled = true, -- 12
+					},
+					feralFrenzy = {
+						enabled = true, -- 13
+					},
+					--[[
 					-- Covenants
 					echoingReprimand = { -- Kyrian
 						enabled = true, -- 18
@@ -344,15 +332,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					},
 					serratedBoneSpike = { -- Necrolord
 						enabled = true, -- 20
-					},
-					-- PvP					
-					deathFromAbove = {
-						enabled = false, -- 21
-					},
-					dismantle = {
-						enabled = false, -- 22
-					},
-					]]
+					}]]
 			},
 			generation = {
 				mode="gcd",

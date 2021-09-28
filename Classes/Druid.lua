@@ -374,24 +374,30 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				overgrowthSeedling = 1.0
 			},
 			talents = {
-				--[[blindside = {
+				lunarInspiration = {
 					isSelected = false
 				},
-				subterfuge = {
+				savageRoar = {
 					isSelected = false
 				},
-				internalBleeding = {
+				incarnationKingOfTheJungle = {
 					isSelected = false
 				},
-				exsanguinate = {
+				scentOfBlood = {
 					isSelected = false
 				},
-				hiddenBlades = {
+				brutalSlash = {
 					isSelected = false
 				},
-				crimsonTempest = {
+				primalWrath = {
 					isSelected = false
-				}]]
+				},
+				bloodtalons = {
+					isSelected = false
+				},
+				feralFrenzy = {
+					isSelected = false
+				}
 			},
 			items = {
 				--tinyToxicBlade = false
@@ -405,216 +411,70 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		}
 
 		specCache.feral.spells = {
-			--[[
-			-- Poisons
-			cripplingPoison = {
-				id = 3409,
+			-- Druid Class Abilities
+            catForm = {
+				id = 768,
 				name = "",
 				icon = ""
 			},
-			deadlyPoison = {
-				id = 2818,
-				name = "",
-				icon = ""
-			},
-			numbingPoison = {
-				id = 5760,
-				name = "",
-				icon = ""
-			},
-			woundPoison = {
-				id = 8680,
-				name = "",
-				icon = ""
-			},
-
-			-- Rogue Class Abilities
-            ambush = {
-				id = 8676,
+			ferociousBite = {
+				id = 22568,
 				name = "",
 				icon = "",
-				energy = -50,
-                comboPointsGenerated = 2,
-                stealth = true,
+				energy = -25,
+				comboPoints = true,
 				thresholdId = 1,
-				settingKey = "ambush",
-                --isSnowflake = true,
+				settingKey = "ferociousBite",
+				--isSnowflake = true, -- Really between 25-50 energy
 				thresholdUsable = false
 			},
-			cheapShot = {
-				id = 1833,
+			shred = {
+				id = 5221,
 				name = "",
 				icon = "",
 				energy = -40,
                 comboPointsGenerated = 1,
-                stealth = true,
 				thresholdId = 2,
-				settingKey = "cheapShot",
-				--isSnowflake = false,
+				settingKey = "shred",
 				thresholdUsable = false
 			},
-			crimsonVial = {
-				id = 185311,
+
+			-- Feral Abilities
+			berserk = {
+				id = 106951,
 				name = "",
-				icon = "",
-				energy = -20,
-                comboPointsGenerated = 0,
-				thresholdId = 3,
-				settingKey = "crimsonVial",
-				hasCooldown = true,
-                cooldown = 30,
-				thresholdUsable = false
+				icon = ""
 			},
-			distract = {
-				id = 1725,
-				name = "",
-				icon = "",
-				energy = -30,
-                comboPointsGenerated = 0,
-				thresholdId = 4,
-				settingKey = "distract",
-				hasCooldown = true,
-                cooldown = 30,
-				thresholdUsable = false
-			},
-			feint = {
-				id = 1966,
+			maim = {
+				id = 22570,
 				name = "",
 				icon = "",
 				energy = -35,
                 comboPointsGenerated = 0,
-				thresholdId = 5,
-				settingKey = "feint",
-                hasCooldown = true,
-                cooldown = 15,
-				thresholdUsable = false
-			},
-			kidneyShot = {
-				id = 408,
-				name = "",
-				icon = "",
-				energy = -25,
-                comboPoints = true,
-				thresholdId = 6,
-				settingKey = "kidneyShot",
+				thresholdId = 3,
+				settingKey = "maim",
                 hasCooldown = true,
                 cooldown = 20,
 				thresholdUsable = false
 			},
-			sap = {
-				id = 6770,
+			rake = {
+				id = 1822,
 				name = "",
 				icon = "",
 				energy = -35,
-                comboPointsGenerated = 0,
-                stealth = true,
-				thresholdId = 7,
-				settingKey = "sap",
+                comboPointsGenerated = 1,
+				thresholdId = 4,
+				settingKey = "rake",
 				thresholdUsable = false
 			},
-			shiv = {
-				id = 5938,
+			rip = {
+				id = 1079,
 				name = "",
 				icon = "",
 				energy = -20,
-                comboPointsGenerated = 1,
-				thresholdId = 8,
-				settingKey = "shiv",
-                hasCooldown = true,
-				isSnowflake = true,
-                cooldown = 25,
-				thresholdUsable = false,
-				idLegendaryBonus = 7112
-			},
-			sliceAndDice = {
-				id = 315496,
-				name = "",
-				icon = "",
-				energy = -25,
                 comboPoints = true,
-				thresholdId = 9,
-				settingKey = "sliceAndDice",
-                hasCooldown = false,
-				thresholdUsable = false,
-				pandemicTimes = {
-					12 * 0.3, -- 0 CP, show same as if we had 1
-					12 * 0.3,
-					18 * 0.3,
-					24 * 0.3,
-					30 * 0.3,
-					36 * 0.3,
-					42 * 0.3
-				}
-			},
-
-            -- Feral Spec Abilities
-
-			envenom = {
-				id = 32645,
-				name = "",
-				icon = "",
-				energy = -35,
-                comboPoints = true,
-				thresholdId = 10,
-				settingKey = "envenom",
-                hasCooldown = false,
-				thresholdUsable = false
-			},
-			fanOfKnives = {
-				id = 51723,
-				name = "",
-				icon = "",
-				energy = -35,
-                comboPointsGenerated = 1,
-				thresholdId = 11,
-				settingKey = "fanOfKnives",
-                hasCooldown = false,
-				thresholdUsable = false
-			},
-			garrote = {
-				id = 703,
-				name = "",
-				icon = "",
-				energy = -45,
-                comboPointsGenerated = 1,
-				thresholdId = 12,
-				settingKey = "garrote",
-                hasCooldown = true,
-                cooldown = 6,
-				thresholdUsable = false,
-				pandemicTime = 18 * 0.3
-			},
-			mutilate = {
-				id = 1329,
-				name = "",
-				icon = "",
-				energy = -50,
-                comboPointsGenerated = 2,
-				thresholdId = 13,
-				settingKey = "mutilate",
-                hasCooldown = false,
-				thresholdUsable = false
-			},
-			poisonedKnife = {
-				id = 185565,
-				name = "",
-				icon = "",
-				energy = -40,
-                comboPointsGenerated = 1,
-				thresholdId = 14,
-				settingKey = "poisonedKnife",
-                hasCooldown = false,
-				thresholdUsable = false
-			},
-			rupture = {
-				id = 1943,
-				name = "",
-				icon = "",
-				energy = -25,
-                comboPoints = true,
-				thresholdId = 15,
-				settingKey = "rupture",
-                hasCooldown = false,
+				thresholdId = 5,
+				settingKey = "rip",
 				thresholdUsable = false,
 				pandemicTimes = {
 					8 * 0.3, -- 0 CP, show same as if we had 1
@@ -622,79 +482,132 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					12 * 0.3,
 					16 * 0.3,
 					20 * 0.3,
-					24 * 0.3,
-					28 * 0.3,
-					32 * 0.3, -- 7 CP Kyrian ability buff
+					24 * 0.3
 				}
 			},
-			vendetta = {
-				id = 79140,
+			swipe = {
+				id = 106785,
 				name = "",
 				icon = "",
-				energy = 60,
-                duration = 3
+				energy = -35,
+                comboPointsGenerated = 1,
+				thresholdId = 6,
+				settingKey = "swipe",
+				thresholdUsable = false
 			},
-
-			-- Talents
-			blindside = {
-				id = 121153,
+			thrash = {
+				id = 106830,
 				name = "",
 				icon = "",
-				duration = 10,
-				isActive = false,
+				energy = -40,
+                comboPointsGenerated = 1,
+				thresholdId = 7,
+				settingKey = "thrash",
+				thresholdUsable = false
 			},
-			subterfuge = {
-				id = 115192,
+			clearcasting = {
+				id = 135700,
 				name = "",
 				icon = "",
 				isActive = false
 			},
-			internalBleeding = {
-				id = 154953,
+			predatorySwiftness = {
+				id = 69369,
 				name = "",
 				icon = ""
 			},
-			exsanguinate = {
-				id = 200806,
+
+			-- Talents
+
+			lunarInspiration = {
+				id = 155580,
+				name = "",
+				icon = ""
+			},
+			moonfire = {
+				id = 5221,
+				name = "",
+				icon = "",
+				energy = -30,
+                comboPointsGenerated = 1,
+				thresholdId = 8,
+				settingKey = "moonfire",
+				isSnowflake = true,
+				thresholdUsable = false
+			},
+			savageRoar = {
+				id = 52610,
 				name = "",
 				icon = "",
 				energy = -25,
-				thresholdId = 16,
-				settingKey = "exsanguinate",
-				hasCooldown = true,
-				isTalent = true,
-				isSnowflake = true,
-				thresholdUsable = false,
-				cooldown = 45
+                comboPoints = true,
+				thresholdId = 9,
+				settingKey = "savageRoar",
+                isTalent = true,
+				thresholdUsable = false
 			},
-			hiddenBlades = {
-				id = 270061,
-				name = "",
-				icon = ""
-			},
-			crimsonTempest = {
-				id = 121411,
+			incarnationKingOfTheJungle = {
+				id = 102543,
 				name = "",
 				icon = "",
-				energy = -35,
-				comboPoints = true,
-				thresholdId = 17,
-				settingKey = "crimsonTempest",
-				hasCooldown = false,
-				isTalent = true,
-				thresholdUsable = false,
-				pandemicTimes = {
-					4 * 0.3, -- 0 CP, show same as if we had 1
-					4 * 0.3,
-					6 * 0.3,
-					8 * 0.3,
-					10 * 0.3,
-					12 * 0.3,
-					14 * 0.3,
-					16 * 0.3, -- Kyrian ability buff
-				}
+				energyModifier = 0.8
+			},
+			scentOfBlood = {
+				id = 285564,
+				name = "",
+				icon = "",
+				energyPer = 3,
+				duration = 6
+			},
+			brutalSlash = {
+				id = 202028,
+				name = "",
+				icon = "",
+				energy = -25,
+                comboPointsGenerated = 1,
+				thresholdId = 10,
+				settingKey = "brutalSlash",
+                isTalent = true,
+				hasCooldown = true,
+				thresholdUsable = false
+			},
+			primalWrath = {
+				id = 285381,
+				name = "",
+				icon = "",
+				energy = -20,
+                comboPoints = true,
+				thresholdId = 11,
+				settingKey = "primalWrath",
+                isTalent = true,
+				thresholdUsable = false
+			},
+			bloodtalons = {
+				id = 319439,
+				name = "",
+				icon = "",
+				window = 4,
+				energy = -80,
+				thresholdId = 12,
+				settingKey = "bloodtalons",
+                isTalent = true,
+				isSnowflake = true,
+				thresholdUsable = false
+			},
+			feralFrenzy = {
+				id = 285381,
+				name = "",
+				icon = "",
+				energy = -25,
+                comboPointsGenerated = 5,
+				thresholdId = 13,
+				settingKey = "feralFrenzy",
+                isTalent = true,
+				hasCooldown = true,
+				thresholdUsable = false
 			},
 
+			--[[
 			-- Covenants
 			echoingReprimand = { -- Kyrian
 				id = 323547,
@@ -779,7 +692,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				isPvp = true,
 				thresholdUsable = false,
 				cooldown = 45
-			},]]
+			},
+			]]
 		}
 
 		specCache.feral.snapshotData.energyRegen = 0
@@ -804,22 +718,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			serratedBoneSpike = 0,]]
 			targets = {}
 		}
-		--[[specCache.feral.snapshotData.crimsonVial = {
+		specCache.feral.snapshotData.maim = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.feral.snapshotData.distract = {
+		specCache.feral.snapshotData.brutalSlash = {
+			startTime = nil,
+			duration = 0,
+			charges = 0,
+			maxCharges = 3
+		}
+		specCache.feral.snapshotData.feralFrenzy = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.feral.snapshotData.feint = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}
-		specCache.feral.snapshotData.kidneyShot = {
+		--[[specCache.feral.snapshotData.kidneyShot = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
@@ -1275,6 +1190,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy)
 			local maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
 			local settings = TRB.Data.settings.druid.feral
+
+			TRB.Data.character.talents.lunarInspiration.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
+			TRB.Data.character.talents.savageRoar.isSelected = select(4, GetTalentInfo(5, 2, TRB.Data.character.specGroup))
+			TRB.Data.character.talents.incarnationKingOfTheJungle.isSelected = select(4, GetTalentInfo(5, 3, TRB.Data.character.specGroup))
+			TRB.Data.character.talents.scentOfBlood.isSelected = select(4, GetTalentInfo(6, 1, TRB.Data.character.specGroup))
+			TRB.Data.character.talents.brutalSlash.isSelected = select(4, GetTalentInfo(6, 2, TRB.Data.character.specGroup))
+			TRB.Data.character.talents.primalWrath.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
+			TRB.Data.character.talents.bloodtalons.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
+			TRB.Data.character.talents.feralFrenzy.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 	
 			if settings ~= nil then
 				--TRB.Data.character.isPvp = TRB.Functions.ArePvpTalentsActive()
@@ -1440,7 +1364,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			local resourceFrameCounter = 1
 			for k, v in pairs(TRB.Data.spells) do
 				local spell = TRB.Data.spells[k]
-				if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+				if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 					if TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] == nil then
 						TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
@@ -2497,6 +2421,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		UpdateSnapshot()
 		
 		local currentTime = GetTime()
+
+        if TRB.Data.snapshotData.maim.startTime ~= nil and currentTime > (TRB.Data.snapshotData.maim.startTime + TRB.Data.snapshotData.maim.duration) then
+            TRB.Data.snapshotData.maim.startTime = nil
+            TRB.Data.snapshotData.maim.duration = 0
+        end
+
+        if TRB.Data.snapshotData.feralFrenzy.startTime ~= nil and currentTime > (TRB.Data.snapshotData.feralFrenzy.startTime + TRB.Data.snapshotData.feralFrenzy.duration) then
+            TRB.Data.snapshotData.feralFrenzy.startTime = nil
+            TRB.Data.snapshotData.feralFrenzy.duration = 0
+        end
+
+		TRB.Data.snapshotData.brutalSlash.charges, TRB.Data.snapshotData.brutalSlash.maxCharges, TRB.Data.snapshotData.brutalSlash.startTime, TRB.Data.snapshotData.brutalSlash.duration, _ = GetSpellCharges(TRB.Data.spells.brutalSlash.id)
 	end
 
 	local function HideResourceBar(force)
@@ -2944,7 +2880,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.unusable
 								frameLevel = 127
 							end
-
+							
 							if TRB.Data.settings.druid.feral.thresholds[spell.settingKey].enabled and showThreshold then
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
