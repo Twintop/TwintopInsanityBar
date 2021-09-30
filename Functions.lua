@@ -636,6 +636,17 @@ local function SetBarMinMaxValues(settings)
 end
 TRB.Functions.SetBarMinMaxValues = SetBarMinMaxValues
 
+local function SetThresholdIcon(threshold, spellId)
+	if threshold.icon == nil or spellId == nil then
+		return
+	end
+
+	threshold.icon:SetPoint("TOP", threshold, "BOTTOM", 0, -2)
+	threshold.icon:SetSize(20, 20)
+	threshold.icon.texture:SetTexture(GetSpellTexture(spellId))
+end
+TRB.Functions.SetThresholdIcon = SetThresholdIcon
+
 local function RedrawThresholdLines(settings)
 	local resourceFrame = TRB.Frames.resourceFrame
 	local passiveFrame = TRB.Frames.passiveFrame
@@ -653,9 +664,21 @@ local function RedrawThresholdLines(settings)
 			resourceFrame.thresholds[x].texture = resourceFrame.thresholds[x].texture or resourceFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
 			resourceFrame.thresholds[x].texture:SetAllPoints(resourceFrame.thresholds[x])
 			resourceFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
-			resourceFrame.thresholds[x]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+			--resourceFrame.thresholds[x].texture:SetFrameStrata(TRB.Data.settings.core.strata.level)
 			resourceFrame.thresholds[x]:SetFrameLevel(127)
 			resourceFrame.thresholds[x]:Hide()
+			resourceFrame.thresholds[x].icon = resourceFrame.thresholds[x].icon or CreateFrame("Frame", nil, resourceFrame.thresholds[x])
+			resourceFrame.thresholds[x].icon:SetPoint("TOP", resourceFrame.thresholds[x], "BOTTOM", 0, -10)
+			resourceFrame.thresholds[x].icon:SetSize(20, 20)
+			resourceFrame.thresholds[x].icon:SetFrameLevel(130)
+			resourceFrame.thresholds[x].icon:SetFrameStrata(TRB.Data.settings.core.strata.level)
+			resourceFrame.thresholds[x].icon.texture = resourceFrame.thresholds[x].icon.texture or resourceFrame.thresholds[x].icon:CreateTexture(nil, TRB.Data.settings.core.strata.level)
+			resourceFrame.thresholds[x].icon.texture:SetAllPoints(resourceFrame.thresholds[x].icon)
+			resourceFrame.thresholds[x].icon.texture:SetTexture("Interface\\Icons\\Ability_Druid_TreeofLife")
+			resourceFrame.thresholds[x].icon.cooldown = resourceFrame.thresholds[x].icon.cooldown or CreateFrame("Cooldown", nil, resourceFrame.thresholds[x].icon, "CooldownFrameTemplate")
+			resourceFrame.thresholds[x].icon.cooldown:SetAllPoints(resourceFrame.thresholds[x].icon)
+			resourceFrame.thresholds[x].icon.cooldown:SetFrameStrata(TRB.Data.settings.core.strata.level)
+			--resourceFrame.thresholds[x].icon:Hide()
 		end
 	end
 

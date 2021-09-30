@@ -738,6 +738,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = ""
 			},
+			searingNightmare = {
+				id = 341385,
+				name = "",
+				icon = ""
+			},
 			
 			-- Item Buffs
 			memoryOfLucidDreams = {
@@ -1493,6 +1498,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.settings.priest.shadow.devouringPlagueThreshold and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
 				TRB.Frames.resourceFrame.thresholds[1]:Show()
 				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.devouringPlague.id)
 			else
 				TRB.Frames.resourceFrame.thresholds[1]:Hide()
 			end
@@ -1500,6 +1506,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.settings.priest.shadow.searingNightmareThreshold and TRB.Data.character.talents.searingNightmare.isSelected == true and TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id then
 				TRB.Frames.resourceFrame.thresholds[2]:Show()
 				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.searingNightmare.id)
 			else
 				TRB.Frames.resourceFrame.thresholds[2]:Hide()
 			end
