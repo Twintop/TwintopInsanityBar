@@ -2414,7 +2414,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				--print("NO")
 			else
 				TRB.Data.snapshotData.isTracking = true
-				if TRB.Data.settings.rogue.assassination.displayBar.neverShow == true then
+				if TRB.Data.settings.druid.feral.displayBar.neverShow == true then
 					TRB.Frames.barContainerFrame:Hide()
 				else
 					TRB.Frames.barContainerFrame:Show()
@@ -2886,9 +2886,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 						if TRB.Data.snapshotData.resource2 >= x then
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.feral, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-							if x == (TRB.Data.character.maxResource2 - 1) then
+							if (TRB.Data.settings.druid.feral.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not TRB.Data.settings.druid.feral.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = TRB.Data.settings.druid.feral.colors.comboPoints.penultimate
-							elseif x == TRB.Data.character.maxResource2 then
+							elseif (TRB.Data.settings.druid.feral.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = TRB.Data.settings.druid.feral.colors.comboPoints.final
 							end
 						else

@@ -366,7 +366,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                 spacing=14,
                 relativeTo="TOP",
                 relativeToName="Above - Middle",
-                fullWidth=false,
+                fullWidth=false
             },
 			colors = {
 				text = {
@@ -406,6 +406,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					base="FFFFFF00",
 					penultimate="FFFF9900",
 					final="FFFF0000",
+					sameColor=false
 					--echoingReprimand="FF68CCEF",
 					--serratedBoneSpike="FF40BF40"
 				},
@@ -4684,6 +4685,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		]]
 
 		yCoord = yCoord - 30
+
+		controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.sameColorComboPoint
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Use highest Combo Point color for all?")
+		f.tooltip = "When checked, the highest Combo Point's color will be used for all Combo Points. E.g., if you have maximum 5 combo points and currently have 4, the Penultimate color will be used for all Combo Points instead of just the second to last."
+		f:SetChecked(TRB.Data.settings.druid.feral.comboPoints.sameColor)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.feral.comboPoints.sameColor = self:GetChecked()
+		end)
+
 		controls.colors.comboPointBackground = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled Combo Point background", TRB.Data.settings.druid.feral.colors.comboPoints.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.comboPointBackground
 		f:SetScript("OnMouseDown", function(self, button, ...)
