@@ -2032,9 +2032,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
                         if TRB.Data.snapshotData.resource2 >= x then
                             TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-							if x == (TRB.Data.character.maxResource2 - 1) then
+							if (TRB.Data.settings.rogue.assassination.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not TRB.Data.settings.rogue.assassination.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.penultimate
-							elseif x == TRB.Data.character.maxResource2 then
+							elseif (TRB.Data.settings.rogue.assassination.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.final
 							end
                         else
