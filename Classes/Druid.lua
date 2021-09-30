@@ -422,10 +422,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				energy = -25,
+				energyMax = -50,
 				comboPoints = true,
 				thresholdId = 1,
 				settingKey = "ferociousBite",
-				--isSnowflake = true, -- Really between 25-50 energy
+				isSnowflake = true, -- Really between 25-50 energy
 				thresholdUsable = false
 			},
 			shred = {
@@ -436,7 +437,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                 comboPointsGenerated = 1,
 				thresholdId = 2,
 				settingKey = "shred",
-				thresholdUsable = false
+				thresholdUsable = false,
+				isClearcasting = true
 			},
 
 			-- Feral Abilities
@@ -449,8 +451,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 22570,
 				name = "",
 				icon = "",
-				energy = -35,
-                comboPointsGenerated = 0,
+				energy = -30,
+                comboPoints = true,
 				thresholdId = 3,
 				settingKey = "maim",
                 hasCooldown = true,
@@ -493,7 +495,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                 comboPointsGenerated = 1,
 				thresholdId = 6,
 				settingKey = "swipe",
-				thresholdUsable = false
+				thresholdUsable = false,
+				isSnowflake = true,
+				isClearcasting = true
 			},
 			thrash = {
 				id = 106830,
@@ -503,7 +507,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                 comboPointsGenerated = 1,
 				thresholdId = 7,
 				settingKey = "thrash",
-				thresholdUsable = false
+				thresholdUsable = false,
+				isClearcasting = true
 			},
 			clearcasting = {
 				id = 135700,
@@ -567,9 +572,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                 comboPointsGenerated = 1,
 				thresholdId = 10,
 				settingKey = "brutalSlash",
+				isSnowflake = true,
                 isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				isClearcasting = true
 			},
 			primalWrath = {
 				id = 285381,
@@ -587,11 +594,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				window = 4,
-				energy = -80,
+				energy = -80, --Make this dynamic
 				thresholdId = 12,
 				settingKey = "bloodtalons",
                 isTalent = true,
-				isSnowflake = true,
+				--isSnowflake = true,
 				thresholdUsable = false
 			},
 			feralFrenzy = {
@@ -606,94 +613,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				hasCooldown = true,
 				thresholdUsable = false
 			},
-
-			--[[
-			-- Covenants
-			echoingReprimand = { -- Kyrian
-				id = 323547,
-				name = "",
-				icon = "",
-				energy = -10,
-				comboPointsGenerated = 2,
-				thresholdId = 18,
-				settingKey = "echoingReprimand",
-				hasCooldown = true,
-				isSnowflake = true,
-				thresholdUsable = false,
-				isActive = false,
-				cooldown = 45,
-				buffId = {
-					323558, -- 2
-					323559, -- 3
-					323560, -- 4
-					354835, -- 4
-					354838, -- 5
-				}
-			},
-			sepsis = { -- Night Fae
-				id = 328305,
-				name = "",
-				icon = "",
-				energy = -25,
-				comboPointsGenerated = 1,
-				thresholdId = 19,
-				settingKey = "sepsis",
-				hasCooldown = true,
-				isSnowflake = true,
-				cooldown = 90,
-				buffId = 347037,
-				isActive = false
-			},
-			adrenalineRush = {
-				id = 13750,
-				name = "",
-				icon = "",
-			},
-			serratedBoneSpike = {
-				id = 328547,
-				name = "",
-				icon = "",
-				energy = -15,
-				comboPointsGenerated = 2,
-				thresholdId = 20,
-				settingKey = "serratedBoneSpike",
-				hasCooldown = true,
-				isSnowflake = true,
-				debuffId = 324073
-			},
-			flagellation = {
-				id = 323654,
-				name = "",
-				icon = ""
-			},
-
-			-- PvP
-			deathFromAbove = {
-				id = 269513,
-				name = "",
-				icon = "",
-				energy = -25,
-				thresholdId = 21,
-				settingKey = "deathFromAbove",
-				comboPoints = true,
-				hasCooldown = true,
-				isPvp = true,
-				thresholdUsable = false,
-				cooldown = 30
-			},
-			dismantle = {
-				id = 207777,
-				name = "",
-				icon = "",
-				energy = -25,
-				thresholdId = 22,
-				settingKey = "dismantle",
-				hasCooldown = true,
-				isPvp = true,
-				thresholdUsable = false,
-				cooldown = 45
-			},
-			]]
 		}
 
 		specCache.feral.snapshotData.energyRegen = 0
@@ -733,6 +652,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			startTime = nil,
 			duration = 0,
 			enabled = false
+		}
+		specCache.feral.snapshotData.clearcasting = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0,
+			stacks = 0
 		}
 		--[[specCache.feral.snapshotData.kidneyShot = {
 			startTime = nil,
@@ -1379,6 +1305,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		TRB.Functions.ConstructResourceBar(settings)
+	end
+	
+	local function GetClearcastingRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.clearcasting)
 	end
 
 	local function GetEclipseRemainingTime()
@@ -2419,7 +2349,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function UpdateSnapshot_Feral()
 		UpdateSnapshot()
-		
 		local currentTime = GetTime()
 
         if TRB.Data.snapshotData.maim.startTime ~= nil and currentTime > (TRB.Data.snapshotData.maim.startTime + TRB.Data.snapshotData.maim.duration) then
@@ -2432,7 +2361,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             TRB.Data.snapshotData.feralFrenzy.duration = 0
         end
 
-		TRB.Data.snapshotData.brutalSlash.charges, TRB.Data.snapshotData.brutalSlash.maxCharges, TRB.Data.snapshotData.brutalSlash.startTime, TRB.Data.snapshotData.brutalSlash.duration, _ = GetSpellCharges(TRB.Data.spells.brutalSlash.id)
+		_, _, TRB.Data.snapshotData.clearcasting.stacks, _, TRB.Data.snapshotData.clearcasting.duration, TRB.Data.snapshotData.clearcasting.endTime, _, _, _, TRB.Data.snapshotData.clearcasting.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.clearcasting.id)
+		TRB.Data.snapshotData.clearcasting.remainingTime = GetClearcastingRemainingTime()
+
+		if TRB.Data.character.talents.brutalSlash.isSelected then
+			TRB.Data.snapshotData.brutalSlash.charges, TRB.Data.snapshotData.brutalSlash.maxCharges, TRB.Data.snapshotData.brutalSlash.startTime, TRB.Data.snapshotData.brutalSlash.duration, _ = GetSpellCharges(TRB.Data.spells.brutalSlash.id)
+		end
 	end
 
 	local function HideResourceBar(force)
@@ -2793,11 +2727,57 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									showThreshold = false
 								end]]
 							else
-								if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-									--[[if spell.id == TRB.Data.spells.exsanguinate.id then
-										if not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
+								if spell.isClearcasting and TRB.Data.snapshotData.clearcasting.stacks ~= nil and TRB.Data.snapshotData.clearcasting.stacks > 0 then
+									if spell.id == TRB.Data.spells.brutalSlash.id then
+										if not TRB.Data.character.talents["brutalSlash"].isSelected then
 											showThreshold = false
-										elseif not IsTargetBleeding(TRB.Data.snapshotData.targetData.currentTargetGuid) or (TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
+										elseif TRB.Data.snapshotData.brutalSlash.charges > 0 then
+											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.unusable
+											frameLevel = 127
+										end
+									elseif spell.id == TRB.Data.spells.swipe.id then
+										if TRB.Data.character.talents["brutalSlash"].isSelected then
+											showThreshold = false
+										else
+											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+										end
+									else
+										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+									end
+								elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+									if spell.id == TRB.Data.spells.ferociousBite.id then
+										TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.druid.feral.thresholdWidth, math.min(math.max(-TRB.Data.spells.ferociousBite.energy, TRB.Data.snapshotData.resource), -TRB.Data.spells.ferociousBite.energyMax), TRB.Data.character.maxResource)
+										
+										if TRB.Data.snapshotData.resource >= -energyAmount then
+											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
+											frameLevel = 128
+										end
+									elseif spell.id == TRB.Data.spells.moonfire.id then
+										if not TRB.Data.character.talents["lunarInspiration"].isSelected then
+											showThreshold = false
+										elseif TRB.Data.snapshotData.resource >= -energyAmount then
+											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
+											frameLevel = 128
+										end
+									elseif spell.id == TRB.Data.spells.swipe.id then
+										if TRB.Data.character.talents["brutalSlash"].isSelected then
+											showThreshold = false
+										elseif TRB.Data.snapshotData.resource >= -energyAmount then
+											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
+											frameLevel = 128
+										end
+									elseif spell.id == TRB.Data.spells.brutalSlash.id then
+										if not TRB.Data.character.talents[spell.settingKey].isSelected then
+											showThreshold = false
+										elseif TRB.Data.snapshotData.brutalSlash.charges == 0 then
 											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.unusable
 											frameLevel = 127
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
@@ -2806,54 +2786,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
 											frameLevel = 128
 										end
-									elseif spell.id == TRB.Data.spells.shiv.id then
-										if TRB.Data.character.items.tinyToxicBlade == true then -- Don't show this threshold
-											showThreshold = false
-										elseif TRB.Data.snapshotData.resource >= -energyAmount then
-											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
-										else
-											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
-											frameLevel = 128
-										end
-									elseif spell.id == TRB.Data.spells.echoingReprimand.id then
-										if TRB.Data.character.covenantId ~= 1 then -- Not Kyrian
-											showThreshold = false
-										elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-												thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.unusable
-												frameLevel = 127
-										elseif TRB.Data.snapshotData.resource >= -energyAmount then
-											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
-										else
-											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
-											frameLevel = 128
-										end
-									elseif spell.id == TRB.Data.spells.sepsis.id then
-										if TRB.Data.character.covenantId ~= 3 then -- Not Night Fae
-											showThreshold = false
-										elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-												thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.unusable
-												frameLevel = 127
-										elseif TRB.Data.snapshotData.resource >= -energyAmount then
-											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
-										else
-											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
-											frameLevel = 128
-										end
-									elseif spell.id == TRB.Data.spells.serratedBoneSpike.id then
-										if TRB.Data.character.covenantId ~= 4 then -- Not Necrolord
-											showThreshold = false
-										elseif TRB.Data.snapshotData[spell.settingKey].charges == 0 then
-											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.unusable
-											frameLevel = 127
-										elseif TRB.Data.snapshotData.resource >= -energyAmount then
-											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
-										else
-											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
-											frameLevel = 128
-										end
-									end]]
-								elseif spell.isPvp and not TRB.Data.character.isPvp then
-									showThreshold = false
+									elseif spell.id == TRB.Data.spells.bloodtalons.id then
+										--TODO: How much energy is required to start this? Then do we move it?
+									end
 								elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
 									showThreshold = false
 								elseif spell.hasCooldown then
@@ -2903,17 +2838,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local latency = TRB.Functions.GetLatency()
 
 					local affectingCombat = UnitAffectingCombat("player")
-
-					--[[
-					if affectingCombat then
-						local sadTime = GetSliceAndDiceRemainingTime()
-						if sadTime == 0 then
-							barColor = TRB.Data.settings.druid.feral.colors.bar.noSliceAndDice
-						elseif sadTime < TRB.Data.spells.sliceAndDice.pandemicTimes[TRB.Data.snapshotData.resource2 + 1] then
-							barColor = TRB.Data.settings.druid.feral.colors.bar.sliceAndDicePandemic
-						end
+					
+					if GetClearcastingRemainingTime() > 0 then
+						barColor = TRB.Data.settings.druid.feral.colors.bar.clearcasting
 					end
-					]]
 
 					local barBorderColor = TRB.Data.settings.druid.feral.colors.bar.border
 

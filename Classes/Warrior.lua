@@ -164,7 +164,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "slam",
 				isTalent = false,
 				hasCooldown = false,
-				thresholdUsable = false				
+				thresholdUsable = false
 			},
 			whirlwind = {
 				id = 1680,

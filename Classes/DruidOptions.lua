@@ -393,7 +393,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					borderOvercap="FFFF0000",
 					background="66000000",
 					base="FFFFFF00",
-					--noSliceAndDice="FFFF0000",
+					clearcasting="FF4A95CE",
 					--sliceAndDicePandemic="FFFF9900",
 					casting="FFFFFFFF",
 					spending="FF555555",
@@ -4470,12 +4470,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-		--[[
-		controls.colors.sliceAndDicePandemic = TRB.UiFunctions.BuildColorPicker(parent, "Energy when Slice and Dice is within Pandemic refresh range (current CPs)", TRB.Data.settings.druid.feral.colors.bar.sliceAndDicePandemic, 275, 25, xCoord, yCoord)
-		f = controls.colors.sliceAndDicePandemic
+		controls.colors.clearcasting = TRB.UiFunctions.BuildColorPicker(parent, "Energy when Clearcasting proc is up", TRB.Data.settings.druid.feral.colors.bar.clearcasting, 275, 25, xCoord, yCoord)
+		f = controls.colors.clearcasting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.sliceAndDicePandemic, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.clearcasting, true)
 				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -4485,11 +4484,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 
-					controls.colors.sliceAndDicePandemic.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.feral.colors.bar.sliceAndDicePandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.clearcasting.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.feral.colors.bar.clearcasting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
-		end)]]
+		end)
 
 		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Energy gain from Passive Sources", TRB.Data.settings.druid.feral.colors.bar.passive, 275, 25, xCoord2, yCoord)
 		f = controls.colors.passive
@@ -4776,7 +4775,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		end)
 
-		--[[
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
@@ -4791,80 +4789,80 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.labels.builders = TRB.UiFunctions.BuildLabel(parent, "Builders", 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
-		controls.checkBoxes.ambushThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_ambush", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.ambushThresholdShow
+		controls.checkBoxes.brutalSlashThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_brutalSlash", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.brutalSlashThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Ambush")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ambush. Only visible when in Stealth or usable via the Blindside or Subterfuge talent."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.ambush.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Brutal Slash (if talented)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Brutal Slash. Only visible if talented in to Brutal Slash. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.brutalSlash.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.ambush.enabled = self:GetChecked()
+			TRB.Data.settings.druid.feral.thresholds.brutalSlash.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.cheapShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_cheapShot", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.cheapShotThresholdShow
+		controls.checkBoxes.feralFrenzyThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_feralfrenzy", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.feralFrenzyThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Cheap Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Cheap Shot. Only visible when in Stealth or usable via the Subterfuge talent."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.cheapShot.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Feral Frenzy (if talented)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feral Frenzy. Only visible if talented in to Feral Frenzy. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.feralFrenzy.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.cheapShot.enabled = self:GetChecked()
+			TRB.Data.settings.druid.feral.thresholds.feralFrenzy.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.fanOfKnivesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_fanOfKnives", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.fanOfKnivesThresholdShow
+		controls.checkBoxes.moonfireThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_moonfire", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.moonfireThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Fan of Knives")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Fan of Knives."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.fanOfKnives.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Moonfire (if Lunar Inspiration talented)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Moonfire. Only visible if talented in to Lunar Inspiration."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.moonfire.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.fanOfKnives.enabled = self:GetChecked()
+			TRB.Data.settings.druid.feral.thresholds.moonfire.enabled = self:GetChecked()
+		end)
+		
+		yCoord = yCoord - 25
+		controls.checkBoxes.rakeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_rake", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.rakeThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Rake")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Rake."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.rake.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.feral.thresholds.rake.enabled = self:GetChecked()
+		end)
+		
+		yCoord = yCoord - 25
+		controls.checkBoxes.shredThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_shred", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.shredThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Shred")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shred."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.shred.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.feral.thresholds.shred.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.garroteThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_garrote", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.garroteThresholdShow
+		controls.checkBoxes.swipeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_swipe", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.swipeThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Garrote")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Garrote. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.garrote.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Swipe (if Brutal Slash untalented)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Swipe. Only visible if not talented in to Brutal Slash."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.swipe.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.garrote.enabled = self:GetChecked()
+			TRB.Data.settings.druid.feral.thresholds.swipe.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.mutilateThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_mutilate", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.mutilateThresholdShow
+		controls.checkBoxes.thrashThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_thrash", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thrashThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mutilate")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Mutilate."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.mutilate.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Thrash")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Thrash."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.thrash.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.mutilate.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.poisonedKnifeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_poisonedKnife", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.poisonedKnifeThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Poisoned Knife")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Poisoned Knife."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.poisonedKnife.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.poisonedKnife.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.shivThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_shiv", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.shivThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Shiv")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If on cooldown, will be colored as 'unusable'. If using the Tiny Toxic Blade legendary, no threshold will be shown."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.shiv.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.shiv.enabled = self:GetChecked()
+			TRB.Data.settings.druid.feral.thresholds.thrash.enabled = self:GetChecked()
 		end)
 
 
@@ -4872,179 +4870,73 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.labels.finishers = TRB.UiFunctions.BuildLabel(parent, "Finishers", 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
-		controls.checkBoxes.crimsonTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_crimsonTempest", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.crimsonTempestThresholdShow
+		controls.checkBoxes.ferociousBiteThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_ferociousBite", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.ferociousBiteThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Crimson Tempest (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Tempest. Only visible if talented in to Crimson Tempest. If you do not have any combo points, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.crimsonTempest.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Ferocious Bite")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ferocious Bite. If you do not have any combo points, will be colored as 'unusable'.  Will move along the bar between the current minimum and maximum Energy cost amounts."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.ferociousBite.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.crimsonTempest.enabled = self:GetChecked()
+			TRB.Data.settings.druid.feral.thresholds.ferociousBite.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.envenomThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_envenom", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.envenomThresholdShow
+		controls.checkBoxes.maimThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_maim", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.maimThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Envenom")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Envenom. If you do not have any combo points, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.envenom.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Maim")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Maim. If on cooldown or you do not have any combo points, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.maim.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.envenom.enabled = self:GetChecked()
+			TRB.Data.settings.druid.feral.thresholds.maim.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.kidneyShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_kidneyShot", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.kidneyShotThresholdShow
+		controls.checkBoxes.primalWrathThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_primalwrath", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.primalWrathThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Kidney Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Kidney Shot. Only visible when in Stealth or usable via the Subterfuge talent. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.kidneyShot.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Primal Wrath (if talented)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Primal Wrath. Only visible when talented in to Primal Wrath. If you do not have any combo points, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.primalWrath.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.kidneyShot.enabled = self:GetChecked()
+			TRB.Data.settings.druid.feral.thresholds.primalWrath.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.sliceAndDiceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_sliceAndDice", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.sliceAndDiceThresholdShow
+		controls.checkBoxes.ripThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_rip", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.ripThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Slice and Dice")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Slice and Dice. If you do not have any combo points, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.sliceAndDice.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Rip")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Rip. If you do not have any combo points, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.rip.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.sliceAndDice.enabled = self:GetChecked()
+			TRB.Data.settings.druid.feral.thresholds.rip.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.ruptureThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_rupture", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.ruptureThresholdShow
+		controls.checkBoxes.savageRoarThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_savageRoar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.savageRoarThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Rupture")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Rupture. If you do not have any combo points, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.rupture.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Savage Roar (if talented)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Savage Roar. Only visible when talented in to Savage Roar. If you do not have any combo points, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.savageRoar.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.rupture.enabled = self:GetChecked()
+			TRB.Data.settings.druid.feral.thresholds.savageRoar.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25		
-		controls.labels.utility = TRB.UiFunctions.BuildLabel(parent, "General / Utility", 5, yCoord, 110, 20)
+		controls.labels.other = TRB.UiFunctions.BuildLabel(parent, "Other Thresholds", 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
-		controls.checkBoxes.crimsonVialThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_crimsonVial", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.crimsonVialThresholdShow
+		controls.checkBoxes.bloodtalonsThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_bloodtalons", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.bloodtalonsThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Crimson Vial")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Vial. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.crimsonVial.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Bloodtalons (if talented)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use complete a successful Bloodtalons ability combo. Only visible when talented in to Bloodtalons."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.bloodtalons.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.crimsonVial.enabled = self:GetChecked()
+			TRB.Data.settings.druid.feral.thresholds.bloodtalons.enabled = self:GetChecked()
 		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.distractThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_distract", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.distractThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Distract")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Distract. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.distract.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.distract.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.exsanguinateThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_exsanguinate", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.exsanguinateThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Exsanguinate (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Exsanguinate. Only visible if talented in to Exsanguinate. If on cooldown or the current target has no bleeds, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.exsanguinate.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.exsanguinate.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.feintThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_feint", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.feintThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Feint")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feint. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.feint.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.feint.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.sapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_sap", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.sapThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sap")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sap. Only visible when in Stealth or usable via the Subterfuge talent."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.sap.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.sap.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.labels.covenant = TRB.UiFunctions.BuildLabel(parent, "Covenant", 5, yCoord, 110, 20)
-		yCoord = yCoord - 20
-
-		controls.checkBoxes.echoingReprimandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_echoingReprimand", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.echoingReprimandThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand (if |cFF68CCEFKyrian|r)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand. Only visible if |cFF68CCEFKyrian|r. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.echoingReprimand.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.echoingReprimand.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.sepsisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_sepsis", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.sepsisThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sepsis (if |cFFA330C9Night Fae|r)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis. Only visible if |cFFA330C9Night Fae|r. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.sepsis.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.sepsis.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.serratedBoneSpikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_serratedBoneSpike", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.serratedBoneSpikeThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Serrated Bone Spike (if |cFF40BF40Necrolord|r)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Serrated Bone Spike. Only visible if |cFF40BF40Necrolord|r. If no available charges, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.serratedBoneSpike.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.serratedBoneSpike.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.labels.covenant = TRB.UiFunctions.BuildLabel(parent, "PvP Abilities", 5, yCoord, 110, 20)
-		yCoord = yCoord - 20
-
-		controls.checkBoxes.deathFromAboveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_deathFromAbove", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.deathFromAboveThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Death From Above")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Death From Above. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.deathFromAbove.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.deathFromAbove.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.dismantleThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_dismantle", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.dismantleThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Dismantle")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dismantle. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.dismantle.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.dismantle.enabled = self:GetChecked()
-		end)
-		]]
 
 		yCoord = yCoord - 30
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
