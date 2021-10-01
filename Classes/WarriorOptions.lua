@@ -87,9 +87,20 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local settings = {
 			hastePrecision=2,
 			ragePrecision=0,
-			thresholdWidth=2,
 			overcapThreshold=100,
 			thresholds = {
+				width = 2,
+				overlapBorder=true,
+				icons = {
+					border=2,
+					relativeTo = "TOP",
+					relativeToName = "Above",
+					enabled=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				},
 				execute = {
 					enabled = true, -- 1
 				},
@@ -132,7 +143,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				xPos=0,
 				yPos=-200,
 				border=4,
-				thresholdOverlapBorder=true,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
@@ -277,9 +287,20 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local settings = {
 			hastePrecision=2,
 			ragePrecision=0,
-			thresholdWidth=2,
 			overcapThreshold=100,
 			thresholds = {
+				width = 2,
+				overlapBorder=true,
+				icons = {
+					border=2,
+					relativeTo = "TOP",
+					relativeToName = "Above",
+					enabled=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				},
 				ignorePain = {
 					enabled = true, -- 1
 				},
@@ -310,7 +331,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				xPos=0,
 				yPos=-200,
 				border=4,
-				thresholdOverlapBorder=true,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
@@ -573,7 +593,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["rage"] ~= nil and TRB.Data.spells[k]["rage"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -TRB.Data.spells[k]["rage"], TRB.Data.character.maxResource)
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -TRB.Data.spells[k]["rage"], TRB.Data.character.maxResource)
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -721,7 +741,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["rage"] ~= nil and TRB.Data.spells[k]["rage"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -TRB.Data.spells[k]["rage"], TRB.Data.character.maxResource)
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -TRB.Data.spells[k]["rage"], TRB.Data.character.maxResource)
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -738,7 +758,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.warrior.arms.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.warrior.arms.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -748,11 +768,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.warrior.arms.thresholdWidth = value
+			TRB.Data.settings.warrior.arms.thresholds.width = value
 
 			if GetSpecialization() == 1 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.warrior.arms.thresholdWidth)
+					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.warrior.arms.thresholds.width)
 				end
 			end
 		end)
@@ -1438,9 +1458,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.warrior.arms.bar.thresholdOverlapBorder)
+		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.arms.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Data.settings.warrior.arms.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.warrior.arms)
 		end)
 
@@ -2731,7 +2751,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["rage"] ~= nil and TRB.Data.spells[k]["rage"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.fury, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.warrior.fury.thresholdWidth, -TRB.Data.spells[k]["rage"], TRB.Data.character.maxResource)
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.fury, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.warrior.fury.thresholds.width, -TRB.Data.spells[k]["rage"], TRB.Data.character.maxResource)
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -2879,7 +2899,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["rage"] ~= nil and TRB.Data.spells[k]["rage"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.fury, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.warrior.fury.thresholdWidth, -TRB.Data.spells[k]["rage"], TRB.Data.character.maxResource)
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.fury, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.warrior.fury.thresholds.width, -TRB.Data.spells[k]["rage"], TRB.Data.character.maxResource)
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -2896,7 +2916,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.warrior.fury.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.warrior.fury.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2906,11 +2926,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.warrior.fury.thresholdWidth = value
+			TRB.Data.settings.warrior.fury.thresholds.width = value
 
 			if GetSpecialization() == 2 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.warrior.fury.thresholdWidth)
+					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.warrior.fury.thresholds.width)
 				end
 			end
 		end)
@@ -3605,9 +3625,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.warrior.fury.bar.thresholdOverlapBorder)
+		f:SetChecked(TRB.Data.settings.warrior.fury.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.fury.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Data.settings.warrior.fury.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.warrior.fury)
 		end)
 

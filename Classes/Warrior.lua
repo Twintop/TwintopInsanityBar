@@ -2006,7 +2006,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
 							if spell.id ~= TRB.Data.spells.execute.id then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -rageAmount, TRB.Data.character.maxResource)
+								TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 							end
 
 							local showThreshold = true
@@ -2034,9 +2034,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									end
 
 									if GetSuddenDeathRemainingTime() > 0 then
-										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -TRB.Data.spells.execute.rageMax, TRB.Data.character.maxResource)
+										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -TRB.Data.spells.execute.rageMax, TRB.Data.character.maxResource)
 									else
-										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, math.min(math.max(-rageAmount, normalizedRage), -TRB.Data.spells.execute.rageMax), TRB.Data.character.maxResource)
+										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, math.min(math.max(-rageAmount, normalizedRage), -TRB.Data.spells.execute.rageMax), TRB.Data.character.maxResource)
 									end
 
 									if not showThis or UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
@@ -2194,7 +2194,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then							
 							local rageAmount = CalculateAbilityResourceValue(spell.rage)
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.fury, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.fury.thresholdWidth, -rageAmount, TRB.Data.character.maxResource)
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.fury, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.fury.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local isUsable = true -- Could use it if we had enough rage, e.g. not on CD
@@ -2582,7 +2582,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 					local settings = TRB.Options.Warrior.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
-						TRB.Options.PortForwardPriestSettings()
+						TRB.Options.PortForwardSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
 					else

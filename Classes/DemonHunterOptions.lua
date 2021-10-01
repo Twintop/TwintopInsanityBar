@@ -79,9 +79,20 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local settings = {
 			hastePrecision=2,
 			furyPrecision=0,
-			thresholdWidth=2,
 			overcapThreshold=120,
 			thresholds = {
+				width = 2,
+				overlapBorder=true,
+				icons = {
+					border=2,
+					relativeTo = "TOP",
+					relativeToName = "Above",
+					enabled=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				},
 				annihilation = {
 					enabled = true, -- 1
 				},
@@ -125,7 +136,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				xPos=0,
 				yPos=-200,
 				border=4,
-				thresholdOverlapBorder=true,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
@@ -380,7 +390,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["fury"] ~= nil and TRB.Data.spells[k]["fury"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.demonhunter.havoc, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.demonhunter.havoc.thresholdWidth, -TRB.Data.spells[k]["fury"], TRB.Data.character.maxResource)
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.demonhunter.havoc, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.demonhunter.havoc.thresholds.width, -TRB.Data.spells[k]["fury"], TRB.Data.character.maxResource)
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -510,7 +520,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["fury"] ~= nil and TRB.Data.spells[k]["fury"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.demonhunter.havoc, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.demonhunter.havoc.thresholdWidth, -TRB.Data.spells[k]["fury"], TRB.Data.character.maxResource)
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.demonhunter.havoc, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.demonhunter.havoc.thresholds.width, -TRB.Data.spells[k]["fury"], TRB.Data.character.maxResource)
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -527,7 +537,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.demonhunter.havoc.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.demonhunter.havoc.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -537,11 +547,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.demonhunter.havoc.thresholdWidth = value
+			TRB.Data.settings.demonhunter.havoc.thresholds.width = value
 
 			if GetSpecialization() == 1 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.demonhunter.havoc.thresholdWidth)
+					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.demonhunter.havoc.thresholds.width)
 				end
 			end
 		end)
@@ -1289,9 +1299,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.demonhunter.havoc.bar.thresholdOverlapBorder)
+		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.demonhunter.havoc.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Data.settings.demonhunter.havoc.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.demonhunter.havoc)
 		end)
 

@@ -82,39 +82,50 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local function BeastMasteryLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			thresholdWidth=2,
 			overcapThreshold=120,
 			thresholds = {
-					arcaneShot = {
-						enabled = false, -- 1
-					},
-					aMurderOfCrows = {
-						enabled = true, -- 2
-					},
-					barrage = {
-						enabled = true, -- 3
-					},
-					cobraShot = {
-						enabled = true, -- 4
-					},
-					killCommand = {
-						enabled = true, -- 5
-					},
-					killShot = {
-						enabled = true, -- 6
-					},
-					multiShot = {
-						enabled = true, -- 7
-					},
-					revivePet = {
-						enabled = false, -- 8
-					},
-					scareBeast = {
-						enabled = false, -- 9
-					},
-					wailingArrow = {
-						enabled = true, -- 10
-					}
+				width = 2,
+				overlapBorder=true,
+				icons = {
+					border=2,
+					relativeTo = "TOP",
+					relativeToName = "Above",
+					enabled=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				},
+				arcaneShot = {
+					enabled = false, -- 1
+				},
+				aMurderOfCrows = {
+					enabled = true, -- 2
+				},
+				barrage = {
+					enabled = true, -- 3
+				},
+				cobraShot = {
+					enabled = true, -- 4
+				},
+				killCommand = {
+					enabled = true, -- 5
+				},
+				killShot = {
+					enabled = true, -- 6
+				},
+				multiShot = {
+					enabled = true, -- 7
+				},
+				revivePet = {
+					enabled = false, -- 8
+				},
+				scareBeast = {
+					enabled = false, -- 9
+				},
+				wailingArrow = {
+					enabled = true, -- 10
+				}
 			},
 			generation = {
 				mode="gcd",
@@ -133,7 +144,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				xPos=0,
 				yPos=-200,
 				border=4,
-				thresholdOverlapBorder=true,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
@@ -286,9 +296,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local function MarksmanshipLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			thresholdWidth=2,
 			overcapThreshold=100,
 			thresholds = {
+				width = 2,
+				overlapBorder=true,
+				icons = {
+					border=2,
+					relativeTo = "TOP",
+					relativeToName = "Above",
+					enabled=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				},
 				aimedShot = {
 					enabled = true, -- 1
 				},
@@ -355,7 +376,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				xPos=0,
 				yPos=-200,
 				border=4,
-				thresholdOverlapBorder=true,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
@@ -534,39 +554,50 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local function SurvivalLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			thresholdWidth=2,
 			overcapThreshold=100,
 			thresholds = {
-					arcaneShot = {
-						enabled = false, -- 1
-					},
-					killShot = {
-						enabled = true, -- 2
-					},
-					scareBeast = {
-						enabled = false, -- 3
-					},
-					revivePet = {
-						enabled = false, -- 4
-					},
-					wingClip = {
-						enabled = false, -- 5
-					},
-					carve = {
-						enabled = true, -- 6, Butchery = 7
-					},
-					raptorStrike = {
-						enabled = true, -- 8, also Mongoose Bite
-					},
-					serpentSting = {
-						enabled = false, -- 9
-					},
-					aMurderOfCrows = {
-						enabled = true, -- 10
-					},
-					chakrams = {
-						enabled = true, -- 11
-					}
+				width = 2,
+				overlapBorder=true,
+				icons = {
+					border=2,
+					relativeTo = "TOP",
+					relativeToName = "Above",
+					enabled=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				},
+				arcaneShot = {
+					enabled = false, -- 1
+				},
+				killShot = {
+					enabled = true, -- 2
+				},
+				scareBeast = {
+					enabled = false, -- 3
+				},
+				revivePet = {
+					enabled = false, -- 4
+				},
+				wingClip = {
+					enabled = false, -- 5
+				},
+				carve = {
+					enabled = true, -- 6, Butchery = 7
+				},
+				raptorStrike = {
+					enabled = true, -- 8, also Mongoose Bite
+				},
+				serpentSting = {
+					enabled = false, -- 9
+				},
+				aMurderOfCrows = {
+					enabled = true, -- 10
+				},
+				chakrams = {
+					enabled = true, -- 11
+				}
 			},
 			generation = {
 				mode="gcd",
@@ -591,7 +622,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				xPos=0,
 				yPos=-200,
 				border=4,
-				thresholdOverlapBorder=true,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
@@ -881,7 +911,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.beastMastery, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.beastMastery.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.beastMastery, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.beastMastery.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -1003,7 +1033,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.beastMastery, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.beastMastery.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.beastMastery, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.beastMastery.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -1020,7 +1050,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.beastMastery.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.beastMastery.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1030,11 +1060,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.hunter.beastMastery.thresholdWidth = value
+			TRB.Data.settings.hunter.beastMastery.thresholds.width = value
 
 			if GetSpecialization() == 1 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.hunter.beastMastery.thresholdWidth)
+					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.hunter.beastMastery.thresholds.width)
 				end
 			end
 		end)
@@ -1817,9 +1847,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.hunter.beastMastery.bar.thresholdOverlapBorder)
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.beastMastery.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Data.settings.hunter.beastMastery.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.beastMastery)
 		end)
 
@@ -3308,7 +3338,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -3430,7 +3460,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -3447,7 +3477,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.marksmanship.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.marksmanship.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3457,11 +3487,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.hunter.marksmanship.thresholdWidth = value
+			TRB.Data.settings.hunter.marksmanship.thresholds.width = value
 
 			if GetSpecialization() == 2 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.hunter.marksmanship.thresholdWidth)
+					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.hunter.marksmanship.thresholds.width)
 				end
 			end
 		end)
@@ -4285,9 +4315,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.hunter.marksmanship.bar.thresholdOverlapBorder)
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.marksmanship.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Data.settings.hunter.marksmanship.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.marksmanship)
 		end)
 
@@ -6270,7 +6300,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.survival.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.survival.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -6392,7 +6422,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.survival.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.survival.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -6409,7 +6439,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.survival.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.survival.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6419,10 +6449,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.hunter.survival.thresholdWidth = value
+			TRB.Data.settings.hunter.survival.thresholds.width = value
 			if GetSpecialization() == 3 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.hunter.survival.thresholdWidth)
+					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.hunter.survival.thresholds.width)
 				end
 			end
 		end)
@@ -7220,9 +7250,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.hunter.survival.bar.thresholdOverlapBorder)
+		f:SetChecked(TRB.Data.settings.hunter.survival.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.survival.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Data.settings.hunter.survival.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.survival)
 		end)
 

@@ -338,6 +338,11 @@ local function FillSpellData(spells)
 				name, _, icon = GetSpellInfo(spells[k]["id"])
 				spells[k]["icon"] = string.format("|T%s:0|t", icon)
 				spells[k]["name"] = name
+
+				if spells[k]["thresholdId"] ~= nil then
+					local texture, _ = GetSpellTexture(spells[k]["id"])
+					spells[k]["texture"] = texture
+				end
 			end
 		end
 	end
@@ -511,11 +516,27 @@ local function RepositionThreshold(settings, thresholdLine, parentFrame, thresho
 	local factor = (max - (settings.bar.border * 2)) / resourceMax
 
 	if settings ~= nil and settings.bar ~= nil then
-		thresholdLine:SetPoint("LEFT",
-								parentFrame,
-								"LEFT",
-								(resourceThreshold * factor),
-								0)
+		thresholdLine:SetPoint("LEFT", parentFrame,	"LEFT",	(resourceThreshold * factor), 0)
+	
+		if thresholdLine.icon ~= nil then
+			local setPoint = "TOP"
+			local setPointRelativeTo = "BOTTOM"
+			
+			if settings.thresholds.icons.relativeTo == "TOP" then
+				setPoint = "BOTTOM"
+				setPointRelativeTo = "TOP"
+			elseif settings.thresholds.icons.relativeTo == "CENTER" then
+				setPoint = "CENTER"
+				setPointRelativeTo = "CENTER"
+			elseif settings.thresholds.icons.relativeTo == "BOTTOM" then
+				setPoint = "TOP"
+				setPointRelativeTo = "BOTTOM"
+			end
+		
+			thresholdLine.icon:ClearAllPoints()
+			thresholdLine.icon:SetPoint(setPoint, thresholdLine, setPointRelativeTo, settings.thresholds.icons.xPos, settings.thresholds.icons.yPos)
+			thresholdLine.icon:SetSize(settings.thresholds.icons.width, settings.thresholds.icons.height)
+		end
 	end
 end
 TRB.Functions.RepositionThreshold = RepositionThreshold
@@ -636,14 +657,16 @@ local function SetBarMinMaxValues(settings)
 end
 TRB.Functions.SetBarMinMaxValues = SetBarMinMaxValues
 
-local function SetThresholdIcon(threshold, spellId)
-	if threshold.icon == nil or spellId == nil then
+local function SetThresholdIcon(threshold, settingKey, settings)
+	if threshold.icon == nil then
+		return
+	elseif --[[settings.thresholds.icons.enabled ~= true or]] settings.thresholds[settingKey].enabled ~= true or settings.thresholds[settingKey].showIcon ~= true then
+		threshold.icon:Hide()
 		return
 	end
 
-	threshold.icon:SetPoint("TOP", threshold, "BOTTOM", 0, -2)
-	threshold.icon:SetSize(20, 20)
-	threshold.icon.texture:SetTexture(GetSpellTexture(spellId))
+	threshold.icon.texture:SetTexture(TRB.Data.spells[settingKey].texture)
+	threshold.icon:Show()
 end
 TRB.Functions.SetThresholdIcon = SetThresholdIcon
 
@@ -652,22 +675,21 @@ local function RedrawThresholdLines(settings)
 	local passiveFrame = TRB.Frames.passiveFrame
 	local borderSubtraction = 0
 
-	if not settings.bar.thresholdOverlapBorder then
+	if not settings.thresholds.overlapBorder then
 		borderSubtraction = settings.bar.border * 2
 	end
 
 	local entries = TRB.Functions.TableLength(resourceFrame.thresholds)
 	if entries > 0 then
 		for x = 1, entries do
-			resourceFrame.thresholds[x]:SetWidth(settings.thresholdWidth)
+			resourceFrame.thresholds[x]:SetWidth(settings.thresholds.width)
 			resourceFrame.thresholds[x]:SetHeight(settings.bar.height - borderSubtraction)
 			resourceFrame.thresholds[x].texture = resourceFrame.thresholds[x].texture or resourceFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
 			resourceFrame.thresholds[x].texture:SetAllPoints(resourceFrame.thresholds[x])
 			resourceFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
-			--resourceFrame.thresholds[x].texture:SetFrameStrata(TRB.Data.settings.core.strata.level)
 			resourceFrame.thresholds[x]:SetFrameLevel(127)
 			resourceFrame.thresholds[x]:Hide()
-			resourceFrame.thresholds[x].icon = resourceFrame.thresholds[x].icon or CreateFrame("Frame", nil, resourceFrame.thresholds[x])
+			resourceFrame.thresholds[x].icon = resourceFrame.thresholds[x].icon or CreateFrame("Frame", nil, resourceFrame.thresholds[x], "BackdropTemplate")
 			resourceFrame.thresholds[x].icon:SetPoint("TOP", resourceFrame.thresholds[x], "BOTTOM", 0, -10)
 			resourceFrame.thresholds[x].icon:SetSize(20, 20)
 			resourceFrame.thresholds[x].icon:SetFrameLevel(130)
@@ -675,17 +697,39 @@ local function RedrawThresholdLines(settings)
 			resourceFrame.thresholds[x].icon.texture = resourceFrame.thresholds[x].icon.texture or resourceFrame.thresholds[x].icon:CreateTexture(nil, TRB.Data.settings.core.strata.level)
 			resourceFrame.thresholds[x].icon.texture:SetAllPoints(resourceFrame.thresholds[x].icon)
 			resourceFrame.thresholds[x].icon.texture:SetTexture("Interface\\Icons\\Ability_Druid_TreeofLife")
-			resourceFrame.thresholds[x].icon.cooldown = resourceFrame.thresholds[x].icon.cooldown or CreateFrame("Cooldown", nil, resourceFrame.thresholds[x].icon, "CooldownFrameTemplate")
-			resourceFrame.thresholds[x].icon.cooldown:SetAllPoints(resourceFrame.thresholds[x].icon)
-			resourceFrame.thresholds[x].icon.cooldown:SetFrameStrata(TRB.Data.settings.core.strata.level)
-			--resourceFrame.thresholds[x].icon:Hide()
+			--resourceFrame.thresholds[x].icon.cooldown = resourceFrame.thresholds[x].icon.cooldown or CreateFrame("Cooldown", nil, resourceFrame.thresholds[x].icon, "CooldownFrameTemplate")
+			--resourceFrame.thresholds[x].icon.cooldown:SetAllPoints(resourceFrame.thresholds[x].icon)
+			--resourceFrame.thresholds[x].icon.cooldown:SetFrameStrata(TRB.Data.settings.core.strata.level)
+			if settings.thresholds.icons.border < 1 then
+				resourceFrame.thresholds[x].icon:SetBackdrop({
+					edgeFile = TRB.Data.settings.priest.shadow.textures.border,
+					tile = true,
+					tileSize = 4,
+					edgeSize = 1,
+					insets = {0, 0, 0, 0}
+				})
+				resourceFrame.thresholds[x].icon:Hide()
+			else
+				resourceFrame.thresholds[x].icon:SetBackdrop({
+					edgeFile = "Interface\\Buttons\\WHITE8X8",
+					tile = true,
+					tileSize = 4,
+					edgeSize = settings.thresholds.icons.border,
+					insets = {0, 0, 0, 0}
+				})
+				resourceFrame.thresholds[x].icon:Show()
+			end
+		    resourceFrame.thresholds[x].icon:SetBackdropColor(0, 0, 0, 0)
+		    resourceFrame.thresholds[x].icon:SetBackdropBorderColor(0, 0, 0, 1)
+		
+			resourceFrame.thresholds[x].icon:Hide()
 		end
 	end
 
 	entries = TRB.Functions.TableLength(passiveFrame.thresholds)
 	if entries > 0 then
 		for x = 1, entries do
-			passiveFrame.thresholds[x]:SetWidth(settings.thresholdWidth)
+			passiveFrame.thresholds[x]:SetWidth(settings.thresholds.width)
 			passiveFrame.thresholds[x]:SetHeight(settings.bar.height - borderSubtraction)
 			passiveFrame.thresholds[x].texture = passiveFrame.thresholds[x].texture or passiveFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
 			passiveFrame.thresholds[x].texture:SetAllPoints(passiveFrame.thresholds[x])
@@ -2196,20 +2240,17 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		configuration.bar = settings.bar
 		configuration.displayBar = settings.displayBar
 		configuration.textures = settings.textures
+		configuration.thresholds = settings.thresholds
 		configuration.colors.bar = settings.colors.bar
 		configuration.colors.threshold = settings.colors.threshold
-		configuration.thresholdWidth = settings.thresholdWidth
 		configuration.overcapThreshold = settings.overcapThreshold
 
 		if classId == 1 then -- Warrior
 			if specId == 1 then -- Arms
-				configuration.thresholds = settings.thresholds
 			elseif specId == 2 then -- Fury
-				configuration.thresholds = settings.thresholds
 				configuration.endOfEnrage = settings.endOfEnrage
 			end
 		elseif classId == 3 then -- Hunters
-			configuration.thresholds = settings.thresholds
 			if specId == 1 then -- Beast Mastery
 			elseif specId == 2 then -- Marksmanship
 				configuration.endOfTrueshot = settings.endOfTrueshot
@@ -2220,28 +2261,17 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 4 and specId == 1 then -- Assassination Rogue
 			configuration.colors.comboPoints = settings.colors.comboPoints
 			configuration.comboPoints = settings.comboPoints
-			configuration.thresholds = settings.thresholds
 		elseif classId == 5 then -- Priests
 			if specId == 2 then -- Holy
-				configuration.thresholds = settings.thresholds
 				configuration.endOfApotheosis = settings.endOfApotheosis
 				configuration.flashConcentration = settings.flashConcentration
 			elseif specId == 3 then -- Shadow
-				configuration.devouringPlagueThreshold = settings.devouringPlagueThreshold
-				configuration.searingNightmareThreshold = settings.searingNightmareThreshold
 				configuration.endOfVoidform = settings.endOfVoidform
 			end
 		elseif classId == 7 and specId == 1 then -- Elemental Shaman
-			configuration.earthShockThreshold = settings.earthShockThreshold
 		elseif classId == 11 and specId == 1 then -- Balance Druid
-			configuration.starsurgeThreshold = settings.starsurgeThreshold
-			configuration.starsurge2Threshold = settings.starsurge2Threshold
-			configuration.starsurge3Threshold = settings.starsurge3Threshold
-			configuration.starsurgeThresholdOnlyOverShow = settings.starsurgeThresholdOnlyOverShow
-			configuration.starfallThreshold = settings.starfallThreshold
 			configuration.endOfEclipse = settings.endOfEclipse
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
-			configuration.thresholds = settings.thresholds
 			configuration.endOfMetamorphosis = settings.endOfMetamorphosis
 		end
 	end

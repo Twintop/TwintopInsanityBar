@@ -1839,7 +1839,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then	
 							local energyAmount = CalculateAbilityResourceValue(spell.energy, true)
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.assassination, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.rogue.assassination.thresholdWidth, -energyAmount, TRB.Data.character.maxResource)
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.assassination, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.rogue.assassination.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
@@ -2410,7 +2410,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 					local settings = TRB.Options.Rogue.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
-						TRB.Options.PortForwardPriestSettings()
+						TRB.Options.PortForwardSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
 					else

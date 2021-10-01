@@ -80,9 +80,25 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function ElementalLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			thresholdWidth=2,
 			overcapThreshold=100,
-			earthShockThreshold=true,
+			thresholds = {
+				width = 2,
+				overlapBorder=true,
+				icons = {
+					border=2,
+					relativeTo = "TOP",
+					relativeToName = "Above",
+					enabled=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				},
+				earthShock = { -- 1
+					enabled = true,
+					showIcon = true
+				},
+			},
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
@@ -94,7 +110,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				xPos=0,
 				yPos=-200,
 				border=4,
-				thresholdOverlapBorder=true,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
@@ -357,7 +372,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			TRB.Functions.UpdateBarWidth(TRB.Data.settings.shaman.elemental)
 
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholds.width, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 		end)
 
 		title = "Bar Height"
@@ -462,7 +477,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.border, true))
 
 			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.shaman.elemental)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholds.width, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 
 			local minsliderWidth = math.max(TRB.Data.settings.shaman.elemental.bar.border*2, 120)
 			local minsliderHeight = math.max(TRB.Data.settings.shaman.elemental.bar.border*2, 1)
@@ -473,7 +488,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.shaman.elemental.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.shaman.elemental.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -483,8 +498,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.shaman.elemental.thresholdWidth = value
-			resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.shaman.elemental.thresholdWidth)
+			TRB.Data.settings.shaman.elemental.thresholds.width = value
+			resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.shaman.elemental.thresholds.width)
 		end)
 
 		yCoord = yCoord - 40
@@ -1220,9 +1235,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.bar.thresholdOverlapBorder)
+		f:SetChecked(TRB.Data.settings.shaman.elemental.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.elemental.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Data.settings.shaman.elemental.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.shaman.elemental)
 		end)
 

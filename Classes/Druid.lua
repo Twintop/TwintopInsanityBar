@@ -126,13 +126,39 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			id = 78674,
 			name = "",
 			icon = "",
-			astralPower = 30
+			texture = "",
+			astralPower = 30,
+			thresholdId = 1,
+			settingKey = "starsurge",
+			thresholdUsable = false
+		},
+		starsurge2 = {
+			id = 78674,
+			name = "",
+			icon = "",
+			texture = "",
+			thresholdId = 2,
+			settingKey = "starsurge2",
+			thresholdUsable = false
+		},
+		starsurge3 = {
+			id = 78674,
+			name = "",
+			icon = "",
+			texture = "",
+			thresholdId = 3,
+			settingKey = "starsurge3",
+			thresholdUsable = false
 		},
 		starfall = {
 			id = 191034,
 			name = "",
 			icon = "",
+			texture = "",
 			astralPower = 50,
+			thresholdId = 4,
+			settingKey = "starfall",
+			thresholdUsable = false,
 			isActive = false,
 			baseDuration = 8,
 			pandemic = true,
@@ -511,14 +537,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			if TRB.Data.settings.druid.balance.starsurgeThreshold and TRB.Data.character.starsurgeThreshold < TRB.Data.character.maxResource then
 				resourceFrame.thresholds[1]:Show()
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.starsurge.settingKey, TRB.Data.settings.druid.balance)
 			else
 				resourceFrame.thresholds[1]:Hide()
         	end
 
 			if TRB.Data.settings.druid.balance.starfallThreshold and TRB.Data.character.starfallThreshold < TRB.Data.character.maxResource then
 				resourceFrame.thresholds[4]:Show()
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starfallThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starfallThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.starfall.settingKey, TRB.Data.settings.druid.balance)
+				
 			else
 				resourceFrame.thresholds[4]:Hide()
 			end
@@ -1419,11 +1448,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Data.snapshotData.audio.playedOnethsCue = false
 				end
 
-				if TRB.Data.settings.druid.balance.starsurge2Threshold and
-					(not TRB.Data.settings.druid.balance.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold) and
+				if TRB.Data.settings.druid.balance.thresholds.starsurge2.enabled and
+					(not TRB.Data.settings.druid.balance.thresholds.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold) and
 					(TRB.Data.character.starsurgeThreshold * 2) < TRB.Data.character.maxResource then
 					resourceFrame.thresholds[2]:Show()
-					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*(1+timewornModifier)*2, TRB.Data.character.maxResource)
+					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*(1+timewornModifier)*2, TRB.Data.character.maxResource)
+					TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.starsurge2.settingKey, TRB.Data.settings.druid.balance)
 
 					if currentResource >= TRB.Data.character.starsurgeThreshold * 2 then
 ---@diagnostic disable-next-line: undefined-field
@@ -1436,11 +1466,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					resourceFrame.thresholds[2]:Hide()
 				end
 
-				if TRB.Data.settings.druid.balance.starsurge3Threshold and
-					(not TRB.Data.settings.druid.balance.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold*2) and
+				if TRB.Data.settings.druid.balance.thresholds.starsurge3.enabled and
+					(not TRB.Data.settings.druid.balance.thresholds.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold*2) and
 					(TRB.Data.character.starsurgeThreshold * 3) < TRB.Data.character.maxResource then
 					resourceFrame.thresholds[3]:Show()
-					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*(1+timewornModifier)*3, TRB.Data.character.maxResource)
+					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*(1+timewornModifier)*3, TRB.Data.character.maxResource)
+					TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.starsurge3.settingKey, TRB.Data.settings.druid.balance)
 
 					if currentResource >= TRB.Data.character.starsurgeThreshold * 3 then
 ---@diagnostic disable-next-line: undefined-field
@@ -1783,7 +1814,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Details.addonData.loaded = true
 					local settings = TRB.Options.Druid.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
-						TRB.Options.PortForwardPriestSettings()
+						TRB.Options.PortForwardSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
 					else

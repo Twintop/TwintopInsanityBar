@@ -1128,7 +1128,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 								furyAmount = furyAmount - TRB.Data.spells.firstBlood.furyAdjustment
 							end
 
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.demonhunter.havoc, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.demonhunter.havoc.thresholdWidth, -furyAmount, TRB.Data.character.maxResource)
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.demonhunter.havoc, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.demonhunter.havoc.thresholds.width, -furyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local isUsable = true -- Could use it if we had enough fury, e.g. not on CD
@@ -1416,7 +1416,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 					local settings = TRB.Options.DemonHunter.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
-						TRB.Options.PortForwardPriestSettings()
+						TRB.Options.PortForwardSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
 					else
