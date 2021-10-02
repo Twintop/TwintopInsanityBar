@@ -1100,14 +1100,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 				if TRB.Data.settings.druid.balance.thresholds.starsurge.enabled and TRB.Data.character.starsurgeThreshold < TRB.Data.character.maxResource then
 					resourceFrame.thresholds[1]:Show()
-					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
+					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
 				else
 					resourceFrame.thresholds[1]:Hide()
 				end
 
 				if TRB.Data.settings.druid.balance.thresholds.starfall.enabled and TRB.Data.character.starfallThreshold < TRB.Data.character.maxResource then
 					resourceFrame.thresholds[4]:Show()
-					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starfallThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
+					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starfallThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
 				else
 					resourceFrame.thresholds[4]:Hide()
 				end
@@ -2746,7 +2746,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then	
 							local energyAmount = CalculateAbilityResourceValue(spell.energy, true)
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.druid.feral.thresholdWidth, -energyAmount, TRB.Data.character.maxResource)
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.druid.feral.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
@@ -2798,7 +2798,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									end
 								elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 									if spell.id == TRB.Data.spells.ferociousBite.id then
-										TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.druid.feral.thresholdWidth, math.min(math.max(-TRB.Data.spells.ferociousBite.energy, TRB.Data.snapshotData.resource), -TRB.Data.spells.ferociousBite.energyMax), TRB.Data.character.maxResource)
+										TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.druid.feral.thresholds.width, math.min(math.max(-TRB.Data.spells.ferociousBite.energy, TRB.Data.snapshotData.resource), -TRB.Data.spells.ferociousBite.energyMax), TRB.Data.character.maxResource)
 										
 										if TRB.Data.snapshotData.resource >= -energyAmount then
 											thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over

@@ -796,10 +796,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.border, true))
 
 				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.druid.balance)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*2, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*3, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*2, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*3, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
 			end
 
 			local minsliderWidth = math.max(TRB.Data.settings.druid.balance.bar.border*2, 120)
@@ -821,13 +821,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.thresholdWidth = value
+			TRB.Data.settings.druid.balance.thresholds.width = value
 			
 			if GetSpecialization() == 1 then
-				resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
-				resourceFrame.thresholds[2]:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
-				resourceFrame.thresholds[3]:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
-				resourceFrame.thresholds[4]:SetWidth(TRB.Data.settings.druid.balance.thresholdWidth)
+				resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.druid.balance.thresholds.width)
+				resourceFrame.thresholds[2]:SetWidth(TRB.Data.settings.druid.balance.thresholds.width)
+				resourceFrame.thresholds[3]:SetWidth(TRB.Data.settings.druid.balance.thresholds.width)
+				resourceFrame.thresholds[4]:SetWidth(TRB.Data.settings.druid.balance.thresholds.width)
 			end
 		end)
 
@@ -3517,7 +3517,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.druid.feral.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.druid.feral.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3527,11 +3527,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.thresholdWidth = value
+			TRB.Data.settings.druid.feral.thresholds.width = value
 
 			if GetSpecialization() == 2 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.druid.feral.thresholdWidth)
+					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.druid.feral.thresholds.width)
 				end
 			end
 		end)
