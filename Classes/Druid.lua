@@ -143,7 +143,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				texture = "",
-				astralPower = -30,
+				astralPower = 30,
 				thresholdId = 1,
 				settingKey = "starsurge",
 				thresholdUsable = false
@@ -171,7 +171,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				texture = "",
-				astralPower = -50,
+				astralPower = 50,
 				thresholdId = 4,
 				settingKey = "starfall",
 				thresholdUsable = false,
@@ -1098,14 +1098,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				local currentResource = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 				local timewornModifier = TRB.Data.snapshotData.timewornDreambinder.stacks * TRB.Data.spells.timewornDreambinder.modifier
 
-				if TRB.Data.settings.druid.balance.starsurgeThreshold and TRB.Data.character.starsurgeThreshold < TRB.Data.character.maxResource then
+				if TRB.Data.settings.druid.balance.thresholds.starsurge.enabled and TRB.Data.character.starsurgeThreshold < TRB.Data.character.maxResource then
 					resourceFrame.thresholds[1]:Show()
 					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
 				else
 					resourceFrame.thresholds[1]:Hide()
 				end
 
-				if TRB.Data.settings.druid.balance.starfallThreshold and TRB.Data.character.starfallThreshold < TRB.Data.character.maxResource then
+				if TRB.Data.settings.druid.balance.thresholds.starfall.enabled and TRB.Data.character.starfallThreshold < TRB.Data.character.maxResource then
 					resourceFrame.thresholds[4]:Show()
 					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starfallThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
 				else
@@ -1120,20 +1120,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			local ring2ItemLink = GetInventoryItemLink("player", 12)
 
 			local primordialArcanicPulsar = false
-			if TRB.Data.settings.druid.balance.starsurgeThreshold and TRB.Data.character.starsurgeThreshold < TRB.Data.character.maxResource then
-				resourceFrame.thresholds[1]:Show()
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
-			else
-				resourceFrame.thresholds[1]:Hide()
-        	end
-
-			if TRB.Data.settings.druid.balance.starfallThreshold and TRB.Data.character.starfallThreshold < TRB.Data.character.maxResource then
-				resourceFrame.thresholds[4]:Show()
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starfallThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
-			else
-				resourceFrame.thresholds[4]:Hide()
-			end
-
 			if shoulderItemLink ~= nil then
 				primordialArcanicPulsar = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(shoulderItemLink, 172319, TRB.Data.spells.primordialArcanicPulsar.idLegendaryBonus)
 			end
@@ -1327,23 +1313,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 			
 			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.starsurge.settingKey, TRB.Data.settings.druid.balance)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.starsurge3.settingKey, TRB.Data.settings.druid.balance)
 			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.starsurge2.settingKey, TRB.Data.settings.druid.balance)
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.starsurge3.settingKey, TRB.Data.settings.druid.balance)
 			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.starfall.settingKey, TRB.Data.settings.druid.balance)
 			TRB.Frames.resource2ContainerFrame:Hide()
 		elseif specId == 2 then
-			local resourceFrameCounter = 1
 			for k, v in pairs(TRB.Data.spells) do
 				local spell = TRB.Data.spells[k]
 				if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-					if TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] == nil then
-						TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+					if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
+						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
-
-					TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:Show()
-					TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:SetFrameLevel(0)
-					TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:Hide()
-					resourceFrameCounter = resourceFrameCounter + 1
+					TRB.Functions.ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
+					TRB.Functions.SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+	
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(0)
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
 				end
 			end
 			TRB.Frames.resource2ContainerFrame:Show()
@@ -2539,13 +2525,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, passiveFrame, passiveBarValue)
 
-					if TRB.Data.settings.druid.balance.starsurgeThreshold then
+					if TRB.Data.settings.druid.balance.thresholds.starsurge.enabled then
 						resourceFrame.thresholds[1]:Show()
 					else
 						resourceFrame.thresholds[1]:Hide()
 					end
 
-					if TRB.Data.settings.druid.balance.starfallThreshold then
+					if TRB.Data.settings.druid.balance.thresholds.starfall.enabled then
 						resourceFrame.thresholds[4]:Show()
 					else
 						resourceFrame.thresholds[4]:Hide()
@@ -2883,8 +2869,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							if TRB.Data.settings.druid.feral.thresholds[spell.settingKey].enabled and showThreshold then
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
-	---@diagnostic disable-next-line: undefined-field
+---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 								if frameLevel == 129 then
 									spell.thresholdUsable = true
 								else
@@ -3305,6 +3293,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							FillSpellData_Balance()
 							FillSpellData_Feral()
 							TRB.Data.barConstructedForSpec = nil
+							SwitchSpec()
 							TRB.Options.Druid.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case
 							ConstructResourceBar(TRB.Data.settings.druid[TRB.Data.barConstructedForSpec])

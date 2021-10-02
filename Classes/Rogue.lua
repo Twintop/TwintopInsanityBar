@@ -1014,6 +1014,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
             end
         end
+		TRB.Frames.resource2ContainerFrame:Show()
 
 		TRB.Functions.ConstructResourceBar(settings)
 	end
