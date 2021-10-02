@@ -117,6 +117,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				energy = -50,
                 comboPointsGenerated = 2,
                 stealth = true,
+				texture= "",
 				thresholdId = 1,
 				settingKey = "ambush",
                 --isSnowflake = true,
@@ -129,6 +130,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				energy = -40,
                 comboPointsGenerated = 1,
                 stealth = true,
+				texture= "",
 				thresholdId = 2,
 				settingKey = "cheapShot",
 				--isSnowflake = false,
@@ -140,6 +142,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -20,
                 comboPointsGenerated = 0,
+				texture= "",
 				thresholdId = 3,
 				settingKey = "crimsonVial",
 				hasCooldown = true,
@@ -152,6 +155,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -30,
                 comboPointsGenerated = 0,
+				texture= "",
 				thresholdId = 4,
 				settingKey = "distract",
 				hasCooldown = true,
@@ -164,6 +168,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -35,
                 comboPointsGenerated = 0,
+				texture= "",
 				thresholdId = 5,
 				settingKey = "feint",
                 hasCooldown = true,
@@ -176,6 +181,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -25,
                 comboPoints = true,
+				texture= "",
 				thresholdId = 6,
 				settingKey = "kidneyShot",
                 hasCooldown = true,
@@ -189,6 +195,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				energy = -35,
                 comboPointsGenerated = 0,
                 stealth = true,
+				texture= "",
 				thresholdId = 7,
 				settingKey = "sap",
 				thresholdUsable = false
@@ -199,6 +206,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -20,
                 comboPointsGenerated = 1,
+				texture= "",
 				thresholdId = 8,
 				settingKey = "shiv",
                 hasCooldown = true,
@@ -213,6 +221,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -25,
                 comboPoints = true,
+				texture= "",
 				thresholdId = 9,
 				settingKey = "sliceAndDice",
                 hasCooldown = false,
@@ -236,6 +245,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -35,
                 comboPoints = true,
+				texture= "",
 				thresholdId = 10,
 				settingKey = "envenom",
                 hasCooldown = false,
@@ -247,6 +257,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -35,
                 comboPointsGenerated = 1,
+				texture= "",
 				thresholdId = 11,
 				settingKey = "fanOfKnives",
                 hasCooldown = false,
@@ -258,6 +269,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -45,
                 comboPointsGenerated = 1,
+				texture= "",
 				thresholdId = 12,
 				settingKey = "garrote",
                 hasCooldown = true,
@@ -271,6 +283,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -50,
                 comboPointsGenerated = 2,
+				texture= "",
 				thresholdId = 13,
 				settingKey = "mutilate",
                 hasCooldown = false,
@@ -282,6 +295,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -40,
                 comboPointsGenerated = 1,
+				texture= "",
 				thresholdId = 14,
 				settingKey = "poisonedKnife",
                 hasCooldown = false,
@@ -293,6 +307,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -25,
                 comboPoints = true,
+				texture= "",
 				thresholdId = 15,
 				settingKey = "rupture",
                 hasCooldown = false,
@@ -340,6 +355,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -25,
+				texture= "",
 				thresholdId = 16,
 				settingKey = "exsanguinate",
 				hasCooldown = true,
@@ -359,6 +375,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -35,
 				comboPoints = true,
+				texture= "",
 				thresholdId = 17,
 				settingKey = "crimsonTempest",
 				hasCooldown = false,
@@ -383,6 +400,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -10,
 				comboPointsGenerated = 2,
+				texture= "",
 				thresholdId = 18,
 				settingKey = "echoingReprimand",
 				hasCooldown = true,
@@ -404,6 +422,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -25,
 				comboPointsGenerated = 1,
+				texture= "",
 				thresholdId = 19,
 				settingKey = "sepsis",
 				hasCooldown = true,
@@ -423,6 +442,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -15,
 				comboPointsGenerated = 2,
+				texture= "",
 				thresholdId = 20,
 				settingKey = "serratedBoneSpike",
 				hasCooldown = true,
@@ -441,6 +461,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -25,
+				texture= "",
 				thresholdId = 21,
 				settingKey = "deathFromAbove",
 				comboPoints = true,
@@ -454,6 +475,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -25,
+				texture= "",
 				thresholdId = 22,
 				settingKey = "dismantle",
 				hasCooldown = true,
@@ -977,18 +999,18 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end
 
-		local resourceFrameCounter = 1
         for k, v in pairs(TRB.Data.spells) do
             local spell = TRB.Data.spells[k]
             if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-				if TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] == nil then
-					TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
+				TRB.Functions.ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
+				TRB.Functions.SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
 
-				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:Show()
-				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:SetFrameLevel(0)
-				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:Hide()
-                resourceFrameCounter = resourceFrameCounter + 1
+				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
+				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(0)
+				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
             end
         end
 
@@ -1963,6 +1985,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 								if frameLevel == 129 then
 									spell.thresholdUsable = true
 								else

@@ -83,7 +83,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 185358,
 				name = "",
 				icon = "",
-				focus = -20,
+				focus = -40,
+				texture= "",
 				thresholdId = 1,
 				settingKey = "arcaneShot",
 				thresholdUsable = false
@@ -93,6 +94,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -35,
+				texture= "",
 				thresholdId = 4,
 				settingKey = "cobraShot",
 				isSnowflake = false,
@@ -103,6 +105,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -30,
+				texture= "",
 				thresholdId = 5,
 				settingKey = "killCommand",
 				isSnowflake = true,
@@ -114,6 +117,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -10,
+				texture= "",
 				thresholdId = 6,
 				settingKey = "killShot",
 				healthMinimum = 0.2,
@@ -125,6 +129,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -40,
+				texture= "",
 				thresholdId = 7,
 				settingKey = "multiShot",
 				thresholdUsable = false
@@ -143,6 +148,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -25,
+				texture= "",
 				thresholdId = 9,
 				settingKey = "scareBeast",
 				thresholdUsable = false
@@ -175,6 +181,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -30,
+				texture= "",
 				thresholdId = 2,
 				settingKey = "aMurderOfCrows",
 				isTalent = true,
@@ -187,6 +194,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -60,
+				texture= "",
 				thresholdId = 3,
 				settingKey = "barrage",
 				isTalent = true,
@@ -252,6 +260,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -15,
+				texture= "",
 				thresholdId = 10,
 				settingKey = "wailingArrow",
 				isSnowflake = true,
@@ -410,6 +419,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -35,
+				texture= "",
 				thresholdId = 1,
 				settingKey = "aimedShot",
 				isSnowflake = true,
@@ -420,6 +430,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -20,
+				texture= "",
 				thresholdId = 2,
 				settingKey = "arcaneShot",
 				thresholdUsable = false
@@ -429,6 +440,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -10,
+				texture= "",
 				thresholdId = 5,
 				settingKey = "killShot",
 				healthMinimum = 0.2,
@@ -440,6 +452,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -20,
+				texture= "",
 				thresholdId = 6,
 				settingKey = "multiShot",
 				thresholdUsable = false
@@ -449,6 +462,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -25,
+				texture= "",
 				thresholdId = 9,
 				settingKey = "scareBeast",
 				thresholdUsable = false
@@ -458,6 +472,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -10,
+				texture= "",
 				thresholdId = 10,
 				settingKey = "burstingShot",
 				hasCooldown = true,
@@ -468,6 +483,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -35,
+				texture= "",
 				thresholdId = 11,
 				settingKey = "revivePet",
 				thresholdUsable = false
@@ -507,6 +523,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -10,
+				texture= "",
 				thresholdId = 3,
 				settingKey = "serpentSting",
 				isTalent = true,
@@ -520,6 +537,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -30, -- -60 for non Marksmanship,
+				texture= "",
 				thresholdId = 4,
 				settingKey = "barrage",
 				isTalent = true,
@@ -532,6 +550,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -20,
+				texture= "",
 				thresholdId = 7,
 				settingKey = "aMurderOfCrows",
 				isTalent = true,
@@ -544,6 +563,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -20,
+				texture= "",
 				thresholdId = 8,
 				settingKey = "explosiveShot",
 				isTalent = true,
@@ -563,6 +583,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				focus = -20,
 				isTalent = true--[[,
+				texture= "",
 				thresholdId = 13,
 				settingKey = "arcaneShot",
 				thresholdUsable = false]] --Commenting out for now since it is the same focus as Arcane Shot
@@ -614,6 +635,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -15,
+				texture= "",
 				thresholdId = 10,
 				settingKey = "wailingArrow",
 				isSnowflake = true,
@@ -785,6 +807,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -40,
+				texture= "",
 				thresholdId = 1,
 				settingKey = "arcaneShot",
 				thresholdUsable = false
@@ -794,6 +817,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -10,
+				texture= "",
 				thresholdId = 2,
 				settingKey = "killShot",
 				healthMinimum = 0.2,
@@ -806,6 +830,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -25,
+				texture= "",
 				thresholdId = 3,
 				settingKey = "scareBeast",
 				thresholdUsable = false
@@ -815,6 +840,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -10,
+				texture= "",
 				thresholdId = 4,
 				settingKey = "revivePet",
 				thresholdUsable = false
@@ -824,6 +850,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -20,
+				texture = "",
 				thresholdId = 5,
 				settingKey = "wingClip",
 				thresholdUsable = false
@@ -839,6 +866,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -35,
+				texture= "",
 				thresholdId = 6,
 				settingKey = "carve",
 				isSnowflake = true,
@@ -853,8 +881,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				isTalent = true,
 				hasCooldown = true,
 				isSnowflake = true,
+				texture= "",
 				thresholdId = 7,
-				settingKey = "carve",
+				settingKey = "butchery",
 				thresholdUsable = false
 			},
 			raptorStrike = {
@@ -862,7 +891,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -30,
+				texture= "",
 				thresholdId = 8,
+				isSnowflake = true,
 				settingKey = "raptorStrike",
 				thresholdUsable = false
 			},
@@ -871,10 +902,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -30,
-				isTalent = true--[[,
-				thresholdId = 8,
-				settingKey = "raptorStrike",
-				thresholdUsable = false]] --Commenting out for now since it is the same focus as Raptor Strike
+				isTalent = true,
+				isSnowflake = true,
+				texture= "",
+				thresholdId = 9,
+				settingKey = "mongooseBite",
+				thresholdUsable = false
 			},
 			harpoon = {
 				id = 190925,
@@ -901,7 +934,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -20,
-				thresholdId = 9,
+				texture= "",
+				thresholdId = 10,
 				settingKey = "serpentSting",
 				thresholdUsable = false,
 				baseDuration = 18,
@@ -922,7 +956,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -30,
-				thresholdId = 10,
+				texture= "",
+				thresholdId = 11,
 				settingKey = "aMurderOfCrows",
 				isTalent = true,
 				hasCooldown = true,
@@ -934,7 +969,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -15,
-				thresholdId = 11,
+				texture= "",
+				thresholdId = 12,
 				settingKey = "chakrams",
 				isTalent = true,
 				hasCooldown = true,
@@ -1094,7 +1130,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#killCommand", icon = spells.killCommand.icon, description = "Kill Command", printInSettings = true },
 			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
 			{ variable = "#multiShot", icon = spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
-			{ variable = "#nesingwarys", icon = spells.nesingwarysTrappingApparatus.icon, description = "Nesingwary'ss Trapping Apparatus", printInSettings = true },
+			{ variable = "#nesingwarys", icon = spells.nesingwarysTrappingApparatus.icon, description = "Nesingwary's Trapping Apparatus", printInSettings = true },
 			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
 			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
 			{ variable = "#wailingArrow", icon = spells.wailingArrow.icon, description = "Wailing Arrow", printInSettings = true }
@@ -1173,7 +1209,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
 			{ variable = "#lockAndLoad", icon = spells.lockAndLoad.icon, description = "Lock and Load", printInSettings = true },
 			{ variable = "#multiShot", icon = spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
-			{ variable = "#nesingwarys", icon = spells.nesingwarysTrappingApparatus.icon, description = "Nesingwary'ss Trapping Apparatus", printInSettings = true },
+			{ variable = "#nesingwarys", icon = spells.nesingwarysTrappingApparatus.icon, description = "Nesingwary's Trapping Apparatus", printInSettings = true },
 			{ variable = "#rapidFire", icon = spells.rapidFire.icon, description = "Rapid Fire", printInSettings = true },
 			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
 			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
@@ -1265,7 +1301,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#killCommand", icon = spells.killCommand.icon, description = "Kill Command", printInSettings = true },
 			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
 			{ variable = "#mongooseBite", icon = spells.mongooseBite.icon, description = "Mongoose Bite", printInSettings = true },
-			{ variable = "#nesingwarys", icon = spells.nesingwarysTrappingApparatus.icon, description = "Nesingwary'ss Trapping Apparatus", printInSettings = true },
+			{ variable = "#nesingwarys", icon = spells.nesingwarysTrappingApparatus.icon, description = "Nesingwary's Trapping Apparatus", printInSettings = true },
 			{ variable = "#raptorStrike", icon = spells.raptorStrike.icon, description = "Raptor Strike", printInSettings = true },
 			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
 			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
@@ -1538,18 +1574,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end
 
-		local resourceFrameCounter = 1
         for k, v in pairs(TRB.Data.spells) do
             local spell = TRB.Data.spells[k]
             if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-				if TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] == nil then
-					TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
+				TRB.Functions.ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
+				TRB.Functions.SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
 
-				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:Show()
-				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:SetFrameLevel(0)
-				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:Hide()
-                resourceFrameCounter = resourceFrameCounter + 1
+				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
+				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(0)
+				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
             end
         end
 
@@ -2778,8 +2814,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							if TRB.Data.settings.hunter.beastMastery.thresholds[spell.settingKey].enabled and showThreshold then
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
----@diagnostic disable-next-line: undefined-field
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+								TRB.Functions.SetThresholdLineColor(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], thresholdColor, TRB.Data.settings.hunter.beastMastery)
 								if frameLevel == 129 then
 									spell.thresholdUsable = true
 								else
@@ -3049,8 +3084,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							if TRB.Data.settings.hunter.marksmanship.thresholds[spell.settingKey].enabled and showThreshold then
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
----@diagnostic disable-next-line: undefined-field
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+								TRB.Functions.SetThresholdLineColor(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], thresholdColor, TRB.Data.settings.hunter.marksmanship)
 								if frameLevel == 129 then
 									spell.thresholdUsable = true
 								else
@@ -3217,6 +3251,28 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 											frameLevel = 128
 										end
 									end
+								elseif spell.id == TRB.Data.spells.raptorStrike.id then
+									if TRB.Data.character.talents.mongooseBite.isSelected then
+										showThreshold = false
+									else
+										if TRB.Data.snapshotData.resource >= -focusAmount then
+											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.under
+											frameLevel = 128
+										end
+									end
+								elseif spell.id == TRB.Data.spells.mongooseBite.id then
+									if not TRB.Data.character.talents.mongooseBite.isSelected then
+										showThreshold = false
+									else
+										if TRB.Data.snapshotData.resource >= -focusAmount then
+											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.under
+											frameLevel = 128
+										end
+									end
 								end
 							elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
 								showThreshold = false
@@ -3244,6 +3300,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 								if frameLevel == 129 then
 									spell.thresholdUsable = true
 								else

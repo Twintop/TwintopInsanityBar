@@ -1146,7 +1146,7 @@ local function PortForwardSettings()
         TwintopInsanityBarSettings.priest.shadow.thresholds.overlapBorder = nil
     end
 
-    -- Holy    
+    -- Holy
     if TwintopInsanityBarSettings ~= nil and
     TwintopInsanityBarSettings.priest ~= nil and
     TwintopInsanityBarSettings.priest.holy ~= nil and
@@ -1209,7 +1209,7 @@ local function PortForwardSettings()
         TwintopInsanityBarSettings.shaman.elemental.thresholds.overlapBorder = nil
     end
 
-    -- Hunters 
+    -- Hunters
     if TwintopInsanityBarSettings ~= nil and
         TwintopInsanityBarSettings.hunter ~= nil and
         TwintopInsanityBarSettings.hunter.beastMastery ~= nil and
@@ -1242,6 +1242,9 @@ local function PortForwardSettings()
         TwintopInsanityBarSettings.hunter.survival.thresholds.width = TwintopInsanityBarSettings.hunter.survival.thresholdWidth
         TwintopInsanityBarSettings.hunter.survival.thresholds.overlapBorder = TwintopInsanityBarSettings.hunter.survival.thresholds.overlapBorder
         
+        TwintopInsanityBarSettings.survival.thresholds.mongooseBite.enabled = TwintopInsanityBarSettings.hunter.survival.thresholds.raptorStrike.enabled
+        TwintopInsanityBarSettings.survival.thresholds.butchery.enabled = TwintopInsanityBarSettings.hunter.survival.thresholds.carve.enabled
+
         TwintopInsanityBarSettings.hunter.survival.thresholdWidth = nil
         TwintopInsanityBarSettings.hunter.survival.thresholds.overlapBorder = nil
     end

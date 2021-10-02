@@ -332,6 +332,7 @@ local function FillSpellData(spells)
 				if name ~= nil and icon ~= nil then
 					spells[k]["icon"] = string.format("|T%s:0|t", icon)
 					spells[k]["name"] = name
+					spells[k]["texture"] = icon
 				end
 			elseif spells[k]["id"] ~= nil then
 				local _, name, icon
@@ -660,83 +661,86 @@ TRB.Functions.SetBarMinMaxValues = SetBarMinMaxValues
 local function SetThresholdIcon(threshold, settingKey, settings)
 	if threshold.icon == nil then
 		return
-	elseif --[[settings.thresholds.icons.enabled ~= true or]] settings.thresholds[settingKey].enabled ~= true or settings.thresholds[settingKey].showIcon ~= true then
-		threshold.icon:Hide()
-		return
 	end
 
 	threshold.icon.texture:SetTexture(TRB.Data.spells[settingKey].texture)
-	threshold.icon:Show()
+	
+	if settings.thresholds.icons.enabled then
+		threshold.icon:Show()
+	else
+		threshold.icon:Hide()
+	end
 end
 TRB.Functions.SetThresholdIcon = SetThresholdIcon
 
-local function RedrawThresholdLines(settings)
-	local resourceFrame = TRB.Frames.resourceFrame
-	local passiveFrame = TRB.Frames.passiveFrame
+local function ResetThresholdLine(threshold, settings, hasIcon)
 	local borderSubtraction = 0
 
 	if not settings.thresholds.overlapBorder then
 		borderSubtraction = settings.bar.border * 2
 	end
 
+	threshold:SetWidth(settings.thresholds.width)
+	threshold:SetHeight(settings.bar.height - borderSubtraction)
+	threshold.texture = threshold.texture or threshold:CreateTexture(nil, TRB.Data.settings.core.strata.level)
+	threshold.texture:SetAllPoints(threshold)
+	threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
+	threshold:SetFrameLevel(127)
+	threshold:Hide()
+	
+	if hasIcon == true then
+		threshold.icon = threshold.icon or CreateFrame("Frame", nil, threshold, "BackdropTemplate")
+		--threshold.icon:SetPoint("TOP", threshold, "BOTTOM", 0, -10)
+		--threshold.icon:SetSize(20, 20)
+		threshold.icon:SetFrameLevel(130)
+		threshold.icon:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		threshold.icon.texture = threshold.icon.texture or threshold.icon:CreateTexture(nil, TRB.Data.settings.core.strata.level)
+		threshold.icon.texture:SetAllPoints(threshold.icon)
+		--threshold.icon.texture:SetTexture("Interface\\Icons\\Ability_Druid_TreeofLife")
+		--threshold.icon.cooldown = threshold.icon.cooldown or CreateFrame("Cooldown", nil, threshold.icon, "CooldownFrameTemplate")
+		--threshold.icon.cooldown:SetAllPoints(threshold.icon)
+		--threshold.icon.cooldown:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		if settings.thresholds.icons.border < 1 then
+			threshold.icon:SetBackdrop({
+				insets = {0, 0, 0, 0}
+			})
+		else
+			threshold.icon:SetBackdrop({
+				edgeFile = "Interface\\Buttons\\WHITE8X8",
+				tile = true,
+				tileSize = 4,
+				edgeSize = settings.thresholds.icons.border,
+				insets = {0, 0, 0, 0}
+			})			
+		end
+		threshold.icon:SetBackdropColor(0, 0, 0, 0)
+		threshold.icon:SetBackdropBorderColor(0, 0, 0, 1)
+
+		if settings.thresholds.icons.enabled then
+			threshold.icon:Show()
+		else
+			threshold.icon:Hide()
+		end
+	end
+end
+TRB.Functions.ResetThresholdLine = ResetThresholdLine
+
+local function RedrawThresholdLines(settings)
+	local resourceFrame = TRB.Frames.resourceFrame
+	local passiveFrame = TRB.Frames.passiveFrame
+
 	local entries = TRB.Functions.TableLength(resourceFrame.thresholds)
 	if entries > 0 then
 		for x = 1, entries do
-			resourceFrame.thresholds[x]:SetWidth(settings.thresholds.width)
-			resourceFrame.thresholds[x]:SetHeight(settings.bar.height - borderSubtraction)
-			resourceFrame.thresholds[x].texture = resourceFrame.thresholds[x].texture or resourceFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
-			resourceFrame.thresholds[x].texture:SetAllPoints(resourceFrame.thresholds[x])
-			resourceFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
-			resourceFrame.thresholds[x]:SetFrameLevel(127)
-			resourceFrame.thresholds[x]:Hide()
-			resourceFrame.thresholds[x].icon = resourceFrame.thresholds[x].icon or CreateFrame("Frame", nil, resourceFrame.thresholds[x], "BackdropTemplate")
-			resourceFrame.thresholds[x].icon:SetPoint("TOP", resourceFrame.thresholds[x], "BOTTOM", 0, -10)
-			resourceFrame.thresholds[x].icon:SetSize(20, 20)
-			resourceFrame.thresholds[x].icon:SetFrameLevel(130)
-			resourceFrame.thresholds[x].icon:SetFrameStrata(TRB.Data.settings.core.strata.level)
-			resourceFrame.thresholds[x].icon.texture = resourceFrame.thresholds[x].icon.texture or resourceFrame.thresholds[x].icon:CreateTexture(nil, TRB.Data.settings.core.strata.level)
-			resourceFrame.thresholds[x].icon.texture:SetAllPoints(resourceFrame.thresholds[x].icon)
-			resourceFrame.thresholds[x].icon.texture:SetTexture("Interface\\Icons\\Ability_Druid_TreeofLife")
-			--resourceFrame.thresholds[x].icon.cooldown = resourceFrame.thresholds[x].icon.cooldown or CreateFrame("Cooldown", nil, resourceFrame.thresholds[x].icon, "CooldownFrameTemplate")
-			--resourceFrame.thresholds[x].icon.cooldown:SetAllPoints(resourceFrame.thresholds[x].icon)
-			--resourceFrame.thresholds[x].icon.cooldown:SetFrameStrata(TRB.Data.settings.core.strata.level)
-			if settings.thresholds.icons.border < 1 then
-				resourceFrame.thresholds[x].icon:SetBackdrop({
-					edgeFile = TRB.Data.settings.priest.shadow.textures.border,
-					tile = true,
-					tileSize = 4,
-					edgeSize = 1,
-					insets = {0, 0, 0, 0}
-				})
-				resourceFrame.thresholds[x].icon:Hide()
-			else
-				resourceFrame.thresholds[x].icon:SetBackdrop({
-					edgeFile = "Interface\\Buttons\\WHITE8X8",
-					tile = true,
-					tileSize = 4,
-					edgeSize = settings.thresholds.icons.border,
-					insets = {0, 0, 0, 0}
-				})
-				resourceFrame.thresholds[x].icon:Show()
-			end
-		    resourceFrame.thresholds[x].icon:SetBackdropColor(0, 0, 0, 0)
-		    resourceFrame.thresholds[x].icon:SetBackdropBorderColor(0, 0, 0, 1)
-		
-			resourceFrame.thresholds[x].icon:Hide()
+			TRB.Functions.ResetThresholdLine(resourceFrame.thresholds[x], settings, true)
 		end
 	end
 
 	entries = TRB.Functions.TableLength(passiveFrame.thresholds)
 	if entries > 0 then
 		for x = 1, entries do
-			passiveFrame.thresholds[x]:SetWidth(settings.thresholds.width)
-			passiveFrame.thresholds[x]:SetHeight(settings.bar.height - borderSubtraction)
-			passiveFrame.thresholds[x].texture = passiveFrame.thresholds[x].texture or passiveFrame.thresholds[x]:CreateTexture(nil, TRB.Data.settings.core.strata.level)
-			passiveFrame.thresholds[x].texture:SetAllPoints(passiveFrame.thresholds[x])
+			TRB.Functions.ResetThresholdLine(passiveFrame.thresholds[x], settings, false)
 			passiveFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
-			passiveFrame.thresholds[x]:SetFrameStrata(TRB.Data.settings.core.strata.level)
-			passiveFrame.thresholds[x]:SetFrameLevel(127)
-			passiveFrame.thresholds[x]:Show()
 		end
 	end
 
@@ -827,7 +831,7 @@ local function ConstructResourceBar(settings)
         barBorderFrame:SetWidth(settings.bar.width)
         barBorderFrame:SetHeight(settings.bar.height)
         barBorderFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        barBorderFrame:SetFrameLevel(126)
+        barBorderFrame:SetFrameLevel(101)
 
         resourceFrame:Show()
         resourceFrame:SetMinMaxValues(0, settings.bar.width)
@@ -837,7 +841,7 @@ local function ConstructResourceBar(settings)
         resourceFrame:SetStatusBarTexture(settings.textures.resourceBar)
         resourceFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
         resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		resourceFrame:SetFrameLevel(125)
+		resourceFrame:SetFrameLevel(100)
 
         castingFrame:Show()
         castingFrame:SetMinMaxValues(0, settings.bar.width)
@@ -922,7 +926,7 @@ local function ConstructResourceBar(settings)
 				--border:SetWidth(nodeWidth)
 				--border:SetHeight(settings.comboPoints.height)
 				border:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				border:SetFrameLevel(151)
+				border:SetFrameLevel(111)
 		
 				resource:Show()
 				resource:SetMinMaxValues(0, 1)
@@ -932,7 +936,7 @@ local function ConstructResourceBar(settings)
 				resource:SetStatusBarTexture(settings.textures.comboPointsBar)
 				resource:SetStatusBarColor(GetRGBAFromString(settings.colors.comboPoints.base))
 				resource:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				resource:SetFrameLevel(150)
+				resource:SetFrameLevel(110)
 			end
 		end
 
@@ -1982,6 +1986,7 @@ local function CheckCharacter()
 	else
 		TRB.Data.character.effects.overgrowthSeedlingModifier = 1
 	end
+	TRB.Data.barTextCache = {}
 	TRB.Functions.FillSpellData()
 end
 TRB.Functions.CheckCharacter = CheckCharacter
