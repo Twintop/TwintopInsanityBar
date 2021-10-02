@@ -82,80 +82,91 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	local function AssassinationLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			thresholdWidth=2,
 			overcapThreshold=120,
 			thresholds = {
-                    -- Core Rogue
-					ambush = {
-						enabled = true, -- 1
-					},
-					cheapShot = {
-						enabled = false, -- 2
-					},
-					crimsonVial = {
-						enabled = true, -- 3
-					},
-					distract = {
-						enabled = false, -- 4
-					},
-					feint = {
-						enabled = true, -- 5
-					},
-					kidneyShot = {
-						enabled = false, -- 6
-					},
-					sap = {
-						enabled = false, -- 7
-					},
-					shiv = {
-						enabled = false, -- 8
-					},
-					sliceAndDice = {
-						enabled = true, -- 9
-					},
-                    -- Assassination
-					envenom = {
-						enabled = true, -- 10
-					},
-					fanOfKnives = {
-						enabled = true, -- 11
-					},
-					garrote = {
-						enabled = true, -- 12
-					},
-					mutilate = {
-						enabled = true, -- 13
-					},
-					poisonedKnife = {
-						enabled = false, -- 14
-					},
-					rupture = {
-						enabled = true, -- 15
-					},
-					-- Talents
-					exsanguinate = {
-						enabled = true, -- 16
-					},
-					crimsonTempest = {
-						enabled = true, -- 17
-					},
-					-- Covenants
-					echoingReprimand = { -- Kyrian
-						enabled = true, -- 18
-					},
-					sepsis = { -- Night Fae
-						enabled = true, -- 19
-					},
-					serratedBoneSpike = { -- Necrolord
-						enabled = true, -- 20
-					},
-					-- PvP					
-					deathFromAbove = {
-						enabled = false, -- 21
-					},
-					dismantle = {
-						enabled = false, -- 22
-					},
+				width = 2,
+				overlapBorder=true,
+				icons = {
+					border=2,
+					relativeTo = "TOP",
+					relativeToName = "Above",
+					enabled=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				},
+				-- Core Rogue
+				ambush = {
+					enabled = true, -- 1
+				},
+				cheapShot = {
+					enabled = false, -- 2
+				},
+				crimsonVial = {
+					enabled = true, -- 3
+				},
+				distract = {
+					enabled = false, -- 4
+				},
+				feint = {
+					enabled = true, -- 5
+				},
+				kidneyShot = {
+					enabled = false, -- 6
+				},
+				sap = {
+					enabled = false, -- 7
+				},
+				shiv = {
+					enabled = false, -- 8
+				},
+				sliceAndDice = {
+					enabled = true, -- 9
+				},
+				-- Assassination
+				envenom = {
+					enabled = true, -- 10
+				},
+				fanOfKnives = {
+					enabled = true, -- 11
+				},
+				garrote = {
+					enabled = true, -- 12
+				},
+				mutilate = {
+					enabled = true, -- 13
+				},
+				poisonedKnife = {
+					enabled = false, -- 14
+				},
+				rupture = {
+					enabled = true, -- 15
+				},
+				-- Talents
+				exsanguinate = {
+					enabled = true, -- 16
+				},
+				crimsonTempest = {
+					enabled = true, -- 17
+				},
+				-- Covenants
+				echoingReprimand = { -- Kyrian
+					enabled = true, -- 18
+				},
+				sepsis = { -- Night Fae
+					enabled = true, -- 19
+				},
+				serratedBoneSpike = { -- Necrolord
+					enabled = true, -- 20
+				},
+				-- PvP					
+				deathFromAbove = {
+					enabled = false, -- 21
+				},
+				dismantle = {
+					enabled = false, -- 22
+				},
 			},
 			generation = {
 				mode="gcd",
@@ -174,7 +185,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				xPos=0,
 				yPos=-200,
 				border=4,
-				thresholdOverlapBorder=true,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
@@ -482,7 +492,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["energy"] ~= nil and TRB.Data.spells[k]["energy"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.assassination, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.rogue.assassination.thresholdWidth, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.assassination, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.rogue.assassination.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -609,7 +619,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["energy"] ~= nil and TRB.Data.spells[k]["energy"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.assassination, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.rogue.assassination.thresholdWidth, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.assassination, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.rogue.assassination.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -626,7 +636,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.rogue.assassination.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.rogue.assassination.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -636,11 +646,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.rogue.assassination.thresholdWidth = value
+			TRB.Data.settings.rogue.assassination.thresholds.width = value
 
 			if GetSpecialization() == 1 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.rogue.assassination.thresholdWidth)
+					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.rogue.assassination.thresholds.width)
 				end
 			end
 		end)
@@ -831,7 +841,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end)
 
-		yCoord = yCoord - 40        
+		yCoord = yCoord - 40
         -- Create the dropdown, and configure its appearance
         controls.dropDown.comboPointsRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_comboPointsRelativeTo", parent, "UIDropDownMenuTemplate")
         controls.dropDown.comboPointsRelativeTo.label = TRB.UiFunctions.BuildSectionHeader(parent, "Relative Position of Combo Points to Energy Bar", xCoord, yCoord)
@@ -2138,9 +2148,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.rogue.assassination.bar.thresholdOverlapBorder)
+		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.assassination.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Data.settings.rogue.assassination.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.rogue.assassination)
 		end)
 		
@@ -2402,6 +2412,184 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 30
+
+        -- Create the dropdown, and configure its appearance
+        controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions.BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
+        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
+        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, TRB.Data.settings.rogue.assassination.thresholds.icons.relativeToName)
+        UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
+
+        -- Create and bind the initialization function to the dropdown menu
+        UIDropDownMenu_Initialize(controls.dropDown.thresholdIconRelativeTo, function(self, level, menuList)
+            local entries = 25
+            local info = UIDropDownMenu_CreateInfo()
+            local relativeTo = {}
+            relativeTo["Above"] = "TOP"
+            relativeTo["Middle"] = "CENTER"
+            relativeTo["Below"] = "BOTTOM"
+            local relativeToList = {
+                "Above",
+                "Middle",
+                "Below"
+            }
+
+            for k, v in pairs(relativeToList) do
+                info.text = v
+                info.value = relativeTo[v]
+                info.checked = relativeTo[v] == TRB.Data.settings.rogue.assassination.thresholds.icons.relativeTo
+                info.func = self.SetValue
+                info.arg1 = relativeTo[v]
+                info.arg2 = v
+                UIDropDownMenu_AddButton(info, level)
+            end
+        end)
+
+        function controls.dropDown.thresholdIconRelativeTo:SetValue(newValue, newName)
+            TRB.Data.settings.rogue.assassination.thresholds.icons.relativeTo = newValue
+            TRB.Data.settings.rogue.assassination.thresholds.icons.relativeToName = newName
+			
+			if GetSpecialization() == 1 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.rogue.assassination)
+			end
+
+            UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
+            CloseDropDownMenus()
+        end
+
+		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdIconEnabled
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
+		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
+		f:SetChecked(TRB.Data.settings.rogue.assassination.thresholds.icons.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.assassination.thresholds.icons.enabled = self:GetChecked()
+			
+			if GetSpecialization() == 1 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.rogue.assassination)
+			end
+		end)
+
+		yCoord = yCoord - 80
+		title = "Threshold Icon Width"
+		controls.thresholdIconWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.rogue.assassination.thresholds.icons.width, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.rogue.assassination.thresholds.icons.width = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.rogue.assassination.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.rogue.assassination.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.rogue.assassination.thresholds.icons.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
+		end)
+
+		title = "Threshold Icon Height"
+		controls.thresholdIconHeight = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.rogue.assassination.thresholds.icons.height, 1, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.rogue.assassination.thresholds.icons.height = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.rogue.assassination.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.rogue.assassination.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.rogue.assassination.thresholds.icons.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)				
+		end)
+
+
+		title = "Threshold Icon Horizontal Position (Relative)"
+		yCoord = yCoord - 60
+		controls.thresholdIconHorizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.rogue.assassination.thresholds.icons.xPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.rogue.assassination.thresholds.icons.xPos = value
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+			end
+		end)
+
+		title = "Threshold Icon Vertical Position (Relative)"
+		controls.thresholdIconVertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.rogue.assassination.thresholds.icons.yPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.rogue.assassination.thresholds.icons.yPos = value
+		end)
+
+		local maxIconBorderHeight = math.min(math.floor(TRB.Data.settings.rogue.assassination.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.rogue.assassination.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+
+		title = "Threshold Icon Border Width"
+		yCoord = yCoord - 60
+		controls.thresholdIconBorderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.rogue.assassination.thresholds.icons.border, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.rogue.assassination.thresholds.icons.border = value
+
+			local minsliderWidth = math.max(TRB.Data.settings.rogue.assassination.thresholds.icons.border*2, 1)
+			local minsliderHeight = math.max(TRB.Data.settings.rogue.assassination.thresholds.icons.border*2, 1)
+
+			controls.thresholdIconHeight:SetMinMaxValues(minsliderHeight, 128)
+			controls.thresholdIconHeight.MinLabel:SetText(minsliderHeight)
+			controls.thresholdIconWidth:SetMinMaxValues(minsliderWidth, 128)
+			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.rogue.assassination)
+			end
+		end)
+
+
+		yCoord = yCoord - 60
+
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30

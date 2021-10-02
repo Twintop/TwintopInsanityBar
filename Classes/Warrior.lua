@@ -124,6 +124,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				healthMinimum = 0.2,
 				rage = -20,
 				rageMax = -40,
+				texture= "",
 				thresholdId = 1,
 				settingKey = "execute",
 				isTalent = false,
@@ -137,6 +138,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				icon = "",
 				rage = -40,
 				cooldown = 12,
+				texture= "",
 				thresholdId = 2,
 				settingKey = "ignorePain",
 				isTalent = false,
@@ -148,6 +150,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -30,
+				texture= "",
 				thresholdId = 3,
 				settingKey = "shieldBlock",
 				isTalent = false,
@@ -160,6 +163,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -20,
+				texture= "",
 				thresholdId = 4,
 				settingKey = "slam",
 				isTalent = false,
@@ -171,6 +175,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -30,
+				texture= "",
 				thresholdId = 5,
 				settingKey = "whirlwind",
 				isTalent = false,
@@ -184,6 +189,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -30,
+				texture= "",
 				thresholdId = 6,
 				settingKey = "mortalStrike",
 				isTalent = false,
@@ -216,6 +222,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -10,
+				texture= "",
 				thresholdId = 7,
 				settingKey = "impendingVictory",
 				isTalent = true,
@@ -240,6 +247,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -30,
+				texture= "",
 				thresholdId = 8,
 				settingKey = "rend",
 				isTalent = true,
@@ -254,6 +262,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -20,
+				texture= "",
 				thresholdId = 9,
 				settingKey = "cleave",
 				isTalent = true,
@@ -294,6 +303,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				healthAbove = 0.8,
 				rage = -20,
 				rageMax = -40,
+				texture= "",
 				thresholdId = 10,
 				settingKey = "condemn",
 				isTalent = false,
@@ -489,6 +499,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				icon = "",
 				rage = -40,
 				cooldown = 12,
+				texture= "",
 				thresholdId = 1,
 				settingKey = "ignorePain",
 				isTalent = false,
@@ -500,6 +511,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -30,
+				texture= "",
 				thresholdId = 2,
 				settingKey = "shieldBlock",
 				isTalent = false,
@@ -512,6 +524,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -20,
+				texture= "",
 				thresholdId = 3,
 				settingKey = "slam",
 				isTalent = false,
@@ -523,6 +536,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -30,
+				texture= "",
 				thresholdId = 4,
 				settingKey = "whirlwind",
 				isTalent = false,
@@ -536,6 +550,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -80,
+				texture= "",
 				thresholdId = 5,
 				settingKey = "rampage",
 				isTalent = false,
@@ -559,6 +574,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = -10,
+				texture= "",
 				thresholdId = 6,
 				settingKey = "impendingVictory",
 				isTalent = true,
@@ -1145,18 +1161,18 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		end
 
-		local resourceFrameCounter = 1
         for k, v in pairs(TRB.Data.spells) do
             local spell = TRB.Data.spells[k]
             if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-				if TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] == nil then
-					TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
+				TRB.Functions.ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
+				TRB.Functions.SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
 
-				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:Show()
-				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:SetFrameLevel(0)
-				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:Hide()
-                resourceFrameCounter = resourceFrameCounter + 1
+				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
+				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(0)
+				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
             end
         end
 
@@ -2021,7 +2037,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
 							if spell.id ~= TRB.Data.spells.execute.id then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -rageAmount, TRB.Data.character.maxResource)
+								TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 							end
 
 							local showThreshold = true
@@ -2049,9 +2065,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									end
 
 									if GetSuddenDeathRemainingTime() > 0 then
-										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, -TRB.Data.spells.execute.rageMax, TRB.Data.character.maxResource)
+										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -TRB.Data.spells.execute.rageMax, TRB.Data.character.maxResource)
 									else
-										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholdWidth, math.min(math.max(-rageAmount, normalizedRage), -TRB.Data.spells.execute.rageMax), TRB.Data.character.maxResource)
+										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, math.min(math.max(-rageAmount, normalizedRage), -TRB.Data.spells.execute.rageMax), TRB.Data.character.maxResource)
 									end
 
 									if not showThis or UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
@@ -2120,6 +2136,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
 ---@diagnostic disable-next-line: undefined-field
 								resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 								if frameLevel == 129 then
 									spell.thresholdUsable = true
 								else
@@ -2209,7 +2227,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then							
 							local rageAmount = CalculateAbilityResourceValue(spell.rage)
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.fury, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.fury.thresholdWidth, -rageAmount, TRB.Data.character.maxResource)
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.fury, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.fury.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local isUsable = true -- Could use it if we had enough rage, e.g. not on CD
@@ -2266,6 +2284,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
 ---@diagnostic disable-next-line: undefined-field
 								resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 								if frameLevel == 129 then
 									spell.thresholdUsable = true
 								else
@@ -2597,7 +2617,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 					local settings = TRB.Options.Warrior.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
-						TRB.Options.PortForwardPriestSettings()
+						TRB.Options.PortForwardSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
 					else

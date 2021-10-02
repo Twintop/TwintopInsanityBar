@@ -118,6 +118,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				name = "",
 				icon = "",
 				fury = -40,
+				texture= "",
 				thresholdId = 1,
 				settingKey = "annihilation",
 				isTalent = false,
@@ -131,6 +132,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				icon = "",
 				fury = -35,
                 cooldown = 9,
+				texture= "",
 				thresholdId = 2,
 				settingKey = "bladeDance",
 				isTalent = false,
@@ -167,6 +169,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				icon = "",
 				fury = -35,
                 cooldown = 9,
+				texture= "",
 				thresholdId = 5,
 				settingKey = "bladeDance", --Same as bladeDance
 				isTalent = false,
@@ -243,6 +246,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				icon = "",
                 fury = -30,
                 cooldown = 20,
+				texture= "",
 				thresholdId = 7,
 				settingKey = "glaiveTempest",
 				isTalent = true,
@@ -267,6 +271,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				icon = "",
 				fury = -10,
 				cooldown = 30,
+				texture= "",
 				thresholdId = 8,
 				settingKey = "felEruption",
 				isTalent = true,
@@ -600,20 +605,20 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			end
 		end
 
-		local resourceFrameCounter = 1
         for k, v in pairs(TRB.Data.spells) do
             local spell = TRB.Data.spells[k]
             if spell ~= nil and spell.id ~= nil and spell.fury ~= nil and spell.fury < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-				if TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] == nil then
-					TRB.Frames.resourceFrame.thresholds[resourceFrameCounter] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
+				TRB.Functions.ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
+				TRB.Functions.SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
 
-				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:Show()
-				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:SetFrameLevel(0)
-				TRB.Frames.resourceFrame.thresholds[resourceFrameCounter]:Hide()
-                resourceFrameCounter = resourceFrameCounter + 1
+				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
+				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(0)
+				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
             end
-        end		
+        end	
 
 		TRB.Functions.ConstructResourceBar(settings)
 	end
@@ -1128,7 +1133,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 								furyAmount = furyAmount - TRB.Data.spells.firstBlood.furyAdjustment
 							end
 
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.demonhunter.havoc, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.demonhunter.havoc.thresholdWidth, -furyAmount, TRB.Data.character.maxResource)
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.demonhunter.havoc, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.demonhunter.havoc.thresholds.width, -furyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local isUsable = true -- Could use it if we had enough fury, e.g. not on CD
@@ -1172,6 +1177,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
 ---@diagnostic disable-next-line: undefined-field
 								resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 								if frameLevel == 129 then
 									spell.thresholdUsable = true
 								else
@@ -1416,7 +1423,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 					local settings = TRB.Options.DemonHunter.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
-						TRB.Options.PortForwardPriestSettings()
+						TRB.Options.PortForwardSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
 					else

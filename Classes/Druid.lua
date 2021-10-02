@@ -142,13 +142,39 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 78674,
 				name = "",
 				icon = "",
-				astralPower = 30
+				texture = "",
+				astralPower = -30,
+				thresholdId = 1,
+				settingKey = "starsurge",
+				thresholdUsable = false
+			},
+			starsurge2 = {
+				id = 78674,
+				name = "",
+				icon = "",
+				texture = "",
+				thresholdId = 2,
+				settingKey = "starsurge2",
+				thresholdUsable = false
+			},
+			starsurge3 = {
+				id = 78674,
+				name = "",
+				icon = "",
+				texture = "",
+				thresholdId = 3,
+				settingKey = "starsurge3",
+				thresholdUsable = false
 			},
 			starfall = {
 				id = 191034,
 				name = "",
 				icon = "",
-				astralPower = 50,
+				texture = "",
+				astralPower = -50,
+				thresholdId = 4,
+				settingKey = "starfall",
+				thresholdUsable = false,
 				isActive = false,
 				baseDuration = 8,
 				pandemic = true,
@@ -296,6 +322,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			startTime = nil,
 			astralPower = 0
 		}
+
 		specCache.balance.snapshotData.eclipseSolar = {
 			spellId = nil,
 			startTime = nil
@@ -1093,6 +1120,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			local ring2ItemLink = GetInventoryItemLink("player", 12)
 
 			local primordialArcanicPulsar = false
+			if TRB.Data.settings.druid.balance.starsurgeThreshold and TRB.Data.character.starsurgeThreshold < TRB.Data.character.maxResource then
+				resourceFrame.thresholds[1]:Show()
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
+			else
+				resourceFrame.thresholds[1]:Hide()
+        	end
+
+			if TRB.Data.settings.druid.balance.starfallThreshold and TRB.Data.character.starfallThreshold < TRB.Data.character.maxResource then
+				resourceFrame.thresholds[4]:Show()
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starfallThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
+			else
+				resourceFrame.thresholds[4]:Hide()
+			end
 
 			if shoulderItemLink ~= nil then
 				primordialArcanicPulsar = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(shoulderItemLink, 172319, TRB.Data.spells.primordialArcanicPulsar.idLegendaryBonus)
@@ -1285,6 +1325,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.Frames.resourceFrame.thresholds[x]:SetFrameLevel(0)
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
+			
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.starsurge.settingKey, TRB.Data.settings.druid.balance)
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.starsurge3.settingKey, TRB.Data.settings.druid.balance)
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.starsurge2.settingKey, TRB.Data.settings.druid.balance)
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.starfall.settingKey, TRB.Data.settings.druid.balance)
 			TRB.Frames.resource2ContainerFrame:Hide()
 		elseif specId == 2 then
 			local resourceFrameCounter = 1
@@ -2508,90 +2553,109 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				
 					local timewornModifier = TRB.Data.snapshotData.timewornDreambinder.stacks * TRB.Data.spells.timewornDreambinder.modifier
 
-					if currentResource >= TRB.Data.character.starsurgeThreshold then
-	---@diagnostic disable-next-line: undefined-field
-						resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+				if currentResource >= TRB.Data.character.starsurgeThreshold then
+---@diagnostic disable-next-line: undefined-field
+					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+---@diagnostic disable-next-line: undefined-field
+					resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
 
-						if TRB.Data.spells.onethsClearVision.isActive and TRB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
-							TRB.Data.snapshotData.audio.playedOnethsCue = true
-							TRB.Data.snapshotData.audio.playedSfCue = true
-							PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
-						elseif TRB.Data.settings.druid.balance.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
-							TRB.Data.snapshotData.audio.playedSsCue = true
-							PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					else
-	---@diagnostic disable-next-line: undefined-field
-						resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-						TRB.Data.snapshotData.audio.playedSsCue = false
-						TRB.Data.snapshotData.audio.playedOnethsCue = false
+					if TRB.Data.spells.onethsClearVision.isActive and TRB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
+						TRB.Data.snapshotData.audio.playedOnethsCue = true
+						TRB.Data.snapshotData.audio.playedSfCue = true
+						PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
+					elseif TRB.Data.settings.druid.balance.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
+						TRB.Data.snapshotData.audio.playedSsCue = true
+						PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
 					end
+				else
+---@diagnostic disable-next-line: undefined-field
+					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+---@diagnostic disable-next-line: undefined-field
+					resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+					TRB.Data.snapshotData.audio.playedSsCue = false
+					TRB.Data.snapshotData.audio.playedOnethsCue = false
+				end
 
-					if TRB.Data.settings.druid.balance.starsurge2Threshold and
-						(not TRB.Data.settings.druid.balance.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold) and
-						(TRB.Data.character.starsurgeThreshold * 2) < TRB.Data.character.maxResource then
-						resourceFrame.thresholds[2]:Show()
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*(1+timewornModifier)*2, TRB.Data.character.maxResource)
+				if TRB.Data.settings.druid.balance.thresholds.starsurge2.enabled and
+					(not TRB.Data.settings.druid.balance.thresholds.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold) and
+					(TRB.Data.character.starsurgeThreshold * 2) < TRB.Data.character.maxResource then
+					resourceFrame.thresholds[2]:Show()
+					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*(1+timewornModifier)*2, TRB.Data.character.maxResource)
 
-						if currentResource >= TRB.Data.character.starsurgeThreshold * 2 then
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-						else
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-						end
+					if currentResource >= TRB.Data.character.starsurgeThreshold * 2 then
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
 					else
-						resourceFrame.thresholds[2]:Hide()
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
 					end
+				else
+					resourceFrame.thresholds[2]:Hide()
+				end
 
-					if TRB.Data.settings.druid.balance.starsurge3Threshold and
-						(not TRB.Data.settings.druid.balance.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold*2) and
-						(TRB.Data.character.starsurgeThreshold * 3) < TRB.Data.character.maxResource then
-						resourceFrame.thresholds[3]:Show()
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*(1+timewornModifier)*3, TRB.Data.character.maxResource)
+				if TRB.Data.settings.druid.balance.thresholds.starsurge3.enabled and
+					(not TRB.Data.settings.druid.balance.thresholds.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold*2) and
+					(TRB.Data.character.starsurgeThreshold * 3) < TRB.Data.character.maxResource then
+					resourceFrame.thresholds[3]:Show()
+					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*(1+timewornModifier)*3, TRB.Data.character.maxResource)
 
-						if currentResource >= TRB.Data.character.starsurgeThreshold * 3 then
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-						else
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-						end
+					if currentResource >= TRB.Data.character.starsurgeThreshold * 3 then
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
 					else
-						resourceFrame.thresholds[3]:Hide()
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
 					end
+				else
+					resourceFrame.thresholds[3]:Hide()
+				end
 
-
-					if TRB.Data.character.talents.stellarDrift.isSelected and GetStarfallCooldownRemainingTime() > 0 then
-	---@diagnostic disable-next-line: undefined-field
+				if TRB.Data.character.talents.stellarDrift.isSelected and GetStarfallCooldownRemainingTime() > 0 then
+---@diagnostic disable-next-line: undefined-field
+					resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
+---@diagnostic disable-next-line: undefined-field
+					resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
+				elseif currentResource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.onethsPerception.isActive then
+					if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > TRB.Data.spells.starfall.pandemicTime then
+---@diagnostic disable-next-line: undefined-field
 						resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
-					elseif currentResource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.onethsPerception.isActive then
-						if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > TRB.Data.spells.starfall.pandemicTime then
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
-						else
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-						end
-
-						if TRB.Data.spells.onethsPerception.isActive and TRB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
-							TRB.Data.snapshotData.audio.playedOnethsCue = true
-							TRB.Data.snapshotData.audio.playedSfCue = true
-							PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
-						elseif TRB.Data.settings.druid.balance.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
-							TRB.Data.snapshotData.audio.playedSfCue = true
-							PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
 					else
-	---@diagnostic disable-next-line: undefined-field
-						resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-						TRB.Data.snapshotData.audio.playedSfCue = false
-						TRB.Data.snapshotData.audio.playedOnethsCue = false
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
 					end
 
-					if TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled and currentResource >= TRB.Data.character.starsurgeThreshold then
-						flashBar = true
+					if TRB.Data.spells.onethsPerception.isActive and TRB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
+						TRB.Data.snapshotData.audio.playedOnethsCue = true
+						TRB.Data.snapshotData.audio.playedSfCue = true
+						PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
+					elseif TRB.Data.settings.druid.balance.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
+						TRB.Data.snapshotData.audio.playedSfCue = true
+						PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
 					end
+				else
+---@diagnostic disable-next-line: undefined-field
+					resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+---@diagnostic disable-next-line: undefined-field
+					resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+					TRB.Data.snapshotData.audio.playedSfCue = false
+					TRB.Data.snapshotData.audio.playedOnethsCue = false
+				end
+					
+				if TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled and currentResource >= TRB.Data.character.starsurgeThreshold then
+					flashBar = true
+				end
 
 					local barColor = TRB.Data.settings.druid.balance.colors.bar.base
 
@@ -2633,7 +2697,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if flashBar then
 						TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.druid.balance.colors.bar.flashAlpha, TRB.Data.settings.druid.balance.colors.bar.flashPeriod)
 					end
-				end
+				end			
 			end
 			TRB.Functions.UpdateResourceBar(TRB.Data.settings.druid.balance, refreshText)
 		elseif specId == 2 then
@@ -3157,6 +3221,38 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 	end)
 
+	local function SwitchSpec()
+		local specId = GetSpecialization()
+		if specId == 1 then
+			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.druid.balance)
+			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.balance)
+			FillSpellData_Balance()
+			TRB.Functions.LoadFromSpecCache(specCache.balance)
+			TRB.Functions.RefreshLookupData = RefreshLookupData_Balance
+
+			if TRB.Data.barConstructedForSpec ~= "balance" then
+				TRB.Data.barConstructedForSpec = "balance"
+				ConstructResourceBar(TRB.Data.settings.druid.balance)
+			else
+				TRB.Functions.RepositionBar(TRB.Data.settings.druid.balance, TRB.Frames.barContainerFrame)
+			end
+		elseif specId == 2 then
+			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.druid.feral)
+			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.feral)
+			FillSpellData_Feral()
+			TRB.Functions.LoadFromSpecCache(specCache.feral)
+			TRB.Functions.RefreshLookupData = RefreshLookupData_Feral
+
+			if TRB.Data.barConstructedForSpec ~= "feral" then
+				TRB.Data.barConstructedForSpec = "feral"
+				ConstructResourceBar(TRB.Data.settings.druid.feral)
+			else
+				TRB.Functions.RepositionBar(TRB.Data.settings.druid.feral, TRB.Frames.barContainerFrame)
+			end
+		end
+		EventRegistration()
+	end
+
 	resourceFrame:RegisterEvent("ADDON_LOADED")
 	resourceFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
 	resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
@@ -3172,15 +3268,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 					local settings = TRB.Options.Druid.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
-						TRB.Options.PortForwardPriestSettings()
+						TRB.Options.PortForwardSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
 					else
 						TRB.Data.settings = settings
 					end
 					FillSpecCache()
-					FillSpellData_Balance()
-					FillSpellData_Feral()
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"
@@ -3206,7 +3300,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					C_Timer.After(0, function()
 						C_Timer.After(1, function()
 							TRB.Data.settings.druid.balance = TRB.Functions.ValidateLsmValues("Balance Druid", TRB.Data.settings.druid.balance)
-							TRB.Data.settings.druid.feral= TRB.Functions.ValidateLsmValues("Feral Druid", TRB.Data.settings.druid.feral)
+							TRB.Data.settings.druid.feral = TRB.Functions.ValidateLsmValues("Feral Druid", TRB.Data.settings.druid.feral)
+							
+							FillSpellData_Balance()
+							FillSpellData_Feral()
+							TRB.Data.barConstructedForSpec = nil
 							TRB.Options.Druid.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case
 							ConstructResourceBar(TRB.Data.settings.druid[TRB.Data.barConstructedForSpec])
@@ -3216,34 +3314,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 
 				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
-					if specId == 1 then
-						TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.druid.balance)
-						TRB.Functions.IsTtdActive(TRB.Data.settings.druid.balance)
-						FillSpellData_Balance()
-						TRB.Functions.LoadFromSpecCache(specCache.balance)
-						TRB.Functions.RefreshLookupData = RefreshLookupData_Balance
-
-						if TRB.Data.barConstructedForSpec ~= "balance" then
-							TRB.Data.barConstructedForSpec = "balance"
-							ConstructResourceBar(TRB.Data.settings.druid.balance)
-                        else
-                            TRB.Functions.RepositionBar(TRB.Data.settings.druid.balance, TRB.Frames.barContainerFrame)
-						end
-					elseif specId == 2 then
-						TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.druid.feral)
-						TRB.Functions.IsTtdActive(TRB.Data.settings.druid.feral)
-						FillSpellData_Feral()
-						TRB.Functions.LoadFromSpecCache(specCache.feral)
-						TRB.Functions.RefreshLookupData = RefreshLookupData_Feral
-
-						if TRB.Data.barConstructedForSpec ~= "feral" then
-							TRB.Data.barConstructedForSpec = "feral"
-							ConstructResourceBar(TRB.Data.settings.druid.feral)
-                        else
-                            TRB.Functions.RepositionBar(TRB.Data.settings.druid.feral, TRB.Frames.barContainerFrame)
-						end
-					end
-					EventRegistration()
+					SwitchSpec()
 				end
 			end
 		end

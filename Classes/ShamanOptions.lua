@@ -80,9 +80,25 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function ElementalLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			thresholdWidth=2,
 			overcapThreshold=100,
-			earthShockThreshold=true,
+			thresholds = {
+				width = 2,
+				overlapBorder=true,
+				icons = {
+					border=2,
+					relativeTo = "TOP",
+					relativeToName = "Above",
+					enabled=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				},
+				earthShock = { -- 1
+					enabled = true,
+					showIcon = true
+				},
+			},
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
@@ -94,7 +110,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				xPos=0,
 				yPos=-200,
 				border=4,
-				thresholdOverlapBorder=true,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
@@ -321,6 +336,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
+		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.shaman.elemental)
 		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.shaman.elemental.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.shaman.elemental.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		controls.buttons.exportButton_Shaman_Elemental_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
@@ -357,7 +373,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			TRB.Functions.UpdateBarWidth(TRB.Data.settings.shaman.elemental)
 
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholds.width, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 		end)
 
 		title = "Bar Height"
@@ -462,7 +478,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.border, true))
 
 			TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.shaman.elemental)
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholds.width, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 
 			local minsliderWidth = math.max(TRB.Data.settings.shaman.elemental.bar.border*2, 120)
 			local minsliderHeight = math.max(TRB.Data.settings.shaman.elemental.bar.border*2, 1)
@@ -473,7 +489,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.shaman.elemental.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.shaman.elemental.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -483,8 +499,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.shaman.elemental.thresholdWidth = value
-			resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.shaman.elemental.thresholdWidth)
+			TRB.Data.settings.shaman.elemental.thresholds.width = value
+			resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.shaman.elemental.thresholds.width)
 		end)
 
 		yCoord = yCoord - 40
@@ -1220,9 +1236,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.bar.thresholdOverlapBorder)
+		f:SetChecked(TRB.Data.settings.shaman.elemental.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.elemental.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Data.settings.shaman.elemental.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.shaman.elemental)
 		end)
 
@@ -1231,9 +1247,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Earth Shock/Earthquake")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Maelstrom is required to cast Earth Shock/Earthquake."
-		f:SetChecked(TRB.Data.settings.shaman.elemental.earthShockThreshold)
+		f:SetChecked(TRB.Data.settings.shaman.elemental.thresholds.earthShock.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.elemental.earthShockThreshold = self:GetChecked()
+			TRB.Data.settings.shaman.elemental.thresholds.earthShock.enabled = self:GetChecked()
 		end)
 
 
@@ -1242,6 +1258,184 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = yCoord - 25
 
 		yCoord = yCoord - 40
+
+        -- Create the dropdown, and configure its appearance
+        controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Shaman_Elemental_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions.BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
+        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
+        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, TRB.Data.settings.shaman.elemental.thresholds.icons.relativeToName)
+        UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
+
+        -- Create and bind the initialization function to the dropdown menu
+        UIDropDownMenu_Initialize(controls.dropDown.thresholdIconRelativeTo, function(self, level, menuList)
+            local entries = 25
+            local info = UIDropDownMenu_CreateInfo()
+            local relativeTo = {}
+            relativeTo["Above"] = "TOP"
+            relativeTo["Middle"] = "CENTER"
+            relativeTo["Below"] = "BOTTOM"
+            local relativeToList = {
+                "Above",
+                "Middle",
+                "Below"
+            }
+
+            for k, v in pairs(relativeToList) do
+                info.text = v
+                info.value = relativeTo[v]
+                info.checked = relativeTo[v] == TRB.Data.settings.shaman.elemental.thresholds.icons.relativeTo
+                info.func = self.SetValue
+                info.arg1 = relativeTo[v]
+                info.arg2 = v
+                UIDropDownMenu_AddButton(info, level)
+            end
+        end)
+
+        function controls.dropDown.thresholdIconRelativeTo:SetValue(newValue, newName)
+            TRB.Data.settings.shaman.elemental.thresholds.icons.relativeTo = newValue
+            TRB.Data.settings.shaman.elemental.thresholds.icons.relativeToName = newName
+			
+			if GetSpecialization() == 1 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.shaman.elemental)
+			end
+
+            UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
+            CloseDropDownMenus()
+        end
+
+		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdIconEnabled
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
+		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
+		f:SetChecked(TRB.Data.settings.shaman.elemental.thresholds.icons.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.shaman.elemental.thresholds.icons.enabled = self:GetChecked()
+			
+			if GetSpecialization() == 1 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.shaman.elemental)
+			end
+		end)
+
+		yCoord = yCoord - 80
+		title = "Threshold Icon Width"
+		controls.thresholdIconWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.shaman.elemental.thresholds.icons.width, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.shaman.elemental.thresholds.icons.width = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.shaman.elemental.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.shaman.elemental.thresholds.icons.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
+		end)
+
+		title = "Threshold Icon Height"
+		controls.thresholdIconHeight = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.shaman.elemental.thresholds.icons.height, 1, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.shaman.elemental.thresholds.icons.height = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.shaman.elemental.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.shaman.elemental.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.shaman.elemental.thresholds.icons.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)				
+		end)
+
+
+		title = "Threshold Icon Horizontal Position (Relative)"
+		yCoord = yCoord - 60
+		controls.thresholdIconHorizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.shaman.elemental.thresholds.icons.xPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.shaman.elemental.thresholds.icons.xPos = value
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.RepositionBar(TRB.Data.settings.shaman.elemental, TRB.Frames.barContainerFrame)
+			end
+		end)
+
+		title = "Threshold Icon Vertical Position (Relative)"
+		controls.thresholdIconVertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.shaman.elemental.thresholds.icons.yPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.shaman.elemental.thresholds.icons.yPos = value
+		end)
+
+		local maxIconBorderHeight = math.min(math.floor(TRB.Data.settings.shaman.elemental.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.shaman.elemental.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+
+		title = "Threshold Icon Border Width"
+		yCoord = yCoord - 60
+		controls.thresholdIconBorderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.shaman.elemental.thresholds.icons.border, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.shaman.elemental.thresholds.icons.border = value
+
+			local minsliderWidth = math.max(TRB.Data.settings.shaman.elemental.thresholds.icons.border*2, 1)
+			local minsliderHeight = math.max(TRB.Data.settings.shaman.elemental.thresholds.icons.border*2, 1)
+
+			controls.thresholdIconHeight:SetMinMaxValues(minsliderHeight, 128)
+			controls.thresholdIconHeight.MinLabel:SetText(minsliderHeight)
+			controls.thresholdIconWidth:SetMinMaxValues(minsliderWidth, 128)
+			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.shaman.elemental)
+			end
+		end)
+
+
+		yCoord = yCoord - 60
+
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30

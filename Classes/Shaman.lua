@@ -72,6 +72,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	}
 
 	TRB.Data.spells = {
+		earthShock = {
+			id = 8042,
+			name = "",
+			icon = "",
+			maelstrom = -60,
+			thresholdId = 1,
+			settingKey = "earthShock",
+			thresholdUsable = false
+		},
+
 		lightningBolt = {
 			id = 188196,
 			name = "",
@@ -310,9 +320,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Data.character.talents.stormkeeper.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 		TRB.Data.character.talents.ascendance.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 
-		if TRB.Data.settings.shaman ~= nil and TRB.Data.settings.shaman.elemental ~= nil and TRB.Data.settings.shaman.elemental.earthShockThreshold and TRB.Data.character.earthShockThreshold < TRB.Data.character.maxResource then
+		if TRB.Data.settings.shaman ~= nil and TRB.Data.settings.shaman.elemental ~= nil and TRB.Data.settings.shaman.elemental.thresholds.earthShock.enabled and TRB.Data.character.earthShockThreshold < TRB.Data.character.maxResource then
 			resourceFrame.thresholds[1]:Show()
-			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholdWidth, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+			TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholds.width, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 		else
 			resourceFrame.thresholds[1]:Hide()
 		end
@@ -418,6 +428,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function ConstructResourceBar()
+		TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.earthShock.settingKey, TRB.Data.settings.shaman.elemental)
+
 		TRB.Functions.ConstructResourceBar(TRB.Data.settings.shaman.elemental)
 	end
 	
@@ -853,7 +865,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 				TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.elemental, passiveFrame, passiveBarValue)
 
-				if TRB.Data.settings.shaman.elemental.earthShockThreshold then
+				if TRB.Data.settings.shaman.elemental.thresholds.earthShock.enabled then
 					resourceFrame.thresholds[1]:Show()
 				else
 					resourceFrame.thresholds[1]:Hide()
@@ -886,7 +898,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 
 ---@diagnostic disable-next-line: undefined-field
-				resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+				resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))---@diagnostic disable-next-line: undefined-field
+---@diagnostic disable-next-line: undefined-field
+				resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 			end
 		end
 		TRB.Functions.UpdateResourceBar(TRB.Data.settings.shaman.elemental, refreshText)
@@ -1066,7 +1080,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					TRB.Details.addonData.loaded = true
 					local settings = TRB.Options.Shaman.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
-						TRB.Options.PortForwardPriestSettings()
+						TRB.Options.PortForwardSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
 					else
@@ -1080,6 +1094,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					C_Timer.After(0, function()
 						C_Timer.After(1, function()
 							TRB.Data.settings.shaman.elemental = TRB.Functions.ValidateLsmValues("Elemental Shaman", TRB.Data.settings.shaman.elemental)
+							
+							FillSpellData()
 							TRB.Options.Shaman.ConstructOptionsPanel()
 							-- Reconstruct just in case
 							ConstructResourceBar(TRB.Data.settings.shaman.elemental)--[TRB.Data.barConstructedForSpec])

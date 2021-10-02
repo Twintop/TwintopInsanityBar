@@ -1,4 +1,3 @@
-
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 11 then --Only do this if we're on a Druid!
@@ -90,13 +89,38 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local settings = {
 			hastePrecision=2,
 			astralPowerPrecision=0,
-			thresholdWidth=2,
 			overcapThreshold=100,
-			starsurgeThreshold=true,
-			starsurge2Threshold=false,
-			starsurge3Threshold=false,
-			starsurgeThresholdOnlyOverShow=false,
-			starfallThreshold=true,
+			thresholds = {
+				width = 2,
+				overlapBorder=true,
+				icons = {
+					border=2,
+					relativeTo = "TOP",
+					relativeToName = "Above",
+					enabled=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				},
+				starsurgeThresholdOnlyOverShow = false,
+				starsurge = { -- 1
+					enabled = true,
+					showIcon = true
+				},
+				starsurge2 = { -- 2
+					enabled = true,
+					showIcon = true
+				},
+				starsurge3 = { -- 3
+					enabled = true,
+					showIcon = true
+				},
+				starfall = { -- 4
+					enabled = true,
+					showIcon = true
+				},
+			},
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
@@ -115,7 +139,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				xPos=0,
 				yPos=-200,
 				border=4,
-				thresholdOverlapBorder=true,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
@@ -617,6 +640,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
+		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.druid.balance)
 		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		controls.buttons.exportButton_Druid_Balance_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
@@ -654,10 +678,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if GetSpecialization() == 1 then
 				TRB.Functions.UpdateBarWidth(TRB.Data.settings.druid.balance)
 
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*2, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starsurgeThreshold*3, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholdWidth, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*2, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*3, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
 			end
 		end)
 
@@ -788,7 +812,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.druid.balance.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.druid.balance.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1664,9 +1688,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.druid.balance.bar.thresholdOverlapBorder)
+		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Data.settings.druid.balance.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.balance)
 		end)
 
@@ -1676,9 +1700,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Starfall threshold line")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast Starfall."
-		f:SetChecked(TRB.Data.settings.druid.balance.starfallThreshold)
+		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.starfall.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.starfallThreshold = self:GetChecked()
+			TRB.Data.settings.druid.balance.thresholds.starfall.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -1687,9 +1711,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Starsurge threshold line")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast Starsurge."
-		f:SetChecked(TRB.Data.settings.druid.balance.starsurgeThreshold)
+		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.starsurge.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.starsurgeThreshold = self:GetChecked()
+			TRB.Data.settings.druid.balance.thresholds.starsurge.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 20
@@ -1698,9 +1722,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord+20, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show 2x Starsurge threshold line")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast two Starsurges in a row."
-		f:SetChecked(TRB.Data.settings.druid.balance.starsurge2Threshold)
+		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.starsurge2.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.starsurge2Threshold = self:GetChecked()
+			TRB.Data.settings.druid.balance.thresholds.starsurge2.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 20
@@ -1709,9 +1733,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord+20, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show 3x Starsurge threshold line")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast three Starsurges in a row."
-		f:SetChecked(TRB.Data.settings.druid.balance.starsurge3Threshold)
+		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.starsurge3.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.starsurge3Threshold = self:GetChecked()
+			TRB.Data.settings.druid.balance.thresholds.starsurge3.enabled = self:GetChecked()
 		end)
 		yCoord = yCoord - 20
 		controls.checkBoxes.ssThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurgeOnlyOver", parent, "ChatConfigCheckButtonTemplate")
@@ -1719,12 +1743,218 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord+20, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Only show current + next threshold line?")
 		f.tooltip = "This will only show Starsurge threshold lines if you already have enough Astral Power to cast it, or, if it is the next threshold you're approaching. Only triggers the next after the previous threshold line has been reached, even if it is not checked above!"
-		f:SetChecked(TRB.Data.settings.druid.balance.starsurgeThresholdOnlyOverShow)
+		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.starsurgeThresholdOnlyOverShow)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.starsurgeThresholdOnlyOverShow = self:GetChecked()
+			TRB.Data.settings.druid.balance.thresholds.starsurgeThresholdOnlyOverShow = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 30
+
+		
+        -- Create the dropdown, and configure its appearance
+        controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Druid_Balance_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions.BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
+        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
+        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, TRB.Data.settings.druid.balance.thresholds.icons.relativeToName)
+        UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
+
+        -- Create and bind the initialization function to the dropdown menu
+        UIDropDownMenu_Initialize(controls.dropDown.thresholdIconRelativeTo, function(self, level, menuList)
+            local entries = 25
+            local info = UIDropDownMenu_CreateInfo()
+            local relativeTo = {}
+            relativeTo["Above"] = "TOP"
+            relativeTo["Middle"] = "CENTER"
+            relativeTo["Below"] = "BOTTOM"
+            local relativeToList = {
+                "Above",
+                "Middle",
+                "Below"
+            }
+
+            for k, v in pairs(relativeToList) do
+                info.text = v
+                info.value = relativeTo[v]
+                info.checked = relativeTo[v] == TRB.Data.settings.druid.balance.thresholds.icons.relativeTo
+                info.func = self.SetValue
+                info.arg1 = relativeTo[v]
+                info.arg2 = v
+                UIDropDownMenu_AddButton(info, level)
+            end
+        end)
+
+        function controls.dropDown.thresholdIconRelativeTo:SetValue(newValue, newName)
+            TRB.Data.settings.druid.balance.thresholds.icons.relativeTo = newValue
+            TRB.Data.settings.druid.balance.thresholds.icons.relativeToName = newName
+			
+			if GetSpecialization() == 1 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.balance)
+			end
+
+            UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
+            CloseDropDownMenus()
+        end
+
+		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdIconEnabled
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
+		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
+		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.icons.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.thresholds.icons.enabled = self:GetChecked()
+			
+			if GetSpecialization() == 1 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.balance)
+
+				if TRB.Data.settings.druid.balance.thresholds.icons.enabled then
+					resourceFrame.thresholds[1].icon:Show()
+					resourceFrame.thresholds[2].icon:Show()
+					resourceFrame.thresholds[3].icon:Show()
+					resourceFrame.thresholds[4].icon:Show()
+				else
+					resourceFrame.thresholds[1].icon:Hide()
+					resourceFrame.thresholds[2].icon:Hide()
+					resourceFrame.thresholds[3].icon:Hide()
+					resourceFrame.thresholds[4].icon:Hide()
+				end
+			end
+		end)
+
+		yCoord = yCoord - 80
+		title = "Threshold Icon Width"
+		controls.thresholdIconWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.druid.balance.thresholds.icons.width, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.druid.balance.thresholds.icons.width = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.druid.balance.thresholds.icons.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
+						
+			if GetSpecialization() == 1 then
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "starsurge", TRB.Data.settings.druid.balance)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "starsurge2", TRB.Data.settings.druid.balance)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], "starsurge3", TRB.Data.settings.druid.balance)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], "starfall", TRB.Data.settings.druid.balance)
+			end
+		end)
+
+		title = "Threshold Icon Height"
+		controls.thresholdIconHeight = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.druid.balance.thresholds.icons.height, 1, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.druid.balance.thresholds.icons.height = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.druid.balance.thresholds.icons.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
+						
+			if GetSpecialization() == 1 then
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "starsurge", TRB.Data.settings.druid.balance)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "starsurge2", TRB.Data.settings.druid.balance)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], "starsurge3", TRB.Data.settings.druid.balance)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], "starfall", TRB.Data.settings.druid.balance)
+			end
+		end)
+
+
+		title = "Threshold Icon Horizontal Position (Relative)"
+		yCoord = yCoord - 60
+		controls.thresholdIconHorizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.druid.balance.thresholds.icons.xPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.druid.balance.thresholds.icons.xPos = value
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.RepositionBar(TRB.Data.settings.druid.balance, TRB.Frames.barContainerFrame)
+			end
+		end)
+
+		title = "Threshold Icon Vertical Position (Relative)"
+		controls.thresholdIconVertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.druid.balance.thresholds.icons.yPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.druid.balance.thresholds.icons.yPos = value
+		end)
+
+		local maxIconBorderHeight = math.min(math.floor(TRB.Data.settings.druid.balance.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+
+		title = "Threshold Icon Border Width"
+		yCoord = yCoord - 60
+		controls.thresholdIconBorderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.druid.balance.thresholds.icons.border, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.druid.balance.thresholds.icons.border = value
+
+			local minsliderWidth = math.max(TRB.Data.settings.druid.balance.thresholds.icons.border*2, 1)
+			local minsliderHeight = math.max(TRB.Data.settings.druid.balance.thresholds.icons.border*2, 1)
+
+			controls.thresholdIconHeight:SetMinMaxValues(minsliderHeight, 128)
+			controls.thresholdIconHeight.MinLabel:SetText(minsliderHeight)
+			controls.thresholdIconWidth:SetMinMaxValues(minsliderWidth, 128)
+			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.balance)
+			end
+		end)
+
+
+		yCoord = yCoord - 60
+
+
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Eclipse Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30

@@ -77,8 +77,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function HolyLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			thresholdWidth=2,
 			thresholds = {
+				width = 2,
+				overlapBorder=true,
+				icons = {
+					border=2,
+					relativeTo = "TOP",
+					relativeToName = "Above",
+					enabled=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				},
 				potionOfSpiritualClarity = {
 					enabled = true, -- 1
 				},
@@ -109,7 +120,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				xPos=0,
 				yPos=-200,
 				border=4,
-				thresholdOverlapBorder=true,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
@@ -333,11 +343,28 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			hastePrecision=2,
 			overcapThreshold=100,
 			insanityPrecision=0,
-			devouringPlagueThreshold=true,
-			searingNightmareThreshold=true,
-			thresholdWidth=2,
 			auspiciousSpiritsTracker=true,
 			voidTendrilTracker=true,
+			thresholds = {
+				width = 2,
+				overlapBorder=true,
+				icons = {
+					border=2,
+					relativeTo = "TOP",
+					relativeToName = "Above",
+					enabled=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				},
+				devouringPlague = { -- 1
+					enabled = true,
+				},
+				searingNightmare = { -- 2
+					enabled = true,
+				}
+			},
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
@@ -349,7 +376,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				xPos=0,
 				yPos=-200,
 				border=4,
-				thresholdOverlapBorder=true,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
@@ -802,7 +828,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.priest.holy.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.priest.holy.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -812,18 +838,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.priest.holy.thresholdWidth = value
+			TRB.Data.settings.priest.holy.thresholds.width = value
 			
 			if GetSpecialization() == 2 then
-				resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
-				resourceFrame.thresholds[2]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
-				resourceFrame.thresholds[3]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
-				resourceFrame.thresholds[4]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
-				passiveFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
-				passiveFrame.thresholds[2]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
-				passiveFrame.thresholds[3]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
-				passiveFrame.thresholds[4]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
-				passiveFrame.thresholds[5]:SetWidth(TRB.Data.settings.priest.holy.thresholdWidth)
+				resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.holy.thresholds.width)
+				resourceFrame.thresholds[2]:SetWidth(TRB.Data.settings.priest.holy.thresholds.width)
+				resourceFrame.thresholds[3]:SetWidth(TRB.Data.settings.priest.holy.thresholds.width)
+				resourceFrame.thresholds[4]:SetWidth(TRB.Data.settings.priest.holy.thresholds.width)
+				passiveFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.holy.thresholds.width)
+				passiveFrame.thresholds[2]:SetWidth(TRB.Data.settings.priest.holy.thresholds.width)
+				passiveFrame.thresholds[3]:SetWidth(TRB.Data.settings.priest.holy.thresholds.width)
+				passiveFrame.thresholds[4]:SetWidth(TRB.Data.settings.priest.holy.thresholds.width)
+				passiveFrame.thresholds[5]:SetWidth(TRB.Data.settings.priest.holy.thresholds.width)
 			end
 		end)
 
@@ -1780,9 +1806,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.priest.holy.bar.thresholdOverlapBorder)
+		f:SetChecked(TRB.Data.settings.priest.holy.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.priest.holy.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Data.settings.priest.holy.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.holy)
 		end)
 
@@ -1829,8 +1855,211 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.holy.thresholds.spiritualRejuvenationPotion.enabled = self:GetChecked()
 		end)
 
+		yCoord = yCoord - 25
+		yCoord = yCoord - 25
 
-		yCoord = yCoord - 30
+        -- Create the dropdown, and configure its appearance
+        controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Priest_Holy_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions.BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
+        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
+        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, TRB.Data.settings.priest.holy.thresholds.icons.relativeToName)
+        UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
+
+        -- Create and bind the initialization function to the dropdown menu
+        UIDropDownMenu_Initialize(controls.dropDown.thresholdIconRelativeTo, function(self, level, menuList)
+            local entries = 25
+            local info = UIDropDownMenu_CreateInfo()
+            local relativeTo = {}
+            relativeTo["Above"] = "TOP"
+            relativeTo["Middle"] = "CENTER"
+            relativeTo["Below"] = "BOTTOM"
+            local relativeToList = {
+                "Above",
+                "Middle",
+                "Below"
+            }
+
+            for k, v in pairs(relativeToList) do
+                info.text = v
+                info.value = relativeTo[v]
+                info.checked = relativeTo[v] == TRB.Data.settings.priest.holy.thresholds.icons.relativeTo
+                info.func = self.SetValue
+                info.arg1 = relativeTo[v]
+                info.arg2 = v
+                UIDropDownMenu_AddButton(info, level)
+            end
+        end)
+
+        function controls.dropDown.thresholdIconRelativeTo:SetValue(newValue, newName)
+            TRB.Data.settings.priest.holy.thresholds.icons.relativeTo = newValue
+            TRB.Data.settings.priest.holy.thresholds.icons.relativeToName = newName
+			
+			if GetSpecialization() == 2 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.holy)
+			end
+
+            UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
+            CloseDropDownMenus()
+        end
+
+		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdIconEnabled
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
+		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
+		f:SetChecked(TRB.Data.settings.priest.holy.thresholds.icons.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.holy.thresholds.icons.enabled = self:GetChecked()
+			
+			if GetSpecialization() == 2 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.holy)
+
+				if TRB.Data.settings.priest.holy.thresholds.icons.enabled then
+					resourceFrame.thresholds[1].icon:Show()
+					resourceFrame.thresholds[2].icon:Show()
+					resourceFrame.thresholds[3].icon:Show()
+					resourceFrame.thresholds[4].icon:Show()
+				else
+					resourceFrame.thresholds[1].icon:Hide()
+					resourceFrame.thresholds[2].icon:Hide()
+					resourceFrame.thresholds[3].icon:Hide()
+					resourceFrame.thresholds[4].icon:Hide()
+				end
+			end
+		end)
+
+		yCoord = yCoord - 80
+		title = "Threshold Icon Width"
+		controls.thresholdIconWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.priest.holy.thresholds.icons.width, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.priest.holy.thresholds.icons.width = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.holy.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.holy.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.priest.holy.thresholds.icons.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
+						
+			if GetSpecialization() == 2 then
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "potionOfSpiritualClarity", TRB.Data.settings.priest.holy)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "spiritualRejuvenationPotion", TRB.Data.settings.priest.holy)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], "spiritualManaPotion", TRB.Data.settings.priest.holy)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], "soulfulManaPotion", TRB.Data.settings.priest.holy)
+			end
+		end)
+
+		title = "Threshold Icon Height"
+		controls.thresholdIconHeight = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.priest.holy.thresholds.icons.height, 1, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.priest.holy.thresholds.icons.height = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.holy.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.holy.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.priest.holy.thresholds.icons.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
+						
+			if GetSpecialization() == 2 then
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "potionOfSpiritualClarity", TRB.Data.settings.priest.holy)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "spiritualRejuvenationPotion", TRB.Data.settings.priest.holy)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], "spiritualManaPotion", TRB.Data.settings.priest.holy)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], "soulfulManaPotion", TRB.Data.settings.priest.holy)
+			end
+		end)
+
+
+		title = "Threshold Icon Horizontal Position (Relative)"
+		yCoord = yCoord - 60
+		controls.thresholdIconHorizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.priest.holy.thresholds.icons.xPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.priest.holy.thresholds.icons.xPos = value
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.RepositionBar(TRB.Data.settings.priest.holy, TRB.Frames.barContainerFrame)
+			end
+		end)
+
+		title = "Threshold Icon Vertical Position (Relative)"
+		controls.thresholdIconVertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.priest.holy.thresholds.icons.yPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.priest.holy.thresholds.icons.yPos = value
+		end)
+
+		local maxIconBorderHeight = math.min(math.floor(TRB.Data.settings.priest.holy.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.holy.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+
+		title = "Threshold Icon Border Width"
+		yCoord = yCoord - 60
+		controls.thresholdIconBorderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.priest.holy.thresholds.icons.border, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.priest.holy.thresholds.icons.border = value
+
+			local minsliderWidth = math.max(TRB.Data.settings.priest.holy.thresholds.icons.border*2, 1)
+			local minsliderHeight = math.max(TRB.Data.settings.priest.holy.thresholds.icons.border*2, 1)
+
+			controls.thresholdIconHeight:SetMinMaxValues(minsliderHeight, 128)
+			controls.thresholdIconHeight.MinLabel:SetText(minsliderHeight)
+			controls.thresholdIconWidth:SetMinMaxValues(minsliderWidth, 128)
+			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
+
+			if GetSpecialization() == 2 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.holy)
+			end
+		end)
+
+
+		yCoord = yCoord - 60
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Potion on Cooldown Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -3510,8 +3739,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if GetSpecialization() == 3 then
 				TRB.Functions.UpdateBarWidth(TRB.Data.settings.priest.shadow)
 
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholds.width, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholds.width, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 			end
 		end)
 
@@ -3627,8 +3856,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.border, true))
 
 				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.priest.shadow)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholdWidth, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholds.width, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholds.width, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 			end
 
 			local minsliderWidth = math.max(TRB.Data.settings.priest.shadow.bar.border*2, 120)
@@ -3640,7 +3869,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.priest.shadow.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.priest.shadow.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3650,13 +3879,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.priest.shadow.thresholdWidth = value
+			TRB.Data.settings.priest.shadow.thresholds.width = value
 			
 			if GetSpecialization() == 3 then
-				resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
-				resourceFrame.thresholds[2]:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
-				passiveFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
-				passiveFrame.thresholds[2]:SetWidth(TRB.Data.settings.priest.shadow.thresholdWidth)
+				resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.shadow.thresholds.width)
+				resourceFrame.thresholds[2]:SetWidth(TRB.Data.settings.priest.shadow.thresholds.width)
+				passiveFrame.thresholds[1]:SetWidth(TRB.Data.settings.priest.shadow.thresholds.width)
+				passiveFrame.thresholds[2]:SetWidth(TRB.Data.settings.priest.shadow.thresholds.width)
 			end
 		end)
 
@@ -4467,21 +4696,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.priest.shadow.bar.thresholdOverlapBorder)
+		f:SetChecked(TRB.Data.settings.priest.shadow.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.priest.shadow.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Data.settings.priest.shadow.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.shadow)
 		end)
-
 
 		controls.checkBoxes.dpThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dpThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Devouring Plague")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Devouring Plague."
-		f:SetChecked(TRB.Data.settings.priest.shadow.devouringPlagueThreshold)
+		f:SetChecked(TRB.Data.settings.priest.shadow.thresholds.devouringPlague.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.priest.shadow.devouringPlagueThreshold = self:GetChecked()
+			TRB.Data.settings.priest.shadow.thresholds.devouringPlague.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -4490,17 +4718,215 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Searing Nightmare (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Searing Nightmare. Only visibile if talented in to Searing Nightmare and channeling Mind Sear."
-		f:SetChecked(TRB.Data.settings.priest.shadow.searingNightmareThreshold)
+		f:SetChecked(TRB.Data.settings.priest.shadow.thresholds.searingNightmare.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.priest.shadow.searingNightmareThreshold = self:GetChecked()
+			TRB.Data.settings.priest.shadow.thresholds.searingNightmare.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		yCoord = yCoord - 25
+		yCoord = yCoord - 25
+		yCoord = yCoord - 25
+
+        -- Create the dropdown, and configure its appearance
+        controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Priest_Shadow_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions.BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
+        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
+        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, TRB.Data.settings.priest.shadow.thresholds.icons.relativeToName)
+        UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
+
+        -- Create and bind the initialization function to the dropdown menu
+        UIDropDownMenu_Initialize(controls.dropDown.thresholdIconRelativeTo, function(self, level, menuList)
+            local entries = 25
+            local info = UIDropDownMenu_CreateInfo()
+            local relativeTo = {}
+            relativeTo["Above"] = "TOP"
+            relativeTo["Middle"] = "CENTER"
+            relativeTo["Below"] = "BOTTOM"
+            local relativeToList = {
+                "Above",
+                "Middle",
+                "Below"
+            }
+
+            for k, v in pairs(relativeToList) do
+                info.text = v
+                info.value = relativeTo[v]
+                info.checked = relativeTo[v] == TRB.Data.settings.priest.shadow.thresholds.icons.relativeTo
+                info.func = self.SetValue
+                info.arg1 = relativeTo[v]
+                info.arg2 = v
+                UIDropDownMenu_AddButton(info, level)
+            end
+        end)
+
+        function controls.dropDown.thresholdIconRelativeTo:SetValue(newValue, newName)
+            TRB.Data.settings.priest.shadow.thresholds.icons.relativeTo = newValue
+            TRB.Data.settings.priest.shadow.thresholds.icons.relativeToName = newName
+			
+			if GetSpecialization() == 3 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.shadow)
+
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholds.width, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholds.width, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+			end
+
+            UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
+            CloseDropDownMenus()
+        end
+
+		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdIconEnabled
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
+		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
+		f:SetChecked(TRB.Data.settings.priest.shadow.thresholds.icons.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.priest.shadow.thresholds.icons.enabled = self:GetChecked()
+			
+			if GetSpecialization() == 3 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.shadow)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholds.width, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholds.width, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+
+				if TRB.Data.settings.priest.shadow.thresholds.icons.enabled then
+					resourceFrame.thresholds[1].icon:Show()
+					resourceFrame.thresholds[2].icon:Show()
+				else
+					resourceFrame.thresholds[1].icon:Hide()
+					resourceFrame.thresholds[2].icon:Hide()
+				end
+			end
+		end)
+
+		yCoord = yCoord - 80
+		title = "Threshold Icon Width"
+		controls.thresholdIconWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.priest.shadow.thresholds.icons.width, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.priest.shadow.thresholds.icons.width = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.shadow.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.shadow.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.priest.shadow.thresholds.icons.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
+						
+			if GetSpecialization() == 3 then
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "devouringPlague", TRB.Data.settings.priest.shadow)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "searingNightmare", TRB.Data.settings.priest.shadow)
+			end
+		end)
+
+		title = "Threshold Icon Height"
+		controls.thresholdIconHeight = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.priest.shadow.thresholds.icons.height, 1, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.priest.shadow.thresholds.icons.height = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.priest.shadow.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.shadow.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.priest.shadow.thresholds.icons.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
+						
+			if GetSpecialization() == 3 then
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "devouringPlague", TRB.Data.settings.priest.shadow)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "searingNightmare", TRB.Data.settings.priest.shadow)
+			end
 		end)
 
 
-		yCoord = yCoord - 25
-		yCoord = yCoord - 25
-		yCoord = yCoord - 25
+		title = "Threshold Icon Horizontal Position (Relative)"
+		yCoord = yCoord - 60
+		controls.thresholdIconHorizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.priest.shadow.thresholds.icons.xPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.priest.shadow.thresholds.icons.xPos = value
 
-		yCoord = yCoord - 30
+			if GetSpecialization() == 1 then
+				TRB.Functions.RepositionBar(TRB.Data.settings.priest.shadow, TRB.Frames.barContainerFrame)
+			end
+		end)
+
+		title = "Threshold Icon Vertical Position (Relative)"
+		controls.thresholdIconVertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.priest.shadow.thresholds.icons.yPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.priest.shadow.thresholds.icons.yPos = value
+		end)
+
+		local maxIconBorderHeight = math.min(math.floor(TRB.Data.settings.priest.shadow.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.priest.shadow.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+
+		title = "Threshold Icon Border Width"
+		yCoord = yCoord - 60
+		controls.thresholdIconBorderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.priest.shadow.thresholds.icons.border, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.priest.shadow.thresholds.icons.border = value
+
+			local minsliderWidth = math.max(TRB.Data.settings.priest.shadow.thresholds.icons.border*2, 1)
+			local minsliderHeight = math.max(TRB.Data.settings.priest.shadow.thresholds.icons.border*2, 1)
+
+			controls.thresholdIconHeight:SetMinMaxValues(minsliderHeight, 128)
+			controls.thresholdIconHeight.MinLabel:SetText(minsliderHeight)
+			controls.thresholdIconWidth:SetMinMaxValues(minsliderWidth, 128)
+			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
+
+			if GetSpecialization() == 3 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.shadow)
+			end
+		end)
+
+
+		yCoord = yCoord - 60
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Voidform Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30

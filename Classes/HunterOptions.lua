@@ -82,39 +82,50 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local function BeastMasteryLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			thresholdWidth=2,
 			overcapThreshold=120,
 			thresholds = {
-					arcaneShot = {
-						enabled = false, -- 1
-					},
-					aMurderOfCrows = {
-						enabled = true, -- 2
-					},
-					barrage = {
-						enabled = true, -- 3
-					},
-					cobraShot = {
-						enabled = true, -- 4
-					},
-					killCommand = {
-						enabled = true, -- 5
-					},
-					killShot = {
-						enabled = true, -- 6
-					},
-					multiShot = {
-						enabled = true, -- 7
-					},
-					revivePet = {
-						enabled = false, -- 8
-					},
-					scareBeast = {
-						enabled = false, -- 9
-					},
-					wailingArrow = {
-						enabled = true, -- 10
-					}
+				width = 2,
+				overlapBorder=true,
+				icons = {
+					border=2,
+					relativeTo = "TOP",
+					relativeToName = "Above",
+					enabled=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				},
+				arcaneShot = {
+					enabled = false, -- 1
+				},
+				aMurderOfCrows = {
+					enabled = true, -- 2
+				},
+				barrage = {
+					enabled = true, -- 3
+				},
+				cobraShot = {
+					enabled = true, -- 4
+				},
+				killCommand = {
+					enabled = true, -- 5
+				},
+				killShot = {
+					enabled = true, -- 6
+				},
+				multiShot = {
+					enabled = true, -- 7
+				},
+				revivePet = {
+					enabled = false, -- 8
+				},
+				scareBeast = {
+					enabled = false, -- 9
+				},
+				wailingArrow = {
+					enabled = true, -- 10
+				}
 			},
 			generation = {
 				mode="gcd",
@@ -133,7 +144,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				xPos=0,
 				yPos=-200,
 				border=4,
-				thresholdOverlapBorder=true,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
@@ -286,9 +296,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local function MarksmanshipLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			thresholdWidth=2,
 			overcapThreshold=100,
 			thresholds = {
+				width = 2,
+				overlapBorder=true,
+				icons = {
+					border=2,
+					relativeTo = "TOP",
+					relativeToName = "Above",
+					enabled=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				},
 				aimedShot = {
 					enabled = true, -- 1
 				},
@@ -355,7 +376,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				xPos=0,
 				yPos=-200,
 				border=4,
-				thresholdOverlapBorder=true,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
@@ -534,39 +554,56 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local function SurvivalLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			thresholdWidth=2,
 			overcapThreshold=100,
 			thresholds = {
-					arcaneShot = {
-						enabled = false, -- 1
-					},
-					killShot = {
-						enabled = true, -- 2
-					},
-					scareBeast = {
-						enabled = false, -- 3
-					},
-					revivePet = {
-						enabled = false, -- 4
-					},
-					wingClip = {
-						enabled = false, -- 5
-					},
-					carve = {
-						enabled = true, -- 6, Butchery = 7
-					},
-					raptorStrike = {
-						enabled = true, -- 8, also Mongoose Bite
-					},
-					serpentSting = {
-						enabled = false, -- 9
-					},
-					aMurderOfCrows = {
-						enabled = true, -- 10
-					},
-					chakrams = {
-						enabled = true, -- 11
-					}
+				width = 2,
+				overlapBorder=true,
+				icons = {
+					border=2,
+					relativeTo = "TOP",
+					relativeToName = "Above",
+					enabled=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				},
+				arcaneShot = {
+					enabled = false, -- 1
+				},
+				killShot = {
+					enabled = true, -- 2
+				},
+				scareBeast = {
+					enabled = false, -- 3
+				},
+				revivePet = {
+					enabled = false, -- 4
+				},
+				wingClip = {
+					enabled = false, -- 5
+				},
+				carve = {
+					enabled = true, -- 6
+				},
+				butchery = {
+					enabled = true, -- 7
+				},
+				raptorStrike = {
+					enabled = true, -- 8
+				},
+				mongooseBite = {
+					enabled = true, -- 9
+				},
+				serpentSting = {
+					enabled = false, -- 10
+				},
+				aMurderOfCrows = {
+					enabled = true, -- 11
+				},
+				chakrams = {
+					enabled = true, -- 12
+				}
 			},
 			generation = {
 				mode="gcd",
@@ -591,7 +628,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				xPos=0,
 				yPos=-200,
 				border=4,
-				thresholdOverlapBorder=true,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
@@ -881,7 +917,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.beastMastery, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.beastMastery.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.beastMastery, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.beastMastery.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -1003,7 +1039,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.beastMastery, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.beastMastery.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.beastMastery, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.beastMastery.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -1020,7 +1056,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.beastMastery.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.beastMastery.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1030,11 +1066,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.hunter.beastMastery.thresholdWidth = value
+			TRB.Data.settings.hunter.beastMastery.thresholds.width = value
 
 			if GetSpecialization() == 1 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.hunter.beastMastery.thresholdWidth)
+					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.hunter.beastMastery.thresholds.width)
 				end
 			end
 		end)
@@ -1817,9 +1853,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.hunter.beastMastery.bar.thresholdOverlapBorder)
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.beastMastery.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Data.settings.hunter.beastMastery.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.beastMastery)
 		end)
 
@@ -1933,6 +1969,184 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
+
+        -- Create the dropdown, and configure its appearance
+        controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions.BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
+        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
+        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, TRB.Data.settings.hunter.beastMastery.thresholds.icons.relativeToName)
+        UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
+
+        -- Create and bind the initialization function to the dropdown menu
+        UIDropDownMenu_Initialize(controls.dropDown.thresholdIconRelativeTo, function(self, level, menuList)
+            local entries = 25
+            local info = UIDropDownMenu_CreateInfo()
+            local relativeTo = {}
+            relativeTo["Above"] = "TOP"
+            relativeTo["Middle"] = "CENTER"
+            relativeTo["Below"] = "BOTTOM"
+            local relativeToList = {
+                "Above",
+                "Middle",
+                "Below"
+            }
+
+            for k, v in pairs(relativeToList) do
+                info.text = v
+                info.value = relativeTo[v]
+                info.checked = relativeTo[v] == TRB.Data.settings.hunter.beastMastery.thresholds.icons.relativeTo
+                info.func = self.SetValue
+                info.arg1 = relativeTo[v]
+                info.arg2 = v
+                UIDropDownMenu_AddButton(info, level)
+            end
+        end)
+
+        function controls.dropDown.thresholdIconRelativeTo:SetValue(newValue, newName)
+            TRB.Data.settings.hunter.beastMastery.thresholds.icons.relativeTo = newValue
+            TRB.Data.settings.hunter.beastMastery.thresholds.icons.relativeToName = newName
+			
+			if GetSpecialization() == 1 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.beastMastery)
+			end
+
+            UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
+            CloseDropDownMenus()
+        end
+
+		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdIconEnabled
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
+		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.icons.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.beastMastery.thresholds.icons.enabled = self:GetChecked()
+			
+			if GetSpecialization() == 1 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.beastMastery)
+			end
+		end)
+
+		yCoord = yCoord - 80
+		title = "Threshold Icon Width"
+		controls.thresholdIconWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.beastMastery.thresholds.icons.width, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.beastMastery.thresholds.icons.width = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.beastMastery.thresholds.icons.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
+		end)
+
+		title = "Threshold Icon Height"
+		controls.thresholdIconHeight = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.beastMastery.thresholds.icons.height, 1, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.beastMastery.thresholds.icons.height = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.beastMastery.thresholds.icons.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)				
+		end)
+
+
+		title = "Threshold Icon Horizontal Position (Relative)"
+		yCoord = yCoord - 60
+		controls.thresholdIconHorizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.hunter.beastMastery.thresholds.icons.xPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.beastMastery.thresholds.icons.xPos = value
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.RepositionBar(TRB.Data.settings.hunter.beastMastery, TRB.Frames.barContainerFrame)
+			end
+		end)
+
+		title = "Threshold Icon Vertical Position (Relative)"
+		controls.thresholdIconVertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.hunter.beastMastery.thresholds.icons.yPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.beastMastery.thresholds.icons.yPos = value
+		end)
+
+		local maxIconBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.beastMastery.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.beastMastery.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+
+		title = "Threshold Icon Border Width"
+		yCoord = yCoord - 60
+		controls.thresholdIconBorderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.hunter.beastMastery.thresholds.icons.border, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.beastMastery.thresholds.icons.border = value
+
+			local minsliderWidth = math.max(TRB.Data.settings.hunter.beastMastery.thresholds.icons.border*2, 1)
+			local minsliderHeight = math.max(TRB.Data.settings.hunter.beastMastery.thresholds.icons.border*2, 1)
+
+			controls.thresholdIconHeight:SetMinMaxValues(minsliderHeight, 128)
+			controls.thresholdIconHeight.MinLabel:SetText(minsliderHeight)
+			controls.thresholdIconWidth:SetMinMaxValues(minsliderWidth, 128)
+			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
+
+			if GetSpecialization() == 1 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.beastMastery)
+			end
+		end)
+
+
+		yCoord = yCoord - 60
+
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -3308,7 +3522,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -3430,7 +3644,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.marksmanship.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -3447,7 +3661,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.marksmanship.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.marksmanship.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3457,11 +3671,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.hunter.marksmanship.thresholdWidth = value
+			TRB.Data.settings.hunter.marksmanship.thresholds.width = value
 
 			if GetSpecialization() == 2 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.hunter.marksmanship.thresholdWidth)
+					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.hunter.marksmanship.thresholds.width)
 				end
 			end
 		end)
@@ -4285,9 +4499,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.hunter.marksmanship.bar.thresholdOverlapBorder)
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.marksmanship.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Data.settings.hunter.marksmanship.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.marksmanship)
 		end)
 
@@ -4424,6 +4638,184 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 30
+
+        -- Create the dropdown, and configure its appearance
+        controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions.BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
+        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
+        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, TRB.Data.settings.hunter.marksmanship.thresholds.icons.relativeToName)
+        UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
+
+        -- Create and bind the initialization function to the dropdown menu
+        UIDropDownMenu_Initialize(controls.dropDown.thresholdIconRelativeTo, function(self, level, menuList)
+            local entries = 25
+            local info = UIDropDownMenu_CreateInfo()
+            local relativeTo = {}
+            relativeTo["Above"] = "TOP"
+            relativeTo["Middle"] = "CENTER"
+            relativeTo["Below"] = "BOTTOM"
+            local relativeToList = {
+                "Above",
+                "Middle",
+                "Below"
+            }
+
+            for k, v in pairs(relativeToList) do
+                info.text = v
+                info.value = relativeTo[v]
+                info.checked = relativeTo[v] == TRB.Data.settings.hunter.marksmanship.thresholds.icons.relativeTo
+                info.func = self.SetValue
+                info.arg1 = relativeTo[v]
+                info.arg2 = v
+                UIDropDownMenu_AddButton(info, level)
+            end
+        end)
+
+        function controls.dropDown.thresholdIconRelativeTo:SetValue(newValue, newName)
+            TRB.Data.settings.hunter.marksmanship.thresholds.icons.relativeTo = newValue
+            TRB.Data.settings.hunter.marksmanship.thresholds.icons.relativeToName = newName
+			
+			if GetSpecialization() == 2 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.marksmanship)
+			end
+
+            UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
+            CloseDropDownMenus()
+        end
+
+		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdIconEnabled
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
+		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.icons.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.thresholds.icons.enabled = self:GetChecked()
+			
+			if GetSpecialization() == 2 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.marksmanship)
+			end
+		end)
+
+		yCoord = yCoord - 80
+		title = "Threshold Icon Width"
+		controls.thresholdIconWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.marksmanship.thresholds.icons.width, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.marksmanship.thresholds.icons.width = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.marksmanship.thresholds.icons.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
+		end)
+
+		title = "Threshold Icon Height"
+		controls.thresholdIconHeight = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.marksmanship.thresholds.icons.height, 1, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.marksmanship.thresholds.icons.height = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.marksmanship.thresholds.icons.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)				
+		end)
+
+
+		title = "Threshold Icon Horizontal Position (Relative)"
+		yCoord = yCoord - 60
+		controls.thresholdIconHorizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.hunter.marksmanship.thresholds.icons.xPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.marksmanship.thresholds.icons.xPos = value
+
+			if GetSpecialization() == 2 then
+				TRB.Functions.RepositionBar(TRB.Data.settings.hunter.marksmanship, TRB.Frames.barContainerFrame)
+			end
+		end)
+
+		title = "Threshold Icon Vertical Position (Relative)"
+		controls.thresholdIconVertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.hunter.marksmanship.thresholds.icons.yPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.marksmanship.thresholds.icons.yPos = value
+		end)
+
+		local maxIconBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.marksmanship.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.marksmanship.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+
+		title = "Threshold Icon Border Width"
+		yCoord = yCoord - 60
+		controls.thresholdIconBorderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.hunter.marksmanship.thresholds.icons.border, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.marksmanship.thresholds.icons.border = value
+
+			local minsliderWidth = math.max(TRB.Data.settings.hunter.marksmanship.thresholds.icons.border*2, 1)
+			local minsliderHeight = math.max(TRB.Data.settings.hunter.marksmanship.thresholds.icons.border*2, 1)
+
+			controls.thresholdIconHeight:SetMinMaxValues(minsliderHeight, 128)
+			controls.thresholdIconHeight.MinLabel:SetText(minsliderHeight)
+			controls.thresholdIconWidth:SetMinMaxValues(minsliderWidth, 128)
+			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
+
+			if GetSpecialization() == 2 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.marksmanship)
+			end
+		end)
+
+
+		yCoord = yCoord - 60
+
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Trueshot Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -6270,7 +6662,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.survival.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.survival.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -6392,7 +6784,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.survival.thresholdWidth, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.hunter.survival.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -6409,7 +6801,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.survival.thresholdWidth, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.survival.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6419,10 +6811,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.hunter.survival.thresholdWidth = value
+			TRB.Data.settings.hunter.survival.thresholds.width = value
 			if GetSpecialization() == 3 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.hunter.survival.thresholdWidth)
+					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.hunter.survival.thresholds.width)
 				end
 			end
 		end)
@@ -7220,9 +7612,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.hunter.survival.bar.thresholdOverlapBorder)
+		f:SetChecked(TRB.Data.settings.hunter.survival.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.hunter.survival.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Data.settings.hunter.survival.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.survival)
 		end)
 
@@ -7258,6 +7650,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.survival.thresholds.carve.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.survival.thresholds.carve.enabled = self:GetChecked()
+			TRB.Data.settings.hunter.survival.thresholds.butchery.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -7291,6 +7684,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.survival.thresholds.raptorStrike.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.survival.thresholds.raptorStrike.enabled = self:GetChecked()
+			TRB.Data.settings.hunter.survival.thresholds.mongooseBite.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -7338,6 +7732,184 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
+
+        -- Create the dropdown, and configure its appearance
+        controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions.BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
+        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
+        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, TRB.Data.settings.hunter.survival.thresholds.icons.relativeToName)
+        UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
+
+        -- Create and bind the initialization function to the dropdown menu
+        UIDropDownMenu_Initialize(controls.dropDown.thresholdIconRelativeTo, function(self, level, menuList)
+            local entries = 25
+            local info = UIDropDownMenu_CreateInfo()
+            local relativeTo = {}
+            relativeTo["Above"] = "TOP"
+            relativeTo["Middle"] = "CENTER"
+            relativeTo["Below"] = "BOTTOM"
+            local relativeToList = {
+                "Above",
+                "Middle",
+                "Below"
+            }
+
+            for k, v in pairs(relativeToList) do
+                info.text = v
+                info.value = relativeTo[v]
+                info.checked = relativeTo[v] == TRB.Data.settings.hunter.survival.thresholds.icons.relativeTo
+                info.func = self.SetValue
+                info.arg1 = relativeTo[v]
+                info.arg2 = v
+                UIDropDownMenu_AddButton(info, level)
+            end
+        end)
+
+        function controls.dropDown.thresholdIconRelativeTo:SetValue(newValue, newName)
+            TRB.Data.settings.hunter.survival.thresholds.icons.relativeTo = newValue
+            TRB.Data.settings.hunter.survival.thresholds.icons.relativeToName = newName
+			
+			if GetSpecialization() == 3 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.survival)
+			end
+
+            UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
+            CloseDropDownMenus()
+        end
+
+		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdIconEnabled
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
+		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
+		f:SetChecked(TRB.Data.settings.hunter.survival.thresholds.icons.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.survival.thresholds.icons.enabled = self:GetChecked()
+			
+			if GetSpecialization() == 3 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.survival)
+			end
+		end)
+
+		yCoord = yCoord - 80
+		title = "Threshold Icon Width"
+		controls.thresholdIconWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.survival.thresholds.icons.width, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.survival.thresholds.icons.width = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.survival.thresholds.icons.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
+		end)
+
+		title = "Threshold Icon Height"
+		controls.thresholdIconHeight = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.survival.thresholds.icons.height, 1, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.survival.thresholds.icons.height = value
+
+			local maxBorderSize = math.min(math.floor(TRB.Data.settings.hunter.survival.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = TRB.Data.settings.hunter.survival.thresholds.icons.border
+		
+			if maxBorderSize < borderSize then
+				maxBorderSize = borderSize
+			end
+
+			controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)				
+		end)
+
+
+		title = "Threshold Icon Horizontal Position (Relative)"
+		yCoord = yCoord - 60
+		controls.thresholdIconHorizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.hunter.survival.thresholds.icons.xPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.survival.thresholds.icons.xPos = value
+
+			if GetSpecialization() == 3 then
+				TRB.Functions.RepositionBar(TRB.Data.settings.hunter.survival, TRB.Frames.barContainerFrame)
+			end
+		end)
+
+		title = "Threshold Icon Vertical Position (Relative)"
+		controls.thresholdIconVertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.hunter.survival.thresholds.icons.yPos, 1, 2,
+									sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.survival.thresholds.icons.yPos = value
+		end)
+
+		local maxIconBorderHeight = math.min(math.floor(TRB.Data.settings.hunter.survival.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.hunter.survival.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+
+		title = "Threshold Icon Border Width"
+		yCoord = yCoord - 60
+		controls.thresholdIconBorderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.hunter.survival.thresholds.icons.border, 1, 2,
+									sliderWidth, sliderHeight, xCoord, yCoord)
+		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+			self.EditBox:SetText(value)
+			TRB.Data.settings.hunter.survival.thresholds.icons.border = value
+
+			local minsliderWidth = math.max(TRB.Data.settings.hunter.survival.thresholds.icons.border*2, 1)
+			local minsliderHeight = math.max(TRB.Data.settings.hunter.survival.thresholds.icons.border*2, 1)
+
+			controls.thresholdIconHeight:SetMinMaxValues(minsliderHeight, 128)
+			controls.thresholdIconHeight.MinLabel:SetText(minsliderHeight)
+			controls.thresholdIconWidth:SetMinMaxValues(minsliderWidth, 128)
+			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
+
+			if GetSpecialization() == 3 then
+				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.survival)
+			end
+		end)
+
+
+		yCoord = yCoord - 60
+
 		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
