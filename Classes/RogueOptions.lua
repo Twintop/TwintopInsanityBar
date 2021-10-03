@@ -88,11 +88,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				overlapBorder=true,
 				icons = {
 					border=2,
-					relativeTo = "TOP",
-					relativeToName = "Above",
+					relativeTo = "BOTTOM",
+					relativeToName = "Below",
 					enabled=true,
 					xPos=0,
-					yPos=-12,
+					yPos=12,
 					width=24,
 					height=24
 				},
