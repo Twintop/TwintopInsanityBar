@@ -1592,7 +1592,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$overcap" or var == "$energyOvercap" or var == "$resourceOvercap" then
-				if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.druid.balance.overcapThreshold then
+				if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.druid.feral.overcapThreshold then
 					valid = true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$energyPlusPassive" then

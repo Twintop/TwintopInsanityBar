@@ -5386,7 +5386,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 40
 
 		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.UiFunctions.BuildSlider(parent, title, 0, 170, TRB.Data.settings.druid.feral.overcapThreshold, 1, 1,
+		controls.overcapAt = TRB.UiFunctions.BuildSlider(parent, title, 0, 130, TRB.Data.settings.druid.feral.overcapThreshold, 1, 1,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
