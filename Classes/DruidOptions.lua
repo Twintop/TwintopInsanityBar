@@ -355,6 +355,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				},
 				feralFrenzy = {
 					enabled = true, -- 13
+				},
+				-- Extras
+				ferociousBiteMinimum = {
+					enabled = true -- 14
+				},
+				ferociousBiteMaximum = {
+					enabled = true -- 15
 				}
 			},
 			generation = {
@@ -411,7 +418,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					}
 				},
 				bar = {
-					border="FFFFD300",
+					border="FFFF7C0A",
 					borderOvercap="FFFF0000",
 					background="66000000",
 					base="FFFFFF00",
@@ -423,7 +430,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					overcapEnabled=true,
 				},
 				comboPoints = {
-					border="FFFFD300",
+					border="FFFF7C0A",
 					background="66000000",
 					base="FFFFFF00",
 					penultimate="FFFF9900",
@@ -5126,11 +5133,33 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.checkBoxes.ferociousBiteThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_ferociousBite", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ferociousBiteThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Ferocious Bite")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ferocious Bite. If you do not have any combo points, will be colored as 'unusable'.  Will move along the bar between the current minimum and maximum Energy cost amounts."
+		getglobal(f:GetName() .. 'Text'):SetText("Ferocious Bite (moving/dynamic)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ferocious Bite. If you do not have any combo points, will be colored as 'unusable'. Will move along the bar between the current minimum and maximum Energy cost amounts."
 		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.ferociousBite.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.feral.thresholds.ferociousBite.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.ferociousBiteMinimumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_ferociousBiteMinimum", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.ferociousBiteMinimumThresholdShow
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Ferocious Bite (minimum)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ferocious Bite at its minimum Energy cost. If you do not have any combo points, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.ferociousBiteMinimum.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.feral.thresholds.ferociousBiteMinimum.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.ferociousBiteMaximumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_ferociousBiteMaximum", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.ferociousBiteMaximumThresholdShow
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Ferocious Bite (maximum)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ferocious Bite at its maximum Energy cost. If you do not have any combo points, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.ferociousBiteMaximum.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.feral.thresholds.ferociousBiteMaximum.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25

@@ -456,6 +456,26 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				isSnowflake = true, -- Really between 25-50 energy
 				thresholdUsable = false
 			},
+			ferociousBiteMinimum = {
+				id = 22568,
+				name = "",
+				icon = "",
+				energy = -25,
+				comboPoints = true,
+				thresholdId = 14,
+				settingKey = "ferociousBiteMinimum",
+				thresholdUsable = false
+			},
+			ferociousBiteMaximum = {
+				id = 22568,
+				name = "",
+				icon = "",
+				energy = -50,
+				comboPoints = true,
+				thresholdId = 15,
+				settingKey = "ferociousBiteMaximum",
+				thresholdUsable = false
+			},
 			shred = {
 				id = 5221,
 				name = "",
