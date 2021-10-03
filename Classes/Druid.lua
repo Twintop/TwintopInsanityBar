@@ -2433,16 +2433,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						(TRB.Data.settings.druid.feral.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource)
 					)
 				)) then
-				print(not TRB.Data.specSupported, force, ((not affectingCombat) and
-				(not UnitInVehicle("player")) and (
-					(not TRB.Data.settings.druid.feral.displayBar.alwaysShow) and (
-						(not TRB.Data.settings.druid.feral.displayBar.notZeroShow) or
-						(TRB.Data.settings.druid.feral.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource)
-					)
-				)))
 				TRB.Frames.barContainerFrame:Hide()
 				TRB.Data.snapshotData.isTracking = false
-				--print("NO")
 			else
 				TRB.Data.snapshotData.isTracking = true
 				if TRB.Data.settings.druid.feral.displayBar.neverShow == true then
@@ -2450,13 +2442,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				else
 					TRB.Frames.barContainerFrame:Show()
 				end
-				--print("YES")
 			end
 		else
 			TRB.Frames.barContainerFrame:Hide()
 			TRB.Data.snapshotData.isTracking = false
 		end
-		--print(specId, TRB.Data.specSupported, TRB.Data.snapshotData.isTracking, TRB.Data.settings.druid.feral.displayBar.neverShow)
 	end
 	TRB.Functions.HideResourceBar = HideResourceBar
 
@@ -2869,6 +2859,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							if TRB.Data.settings.druid.feral.thresholds[spell.settingKey].enabled and showThreshold then
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field

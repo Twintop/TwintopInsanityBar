@@ -2814,7 +2814,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							if TRB.Data.settings.hunter.beastMastery.thresholds[spell.settingKey].enabled and showThreshold then
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
-								TRB.Functions.SetThresholdLineColor(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], thresholdColor, TRB.Data.settings.hunter.beastMastery)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 								if frameLevel == 129 then
 									spell.thresholdUsable = true
 								else
@@ -3084,7 +3089,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							if TRB.Data.settings.hunter.marksmanship.thresholds[spell.settingKey].enabled and showThreshold then
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
-								TRB.Functions.SetThresholdLineColor(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], thresholdColor, TRB.Data.settings.hunter.marksmanship)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 								if frameLevel == 129 then
 									spell.thresholdUsable = true
 								else
@@ -3298,6 +3308,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							if TRB.Data.settings.hunter.survival.thresholds[spell.settingKey].enabled and showThreshold then
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field

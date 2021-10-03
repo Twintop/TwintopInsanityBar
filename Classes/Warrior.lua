@@ -2135,6 +2135,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
 ---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel)
+---@diagnostic disable-next-line: undefined-field
 								resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 								resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
@@ -2282,6 +2284,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							if TRB.Data.settings.warrior.fury.thresholds[spell.settingKey].enabled and showThreshold then
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
+---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel)
 ---@diagnostic disable-next-line: undefined-field
 								resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
