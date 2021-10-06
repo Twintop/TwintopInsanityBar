@@ -1,5 +1,4 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
 TRB.Functions = TRB.Functions or {}
 local EXPORT_STRING_PREFIX = "!TRB!"
 

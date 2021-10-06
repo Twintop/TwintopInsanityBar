@@ -4685,18 +4685,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 	resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
-		local _, _, classIndex = UnitClass("player")
 		local specId = GetSpecialization() or 0
-		if classIndex == 5 then
+		if classIndexId == 5 then
 			if event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar" then
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
 					local settings = TRB.Options.Priest.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
-						TRB.Options.PortForwardSettings()
+						TRB.Options:PortForwardSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
-						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
+						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
 						TRB.Data.settings = settings
 					end
