@@ -42,18 +42,21 @@ function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultV
     f.MinLabel = f:CreateFontString(nil, "Overlay")
     f.MinLabel:SetFontObject(GameFontHighlightSmall)
     f.MinLabel:SetSize(0, 14)
+    ---@diagnostic disable-next-line: redundant-parameter
     f.MinLabel:SetWordWrap(false)
     f.MinLabel:SetPoint("TopLeft", f, "BottomLeft", 0, -1)
     f.MinLabel:SetText(minValue)
     f.MaxLabel = f:CreateFontString(nil, "Overlay")
     f.MaxLabel:SetFontObject(GameFontHighlightSmall)
     f.MaxLabel:SetSize(0, 14)
+    ---@diagnostic disable-next-line: redundant-parameter
     f.MaxLabel:SetWordWrap(false)
     f.MaxLabel:SetPoint("TopRight", f, "BottomRight", 0, -1)
     f.MaxLabel:SetText(maxValue)
     f.Title = f:CreateFontString(nil, "Overlay")
     f.Title:SetFontObject(GameFontNormal)
     f.Title:SetSize(0, 14)
+    ---@diagnostic disable-next-line: redundant-parameter
     f.Title:SetWordWrap(false)
     f.Title:SetPoint("Bottom", f, "Top")
     f.Title:SetText(title)
@@ -215,6 +218,7 @@ function TRB.UiFunctions:BuildColorPicker(parent, description, settingsEntry, si
 	f.Font:SetPoint("LEFT", f, "RIGHT", 10, 0)
 	f.Font:SetFontObject(GameFontHighlight)
 	f.Font:SetText(description)
+    ---@diagnostic disable-next-line: redundant-parameter
 	f.Font:SetWordWrap(true)
 	f.Font:SetJustifyH("LEFT")
 	f.Font:SetSize(sizeTotal - sizeFrame - 25, sizeFrame)

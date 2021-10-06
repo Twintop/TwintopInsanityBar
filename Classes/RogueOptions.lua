@@ -3300,6 +3300,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.settings.rogue.assassination.audio.blindside.enabled = self:GetChecked()
 
 			if TRB.Data.settings.rogue.assassination.audio.blindside.enabled then
+				---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3349,6 +3350,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.settings.rogue.assassination.audio.blindside.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.blindsideAudio, newName)
 			CloseDropDownMenus()
+			---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -3364,6 +3366,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.settings.rogue.assassination.audio.overcap.enabled = self:GetChecked()
 
 			if TRB.Data.settings.rogue.assassination.audio.overcap.enabled then
+				---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3413,6 +3416,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.settings.rogue.assassination.audio.overcap.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
+			---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -3428,6 +3432,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.settings.rogue.assassination.audio.sepsis.enabled = self:GetChecked()
 
 			if TRB.Data.settings.rogue.assassination.audio.sepsis.enabled then
+				---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3477,6 +3482,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.settings.rogue.assassination.audio.sepsis.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.sepsisAudio, newName)
 			CloseDropDownMenus()
+			---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 		yCoord = yCoord - 60

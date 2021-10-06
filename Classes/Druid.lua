@@ -1075,6 +1075,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function GetCurrentMoonSpell()
 		local currentTime = GetTime()
 		if GetSpecialization() == 1 and TRB.Data.character.talents.newMoon.isSelected and (TRB.Data.snapshotData.newMoon.checkAfter == nil or currentTime >= TRB.Data.snapshotData.newMoon.checkAfter) then
+			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.newMoon.currentSpellId = select(7, GetSpellInfo(TRB.Data.spells.newMoon.name))
 
 			if TRB.Data.snapshotData.newMoon.currentSpellId == TRB.Data.spells.newMoon.id then
@@ -2391,6 +2392,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		end
 
+---@diagnostic disable-next-line: redundant-parameter
 		TRB.Data.snapshotData.newMoon.charges, TRB.Data.snapshotData.newMoon.maxCharges, TRB.Data.snapshotData.newMoon.startTime, TRB.Data.snapshotData.newMoon.duration, _ = GetSpellCharges(TRB.Data.spells.newMoon.id)
 
 		if TRB.Data.character.items.primordialArcanicPulsar then
@@ -2412,10 +2414,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             TRB.Data.snapshotData.feralFrenzy.duration = 0
         end
 
+---@diagnostic disable-next-line: redundant-parameter
 		_, _, TRB.Data.snapshotData.clearcasting.stacks, _, TRB.Data.snapshotData.clearcasting.duration, TRB.Data.snapshotData.clearcasting.endTime, _, _, _, TRB.Data.snapshotData.clearcasting.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.clearcasting.id)
 		TRB.Data.snapshotData.clearcasting.remainingTime = GetClearcastingRemainingTime()
 
 		if TRB.Data.character.talents.brutalSlash.isSelected then
+---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.brutalSlash.charges, TRB.Data.snapshotData.brutalSlash.maxCharges, TRB.Data.snapshotData.brutalSlash.startTime, TRB.Data.snapshotData.brutalSlash.duration, _ = GetSpellCharges(TRB.Data.spells.brutalSlash.id)
 		end
 	end
@@ -2496,6 +2500,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 						if TRB.Data.settings.druid.balance.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.druid.balance.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
@@ -2558,9 +2563,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if TRB.Data.spells.onethsClearVision.isActive and TRB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
 						TRB.Data.snapshotData.audio.playedOnethsCue = true
 						TRB.Data.snapshotData.audio.playedSfCue = true
+						---@diagnostic disable-next-line: redundant-parameter
 						PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
 					elseif TRB.Data.settings.druid.balance.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
 						TRB.Data.snapshotData.audio.playedSsCue = true
+						---@diagnostic disable-next-line: redundant-parameter
 						PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
 					end
 				else
@@ -2635,9 +2642,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if TRB.Data.spells.onethsPerception.isActive and TRB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
 						TRB.Data.snapshotData.audio.playedOnethsCue = true
 						TRB.Data.snapshotData.audio.playedSfCue = true
+						---@diagnostic disable-next-line: redundant-parameter
 						PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
 					elseif TRB.Data.settings.druid.balance.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
 						TRB.Data.snapshotData.audio.playedSfCue = true
+						---@diagnostic disable-next-line: redundant-parameter
 						PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
 					end
 				else
@@ -2914,6 +2923,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 						if TRB.Data.settings.druid.feral.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.druid.feral.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
@@ -3178,6 +3188,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Data.snapshotData.newMoon.currentSpellId = TRB.Data.spells.newMoon.id
 							TRB.Data.snapshotData.newMoon.currentKey = "newMoon"
 							TRB.Data.snapshotData.newMoon.checkAfter = currentTime + 20
+---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.spells.newMoon.currentIcon = select(3, GetSpellInfo(202767)) -- Use the old Legion artiface spell ID since New Moon's icon returns incorrect for several seconds after casting Full Moon
 						end
 					else
