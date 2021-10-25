@@ -307,11 +307,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				bleedColors=true,
 				icons = {
 					border=2,
-					relativeTo = "TOP",
-					relativeToName = "Above",
+					relativeTo = "BOTTOM",
+					relativeToName = "Below",
 					enabled=true,
 					xPos=0,
-					yPos=-12,
+					yPos=12,
 					width=24,
 					height=24
 				},
@@ -352,7 +352,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					enabled = true, -- 11
 				},
 				bloodtalons = {
-					enabled = true, -- 12
+					enabled = false, -- 12
 				},
 				feralFrenzy = {
 					enabled = true, -- 13
@@ -414,9 +414,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					dots={
 						enabled=true,
 						same="FFFFFFFF",
-						down="FFFF0000",
-						worse="FFFF0000",
-						better="FF00FF00"
+						down="FFFF8888",
+						worse="FFFF33BB",
+						better="FF009955"
 					}
 				},
 				bar = {
