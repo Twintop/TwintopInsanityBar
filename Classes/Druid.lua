@@ -720,6 +720,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			},
 
 			-- Conduits
+			carnivorousInstinct = {
+				id = 340705,
+				name = "",
+				icon = "",
+				conduitId = 268,
+				conduitRanks = {}
+			},
 			suddenAmbush = {
 				id = 340698,
 				name = "",
@@ -1034,6 +1041,24 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function FillSpellData_Feral()
 		Setup_Feral()
 		local spells = TRB.Functions.FillSpellData(specCache.feral.spells)
+		
+		-- Conduit Ranks
+		spells.carnivorousInstinct.conduitRanks[0] = 0
+		spells.carnivorousInstinct.conduitRanks[1] = 3.0
+		spells.carnivorousInstinct.conduitRanks[2] = 3.3
+		spells.carnivorousInstinct.conduitRanks[3] = 3.6
+		spells.carnivorousInstinct.conduitRanks[4] = 3.9
+		spells.carnivorousInstinct.conduitRanks[5] = 4.2
+		spells.carnivorousInstinct.conduitRanks[6] = 4.5
+		spells.carnivorousInstinct.conduitRanks[7] = 4.8
+		spells.carnivorousInstinct.conduitRanks[8] = 5.1
+		spells.carnivorousInstinct.conduitRanks[9] = 5.4
+		spells.carnivorousInstinct.conduitRanks[10] = 5.7
+		spells.carnivorousInstinct.conduitRanks[11] = 6.0
+		spells.carnivorousInstinct.conduitRanks[12] = 6.3
+		spells.carnivorousInstinct.conduitRanks[13] = 6.6
+		spells.carnivorousInstinct.conduitRanks[14] = 6.9
+		spells.carnivorousInstinct.conduitRanks[15] = 7.2
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.feral.barTextVariables.icons = {
@@ -1562,7 +1587,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local snapshot = 1.0
 
 		if bonuses.tigersFury == true and GetTigersFuryRemainingTime() > 0 then
-			snapshot = snapshot * TRB.Data.spells.tigersFury.modifier
+			snapshot = snapshot * (TRB.Data.spells.tigersFury.modifier + (TRB.Data.spells.carnivorousInstinct.conduitRanks[TRB.Functions.GetSoulbindEquippedConduitRank(TRB.Data.spells.carnivorousInstinct.conduitId)] / 100))
 		end
 
 		if bonuses.momentOfClarity == true and TRB.Data.character.talents.momentOfClarity.isSelected == true and ((TRB.Data.snapshotData.clearcasting.stacks ~= nil and TRB.Data.snapshotData.clearcasting.stacks > 0) or GetClearcastingRemainingTime(true) > 0) then
@@ -3668,9 +3693,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								end
 								TRB.Data.snapshotData.targetData.targets[destGUID].thrashSnapshot = GetCurrentSnapshot(TRB.Data.spells.thrash.bonuses)
 								
-								if TRB.Data.snapshotData.clearcasting.stacks == 0 then
-									TRB.Data.snapshotData.clearcasting.endTimeLeeway = nil
-								end
 								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
 								TRB.Data.snapshotData.targetData.targets[destGUID].thrash = false

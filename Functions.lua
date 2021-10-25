@@ -2085,13 +2085,34 @@ local function GetSoulbindItemLevel(id)
 	end
 	return 0
 end
-TRB.Functions.IsSoulbindActive = GetSoulbindItemLevel
+TRB.Functions.GetSoulbindItemLevel = GetSoulbindItemLevel
+
+local function GetSoulbindEquippedConduitRank(id)
+    local soulbindId = C_Soulbinds.GetActiveSoulbindID()
+    local soulbindData = C_Soulbinds.GetSoulbindData(soulbindId)
+    local nodes = soulbindData.tree.nodes
+    local length = TableLength(nodes)
+    
+    for x = 1, length do        
+        if nodes[x].spellID ~= nil and nodes[x].spellID == 0 and nodes[x].conduitID ~= nil and nodes[x].conduitID == id then
+			local empowered = 0
+
+			if nodes[x].socketEnhanced then
+				empowered = 2
+			end
+
+			return nodes[x].conduitRank + empowered
+        end        
+    end
+	return 0
+end
+TRB.Functions.GetSoulbindEquippedConduitRank = GetSoulbindEquippedConduitRank
 
 local function GetSoulbindRank(id)
 	local conduit = C_Soulbinds.GetConduitCollectionData(id)
 
 	if conduit ~= nil then
-		return conduit.conduitRank
+		return conduit.conduitRank + empowered
 	end
 	return 0
 end
