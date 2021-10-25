@@ -304,6 +304,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
+				bleedColors=true,
 				icons = {
 					border=2,
 					relativeTo = "TOP",
@@ -412,9 +413,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					right="FFFFFFFF",
 					dots={
 						enabled=true,
-						up="FFFFFFFF",
+						same="FFFFFFFF",
 						down="FFFF0000",
-						pandemic="FFFFFF00"
+						worse="FFFF0000",
+						better="FF00FF00"
 					}
 				},
 				bar = {
@@ -5040,9 +5042,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.druid.feral.bar.thresholdOverlapBorder)
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.bar.thresholdOverlapBorder = self:GetChecked()
+			TRB.Data.settings.druid.feral.thresholds.overlapBorder = self:GetChecked()
+			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.feral)
+		end)
+
+		controls.checkBoxes.thresholdBleedColors = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_thresholdBleedColors", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdBleedColors
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-120)
+		getglobal(f:GetName() .. 'Text'):SetText("Use different colors for Bleed snapshots?")
+		f.tooltip = "When checked, threshold lines for Rake, Rip, Thrash, and Moonfire (if Lunar Inspiration is talented) will have their threshold lines colored based on if the current buffs are better, worse, or the same damage (or the bleed is not on the target) instead of based on available Energy or Combo Points. The colors used are set in the 'Bleed Snapshotting' section under the 'Font & Text' tab."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.bleedColors)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.feral.thresholds.bleedColors = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.feral)
 		end)
 		
@@ -5968,25 +5981,25 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.UiFunctions:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bleed Snapshotting", 0, yCoord)
 
 		yCoord = yCoord - 25
 
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter, DoT timer, and Slice and Dice color based on time remaining?")
-		f.tooltip = "When checked, the color of total DoTs up counters, DoT timers, and Slice and Dice's timer will change based on whether or not the DoT is on the current target."
+		getglobal(f:GetName() .. 'Text'):SetText("Change total Bleed counters and Bleed timers based on shapshotted damage?")
+		f.tooltip = "When checked, the color of total Bleeds (and Moonfire, if talented) up counters and Bleed timers will change based on whether or not the current snapshotted damage values are better, worse, or the same vs. your current damage buffs."
 		f:SetChecked(TRB.Data.settings.druid.feral.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.feral.colors.text.dots.enabled = self:GetChecked()
 		end)
 
-		controls.colors.dotUp = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", TRB.Data.settings.druid.feral.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
-		f = controls.colors.dotUp
+		controls.colors.dotSame = TRB.UiFunctions:BuildColorPicker(parent, "Bleed snapshot on current target is the same", TRB.Data.settings.druid.feral.colors.text.dots.same, 550, 25, xCoord, yCoord-30)
+		f = controls.colors.dotSame
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.text.dots.up, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.text.dots.same, true)
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -5996,17 +6009,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.dotUp.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.text.dots.up = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    controls.colors.dotSame.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.druid.feral.colors.text.dots.same = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
 
-		controls.colors.dotPandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", TRB.Data.settings.druid.feral.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
-		f = controls.colors.dotPandemic
+		controls.colors.dotWorse = TRB.UiFunctions:BuildColorPicker(parent, "Bleed snapshot on current target is worse and should be reapplied.", TRB.Data.settings.druid.feral.colors.text.dots.worse, 550, 25, xCoord, yCoord-60)
+		f = controls.colors.dotWorse
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.text.dots.pandemic, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.text.dots.worse, true)
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -6016,13 +6029,33 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                         a = OpacitySliderFrame:GetValue()
                     end
         
-                    controls.colors.dotPandemic.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.text.dots.pandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    controls.colors.dotWorse.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.druid.feral.colors.text.dots.worse = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
 
-		controls.colors.dotDown = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", TRB.Data.settings.druid.feral.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
+		controls.colors.dotBetter = TRB.UiFunctions:BuildColorPicker(parent, "Bleed snapshot on current target is better and should NOT be reapplied.", TRB.Data.settings.druid.feral.colors.text.dots.better, 550, 25, xCoord, yCoord-90)
+		f = controls.colors.dotBetter
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.text.dots.better, true)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.dotBetter.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.druid.feral.colors.text.dots.better = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		controls.colors.dotDown = TRB.UiFunctions:BuildColorPicker(parent, "Bleed is not active on current target", TRB.Data.settings.druid.feral.colors.text.dots.down, 550, 25, xCoord, yCoord-120)
 		f = controls.colors.dotDown
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -6043,7 +6076,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 
-		yCoord = yCoord - 130
+		yCoord = yCoord - 150
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 
 		yCoord = yCoord - 50
