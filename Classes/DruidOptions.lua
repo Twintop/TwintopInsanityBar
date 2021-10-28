@@ -275,7 +275,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "",
+				text = "#rake $rakeCount    #thrash $thrashCount||n#rip $ripCount    {$lunarInspiration}[#moonfire $moonfireCount]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -324,7 +324,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				},
 				-- Feral
 				maim = {
-					enabled = true, -- 3
+					enabled = false, -- 3
 				},
 				rake = {
 					enabled = true, -- 4
@@ -333,7 +333,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					enabled = true, -- 5
 				},
 				swipe = {
-					enabled = true, -- 6
+					enabled = false, -- 6
 				},
 				thrash = {
 					enabled = true, -- 7
@@ -359,7 +359,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				},
 				-- Extras
 				ferociousBiteMinimum = {
-					enabled = true -- 14
+					enabled = false -- 14
 				},
 				ferociousBiteMaximum = {
 					enabled = true -- 15

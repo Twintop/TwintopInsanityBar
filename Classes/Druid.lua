@@ -1164,6 +1164,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$moonfireSnapshot", description = "Snapshot percentage of Lunar Inspiration's Moonfire on your current target", printInSettings = true, color = false },
 			{ variable = "$moonfirePercent", description = "Snapshot percentage vs. recasting of Lunar Inspiration's Moonfire on your current target", printInSettings = true, color = false },
 			{ variable = "$moonfireCurrent", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
+			
+			{ variable = "$lunarInspiration", description = "Is Lunar Inspiration currently talented. Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$brutalSlashCharges", description = "Number of charges you currently have for Brutal Slash (if talented)", printInSettings = true, color = false },
 			{ variable = "$brutalSlashCooldown", description = "Time remaining until your next Brutal Slash recharge (if talented)", printInSettings = true, color = false },
@@ -1997,6 +1999,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireSnapshot > 0 then
 					valid = true
 				end
+			elseif var == "$lunarInspiration" then
+				if TRB.Data.character.talents.lunarInspiration.isSelected == true then
+					valid = true
+				end
 			elseif var == "$brutalSlashCharges" then
 				if TRB.Data.character.talents.brutalSlash.isSelected then
 					if TRB.Data.snapshotData.brutalSlash.charges > 0 then
@@ -2735,6 +2741,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$moonfireSnapshot"] = moonfireSnapshot
 		lookup["$moonfireCurrent"] = moonfireCurrent
 		lookup["$moonfirePercent"] = moonfirePercent
+		lookup["$lunarInspiration"] = ""
 
 		lookup["$brutalSlashCharges"] = brutalSlashCharges
 		lookup["$brutalSlashCooldown"] = brutalSlashCooldown
@@ -3940,9 +3947,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Data.spells.apexPredatorsCraving.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.apexPredatorsCraving.duration, TRB.Data.snapshotData.apexPredatorsCraving.endTime, _, _, _, TRB.Data.snapshotData.apexPredatorsCraving.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.apexPredatorsCraving.id)
 
-							if TRB.Data.settings.druid.balance.audio.apexPredatorsCraving.enabled then
+							if TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.enabled then
 								---@diagnostic disable-next-line: redundant-parameter
-								PlaySoundFile(TRB.Data.settings.druid.balance.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
+								PlaySoundFile(TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.apexPredatorsCraving.isActive = false
