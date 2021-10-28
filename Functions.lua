@@ -2331,8 +2331,13 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.endOfVoidform = settings.endOfVoidform
 			end
 		elseif classId == 7 and specId == 1 then -- Elemental Shaman
-		elseif classId == 11 and specId == 1 then -- Balance Druid
-			configuration.endOfEclipse = settings.endOfEclipse
+		elseif classId == 11 then -- Druids
+			if specId == 1 then -- Balance
+				configuration.endOfEclipse = settings.endOfEclipse
+			elseif specId == 2 then -- Feral
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
+			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 			configuration.endOfMetamorphosis = settings.endOfMetamorphosis
 		end
@@ -2381,8 +2386,11 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.insanityPrecision = settings.insanityPrecision
 			end
 		elseif classId == 7 and specId == 1 then -- Elemental Shaman
-		elseif classId == 11 and specId == 1 then -- Balance Druid
-			configuration.astralPowerPrecision = settings.astralPowerPrecision
+		elseif classId == 11 then -- Druids
+			if specId == 1 then -- Balance
+				configuration.astralPowerPrecision = settings.astralPowerPrecision
+			elseif specId == 2 then -- Feral
+			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 		end
 	end
@@ -2415,7 +2423,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.voidTendrilTracker = settings.voidTendrilTracker
 			end
 		elseif classId == 7 and specId == 1 then -- Elemental Shaman
-		elseif classId == 11 and specId == 1 then -- Balance Druid
+		elseif classId == 11 then -- Druid
+			if specId == 1 then -- Balance
+			elseif specId == 2 then -- Feral
+			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 		end
 	end
@@ -2510,6 +2521,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.druid.balance) > 0 then -- Balance
 				configuration.druid.balance = TRB.Functions.ExportConfigurationSections(11, 1, settings.druid.balance, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
+			
+			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.druid.feral) > 0 then -- Feral
+				configuration.druid.feral = TRB.Functions.ExportConfigurationSections(11, 2, settings.druid.feral, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
 		elseif classId == 12 and settings.demonhunter ~= nil then -- Demon Hunter
 			configuration.demonhunter = {}
 			
@@ -2546,9 +2561,12 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Elemental Shaman
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
 
-		-- Balance Druid
+		-- Druids
+		-- Balance
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
-		
+		-- Feral
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+
 		-- Havoc Demon Hunter
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(12, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
 	end

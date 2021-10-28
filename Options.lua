@@ -575,6 +575,36 @@ local function ConstructImportExportPanel()
     yCoord = yCoord - 35
     controls.labels.druid = TRB.UiFunctions:BuildLabel(parent, "Druid", xCoord, yCoord, 110, 20)
 
+    buttonOffset = xCoord + xPadding + 100
+    controls.buttons.exportButton_Druid_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.buttons.exportButton_Druid_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Druid specializations (All).", 11, nil, true, true, true, true, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 50
+    controls.exportButton_Druid_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Druid_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Druid specializations (Bar Display).", 11, nil, true, false, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 80
+    controls.exportButton_Druid_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Druid_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Druid specializations (Font & Text).", 11, nil, false, true, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 90
+    controls.exportButton_Druid_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Druid_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Druid specializations (Audio & Tracking).", 11, nil, false, false, true, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 120
+    controls.exportButton_Druid_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Druid_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Druid specializations (Bar Text).", 11, nil, false, false, false, true, false)
+    end)
+
     yCoord = yCoord - 25
     specName = "Balance"
     controls.labels.druidBalance = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
@@ -608,6 +638,41 @@ local function ConstructImportExportPanel()
     controls.exportButton_Druid_Balance_BarText:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Balance Druid (Bar Text).", 11, 1, false, false, false, true, false)
     end)
+
+    yCoord = yCoord - 25
+    specName = "Feral"
+    controls.labels.druidFeral = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+
+    buttonOffset = xCoord + xPadding + 100
+    controls.buttons.exportButton_Druid_Feral_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.buttons.exportButton_Druid_Feral_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Feral Druid (All).", 11, 2, true, true, true, true, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 50
+    controls.exportButton_Druid_Feral_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Druid_Feral_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Feral Druid (Bar Display).", 11, 2, true, false, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 80
+    controls.exportButton_Druid_Feral_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Druid_Feral_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Feral Druid (Font & Text).", 11, 2, false, true, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 90
+    controls.exportButton_Druid_Feral_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Druid_Feral_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Feral Druid (Audio & Tracking).", 11, 2, false, false, true, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 120
+    controls.exportButton_Druid_Feral_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Druid_Feral_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Feral Druid (Bar Text).", 11, 2, false, false, false, true, false)
+    end)
+
 
     yCoord = yCoord - 35
     controls.labels.hunter = TRB.UiFunctions:BuildLabel(parent, "Hunter", xCoord, yCoord, 110, 20)
