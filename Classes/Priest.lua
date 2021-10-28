@@ -1760,6 +1760,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.character.talents.hungeringVoid.isSelected == true then
 				local reaction = TRB.Data.settings.core.reactionTime
 				local latency = TRB.Functions.GetLatency()
+---@diagnostic disable-next-line: redundant-parameter
 				local vbStart, vbDuration, _, _ = GetSpellCooldown(TRB.Data.spells.voidBolt.id)
 				local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(TRB.Data.spells.voidBolt.id)
 				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier * TRB.Data.character.torghast.phantasmicInfuserModifier * TRB.Data.character.torghast.rampaging.coolDownReduction), 0.75) + latency + reaction
@@ -2799,6 +2800,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			_ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
 
 			local _ttdColor = TRB.Data.settings.priest.shadow.colors.text.left
+---@diagnostic disable-next-line: redundant-parameter
 			local s2mStart, s2mDuration, _, _ = GetSpellCooldown(TRB.Data.spells.s2m.id)
 
 			if TRB.Data.character.talents.surrenderToMadeness.isSelected and not TRB.Data.snapshotData.voidform.s2m.active then
@@ -3222,6 +3224,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.mindbender.resourceFinal = CalculateInsanityGain(TRB.Data.snapshotData.mindbender.resourceRaw, false)
 			end
 		else
+---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.mindbender.onCooldown = not (GetSpellCooldown(TRB.Data.spells.mindbender.id) == 0)
 			TRB.Data.snapshotData.mindbender.isActive = false
 			TRB.Data.snapshotData.mindbender.swingTime = 0
@@ -3389,6 +3392,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			end
 		else
+---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.wrathfulFaerie.main.onCooldown = not (GetSpellCooldown(TRB.Data.spells.wrathfulFaerie.id) == 0)
 			TRB.Data.snapshotData.wrathfulFaerie.main.isActive = false
 			TRB.Data.snapshotData.wrathfulFaerie.main.endTime = nil
@@ -3592,6 +3596,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
         end
 
 		if TRB.Data.snapshotData.holyWordSerenity.startTime ~= nil then
+---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.holyWordSerenity.startTime, TRB.Data.snapshotData.holyWordSerenity.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordSerenity.id)
 			
 			if TRB.Data.snapshotData.holyWordSerenity.startTime == 0 then
@@ -3600,6 +3605,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		if TRB.Data.snapshotData.holyWordSanctify.startTime ~= nil then
+---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.holyWordSanctify.startTime, TRB.Data.snapshotData.holyWordSanctify.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordSanctify.id)
 			
 			if TRB.Data.snapshotData.holyWordSanctify.startTime == 0 then
@@ -3608,6 +3614,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		if TRB.Data.snapshotData.holyWordChastise.startTime ~= nil then
+---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.holyWordChastise.startTime, TRB.Data.snapshotData.holyWordChastise.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordChastise.id)
 
 			if TRB.Data.snapshotData.holyWordChastise.startTime == 0 then
@@ -3750,6 +3757,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 						if TRB.Data.settings.priest.holy.audio.surgeOfLight.enabled and not TRB.Data.snapshotData.audio.surgeOfLightCue then
 							TRB.Data.snapshotData.audio.surgeOfLightCue = true
+---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.priest.holy.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					end
@@ -3759,6 +3767,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 						if TRB.Data.settings.priest.holy.audio.surgeOfLight2.enabled and not TRB.Data.snapshotData.audio.surgeOfLight2Cue then
 							TRB.Data.snapshotData.audio.surgeOfLight2Cue = true
+---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.priest.holy.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					end
@@ -3768,6 +3777,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 						if TRB.Data.settings.priest.holy.audio.innervate.enabled and TRB.Data.snapshotData.audio.innervateCue == false then
 							TRB.Data.snapshotData.audio.innervateCue = true
+---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.priest.holy.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					end
@@ -3794,6 +3804,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 								if TRB.Data.settings.priest.holy.audio.flashConcentration.enabled and TRB.Data.snapshotData.audio.flashConcentrationCue == false then
 									TRB.Data.snapshotData.audio.flashConcentrationCue = true
+---@diagnostic disable-next-line: redundant-parameter
 									PlaySoundFile(TRB.Data.settings.priest.holy.audio.flashConcentration.sound, TRB.Data.settings.core.audio.channel.channel)
 								end
 							else
@@ -4076,6 +4087,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 						if TRB.Data.settings.priest.shadow.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
+---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.priest.shadow.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
@@ -4162,9 +4174,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						if TRB.Data.spells.mindDevourer.isActive and TRB.Data.settings.priest.shadow.audio.mdProc.enabled and TRB.Data.snapshotData.audio.playedMdCue == false then
 							TRB.Data.snapshotData.audio.playedDpCue = true
 							TRB.Data.snapshotData.audio.playedMdCue = true
+---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.priest.shadow.audio.mdProc.sound, TRB.Data.settings.core.audio.channel.channel)
 						elseif TRB.Data.settings.priest.shadow.audio.dpReady.enabled and TRB.Data.snapshotData.audio.playedDpCue == false then
 							TRB.Data.snapshotData.audio.playedDpCue = true
+---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.priest.shadow.audio.dpReady.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
@@ -4374,14 +4388,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					elseif spellId == TRB.Data.spells.holyWordSerenity.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Serenity
+---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.snapshotData.holyWordSerenity.startTime, TRB.Data.snapshotData.holyWordSerenity.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordSerenity.id)
 						end
 					elseif spellId == TRB.Data.spells.holyWordSanctify.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Sanctify
+---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.snapshotData.holyWordSanctify.startTime, TRB.Data.snapshotData.holyWordSanctify.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordSanctify.id)
 						end
 					elseif spellId == TRB.Data.spells.holyWordChastise.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Chastise
+---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.snapshotData.holyWordChastise.startTime, TRB.Data.snapshotData.holyWordChastise.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordChastise.id)
 						end
 					end
@@ -4618,6 +4635,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			if s2mDeath then
 				if settings.audio.s2mDeath.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 					PlaySoundFile(settings.audio.s2mDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 				end
 				TRB.Data.snapshotData.voidform.s2m.startTime = nil
