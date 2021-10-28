@@ -411,7 +411,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		-- This is done here so that we can get icons for the options menu!
 		specCache.havoc.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Fury generating spell you are currently hardcasting", printInSettings = true },
-			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#annihilation", icon = spells.annihilation.icon, description = spells.annihilation.name, printInSettings = true },
@@ -998,8 +998,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
             TRB.Data.snapshotData.bladeDance.duration = 0
 		elseif TRB.Data.snapshotData.bladeDance.startTime ~= nil then
 			if GetMetamorphosisRemainingTime() > 0 then
+				---@diagnostic disable-next-line: redundant-parameter
 				TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.deathSweep.id)
 			else
+				---@diagnostic disable-next-line: redundant-parameter
 				TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.bladeDance.id)
 			end
         end
@@ -1008,6 +1010,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Data.snapshotData.chaosNova.startTime = nil
             TRB.Data.snapshotData.chaosNova.duration = 0
 		elseif TRB.Data.snapshotData.chaosNova.startTime ~= nil then
+			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.chaosNova.startTime, TRB.Data.snapshotData.chaosNova.duration, _, _ = GetSpellCooldown(TRB.Data.spells.chaosNova.id)
         end
 
@@ -1015,6 +1018,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
             TRB.Data.snapshotData.eyeBeam.startTime = nil
             TRB.Data.snapshotData.eyeBeam.duration = 0
 		elseif TRB.Data.snapshotData.eyeBeam.startTime ~= nil then
+			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.eyeBeam.startTime, TRB.Data.snapshotData.eyeBeam.duration, _, _ = GetSpellCooldown(TRB.Data.spells.eyeBeam.id)
         end
 
@@ -1022,6 +1026,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
             TRB.Data.snapshotData.glaiveTempest.startTime = nil
             TRB.Data.snapshotData.glaiveTempest.duration = 0
 		elseif TRB.Data.snapshotData.glaiveTempest.startTime ~= nil then
+			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.glaiveTempest.startTime, TRB.Data.snapshotData.glaiveTempest.duration, _, _ = GetSpellCooldown(TRB.Data.spells.glaiveTempest.id)
         end
 
@@ -1029,6 +1034,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
             TRB.Data.snapshotData.felEruption.startTime = nil
             TRB.Data.snapshotData.felEruption.duration = 0
 		elseif TRB.Data.snapshotData.felEruption.startTime ~= nil then
+			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.felEruption.startTime, TRB.Data.snapshotData.felEruption.duration, _, _ = GetSpellCooldown(TRB.Data.spells.felEruption.id)
         end
 	end
@@ -1222,6 +1228,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 						if TRB.Data.settings.demonhunter.havoc.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.demonhunter.havoc.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
@@ -1270,26 +1277,32 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				if specId == 1 then --Havoc
                     if spellId == TRB.Data.spells.bladeDance.id then
 						if type == "SPELL_CAST_SUCCESS" then
+							---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.bladeDance.id)
 						end
 					elseif spellId == TRB.Data.spells.deathSweep.id then
 						if type == "SPELL_CAST_SUCCESS" then
+							---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.deathSweep.id)
 						end
 					elseif spellId == TRB.Data.spells.chaosNova.id then
 						if type == "SPELL_CAST_SUCCESS" then
+							---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.snapshotData.chaosNova.startTime, TRB.Data.snapshotData.chaosNova.duration, _, _ = GetSpellCooldown(TRB.Data.spells.chaosNova.id)
 						end
 					elseif spellId == TRB.Data.spells.eyeBeam.id then
 						if type == "SPELL_CAST_SUCCESS" then
+							---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.snapshotData.eyeBeam.startTime, TRB.Data.snapshotData.eyeBeam.duration, _, _ = GetSpellCooldown(TRB.Data.spells.eyeBeam.id)
 						end
 					elseif spellId == TRB.Data.spells.glaiveTempest.id then
 						if type == "SPELL_CAST_SUCCESS" then
+							---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.snapshotData.glaiveTempest.startTime, TRB.Data.snapshotData.glaiveTempest.duration, _, _ = GetSpellCooldown(TRB.Data.spells.glaiveTempest.id)
 						end
 					elseif spellId == TRB.Data.spells.felEruption.id then
 						if type == "SPELL_CAST_SUCCESS" then
+							---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.snapshotData.felEruption.startTime, TRB.Data.snapshotData.felEruption.duration, _, _ = GetSpellCooldown(TRB.Data.spells.felEruption.id)
 						end
 					elseif spellId == TRB.Data.spells.metamorphosis.id then
