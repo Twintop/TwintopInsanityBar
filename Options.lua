@@ -1132,7 +1132,7 @@ function TRB.Options:PortForwardSettings()
         
         TwintopInsanityBarSettings.priest.shadow.thresholds = {
             width = TwintopInsanityBarSettings.priest.shadow.thresholdWidth,
-            overlapBorder = TwintopInsanityBarSettings.priest.shadow.thresholds.overlapBorder,
+            overlapBorder = TwintopInsanityBarSettings.priest.shadow.thresholdsOverlapBorder,
             devouringPlague = {
                 enabled = TwintopInsanityBarSettings.priest.shadow.devouringPlagueThreshold
             },
@@ -1144,7 +1144,7 @@ function TRB.Options:PortForwardSettings()
         TwintopInsanityBarSettings.priest.shadow.thresholdWidth = nil
         TwintopInsanityBarSettings.priest.shadow.devouringPlagueThreshold = nil
         TwintopInsanityBarSettings.priest.shadow.searingNightmareThreshold = nil
-        TwintopInsanityBarSettings.priest.shadow.thresholds.overlapBorder = nil
+        TwintopInsanityBarSettings.priest.shadow.thresholdsOverlapBorder = nil
     end
 
     -- Holy
@@ -1154,10 +1154,10 @@ function TRB.Options:PortForwardSettings()
     TwintopInsanityBarSettings.priest.holy.thresholdWidth ~= nil then
         
         TwintopInsanityBarSettings.priest.holy.thresholds.width = TwintopInsanityBarSettings.priest.holy.thresholdWidth
-        TwintopInsanityBarSettings.priest.holy.thresholds.overlapBorder = TwintopInsanityBarSettings.priest.holy.thresholds.overlapBorder
+        TwintopInsanityBarSettings.priest.holy.thresholds.overlapBorder = TwintopInsanityBarSettings.priest.holy.thresholdsOverlapBorder
         
         TwintopInsanityBarSettings.priest.holy.thresholdWidth = nil
-        TwintopInsanityBarSettings.priest.holy.thresholds.overlapBorder = nil
+        TwintopInsanityBarSettings.priest.holy.thresholdsOverlapBorder = nil
     end
 
 
@@ -1169,7 +1169,7 @@ function TRB.Options:PortForwardSettings()
     
         TwintopInsanityBarSettings.druid.balance.thresholds = {
             width = TwintopInsanityBarSettings.druid.balance.thresholdWidth,            
-            overlapBorder = TwintopInsanityBarSettings.druid.balance.thresholds.overlapBorder,
+            overlapBorder = TwintopInsanityBarSettings.druid.balance.thresholdsOverlapBorder,
             starsurgeThresholdOnlyOverShow = TwintopInsanityBarSettings.druid.balance.starsurgeThresholdOnlyOverShow,
             starsurge = {
                 enabled = TwintopInsanityBarSettings.druid.balance.starsurgeThreshold
@@ -1188,7 +1188,7 @@ function TRB.Options:PortForwardSettings()
         TwintopInsanityBarSettings.druid.balance.thresholdWidth = nil
         TwintopInsanityBarSettings.druid.balance.devouringPlagueThreshold = nil
         TwintopInsanityBarSettings.druid.balance.searingNightmareThreshold = nil
-        TwintopInsanityBarSettings.druid.balance.thresholds.overlapBorder = nil
+        TwintopInsanityBarSettings.druid.balance.thresholdsOverlapBorder = nil
     end
   
     -- Elemental Thresholds
@@ -1199,7 +1199,7 @@ function TRB.Options:PortForwardSettings()
 
         TwintopInsanityBarSettings.shaman.elemental.thresholds = {
             width = TwintopInsanityBarSettings.shaman.elemental.thresholdWidth,
-            overlapBorder = TwintopInsanityBarSettings.shaman.elemental.thresholds.overlapBorder,
+            overlapBorder = TwintopInsanityBarSettings.shaman.elemental.thresholdsOverlapBorder,
             earthShock = {
                 enabled = TwintopInsanityBarSettings.shaman.elemental.earthShockThreshold
             }
@@ -1207,7 +1207,7 @@ function TRB.Options:PortForwardSettings()
         
         TwintopInsanityBarSettings.shaman.elemental.thresholdWidth = nil
         TwintopInsanityBarSettings.shaman.elemental.earthShockThreshold = nil
-        TwintopInsanityBarSettings.shaman.elemental.thresholds.overlapBorder = nil
+        TwintopInsanityBarSettings.shaman.elemental.thresholdsOverlapBorder = nil
     end
 
     -- Hunters
@@ -1217,10 +1217,10 @@ function TRB.Options:PortForwardSettings()
         TwintopInsanityBarSettings.hunter.beastMastery.thresholdWidth ~= nil then
             
         TwintopInsanityBarSettings.hunter.beastMastery.thresholds.width = TwintopInsanityBarSettings.hunter.beastMastery.thresholdWidth
-        TwintopInsanityBarSettings.hunter.beastMastery.thresholds.overlapBorder = TwintopInsanityBarSettings.hunter.beastMastery.thresholds.overlapBorder
+        TwintopInsanityBarSettings.hunter.beastMastery.thresholds.overlapBorder = TwintopInsanityBarSettings.hunter.beastMastery.thresholdsOverlapBorder
         
         TwintopInsanityBarSettings.hunter.beastMastery.thresholdWidth = nil
-        TwintopInsanityBarSettings.hunter.beastMastery.thresholds.overlapBorder = nil
+        TwintopInsanityBarSettings.hunter.beastMastery.thresholdsOverlapBorder = nil
     end
     
     if TwintopInsanityBarSettings ~= nil and
@@ -1229,10 +1229,10 @@ function TRB.Options:PortForwardSettings()
         TwintopInsanityBarSettings.hunter.marksmanship.thresholdWidth ~= nil then
             
         TwintopInsanityBarSettings.hunter.marksmanship.thresholds.width = TwintopInsanityBarSettings.hunter.marksmanship.thresholdWidth
-        TwintopInsanityBarSettings.hunter.marksmanship.thresholds.overlapBorder = TwintopInsanityBarSettings.hunter.marksmanship.thresholds.overlapBorder
+        TwintopInsanityBarSettings.hunter.marksmanship.thresholds.overlapBorder = TwintopInsanityBarSettings.hunter.marksmanship.thresholdsOverlapBorder
         
         TwintopInsanityBarSettings.hunter.marksmanship.thresholdWidth = nil
-        TwintopInsanityBarSettings.hunter.marksmanship.thresholds.overlapBorder = nil
+        TwintopInsanityBarSettings.hunter.marksmanship.thresholdsOverlapBorder = nil
     end
     
     if TwintopInsanityBarSettings ~= nil and
@@ -1241,13 +1241,13 @@ function TRB.Options:PortForwardSettings()
         TwintopInsanityBarSettings.hunter.survival.thresholdWidth ~= nil then
             
         TwintopInsanityBarSettings.hunter.survival.thresholds.width = TwintopInsanityBarSettings.hunter.survival.thresholdWidth
-        TwintopInsanityBarSettings.hunter.survival.thresholds.overlapBorder = TwintopInsanityBarSettings.hunter.survival.thresholds.overlapBorder
+        TwintopInsanityBarSettings.hunter.survival.thresholds.overlapBorder = TwintopInsanityBarSettings.hunter.survival.thresholdsOverlapBorder
         
         TwintopInsanityBarSettings.survival.thresholds.mongooseBite.enabled = TwintopInsanityBarSettings.hunter.survival.thresholds.raptorStrike.enabled
         TwintopInsanityBarSettings.survival.thresholds.butchery.enabled = TwintopInsanityBarSettings.hunter.survival.thresholds.carve.enabled
 
         TwintopInsanityBarSettings.hunter.survival.thresholdWidth = nil
-        TwintopInsanityBarSettings.hunter.survival.thresholds.overlapBorder = nil
+        TwintopInsanityBarSettings.hunter.survival.thresholdsOverlapBorder = nil
     end
 
     -- Warriors
@@ -1257,10 +1257,10 @@ function TRB.Options:PortForwardSettings()
     TwintopInsanityBarSettings.warrior.arms.thresholdWidth ~= nil then
             
         TwintopInsanityBarSettings.warrior.arms.thresholds.width = TwintopInsanityBarSettings.warrior.arms.thresholdWidth
-        TwintopInsanityBarSettings.warrior.arms.thresholds.overlapBorder = TwintopInsanityBarSettings.warrior.arms.thresholds.overlapBorder
+        TwintopInsanityBarSettings.warrior.arms.thresholds.overlapBorder = TwintopInsanityBarSettings.warrior.arms.thresholdsOverlapBorder
         
         TwintopInsanityBarSettings.warrior.arms.thresholdWidth = nil
-        TwintopInsanityBarSettings.warrior.arms.thresholds.overlapBorder = nil
+        TwintopInsanityBarSettings.warrior.arms.thresholdsOverlapBorder = nil
     end
     
     if TwintopInsanityBarSettings ~= nil and
@@ -1269,10 +1269,10 @@ function TRB.Options:PortForwardSettings()
         TwintopInsanityBarSettings.warrior.fury.thresholdWidth ~= nil then
             
         TwintopInsanityBarSettings.warrior.fury.thresholds.width = TwintopInsanityBarSettings.warrior.fury.thresholdWidth
-        TwintopInsanityBarSettings.warrior.fury.thresholds.overlapBorder = TwintopInsanityBarSettings.warrior.fury.thresholds.overlapBorder
+        TwintopInsanityBarSettings.warrior.fury.thresholds.overlapBorder = TwintopInsanityBarSettings.warrior.fury.thresholdsOverlapBorder
         
         TwintopInsanityBarSettings.warrior.fury.thresholdWidth = nil
-        TwintopInsanityBarSettings.warrior.fury.thresholds.overlapBorder = nil
+        TwintopInsanityBarSettings.warrior.fury.thresholdsOverlapBorder = nil
     end
 
     -- Havoc
@@ -1282,10 +1282,10 @@ function TRB.Options:PortForwardSettings()
     TwintopInsanityBarSettings.demonhunter.havoc.thresholdWidth ~= nil then
             
         TwintopInsanityBarSettings.demonhunter.havoc.thresholds.width = TwintopInsanityBarSettings.demonhunter.havoc.thresholdWidth
-        TwintopInsanityBarSettings.demonhunter.havoc.thresholds.overlapBorder = TwintopInsanityBarSettings.demonhunter.havoc.thresholds.overlapBorder
+        TwintopInsanityBarSettings.demonhunter.havoc.thresholds.overlapBorder = TwintopInsanityBarSettings.demonhunter.havoc.thresholdsOverlapBorder
         
         TwintopInsanityBarSettings.demonhunter.havoc.thresholdWidth = nil
-        TwintopInsanityBarSettings.demonhunter.havoc.thresholds.overlapBorder = nil
+        TwintopInsanityBarSettings.demonhunter.havoc.thresholdsOverlapBorder = nil
     end
 
     -- Assassination
@@ -1295,10 +1295,10 @@ function TRB.Options:PortForwardSettings()
         TwintopInsanityBarSettings.rogue.assassination.thresholdWidth ~= nil then
             
         TwintopInsanityBarSettings.rogue.assassination.thresholds.width = TwintopInsanityBarSettings.rogue.assassination.thresholdWidth
-        TwintopInsanityBarSettings.priest.holy.thresholds.overlapBorder = TwintopInsanityBarSettings.rogue.assassination.thresholds.overlapBorder
+        TwintopInsanityBarSettings.priest.holy.thresholds.overlapBorder = TwintopInsanityBarSettings.rogue.assassination.thresholdsOverlapBorder
         
         TwintopInsanityBarSettings.rogue.assassination.thresholdWidth = nil
-        TwintopInsanityBarSettings.rogue.assassination.thresholds.overlapBorder = nil
+        TwintopInsanityBarSettings.rogue.assassination.thresholdsOverlapBorder = nil
     end
 
 end
