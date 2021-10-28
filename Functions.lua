@@ -216,7 +216,8 @@ TRB.Functions.PulseFrame = PulseFrame
 -- Casting, Time, and GCD Functions
 
 local function GetCurrentGCDLockRemaining()
-	local startTime, duration, enabled = GetSpellCooldown(61304);
+---@diagnostic disable-next-line: redundant-parameter
+	local startTime, duration, _ = GetSpellCooldown(61304);
 	return (startTime + duration - GetTime())
 end
 TRB.Functions.GetCurrentGCDLockRemaining = GetCurrentGCDLockRemaining
@@ -340,6 +341,7 @@ local function FillSpellData(spells)
 				spells[k]["name"] = name
 
 				if spells[k]["thresholdId"] ~= nil then
+---@diagnostic disable-next-line: redundant-parameter
 					local texture, _ = GetSpellTexture(spells[k]["id"])
 					spells[k]["texture"] = texture
 				end
@@ -354,6 +356,7 @@ end
 TRB.Functions.FillSpellData = FillSpellData
 
 local function GetSpellManaCost(spellId)
+---@diagnostic disable-next-line: redundant-parameter
 	local spc = GetSpellPowerCost(spellId)
 	local length = TRB.Functions.TableLength(spc)
 
@@ -2018,8 +2021,8 @@ local function UpdateSnapshot()
 	end
 
 	TRB.Data.snapshotData.haste = UnitSpellHaste("player")
-	TRB.Data.snapshotData.crit = GetCritChance("player")
-	TRB.Data.snapshotData.mastery = GetMasteryEffect("player")
+	TRB.Data.snapshotData.crit = GetCritChance()
+	TRB.Data.snapshotData.mastery = GetMasteryEffect()
 	TRB.Data.snapshotData.versatilityOffensive = GetCombatRatingBonus(29)
 	TRB.Data.snapshotData.versatilityDefensive = GetCombatRatingBonus(31)
 
@@ -2537,38 +2540,38 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 
 		-- Warriors
 		-- Arms
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(1, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(1, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Fury
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(1, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(1, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Hunters
 		-- Beast Mastery
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Marksmanship
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Survival
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Priests
 		-- Holy
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(5, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(5, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Shadow
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(5, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(5, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Assassination Rogue
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Elemental Shaman
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Druids
 		-- Balance
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Feral
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Havoc Demon Hunter
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(12, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(12, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 	end
 
 	if includeCore then
