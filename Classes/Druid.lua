@@ -2752,7 +2752,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$clearcastingStacks"] = clearcastingStacks
 		lookup["$clearcastingTime"] = clearcastingTime
 		lookup["$berserkTime"] = berserkTime
-		lookup["$incarnationTime"] = incarnationTime
+		lookup["$incarnationTime"] = berserkTime
 		lookup["$apexPredatorsCravingTime"] = apexPredatorsCravingTime
 
 		lookup["$energyPlusCasting"] = energyPlusCasting

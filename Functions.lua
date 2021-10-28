@@ -2112,7 +2112,7 @@ local function GetSoulbindRank(id)
 	local conduit = C_Soulbinds.GetConduitCollectionData(id)
 
 	if conduit ~= nil then
-		return conduit.conduitRank + empowered
+		return conduit.conduitRank
 	end
 	return 0
 end
