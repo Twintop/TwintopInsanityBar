@@ -1970,7 +1970,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function CalculateHolyWordCooldown(base)
-		local holyOrationValue = TRB.Data.spells.holyOration.conduitRanks[TRB.Functions.GetSoulbindRank(TRB.Data.spells.holyOration.conduitId)]
+		local holyOrationValue = TRB.Data.spells.holyOration.conduitRanks[TRB.Functions.GetSoulbindEquippedConduitRank(TRB.Data.spells.holyOration.conduitId)]
 		local mod = 1 * TRB.Data.character.torghast.rampaging.coolDownReduction
 
 		if TRB.Data.spells.apotheosis.isActive then
@@ -3161,7 +3161,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		if TRB.Data.settings.priest.shadow.mindbender.enabled and haveTotem and timeRemaining > 0 then
 			TRB.Data.snapshotData.mindbender.isActive = true
 			if TRB.Data.settings.priest.shadow.mindbender.enabled then
-				local rabidShadowsPercent = 1 + TRB.Data.spells.rabidShadows.conduitRanks[TRB.Functions.GetSoulbindRank(TRB.Data.spells.rabidShadows.conduitId)]
+				local rabidShadowsPercent = 1 + TRB.Data.spells.rabidShadows.conduitRanks[TRB.Functions.GetSoulbindEquippedConduitRank(TRB.Data.spells.rabidShadows.conduitId)]
 				local swingSpeed = 1.5 / (1 + (TRB.Data.snapshotData.haste / 100)) / rabidShadowsPercent
 
 				if swingSpeed > 1.5 then
@@ -4552,7 +4552,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if type == "SPELL_AURA_APPLIED" then -- Gained buff
 						if TRB.Data.snapshotData.wrathfulFaerie.fermata.isActive == false or TRB.Data.snapshotData.targetData.wrathfulFaerieFermataGuid ~= destGUID then
 							TRB.Data.snapshotData.wrathfulFaerie.fermata.isActive = true
-							local duration = TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[TRB.Functions.GetSoulbindRank(TRB.Data.spells.wrathfulFaerieFermata.conduitId)] * TRB.Data.character.torghast.dreamspunMushroomsModifier
+							local duration = TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[TRB.Functions.GetSoulbindEquippedConduitRank(TRB.Data.spells.wrathfulFaerieFermata.conduitId)] * TRB.Data.character.torghast.dreamspunMushroomsModifier
 							TRB.Data.snapshotData.wrathfulFaerie.fermata.endTime = currentTime + duration
 						end
 						TRB.Data.snapshotData.targetData.wrathfulFaerieFermataGuid = destGUID
@@ -4685,18 +4685,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 	resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
-		local _, _, classIndex = UnitClass("player")
 		local specId = GetSpecialization() or 0
-		if classIndex == 5 then
+		if classIndexId == 5 then
 			if event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar" then
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
 					local settings = TRB.Options.Priest.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
-						TRB.Options.PortForwardSettings()
+						TRB.Options:PortForwardSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
-						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
+						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
 						TRB.Data.settings = settings
 					end

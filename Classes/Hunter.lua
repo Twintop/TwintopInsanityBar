@@ -2814,7 +2814,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							if TRB.Data.settings.hunter.beastMastery.thresholds[spell.settingKey].enabled and showThreshold then
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
-								TRB.Functions.SetThresholdLineColor(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], thresholdColor, TRB.Data.settings.hunter.beastMastery)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel+10)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 								if frameLevel == 129 then
 									spell.thresholdUsable = true
 								else
@@ -3084,7 +3089,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							if TRB.Data.settings.hunter.marksmanship.thresholds[spell.settingKey].enabled and showThreshold then
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
-								TRB.Functions.SetThresholdLineColor(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], thresholdColor, TRB.Data.settings.hunter.marksmanship)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel+10)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 								if frameLevel == 129 then
 									spell.thresholdUsable = true
 								else
@@ -3298,6 +3308,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							if TRB.Data.settings.hunter.survival.thresholds[spell.settingKey].enabled and showThreshold then
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel+10)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
@@ -3693,18 +3705,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 	resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
-		local _, _, classIndex = UnitClass("player")
 		local specId = GetSpecialization() or 0
-		if classIndex == 3 then
+		if classIndexId == 3 then
 			if (event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar") then
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
 					local settings = TRB.Options.Hunter.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
-						TRB.Options.PortForwardSettings()
+						TRB.Options:PortForwardSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
-						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
+						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
 						TRB.Data.settings = settings
 					end

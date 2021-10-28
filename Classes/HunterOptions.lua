@@ -818,32 +818,32 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}]]
 
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = TRB.UiFunctions.BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
 		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_Reset")
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton1 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 
 		--[[
-		controls.resetButton2 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton2 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
 		controls.resetButton2:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_ResetBarTextNarrowAdvanced")
 		end)
 		]]
 
-		controls.resetButton3 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
 		controls.resetButton3:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_ResetBarTextAdvanced")
 		end)
@@ -880,16 +880,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.beastMastery)
 
-		controls.buttons.exportButton_Hunter_BeastMastery_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_BeastMastery_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_BeastMastery_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (Bar Display).", 3, 1, true, false, false, false, false)
 		end)
 
-		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
+		controls.barPositionSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
 
 		yCoord = yCoord - 40
 		title = "Bar Width"
-		controls.width = TRB.UiFunctions.BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, TRB.Data.settings.hunter.beastMastery.bar.width, 1, 2,
+		controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, TRB.Data.settings.hunter.beastMastery.bar.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -925,7 +925,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Bar Height"
-		controls.height = TRB.UiFunctions.BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, TRB.Data.settings.hunter.beastMastery.bar.height, 1, 2,
+		controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, TRB.Data.settings.hunter.beastMastery.bar.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -955,7 +955,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Bar Horizontal Position"
 		yCoord = yCoord - 60
-		controls.horizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.hunter.beastMastery.bar.xPos, 1, 2,
+		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.hunter.beastMastery.bar.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -975,7 +975,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Bar Vertical Position"
-		controls.vertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.hunter.beastMastery.bar.yPos, 1, 2,
+		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.hunter.beastMastery.bar.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -996,7 +996,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Bar Border Width"
 		yCoord = yCoord - 60
-		controls.borderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.hunter.beastMastery.bar.border, 1, 2,
+		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.hunter.beastMastery.bar.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.borderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1056,7 +1056,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.beastMastery.thresholds.width, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.beastMastery.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1091,7 +1091,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			barContainerFrame:EnableMouse((not TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop)
 		end)
 			
-		TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay)
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay)
 
 		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.pinToPRD
@@ -1102,7 +1102,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay = self:GetChecked()
 			
-			TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay)
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay)
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.hunter.beastMastery.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.beastMastery.bar.dragAndDrop)
@@ -1113,12 +1113,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 30
-		controls.textBarTexturesSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Textures", 0, yCoord)
+		controls.textBarTexturesSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Textures", 0, yCoord)
 		yCoord = yCoord - 30
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_FocusBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
+		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
@@ -1185,7 +1185,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_CastBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.castingBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
+		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
@@ -1258,7 +1258,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
+		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
@@ -1354,7 +1354,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_BorderTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.borderTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
+		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
@@ -1420,7 +1420,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_BackgroundTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.backgroundTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
+		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
@@ -1482,12 +1482,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 70
-		controls.barDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display", 0, yCoord)
+		controls.barDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display", 0, yCoord)
 
 		yCoord = yCoord - 50
 
 		title = "Beastial Wrath Flash Alpha"
-		controls.flashAlpha = TRB.UiFunctions.BuildSlider(parent, title, 0, 1, TRB.Data.settings.hunter.beastMastery.colors.bar.flashAlpha, 0.01, 2,
+		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, TRB.Data.settings.hunter.beastMastery.colors.bar.flashAlpha, 0.01, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1503,7 +1503,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Beastial Wrath Flash Period (sec)"
-		controls.flashPeriod = TRB.UiFunctions.BuildSlider(parent, title, 0.05, 2, TRB.Data.settings.hunter.beastMastery.colors.bar.flashPeriod, 0.05, 2,
+		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0.05, 2, TRB.Data.settings.hunter.beastMastery.colors.bar.flashPeriod, 0.05, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1633,15 +1633,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 60
 
-		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
+		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Focus", TRB.Data.settings.hunter.beastMastery.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Focus", TRB.Data.settings.hunter.beastMastery.colors.bar.base, 300, 25, xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
                 local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.base, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1655,12 +1655,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.hunter.beastMastery.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.hunter.beastMastery.colors.bar.border, 225, 25, xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.border, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1677,12 +1677,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from Passive Sources", TRB.Data.settings.hunter.beastMastery.colors.bar.passive, 275, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from Passive Sources", TRB.Data.settings.hunter.beastMastery.colors.bar.passive, 275, 25, xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.passive, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1698,12 +1698,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.borderBeastialWrath = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when you can use Beastial Wrath", TRB.Data.settings.hunter.beastMastery.colors.bar.borderBeastialWrath, 275, 25, xCoord2, yCoord)
+		controls.colors.borderBeastialWrath = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you can use Beastial Wrath", TRB.Data.settings.hunter.beastMastery.colors.bar.borderBeastialWrath, 275, 25, xCoord2, yCoord)
 		f = controls.colors.borderBeastialWrath
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.borderBeastialWrath, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1720,12 +1720,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.frenzyUse = TRB.UiFunctions.BuildColorPicker(parent, "Focus when Barbed Shot should be used", TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyUse, 275, 25, xCoord, yCoord)
+		controls.colors.frenzyUse = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Barbed Shot should be used", TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyUse, 275, 25, xCoord, yCoord)
 		f = controls.colors.frenzyUse
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyUse, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1740,12 +1740,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.hunter.beastMastery.colors.bar.background, 275, 25, xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.hunter.beastMastery.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.background, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1762,12 +1762,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.frenzyHold = TRB.UiFunctions.BuildColorPicker(parent, "Focus when Barbed Shot charges should be held", TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyHold, 275, 25, xCoord, yCoord)
+		controls.colors.frenzyHold = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Barbed Shot charges should be held", TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyHold, 275, 25, xCoord, yCoord)
 		f = controls.colors.frenzyHold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.bar.frenzyHold, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -1784,16 +1784,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 40
 
-		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
 
 		yCoord = yCoord - 25
 
-		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under minimum required Focus threshold line", TRB.Data.settings.hunter.beastMastery.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		controls.colors.thresholdUnder = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Focus threshold line", TRB.Data.settings.hunter.beastMastery.colors.threshold.under, 275, 25, xCoord2, yCoord)
 		f = controls.colors.thresholdUnder
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.threshold.under, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1808,12 +1808,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over minimum required Focus threshold line", TRB.Data.settings.hunter.beastMastery.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		controls.colors.thresholdOver = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Focus threshold line", TRB.Data.settings.hunter.beastMastery.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
 		f = controls.colors.thresholdOver
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.threshold.over, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1828,12 +1828,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.thresholdUnusable = TRB.UiFunctions.BuildColorPicker(parent, "Ability is unusable threshold line", TRB.Data.settings.hunter.beastMastery.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
+		controls.colors.thresholdUnusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", TRB.Data.settings.hunter.beastMastery.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
 		f = controls.colors.thresholdUnusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.threshold.unusable, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -1972,7 +1972,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
         -- Create the dropdown, and configure its appearance
         controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
-        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions.BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
         controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
         controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
         UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
@@ -2032,7 +2032,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 80
 		title = "Threshold Icon Width"
-		controls.thresholdIconWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.beastMastery.thresholds.icons.width, 1, 2,
+		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.beastMastery.thresholds.icons.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2057,7 +2057,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Threshold Icon Height"
-		controls.thresholdIconHeight = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.beastMastery.thresholds.icons.height, 1, 2,
+		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.beastMastery.thresholds.icons.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2084,7 +2084,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Threshold Icon Horizontal Position (Relative)"
 		yCoord = yCoord - 60
-		controls.thresholdIconHorizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.hunter.beastMastery.thresholds.icons.xPos, 1, 2,
+		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.hunter.beastMastery.thresholds.icons.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2102,7 +2102,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Threshold Icon Vertical Position (Relative)"
-		controls.thresholdIconVertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.hunter.beastMastery.thresholds.icons.yPos, 1, 2,
+		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.hunter.beastMastery.thresholds.icons.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2119,7 +2119,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Threshold Icon Border Width"
 		yCoord = yCoord - 60
-		controls.thresholdIconBorderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.hunter.beastMastery.thresholds.icons.border, 1, 2,
+		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.hunter.beastMastery.thresholds.icons.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2147,7 +2147,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 60
 
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_8", parent, "ChatConfigCheckButtonTemplate")
@@ -2163,7 +2163,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 40
 
 		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.UiFunctions.BuildSlider(parent, title, 0, 120, TRB.Data.settings.hunter.beastMastery.overcapThreshold, 1, 1,
+		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 120, TRB.Data.settings.hunter.beastMastery.overcapThreshold, 1, 1,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2206,17 +2206,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		controls.buttons.exportButton_Hunter_BeastMastery_FontAndText = TRB.UiFunctions.BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_BeastMastery_FontAndText = TRB.UiFunctions:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_BeastMastery_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (Font & Text).", 3, 1, false, true, false, false, false)
 		end)
 
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Face", 0, yCoord)
 
 		yCoord = yCoord - 30
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_FontLeft", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontLeft.label = TRB.UiFunctions.BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
@@ -2283,7 +2283,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_FontMiddle", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontMiddle.label = TRB.UiFunctions.BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
+		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
@@ -2352,7 +2352,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_FontRight", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontRight.label = TRB.UiFunctions.BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
@@ -2442,11 +2442,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 70
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Size and Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Size and Colors", 0, yCoord)
 
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
-		controls.fontSizeLeft = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.beastMastery.displayText.left.fontSize, 1, 0,
+		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.beastMastery.displayText.left.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2482,13 +2482,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.leftText = TRB.UiFunctions.BuildColorPicker(parent, "Left Text", TRB.Data.settings.hunter.beastMastery.colors.text.left,
+		controls.colors.leftText = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", TRB.Data.settings.hunter.beastMastery.colors.text.left,
 														250, 25, xCoord2, yCoord-30)
 		f = controls.colors.leftText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.text.left, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -2505,13 +2505,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.middleText = TRB.UiFunctions.BuildColorPicker(parent, "Middle Text", TRB.Data.settings.hunter.beastMastery.colors.text.middle,
+		controls.colors.middleText = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", TRB.Data.settings.hunter.beastMastery.colors.text.middle,
 														225, 25, xCoord2, yCoord-70)
 		f = controls.colors.middleText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.text.middle, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -2528,13 +2528,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.rightText = TRB.UiFunctions.BuildColorPicker(parent, "Right Text", TRB.Data.settings.hunter.beastMastery.colors.text.right,
+		controls.colors.rightText = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", TRB.Data.settings.hunter.beastMastery.colors.text.right,
 														225, 25, xCoord2, yCoord-110)
 		f = controls.colors.rightText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.text.right, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -2553,7 +2553,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeMiddle = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.beastMastery.displayText.middle.fontSize, 1, 0,
+		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.beastMastery.displayText.middle.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2577,7 +2577,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeRight = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.beastMastery.displayText.right.fontSize, 1, 0,
+		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.beastMastery.displayText.right.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2600,15 +2600,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Focus Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Focus Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Current Focus", TRB.Data.settings.hunter.beastMastery.colors.text.current, 300, 25, xCoord, yCoord)
+		controls.colors.currentFocusText = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus", TRB.Data.settings.hunter.beastMastery.colors.text.current, 300, 25, xCoord, yCoord)
 		f = controls.colors.currentFocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.text.current, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -2625,12 +2625,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 		
-		controls.colors.passiveFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Passive Focus", TRB.Data.settings.hunter.beastMastery.colors.text.passive, 275, 25, xCoord2, yCoord)
+		controls.colors.passiveFocusText = TRB.UiFunctions:BuildColorPicker(parent, "Passive Focus", TRB.Data.settings.hunter.beastMastery.colors.text.passive, 275, 25, xCoord2, yCoord)
 		f = controls.colors.passiveFocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.text.passive, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -2648,12 +2648,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdfocusText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", TRB.Data.settings.hunter.beastMastery.colors.text.overThreshold, 300, 25, xCoord, yCoord)
+		controls.colors.thresholdfocusText = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", TRB.Data.settings.hunter.beastMastery.colors.text.overThreshold, 300, 25, xCoord, yCoord)
 		f = controls.colors.thresholdfocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.text.overThreshold, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -2670,12 +2670,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.overcapfocusText = TRB.UiFunctions.BuildColorPicker(parent, "Current Focus is above overcap threshold", TRB.Data.settings.hunter.beastMastery.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		controls.colors.overcapfocusText = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus is above overcap threshold", TRB.Data.settings.hunter.beastMastery.colors.text.overcap, 300, 25, xCoord2, yCoord)
 		f = controls.colors.overcapfocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.text.overcap, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -2716,11 +2716,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		
 
 		yCoord = yCoord - 30
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
-		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.beastMastery.hastePrecision, 1, 0,
+		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.beastMastery.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2763,12 +2763,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		controls.buttons.exportButton_Hunter_BeastMastery_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_BeastMastery_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_BeastMastery_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (Audio & Tracking).", 3, 1, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
@@ -3094,7 +3094,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
@@ -3124,7 +3124,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Focus GCDs - 0.75sec Floor"
-		controls.focusGenerationGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.hunter.beastMastery.generation.gcds, 0.25, 2,
+		controls.focusGenerationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, TRB.Data.settings.hunter.beastMastery.generation.gcds, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3156,7 +3156,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Focus Over Time (sec)"
-		controls.focusGenerationTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.beastMastery.generation.time, 0.25, 2,
+		controls.focusGenerationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.beastMastery.generation.time, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3193,16 +3193,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
 
-		TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
-		controls.buttons.exportButton_Hunter_BeastMastery_BarText = TRB.UiFunctions.BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		controls.buttons.exportButton_Hunter_BeastMastery_BarText = TRB.UiFunctions:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_BeastMastery_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (Bar Text).", 3, 1, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions.BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.hunter.beastMastery.displayText.left.text,
+		controls.textbox.left = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.beastMastery.displayText.left.text,
 														500, 440, 24, xCoord+100, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
@@ -3213,9 +3213,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions.BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.hunter.beastMastery.displayText.middle.text,
+		controls.textbox.middle = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.beastMastery.displayText.middle.text,
 														500, 440, 24, xCoord+100, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
@@ -3226,9 +3226,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions.BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.hunter.beastMastery.displayText.right.text,
+		controls.textbox.right = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.beastMastery.displayText.right.text,
 														500, 440, 24, xCoord+100, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
@@ -3238,7 +3238,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Options.CreateBarTextInstructions(cache, parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextInstructions(cache, parent, xCoord, yCoord)
 	end
 
 	local function BeastMasteryConstructOptionsPanel(cache)
@@ -3270,7 +3270,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		parent = interfaceSettingsFrame.beastMasteryDisplayPanel
 
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Beast Mastery Hunter", xCoord+xPadding, yCoord-5)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Beast Mastery Hunter", xCoord+xPadding, yCoord-5)
 	
 		controls.checkBoxes.beastMasteryHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_beastMasteryHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.beastMasteryHunterEnabled
@@ -3281,18 +3281,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.hunter.beastMastery = self:GetChecked()
 			TRB.Functions.EventRegistration()
-			TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.beastMasteryHunterEnabled, TRB.Data.settings.core.enabled.hunter.beastMastery, true)
+			TRB.UiFunctions:ToggleCheckboxOnOff(controls.checkBoxes.beastMasteryHunterEnabled, TRB.Data.settings.core.enabled.hunter.beastMastery, true)
 		end)
 
-		TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.beastMasteryHunterEnabled, TRB.Data.settings.core.enabled.hunter.beastMastery, true)
+		TRB.UiFunctions:ToggleCheckboxOnOff(controls.checkBoxes.beastMasteryHunterEnabled, TRB.Data.settings.core.enabled.hunter.beastMastery, true)
 
-		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Hunter_BeastMastery_All = TRB.UiFunctions.BuildButton(parent, "Export Specialization", 440, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Hunter_BeastMastery_All = TRB.UiFunctions:BuildButton(parent, "Export Specialization", 440, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Hunter_BeastMastery_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (All).", 3, 1, true, true, true, true, false)
 		end)
@@ -3302,12 +3302,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_BeastMastery_Tab2", "Bar Display", 1, parent, 85)
+		tabs[1] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Hunter_BeastMastery_Tab2", "Bar Display", 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_BeastMastery_Tab3", "Font & Text", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_BeastMastery_Tab4", "Audio & Tracking", 3, parent, 120, tabs[2])
-		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_BeastMastery_Tab5", "Bar Text", 4, parent, 60, tabs[3])
-		tabs[5] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_BeastMastery_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
+		tabs[2] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Hunter_BeastMastery_Tab3", "Font & Text", 2, parent, 85, tabs[1])
+		tabs[3] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Hunter_BeastMastery_Tab4", "Audio & Tracking", 3, parent, 120, tabs[2])
+		tabs[4] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Hunter_BeastMastery_Tab5", "Bar Text", 4, parent, 60, tabs[3])
+		tabs[5] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Hunter_BeastMastery_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
 
 		PanelTemplates_TabResize(tabs[1], 0)
 		PanelTemplates_TabResize(tabs[2], 0)
@@ -3317,7 +3317,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 15
 
 		for i = 1, 5 do 
-			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Hunter_BeastMastery_LayoutPanel" .. i, parent)
+			tabsheets[i] = TRB.UiFunctions:CreateTabFrameContainer("TwintopResourceBar_Hunter_BeastMastery_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
 		end
@@ -3423,32 +3423,32 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}]]
 
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = TRB.UiFunctions.BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
 		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_Reset")
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton1 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 
 		--[[
-		controls.resetButton2 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton2 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
 		controls.resetButton2:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_ResetBarTextNarrowAdvanced")
 		end)
 		]]
 
-		controls.resetButton3 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
 		controls.resetButton3:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_ResetBarTextAdvanced")
 		end)
@@ -3485,16 +3485,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.marksmanship)
 
-		controls.buttons.exportButton_Hunter_Marksmanship_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_Marksmanship_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_Marksmanship_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (Bar Display).", 3, 2, true, false, false, false, false)
 		end)
 
-		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
+		controls.barPositionSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
 
 		yCoord = yCoord - 40
 		title = "Bar Width"
-		controls.width = TRB.UiFunctions.BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, TRB.Data.settings.hunter.marksmanship.bar.width, 1, 2,
+		controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, TRB.Data.settings.hunter.marksmanship.bar.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3530,7 +3530,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Bar Height"
-		controls.height = TRB.UiFunctions.BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, TRB.Data.settings.hunter.marksmanship.bar.height, 1, 2,
+		controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, TRB.Data.settings.hunter.marksmanship.bar.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3560,7 +3560,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Bar Horizontal Position"
 		yCoord = yCoord - 60
-		controls.horizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.hunter.marksmanship.bar.xPos, 1, 2,
+		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.hunter.marksmanship.bar.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3580,7 +3580,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Bar Vertical Position"
-		controls.vertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.hunter.marksmanship.bar.yPos, 1, 2,
+		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.hunter.marksmanship.bar.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3601,7 +3601,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Bar Border Width"
 		yCoord = yCoord - 60
-		controls.borderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.hunter.marksmanship.bar.border, 1, 2,
+		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.hunter.marksmanship.bar.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.borderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3661,7 +3661,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.marksmanship.thresholds.width, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.marksmanship.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3696,7 +3696,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			barContainerFrame:EnableMouse((not TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
 		end)
 
-		TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay)
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay)
 
 		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.pinToPRD
@@ -3707,7 +3707,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay = self:GetChecked()
 			
-			TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay)
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay)
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.hunter.marksmanship.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.marksmanship.bar.dragAndDrop)
@@ -3717,12 +3717,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 30
-		controls.textBarTexturesSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Textures", 0, yCoord)
+		controls.textBarTexturesSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Textures", 0, yCoord)
 		yCoord = yCoord - 30
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_FocusBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
+		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
@@ -3789,7 +3789,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_CastBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.castingBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
+		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
@@ -3862,7 +3862,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
+		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
@@ -3958,7 +3958,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_BorderTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.borderTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
+		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
@@ -4024,7 +4024,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_BackgroundTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.backgroundTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
+		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
@@ -4086,12 +4086,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 70
-		controls.barDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display", 0, yCoord)
+		controls.barDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display", 0, yCoord)
 
 		--[[yCoord = yCoord - 50
 
 		title = "Earth Shock/EQ Flash Alpha"
-		controls.flashAlpha = TRB.UiFunctions.BuildSlider(parent, title, 0, 1, TRB.Data.settings.hunter.marksmanship.colors.bar.flashAlpha, 0.01, 2,
+		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, TRB.Data.settings.hunter.marksmanship.colors.bar.flashAlpha, 0.01, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4107,7 +4107,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Earth Shock/EQ Flash Period (sec)"
-		controls.flashPeriod = TRB.UiFunctions.BuildSlider(parent, title, 0, 2, TRB.Data.settings.hunter.marksmanship.colors.bar.flashPeriod, 0.05, 2,
+		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0, 2, TRB.Data.settings.hunter.marksmanship.colors.bar.flashPeriod, 0.05, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4217,15 +4217,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 60
 
-		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
+		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Focus", TRB.Data.settings.hunter.marksmanship.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Focus", TRB.Data.settings.hunter.marksmanship.colors.bar.base, 300, 25, xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
                 local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.base, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -4239,12 +4239,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.hunter.marksmanship.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.hunter.marksmanship.colors.bar.border, 225, 25, xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.border, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -4261,12 +4261,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", TRB.Data.settings.hunter.marksmanship.colors.bar.casting, 275, 25, xCoord, yCoord)
+		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", TRB.Data.settings.hunter.marksmanship.colors.bar.casting, 275, 25, xCoord, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.casting, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -4282,12 +4282,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast builder will overcap Focus", TRB.Data.settings.hunter.marksmanship.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast builder will overcap Focus", TRB.Data.settings.hunter.marksmanship.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.borderOvercap, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -4303,12 +4303,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.spending = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.marksmanship.colors.bar.spending, 275, 25, xCoord, yCoord)
+		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.marksmanship.colors.bar.spending, 275, 25, xCoord, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.spending, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -4323,12 +4323,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.steadyFocus = TRB.UiFunctions.BuildColorPicker(parent, "Border when Steady Focus is expiring or not up (per settings)", TRB.Data.settings.hunter.marksmanship.colors.bar.borderSteadyFocus, 275, 25, xCoord2, yCoord)
+		controls.colors.steadyFocus = TRB.UiFunctions:BuildColorPicker(parent, "Border when Steady Focus is expiring or not up (per settings)", TRB.Data.settings.hunter.marksmanship.colors.bar.borderSteadyFocus, 275, 25, xCoord2, yCoord)
 		f = controls.colors.steadyFocus
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.borderSteadyFocus, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -4344,12 +4344,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from Passive Sources", TRB.Data.settings.hunter.marksmanship.colors.bar.passive, 275, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from Passive Sources", TRB.Data.settings.hunter.marksmanship.colors.bar.passive, 275, 25, xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.passive, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -4365,12 +4365,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.trueshot = TRB.UiFunctions.BuildColorPicker(parent, "Focus while Trueshot is active", TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot, 275, 25, xCoord2, yCoord)
+		controls.colors.trueshot = TRB.UiFunctions:BuildColorPicker(parent, "Focus while Trueshot is active", TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot, 275, 25, xCoord2, yCoord)
 		f = controls.colors.trueshot
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.trueshot, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -4387,12 +4387,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 30
 
-		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.hunter.marksmanship.colors.bar.background, 275, 25, xCoord, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.hunter.marksmanship.colors.bar.background, 275, 25, xCoord, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.background, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -4408,12 +4408,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.trueshotEnding = TRB.UiFunctions.BuildColorPicker(parent, "Focus when Trueshot is ending", TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding, 275, 25, xCoord2, yCoord)
+		controls.colors.trueshotEnding = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Trueshot is ending", TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding, 275, 25, xCoord2, yCoord)
 		f = controls.colors.trueshotEnding
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.bar.trueshotEnding, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -4430,16 +4430,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 40
 
-		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
 
 		yCoord = yCoord - 25
 
-		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under minimum required Focus threshold line", TRB.Data.settings.hunter.marksmanship.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		controls.colors.thresholdUnder = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Focus threshold line", TRB.Data.settings.hunter.marksmanship.colors.threshold.under, 275, 25, xCoord2, yCoord)
 		f = controls.colors.thresholdUnder
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.threshold.under, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -4454,12 +4454,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over minimum required Focus threshold line", TRB.Data.settings.hunter.marksmanship.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		controls.colors.thresholdOver = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Focus threshold line", TRB.Data.settings.hunter.marksmanship.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
 		f = controls.colors.thresholdOver
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.threshold.over, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -4474,12 +4474,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.thresholdUnusable = TRB.UiFunctions.BuildColorPicker(parent, "Ability is unusable threshold line", TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
+		controls.colors.thresholdUnusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
 		f = controls.colors.thresholdUnusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -4641,7 +4641,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
         -- Create the dropdown, and configure its appearance
         controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
-        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions.BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
         controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
         controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
         UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
@@ -4701,7 +4701,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 80
 		title = "Threshold Icon Width"
-		controls.thresholdIconWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.marksmanship.thresholds.icons.width, 1, 2,
+		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.marksmanship.thresholds.icons.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4726,7 +4726,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Threshold Icon Height"
-		controls.thresholdIconHeight = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.marksmanship.thresholds.icons.height, 1, 2,
+		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.marksmanship.thresholds.icons.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4753,7 +4753,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Threshold Icon Horizontal Position (Relative)"
 		yCoord = yCoord - 60
-		controls.thresholdIconHorizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.hunter.marksmanship.thresholds.icons.xPos, 1, 2,
+		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.hunter.marksmanship.thresholds.icons.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4771,7 +4771,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Threshold Icon Vertical Position (Relative)"
-		controls.thresholdIconVertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.hunter.marksmanship.thresholds.icons.yPos, 1, 2,
+		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.hunter.marksmanship.thresholds.icons.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4788,7 +4788,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Threshold Icon Border Width"
 		yCoord = yCoord - 60
-		controls.thresholdIconBorderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.hunter.marksmanship.thresholds.icons.border, 1, 2,
+		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.hunter.marksmanship.thresholds.icons.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4816,7 +4816,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 60
 
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Trueshot Configuration", 0, yCoord)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "End of Trueshot Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.endOfTrueshot = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -4846,7 +4846,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Trueshot GCDs - 0.75sec Floor"
-		controls.endOfTrueshotGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 20, TRB.Data.settings.hunter.marksmanship.endOfTrueshot.gcdsMax, 0.25, 2,
+		controls.endOfTrueshotGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 20, TRB.Data.settings.hunter.marksmanship.endOfTrueshot.gcdsMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfTrueshotGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4878,7 +4878,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Trueshot Time Remaining (sec)"
-		controls.endOfTrueshotTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.marksmanship.endOfTrueshot.timeMax, 0.25, 2,
+		controls.endOfTrueshotTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.marksmanship.endOfTrueshot.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfTrueshotTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4894,7 +4894,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Steady Focus Expiration Configuration", 0, yCoord)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Steady Focus Expiration Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.steadyFocus = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -4925,7 +4925,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Steady Focus GCDs - 0.75sec Floor"
-		controls.steadyFocusGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0, 30, TRB.Data.settings.hunter.marksmanship.steadyFocus.gcdsMax, 0.25, 2,
+		controls.steadyFocusGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 30, TRB.Data.settings.hunter.marksmanship.steadyFocus.gcdsMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.steadyFocusGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4957,7 +4957,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Steady Focus Time Remaining (sec)"
-		controls.steadyFocusTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.hunter.marksmanship.steadyFocus.timeMax, 0.25, 2,
+		controls.steadyFocusTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, TRB.Data.settings.hunter.marksmanship.steadyFocus.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.steadyFocusTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4973,7 +4973,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB1_8", parent, "ChatConfigCheckButtonTemplate")
@@ -4989,7 +4989,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 40
 
 		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.UiFunctions.BuildSlider(parent, title, 0, 100, TRB.Data.settings.hunter.marksmanship.overcapThreshold, 1, 1,
+		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 100, TRB.Data.settings.hunter.marksmanship.overcapThreshold, 1, 1,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5032,17 +5032,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		controls.buttons.exportButton_Hunter_Marksmanship_FontAndText = TRB.UiFunctions.BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_Marksmanship_FontAndText = TRB.UiFunctions:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_Marksmanship_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (Font & Text).", 3, 2, false, true, false, false, false)
 		end)
 
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Face", 0, yCoord)
 
 		yCoord = yCoord - 30
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_FontLeft", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontLeft.label = TRB.UiFunctions.BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
@@ -5109,7 +5109,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_FontMiddle", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontMiddle.label = TRB.UiFunctions.BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
+		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
@@ -5178,7 +5178,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_FontRight", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontRight.label = TRB.UiFunctions.BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
@@ -5268,11 +5268,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 70
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Size and Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Size and Colors", 0, yCoord)
 
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
-		controls.fontSizeLeft = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.marksmanship.displayText.left.fontSize, 1, 0,
+		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.marksmanship.displayText.left.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5308,13 +5308,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.leftText = TRB.UiFunctions.BuildColorPicker(parent, "Left Text", TRB.Data.settings.hunter.marksmanship.colors.text.left,
+		controls.colors.leftText = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", TRB.Data.settings.hunter.marksmanship.colors.text.left,
 														250, 25, xCoord2, yCoord-30)
 		f = controls.colors.leftText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.left, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -5331,13 +5331,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.middleText = TRB.UiFunctions.BuildColorPicker(parent, "Middle Text", TRB.Data.settings.hunter.marksmanship.colors.text.middle,
+		controls.colors.middleText = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", TRB.Data.settings.hunter.marksmanship.colors.text.middle,
 														225, 25, xCoord2, yCoord-70)
 		f = controls.colors.middleText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.middle, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -5354,13 +5354,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.rightText = TRB.UiFunctions.BuildColorPicker(parent, "Right Text", TRB.Data.settings.hunter.marksmanship.colors.text.right,
+		controls.colors.rightText = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", TRB.Data.settings.hunter.marksmanship.colors.text.right,
 														225, 25, xCoord2, yCoord-110)
 		f = controls.colors.rightText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.right, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -5379,7 +5379,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeMiddle = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.marksmanship.displayText.middle.fontSize, 1, 0,
+		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.marksmanship.displayText.middle.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5403,7 +5403,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeRight = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.marksmanship.displayText.right.fontSize, 1, 0,
+		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.marksmanship.displayText.right.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5426,15 +5426,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Focus Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Focus Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Current Focus", TRB.Data.settings.hunter.marksmanship.colors.text.current, 300, 25, xCoord, yCoord)
+		controls.colors.currentFocusText = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus", TRB.Data.settings.hunter.marksmanship.colors.text.current, 300, 25, xCoord, yCoord)
 		f = controls.colors.currentFocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.current, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -5451,12 +5451,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.castingFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", TRB.Data.settings.hunter.marksmanship.colors.text.casting, 275, 25, xCoord2, yCoord)
+		controls.colors.castingFocusText = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", TRB.Data.settings.hunter.marksmanship.colors.text.casting, 275, 25, xCoord2, yCoord)
 		f = controls.colors.castingFocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.casting, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -5475,12 +5475,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 30
-		controls.colors.passiveFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Passive Focus", TRB.Data.settings.hunter.marksmanship.colors.text.passive, 300, 25, xCoord, yCoord)
+		controls.colors.passiveFocusText = TRB.UiFunctions:BuildColorPicker(parent, "Passive Focus", TRB.Data.settings.hunter.marksmanship.colors.text.passive, 300, 25, xCoord, yCoord)
 		f = controls.colors.passiveFocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.passive, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -5497,12 +5497,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.spendingFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.marksmanship.colors.text.spending, 275, 25, xCoord2, yCoord)
+		controls.colors.spendingFocusText = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.marksmanship.colors.text.spending, 275, 25, xCoord2, yCoord)
 		f = controls.colors.spendingFocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.spending, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -5520,12 +5520,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdfocusText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", TRB.Data.settings.hunter.marksmanship.colors.text.overThreshold, 300, 25, xCoord, yCoord)
+		controls.colors.thresholdfocusText = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", TRB.Data.settings.hunter.marksmanship.colors.text.overThreshold, 300, 25, xCoord, yCoord)
 		f = controls.colors.thresholdfocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.overThreshold, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -5542,12 +5542,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.overcapfocusText = TRB.UiFunctions.BuildColorPicker(parent, "Hardcasting builder ability will overcap Focus", TRB.Data.settings.hunter.marksmanship.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		controls.colors.overcapfocusText = TRB.UiFunctions:BuildColorPicker(parent, "Hardcasting builder ability will overcap Focus", TRB.Data.settings.hunter.marksmanship.colors.text.overcap, 300, 25, xCoord2, yCoord)
 		f = controls.colors.overcapfocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.overcap, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -5587,7 +5587,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.UiFunctions.BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.UiFunctions:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
 
 		yCoord = yCoord - 25
 
@@ -5601,12 +5601,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.colors.text.dots.enabled = self:GetChecked()
 		end)
 
-		controls.colors.dotUp = TRB.UiFunctions.BuildColorPicker(parent, "DoT is active on current target", TRB.Data.settings.hunter.marksmanship.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
+		controls.colors.dotUp = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", TRB.Data.settings.hunter.marksmanship.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
 		f = controls.colors.dotUp
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.dots.up, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -5621,12 +5621,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.dotPandemic = TRB.UiFunctions.BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", TRB.Data.settings.hunter.marksmanship.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
+		controls.colors.dotPandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", TRB.Data.settings.hunter.marksmanship.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
 		f = controls.colors.dotPandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.dots.pandemic, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -5641,12 +5641,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.dotDown = TRB.UiFunctions.BuildColorPicker(parent, "DoT is not active on current target", TRB.Data.settings.hunter.marksmanship.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
+		controls.colors.dotDown = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", TRB.Data.settings.hunter.marksmanship.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
 		f = controls.colors.dotDown
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.marksmanship.colors.text.dots.down, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -5663,11 +5663,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
-		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.marksmanship.hastePrecision, 1, 0,
+		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.marksmanship.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5710,12 +5710,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		controls.buttons.exportButton_Hunter_Marksmanship_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_Marksmanship_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_Marksmanship_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (Audio & Tracking).", 3, 2, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.aimedShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_aimedShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
@@ -5797,7 +5797,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "GCDs - 0.75sec Floor"
-		controls.aimedShotGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0, 6, TRB.Data.settings.hunter.marksmanship.audio.aimedShot.gcds, 0.25, 2,
+		controls.aimedShotGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 6, TRB.Data.settings.hunter.marksmanship.audio.aimedShot.gcds, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.aimedShotGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5828,7 +5828,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Time (sec)"
-		controls.aimedShotTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 12, TRB.Data.settings.hunter.marksmanship.audio.aimedShot.time, 0.25, 2,
+		controls.aimedShotTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 12, TRB.Data.settings.hunter.marksmanship.audio.aimedShot.time, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.aimedShotTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6232,7 +6232,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
@@ -6263,7 +6263,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Focus GCDs - 0.75sec Floor"
-		controls.focusGenerationGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.hunter.marksmanship.generation.gcds, 0.25, 2,
+		controls.focusGenerationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, TRB.Data.settings.hunter.marksmanship.generation.gcds, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6295,7 +6295,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Focus Over Time (sec)"
-		controls.focusGenerationTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.marksmanship.generation.time, 0.25, 2,
+		controls.focusGenerationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.marksmanship.generation.time, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6332,16 +6332,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
 
-		TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
-		controls.buttons.exportButton_Hunter_Marksmanship_BarText = TRB.UiFunctions.BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		controls.buttons.exportButton_Hunter_Marksmanship_BarText = TRB.UiFunctions:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_Marksmanship_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (Bar Text).", 3, 2, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions.BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.hunter.marksmanship.displayText.left.text,
+		controls.textbox.left = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.marksmanship.displayText.left.text,
 														500, 440, 24, xCoord+100, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
@@ -6352,9 +6352,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions.BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.hunter.marksmanship.displayText.middle.text,
+		controls.textbox.middle = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.marksmanship.displayText.middle.text,
 														500, 440, 24, xCoord+100, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
@@ -6365,9 +6365,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions.BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.hunter.marksmanship.displayText.right.text,
+		controls.textbox.right = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.marksmanship.displayText.right.text,
 														500, 440, 24, xCoord+100, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
@@ -6377,7 +6377,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Options.CreateBarTextInstructions(cache, parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextInstructions(cache, parent, xCoord, yCoord)
 	end
 
 	local function MarksmanshipConstructOptionsPanel(cache)
@@ -6409,7 +6409,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		parent = interfaceSettingsFrame.marksmanshipDisplayPanel
 
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Marksmanship Hunter", xCoord+xPadding, yCoord-5)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Marksmanship Hunter", xCoord+xPadding, yCoord-5)
 	
 		controls.checkBoxes.marksmanshipHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_marksmanshipHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.marksmanshipHunterEnabled
@@ -6420,18 +6420,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.hunter.marksmanship = self:GetChecked()
 			TRB.Functions.EventRegistration()
-			TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.marksmanshipHunterEnabled, TRB.Data.settings.core.enabled.hunter.marksmanship, true)
+			TRB.UiFunctions:ToggleCheckboxOnOff(controls.checkBoxes.marksmanshipHunterEnabled, TRB.Data.settings.core.enabled.hunter.marksmanship, true)
 		end)
 
-		TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.marksmanshipHunterEnabled, TRB.Data.settings.core.enabled.hunter.marksmanship, true)
+		TRB.UiFunctions:ToggleCheckboxOnOff(controls.checkBoxes.marksmanshipHunterEnabled, TRB.Data.settings.core.enabled.hunter.marksmanship, true)
 
-		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Hunter_Marksmanship_All = TRB.UiFunctions.BuildButton(parent, "Export Specialization", 440, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Hunter_Marksmanship_All = TRB.UiFunctions:BuildButton(parent, "Export Specialization", 440, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Hunter_Marksmanship_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (All).", 3, 2, true, true, true, true, false)
 		end)
@@ -6441,12 +6441,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab2", "Bar Display", 1, parent, 85)
+		tabs[1] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab2", "Bar Display", 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab3", "Font & Text", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab4", "Audio & Tracking", 3, parent, 120, tabs[2])
-		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab5", "Bar Text", 4, parent, 60, tabs[3])
-		tabs[5] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
+		tabs[2] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab3", "Font & Text", 2, parent, 85, tabs[1])
+		tabs[3] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab4", "Audio & Tracking", 3, parent, 120, tabs[2])
+		tabs[4] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab5", "Bar Text", 4, parent, 60, tabs[3])
+		tabs[5] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Hunter_Marksmanship_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
 
 		PanelTemplates_TabResize(tabs[1], 0)
 		PanelTemplates_TabResize(tabs[2], 0)
@@ -6456,7 +6456,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 15
 
 		for i = 1, 5 do 
-			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Hunter_Marksmanship_LayoutPanel" .. i, parent)
+			tabsheets[i] = TRB.UiFunctions:CreateTabFrameContainer("TwintopResourceBar_Hunter_Marksmanship_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
 		end
@@ -6563,32 +6563,32 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}]]
 
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = TRB.UiFunctions.BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
 		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Survival_Reset")
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.UiFunctions.BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton1 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Survival_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 
 		--[[
-		controls.resetButton2 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton2 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
 		controls.resetButton2:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Survival_ResetBarTextNarrowAdvanced")
 		end)
 		]]
 
-		controls.resetButton3 = TRB.UiFunctions.BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
 		controls.resetButton3:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Survival_ResetBarTextAdvanced")
 		end)
@@ -6625,16 +6625,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.survival)
 
-		controls.buttons.exportButton_Hunter_Survival_BarDisplay = TRB.UiFunctions.BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_Survival_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_Survival_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (Bar Display).", 3, 3, true, false, false, false, false)
 		end)
 
-		controls.barPositionSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
+		controls.barPositionSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
 
 		yCoord = yCoord - 40
 		title = "Bar Width"
-		controls.width = TRB.UiFunctions.BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, TRB.Data.settings.hunter.survival.bar.width, 1, 2,
+		controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, TRB.Data.settings.hunter.survival.bar.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6670,7 +6670,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Bar Height"
-		controls.height = TRB.UiFunctions.BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, TRB.Data.settings.hunter.survival.bar.height, 1, 2,
+		controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, TRB.Data.settings.hunter.survival.bar.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6700,7 +6700,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Bar Horizontal Position"
 		yCoord = yCoord - 60
-		controls.horizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.hunter.survival.bar.xPos, 1, 2,
+		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.hunter.survival.bar.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6720,7 +6720,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Bar Vertical Position"
-		controls.vertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.hunter.survival.bar.yPos, 1, 2,
+		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.hunter.survival.bar.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6741,7 +6741,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Bar Border Width"
 		yCoord = yCoord - 60
-		controls.borderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.hunter.survival.bar.border, 1, 2,
+		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.hunter.survival.bar.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.borderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6801,7 +6801,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.survival.thresholds.width, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, TRB.Data.settings.hunter.survival.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6835,7 +6835,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			barContainerFrame:EnableMouse((not TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.survival.bar.dragAndDrop)
 		end)
 
-		TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay)
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay)
 
 		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.pinToPRD
@@ -6846,7 +6846,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay = self:GetChecked()
 
-			TRB.UiFunctions.ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay)
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay)
 
 			barContainerFrame:SetMovable((not TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.survival.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not TRB.Data.settings.hunter.survival.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.hunter.survival.bar.dragAndDrop)
@@ -6856,12 +6856,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 30
-		controls.textBarTexturesSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Textures", 0, yCoord)
+		controls.textBarTexturesSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Textures", 0, yCoord)
 		yCoord = yCoord - 30
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_FocusBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
+		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
@@ -6928,7 +6928,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_CastBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.castingBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
+		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
@@ -6997,7 +6997,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
+		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
@@ -7089,7 +7089,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_BorderTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.borderTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
+		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
@@ -7155,7 +7155,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_BackgroundTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.backgroundTexture.label = TRB.UiFunctions.BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
+		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
@@ -7217,12 +7217,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 70
-		controls.barDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display", 0, yCoord)
+		controls.barDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display", 0, yCoord)
 
 		--[[yCoord = yCoord - 50
 
 		title = "Earth Shock/EQ Flash Alpha"
-		controls.flashAlpha = TRB.UiFunctions.BuildSlider(parent, title, 0, 1, TRB.Data.settings.hunter.survival.colors.bar.flashAlpha, 0.01, 2,
+		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, TRB.Data.settings.hunter.survival.colors.bar.flashAlpha, 0.01, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -7238,7 +7238,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Earth Shock/EQ Flash Period (sec)"
-		controls.flashPeriod = TRB.UiFunctions.BuildSlider(parent, title, 0, 2, TRB.Data.settings.hunter.survival.colors.bar.flashPeriod, 0.05, 2,
+		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0, 2, TRB.Data.settings.hunter.survival.colors.bar.flashPeriod, 0.05, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -7348,15 +7348,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 60
 
-		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
+		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions.BuildColorPicker(parent, "Focus", TRB.Data.settings.hunter.survival.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Focus", TRB.Data.settings.hunter.survival.colors.bar.base, 300, 25, xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
                 local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.base, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -7370,12 +7370,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.border = TRB.UiFunctions.BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.hunter.survival.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.hunter.survival.colors.bar.border, 225, 25, xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.border, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -7392,12 +7392,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from Passive Sources", TRB.Data.settings.hunter.survival.colors.bar.passive, 525, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from Passive Sources", TRB.Data.settings.hunter.survival.colors.bar.passive, 525, 25, xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.passive, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -7413,12 +7413,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.background = TRB.UiFunctions.BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.hunter.survival.colors.bar.background, 275, 25, xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.hunter.survival.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.background, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -7436,12 +7436,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 30
 
-		controls.colors.spending = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.survival.colors.bar.spending, 275, 25, xCoord, yCoord)
+		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.survival.colors.bar.spending, 275, 25, xCoord, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.spending, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -7458,12 +7458,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		--[[
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.UiFunctions.BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", TRB.Data.settings.hunter.survival.colors.bar.casting, 275, 25, xCoord, yCoord)
+		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", TRB.Data.settings.hunter.survival.colors.bar.casting, 275, 25, xCoord, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.casting, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -7479,12 +7479,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions.BuildColorPicker(parent, "Bar border color when your current hardcast builder will overcap Focus", TRB.Data.settings.hunter.survival.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast builder will overcap Focus", TRB.Data.settings.hunter.survival.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.borderOvercap, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -7500,12 +7500,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 		]]
 
-		controls.colors.coordinatedAssault = TRB.UiFunctions.BuildColorPicker(parent, "Focus while Coordinated Assault is active", TRB.Data.settings.hunter.survival.colors.bar.coordinatedAssault, 275, 25, xCoord2, yCoord)
+		controls.colors.coordinatedAssault = TRB.UiFunctions:BuildColorPicker(parent, "Focus while Coordinated Assault is active", TRB.Data.settings.hunter.survival.colors.bar.coordinatedAssault, 275, 25, xCoord2, yCoord)
 		f = controls.colors.coordinatedAssault
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.coordinatedAssault, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -7521,12 +7521,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.coordinatedAssaultEnding = TRB.UiFunctions.BuildColorPicker(parent, "Focus when Coordinated Assault is ending", TRB.Data.settings.hunter.survival.colors.bar.coordinatedAssaultEnding, 275, 25, xCoord2, yCoord)
+		controls.colors.coordinatedAssaultEnding = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Coordinated Assault is ending", TRB.Data.settings.hunter.survival.colors.bar.coordinatedAssaultEnding, 275, 25, xCoord2, yCoord)
 		f = controls.colors.coordinatedAssaultEnding
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.bar.coordinatedAssaultEnding, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -7543,16 +7543,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 40
 
-		controls.barColorsSection = TRB.UiFunctions.BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
 
 		yCoord = yCoord - 25
 
-		controls.colors.thresholdUnder = TRB.UiFunctions.BuildColorPicker(parent, "Under minimum required Focus threshold line", TRB.Data.settings.hunter.survival.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		controls.colors.thresholdUnder = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Focus threshold line", TRB.Data.settings.hunter.survival.colors.threshold.under, 275, 25, xCoord2, yCoord)
 		f = controls.colors.thresholdUnder
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.threshold.under, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -7567,12 +7567,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.thresholdOver = TRB.UiFunctions.BuildColorPicker(parent, "Over minimum required Focus threshold line", TRB.Data.settings.hunter.survival.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		controls.colors.thresholdOver = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Focus threshold line", TRB.Data.settings.hunter.survival.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
 		f = controls.colors.thresholdOver
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.threshold.over, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -7587,12 +7587,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.thresholdUnusable = TRB.UiFunctions.BuildColorPicker(parent, "Ability is unusable threshold line", TRB.Data.settings.hunter.survival.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
+		controls.colors.thresholdUnusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", TRB.Data.settings.hunter.survival.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
 		f = controls.colors.thresholdUnusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.threshold.unusable, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -7735,7 +7735,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
         -- Create the dropdown, and configure its appearance
         controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
-        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions.BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
         controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
         controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
         UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
@@ -7795,7 +7795,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 80
 		title = "Threshold Icon Width"
-		controls.thresholdIconWidth = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.survival.thresholds.icons.width, 1, 2,
+		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.survival.thresholds.icons.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -7820,7 +7820,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Threshold Icon Height"
-		controls.thresholdIconHeight = TRB.UiFunctions.BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.survival.thresholds.icons.height, 1, 2,
+		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, TRB.Data.settings.hunter.survival.thresholds.icons.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -7847,7 +7847,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Threshold Icon Horizontal Position (Relative)"
 		yCoord = yCoord - 60
-		controls.thresholdIconHorizontal = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.hunter.survival.thresholds.icons.xPos, 1, 2,
+		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.hunter.survival.thresholds.icons.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -7865,7 +7865,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Threshold Icon Vertical Position (Relative)"
-		controls.thresholdIconVertical = TRB.UiFunctions.BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.hunter.survival.thresholds.icons.yPos, 1, 2,
+		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.hunter.survival.thresholds.icons.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -7882,7 +7882,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Threshold Icon Border Width"
 		yCoord = yCoord - 60
-		controls.thresholdIconBorderWidth = TRB.UiFunctions.BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.hunter.survival.thresholds.icons.border, 1, 2,
+		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.hunter.survival.thresholds.icons.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -7910,7 +7910,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 60
 
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "End of Configuration", 0, yCoord)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "End of Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.endOfCoordinatedAssault = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -7940,7 +7940,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Coordinated Assault GCDs - 0.75sec Floor"
-		controls.endOfCoordinatedAssaultGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0.5, 20, TRB.Data.settings.hunter.survival.endOfCoordinatedAssault.gcdsMax, 0.25, 2,
+		controls.endOfCoordinatedAssaultGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 20, TRB.Data.settings.hunter.survival.endOfCoordinatedAssault.gcdsMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfCoordinatedAssaultGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -7972,7 +7972,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Coordinated Assault Time Remaining (sec)"
-		controls.endOfCoordinatedAssaultTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.survival.endOfCoordinatedAssault.timeMax, 0.25, 2,
+		controls.endOfCoordinatedAssaultTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.survival.endOfCoordinatedAssault.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfCoordinatedAssaultTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -7988,7 +7988,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB1_8", parent, "ChatConfigCheckButtonTemplate")
@@ -8004,7 +8004,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 40
 
 		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.UiFunctions.BuildSlider(parent, title, 0, 100, TRB.Data.settings.hunter.survival.overcapThreshold, 1, 1,
+		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 100, TRB.Data.settings.hunter.survival.overcapThreshold, 1, 1,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -8047,17 +8047,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		controls.buttons.exportButton_Hunter_Survival_FontAndText = TRB.UiFunctions.BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_Survival_FontAndText = TRB.UiFunctions:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_Survival_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (Font & Text).", 3, 3, false, true, false, false, false)
 		end)
 
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Face", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Face", 0, yCoord)
 
 		yCoord = yCoord - 30
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_FontLeft", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontLeft.label = TRB.UiFunctions.BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
@@ -8124,7 +8124,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_FontMiddle", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontMiddle.label = TRB.UiFunctions.BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
+		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
@@ -8193,7 +8193,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_FontRight", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontRight.label = TRB.UiFunctions.BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
@@ -8283,11 +8283,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 70
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Font Size and Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Size and Colors", 0, yCoord)
 
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
-		controls.fontSizeLeft = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.survival.displayText.left.fontSize, 1, 0,
+		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.survival.displayText.left.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -8319,13 +8319,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.leftText = TRB.UiFunctions.BuildColorPicker(parent, "Left Text", TRB.Data.settings.hunter.survival.colors.text.left,
+		controls.colors.leftText = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", TRB.Data.settings.hunter.survival.colors.text.left,
 														250, 25, xCoord2, yCoord-30)
 		f = controls.colors.leftText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.text.left, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -8342,13 +8342,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.middleText = TRB.UiFunctions.BuildColorPicker(parent, "Middle Text", TRB.Data.settings.hunter.survival.colors.text.middle,
+		controls.colors.middleText = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", TRB.Data.settings.hunter.survival.colors.text.middle,
 														225, 25, xCoord2, yCoord-70)
 		f = controls.colors.middleText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.text.middle, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -8365,13 +8365,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.rightText = TRB.UiFunctions.BuildColorPicker(parent, "Right Text", TRB.Data.settings.hunter.survival.colors.text.right,
+		controls.colors.rightText = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", TRB.Data.settings.hunter.survival.colors.text.right,
 														225, 25, xCoord2, yCoord-110)
 		f = controls.colors.rightText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.text.right, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -8390,7 +8390,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeMiddle = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.survival.displayText.middle.fontSize, 1, 0,
+		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.survival.displayText.middle.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -8414,7 +8414,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeRight = TRB.UiFunctions.BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.survival.displayText.right.fontSize, 1, 0,
+		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.hunter.survival.displayText.right.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -8437,15 +8437,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Focus Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Focus Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Current Focus", TRB.Data.settings.hunter.survival.colors.text.current, 300, 25, xCoord, yCoord)
+		controls.colors.currentFocusText = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus", TRB.Data.settings.hunter.survival.colors.text.current, 300, 25, xCoord, yCoord)
 		f = controls.colors.currentFocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.text.current, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -8462,12 +8462,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.spendingFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.survival.colors.text.spending, 275, 25, xCoord2, yCoord)
+		controls.colors.spendingFocusText = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", TRB.Data.settings.hunter.survival.colors.text.spending, 275, 25, xCoord2, yCoord)
 		f = controls.colors.spendingFocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.text.spending, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -8485,12 +8485,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passiveFocusText = TRB.UiFunctions.BuildColorPicker(parent, "Passive Focus", TRB.Data.settings.hunter.survival.colors.text.passive, 300, 25, xCoord, yCoord)
+		controls.colors.passiveFocusText = TRB.UiFunctions:BuildColorPicker(parent, "Passive Focus", TRB.Data.settings.hunter.survival.colors.text.passive, 300, 25, xCoord, yCoord)
 		f = controls.colors.passiveFocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.text.passive, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -8508,12 +8508,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdfocusText = TRB.UiFunctions.BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", TRB.Data.settings.hunter.survival.colors.text.overThreshold, 300, 25, xCoord, yCoord)
+		controls.colors.thresholdfocusText = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", TRB.Data.settings.hunter.survival.colors.text.overThreshold, 300, 25, xCoord, yCoord)
 		f = controls.colors.thresholdfocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.text.overThreshold, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -8530,12 +8530,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.overcapfocusText = TRB.UiFunctions.BuildColorPicker(parent, "Current Focus is above overcap threshold", TRB.Data.settings.hunter.survival.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		controls.colors.overcapfocusText = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus is above overcap threshold", TRB.Data.settings.hunter.survival.colors.text.overcap, 300, 25, xCoord2, yCoord)
 		f = controls.colors.overcapfocusText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.text.overcap, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
 						r, g, b, a = unpack(color)
@@ -8575,7 +8575,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.UiFunctions.BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.UiFunctions:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
 
 		yCoord = yCoord - 25
 
@@ -8589,12 +8589,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.survival.colors.text.dots.enabled = self:GetChecked()
 		end)
 
-		controls.colors.dotUp = TRB.UiFunctions.BuildColorPicker(parent, "DoT is active on current target", TRB.Data.settings.hunter.survival.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
+		controls.colors.dotUp = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", TRB.Data.settings.hunter.survival.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
 		f = controls.colors.dotUp
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.text.dots.up, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -8609,12 +8609,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.dotPandemic = TRB.UiFunctions.BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", TRB.Data.settings.hunter.survival.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
+		controls.colors.dotPandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", TRB.Data.settings.hunter.survival.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
 		f = controls.colors.dotPandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.text.dots.pandemic, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -8629,12 +8629,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
-		controls.colors.dotDown = TRB.UiFunctions.BuildColorPicker(parent, "DoT is not active on current target", TRB.Data.settings.hunter.survival.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
+		controls.colors.dotDown = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", TRB.Data.settings.hunter.survival.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
 		f = controls.colors.dotDown
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.survival.colors.text.dots.down, true)
-				TRB.UiFunctions.ShowColorPicker(r, g, b, 1-a, function(color)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
                         r, g, b, a = unpack(color)
@@ -8651,11 +8651,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
-		controls.hastePrecision = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.survival.hastePrecision, 1, 0,
+		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.survival.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -8698,12 +8698,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		controls.buttons.exportButton_Hunter_Survival_AudioAndTracking = TRB.UiFunctions.BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Hunter_Survival_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_Survival_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (Audio & Tracking).", 3, 3, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
@@ -8965,7 +8965,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.UiFunctions.BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
+		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
@@ -8996,7 +8996,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Focus GCDs - 0.75sec Floor"
-		controls.focusGenerationGCDs = TRB.UiFunctions.BuildSlider(parent, title, 0, 15, TRB.Data.settings.hunter.survival.generation.gcds, 0.25, 2,
+		controls.focusGenerationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, TRB.Data.settings.hunter.survival.generation.gcds, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -9028,7 +9028,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		title = "Focus Over Time (sec)"
-		controls.focusGenerationTime = TRB.UiFunctions.BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.survival.generation.time, 0.25, 2,
+		controls.focusGenerationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, TRB.Data.settings.hunter.survival.generation.time, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -9065,16 +9065,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
 
-		TRB.UiFunctions.BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
-		controls.buttons.exportButton_Hunter_Survival_BarText = TRB.UiFunctions.BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		controls.buttons.exportButton_Hunter_Survival_BarText = TRB.UiFunctions:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_Survival_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (Bar Text).", 3, 3, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions.BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.hunter.survival.displayText.left.text,
+		controls.textbox.left = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.survival.displayText.left.text,
 														500, 440, 24, xCoord+100, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
@@ -9084,9 +9084,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions.BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.hunter.survival.displayText.middle.text,
+		controls.textbox.middle = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.survival.displayText.middle.text,
 														500, 440, 24, xCoord+100, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
@@ -9096,9 +9096,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions.BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions.BuildTextBox(parent, TRB.Data.settings.hunter.survival.displayText.right.text,
+		controls.textbox.right = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.survival.displayText.right.text,
 														500, 440, 24, xCoord+100, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
@@ -9108,7 +9108,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Options.CreateBarTextInstructions(cache, parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextInstructions(cache, parent, xCoord, yCoord)
 	end
 
 	local function SurvivalConstructOptionsPanel(cache)
@@ -9140,7 +9140,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		parent = interfaceSettingsFrame.survivalDisplayPanel
 
-		controls.textSection = TRB.UiFunctions.BuildSectionHeader(parent, "Survival Hunter", xCoord+xPadding, yCoord-5)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Survival Hunter", xCoord+xPadding, yCoord-5)
 	
 		controls.checkBoxes.survivalHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_survivalHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.survivalHunterEnabled
@@ -9151,18 +9151,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.hunter.survival = self:GetChecked()
 			TRB.Functions.EventRegistration()
-			TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.survivalHunterEnabled, TRB.Data.settings.core.enabled.hunter.survival, true)
+			TRB.UiFunctions:ToggleCheckboxOnOff(controls.checkBoxes.survivalHunterEnabled, TRB.Data.settings.core.enabled.hunter.survival, true)
 		end)
 
-		TRB.UiFunctions.ToggleCheckboxOnOff(controls.checkBoxes.survivalHunterEnabled, TRB.Data.settings.core.enabled.hunter.survival, true)
+		TRB.UiFunctions:ToggleCheckboxOnOff(controls.checkBoxes.survivalHunterEnabled, TRB.Data.settings.core.enabled.hunter.survival, true)
 
-		controls.buttons.importButton = TRB.UiFunctions.BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Hunter_Survival_All = TRB.UiFunctions.BuildButton(parent, "Export Specialization", 440, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Hunter_Survival_All = TRB.UiFunctions:BuildButton(parent, "Export Specialization", 440, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Hunter_Survival_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (All).", 3, 3, true, true, true, true, false)
 		end)
@@ -9172,12 +9172,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Survival_Tab2", "Bar Display", 1, parent, 85)
+		tabs[1] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Hunter_Survival_Tab2", "Bar Display", 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Survival_Tab3", "Font & Text", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Survival_Tab4", "Audio & Tracking", 3, parent, 120, tabs[2])
-		tabs[4] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Survival_Tab5", "Bar Text", 4, parent, 60, tabs[3])
-		tabs[5] = TRB.UiFunctions.CreateTab("TwintopResourceBar_Options_Hunter_Survival_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
+		tabs[2] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Hunter_Survival_Tab3", "Font & Text", 2, parent, 85, tabs[1])
+		tabs[3] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Hunter_Survival_Tab4", "Audio & Tracking", 3, parent, 120, tabs[2])
+		tabs[4] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Hunter_Survival_Tab5", "Bar Text", 4, parent, 60, tabs[3])
+		tabs[5] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Hunter_Survival_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
@@ -9190,7 +9190,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 15
 
 		for i = 1, 5 do 
-			tabsheets[i] = TRB.UiFunctions.CreateTabFrameContainer("TwintopResourceBar_Hunter_Survival_LayoutPanel" .. i, parent)
+			tabsheets[i] = TRB.UiFunctions:CreateTabFrameContainer("TwintopResourceBar_Hunter_Survival_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
 		end
@@ -9215,7 +9215,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 	local function ConstructOptionsPanel(specCache)
-		TRB.Options.ConstructOptionsPanel()
+		TRB.Options:ConstructOptionsPanel()
 		BeastMasteryConstructOptionsPanel(specCache.beastMastery)
 		MarksmanshipConstructOptionsPanel(specCache.marksmanship)
 		SurvivalConstructOptionsPanel(specCache.survival)

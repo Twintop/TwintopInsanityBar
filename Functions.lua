@@ -1,5 +1,4 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
 TRB.Functions = TRB.Functions or {}
 local EXPORT_STRING_PREFIX = "!TRB!"
 
@@ -427,13 +426,28 @@ local function LoadFromSpecCache(cache)
 end
 TRB.Functions.LoadFromSpecCache = LoadFromSpecCache
 
-local function GetSpellRemainingTime(snapshotSpell)
+local function GetSpellRemainingTime(snapshotSpell, leeway)
 	-- For snapshotData objects that contain .isActive or .endTime
 	local currentTime = GetTime()
 	local remainingTime = 0
+	local endTime = nil
 
-	if snapshotSpell.endTime ~= nil and (snapshotSpell.isActive or snapshotSpell.endTime > currentTime) then
-		remainingTime = snapshotSpell.endTime - currentTime
+	if snapshotSpell ~= nil then
+		if leeway and snapshotSpell.endTimeLeeway ~= nil then
+			endTime = snapshotSpell.endTimeLeeway
+		else
+			endTime = snapshotSpell.endTime
+		end
+	end
+
+	if endTime ~= nil and (snapshotSpell.isActive or endTime > currentTime) then
+		remainingTime = endTime - currentTime
+	elseif snapshotSpell.startTime ~= nil and snapshotSpell.duration ~= nil and snapshotSpell.duration > 0 then
+		remainingTime = snapshotSpell.duration - (currentTime - snapshotSpell.startTime)
+	end
+
+	if remainingTime < 0 then
+		remainingTime = 0
 	end
 
 	return remainingTime
@@ -692,7 +706,7 @@ local function ResetThresholdLine(threshold, settings, hasIcon)
 		threshold.icon = threshold.icon or CreateFrame("Frame", nil, threshold, "BackdropTemplate")
 		--threshold.icon:SetPoint("TOP", threshold, "BOTTOM", 0, -10)
 		--threshold.icon:SetSize(20, 20)
-		threshold.icon:SetFrameLevel(130)
+		threshold.icon:SetFrameLevel(137)
 		threshold.icon:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		threshold.icon.texture = threshold.icon.texture or threshold.icon:CreateTexture(nil, TRB.Data.settings.core.strata.level)
 		threshold.icon.texture:SetAllPoints(threshold.icon)
@@ -863,7 +877,7 @@ local function ConstructResourceBar(settings)
         passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		passiveFrame:SetFrameLevel(80)
 
-		if TRB.Frames.resource2Frames ~= nil then
+		if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil then
 			local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 			local nodes = TRB.Data.character.maxResource2
 
@@ -950,7 +964,7 @@ local function ConstructResourceBar(settings)
         leftTextFrame:SetHeight(settings.bar.height * 3.5)
         leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 2, 0)
         leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        leftTextFrame:SetFrameLevel(200)
+        leftTextFrame:SetFrameLevel(2000)
         leftTextFrame.font:SetPoint("LEFT", 0, 0)
         leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
         leftTextFrame.font:SetJustifyH("LEFT")
@@ -962,7 +976,7 @@ local function ConstructResourceBar(settings)
         middleTextFrame:SetHeight(settings.bar.height * 3.5)
         middleTextFrame:SetPoint("CENTER", barContainerFrame, "CENTER", 0, 0)
         middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        middleTextFrame:SetFrameLevel(200)
+        middleTextFrame:SetFrameLevel(2000)
         middleTextFrame.font:SetPoint("CENTER", 0, 0)
         middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
         middleTextFrame.font:SetJustifyH("CENTER")
@@ -974,7 +988,7 @@ local function ConstructResourceBar(settings)
         rightTextFrame:SetHeight(settings.bar.height * 3.5)
         rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        rightTextFrame:SetFrameLevel(200)
+        rightTextFrame:SetFrameLevel(2000)
         rightTextFrame.font:SetPoint("RIGHT", 0, 0)
         rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
         rightTextFrame.font:SetJustifyH("RIGHT")
@@ -1001,7 +1015,7 @@ local function RepositionBar(settings, containerFrame)
 		containerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
 	end
 
-	if TRB.Frames.resource2Frames ~= nil then
+	if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil then
 		local containerFrame2 = TRB.Frames.resource2ContainerFrame
 		local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 		local nodes = TRB.Data.character.maxResource2
@@ -2071,13 +2085,34 @@ local function GetSoulbindItemLevel(id)
 	end
 	return 0
 end
-TRB.Functions.IsSoulbindActive = GetSoulbindItemLevel
+TRB.Functions.GetSoulbindItemLevel = GetSoulbindItemLevel
+
+local function GetSoulbindEquippedConduitRank(id)
+    local soulbindId = C_Soulbinds.GetActiveSoulbindID()
+    local soulbindData = C_Soulbinds.GetSoulbindData(soulbindId)
+    local nodes = soulbindData.tree.nodes
+    local length = TableLength(nodes)
+    
+    for x = 1, length do        
+        if nodes[x].spellID ~= nil and nodes[x].spellID == 0 and nodes[x].conduitID ~= nil and nodes[x].conduitID == id then
+			local empowered = 0
+
+			if nodes[x].socketEnhanced then
+				empowered = 2
+			end
+
+			return nodes[x].conduitRank + empowered
+        end        
+    end
+	return 0
+end
+TRB.Functions.GetSoulbindEquippedConduitRank = GetSoulbindEquippedConduitRank
 
 local function GetSoulbindRank(id)
 	local conduit = C_Soulbinds.GetConduitCollectionData(id)
 
 	if conduit ~= nil then
-		return conduit.conduitRank
+		return conduit.conduitRank + empowered
 	end
 	return 0
 end
@@ -2138,13 +2173,14 @@ local function ValidateLsmValues(specName, settings)
 	end
 
 	-- Textures
+	-- Bar
 	if not TRB.Details.addonData.libs.SharedMedia:IsValid("background", settings.textures.backgroundName) then
 		print("TRB: |cFFFF5555Invalid texture (" .. specName .. " bar background): '|r" .. settings.textures.backgroundName .. "|cFFFF5555'. Resetting to a default texture.|r")
 		settings.textures.background = TRB.Data.constants.defaultSettings.textures.background
 		settings.textures.backgroundName = TRB.Data.constants.defaultSettings.textures.backgroundName
 	end
 
-	if not TRB.Details.addonData.libs.SharedMedia:IsValid("border", settings.textures.borderName) then
+	if not TRB.Details.addonData.libs.SharedMedia:IsValid("border", settings.textures.borderName) and settings.textures.borderName ~= "1 Pixel" then
 		print("TRB: |cFFFF5555Invalid texture (" .. specName .. " bar border): '|r" .. settings.textures.borderName .. "|cFFFF5555'. Resetting to a default texture.|r")
 		settings.textures.border = TRB.Data.constants.defaultSettings.textures.border
 		settings.textures.borderName = TRB.Data.constants.defaultSettings.textures.borderName
@@ -2166,6 +2202,27 @@ local function ValidateLsmValues(specName, settings)
 		print("TRB: |cFFFF5555Invalid texture (" .. specName .. " casting bar): '|r" .. settings.textures.castingBarName .. "|cFFFF5555'. Resetting to a default texture.|r")
 		settings.textures.castingBar = TRB.Data.constants.defaultSettings.textures.resourceBar
 		settings.textures.castingBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
+	end
+
+	-- Combo Points
+	if settings.textures.comboPointsBorder ~= nil then
+		if not TRB.Details.addonData.libs.SharedMedia:IsValid("background", settings.textures.comboPointsBackgroundName) then
+			print("TRB: |cFFFF5555Invalid texture (" .. specName .. " combo points background): '|r" .. settings.textures.comboPointsBackgroundName .. "|cFFFF5555'. Resetting to a default texture.|r")
+			settings.textures.comboPointsBackground = TRB.Data.constants.defaultSettings.textures.background
+			settings.textures.comboPointsBackgroundName = TRB.Data.constants.defaultSettings.textures.backgroundName
+		end
+
+		if not TRB.Details.addonData.libs.SharedMedia:IsValid("border", settings.textures.comboPointsBorderName) and settings.textures.comboPointsBorderName ~= "1 Pixel" then
+			print("TRB: |cFFFF5555Invalid texture (" .. specName .. " combo points border): '|r" .. settings.textures.comboPointsBorderName .. "|cFFFF5555'. Resetting to a default texture.|r")
+			settings.textures.comboPointsBorder = TRB.Data.constants.defaultSettings.textures.border
+			settings.textures.comboPointsBorderName = TRB.Data.constants.defaultSettings.textures.borderName
+		end
+
+		if not TRB.Details.addonData.libs.SharedMedia:IsValid("statusbar", settings.textures.comboPointsBarName) then
+			print("TRB: |cFFFF5555Invalid texture (" .. specName .. " combo points bar): '|r" .. settings.textures.comboPointsBarName .. "|cFFFF5555'. Resetting to a default texture.|r")
+			settings.textures.comboPointsBar = TRB.Data.constants.defaultSettings.textures.resourceBar
+			settings.textures.comboPointsBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
+		end
 	end
 
 	for k, v in pairs(settings.audio) do
@@ -2274,8 +2331,13 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.endOfVoidform = settings.endOfVoidform
 			end
 		elseif classId == 7 and specId == 1 then -- Elemental Shaman
-		elseif classId == 11 and specId == 1 then -- Balance Druid
-			configuration.endOfEclipse = settings.endOfEclipse
+		elseif classId == 11 then -- Druids
+			if specId == 1 then -- Balance
+				configuration.endOfEclipse = settings.endOfEclipse
+			elseif specId == 2 then -- Feral
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
+			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 			configuration.endOfMetamorphosis = settings.endOfMetamorphosis
 		end
@@ -2324,8 +2386,11 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.insanityPrecision = settings.insanityPrecision
 			end
 		elseif classId == 7 and specId == 1 then -- Elemental Shaman
-		elseif classId == 11 and specId == 1 then -- Balance Druid
-			configuration.astralPowerPrecision = settings.astralPowerPrecision
+		elseif classId == 11 then -- Druids
+			if specId == 1 then -- Balance
+				configuration.astralPowerPrecision = settings.astralPowerPrecision
+			elseif specId == 2 then -- Feral
+			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 		end
 	end
@@ -2358,7 +2423,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.voidTendrilTracker = settings.voidTendrilTracker
 			end
 		elseif classId == 7 and specId == 1 then -- Elemental Shaman
-		elseif classId == 11 and specId == 1 then -- Balance Druid
+		elseif classId == 11 then -- Druid
+			if specId == 1 then -- Balance
+			elseif specId == 2 then -- Feral
+			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 		end
 	end
@@ -2453,6 +2521,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.druid.balance) > 0 then -- Balance
 				configuration.druid.balance = TRB.Functions.ExportConfigurationSections(11, 1, settings.druid.balance, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
+			
+			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.druid.feral) > 0 then -- Feral
+				configuration.druid.feral = TRB.Functions.ExportConfigurationSections(11, 2, settings.druid.feral, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
 		elseif classId == 12 and settings.demonhunter ~= nil then -- Demon Hunter
 			configuration.demonhunter = {}
 			
@@ -2489,9 +2561,12 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Elemental Shaman
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
 
-		-- Balance Druid
+		-- Druids
+		-- Balance
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
-		
+		-- Feral
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
+
 		-- Havoc Demon Hunter
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(12, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, false))
 	end

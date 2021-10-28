@@ -4,7 +4,7 @@ TRB.UiFunctions = {}
 
 
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
-local function BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
+function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
 	local f = CreateFrame("Slider", nil, parent, "BackdropTemplate")
 	f.EditBox = CreateFrame("EditBox", nil, f, "BackdropTemplate")
 	f:SetPoint("TOPLEFT", posX+18, posY)
@@ -42,18 +42,21 @@ local function BuildSlider(parent, title, minValue, maxValue, defaultValue, step
     f.MinLabel = f:CreateFontString(nil, "Overlay")
     f.MinLabel:SetFontObject(GameFontHighlightSmall)
     f.MinLabel:SetSize(0, 14)
+    ---@diagnostic disable-next-line: redundant-parameter
     f.MinLabel:SetWordWrap(false)
     f.MinLabel:SetPoint("TopLeft", f, "BottomLeft", 0, -1)
     f.MinLabel:SetText(minValue)
     f.MaxLabel = f:CreateFontString(nil, "Overlay")
     f.MaxLabel:SetFontObject(GameFontHighlightSmall)
     f.MaxLabel:SetSize(0, 14)
+    ---@diagnostic disable-next-line: redundant-parameter
     f.MaxLabel:SetWordWrap(false)
     f.MaxLabel:SetPoint("TopRight", f, "BottomRight", 0, -1)
     f.MaxLabel:SetText(maxValue)
     f.Title = f:CreateFontString(nil, "Overlay")
     f.Title:SetFontObject(GameFontNormal)
     f.Title:SetSize(0, 14)
+    ---@diagnostic disable-next-line: redundant-parameter
     f.Title:SetWordWrap(false)
     f.Title:SetPoint("Bottom", f, "Top")
     f.Title:SetText(title)
@@ -147,9 +150,8 @@ local function BuildSlider(parent, title, minValue, maxValue, defaultValue, step
 
 	return f
 end
-TRB.UiFunctions.BuildSlider = BuildSlider
 
-local function BuildTextBox(parent, text, maxLetters, width, height, xPos, yPos)
+function TRB.UiFunctions:BuildTextBox(parent, text, maxLetters, width, height, xPos, yPos)
 	local f = CreateFrame("EditBox", nil, parent, "BackdropTemplate")
 	f:SetPoint("TOPLEFT", xPos, yPos)
 	f:SetAutoFocus(false)
@@ -184,9 +186,8 @@ local function BuildTextBox(parent, text, maxLetters, width, height, xPos, yPos)
 
 	return f
 end
-TRB.UiFunctions.BuildTextBox = BuildTextBox
 
-local function ShowColorPicker(r, g, b, a, callback)
+function TRB.UiFunctions:ShowColorPicker(r, g, b, a, callback)
 	ColorPickerFrame.func, ColorPickerFrame.opacityFunc, ColorPickerFrame.cancelFunc = 
 		callback, callback, callback
 	ColorPickerFrame:SetColorRGB(r, g, b)
@@ -195,9 +196,8 @@ local function ShowColorPicker(r, g, b, a, callback)
 	ColorPickerFrame:Hide() -- Need to run the OnShow handler.
 	ColorPickerFrame:Show()
 end
-TRB.UiFunctions.ShowColorPicker = ShowColorPicker
 
-local function BuildColorPicker(parent, description, settingsEntry, sizeTotal, sizeFrame, posX, posY)
+function TRB.UiFunctions:BuildColorPicker(parent, description, settingsEntry, sizeTotal, sizeFrame, posX, posY)
     local settings = TRB.Data.settings
 	local f = CreateFrame("Button", nil, parent, "BackdropTemplate")
 	f:SetSize(sizeFrame, sizeFrame)
@@ -218,14 +218,14 @@ local function BuildColorPicker(parent, description, settingsEntry, sizeTotal, s
 	f.Font:SetPoint("LEFT", f, "RIGHT", 10, 0)
 	f.Font:SetFontObject(GameFontHighlight)
 	f.Font:SetText(description)
+    ---@diagnostic disable-next-line: redundant-parameter
 	f.Font:SetWordWrap(true)
 	f.Font:SetJustifyH("LEFT")
 	f.Font:SetSize(sizeTotal - sizeFrame - 25, sizeFrame)
 	return f
 end
-TRB.UiFunctions.BuildColorPicker = BuildColorPicker
 
-local function BuildSectionHeader(parent, title, posX, posY)
+function TRB.UiFunctions:BuildSectionHeader(parent, title, posX, posY)
     local settings = TRB.Data.settings
 	local f = CreateFrame("Frame", nil, parent)
 	f:ClearAllPoints()
@@ -242,9 +242,8 @@ local function BuildSectionHeader(parent, title, posX, posY)
 	f.font:SetText(title)
 	return f
 end
-TRB.UiFunctions.BuildSectionHeader = BuildSectionHeader
 
-local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, width, height)
+function TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, width, height)
 	local f = CreateFrame("Frame", nil, parent)
 	f:ClearAllPoints()
 	f:SetPoint("TOPLEFT", parent)
@@ -278,9 +277,8 @@ local function BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, 
 
 	return f
 end
-TRB.UiFunctions.BuildDisplayTextHelpEntry = BuildDisplayTextHelpEntry
 
-local function BuildButton(parent, text, posX, posY, width, height)
+function TRB.UiFunctions:BuildButton(parent, text, posX, posY, width, height)
     local f = CreateFrame("Button", nil, parent)
     f:SetPoint("TOPLEFT", parent, "TOPLEFT", posX, posY)
     f:SetWidth(width)
@@ -305,9 +303,8 @@ local function BuildButton(parent, text, posX, posY, width, height)
 
     return f
 end
-TRB.UiFunctions.BuildButton = BuildButton
 
-local function BuildLabel(parent, text, posX, posY, width, height, fontObject, hAlign)
+function TRB.UiFunctions:BuildLabel(parent, text, posX, posY, width, height, fontObject, hAlign)
     if fontObject == nil then
         fontObject = GameFontNormal
     end
@@ -331,9 +328,8 @@ local function BuildLabel(parent, text, posX, posY, width, height, fontObject, h
 
     return f
 end
-TRB.UiFunctions.BuildLabel = BuildLabel
 
-local function CreateScrollFrameContainer(name, parent, width, height)
+function TRB.UiFunctions:CreateScrollFrameContainer(name, parent, width, height)
     width = width or 560
     height = height or 540
 	local sf = CreateFrame("ScrollFrame", name, parent, "UIPanelScrollFrameTemplate")
@@ -345,9 +341,8 @@ local function CreateScrollFrameContainer(name, parent, width, height)
 	sf:SetScrollChild(sf.scrollChild)
 	return sf
 end
-TRB.UiFunctions.CreateScrollFrameContainer = CreateScrollFrameContainer
 
-local function CreateTabFrameContainer(name, parent, width, height)
+function TRB.UiFunctions:CreateTabFrameContainer(name, parent, width, height)
     width = width or 580
     height = height or 503
     local cf = CreateFrame("Frame", name, parent, "BackdropTemplate")
@@ -369,15 +364,13 @@ local function CreateTabFrameContainer(name, parent, width, height)
     cf:SetHeight(height)
     cf:SetPoint("TOPLEFT", 0, 10)
 
-    cf.scrollFrame = TRB.UiFunctions.CreateScrollFrameContainer(name .. "ScrollFrame", cf, width - 30, height - 8)
+    cf.scrollFrame = TRB.UiFunctions:CreateScrollFrameContainer(name .. "ScrollFrame", cf, width - 30, height - 8)
     cf.scrollFrame:SetPoint("TOPLEFT", cf, "TOPLEFT", 5, -5)
     return cf
 end
-TRB.UiFunctions.CreateTabFrameContainer = CreateTabFrameContainer
 
-local function SwitchTab(self, tabId)
-    local parent = self:GetParent()   
-    local font
+function TRB.UiFunctions:SwitchTab(self, tabId)
+    local parent = self:GetParent()
     if parent.lastTab then
         parent.lastTab:Hide()
         parent.tabs[parent.lastTabId]:SetNormalFontObject(TRB.Options.fonts.options.tabNormalSmall)
@@ -387,16 +380,15 @@ local function SwitchTab(self, tabId)
     parent.lastTab = parent.tabsheets[tabId]
     parent.lastTabId = tabId
 end
-TRB.UiFunctions.SwitchTab = SwitchTab
 
-local function CreateTab(name, displayText, id, parent, width, rightOf)
+function TRB.UiFunctions:CreateTab(name, displayText, id, parent, width, rightOf)
     width = width or 100
     local tab = CreateFrame("Button", name, parent, "TabButtonTemplate")
     tab.id = id
     tab:SetSize(width, 16)
     tab:SetText(displayText)
     tab:SetScript("OnClick", function(self)
-        TRB.UiFunctions.SwitchTab(self, self.id)
+        TRB.UiFunctions:SwitchTab(self, self.id)
     end)
 
     if rightOf ~= nil then
@@ -408,9 +400,8 @@ local function CreateTab(name, displayText, id, parent, width, rightOf)
     tab:SetNormalFontObject(TRB.Options.fonts.options.tabNormalSmall)
     return tab
 end
-TRB.UiFunctions.CreateTab = CreateTab
 
-local function ToggleCheckboxEnabled(checkbox, enable)
+function TRB.UiFunctions:ToggleCheckboxEnabled(checkbox, enable)
     if enable then
 ---@diagnostic disable-next-line: undefined-field
         checkbox:Enable()
@@ -421,9 +412,8 @@ local function ToggleCheckboxEnabled(checkbox, enable)
         getglobal(checkbox:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
     end
 end
-TRB.UiFunctions.ToggleCheckboxEnabled = ToggleCheckboxEnabled
 
-local function ToggleCheckboxOnOff(checkbox, enable, changeText)
+function TRB.UiFunctions:ToggleCheckboxOnOff(checkbox, enable, changeText)
     if enable then
         getglobal(checkbox:GetName().."Text"):SetTextColor(0, 1, 0)
 
@@ -438,4 +428,3 @@ local function ToggleCheckboxOnOff(checkbox, enable, changeText)
         end
     end
 end
-TRB.UiFunctions.ToggleCheckboxOnOff = ToggleCheckboxOnOff

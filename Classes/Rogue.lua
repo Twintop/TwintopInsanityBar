@@ -670,6 +670,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$energyTotal", description = "Current + Passive + Casting Energy Total", printInSettings = true, color = false },
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Energy Total", printInSettings = false, color = false },
 			
+			{ variable = "$comboPoints", description = "Current Combo Points", printInSettings = true, color = false },
+			{ variable = "$comboPointsMax", description = "Maximum Combo Points", printInSettings = true, color = false },
+
 			{ variable = "$sadTime", description = "Time remaining on Slice and Dice buff", printInSettings = true, color = false },
 			{ variable = "$sliceAndDiceTime", description = "Time remaining on Slice and Dice buff", printInSettings = false, color = false },
 
@@ -761,7 +764,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
         
         if settings ~= nil then
-			TRB.Data.character.isPvp = TRB.Functions.ArePvpTalentsActive()			
+			TRB.Data.character.isPvp = TRB.Functions.ArePvpTalentsActive()
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
             	TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
@@ -833,6 +836,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.blindside)
 	end
 
+    local function CalculateAbilityResourceValue(resource, threshold)
+        local modifier = 1.0
+
+		modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
+
+        return resource * modifier
+    end
+	
 	local function InitializeTarget(guid, selfInitializeAllowed)
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
 			return false
@@ -871,13 +882,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 
-    local function CalculateAbilityResourceValue(resource, threshold)
-        local modifier = 1.0
-
-		modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
-
-        return resource * modifier
-    end
 
 	local function UpdateCastingResourceFinal()
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
@@ -1013,6 +1017,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
             end
         end
+		TRB.Frames.resource2ContainerFrame:Show()
 
 		TRB.Functions.ConstructResourceBar(settings)
 	end
@@ -1191,6 +1196,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 				valid = true
 			end
+		elseif var == "$comboPoints" then
+			valid = true
+		elseif var == "$comboPointsMax" then
+			valid = true
 		elseif var == "$sadTime" or var == "$sliceAndDiceTime" then
 			if TRB.Data.snapshotData.sliceAndDice.spellId ~= nil then
 				valid = true
@@ -1535,6 +1544,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentEnergy
 		lookup["$casting"] = castingEnergy
+		lookup["$comboPoints"] = TRB.Data.character.resource2
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookup["$cpCount"] = cpCount
 		lookup["$cripplingPoisonCount"] = cpCount
 		lookup["$cpTime"] = cpTime
@@ -1984,6 +1995,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
 ---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel+10)
+---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
@@ -2425,18 +2438,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 	resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
-		local _, _, classIndex = UnitClass("player")
 		local specId = GetSpecialization() or 0
-		if classIndex == 4 then
+		if classIndexId == 4 then
 			if (event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar") then
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
 					local settings = TRB.Options.Rogue.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
-						TRB.Options.PortForwardSettings()
+						TRB.Options:PortForwardSettings()
 						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
-						TRB.Data.settings = TRB.Options.CleanupSettings(TRB.Data.settings)
+						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
 						TRB.Data.settings = settings
 					end
