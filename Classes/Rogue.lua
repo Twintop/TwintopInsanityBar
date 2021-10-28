@@ -670,6 +670,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$energyTotal", description = "Current + Passive + Casting Energy Total", printInSettings = true, color = false },
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Energy Total", printInSettings = false, color = false },
 			
+			{ variable = "$comboPoints", description = "Current Combo Points", printInSettings = true, color = false },
+			{ variable = "$comboPointsMax", description = "Maximum Combo Points", printInSettings = true, color = false },
+
 			{ variable = "$sadTime", description = "Time remaining on Slice and Dice buff", printInSettings = true, color = false },
 			{ variable = "$sliceAndDiceTime", description = "Time remaining on Slice and Dice buff", printInSettings = false, color = false },
 
@@ -1193,6 +1196,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 				valid = true
 			end
+		elseif var == "$comboPoints" then
+			valid = true
+		elseif var == "$comboPointsMax" then
+			valid = true
 		elseif var == "$sadTime" or var == "$sliceAndDiceTime" then
 			if TRB.Data.snapshotData.sliceAndDice.spellId ~= nil then
 				valid = true
@@ -1537,6 +1544,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentEnergy
 		lookup["$casting"] = castingEnergy
+		lookup["$comboPoints"] = TRB.Data.character.resource2
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookup["$cpCount"] = cpCount
 		lookup["$cripplingPoisonCount"] = cpCount
 		lookup["$cpTime"] = cpTime
