@@ -19,6 +19,11 @@ addonData.libs.SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 addonData.libs.SharedMedia:Register("sound", "TRB: Wilhelm Scream", "Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg")
 addonData.libs.SharedMedia:Register("sound", "TRB: Boxing Arena Gong", "Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg")
 addonData.libs.SharedMedia:Register("sound", "TRB: Air Horn", "Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg")
+
+if not addonData.libs.SharedMedia:IsValid("border", "1 Pixel") then
+	addonData.libs.SharedMedia:Register("border", "1 Pixel", "Interface\\Buttons\\WHITE8X8")
+end
+
 TRB.Details.addonData = addonData
 
 -- Frames

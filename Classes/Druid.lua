@@ -473,6 +473,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				comboPoints = true,
 				thresholdId = 14,
 				settingKey = "ferociousBiteMinimum",
+				isSnowflake = true,
 				thresholdUsable = false
 			},
 			ferociousBiteMaximum = {
@@ -483,6 +484,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				comboPoints = true,
 				thresholdId = 15,
 				settingKey = "ferociousBiteMaximum",
+				isSnowflake = true,
 				thresholdUsable = false
 			},
 			prowl = {
@@ -733,6 +735,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 340698,
 				name = "",
 				icon = ""
+			},
+
+			-- Legendaries
+			apexPredatorsCraving = {
+				id = 339140,
+				name = "",
+				icon = ""
 			}
 		}
 
@@ -809,6 +818,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			duration = 0,
 			stacks = 0,
 			endTimeLeeway = nil
+		}
+		specCache.feral.snapshotData.apexPredatorsCraving = {
+			spellId = nil,
+			endTime = nil,
+			duration = 0
 		}
 		specCache.feral.snapshotData.snapshots = {
 			rake = 100,
@@ -1068,6 +1082,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
+            { variable = "#apexPredatorsCraving", icon = spells.apexPredatorsCraving.icon, description = spells.apexPredatorsCraving.name, printInSettings = true },
             { variable = "#berserk", icon = spells.berserk.icon, description = spells.berserk.name, printInSettings = true },
             { variable = "#bloodtalons", icon = spells.bloodtalons.icon, description = spells.bloodtalons.name, printInSettings = true },
             { variable = "#brutalSlash", icon = spells.brutalSlash.icon, description = spells.brutalSlash.name, printInSettings = true },
@@ -1150,22 +1165,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$moonfirePercent", description = "Snapshot percentage vs. recasting of Lunar Inspiration's Moonfire on your current target", printInSettings = true, color = false },
 			{ variable = "$moonfireCurrent", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
 
-			{ variable = "$brutalSlashCharges", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
-			{ variable = "$brutalSlashCooldown", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
-			{ variable = "$brutalSlashCooldownTotal", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
+			{ variable = "$brutalSlashCharges", description = "Number of charges you currently have for Brutal Slash (if talented)", printInSettings = true, color = false },
+			{ variable = "$brutalSlashCooldown", description = "Time remaining until your next Brutal Slash recharge (if talented)", printInSettings = true, color = false },
+			{ variable = "$brutalSlashCooldownTotal", description = "Time remaining until Brutal Slash has full charges (if talented)", printInSettings = true, color = false },  
 			
-			{ variable = "$bloodtalonsStacks", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
-			{ variable = "$bloodtalonsTime", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
+			{ variable = "$bloodtalonsStacks", description = "Number of stacks of Bloodtalons available to use (if talented)", printInSettings = true, color = false },
+			{ variable = "$bloodtalonsTime", description = "Time remaining on your Bloodtalons proc (if talented)", printInSettings = true, color = false },
 			
-			{ variable = "$suddenAmbushTime", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
+			{ variable = "$clearcastingStacks", description = "Number of stacks of Clearcasting available to use", printInSettings = true, color = false },
+			{ variable = "$clearcastingTime", description = "Time remaining on your Clearcasting proc", printInSettings = true, color = false },
 			
-			{ variable = "$clearcastingStacks", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
-			{ variable = "$clearcastingTime", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
-			
-			{ variable = "$berserkTime", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
-			
-			{ variable = "$incarnationTime", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
+			{ variable = "$berserkTime", description = "Time remaining on your Berserk or Incarnation: King of the Jungle buff", printInSettings = true, color = false },
+			{ variable = "$incarnationTime", description = "Time remaining on your Berserk or Incarnation: King of the Jungle buff", printInSettings = false, color = false },
 
+			{ variable = "$suddenAmbushTime", description = "Time remaining on your Sudden Ambush proc (if conduit socketed)", printInSettings = true, color = false },
+			
+			{ variable = "$apexPredatorsCravingTime", description = "Time remaining on your Apex Predator's Craving proc (if equipped)", printInSettings = true, color = false },
+			
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
@@ -1544,7 +1560,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	
 	local function GetBerserkRemainingTime()
 		if TRB.Data.character.talents.incarnationKingOfTheJungle.IsSelected then
-			print("hi")
 			return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.incarnationKingOfTheJungle)
 		else
 			return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.berserk)
@@ -1553,6 +1568,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 	local function GetSuddenAmbushRemainingTime(leeway)
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.suddenAmbush, leeway)
+	end
+	
+	local function GetApexPredatorsCravingRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.apexPredatorsCraving)
 	end
 
 	local function GetEclipseRemainingTime()
@@ -2018,6 +2037,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			elseif var == "$berserkTime" or var == "$incarnationTime" then
 				if GetBerserkRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$apexPredatorsCravingTime" then
+				if GetApexPredatorsCravingRemainingTime() > 0 then
 					valid = true
 				end
 			end
@@ -2637,6 +2660,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local _berserkTime = GetBerserkRemainingTime()
 		local berserkTime = string.format("%.1f", _berserkTime)
 
+		--$apexPredatorsCravingTime
+		local _apexPredatorsCravingTime = GetApexPredatorsCravingRemainingTime()
+		local apexPredatorsCravingTime = 0
+		if _apexPredatorsCravingTime ~= nil then
+			apexPredatorsCravingTime = string.format("%.1f", _apexPredatorsCravingTime)
+		end
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveEnergy or 0
@@ -2717,6 +2746,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$clearcastingTime"] = clearcastingTime
 		lookup["$berserkTime"] = berserkTime
 		lookup["$incarnationTime"] = incarnationTime
+		lookup["$apexPredatorsCravingTime"] = apexPredatorsCravingTime
 
 		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$energyTotal"] = energyTotal
@@ -3117,11 +3147,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if TRB.Data.spells.onethsClearVision.isActive and TRB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
 						TRB.Data.snapshotData.audio.playedOnethsCue = true
 						TRB.Data.snapshotData.audio.playedSfCue = true
-						---@diagnostic disable-next-line: redundant-parameter
+---@diagnostic disable-next-line: redundant-parameter
 						PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
 					elseif TRB.Data.settings.druid.balance.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
 						TRB.Data.snapshotData.audio.playedSsCue = true
-						---@diagnostic disable-next-line: redundant-parameter
+---@diagnostic disable-next-line: redundant-parameter
 						PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
 					end
 				else
@@ -3378,10 +3408,24 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
 								end
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-								if spell.id == TRB.Data.spells.ferociousBite.id then
+								if spell.id == TRB.Data.spells.ferociousBite.id and spell.settingKey == "ferociousBite" then
 									TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.druid.feral.thresholds.width, math.min(math.max(-energyAmount, TRB.Data.snapshotData.resource), -CalculateAbilityResourceValue(TRB.Data.spells.ferociousBite.energyMax, true)), TRB.Data.character.maxResource)
 									
-									if TRB.Data.snapshotData.resource >= -energyAmount then
+									if TRB.Data.snapshotData.resource >= -energyAmount or TRB.Data.spells.apexPredatorsCraving.isActive == true then
+										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
+										frameLevel = 128
+									end
+								elseif spell.id == TRB.Data.spells.ferociousBiteMinimum.id and spell.settingKey == "ferociousBiteMinimum" then
+									if TRB.Data.snapshotData.resource >= -energyAmount or TRB.Data.spells.apexPredatorsCraving.isActive == true then
+										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
+										frameLevel = 128
+									end
+								elseif spell.id == TRB.Data.spells.ferociousBiteMaximum.id and spell.settingKey == "ferociousBiteMaximum" then
+									if TRB.Data.snapshotData.resource >= -energyAmount or TRB.Data.spells.apexPredatorsCraving.isActive == true then
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
@@ -3478,7 +3522,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						barColor = TRB.Data.settings.druid.feral.colors.bar.clearcasting
 					end
 
-					if TRB.Data.snapshotData.resource2 == 5 and TRB.Data.snapshotData.resource >= -CalculateAbilityResourceValue(TRB.Data.spells.ferociousBiteMaximum.energy, true) then
+					if (TRB.Data.snapshotData.resource2 == 5 and TRB.Data.snapshotData.resource >= -CalculateAbilityResourceValue(TRB.Data.spells.ferociousBiteMaximum.energy, true)) or TRB.Data.spells.apexPredatorsCraving.isActive == true then
 						barColor = TRB.Data.settings.druid.feral.colors.bar.maxBite
 					end
 
@@ -3502,19 +3546,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
 					
-					local sbsCp = 0
-					
-					--[[
-					if TRB.Data.character.covenantId == 4 and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.serratedBoneSpike.charges > 0 then
-						sbsCp = 1 + TRB.Data.snapshotData.targetData.serratedBoneSpike
-
-						if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] == nil or
-							TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serratedBoneSpike == false then
-							sbsCp = sbsCp + 1
-						end
-					end
-]]
-
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.background, true)
 					
 					for x = 1, TRB.Data.character.maxResource2 do
@@ -3535,14 +3566,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.feral, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 						end
 
-						--[[if TRB.Data.snapshotData.echoingReprimand[x].enabled then
-							cpColor = TRB.Data.settings.druid.feral.colors.comboPoints.echoingReprimand
-							cpBorderColor = TRB.Data.settings.druid.feral.colors.comboPoints.echoingReprimand
-							cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.echoingReprimand, true)
-						elseif sbsCp > 0 and x > TRB.Data.snapshotData.resource2 and x <= (TRB.Data.snapshotData.resource2 + sbsCp) then
-							cpBorderColor = TRB.Data.settings.druid.feral.colors.comboPoints.serratedBoneSpike
-							cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.serratedBoneSpike, true)
-						end]]
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(cpBorderColor, true))
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
@@ -3911,6 +3934,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Data.snapshotData.bloodtalons.duration = 0
 							TRB.Data.snapshotData.bloodtalons.stacks = 0
 							TRB.Data.spells.bloodtalons.isActive = false
+						end
+					elseif spellId == TRB.Data.spells.apexPredatorsCraving.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.apexPredatorsCraving.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.apexPredatorsCraving.duration, TRB.Data.snapshotData.apexPredatorsCraving.endTime, _, _, _, TRB.Data.snapshotData.apexPredatorsCraving.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.apexPredatorsCraving.id)
+
+							if TRB.Data.settings.druid.balance.audio.apexPredatorsCraving.enabled then
+								---@diagnostic disable-next-line: redundant-parameter
+								PlaySoundFile(TRB.Data.settings.druid.balance.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.apexPredatorsCraving.isActive = false
+							TRB.Data.snapshotData.apexPredatorsCraving.spellId = nil
+							TRB.Data.snapshotData.apexPredatorsCraving.duration = 0
+							TRB.Data.snapshotData.apexPredatorsCraving.endTime = nil
 						end
 					else
 					end

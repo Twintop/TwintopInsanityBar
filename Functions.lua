@@ -2173,13 +2173,14 @@ local function ValidateLsmValues(specName, settings)
 	end
 
 	-- Textures
+	-- Bar
 	if not TRB.Details.addonData.libs.SharedMedia:IsValid("background", settings.textures.backgroundName) then
 		print("TRB: |cFFFF5555Invalid texture (" .. specName .. " bar background): '|r" .. settings.textures.backgroundName .. "|cFFFF5555'. Resetting to a default texture.|r")
 		settings.textures.background = TRB.Data.constants.defaultSettings.textures.background
 		settings.textures.backgroundName = TRB.Data.constants.defaultSettings.textures.backgroundName
 	end
 
-	if not TRB.Details.addonData.libs.SharedMedia:IsValid("border", settings.textures.borderName) then
+	if not TRB.Details.addonData.libs.SharedMedia:IsValid("border", settings.textures.borderName) and settings.textures.borderName ~= "1 Pixel" then
 		print("TRB: |cFFFF5555Invalid texture (" .. specName .. " bar border): '|r" .. settings.textures.borderName .. "|cFFFF5555'. Resetting to a default texture.|r")
 		settings.textures.border = TRB.Data.constants.defaultSettings.textures.border
 		settings.textures.borderName = TRB.Data.constants.defaultSettings.textures.borderName
@@ -2201,6 +2202,27 @@ local function ValidateLsmValues(specName, settings)
 		print("TRB: |cFFFF5555Invalid texture (" .. specName .. " casting bar): '|r" .. settings.textures.castingBarName .. "|cFFFF5555'. Resetting to a default texture.|r")
 		settings.textures.castingBar = TRB.Data.constants.defaultSettings.textures.resourceBar
 		settings.textures.castingBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
+	end
+
+	-- Combo Points
+	if settings.textures.comboPointsBorder ~= nil then
+		if not TRB.Details.addonData.libs.SharedMedia:IsValid("background", settings.textures.comboPointsBackgroundName) then
+			print("TRB: |cFFFF5555Invalid texture (" .. specName .. " combo points background): '|r" .. settings.textures.comboPointsBackgroundName .. "|cFFFF5555'. Resetting to a default texture.|r")
+			settings.textures.comboPointsBackground = TRB.Data.constants.defaultSettings.textures.background
+			settings.textures.comboPointsBackgroundName = TRB.Data.constants.defaultSettings.textures.backgroundName
+		end
+
+		if not TRB.Details.addonData.libs.SharedMedia:IsValid("border", settings.textures.comboPointsBorderName) and settings.textures.comboPointsBorderName ~= "1 Pixel" then
+			print("TRB: |cFFFF5555Invalid texture (" .. specName .. " combo points border): '|r" .. settings.textures.comboPointsBorderName .. "|cFFFF5555'. Resetting to a default texture.|r")
+			settings.textures.comboPointsBorder = TRB.Data.constants.defaultSettings.textures.border
+			settings.textures.comboPointsBorderName = TRB.Data.constants.defaultSettings.textures.borderName
+		end
+
+		if not TRB.Details.addonData.libs.SharedMedia:IsValid("statusbar", settings.textures.comboPointsBarName) then
+			print("TRB: |cFFFF5555Invalid texture (" .. specName .. " combo points bar): '|r" .. settings.textures.comboPointsBarName .. "|cFFFF5555'. Resetting to a default texture.|r")
+			settings.textures.comboPointsBar = TRB.Data.constants.defaultSettings.textures.resourceBar
+			settings.textures.comboPointsBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
+		end
 	end
 
 	for k, v in pairs(settings.audio) do

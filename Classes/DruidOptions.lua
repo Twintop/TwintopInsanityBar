@@ -438,8 +438,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					penultimate="FFFF9900",
 					final="FFFF0000",
 					sameColor=false
-					--echoingReprimand="FF68CCEF",
-					--serratedBoneSpike="FF40BF40"
 				},
 				threshold = {
 					under="FFFFFFFF",
@@ -455,18 +453,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-				--[[blindside={
-					name = "Blindside Proc",
+				apexPredatorsCraving={
+					name = "Apex Predator's Craving Proc",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
-				},
-				sepsis={
-					name = "Flayer's Mark Proc",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},]]
+				}
             },
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -6132,31 +6124,30 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
-		--[[
 		yCoord = yCoord - 30
-		controls.checkBoxes.blindsideAudio = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_blindside_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.blindsideAudio
+		controls.checkBoxes.apcAudio = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_apc_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.apcAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Blidside proc occurs")
-		f.tooltip = "Play an audio cue when a Blindside proc occurs, allowing Ambush to be used outside of stealth."
-		f:SetChecked(TRB.Data.settings.druid.feral.audio.blindside.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when an Apex Predator's Craving proc occurs")
+		f.tooltip = "Play an audio cue when an Apex Predator's Craving (legendary) proc occurs, allowing a max damage Ferocious Bite to be cast without spending any Energy or Combo Points."
+		f:SetChecked(TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.audio.blindside.enabled = self:GetChecked()
+			TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.enabled = self:GetChecked()
 
-			if TRB.Data.settings.druid.feral.audio.blindside.enabled then
-				PlaySoundFile(TRB.Data.settings.druid.feral.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
+			if TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.enabled then
+				PlaySoundFile(TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.blindsideAudio = CreateFrame("FRAME", "TwintopResourceBar_Druid_Feral_blindside_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.blindsideAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.blindsideAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.blindsideAudio, TRB.Data.settings.druid.feral.audio.blindside.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.blindsideAudio, "LEFT")
+		controls.dropDown.apcAudio = CreateFrame("FRAME", "TwintopResourceBar_Druid_Feral_apexPredatorsCraving_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.apcAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.apcAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.apcAudio, TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.apcAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.blindsideAudio, function(self, level, menuList)
+		UIDropDownMenu_Initialize(controls.dropDown.apcAudio, function(self, level, menuList)
 			local entries = 25
 			local info = UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
@@ -6177,7 +6168,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.druid.feral.audio.blindside.sound
+						info.checked = sounds[v] == TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -6188,14 +6179,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.blindsideAudio:SetValue(newValue, newName)
-			TRB.Data.settings.druid.feral.audio.blindside.sound = newValue
-			TRB.Data.settings.druid.feral.audio.blindside.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.blindsideAudio, newName)
+		function controls.dropDown.apcAudio:SetValue(newValue, newName)
+			TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.sound = newValue
+			TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.apcAudio, newName)
 			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.druid.feral.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
-		]]
 
 		yCoord = yCoord - 60
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
@@ -6259,71 +6249,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			CloseDropDownMenus()
 			PlaySoundFile(TRB.Data.settings.druid.feral.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
-
-		--[[
-		yCoord = yCoord - 60
-		controls.checkBoxes.sepsisAudio = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_sepsis_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.sepsisAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you gain Sepsis buff (if |cFF68CCEFKyrian|r)")
-		f.tooltip = "Play an audio cue when you gain Sepsis buff that allows you to use a stealth ability outside of steath."
-		f:SetChecked(TRB.Data.settings.druid.feral.audio.sepsis.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.audio.sepsis.enabled = self:GetChecked()
-
-			if TRB.Data.settings.druid.feral.audio.sepsis.enabled then
-				PlaySoundFile(TRB.Data.settings.druid.feral.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.sepsisAudio = CreateFrame("FRAME", "TwintopResourceBar_Druid_Feral_sepsis_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.sepsisAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.sepsisAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.sepsisAudio, TRB.Data.settings.druid.feral.audio.sepsis.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.sepsisAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.sepsisAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else  
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.druid.feral.audio.sepsis.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.sepsisAudio:SetValue(newValue, newName)
-			TRB.Data.settings.druid.feral.audio.sepsis.sound = newValue
-			TRB.Data.settings.druid.feral.audio.sepsis.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.sepsisAudio, newName)
-			CloseDropDownMenus()
-			PlaySoundFile(TRB.Data.settings.druid.feral.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-		]]
 
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Energy Regeneration", 0, yCoord)
