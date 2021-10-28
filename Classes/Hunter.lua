@@ -1114,7 +1114,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		-- This is done here so that we can get icons for the options menu!
 		specCache.beastMastery.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Focus generating spell you are currently hardcasting", printInSettings = true },
-			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#aMurderOfCrows", icon = spells.aMurderOfCrows.icon, description = "A Murder of Crows", printInSettings = true },
@@ -1194,7 +1194,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		-- This is done here so that we can get icons for the options menu!
 		specCache.marksmanship.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Focus generating spell you are currently hardcasting", printInSettings = true },
-			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#aMurderOfCrows", icon = spells.aMurderOfCrows.icon, description = "A Murder of Crows", printInSettings = true },
@@ -1284,7 +1284,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		-- This is done here so that we can get icons for the options menu!
 		specCache.survival.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Focus generating spell you are currently hardcasting", printInSettings = true },
-			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#aMurderOfCrows", icon = spells.aMurderOfCrows.icon, description = "A Murder of Crows", printInSettings = true },
@@ -2474,6 +2474,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Data.snapshotData.barbedShot.endTime = maxEndTime
 
 		-- Recharge info
+---@diagnostic disable-next-line: redundant-parameter
 		TRB.Data.snapshotData.barbedShot.charges, _, TRB.Data.snapshotData.barbedShot.startTime, TRB.Data.snapshotData.barbedShot.duration, _ = GetSpellCharges(TRB.Data.spells.barbedShot.id)
 	end
 
@@ -2512,6 +2513,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             TRB.Data.snapshotData.killCommand.startTime = nil
             TRB.Data.snapshotData.killCommand.duration = 0
 		elseif TRB.Data.snapshotData.killCommand.startTime ~= nil then
+			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.killCommand.startTime, TRB.Data.snapshotData.killCommand.duration, _, _ = GetSpellCooldown(TRB.Data.spells.killCommand.id)
         end
 
@@ -2523,6 +2525,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 		_, _, TRB.Data.snapshotData.frenzy.stacks, _, TRB.Data.snapshotData.frenzy.duration, TRB.Data.snapshotData.frenzy.endTime, _, _, _, TRB.Data.snapshotData.frenzy.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.frenzy.id, "pet")
+		---@diagnostic disable-next-line: redundant-parameter
 		TRB.Data.snapshotData.beastialWrath.startTime, TRB.Data.snapshotData.beastialWrath.duration, _, _ = GetSpellCooldown(TRB.Data.spells.beastialWrath.id)
 	end
 
@@ -2532,7 +2535,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local currentTime = GetTime()
 		local _
 
+---@diagnostic disable-next-line: redundant-parameter
         TRB.Data.snapshotData.aimedShot.charges, _, TRB.Data.snapshotData.aimedShot.startTime, TRB.Data.snapshotData.aimedShot.duration, _ = GetSpellCharges(TRB.Data.spells.aimedShot.id)
+		---@diagnostic disable-next-line: redundant-parameter
         TRB.Data.snapshotData.killShot.charges, _, TRB.Data.snapshotData.killShot.startTime, TRB.Data.snapshotData.killShot.duration, _ = GetSpellCharges(TRB.Data.spells.killShot.id)
 
         if TRB.Data.snapshotData.burstingShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.burstingShot.startTime + TRB.Data.snapshotData.burstingShot.duration) then
@@ -2577,6 +2582,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local currentTime = GetTime()
         local _
 
+---@diagnostic disable-next-line: redundant-parameter
 		TRB.Data.snapshotData.butchery.charges, _, TRB.Data.snapshotData.butchery.startTime, TRB.Data.snapshotData.butchery.duration, _ = GetSpellCharges(TRB.Data.spells.butchery.id)
 
 		if TRB.Data.snapshotData.carve.startTime ~= nil and currentTime > (TRB.Data.snapshotData.carve.startTime + TRB.Data.snapshotData.carve.duration) then
@@ -2757,6 +2763,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									elseif TRB.Data.snapshotData.resource >= -focusAmount or flayersMarkTime > 0 then
 										if TRB.Data.settings.hunter.beastMastery.audio.killShot.enabled and not TRB.Data.snapshotData.audio.playedKillShotCue then
 											TRB.Data.snapshotData.audio.playedKillShotCue = true
+											---@diagnostic disable-next-line: redundant-parameter
 											PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 										end
 										thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.over
@@ -2879,6 +2886,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 						if TRB.Data.settings.hunter.beastMastery.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
@@ -2923,6 +2931,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 						if TRB.Data.settings.hunter.marksmanship.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
@@ -3024,6 +3033,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 										if TRB.Data.snapshotData.aimedShot.charges == 2 or timeThreshold >= remainingCd then
 											TRB.Data.snapshotData.audio.playedAimedShotCue = true
+											---@diagnostic disable-next-line: redundant-parameter
 											PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.aimedShot.sound, TRB.Data.settings.core.audio.channel.channel)
 										end
 									elseif TRB.Data.snapshotData.aimedShot.charges == 2 then
@@ -3043,6 +3053,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
 										if TRB.Data.settings.hunter.marksmanship.audio.killShot.enabled and not TRB.Data.snapshotData.audio.playedKillShotCue then
 											TRB.Data.snapshotData.audio.playedKillShotCue = true
+											---@diagnostic disable-next-line: redundant-parameter
 											PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 										end
 									else
@@ -3150,6 +3161,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 						if TRB.Data.settings.hunter.survival.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.hunter.survival.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
@@ -3225,6 +3237,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									elseif TRB.Data.snapshotData.resource >= -focusAmount or flayersMarkTime > 0 then
 										if TRB.Data.settings.hunter.survival.audio.killShot.enabled and not TRB.Data.snapshotData.audio.playedKillShotCue then
 											TRB.Data.snapshotData.audio.playedKillShotCue = true
+											---@diagnostic disable-next-line: redundant-parameter
 											PlaySoundFile(TRB.Data.settings.hunter.survival.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 										end
 										thresholdColor = TRB.Data.settings.hunter.survival.colors.threshold.over
@@ -3330,6 +3343,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					if TRB.Data.settings.hunter.survival.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
 						if TRB.Data.settings.hunter.survival.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.hunter.survival.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
@@ -3400,6 +3414,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						end
 					elseif spellId == TRB.Data.spells.barbedShot.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Barbed Shot
+							---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.snapshotData.barbedShot.charges, _, TRB.Data.snapshotData.barbedShot.startTime, TRB.Data.snapshotData.barbedShot.duration, _ = GetSpellCharges(TRB.Data.spells.barbedShot.id)
 						end
 					elseif spellId == TRB.Data.spells.barbedShot.buffId[1] or spellId == TRB.Data.spells.barbedShot.buffId[2] or spellId == TRB.Data.spells.barbedShot.buffId[3] or spellId == TRB.Data.spells.barbedShot.buffId[4] or spellId == TRB.Data.spells.barbedShot.buffId[5] then
@@ -3423,9 +3438,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						end
 					elseif spellId == TRB.Data.spells.killCommand.id then
 						if type == "SPELL_CAST_SUCCESS" then
+							---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.snapshotData.killCommand.startTime, TRB.Data.snapshotData.killCommand.duration, _, _ = GetSpellCooldown(TRB.Data.spells.killCommand.id)
 						end
 					elseif spellId == TRB.Data.spells.beastialWrath.id then
+						---@diagnostic disable-next-line: redundant-parameter
 						TRB.Data.snapshotData.beastialWrath.startTime, TRB.Data.snapshotData.beastialWrath.duration, _, _ = GetSpellCooldown(TRB.Data.spells.beastialWrath.id)
 					elseif spellId == TRB.Data.spells.flamewakersCobraSting.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
@@ -3441,9 +3458,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 				elseif specId == 2 then --Marksmanship
 					if spellId == TRB.Data.spells.burstingShot.id then
+						---@diagnostic disable-next-line: redundant-parameter
 						TRB.Data.snapshotData.burstingShot.startTime, TRB.Data.snapshotData.burstingShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.burstingShot.id)
 					elseif spellId == TRB.Data.spells.aimedShot.id then
 						if type == "SPELL_CAST_SUCCESS" then
+							---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.snapshotData.aimedShot.charges, _, TRB.Data.snapshotData.aimedShot.startTime, TRB.Data.snapshotData.aimedShot.duration, _ = GetSpellCharges(TRB.Data.spells.aimedShot.id)
 							TRB.Data.snapshotData.audio.playedAimedShotCue = false
 						end
@@ -3453,6 +3472,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.barrage.duration = TRB.Data.spells.barrage.cooldown
 						end
 					elseif spellId == TRB.Data.spells.explosiveShot.id then
+						---@diagnostic disable-next-line: redundant-parameter
 						TRB.Data.snapshotData.explosiveShot.startTime, TRB.Data.snapshotData.explosiveShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.explosiveShot.id)
 					elseif spellId == TRB.Data.spells.trueshot.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
@@ -3480,6 +3500,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							_, _, _, _, TRB.Data.snapshotData.lockAndLoad.duration, TRB.Data.snapshotData.lockAndLoad.endTime, _, _, _, TRB.Data.snapshotData.lockAndLoad.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.lockAndLoad.id)
 
 							if TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.enabled then
+								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
@@ -3508,9 +3529,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						end
 					elseif spellId == TRB.Data.spells.secretsOfTheUnblinkingVigil.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.startTime, TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration, _, _ = GetSpellCooldown(TRB.Data.spells.secretsOfTheUnblinkingVigil.id)
 
 							if TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.enabled then
+								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
@@ -3543,11 +3566,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 				elseif specId == 3 then --Survival
 					if spellId == TRB.Data.spells.carve.id then
+						---@diagnostic disable-next-line: redundant-parameter
 						TRB.Data.snapshotData.carve.startTime, TRB.Data.snapshotData.carve.duration, _, _ = GetSpellCooldown(TRB.Data.spells.carve.id)
 					elseif spellId == TRB.Data.spells.chakrams.id then
 						TRB.Data.snapshotData.chakrams.startTime = currentTime
 						TRB.Data.snapshotData.chakrams.duration = TRB.Data.spells.chakrams.cooldown
 					elseif spellId == TRB.Data.spells.flankingStrike.id then
+						---@diagnostic disable-next-line: redundant-parameter
 						TRB.Data.snapshotData.flankingStrike.startTime, TRB.Data.snapshotData.flankingStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.flankingStrike.id)
 					elseif spellId == TRB.Data.spells.termsOfEngagement.id then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Terms of Engagement
@@ -3603,6 +3628,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 				-- Spec agnostic
 				if spellId == TRB.Data.spells.flayedShot.id then
+					---@diagnostic disable-next-line: redundant-parameter
 					TRB.Data.snapshotData.flayedShot.startTime, TRB.Data.snapshotData.flayedShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.flayedShot.id)
 				elseif spellId == TRB.Data.spells.killShot.id then
 					TRB.Data.snapshotData.audio.playedKillShotCue = false
@@ -3619,23 +3645,29 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 						if specId == 1 and TRB.Data.settings.hunter.beastMastery.audio.flayersMark.enabled then
 							TRB.Data.snapshotData.audio.playedKillShotCue = true
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 						elseif specId == 2 and TRB.Data.settings.hunter.marksmanship.audio.flayersMark.enabled then
 							TRB.Data.snapshotData.audio.playedKillShotCue = true
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 						elseif specId == 3 and TRB.Data.settings.hunter.survival.audio.flayersMark.enabled then
 							TRB.Data.snapshotData.audio.playedKillShotCue = true
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.hunter.survival.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 
 						if specId == 1 and not TRB.Data.snapshotData.audio.playedKillShotCue and TRB.Data.settings.hunter.beastMastery.audio.killShot.enabled then
 							TRB.Data.snapshotData.audio.playedKillShotCue = true
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 						elseif specId == 2 and not TRB.Data.snapshotData.audio.playedKillShotCue and TRB.Data.settings.hunter.marksmanship.audio.killShot.enabled then
 							TRB.Data.snapshotData.audio.playedKillShotCue = true
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 						elseif specId == 3 and not TRB.Data.snapshotData.audio.playedKillShotCue and TRB.Data.settings.hunter.survival.audio.killShot.enabled then
 							TRB.Data.snapshotData.audio.playedKillShotCue = true
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.hunter.survival.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
@@ -3650,8 +3682,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						_, _, _, _, TRB.Data.snapshotData.nesingwarysTrappingApparatus.duration, TRB.Data.snapshotData.nesingwarysTrappingApparatus.endTime, _, _, _, TRB.Data.snapshotData.nesingwarysTrappingApparatus.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.nesingwarysTrappingApparatus.id)
 
 						if specId == 2 and TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.enabled then
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 						elseif specId == 3 and TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.enabled then
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff

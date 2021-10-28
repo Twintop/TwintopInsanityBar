@@ -245,7 +245,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		-- This is done here so that we can get icons for the options menu!
 		TRB.Data.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Maelstrom generating spell you are currently hardcasting", printInSettings = true },
-			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#ascendance", icon = TRB.Data.spells.ascendance.icon, description = TRB.Data.spells.ascendance.name, printInSettings = true },
@@ -836,6 +836,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 					if TRB.Data.settings.shaman.elemental.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 						TRB.Data.snapshotData.audio.overcapCue = true
+						---@diagnostic disable-next-line: redundant-parameter
 						PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 					end
 				else
@@ -884,6 +885,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 					if TRB.Data.settings.shaman.elemental.audio.esReady.enabled and TRB.Data.snapshotData.audio.playedEsCue == false then
 						TRB.Data.snapshotData.audio.playedEsCue = true
+						---@diagnostic disable-next-line: redundant-parameter
 						PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
 					end
 				else
@@ -1097,6 +1099,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							FillSpellData()
 							TRB.Options.Shaman.ConstructOptionsPanel()
 							-- Reconstruct just in case
+---@diagnostic disable-next-line: redundant-parameter
 							ConstructResourceBar(TRB.Data.settings.shaman.elemental)--[TRB.Data.barConstructedForSpec])
 							EventRegistration()
 						end)

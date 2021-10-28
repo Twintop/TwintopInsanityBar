@@ -611,7 +611,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		-- This is done here so that we can get icons for the options menu!
 		specCache.assassination.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Energy generating spell you are currently hardcasting", printInSettings = true },
-			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#blindside", icon = spells.blindside.icon, description = spells.blindside.name, printInSettings = true },
@@ -1637,6 +1637,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		_, _, _, _, TRB.Data.snapshotData.sliceAndDice.duration, TRB.Data.snapshotData.sliceAndDice.endTime, _, _, _, TRB.Data.snapshotData.sliceAndDice.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.sliceAndDice.id)
 
 		if TRB.Data.character.covenantId == 4 then
+---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.serratedBoneSpike.charges, _, TRB.Data.snapshotData.serratedBoneSpike.startTime, TRB.Data.snapshotData.serratedBoneSpike.duration, _ = GetSpellCharges(TRB.Data.spells.serratedBoneSpike.id)
 		else
 			TRB.Data.snapshotData.serratedBoneSpike.charges = 0
@@ -2034,6 +2035,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 						if TRB.Data.settings.rogue.assassination.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
@@ -2135,6 +2137,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							TRB.Data.spells.blindside.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.blindside.duration, TRB.Data.snapshotData.blindside.endTime, _, _, _, TRB.Data.snapshotData.blindside.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.blindside.id)
 							if TRB.Data.settings.rogue.assassination.audio.blindside.enabled then
+								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
@@ -2372,13 +2375,15 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 						TRB.Data.spells.sepsis.isActive = true
 						if TRB.Data.settings.rogue.assassination.audio.sepsis.enabled then
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 						TRB.Data.spells.sepsis.isActive = false
 					end
 				elseif spellId == TRB.Data.spells.serratedBoneSpike.id then
-					if type == "SPELL_CAST_SUCCESS" then -- Barbed Shot
+					if type == "SPELL_CAST_SUCCESS" then -- Serrated Bone Spike
+						---@diagnostic disable-next-line: redundant-parameter
 						TRB.Data.snapshotData.serratedBoneSpike.charges, _, TRB.Data.snapshotData.serratedBoneSpike.startTime, TRB.Data.snapshotData.serratedBoneSpike.duration, _ = GetSpellCharges(TRB.Data.spells.serratedBoneSpike.id)
 					end
 				elseif spellId == TRB.Data.spells.serratedBoneSpike.debuffId then

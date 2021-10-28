@@ -744,7 +744,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		-- This is done here so that we can get icons for the options menu!
 		specCache.arms.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Rage generating spell you are currently hardcasting", printInSettings = true },
-			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
             { variable = "#ancientAftershock", icon = spells.ancientAftershock.icon, description = "Ancient Aftershock", printInSettings = true },
@@ -836,7 +836,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		-- This is done here so that we can get icons for the options menu!
 		specCache.fury.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Rage generating spell you are currently hardcasting", printInSettings = true },
-			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
             { variable = "#ancientAftershock", icon = spells.ancientAftershock.icon, description = "Ancient Aftershock", printInSettings = true },
@@ -1857,6 +1857,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.snapshotData.impendingVictory.startTime = nil
             TRB.Data.snapshotData.impendingVictory.duration = 0
 		elseif TRB.Data.snapshotData.impendingVictory.startTime ~= nil then
+			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.impendingVictory.startTime, TRB.Data.snapshotData.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
         end
 
@@ -1864,9 +1865,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
             TRB.Data.snapshotData.ignorePain.startTime = nil
             TRB.Data.snapshotData.ignorePain.duration = 0
 		elseif TRB.Data.snapshotData.ignorePain.startTime ~= nil then
+			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.ignorePain.startTime, TRB.Data.snapshotData.ignorePain.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ignorePain.id)
         end
 
+---@diagnostic disable-next-line: redundant-parameter
 		TRB.Data.snapshotData.shieldBlock.charges, _, TRB.Data.snapshotData.shieldBlock.startTime, TRB.Data.snapshotData.shieldBlock.duration, _ = GetSpellCharges(TRB.Data.spells.shieldBlock.id)
 	end
 
@@ -1881,6 +1884,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.snapshotData.mortalStrike.startTime = nil
             TRB.Data.snapshotData.mortalStrike.duration = 0
 		elseif TRB.Data.snapshotData.mortalStrike.startTime ~= nil then
+			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.mortalStrike.startTime, TRB.Data.snapshotData.mortalStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.mortalStrike.id)
         end
 
@@ -1888,6 +1892,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
             TRB.Data.snapshotData.cleave.startTime = nil
             TRB.Data.snapshotData.cleave.duration = 0
 		elseif TRB.Data.snapshotData.cleave.startTime ~= nil then
+			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.cleave.startTime, TRB.Data.snapshotData.cleave.duration, _, _ = GetSpellCooldown(TRB.Data.spells.cleave.id)
         end
 
@@ -2160,6 +2165,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 						if TRB.Data.settings.warrior.arms.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.warrior.arms.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
@@ -2314,6 +2320,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 						if TRB.Data.settings.warrior.fury.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
+							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.warrior.fury.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
@@ -2362,10 +2369,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				if specId == 1 then --Arms
 					if spellId == TRB.Data.spells.mortalStrike.id then
 						if type == "SPELL_CAST_SUCCESS" then
+							---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.snapshotData.mortalStrike.startTime, TRB.Data.snapshotData.mortalStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.mortalStrike.id)
 						end
 					elseif spellId == TRB.Data.spells.cleave.id then
 						if type == "SPELL_CAST_SUCCESS" then
+							---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.snapshotData.cleave.startTime, TRB.Data.snapshotData.cleave.duration, _, _ = GetSpellCooldown(TRB.Data.spells.cleave.id)
 						end
 					elseif spellId == TRB.Data.spells.deadlyCalm.id then
@@ -2384,6 +2393,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							TRB.Data.spells.suddenDeath.isActive = true
 							
 							if TRB.Data.settings.warrior.arms.audio.suddenDeath.enabled then
+								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.aimedShot.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
@@ -2490,6 +2500,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				-- Spec Agnostic
 				if spellId == TRB.Data.spells.impendingVictory.id then
 					if type == "SPELL_CAST_SUCCESS" then
+						---@diagnostic disable-next-line: redundant-parameter
 						TRB.Data.snapshotData.impendingVictory.startTime, TRB.Data.snapshotData.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
 					end
 				elseif spellId == TRB.Data.spells.victoryRush.id then
@@ -2508,6 +2519,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					end
 				elseif spellId == TRB.Data.spells.shieldBlock.id then
 					if type == "SPELL_CAST_SUCCESS" then
+						---@diagnostic disable-next-line: redundant-parameter
 						TRB.Data.snapshotData.shieldBlock.charges, _, TRB.Data.snapshotData.shieldBlock.startTime, TRB.Data.snapshotData.shieldBlock.duration, _ = GetSpellCharges(TRB.Data.spells.shieldBlock.id)
 					end
 				elseif spellId == TRB.Data.spells.ancientAftershock.id then
