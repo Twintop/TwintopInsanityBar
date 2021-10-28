@@ -672,6 +672,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 202028,
 				name = "",
 				icon = "",
+				cooldown = 8,
+				isHasted = true,
 				energy = -25,
                 comboPointsGenerated = 1,
 				thresholdId = 10,
@@ -1066,53 +1068,32 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			--{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-            { variable = "#rip", icon = spells.moonfire.icon, description = spells.rip.name, printInSettings = true },
-            { variable = "#rake", icon = spells.moonfire.icon, description = spells.rake.name, printInSettings = true },
-            { variable = "#thrash", icon = spells.moonfire.icon, description = spells.thrash.name, printInSettings = true },
+            { variable = "#berserk", icon = spells.berserk.icon, description = spells.berserk.name, printInSettings = true },
+            { variable = "#bloodtalons", icon = spells.bloodtalons.icon, description = spells.bloodtalons.name, printInSettings = true },
+            { variable = "#brutalSlash", icon = spells.brutalSlash.icon, description = spells.brutalSlash.name, printInSettings = true },
+            { variable = "#carnivorousInstinct", icon = spells.carnivorousInstinct.icon, description = spells.carnivorousInstinct.name, printInSettings = true },
+            { variable = "#catForm", icon = spells.catForm.icon, description = spells.catForm.name, printInSettings = true },
+            { variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
+            { variable = "#feralFrenzy", icon = spells.feralFrenzy.icon, description = spells.feralFrenzy.name, printInSettings = true },
+            { variable = "#ferociousBite", icon = spells.ferociousBite.icon, description = spells.ferociousBite.name, printInSettings = true },
+            { variable = "#incarnation", icon = spells.incarnationKingOfTheJungle.icon, description = spells.incarnationKingOfTheJungle.name, printInSettings = true },
+            { variable = "#incarnationKingOfTheJungle", icon = spells.incarnationKingOfTheJungle.icon, description = spells.incarnationKingOfTheJungle.name, printInSettings = false },
+            { variable = "#lunarInspiration", icon = spells.lunarInspiration.icon, description = spells.lunarInspiration.name, printInSettings = true },
+            { variable = "#maim", icon = spells.maim.icon, description = spells.maim.name, printInSettings = true },
             { variable = "#moonfire", icon = spells.moonfire.icon, description = spells.moonfire.name, printInSettings = true },
-           
-			--[[ 
-			{ variable = "#starsurge", icon = spells.starsurge.icon, description = "Starsurge", printInSettings = true },
-			{ variable = "#starfall", icon = spells.fullMoon.icon, description = "Starfall", printInSettings = true },
-			{ variable = "#oneths", icon = spells.onethsClearVision.icon .. " or " .. spells.onethsPerception.icon, description = "Oneth's Clear Vision or Perception, whichever is active", printInSettings = true },
-			{ variable = "#onethsClearVision", icon = spells.onethsClearVision.icon, description = "Oneth's Clear Vision", printInSettings = true },
-			{ variable = "#onethsPerception", icon = spells.onethsPerception.icon, description = "Oneth's Perception", printInSettings = true },
-
-			{ variable = "#pulsar", icon = spells.primordialArcanicPulsar.icon, description = "Primordial Arcanic Pulsar", printInSettings = true },
-			{ variable = "#pap", icon = spells.primordialArcanicPulsar.icon, description = "Primordial Arcanic Pulsar", printInSettings = false },
-			{ variable = "#primordialArcanicPulsar", icon = spells.primordialArcanicPulsar.icon, description = "Primordial Arcanic Pulsar", printInSettings = false },
-
-			{ variable = "#eclipse", icon = spells.incarnationChosenOfElune.icon .. spells.celestialAlignment.icon .. spells.eclipseSolar.icon .. " or " .. spells.eclipseLunar.icon, description = "Current active Eclipse", printInSettings = true },
-			{ variable = "#celestialAlignment", icon = spells.celestialAlignment.icon, description = "Celestial Alignment", printInSettings = true },            
-			{ variable = "#icoe", icon = spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = true },            
-			{ variable = "#coe", icon = spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = false },            
-			{ variable = "#incarnation", icon = spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = false },            
-			{ variable = "#incarnationChosenOfElune", icon = spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = false },            
-			{ variable = "#solar", icon = spells.eclipseSolar.icon, description = "Eclipse (Solar)", printInSettings = true },
-            { variable = "#eclipseSolar", icon = spells.eclipseSolar.icon, description = "Eclipse (Solar)", printInSettings = false },
-            { variable = "#solarEclipse", icon = spells.eclipseSolar.icon, description = "Eclipse (Solar)", printInSettings = false },
-            { variable = "#lunar", icon = spells.eclipseLunar.icon, description = "Eclipse (Lunar)", printInSettings = true },
-            { variable = "#eclipseLunar", icon = spells.eclipseLunar.icon, description = "Eclipse (Lunar)", printInSettings = false },
-            { variable = "#lunarEclipse", icon = spells.eclipseLunar.icon, description = "Eclipse (Lunar)", printInSettings = false },
-            
-			{ variable = "#naturesBalance", icon = spells.naturesBalance.icon, description = "Nature's Balance", printInSettings = true },
-			{ variable = "#woe", icon = spells.warriorOfElune.icon, description = "Warrior of Elune", printInSettings = false },
-			{ variable = "#warriorOfElune", icon = spells.warriorOfElune.icon, description = "Warrior of Elune", printInSettings = true },
-			{ variable = "#forceOfNature", icon = spells.forceOfNature.icon, description = "Force of Nature", printInSettings = true },
-			{ variable = "#fon", icon = spells.forceOfNature.icon, description = "Force of Nature", printInSettings = false },
-            
-            { variable = "#soulOfTheForest", icon = spells.soulOfTheForest.icon, description = "Soul of the Forest", printInSettings = true },
-            
-            { variable = "#stellarFlare", icon = spells.stellarFlare.icon, description = "Stellar Flare", printInSettings = true },
-
-			{ variable = "#foe", icon = spells.furyOfElune.icon, description = "Fury Of Elune", printInSettings = false },
-			{ variable = "#furyOfElune", icon = spells.furyOfElune.icon, description = "Fury Of Elune", printInSettings = true },
-
-			{ variable = "#newMoon", icon = spells.newMoon.icon, description = "New Moon", printInSettings = true },
-			{ variable = "#halfMoon", icon = spells.halfMoon.icon, description = "Half Moon", printInSettings = true },
-			{ variable = "#fullMoon", icon = spells.fullMoon.icon, description = "Full Moon", printInSettings = true },
-			{ variable = "#moon", icon = spells.newMoon.icon .. spells.halfMoon.icon .. spells.fullMoon.icon, description = "Current Moon", printInSettings = true },
-			]]
+            { variable = "#predatorySwiftness", icon = spells.predatorySwiftness.icon, description = spells.predatorySwiftness.name, printInSettings = true },
+            { variable = "#primalWrath", icon = spells.primalWrath.icon, description = spells.primalWrath.name, printInSettings = true },
+            { variable = "#prowl", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = true },
+            { variable = "#rake", icon = spells.rake.icon, description = spells.rake.name, printInSettings = true },
+            { variable = "#rip", icon = spells.rip.icon, description = spells.rip.name, printInSettings = true },
+            { variable = "#savageRoar", icon = spells.savageRoar.icon, description = spells.savageRoar.name, printInSettings = true },
+            { variable = "#shadowmeld", icon = spells.shadowmeld.icon, description = spells.shadowmeld.name, printInSettings = true },
+            { variable = "#scentOfBlood", icon = spells.scentOfBlood.icon, description = spells.scentOfBlood.name, printInSettings = true },
+            { variable = "#shred", icon = spells.shred.icon, description = spells.shred.name, printInSettings = true },
+            { variable = "#suddenAmbush", icon = spells.suddenAmbush.icon, description = spells.suddenAmbush.name, printInSettings = true },
+            { variable = "#swipe", icon = spells.swipe.icon, description = spells.swipe.name, printInSettings = true },
+            { variable = "#thrash", icon = spells.thrash.icon, description = spells.thrash.name, printInSettings = true },
+            { variable = "#tigersFury", icon = spells.tigersFury.icon, description = spells.tigersFury.name, printInSettings = true },
 		}
 		specCache.feral.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -1142,6 +1123,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$energyTotal", description = "Current + Passive + Casting Energy Total", printInSettings = true, color = false },   
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Energy Total", printInSettings = false, color = false },     
 			
+			{ variable = "$comboPoints", description = "Current Combo Points", printInSettings = true, color = false },
+			{ variable = "$comboPointsMax", description = "Maximum Combo Points", printInSettings = true, color = false },
+
 			{ variable = "$ripCount", description = "Number of Rips active on targets", printInSettings = true, color = false },
 			{ variable = "$ripTime", description = "Time remaining on Rip on your current target", printInSettings = true, color = false },
 			{ variable = "$ripSnapshot", description = "Snapshot percentage of Rip on your current target", printInSettings = true, color = false },
@@ -1165,6 +1149,22 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$moonfireSnapshot", description = "Snapshot percentage of Lunar Inspiration's Moonfire on your current target", printInSettings = true, color = false },
 			{ variable = "$moonfirePercent", description = "Snapshot percentage vs. recasting of Lunar Inspiration's Moonfire on your current target", printInSettings = true, color = false },
 			{ variable = "$moonfireCurrent", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
+
+			{ variable = "$brutalSlashCharges", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
+			{ variable = "$brutalSlashCooldown", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
+			{ variable = "$brutalSlashCooldownTotal", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
+			
+			{ variable = "$bloodtalonsStacks", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
+			{ variable = "$bloodtalonsTime", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
+			
+			{ variable = "$suddenAmbushTime", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
+			
+			{ variable = "$clearcastingStacks", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
+			{ variable = "$clearcastingTime", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
+			
+			{ variable = "$berserkTime", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
+			
+			{ variable = "$incarnationTime", description = "Current snapshot percentage damage if Lunar Inspiration's Moonfire was used right now", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -1333,8 +1333,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	
     local function CalculateAbilityResourceValue(resource, threshold)
         local modifier = 1.0
+		local specId = GetSpecialization()
 
 		modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
+
+		if specId == 2 then
+			if TRB.Data.spells.incarnationKingOfTheJungle.isActive then
+				modifier = modifier * TRB.Data.spells.incarnationKingOfTheJungle.energyModifier
+			end
+		end
 
         return resource * modifier
     end
@@ -1536,13 +1543,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 	
 	local function GetBerserkRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.berserk)
+		if TRB.Data.character.talents.incarnationKingOfTheJungle.IsSelected then
+			print("hi")
+			return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.incarnationKingOfTheJungle)
+		else
+			return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.berserk)
+		end
 	end
-	
-	local function GetIncarnationKingOfTheJungleRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.incarnationKingOfTheJungle)
-	end
-	
+		
 	local function GetSuddenAmbushRemainingTime(leeway)
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.suddenAmbush, leeway)
 	end
@@ -1601,7 +1609,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.snapshotData.shadowmeld.isActive or
 			TRB.Data.snapshotData.prowl.isActive or
 			GetBerserkRemainingTime() > 0 or
-			GetIncarnationKingOfTheJungleRemainingTime() > 0 or
 			GetSuddenAmbushRemainingTime(true) > 0) then
 			snapshot = snapshot * TRB.Data.spells.prowl.modifier
 		end
@@ -1830,6 +1837,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				if TRB.Data.snapshotData.resource > 0 then
 					valid = true
 				end
+			elseif var == "$comboPoints" then
+				valid = true
+			elseif var == "$comboPointsMax" then
+				valid = true
 			elseif var == "$ripCount" then
 				if TRB.Data.snapshotData.targetData.rip > 0 then
 					valid = true
@@ -1965,6 +1976,48 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Data.snapshotData.targetData.targets ~= nil and
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireSnapshot > 0 then
+					valid = true
+				end
+			elseif var == "$brutalSlashCharges" then
+				if TRB.Data.character.talents.brutalSlash.isSelected then
+					if TRB.Data.snapshotData.brutalSlash.charges > 0 then
+						valid = true
+					end
+				end
+			elseif var == "$brutalSlashCooldown" then
+				if TRB.Data.character.talents.brutalSlash.isSelected then
+					if TRB.Data.snapshotData.brutalSlash.cooldown > 0 then
+						valid = true
+					end
+				end
+			elseif var == "$brutalSlashCooldownTotal" then
+				if TRB.Data.character.talents.brutalSlash.isSelected then
+					if TRB.Data.snapshotData.brutalSlash.charges < TRB.Data.snapshotData.brutalSlash.maxCharges then
+						valid = true
+					end
+				end
+			elseif var == "$bloodtalonsStacks" then
+				if TRB.Data.snapshotData.bloodtalons.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$bloodtalonsTime" then
+				if TRB.Data.snapshotData.bloodtalons.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$suddenAmbushTime" then
+				if GetSuddenAmbushRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$clearcastingStacks" then
+				if TRB.Data.snapshotData.clearcasting.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$clearcastingTimeTime" then
+				if TRB.Data.snapshotData.clearcastingTime.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$berserkTime" or var == "$incarnationTime" then
+				if GetBerserkRemainingTime() > 0 then
 					valid = true
 				end
 			end
@@ -2542,6 +2595,47 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				moonfirePercent = 0
 			end
 		end
+		
+		--$brutalSlashCharges
+		local brutalSlashCharges = TRB.Data.snapshotData.brutalSlash.charges
+		--$brutalSlashCooldown
+		local _brutalSlashCooldown = 0
+		--$brutalSlashCooldownTotal
+		local _brutalSlashCooldownTotal = 0
+
+		if TRB.Data.snapshotData.brutalSlash.startTime ~= nil and TRB.Data.snapshotData.brutalSlash.charges < TRB.Data.snapshotData.brutalSlash.maxCharges then
+			local _brutalSlashHastedCooldown = (TRB.Data.snapshotData.brutalSlash.duration / (1 + (TRB.Data.snapshotData.haste / 100)))
+			_brutalSlashCooldown = math.max(0, TRB.Data.snapshotData.brutalSlash.startTime + _brutalSlashHastedCooldown - currentTime)
+			_brutalSlashCooldownTotal = _brutalSlashCooldown + ((TRB.Data.snapshotData.brutalSlash.maxCharges - TRB.Data.snapshotData.brutalSlash.charges - 1) * _brutalSlashHastedCooldown)
+		end
+
+		local brutalSlashCooldown = string.format("%.1f", _brutalSlashCooldown)
+		local brutalSlashCooldownTotal = string.format("%.1f", _brutalSlashCooldownTotal)
+		
+		--$bloodtalonsStacks
+		local bloodtalonsStacks = TRB.Data.snapshotData.bloodtalons.stacks or 0
+
+		--$bloodtalonsTime
+		local _bloodtalonsTime = TRB.Data.snapshotData.bloodtalons.remainingTime or 0
+		local bloodtalonsTime = string.format("%.1f", _bloodtalonsTime)
+		
+		--$suddenAmbushTime
+		local _suddenAmbushTime = GetSuddenAmbushRemainingTime()
+		local suddenAmbushTime = 0
+		if _suddenAmbushTime ~= nil then
+			suddenAmbushTime = string.format("%.1f", _suddenAmbushTime)
+		end
+		
+		--$clearcastingStacks
+		local clearcastingStacks = TRB.Data.snapshotData.clearcasting.stacks or 0
+
+		--$clearcastingTime
+		local _clearcastingTime = TRB.Data.snapshotData.clearcasting.remainingTime or 0
+		local clearcastingTime = string.format("%.1f", _clearcastingTime)
+
+		--$berserkTime (and $incarnationTime)
+		local _berserkTime = GetBerserkRemainingTime()
+		local berserkTime = string.format("%.1f", _berserkTime)
 
 		----------------------------
 
@@ -2566,44 +2660,32 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		}
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#rip"] = TRB.Data.spells.rip.icon
-		lookup["#rake"] = TRB.Data.spells.rake.icon
-		lookup["#thrash"] = TRB.Data.spells.thrash.icon
+		lookup["#berserk"] = TRB.Data.spells.berserk.icon
+		lookup["#bloodtalons"] = TRB.Data.spells.bloodtalons.icon
+		lookup["#brutalSlash"] = TRB.Data.spells.brutalSlash.icon
+		lookup["#carnivorousInstinct"] = TRB.Data.spells.carnivorousInstinct.icon
+		lookup["#catForm"] = TRB.Data.spells.catForm.icon
+		lookup["#clearcasting"] = TRB.Data.spells.clearcasting.icon
+		lookup["#feralFrenzy"] = TRB.Data.spells.feralFrenzy.icon
+		lookup["#ferociousBite"] = TRB.Data.spells.ferociousBite.icon
+		lookup["#incarnation"] = TRB.Data.spells.incarnationKingOfTheJungle.icon
+		lookup["#incarnationKingOfTheJungle"] = TRB.Data.spells.incarnationKingOfTheJungle.icon
+		lookup["#lunarInspiration"] = TRB.Data.spells.lunarInspiration.icon
+		lookup["#maim"] = TRB.Data.spells.maim.icon
 		lookup["#moonfire"] = TRB.Data.spells.moonfire.icon
-		--[[lookup["#starsurge"] = TRB.Data.spells.starsurge.icon
-		lookup["#starfall"] = TRB.Data.spells.starfall.icon
-		lookup["#eclipse"] = eclipseIcon or TRB.Data.spells.celestialAlignment.icon
-		lookup["#celestialAlignment"] = TRB.Data.spells.celestialAlignment.icon
-		lookup["#icoe"] = TRB.Data.spells.incarnationChosenOfElune.icon
-		lookup["#coe"] = TRB.Data.spells.incarnationChosenOfElune.icon
-		lookup["#incarnation"] = TRB.Data.spells.incarnationChosenOfElune.icon
-		lookup["#incarnationChosenOfElune"] = TRB.Data.spells.incarnationChosenOfElune.icon
-		lookup["#solar"] = TRB.Data.spells.eclipseSolar.icon
-		lookup["#eclipseSolar"] = TRB.Data.spells.eclipseSolar.icon
-		lookup["#solarEclipse"] = TRB.Data.spells.eclipseSolar.icon
-		lookup["#lunar"] = TRB.Data.spells.eclipseLunar.icon
-		lookup["#eclipseLunar"] = TRB.Data.spells.eclipseLunar.icon
-		lookup["#lunarEclipse"] = TRB.Data.spells.eclipseLunar.icon
-		lookup["#naturesBalance"] = TRB.Data.spells.naturesBalance.icon
-		lookup["#woe"] = TRB.Data.spells.warriorOfElune.icon
-		lookup["#warriorOfElune"] = TRB.Data.spells.warriorOfElune.icon
-		lookup["#forceOfNature"] = TRB.Data.spells.forceOfNature.icon
-		lookup["#fon"] = TRB.Data.spells.forceOfNature.icon
-		lookup["#soulOfTheForest"] = TRB.Data.spells.soulOfTheForest.icon
-		lookup["#foe"] = TRB.Data.spells.furyOfElune.icon
-		lookup["#furyOfElune"] = TRB.Data.spells.furyOfElune.icon
-		lookup["#stellarFlare"] = TRB.Data.spells.stellarFlare.icon
-		lookup["#newMoon"] = TRB.Data.spells.newMoon.icon
-		lookup["#halfMoon"] = TRB.Data.spells.halfMoon.icon
-		lookup["#fullMoon"] = TRB.Data.spells.fullMoon.icon
-		lookup["#moon"] = currentMoonIcon
-		lookup["#oneths"] = onethsIcon
-		lookup["#onethsClearVision"] = TRB.Data.spells.onethsClearVision.icon
-		lookup["#onethsPerception"] = TRB.Data.spells.onethsPerception.icon
-		lookup["#pulsar"] = TRB.Data.spells.primordialArcanicPulsar.icon
-		lookup["#pap"] = TRB.Data.spells.primordialArcanicPulsar.icon
-		]]
-		
+		lookup["#predatorySwiftness"] = TRB.Data.spells.predatorySwiftness.icon
+		lookup["#primalWrath"] = TRB.Data.spells.primalWrath.icon
+		lookup["#prowl"] = TRB.Data.spells.prowl.icon
+		lookup["#rake"] = TRB.Data.spells.rake.icon
+		lookup["#rip"] = TRB.Data.spells.rip.icon
+		lookup["#savageRoar"] = TRB.Data.spells.savageRoar.icon
+		lookup["#shadowmeld"] = TRB.Data.spells.shadowmeld.icon
+		lookup["#scentOfBlood"] = TRB.Data.spells.scentOfBlood.icon
+		lookup["#shred"] = TRB.Data.spells.shred.icon
+		lookup["#suddenAmbush"] = TRB.Data.spells.suddenAmbush.icon
+		lookup["#swipe"] = TRB.Data.spells.swipe.icon
+		lookup["#thrash"] = TRB.Data.spells.thrash.icon
+		lookup["#tigersFury"] = TRB.Data.spells.tigersFury.icon	
 		lookup["$ripCount"] = ripCount
 		lookup["$ripTime"] = ripTime
 		lookup["$ripSnapshot"] = ripSnapshot
@@ -2624,6 +2706,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$moonfireSnapshot"] = moonfireSnapshot
 		lookup["$moonfireCurrent"] = moonfireCurrent
 		lookup["$moonfirePercent"] = moonfirePercent
+
+		lookup["$brutalSlashCharges"] = brutalSlashCharges
+		lookup["$brutalSlashCooldown"] = brutalSlashCooldown
+		lookup["$brutalSlashCooldownTotal"] = brutalSlashCooldownTotal
+		lookup["$bloodtalonsStacks"] = bloodtalonsStacks
+		lookup["$bloodtalonsTime"] = bloodtalonsTime
+		lookup["$suddenAmbushTime"] = suddenAmbushTime
+		lookup["$clearcastingStacks"] = clearcastingStacks
+		lookup["$clearcastingTime"] = clearcastingTime
+		lookup["$berserkTime"] = berserkTime
+		lookup["$incarnationTime"] = incarnationTime
+
 		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$energyTotal"] = energyTotal
 		lookup["$energyMax"] = TRB.Data.character.maxResource
@@ -2640,6 +2734,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$overcap"] = overcap
 		lookup["$resourceOvercap"] = overcap
 		lookup["$energyOvercap"] = overcap
+		lookup["$comboPoints"] = TRB.Data.character.resource2
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 		TRB.Data.lookup = lookup
 	end
 
@@ -2788,6 +2884,22 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		UpdateSnapshot()
 		local currentTime = GetTime()
 		
+		if TRB.Data.character.talents.incarnationKingOfTheJungle.isSelected then
+			-- Incarnation: King of the Jungle doesn't show up in-game as a combat log event. Check for it manually instead.
+			local _, _, _, _, incDuration, incEndTime, _, _, _, incSpellId = TRB.Functions.FindBuffById(TRB.Data.spells.incarnationKingOfTheJungle.id)
+			if incDuration ~= nil then			
+				TRB.Data.spells.incarnationKingOfTheJungle.isActive = true
+				TRB.Data.snapshotData.incarnationKingOfTheJungle.duration = incDuration
+				TRB.Data.snapshotData.incarnationKingOfTheJungle.endTime = incEndTime
+				TRB.Data.snapshotData.incarnationKingOfTheJungle.spellId = incSpellId
+			else
+				TRB.Data.spells.incarnationKingOfTheJungle.isActive = false
+				TRB.Data.snapshotData.incarnationKingOfTheJungle.spellId = nil
+				TRB.Data.snapshotData.incarnationKingOfTheJungle.duration = 0
+				TRB.Data.snapshotData.incarnationKingOfTheJungle.endTime = nil
+			end
+		end
+
 		TRB.Data.snapshotData.snapshots.rip = GetCurrentSnapshot(TRB.Data.spells.rip.bonuses)
 		TRB.Data.snapshotData.snapshots.rake = GetCurrentSnapshot(TRB.Data.spells.rake.bonuses)
 		TRB.Data.snapshotData.snapshots.thrash = GetCurrentSnapshot(TRB.Data.spells.thrash.bonuses)
@@ -3267,7 +3379,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								end
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.ferociousBite.id then
-									TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.druid.feral.thresholds.width, math.min(math.max(-TRB.Data.spells.ferociousBite.energy, TRB.Data.snapshotData.resource), -TRB.Data.spells.ferociousBite.energyMax), TRB.Data.character.maxResource)
+									TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.druid.feral.thresholds.width, math.min(math.max(-energyAmount, TRB.Data.snapshotData.resource), -CalculateAbilityResourceValue(TRB.Data.spells.ferociousBite.energyMax, true)), TRB.Data.character.maxResource)
 									
 									if TRB.Data.snapshotData.resource >= -energyAmount then
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
@@ -3364,6 +3476,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					
 					if GetClearcastingRemainingTime() > 0 then
 						barColor = TRB.Data.settings.druid.feral.colors.bar.clearcasting
+					end
+
+					if TRB.Data.snapshotData.resource2 == 5 and TRB.Data.snapshotData.resource >= -CalculateAbilityResourceValue(TRB.Data.spells.ferociousBiteMaximum.energy, true) then
+						barColor = TRB.Data.settings.druid.feral.colors.bar.maxBite
 					end
 
 					local barBorderColor = TRB.Data.settings.druid.feral.colors.bar.border

@@ -425,7 +425,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					background="66000000",
 					base="FFFFFF00",
 					clearcasting="FF4A95CE",
-					--sliceAndDicePandemic="FFFF9900",
+					maxBite="FF009900",
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FF9F4500",
@@ -4764,9 +4764,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 
 		yCoord = yCoord - 30
-		--[[
-		controls.colors.noSliceAndDice = TRB.UiFunctions:BuildColorPicker(parent, "Energy when Slice and Dice is not up", TRB.Data.settings.druid.feral.colors.bar.noSliceAndDice, 275, 25, xCoord, yCoord)
-		f = controls.colors.noSliceAndDice
+		controls.colors.maxBite = TRB.UiFunctions:BuildColorPicker(parent, "Energy when 5 Combo Points and Ferocious Bite will do max damage", TRB.Data.settings.druid.feral.colors.bar.maxBite, 275, 25, xCoord, yCoord)
+		f = controls.colors.maxBite
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.noSliceAndDice, true)
@@ -4779,11 +4778,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						a = OpacitySliderFrame:GetValue()
 					end
 
-					controls.colors.noSliceAndDice.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.feral.colors.bar.noSliceAndDice = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.maxBite.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.feral.colors.bar.maxBite = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
-		end)]]
+		end)
 
 		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.druid.feral.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
@@ -5219,6 +5218,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.feral.thresholds.savageRoar.enabled = self:GetChecked()
 		end)
 
+		--[[
 		yCoord = yCoord - 25		
 		controls.labels.other = TRB.UiFunctions:BuildLabel(parent, "Other Thresholds", 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
@@ -5232,6 +5232,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.feral.thresholds.bloodtalons.enabled = self:GetChecked()
 		end)
+		]]
 
 		yCoord = yCoord - 30
 
