@@ -1318,8 +1318,12 @@ function TRB.Options:PortForwardSettings()
         TwintopInsanityBarSettings.hunter.survival.thresholds.width = TwintopInsanityBarSettings.hunter.survival.thresholdWidth
         TwintopInsanityBarSettings.hunter.survival.thresholds.overlapBorder = TwintopInsanityBarSettings.hunter.survival.thresholdsOverlapBorder
         
-        TwintopInsanityBarSettings.survival.thresholds.mongooseBite.enabled = TwintopInsanityBarSettings.hunter.survival.thresholds.raptorStrike.enabled
-        TwintopInsanityBarSettings.survival.thresholds.butchery.enabled = TwintopInsanityBarSettings.hunter.survival.thresholds.carve.enabled
+        TwintopInsanityBarSettings.hunter.survival.thresholds.mongooseBite = {
+            enabled = TwintopInsanityBarSettings.hunter.survival.thresholds.raptorStrike.enabled
+        }
+        TwintopInsanityBarSettings.hunter.survival.thresholds.butchery = {
+            enabled = TwintopInsanityBarSettings.hunter.survival.thresholds.carve.enabled
+        }
 
         TwintopInsanityBarSettings.hunter.survival.thresholdWidth = nil
         TwintopInsanityBarSettings.hunter.survival.thresholdsOverlapBorder = nil
@@ -1370,7 +1374,7 @@ function TRB.Options:PortForwardSettings()
         TwintopInsanityBarSettings.rogue.assassination.thresholdWidth ~= nil then
             
         TwintopInsanityBarSettings.rogue.assassination.thresholds.width = TwintopInsanityBarSettings.rogue.assassination.thresholdWidth
-        TwintopInsanityBarSettings.priest.holy.thresholds.overlapBorder = TwintopInsanityBarSettings.rogue.assassination.thresholdsOverlapBorder
+        TwintopInsanityBarSettings.rogue.assassination.thresholds.overlapBorder = TwintopInsanityBarSettings.rogue.assassination.thresholdsOverlapBorder
         
         TwintopInsanityBarSettings.rogue.assassination.thresholdWidth = nil
         TwintopInsanityBarSettings.rogue.assassination.thresholdsOverlapBorder = nil
