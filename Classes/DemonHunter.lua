@@ -173,11 +173,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
                 cooldown = 9,
 				texture = "",
 				thresholdId = 5,
-				settingKey = "bladeDance", --Same as bladeDance
+				settingKey = "deathSweep",
 				isTalent = false,
 				hasCooldown = true,
 				thresholdUsable = false,
-				demonForm = true
+				demonForm = true,
+				isSnowflake = true
 			},
             demonsBite = {
                id = 162243,
@@ -1161,6 +1162,18 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 								showThreshold = false
 								isUsable = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+								if spell.Id == TRB.Data.spells.deathSweep.id then
+									if TRB.Data.snapshotData.bladeDance.startTime ~= nil and currentTime < (TRB.Data.snapshotData.bladeDance.startTime + TRB.Data.snapshotData.bladeDance.duration) then
+										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
+										frameLevel = 127
+										isUsable = false
+									elseif currentFury >= -furyAmount then
+										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
+										frameLevel = 128
+									end
+								end
 							elseif spell.hasCooldown then
 								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 									thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
