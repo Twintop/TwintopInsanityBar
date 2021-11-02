@@ -131,6 +131,18 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				condemn = {
 					enabled = true, -- 10
 				},
+				executeMinimum = {
+					enabled = true, -- 11
+				},
+				executeMaximum = {
+					enabled = true, -- 12
+				},
+				condemnMinimum = {
+					enabled = true, -- 13
+				},
+				condemnMaximum = {
+					enabled = true, -- 14
+				},
 			},
 			displayBar = {
 				alwaysShow=false,
@@ -1478,12 +1490,36 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.executeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_execute", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.executeThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Execute / Condemn (if |cFFFF4040Venthyr|r)")
+		getglobal(f:GetName() .. 'Text'):SetText("Execute/Condemn (if |cFFFF4040Venthyr|r)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute or Condemn (if |cFFFF4040Venthyr|r). Only visible when the current target is in Execute health range or available from a Sudden Death proc. Will move along the bar between the current minimum and maximum Rage cost amounts."
 		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.execute.enabled or TRB.Data.settings.warrior.arms.thresholds.condemn.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.warrior.arms.thresholds.execute.enabled = self:GetChecked()
 			TRB.Data.settings.warrior.arms.thresholds.condemn.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.executeMinimumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_executeMinimum", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.executeMinimumThresholdShow
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Execute/Condemn (if |cFFFF4040Venthyr|r) (minimum)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute or Condemn (if |cFFFF4040Venthyr|r) at its minimum Rage cost. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
+		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.executeMinimum.enabled or TRB.Data.settings.warrior.arms.thresholds.condemnMinimum.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.warrior.arms.thresholds.executeMinimum.enabled = self:GetChecked()
+			TRB.Data.settings.warrior.arms.thresholds.condemnMinimum.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.executeMaximumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_executeMaximum", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.executeMaximumThresholdShow
+		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Execute/Condemn (if |cFFFF4040Venthyr|r) (maximum)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute or Condemn (if |cFFFF4040Venthyr|r) at its maximum Rage cost. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
+		f:SetChecked(TRB.Data.settings.warrior.arms.thresholds.executeMaximum.enabled or TRB.Data.settings.warrior.arms.thresholds.condemnMaximum.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.warrior.arms.thresholds.executeMaximum.enabled = self:GetChecked()
+			TRB.Data.settings.warrior.arms.thresholds.condemnMaximum.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25

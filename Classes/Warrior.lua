@@ -115,7 +115,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 100,
 				name = "",
 				icon = "",
-				rage = 20				
+				rage = 20
 			},
 			execute = {
 				id = 163201,
@@ -127,6 +127,34 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				texture = "",
 				thresholdId = 1,
 				settingKey = "execute",
+				isTalent = false,
+				hasCooldown = false,
+				thresholdUsable = false,
+				isSnowflake = true
+			},
+			executeMinimum = {
+				id = 163201,
+				name = "",
+				icon = "",
+				healthMinimum = 0.2,
+				rage = -20,
+				texture = "",
+				thresholdId = 11,
+				settingKey = "executeMinimum",
+				isTalent = false,
+				hasCooldown = false,
+				thresholdUsable = false,
+				isSnowflake = true
+			},
+			executeMaximum = {
+				id = 163201,
+				name = "",
+				icon = "",
+				healthMinimum = 0.2,
+				rage = -40,
+				texture = "",
+				thresholdId = 12,
+				settingKey = "executeMaximum",
 				isTalent = false,
 				hasCooldown = false,
 				thresholdUsable = false,
@@ -306,6 +334,36 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				texture = "",
 				thresholdId = 10,
 				settingKey = "condemn",
+				isTalent = false,
+				hasCooldown = false,
+				thresholdUsable = false,
+				isSnowflake = true
+			},
+			condemnMinimum = {
+				id = 317349,
+				name = "",
+				icon = "",
+				healthMinimum = 0.2,
+				healthAbove = 0.8,
+				rage = -20,
+				texture = "",
+				thresholdId = 13,
+				settingKey = "condemnMinimum",
+				isTalent = false,
+				hasCooldown = false,
+				thresholdUsable = false,
+				isSnowflake = true
+			},
+			condemnMaximum = {
+				id = 317349,
+				name = "",
+				icon = "",
+				healthMinimum = 0.2,
+				healthAbove = 0.8,
+				rage = -40,
+				texture = "",
+				thresholdId = 14,
+				settingKey = "condemnMaximum",
 				isTalent = false,
 				hasCooldown = false,
 				thresholdUsable = false,
@@ -2037,11 +2095,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then							
+						if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local rageAmount = CalculateAbilityResourceValue(spell.rage)
 							local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
-							if spell.id ~= TRB.Data.spells.execute.id then
+							if not (spell.id == TRB.Data.spells.execute.id or spell.id == TRB.Data.spells.condemn.id) then
 								TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 							end
 
@@ -2069,19 +2127,35 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										healthMinimum = TRB.Data.spells.massacre.healthMinimum
 									end
 
-									if GetSuddenDeathRemainingTime() > 0 then
-										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -TRB.Data.spells.execute.rageMax, TRB.Data.character.maxResource)
+									if spell.settingKey == "condemn" or spell.settingKey == "execute" then
+										if GetSuddenDeathRemainingTime() > 0 then
+											TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -TRB.Data.spells.execute.rageMax, TRB.Data.character.maxResource)
+										else
+											TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, math.min(math.max(-rageAmount, normalizedRage), -TRB.Data.spells.execute.rageMax), TRB.Data.character.maxResource)
+										end
 									else
-										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, math.min(math.max(-rageAmount, normalizedRage), -TRB.Data.spells.execute.rageMax), TRB.Data.character.maxResource)
+										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 									end
 
 									if not showThis or UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
 										showThreshold = false
 										isUsable = false
-									elseif spell.id == TRB.Data.spells.condemn.id and not TRB.Data.spells.voraciousCullingBlade.isActive and ((targetUnitHealth <= TRB.Data.spells.condemn.healthAbove and targetUnitHealth >= healthMinimum)) then
+									elseif spell.settingKey == "condemnMinimum" and not TRB.Data.spells.voraciousCullingBlade.isActive and ((targetUnitHealth <= TRB.Data.spells.condemnMinimum.healthAbove and targetUnitHealth >= healthMinimum)) then
 										showThreshold = false
 										isUsable = false
-									elseif spell.id == TRB.Data.spells.execute.id and not TRB.Data.spells.voraciousCullingBlade.isActive and (targetUnitHealth >= healthMinimum) then
+									elseif spell.settingKey == "executeMinimum" and not TRB.Data.spells.voraciousCullingBlade.isActive and (targetUnitHealth >= healthMinimum) then
+										showThreshold = false
+										isUsable = false
+									elseif spell.settingKey == "condemnMaximum" and not TRB.Data.spells.voraciousCullingBlade.isActive and ((targetUnitHealth <= TRB.Data.spells.condemnMaximum.healthAbove and targetUnitHealth >= healthMinimum)) then
+										showThreshold = false
+										isUsable = false
+									elseif spell.settingKey == "executeMaximum" and not TRB.Data.spells.voraciousCullingBlade.isActive and (targetUnitHealth >= healthMinimum) then
+										showThreshold = false
+										isUsable = false
+									elseif spell.settingKey == "condemn" and not TRB.Data.spells.voraciousCullingBlade.isActive and ((targetUnitHealth <= TRB.Data.spells.condemn.healthAbove and targetUnitHealth >= healthMinimum)) then
+										showThreshold = false
+										isUsable = false
+									elseif spell.settingKey == "execute" and not TRB.Data.spells.voraciousCullingBlade.isActive and (targetUnitHealth >= healthMinimum) then
 										showThreshold = false
 										isUsable = false
 									elseif currentRage >= -rageAmount then
@@ -2131,7 +2205,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								end
 							end
 
-							if TRB.Data.settings.warrior.arms.thresholds[spell.settingKey].enabled and showThreshold then								
+							if TRB.Data.settings.warrior.arms.thresholds[spell.settingKey].enabled and showThreshold then
 								if isUsable and TRB.Data.snapshotData.deadlyCalm.stacks ~= nil and TRB.Data.snapshotData.deadlyCalm.stacks > 0 then
 									thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
 									frameLevel = 129
