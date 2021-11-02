@@ -77,6 +77,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			name = "",
 			icon = "",
 			maelstrom = -60,
+			texture = "",
 			thresholdId = 1,
 			settingKey = "earthShock",
 			thresholdUsable = false
