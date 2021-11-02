@@ -329,21 +329,31 @@ local function FillSpellData(spells)
 			if spells[k]["itemId"] ~= nil then
 				local _, name, icon
 				name, _, _, _, _, _, _, _, _, icon = GetItemInfo(spells[k]["itemId"])
-				if name ~= nil and icon ~= nil then
-					spells[k]["icon"] = string.format("|T%s:0|t", icon)
+				if name ~= nil then
 					spells[k]["name"] = name
+				end
+
+				if spells[k]["iconName"] ~= nil then
+					icon = "Interface\\Icons\\" .. spells[k]["iconName"]
+				end
+				
+				if icon ~= nil then
+					spells[k]["icon"] = string.format("|T%s:0|t", icon)
 					spells[k]["texture"] = icon
 				end
 			elseif spells[k]["id"] ~= nil then
 				local _, name, icon
 				name, _, icon = GetSpellInfo(spells[k]["id"])
+				
+				if spells[k]["iconName"] ~= nil then
+					icon = "Interface\\Icons\\" .. spells[k]["iconName"]
+				end
+
 				spells[k]["icon"] = string.format("|T%s:0|t", icon)
 				spells[k]["name"] = name
 
 				if spells[k]["thresholdId"] ~= nil then
----@diagnostic disable-next-line: redundant-parameter
-					local texture, _ = GetSpellTexture(spells[k]["id"])
-					spells[k]["texture"] = texture
+					spells[k]["texture"] = icon
 				end
 			end
 		end

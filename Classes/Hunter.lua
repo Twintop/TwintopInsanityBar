@@ -428,12 +428,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			},
 			arcaneShot = {
 				id = 185358,
+				iconName = "ability_impalingbolt",
 				name = "",
 				icon = "",
 				focus = -20,
 				texture = "",
 				thresholdId = 2,
 				settingKey = "arcaneShot",
+				isSnowflake = true,
 				thresholdUsable = false
 			},
 			killShot = {
@@ -583,11 +585,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				focus = -20,
-				isTalent = true--[[,
+				isTalent = true,
 				texture = "",
 				thresholdId = 13,
-				settingKey = "arcaneShot",
-				thresholdUsable = false]] --Commenting out for now since it is the same focus as Arcane Shot
+				settingKey = "chimaeraShot",
+				thresholdUsable = false
 			},
 			lockAndLoad = {
 				id = 194594,
@@ -637,7 +639,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				focus = -15,
 				texture = "",
-				thresholdId = 10,
+				thresholdId = 12,
 				settingKey = "wailingArrow",
 				isSnowflake = true,
 				thresholdUsable = false,
@@ -3009,7 +3011,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							local frameLevel = 129
 
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-								if spell.id == TRB.Data.spells.aimedShot.id then
+								if spell.id == TRB.Data.spells.arcaneShot.id then
+									if TRB.Data.character.talents.chimaeraShot.isSelected == true then
+										showThreshold = false
+									elseif TRB.Data.snapshotData.resource >= -focusAmount or TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration > 0 then
+										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.under
+										frameLevel = 128
+									end
+								elseif spell.id == TRB.Data.spells.aimedShot.id then
 									if TRB.Data.snapshotData.aimedShot.charges == 0 and not TRB.Data.spells.lockAndLoad.isActive then
 										thresholdColor = TRB.Data.settings.hunter.marksmanship.colors.threshold.unusable
 										frameLevel = 127

@@ -1300,6 +1300,16 @@ function TRB.Options:PortForwardSettings()
         TwintopInsanityBarSettings.hunter.marksmanship.thresholdsOverlapBorder = nil
     end
     
+    -- ChimaeraShot threshold
+    if TwintopInsanityBarSettings ~= nil and
+        TwintopInsanityBarSettings.hunter ~= nil and
+        TwintopInsanityBarSettings.hunter.marksmanship ~= nil and
+        TwintopInsanityBarSettings.hunter.marksmanship.thresholds ~= nil and
+        TwintopInsanityBarSettings.hunter.marksmanship.thresholds.chimaeraShot == nil then
+        
+        TwintopInsanityBarSettings.hunter.marksmanship.thresholds.chimaeraShot = TwintopInsanityBarSettings.hunter.marksmanship.thresholds.arcaneShot
+    end
+
     if TwintopInsanityBarSettings ~= nil and
         TwintopInsanityBarSettings.hunter ~= nil and
         TwintopInsanityBarSettings.hunter.survival ~= nil and

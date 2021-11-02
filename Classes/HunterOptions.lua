@@ -314,7 +314,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					enabled = true, -- 1
 				},
 				arcaneShot = {
-					enabled = true, -- 2 --Also Chimera Shot @ 13
+					enabled = true, -- 2
 				},
 				serpentSting = {
 					enabled = false, -- 3
@@ -345,6 +345,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				},
 				wailingArrow = {
 					enabled = true, -- 12
+				},
+				chimaeraShot = {
+					enabled = true -- 13
 				}
 			},
 			generation = {
@@ -4524,6 +4527,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.arcaneShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.marksmanship.thresholds.arcaneShot.enabled = self:GetChecked()
+			TRB.Data.settings.hunter.marksmanship.thresholds.chimaeraShot.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
