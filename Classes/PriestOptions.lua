@@ -205,25 +205,25 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				innervate={
 					name = "Innervate",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				surgeOfLight={
 					name = "Innervate (1 stack)",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				surgeOfLight2={
 					name = "Innervate (2 stacks)",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				flashConcentration={
 					name = "Flash Concentration",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				}
 			},
@@ -458,31 +458,31 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				s2mDeath={
 					name = "Surrender to Madness Death",
 					enabled=true,
-					sound="Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\wilhelm.ogg",
 					soundName="TRB: Wilhelm Scream"
 				},
 				overcap={
 					name = "Overcap",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				mdProc={
 					name = "Mind Devourer Proc",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				dpReady={
 					name = "Devouring Plague Ready",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				mindbender={
 					name = "Mindbender Ready",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				}
 			},

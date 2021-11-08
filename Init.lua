@@ -16,9 +16,9 @@ local addonData = {
 	libs = {}
 }
 addonData.libs.SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
-addonData.libs.SharedMedia:Register("sound", "TRB: Wilhelm Scream", "Interface\\Addons\\TwintopInsanityBar\\wilhelm.ogg")
-addonData.libs.SharedMedia:Register("sound", "TRB: Boxing Arena Gong", "Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg")
-addonData.libs.SharedMedia:Register("sound", "TRB: Air Horn", "Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg")
+addonData.libs.SharedMedia:Register("sound", "TRB: Wilhelm Scream", "Interface\\Addons\\TwintopInsanityBar\\Sounds\\wilhelm.ogg")
+addonData.libs.SharedMedia:Register("sound", "TRB: Boxing Arena Gong", "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg")
+addonData.libs.SharedMedia:Register("sound", "TRB: Air Horn", "Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg")
 
 if not addonData.libs.SharedMedia:IsValid("border", "1 Pixel") then
 	addonData.libs.SharedMedia:Register("border", "1 Pixel", "Interface\\Buttons\\WHITE8X8")
@@ -183,7 +183,7 @@ TRB.Data.constants = {
 			resourceBarName="Blizzard",
 		},
 		sounds = {
-			sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+			sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 			soundName="TRB: Air Horn"
 		}
 	}

@@ -158,13 +158,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				esReady={
 					name = "Earth Shock Ready",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				overcap={
 					name = "Overcap",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				}
             },

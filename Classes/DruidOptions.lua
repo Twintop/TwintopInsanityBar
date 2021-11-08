@@ -192,25 +192,25 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				ssReady={
 					name = "Starsurge Ready",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				sfReady={
 					name = "Starfall Ready",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				onethsReady={
 					name = "Oneth's Clear Vision Ready",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\BoxingArenaSound.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				overcap={
 					name = "Overcap",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				}
             },
@@ -450,13 +450,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				overcap={
 					name = "Overcap",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				apexPredatorsCraving={
 					name = "Apex Predator's Craving Proc",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				}
             },

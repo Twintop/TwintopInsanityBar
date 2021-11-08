@@ -191,25 +191,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				overcap={
 					name = "Overcap",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				killShot={
 					name = "Kill Shot Ready",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				flayersMark={
 					name = "Flayer's Mark Proc",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				nesingwarysTrappingApparatus={
 					name = "Nesingwary's Trapping Apparatus Proc",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				}
             },
@@ -431,7 +431,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				aimedShot={
 					name = "Aimed Shot Capping",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn",
 					mode="gcd",
 					gcds=1,
@@ -440,37 +440,37 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				lockAndLoad={
 					name = "Lock and Load Proc",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				overcap={
 					name = "Overcap",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				secretsOfTheUnblinkingVigil={
 					name = "Secrets of the Unblinking Vigil Proc",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				nesingwarysTrappingApparatus={
 					name = "Nesingwary's Trapping Apparatus Proc",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				killShot={
 					name = "Kill Shot Ready",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				flayersMark={
 					name = "Flayer's Mark Proc",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				}
             },
@@ -682,25 +682,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				overcap={
 					name = "Overcap",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				killShot={
 					name = "Kill Shot Ready",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				flayersMark={
 					name = "Flayer's Mark Proc",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
 				nesingwarysTrappingApparatus={
 					name = "Nesingwary's Trapping Apparatus Proc",
 					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\AirHorn.ogg",
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				}
             },
