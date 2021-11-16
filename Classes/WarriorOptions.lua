@@ -320,16 +320,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					enabled = false, -- 2
 				},
 				slam = {
-					enabled = true, -- 3
-				},
-				whirlwind = {
-					enabled = true, -- 4
+					enabled = false, -- 3
 				},
 				rampage = {
-					enabled = true, -- 5
+					enabled = true, -- 4
 				},
 				impendingVictory = {
-					enabled = true, -- 6
+					enabled = true, -- 5
 				},
 			},
 			displayBar = {
@@ -3897,17 +3894,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetChecked(TRB.Data.settings.warrior.fury.thresholds.slam.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.warrior.fury.thresholds.slam.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.whirlwindThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_whirlwind", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.whirlwindThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Whirlwind")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Whirlwind."
-		f:SetChecked(TRB.Data.settings.warrior.fury.thresholds.whirlwind.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.warrior.fury.thresholds.whirlwind.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40

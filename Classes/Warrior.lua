@@ -587,19 +587,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "slam",
 				isTalent = false,
 				hasCooldown = false,
-				thresholdUsable = false				
+				thresholdUsable = false
 			},
 			whirlwind = {
 				id = 85739, --buff ID
 				name = "",
-				icon = "",
-				rage = -30,
-				texture = "",
-				thresholdId = 4,
-				settingKey = "whirlwind",
-				isTalent = false,
-				hasCooldown = false,
-				thresholdUsable = false
+				icon = ""
 			},
 			
 			--Fury base abilities
@@ -609,7 +602,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				icon = "",
 				rage = -80,
 				texture = "",
-				thresholdId = 5,
+				thresholdId = 4,
 				settingKey = "rampage",
 				isTalent = false,
 				hasCooldown = false,
@@ -633,7 +626,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				icon = "",
 				rage = -10,
 				texture = "",
-				thresholdId = 6,
+				thresholdId = 5,
 				settingKey = "impendingVictory",
 				isTalent = true,
 				hasCooldown = true,
