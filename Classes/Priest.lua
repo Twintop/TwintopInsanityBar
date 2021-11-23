@@ -4460,8 +4460,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.voidBolt.lastSuccess = currentTime
 						elseif type == "SPELL_DAMAGE" then
-							TRB.Data.snapshotData.voidBolt.flightTime = currentTime - TRB.Data.snapshotData.voidBolt.lastSuccess
-							TRB.Data.snapshotData.voidBolt.lastSuccess = nil
+							if TRB.Data.snapshotData.voidBolt.lastSuccess ~= nil then
+								TRB.Data.snapshotData.voidBolt.flightTime = currentTime - TRB.Data.snapshotData.voidBolt.lastSuccess
+								TRB.Data.snapshotData.voidBolt.lastSuccess = nil
+							end
 						end
 					elseif spellId == TRB.Data.spells.vampiricTouch.id then
 						if InitializeTarget(destGUID) then
