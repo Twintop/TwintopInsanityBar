@@ -1212,7 +1212,7 @@ function TRB.Options:PortForwardSettings()
         TwintopInsanityBarSettings.priest.shadow.thresholdsOverlapBorder = nil
     end
 
-    -- Holy
+    -- Holy Thresholds
     if TwintopInsanityBarSettings ~= nil and
     TwintopInsanityBarSettings.priest ~= nil and
     TwintopInsanityBarSettings.priest.holy ~= nil and
@@ -1224,7 +1224,6 @@ function TRB.Options:PortForwardSettings()
         TwintopInsanityBarSettings.priest.holy.thresholdWidth = nil
         TwintopInsanityBarSettings.priest.holy.thresholdsOverlapBorder = nil
     end
-
 
     -- Balance Thresholds
     if TwintopInsanityBarSettings ~= nil and
@@ -1380,6 +1379,17 @@ function TRB.Options:PortForwardSettings()
         TwintopInsanityBarSettings.rogue.assassination.thresholdsOverlapBorder = nil
     end
 
+
+    -- Shadow Voidform color variable name changed to Devouring Plague
+    if TwintopInsanityBarSettings ~= nil and
+        TwintopInsanityBarSettings.priest ~= nil and
+        TwintopInsanityBarSettings.priest.shadow ~= nil and
+        TwintopInsanityBarSettings.priest.shadow.colors ~= nil and
+        TwintopInsanityBarSettings.priest.shadow.colors.bar ~= nil and
+        TwintopInsanityBarSettings.priest.shadow.colors.bar.enterVoidform ~= nil then
+        TwintopInsanityBarSettings.priest.shadow.colors.bar.devouringPlagueUsable = TwintopInsanityBarSettings.priest.shadow.colors.bar.enterVoidform
+        TwintopInsanityBarSettings.priest.shadow.colors.bar.enterVoidform = nil
+    end
 end
 
 function TRB.Options:CleanupSettings(oldSettings)
