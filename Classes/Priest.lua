@@ -4191,6 +4191,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.audio.playedMdCue = false
 					end
 
+					if currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
+						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsableCasting, true))
+					else
+						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.casting, true))
+					end
+
 					if TRB.Data.snapshotData.voidform.spellId then
 						local timeThreshold = 0
 						local useEndOfVoidformColor = false
@@ -4208,13 +4214,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						if useEndOfVoidformColor and TRB.Data.snapshotData.voidform.remainingTime <= timeThreshold then
 							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, true))
 						elseif currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.enterVoidform, true))
+							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsable, true))
 						else
 							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform, true))
 						end
 					else
 						if currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.enterVoidform, true))
+							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsable, true))
 						else
 							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.base, true))
 						end

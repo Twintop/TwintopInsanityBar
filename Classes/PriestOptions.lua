@@ -437,7 +437,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					borderOvercap="FFFF0000",
 					background="66000000",
 					base="FF763BAF",
-					enterVoidform="FF5C2F89",
+					devouringPlagueUsable="FF5C2F89",
+					devouringPlagueUsableCasting="FFFFFFFF",
 					inVoidform="FF431863",
 					inVoidform1GCD="FFFF0000",
 					casting="FFFFFFFF",
@@ -4477,11 +4478,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.enterVoidform = TRB.UiFunctions:BuildColorPicker(parent, "Insanity when you can cast Devouring Plague", TRB.Data.settings.priest.shadow.colors.bar.enterVoidform, 300, 25, xCoord, yCoord)
-		f = controls.colors.enterVoidform
+		controls.colors.devouringPlagueUsable = TRB.UiFunctions:BuildColorPicker(parent, "Insanity when you can cast Devouring Plague", TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsable, 300, 25, xCoord, yCoord)
+		f = controls.colors.devouringPlagueUsable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.enterVoidform, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsable, true)
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -4491,8 +4492,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						a = OpacitySliderFrame:GetValue()
 					end
 
-					controls.colors.enterVoidform.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.priest.shadow.colors.bar.enterVoidform = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.devouringPlagueUsable.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsable = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -4538,8 +4539,29 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end)
 			end
 		end)
+		
+		controls.colors.devouringPlagueUsableCasting = TRB.UiFunctions:BuildColorPicker(parent, "Insanity from hardcasting spells when can cast DP", TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsableCasting, 275, 25, xCoord2, yCoord)
+		f = controls.colors.devouringPlagueUsableCasting
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsableCasting, true)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
 
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.priest.shadow.colors.bar.border, 275, 25, xCoord2, yCoord)
+					controls.colors.devouringPlagueUsableCasting.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsableCasting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.priest.shadow.colors.bar.border, 300, 25, xCoord, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -4560,8 +4582,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		yCoord = yCoord - 30
-		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Insanity", TRB.Data.settings.priest.shadow.colors.bar.borderOvercap, 300, 25, xCoord, yCoord)
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Insanity", TRB.Data.settings.priest.shadow.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -4581,7 +4602,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.priest.shadow.colors.bar.background, 275, 25, xCoord2, yCoord)
+		yCoord = yCoord - 30
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.priest.shadow.colors.bar.background, 300, 25, xCoord, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
