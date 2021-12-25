@@ -1409,6 +1409,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1429,6 +1430,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1450,6 +1452,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1471,6 +1474,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1492,6 +1496,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1512,6 +1517,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1533,6 +1539,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1553,6 +1560,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1575,6 +1583,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1601,6 +1610,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1622,6 +1632,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1642,6 +1653,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1662,6 +1674,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1682,6 +1695,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1785,6 +1799,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -2656,6 +2671,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -2679,6 +2695,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -2702,6 +2719,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -2776,6 +2794,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -2798,6 +2817,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -2821,6 +2841,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4450,6 +4471,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4470,6 +4492,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4491,6 +4514,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4511,6 +4535,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4532,6 +4557,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4553,6 +4579,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4574,6 +4601,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4595,6 +4623,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4616,6 +4645,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4638,6 +4668,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4707,6 +4738,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5391,6 +5423,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5414,6 +5447,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5437,6 +5471,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5511,6 +5546,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5533,6 +5569,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5556,6 +5593,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5579,6 +5617,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5601,6 +5640,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5747,6 +5787,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5770,6 +5811,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5793,6 +5835,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5857,6 +5900,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5880,6 +5924,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5903,6 +5948,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
+---@diagnostic disable-next-line: deprecated
 						r, g, b, a = unpack(color)
 					else
 						r, g, b = ColorPickerFrame:GetColorRGB()

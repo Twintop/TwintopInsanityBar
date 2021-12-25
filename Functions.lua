@@ -2373,7 +2373,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Shadow
 				configuration.endOfVoidform = settings.endOfVoidform
 			end
-		elseif classId == 7 and specId == 1 then -- Elemental Shaman
+		elseif classId == 7 then -- Shaman
+			if specId == 1 then -- Elemental
+			elseif TRB.Data.settings.core.experimental.specs.shaman.restoration and specId == 3 then -- Restoration
+			end
 		elseif classId == 11 then -- Druids
 			if specId == 1 then -- Balance
 				configuration.endOfEclipse = settings.endOfEclipse
@@ -2428,7 +2431,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.s2mThreshold = settings.s2mThreshold
 				configuration.insanityPrecision = settings.insanityPrecision
 			end
-		elseif classId == 7 and specId == 1 then -- Elemental Shaman
+		elseif classId == 7 then -- Shaman
+			if specId == 1 then -- Elemental
+			elseif TRB.Data.settings.core.experimental.specs.shaman.restoration and specId == 3 then -- Restoration
+			end
 		elseif classId == 11 then -- Druids
 			if specId == 1 then -- Balance
 				configuration.astralPowerPrecision = settings.astralPowerPrecision
@@ -2465,7 +2471,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.auspiciousSpiritsTracker = settings.auspiciousSpiritsTracker
 				configuration.voidTendrilTracker = settings.voidTendrilTracker
 			end
-		elseif classId == 7 and specId == 1 then -- Elemental Shaman
+		elseif classId == 7 then -- Shaman
+			if specId == 1 then -- Elemental
+			elseif TRB.Data.settings.core.experimental.specs.shaman.restoration and specId == 3 then -- Restoration
+			end
 		elseif classId == 11 then -- Druid
 			if specId == 1 then -- Balance
 			elseif specId == 2 then -- Feral
@@ -2558,6 +2567,12 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.shaman.elemental) > 0 then -- Elemental
 				configuration.shaman.elemental = TRB.Functions.ExportConfigurationSections(7, 1, settings.shaman.elemental, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
+
+			if TRB.Data.settings.core.experimental.specs.shaman.restoration then
+				if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.shaman.restoration) > 0 then -- Restoration
+					configuration.shaman.restoration = TRB.Functions.ExportConfigurationSections(7, 3, settings.shaman.restoration, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+				end
+			end
 		elseif classId == 11 and settings.druid ~= nil then -- Druid
 			configuration.druid = {}
 			
@@ -2601,8 +2616,14 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Assassination Rogue
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
-		-- Elemental Shaman
+		-- Shamans
+		-- Elemental
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+
+		if TRB.Data.settings.core.experimental.specs.shaman.restoration then
+			-- Restoration
+			configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(7, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		end
 
 		-- Druids
 		-- Balance
