@@ -1743,6 +1743,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1763,6 +1764,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -2857,6 +2859,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -2877,6 +2880,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -2897,6 +2901,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -3930,7 +3935,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 30
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TIBInsanityBarTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_InsanityBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -3996,7 +4001,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TIBCastBarTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_CastBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -4068,7 +4073,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 60
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TIBPassiveBarTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -4137,7 +4142,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			CloseDropDownMenus()
 		end
 
-		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TIBCB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_CB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
@@ -4164,7 +4169,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 60
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.borderTexture = CreateFrame("FRAME", "TIBBorderTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_BorderTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -4230,7 +4235,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TIBBackgroundTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_BackgroundTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -4330,7 +4335,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 40
-		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TIBRB1_2", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_RB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Always show bar")
@@ -4348,7 +4353,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.HideResourceBar()
 		end)
 
-		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TIBRB1_3", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_RB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord-15)
 		getglobal(f:GetName() .. 'Text'):SetText("Show bar when Insanity > 0")
@@ -4366,7 +4371,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.HideResourceBar()
 		end)
 
-		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TIBRB1_4", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_RB1_4", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.combatShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Only show bar in combat")
@@ -4384,7 +4389,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.HideResourceBar()
 		end)
 
-		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TIBRB1_5", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_RB1_5", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.neverShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord-45)
 		getglobal(f:GetName() .. 'Text'):SetText("Never show bar (run in background)")
@@ -4422,7 +4427,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TIBCB1_5", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_CB1_5", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash bar when DP is usable")
@@ -4660,6 +4665,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4680,6 +4686,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5040,7 +5047,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TIBCB1_8", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_CB1_8", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapEnabled
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
@@ -5653,6 +5660,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5673,6 +5681,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5693,6 +5702,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5998,7 +6008,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.s2mDeath = CreateFrame("CheckButton", "TIBCB3_2", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.s2mDeath = CreateFrame("CheckButton", "TwintopResourceBar_CB3_2", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.s2mDeath
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio when you die, horribly, from Surrender to Madness")
@@ -6013,7 +6023,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.s2mAudio = CreateFrame("FRAME", "TIBS2MDeathAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.s2mAudio = CreateFrame("FRAME", "TwintopResourceBar_S2MDeathAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.s2mAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.s2mAudio, sliderWidth)
 		UIDropDownMenu_SetText(controls.dropDown.s2mAudio, TRB.Data.settings.priest.shadow.audio.s2mDeath.soundName)
@@ -6062,7 +6072,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.dpReady = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.dpReady = CreateFrame("CheckButton", "TwintopResourceBar_CB3_3", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dpReady
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Devouring Plague is usable")
@@ -6077,7 +6087,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.dpReadyAudio = CreateFrame("FRAME", "TIBdpReadyAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.dpReadyAudio = CreateFrame("FRAME", "TwintopResourceBar_dpReadyAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.dpReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.dpReadyAudio, sliderWidth)
 		UIDropDownMenu_SetText(controls.dropDown.dpReadyAudio, TRB.Data.settings.priest.shadow.audio.dpReady.soundName)
@@ -6126,7 +6136,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.mdProc = CreateFrame("CheckButton", "TIBCB3_MD_Sound", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.mdProc = CreateFrame("CheckButton", "TwintopResourceBar_CB3_MD_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mdProc
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Mind Devourer proc occurs")
@@ -6141,7 +6151,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.mdProcAudio = CreateFrame("FRAME", "TIBmdProcAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.mdProcAudio = CreateFrame("FRAME", "TwintopResourceBar_mdProcAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.mdProcAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.mdProcAudio, sliderWidth)
 		UIDropDownMenu_SetText(controls.dropDown.mdProcAudio, TRB.Data.settings.priest.shadow.audio.mdProc.soundName)
@@ -6191,7 +6201,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TIBCB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Insanity")
@@ -6206,7 +6216,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TIBovercapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_overcapAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, sliderWidth)
 		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.priest.shadow.audio.overcap.soundName)
@@ -6258,7 +6268,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Auspicious Spirits Tracking", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.as = CreateFrame("CheckButton", "TIBCB3_6", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.as = CreateFrame("CheckButton", "TwintopResourceBar_CB3_6", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.as
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track Auspicious Spirits")
@@ -6279,7 +6289,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Eternal Call to the Void / Void Tendril + Void Lasher Tracking", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.voidTendril = CreateFrame("CheckButton", "TIBCB3_6a", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.voidTendril = CreateFrame("CheckButton", "TwintopResourceBar_CB3_6a", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.voidTendril
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track Eternal Call to the Void")
@@ -6298,7 +6308,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Shadowfiend/Mindbender Tracking", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.mindbender = CreateFrame("CheckButton", "TIBCB3_7", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.mindbender = CreateFrame("CheckButton", "TwintopResourceBar_CB3_7", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mindbender
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track Shadowfiend Insanity Gain")
@@ -6309,7 +6319,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.mindbenderModeGCDs = CreateFrame("CheckButton", "TIBRB3_8", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.mindbenderModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_RB3_8", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.mindbenderModeGCDs
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Insanity from GCDs remaining")
@@ -6342,7 +6352,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.mindbenderModeSwings = CreateFrame("CheckButton", "TIBRB3_9", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.mindbenderModeSwings = CreateFrame("CheckButton", "TwintopResourceBar_RB3_9", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.mindbenderModeSwings
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Insanity from Swings remaining")
@@ -6374,7 +6384,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.mindbenderModeTime = CreateFrame("CheckButton", "TIBRB3_10", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.mindbenderModeTime = CreateFrame("CheckButton", "TwintopResourceBar_RB3_10", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.mindbenderModeTime
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Insanity from Time remaining")

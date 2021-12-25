@@ -877,7 +877,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 30
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TIBResourceBarTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_ResourceBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -944,7 +944,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TIBCastBarTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_CastBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -1013,7 +1013,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 60
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TIBPassiveBarTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -1079,7 +1079,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			CloseDropDownMenus()
 		end
 
-		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TIBCB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_CB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
@@ -1103,7 +1103,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 60
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.borderTexture = CreateFrame("FRAME", "TIBBorderTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_BorderTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -1169,7 +1169,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TIBBackgroundTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_BackgroundTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -1268,7 +1268,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 40
-		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TIBRB1_2", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_RB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
@@ -1286,7 +1286,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Functions.HideResourceBar()
 		end)
 
-		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TIBRB1_3", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_RB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord-15)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Astral Power > 0")
@@ -1304,7 +1304,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Functions.HideResourceBar()
 		end)
 
-		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TIBRB1_4", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_RB1_4", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.combatShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
@@ -1322,7 +1322,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Functions.HideResourceBar()
 		end)
 
-		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TIBRB1_5", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_RB1_5", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.neverShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord-45)
 		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
@@ -1360,7 +1360,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TIBCB1_5", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_CB1_5", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash bar when Moonkin Form is missing")
@@ -1370,7 +1370,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.colors.bar.flashEnabled = self:GetChecked()
 		end)
 
-		controls.checkBoxes.flashSsEnabled = CreateFrame("CheckButton", "TIBCB1_6", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.flashSsEnabled = CreateFrame("CheckButton", "TwintopResourceBar_CB1_6", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashSsEnabled
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash bar when Starsurge is usable")
@@ -2058,7 +2058,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TIBCB1_8", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_CB1_8", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapEnabled
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
@@ -2124,7 +2124,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		yCoord = yCoord - 30
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontLeft = CreateFrame("FRAME", "TIBFontLeft", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_FontLeft", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -2185,7 +2185,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TIBFontMiddle", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_FontMiddle", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -2248,7 +2248,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 40 - 20
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontRight = CreateFrame("FRAME", "TIBFontRight", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_FontRight", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -2308,7 +2308,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			CloseDropDownMenus()
 		end
 
-		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TIBCB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
@@ -2352,7 +2352,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		end)
 
-		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TIBCB2_F1", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontSizeLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
@@ -2636,6 +2636,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -2656,6 +2657,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -2676,6 +2678,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -2761,7 +2764,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.ssReady = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.ssReady = CreateFrame("CheckButton", "TwintopResourceBar_CB3_3", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ssReady
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Starsurge is usable")
@@ -2777,7 +2780,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.ssReadyAudio = CreateFrame("FRAME", "TIBssReadyAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.ssReadyAudio = CreateFrame("FRAME", "TwintopResourceBar_ssReadyAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.ssReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
 		UIDropDownMenu_SetWidth(controls.dropDown.ssReadyAudio, sliderWidth)
 		UIDropDownMenu_SetText(controls.dropDown.ssReadyAudio, TRB.Data.settings.druid.balance.audio.ssReady.soundName)
@@ -2826,7 +2829,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.sfReady = CreateFrame("CheckButton", "TIBCB3_MD_Sound", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.sfReady = CreateFrame("CheckButton", "TwintopResourceBar_CB3_MD_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sfReady
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Starfall is usable")
@@ -2842,7 +2845,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.sfReadyAudio = CreateFrame("FRAME", "TIBsfReadyAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.sfReadyAudio = CreateFrame("FRAME", "TwintopResourceBar_sfReadyAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.sfReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
 		UIDropDownMenu_SetWidth(controls.dropDown.sfReadyAudio, sliderWidth)
 		UIDropDownMenu_SetText(controls.dropDown.sfReadyAudio, TRB.Data.settings.druid.balance.audio.sfReady.soundName)
@@ -2891,7 +2894,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.onethsReady = CreateFrame("CheckButton", "TIBCB3_oneths_Sound", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.onethsReady = CreateFrame("CheckButton", "TwintopResourceBar_CB3_oneths_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.onethsReady
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Oneth's Clear Vision or Oneth's Perception proc occurs.")
@@ -2907,7 +2910,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.onethsReadyAudio = CreateFrame("FRAME", "TIBonethsReadyAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.onethsReadyAudio = CreateFrame("FRAME", "TwintopResourceBar_onethsReadyAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.onethsReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
 		UIDropDownMenu_SetWidth(controls.dropDown.onethsReadyAudio, sliderWidth)
 		UIDropDownMenu_SetText(controls.dropDown.onethsReadyAudio, TRB.Data.settings.druid.balance.audio.onethsReady.soundName)
@@ -2957,7 +2960,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TIBCB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Astral Power")
@@ -2973,7 +2976,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TIBovercapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_overcapAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
 		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, sliderWidth)
 		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.druid.balance.audio.overcap.soundName)
@@ -4680,6 +4683,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4699,6 +4703,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4741,6 +4746,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4784,6 +4790,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4810,6 +4817,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4829,6 +4837,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4850,6 +4859,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4870,6 +4880,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4892,6 +4903,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4912,6 +4924,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4945,6 +4958,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4976,6 +4990,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -4996,6 +5011,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5016,6 +5032,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5749,6 +5766,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5772,6 +5790,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5795,6 +5814,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5869,6 +5889,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -5996,6 +6017,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -6016,6 +6038,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -6036,6 +6059,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -6056,6 +6080,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()

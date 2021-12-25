@@ -544,7 +544,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = yCoord - 30
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TIBMaelstromBarTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_MaelstromBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -605,7 +605,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TIBCastBarTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_CastBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -669,7 +669,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = yCoord - 60
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TIBPassiveBarTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -729,7 +729,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			CloseDropDownMenus()
 		end
 
-		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TIBCB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_CB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
@@ -753,7 +753,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = yCoord - 60
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.borderTexture = CreateFrame("FRAME", "TIBBorderTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_BorderTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -815,7 +815,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TIBBackgroundTexture", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_BackgroundTexture", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -911,7 +911,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 40
-		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TIBRB1_2", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_RB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
@@ -929,7 +929,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.HideResourceBar()
 		end)
 
-		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TIBRB1_3", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_RB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord-15)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Maelstrom > 0")
@@ -947,7 +947,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.HideResourceBar()
 		end)
 
-		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TIBRB1_4", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_RB1_4", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.combatShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
@@ -965,7 +965,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.HideResourceBar()
 		end)
 
-		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TIBRB1_5", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_RB1_5", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.neverShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord-45)
 		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
@@ -1003,7 +1003,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.elemental.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TIBCB1_5", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_CB1_5", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Earth Shock/EQ is Usable")
@@ -1026,6 +1026,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1045,6 +1046,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1067,6 +1069,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1087,6 +1090,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1109,6 +1113,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1151,6 +1156,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1178,6 +1184,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1198,6 +1205,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1219,6 +1227,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1439,7 +1448,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TIBCB1_8", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_CB1_8", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapEnabled
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
@@ -1505,7 +1514,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		yCoord = yCoord - 30
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontLeft = CreateFrame("FRAME", "TIBFontLeft", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_FontLeft", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -1566,7 +1575,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TIBFontMiddle", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_FontMiddle", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
@@ -1629,7 +1638,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = yCoord - 40 - 20
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontRight = CreateFrame("FRAME", "TIBFontRight", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_FontRight", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -1689,7 +1698,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			CloseDropDownMenus()
 		end
 
-		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TIBCB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
@@ -1733,7 +1742,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)
 
-		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TIBCB2_F1", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontSizeLock
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
@@ -1756,6 +1765,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1779,6 +1789,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1802,6 +1813,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1868,6 +1880,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -1890,6 +1903,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -2017,6 +2031,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -2037,6 +2052,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -2057,6 +2073,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
+---@diagnostic disable-next-line: deprecated
                         r, g, b, a = unpack(color)
                     else
                         r, g, b = ColorPickerFrame:GetColorRGB()
@@ -2106,7 +2123,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.esReady = CreateFrame("CheckButton", "TIBCB3_3", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.esReady = CreateFrame("CheckButton", "TwintopResourceBar_CB3_3", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.esReady
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Earth Shock/EQ is usable")
@@ -2117,7 +2134,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.esReadyAudio = CreateFrame("FRAME", "TIBesReadyAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.esReadyAudio = CreateFrame("FRAME", "TwintopResourceBar_esReadyAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.esReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.esReadyAudio, dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, TRB.Data.settings.shaman.elemental.audio.esReady.soundName)
@@ -2167,7 +2184,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TIBCB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Maelstrom")
@@ -2182,7 +2199,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TIBovercapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_overcapAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.shaman.elemental.audio.overcap.soundName)

@@ -69,11 +69,19 @@ local function LoadDefaultSettings()
                     assassination = true
                 },
                 shaman = {
-                    elemental = true
+                    elemental = true,
+                    restoration = true
                 },
                 warrior = {
                     arms = true,
                     fury = true
+                }
+            },
+            experimental = {
+                specs = {
+                    shaman = {
+                        restoration = false
+                    }
                 }
             }
         },
@@ -248,7 +256,7 @@ local function ConstructAddonOptionsPanel()
     yCoord = yCoord - 30
 
     -- Create the dropdown, and configure its appearance
-    controls.dropDown.strata = CreateFrame("FRAME", "TIBFrameStrata", parent, "UIDropDownMenuTemplate")
+    controls.dropDown.strata = CreateFrame("FRAME", "TwintopResourceBar_FrameStrata", parent, "UIDropDownMenuTemplate")
     controls.dropDown.strata.label = TRB.UiFunctions:BuildSectionHeader(parent, "Frame Strata Level To Draw Bar On", xCoord, yCoord)
     controls.dropDown.strata.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.strata:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -316,7 +324,7 @@ local function ConstructAddonOptionsPanel()
     yCoord = yCoord - 30
 
     -- Create the dropdown, and configure its appearance
-    controls.dropDown.audioChannel = CreateFrame("FRAME", "TIBFrameAudioChannel", parent, "UIDropDownMenuTemplate")
+    controls.dropDown.audioChannel = CreateFrame("FRAME", "TwintopResourceBar_FrameAudioChannel", parent, "UIDropDownMenuTemplate")
     controls.dropDown.audioChannel.label = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Channel To Use", xCoord, yCoord)
     controls.dropDown.audioChannel.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.audioChannel:SetPoint("TOPLEFT", xCoord, yCoord-30)
@@ -352,6 +360,22 @@ local function ConstructAddonOptionsPanel()
         UIDropDownMenu_SetText(controls.dropDown.audioChannel, newName)
         CloseDropDownMenus()
     end
+
+
+    yCoord = yCoord - 60
+    controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Experimental Features", 0, yCoord)
+
+    yCoord = yCoord - 30
+    controls.checkBoxes.experimentalShamanRestoration = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.experimentalShamanRestoration
+    f:SetPoint("TOPLEFT", xCoord2, yCoord)
+    getglobal(f:GetName() .. 'Text'):SetText("Restoration Shaman support")
+    f.tooltip = "This will enable experimental Restoration Shaman support within the bar. If you change this setting and are currently logged in on a Shaman, you'll need to reload your UI before Restoration Shaman configuration options become available."
+    f:SetChecked(TRB.Data.settings.core.experiemental.specs.shaman.elemental)
+    f:SetScript("OnClick", function(self, ...)
+        TRB.Data.settings.core.experiemental.specs.shaman.elemental = self:GetChecked()
+    end)
+
 
     TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
     TRB.Frames.interfaceSettingsFrameContainer.controls = controls
