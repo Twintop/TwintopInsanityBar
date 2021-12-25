@@ -845,78 +845,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			thrash = 100,
 			moonfire = 100
 		}
-		--[[specCache.feral.snapshotData.kidneyShot = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}
-		specCache.feral.snapshotData.shiv = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}
-		specCache.feral.snapshotData.garrote = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}
-		specCache.feral.snapshotData.exsanguinate = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}
-		specCache.feral.snapshotData.blindside = {
-			spellId = nil,
-			endTime = nil,
-			duration = 0
-		}
-		specCache.feral.snapshotData.sliceAndDice = {
-			spellId = nil,
-			endTime = nil,
-			duration = 0
-		}
-
-		specCache.feral.snapshotData.echoingReprimand = {
-			startTime = nil,
-			duration = 0,
-		}
-		for x = 1, 6 do -- 1 and 6 CPs doesn't get it, but including it just in case it gets added/changed
-			specCache.feral.snapshotData.echoingReprimand[x] = {
-				endTime = nil,
-				duration = 0,
-				enabled = false,
-				comboPoints = 0
-			}
-		end
-		
-		specCache.feral.snapshotData.sepsis = {
-			startTime = nil,
-			endTime = nil,
-			duration = 0,
-			enabled = false
-		}
-		specCache.feral.snapshotData.serratedBoneSpike = {
-			isActive = false,
-			-- Charges
-			charges = 0,
-			startTime = nil,
-			duration = 0
-		}
-		specCache.feral.snapshotData.deathFromAbove = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}
-		specCache.feral.snapshotData.dismantle = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}
-
-		specCache.feral.barTextVariables = {
-			icons = {},
-			values = {}
-		}]]
 	end
 
 	local function Setup_Balance()
@@ -1537,10 +1465,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 			
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.starsurge.settingKey, TRB.Data.settings.druid.balance)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.starsurge2.settingKey, TRB.Data.settings.druid.balance)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.starsurge3.settingKey, TRB.Data.settings.druid.balance)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.starfall.settingKey, TRB.Data.settings.druid.balance)
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.starsurge.settingKey, settings)
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.starsurge2.settingKey, settings)
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.starsurge3.settingKey, settings)
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.starfall.settingKey, settings)
 			TRB.Frames.resource2ContainerFrame:Hide()
 		elseif specId == 2 then
 			for k, v in pairs(TRB.Data.spells) do
@@ -2882,7 +2810,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function UpdateSnapshot()
 		TRB.Functions.UpdateSnapshot()
-		local currentTime = GetTime()
 	end
 
 	local function UpdateSnapshot_Balance()
