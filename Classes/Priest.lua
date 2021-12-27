@@ -4272,11 +4272,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if destGUID == TRB.Data.character.guid then
 				if specId == 2 then -- Let's check raid effect mana stuff
 					if type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.symbolOfHope.tickId then
-						local diff = 0
-						if TRB.Data.snapshotData.symbolOfHope.previousTickTime ~= nil then
-							diff = currentTime - TRB.Data.snapshotData.symbolOfHope.previousTickTime
-						end
-
 						TRB.Data.snapshotData.symbolOfHope.isActive = true
 						if TRB.Data.snapshotData.symbolOfHope.firstTickTime == nil then
 							TRB.Data.snapshotData.symbolOfHope.firstTickTime = currentTime

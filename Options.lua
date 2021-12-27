@@ -368,7 +368,7 @@ local function ConstructAddonOptionsPanel()
     yCoord = yCoord - 30
     controls.checkBoxes.experimentalShamanRestoration = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental", parent, "ChatConfigCheckButtonTemplate")
     f = controls.checkBoxes.experimentalShamanRestoration
-    f:SetPoint("TOPLEFT", xCoord2, yCoord)
+    f:SetPoint("TOPLEFT", xCoord, yCoord)
     getglobal(f:GetName() .. 'Text'):SetText("Restoration Shaman support")
     f.tooltip = "This will enable experimental Restoration Shaman support within the bar. If you change this setting and are currently logged in on a Shaman, you'll need to reload your UI before Restoration Shaman configuration options become available."
     f:SetChecked(TRB.Data.settings.core.experimental.specs.shaman.restoration)
