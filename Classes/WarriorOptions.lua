@@ -2518,6 +2518,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.arms.audio.overcap.enabled = self:GetChecked()
 
 			if TRB.Data.settings.warrior.arms.audio.overcap.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.warrior.arms.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2567,6 +2568,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.arms.audio.overcap.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.warrior.arms.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -2582,6 +2584,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.arms.audio.suddenDeath.enabled = self:GetChecked()
 
 			if TRB.Data.settings.warrior.arms.audio.suddenDeath.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.warrior.arms.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2631,6 +2634,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.arms.audio.suddenDeath.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.warrior.arms.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -4839,6 +4843,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.fury.audio.overcap.enabled = self:GetChecked()
 
 			if TRB.Data.settings.warrior.fury.audio.overcap.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.warrior.fury.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -4888,6 +4893,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.fury.audio.overcap.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.warrior.fury.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -4903,6 +4909,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.fury.audio.suddenDeath.enabled = self:GetChecked()
 
 			if TRB.Data.settings.warrior.fury.audio.suddenDeath.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.warrior.fury.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -4952,6 +4959,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.settings.warrior.fury.audio.suddenDeath.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.warrior.fury.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 		]]

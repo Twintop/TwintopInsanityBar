@@ -2284,6 +2284,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Data.settings.demonhunter.havoc.audio.overcap.enabled = self:GetChecked()
 
 			if TRB.Data.settings.demonhunter.havoc.audio.overcap.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.demonhunter.havoc.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2333,6 +2334,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Data.settings.demonhunter.havoc.audio.overcap.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.demonhunter.havoc.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -2349,6 +2351,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Data.settings.demonhunter.havoc.audio.suddenDeath.enabled = self:GetChecked()
 
 			if TRB.Data.settings.demonhunter.havoc.audio.suddenDeath.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.demonhunter.havoc.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2398,6 +2401,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Data.settings.demonhunter.havoc.audio.suddenDeath.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.demonhunter.havoc.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
         ]]

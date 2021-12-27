@@ -3001,6 +3001,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.holy.audio.innervate.enabled = self:GetChecked()
 
 			if TRB.Data.settings.priest.holy.audio.innervate.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.priest.holy.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3050,6 +3051,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.holy.audio.innervate.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.innervateAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.priest.holy.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -3065,6 +3067,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.holy.audio.surgeOfLight.enabled = self:GetChecked()
 
 			if TRB.Data.settings.priest.holy.audio.surgeOfLight.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.priest.holy.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3114,6 +3117,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.holy.audio.surgeOfLight.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.surgeOfLightAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.priest.holy.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -3129,6 +3133,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.holy.audio.surgeOfLight2.enabled = self:GetChecked()
 
 			if TRB.Data.settings.priest.holy.audio.surgeOfLight2.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.priest.holy.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3178,6 +3183,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.holy.audio.surgeOfLight2.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.surgeOfLight2Audio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.priest.holy.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -3193,6 +3199,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.holy.audio.flashConcentration.enabled = self:GetChecked()
 
 			if TRB.Data.settings.priest.holy.audio.flashConcentration.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.priest.holy.audio.flashConcentration.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3242,6 +3249,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.holy.audio.flashConcentration.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.flashConcentrationAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.priest.holy.audio.flashConcentration.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -6064,6 +6072,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.audio.s2mDeath.enabled = self:GetChecked()
 
 			if TRB.Data.settings.priest.shadow.audio.s2mDeath.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.priest.shadow.audio.s2mDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -6113,6 +6122,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.audio.s2mDeath.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.s2mAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.priest.shadow.audio.s2mDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -6128,6 +6138,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.audio.dpReady.enabled = self:GetChecked()
 
 			if TRB.Data.settings.priest.shadow.audio.dpReady.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.priest.shadow.audio.dpReady.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -6177,6 +6188,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.audio.dpReady.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.dpReadyAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.priest.shadow.audio.dpReady.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -6192,6 +6204,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.audio.mdProc.enabled = self:GetChecked()
 
 			if TRB.Data.settings.priest.shadow.audio.mdProc.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.priest.shadow.audio.mdProc.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -6241,6 +6254,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.audio.mdProc.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.mdProcAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.priest.shadow.audio.mdProc.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -6257,6 +6271,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.audio.overcap.enabled = self:GetChecked()
 
 			if TRB.Data.settings.priest.shadow.audio.overcap.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.priest.shadow.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -6306,6 +6321,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.settings.priest.shadow.audio.overcap.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.priest.shadow.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 

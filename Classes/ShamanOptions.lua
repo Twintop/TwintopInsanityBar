@@ -5291,6 +5291,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.restoration.audio.surgeOfLight.enabled = self:GetChecked()
 
 			if TRB.Data.settings.shaman.restoration.audio.surgeOfLight.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -5340,6 +5341,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.restoration.audio.surgeOfLight.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.surgeOfLightAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -5355,6 +5357,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.restoration.audio.surgeOfLight2.enabled = self:GetChecked()
 
 			if TRB.Data.settings.shaman.restoration.audio.surgeOfLight2.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -5404,6 +5407,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.restoration.audio.surgeOfLight2.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.surgeOfLight2Audio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -5419,6 +5423,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.restoration.audio.flashConcentration.enabled = self:GetChecked()
 
 			if TRB.Data.settings.shaman.restoration.audio.flashConcentration.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.flashConcentration.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -5468,6 +5473,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.restoration.audio.flashConcentration.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.flashConcentrationAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.flashConcentration.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 		]]

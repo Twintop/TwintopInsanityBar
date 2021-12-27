@@ -2801,6 +2801,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.audio.killShot.enabled = self:GetChecked()
 
 			if TRB.Data.settings.hunter.beastMastery.audio.killShot.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2850,6 +2851,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.audio.killShot.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -2865,6 +2867,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.audio.overcap.enabled = self:GetChecked()
 
 			if TRB.Data.settings.hunter.beastMastery.audio.overcap.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2914,6 +2917,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.audio.overcap.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -2929,6 +2933,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.audio.flayersMark.enabled = self:GetChecked()
 
 			if TRB.Data.settings.hunter.beastMastery.audio.flayersMark.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2978,6 +2983,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.audio.flayersMark.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -2994,6 +3000,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.audio.nesingwarysTrappingApparatus.enabled = self:GetChecked()
 
 			if TRB.Data.settings.hunter.beastMastery.audio.nesingwarysTrappingApparatus.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3043,6 +3050,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.audio.nesingwarysTrappingApparatus.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -3059,6 +3067,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.audio.secretsOfTheUnblinkingVigil.enabled = self:GetChecked()
 
 			if TRB.Data.settings.hunter.beastMastery.audio.secretsOfTheUnblinkingVigil.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3108,6 +3117,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.beastMastery.audio.secretsOfTheUnblinkingVigil.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.hunter.beastMastery.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 		]]
@@ -5774,6 +5784,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.audio.aimedShot.enabled = self:GetChecked()
 
 			if TRB.Data.settings.hunter.marksmanship.audio.aimedShot.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.aimedShot.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -5823,6 +5834,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.audio.aimedShot.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.aimedShotAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.aimedShot.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -5902,6 +5914,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.enabled = self:GetChecked()
 
 			if TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -5951,6 +5964,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.lockAndLoadAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -5966,6 +5980,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.audio.killShot.enabled = self:GetChecked()
 
 			if TRB.Data.settings.hunter.marksmanship.audio.killShot.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -6015,6 +6030,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.audio.killShot.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -6030,6 +6046,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.audio.overcap.enabled = self:GetChecked()
 
 			if TRB.Data.settings.hunter.marksmanship.audio.overcap.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -6079,6 +6096,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.audio.overcap.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -6094,6 +6112,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.audio.flayersMark.enabled = self:GetChecked()
 
 			if TRB.Data.settings.hunter.marksmanship.audio.flayersMark.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -6143,6 +6162,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.audio.flayersMark.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -6159,6 +6179,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.enabled = self:GetChecked()
 
 			if TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -6208,6 +6229,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -6224,6 +6246,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.enabled = self:GetChecked()
 
 			if TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -6273,6 +6296,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -8785,6 +8809,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.survival.audio.killShot.enabled = self:GetChecked()
 
 			if TRB.Data.settings.hunter.survival.audio.killShot.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.hunter.survival.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -8834,6 +8859,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.survival.audio.killShot.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -8850,6 +8876,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.survival.audio.overcap.enabled = self:GetChecked()
 
 			if TRB.Data.settings.hunter.survival.audio.overcap.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.hunter.survival.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -8899,6 +8926,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.survival.audio.overcap.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -8915,6 +8943,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.survival.audio.flayersMark.enabled = self:GetChecked()
 
 			if TRB.Data.settings.hunter.survival.audio.flayersMark.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.hunter.survival.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -8964,6 +8993,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.survival.audio.flayersMark.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -8980,6 +9010,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.enabled = self:GetChecked()
 
 			if TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -9029,6 +9060,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.hunter.survival.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 

@@ -2797,6 +2797,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.audio.ssReady.enabled = self:GetChecked()
 
 			if TRB.Data.settings.druid.balance.audio.ssReady.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2846,6 +2847,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.audio.ssReady.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.ssReadyAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -2862,6 +2864,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.audio.sfReady.enabled = self:GetChecked()
 
 			if TRB.Data.settings.druid.balance.audio.sfReady.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2911,6 +2914,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.audio.sfReady.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.sfReadyAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -2927,6 +2931,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.audio.onethsReady.enabled = self:GetChecked()
 
 			if TRB.Data.settings.druid.balance.audio.onethsReady.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsReady.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2976,6 +2981,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.audio.onethsReady.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.onethsReadyAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsReady.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -2993,6 +2999,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.audio.overcap.enabled = self:GetChecked()
 
 			if TRB.Data.settings.druid.balance.audio.overcap.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.druid.balance.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3042,6 +3049,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.balance.audio.overcap.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.druid.balance.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -6187,6 +6195,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.enabled = self:GetChecked()
 
 			if TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -6236,6 +6245,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.apcAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -6250,6 +6260,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.feral.audio.overcap.enabled = self:GetChecked()
 
 			if TRB.Data.settings.druid.feral.audio.overcap.enabled then
+---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(TRB.Data.settings.druid.feral.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -6299,6 +6310,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.settings.druid.feral.audio.overcap.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.druid.feral.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
