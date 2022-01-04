@@ -3491,7 +3491,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Options:CreateBarTextInstructions(cache, parent, xCoord, yCoord)
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "Priest_Holy")
+		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 
 	local function HolyConstructOptionsPanel(cache)
@@ -6680,7 +6682,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Options:CreateBarTextInstructions(cache, parent, xCoord, yCoord)
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "Priest_Shadow")
+		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 
 	local function ShadowConstructOptionsPanel(cache)

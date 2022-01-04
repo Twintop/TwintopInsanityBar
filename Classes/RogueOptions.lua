@@ -3656,7 +3656,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Options:CreateBarTextInstructions(cache, parent, xCoord, yCoord)
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "Rogue_Assassination")
+		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 
 	local function AssassinationConstructOptionsPanel(cache)

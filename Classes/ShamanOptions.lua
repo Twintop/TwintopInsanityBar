@@ -2639,7 +2639,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Options:CreateBarTextInstructions(cache, parent, xCoord, yCoord)
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "Shaman_Elemental")
+		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 
 	local function ElementalConstructOptionsPanel(cache)
@@ -5666,27 +5668,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
 
-		local grandparent = parent:GetParent()
-		local variablesPanelParent = TRB.UiFunctions:CreateTabFrameContainer("TRB_Shaman_Restoration_BarTextVariables_Frame", grandparent, 300, 500)
-		local variablesPanel = variablesPanelParent.scrollFrame.scrollChild
-		variablesPanelParent:ClearAllPoints()
-		variablesPanelParent:SetPoint("TOPLEFT", grandparent, "TOPRIGHT", 50, 5)
-		--[[variablesPanel:SetBackdrop({
-			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-			edgeFile =  "Interface\\Tooltips\\UI-Tooltip-Border",
-			tile = true,
-			edgeSize = 8,
-			tileSize = 32,
-			insets = {
-				left = 0,
-				right = 0,
-				top = 0,
-				bottom = 0,
-			}
-		})]]
-		variablesPanel.controls = {}
-		TRB.UiFunctions:BuildSectionHeader(variablesPanel, "Bar Text Variables", 5, 0)
-
 		TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 		
 		controls.buttons.exportButton_Shaman_Restoration_BarText = TRB.UiFunctions:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
@@ -5737,7 +5718,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Options:CreateBarTextInstructions(cache, parent, xCoord, yCoord)
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "Shaman_Restoration")
+		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 

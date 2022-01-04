@@ -2472,7 +2472,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Options:CreateBarTextInstructions(cache, parent, xCoord, yCoord)
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "DemonHuner_Havoc")
+		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 
 	local function HavocConstructOptionsPanel(cache)

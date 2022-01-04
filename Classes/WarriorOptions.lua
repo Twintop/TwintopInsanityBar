@@ -2704,7 +2704,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Options:CreateBarTextInstructions(cache, parent, xCoord, yCoord)
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "Warrior_Arms")
+		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 
 	local function ArmsConstructOptionsPanel(cache)
@@ -5030,7 +5032,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Options:CreateBarTextInstructions(cache, parent, xCoord, yCoord)
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "Warrior_Fury")
+		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 
 	local function FuryConstructOptionsPanel(cache)

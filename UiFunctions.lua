@@ -403,6 +403,16 @@ function TRB.UiFunctions:CreateTab(name, displayText, id, parent, width, rightOf
     return tab
 end
 
+function TRB.UiFunctions:CreateVariablesSidePanel(parent, name)
+    local grandparent = parent:GetParent()
+    local variablesPanelParent = TRB.UiFunctions:CreateTabFrameContainer("TRB_" .. name .. "_BarTextVariables_Frame", grandparent, 300, 500)
+    local variablesPanel = variablesPanelParent.scrollFrame.scrollChild
+    variablesPanelParent:ClearAllPoints()
+    variablesPanelParent:SetPoint("TOPLEFT", grandparent, "TOPRIGHT", 50, 5)
+    TRB.UiFunctions:BuildSectionHeader(variablesPanel, "Bar Text Variables", 0, 5)
+    return variablesPanel
+end
+
 function TRB.UiFunctions:ToggleCheckboxEnabled(checkbox, enable)
     if enable then
 ---@diagnostic disable-next-line: undefined-field
