@@ -276,6 +276,7 @@ function TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, var, desc, posX, posY
     fd.font:SetJustifyV("TOP")
 	fd.font:SetSize(width, height2)
 	fd.font:SetText(desc)
+---@diagnostic disable-next-line: redundant-parameter
     fd.font:SetWordWrap(true)
 
 	return f
