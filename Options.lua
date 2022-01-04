@@ -1510,7 +1510,7 @@ function TRB.Options:CleanupSettings(oldSettings)
     return newSettings
 end
 
-function TRB.Options:CreateBarTextInstructions(cache, parent, xCoord, yCoord)
+function TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
     local maxOptionsWidth = 550
     local barTextInstructionsHeight = 300
     TRB.UiFunctions:BuildLabel(parent, TRB.Options.variables.barTextInstructions, xCoord+5, yCoord, maxOptionsWidth-(2*(xCoord+5)), barTextInstructionsHeight, GameFontHighlight, "LEFT")
