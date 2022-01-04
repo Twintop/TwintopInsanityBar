@@ -1510,32 +1510,32 @@ function TRB.Options:CleanupSettings(oldSettings)
     return newSettings
 end
 
-function TRB.Options:CreateBarTextInstructions(cache, parent, xCoord, yCoord, variableSplit)
-    if variableSplit == nil then
-        variableSplit = 135
-    end
-
+function TRB.Options:CreateBarTextInstructions(cache, parent, xCoord, yCoord)
     local maxOptionsWidth = 550
     local barTextInstructionsHeight = 300
     TRB.UiFunctions:BuildLabel(parent, TRB.Options.variables.barTextInstructions, xCoord+5, yCoord, maxOptionsWidth-(2*(xCoord+5)), barTextInstructionsHeight, GameFontHighlight, "LEFT")
+end
 
-    yCoord = yCoord - barTextInstructionsHeight - 10
 
+function TRB.Options:CreateBarTextVariables(cache, parent, xCoord, yCoord, variableSplit)
+    if variableSplit == nil then
+        variableSplit = 135
+    end
+    local height = 15
+    local width = 260
     local entries1 = TRB.Functions.TableLength(cache.barTextVariables.values)
     for i=1, entries1 do
         if cache.barTextVariables.values[i].printInSettings == true then
-            TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, cache.barTextVariables.values[i].variable, cache.barTextVariables.values[i].description, xCoord, yCoord, variableSplit, 400, 15)
-            local height = 15
-            yCoord = yCoord - height - 5
+            TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, cache.barTextVariables.values[i].variable, cache.barTextVariables.values[i].description, xCoord, yCoord, 0, width, height)
+            yCoord = yCoord - (height * 3) - 5
         end
     end
 
     local entries2 = TRB.Functions.TableLength(cache.barTextVariables.pipe)
     for i=1, entries2 do
         if cache.barTextVariables.pipe[i].printInSettings == true then
-            TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, cache.barTextVariables.pipe[i].variable, cache.barTextVariables.pipe[i].description, xCoord, yCoord, variableSplit, 400, 15)
-            local height = 15
-            yCoord = yCoord - height - 5
+            TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, cache.barTextVariables.pipe[i].variable, cache.barTextVariables.pipe[i].description, xCoord, yCoord, 0, width, height)
+            yCoord = yCoord - (height * 3) - 5
         end
     end
 
@@ -1548,12 +1548,8 @@ function TRB.Options:CreateBarTextInstructions(cache, parent, xCoord, yCoord, va
             if cache.barTextVariables.icons[i].icon ~= "" then
                 text = cache.barTextVariables.icons[i].icon .. " "
             end
-            local height = 15
-            if cache.barTextVariables.icons[i].variable == "#casting" then
-                height = 15
-            end
-            TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, cache.barTextVariables.icons[i].variable, text .. cache.barTextVariables.icons[i].description, xCoord, yCoord, variableSplit, 400, height)
-            yCoord = yCoord - height - 5
+            TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, cache.barTextVariables.icons[i].variable, text .. cache.barTextVariables.icons[i].description, xCoord, yCoord, 0, width, height)
+            yCoord = yCoord - (height * 3) - 5
         end
     end
 end
