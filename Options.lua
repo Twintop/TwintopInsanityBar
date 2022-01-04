@@ -1209,13 +1209,13 @@ function TRB.Options:ConstructOptionsPanel()
 
     interfaceSettingsFrame.controls.barPositionSection = TRB.UiFunctions:BuildSectionHeader(parent, TRB.Details.addonTitle, xCoord+xPadding, yCoord)
     yCoord = yCoord - 40
-    interfaceSettingsFrame.controls.labels.infoAuthor = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Author:", TRB.Details.addonAuthor .. " - " .. TRB.Details.addonAuthorServer, xCoord+xPadding*2, yCoord, 100, 450)
-    yCoord = yCoord - 20
-    interfaceSettingsFrame.controls.labels.infoVersion = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Version:", TRB.Details.addonVersion, xCoord+xPadding*2, yCoord, 100, 450)
-    yCoord = yCoord - 20
-    interfaceSettingsFrame.controls.labels.infoReleased = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Released:", TRB.Details.addonReleaseDate, xCoord+xPadding*2, yCoord, 100, 450)
-    yCoord = yCoord - 20
-    interfaceSettingsFrame.controls.labels.infoSupport = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Supported Specs:", TRB.Details.supportedSpecs, xCoord+xPadding*2, yCoord, 100, 450, 300)
+    interfaceSettingsFrame.controls.labels.infoAuthor = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Author:", TRB.Details.addonAuthor .. " - " .. TRB.Details.addonAuthorServer, xCoord+(xPadding*2), yCoord, 0, 450, 15, 15)
+    yCoord = yCoord - 40
+    interfaceSettingsFrame.controls.labels.infoVersion = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Version:", TRB.Details.addonVersion, xCoord+(xPadding*2), yCoord, 0, 450, 15, 15)
+    yCoord = yCoord - 40
+    interfaceSettingsFrame.controls.labels.infoReleased = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Released:", TRB.Details.addonReleaseDate, xCoord+(xPadding*2), yCoord, 0, 450, 15, 15)
+    yCoord = yCoord - 40
+    interfaceSettingsFrame.controls.labels.infoSupport = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Supported Specs:", TRB.Details.supportedSpecs, xCoord+(xPadding*2), yCoord, 0, 450, 15, 300)
 
 
     interfaceSettingsFrame.panel.yCoord = yCoord

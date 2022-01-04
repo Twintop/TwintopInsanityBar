@@ -243,8 +243,9 @@ function TRB.UiFunctions:BuildSectionHeader(parent, title, posX, posY)
 	return f
 end
 
-function TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, width, height)
+function TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, width, height, height2)
 	height = height or 20
+    height2 = height2 or (height * 3)
     local f = CreateFrame("Frame", nil, parent)
 	f:ClearAllPoints()
 	f:SetPoint("TOPLEFT", parent)
@@ -266,14 +267,14 @@ function TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, var, desc, posX, posY
 	fd:SetPoint("TOPLEFT", parent)
 	fd:SetPoint("TOPLEFT", posX+5, posY-height)
 	fd:SetWidth(width-5)
-	fd:SetHeight(height*3)
+	fd:SetHeight(height2)
 	fd.font = fd:CreateFontString(nil, TRB.Data.settings.core.strata.level)
 	fd.font:SetFontObject(GameFontHighlightSmall)
 	fd.font:SetPoint("LEFT", fd, "LEFT")
     fd.font:SetSize(0, 14)
 	fd.font:SetJustifyH("LEFT")
     fd.font:SetJustifyV("TOP")
-	fd.font:SetSize(width, height*3)
+	fd.font:SetSize(width, height2)
 	fd.font:SetText(desc)
     fd.font:SetWordWrap(true)
 
