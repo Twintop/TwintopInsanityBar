@@ -200,7 +200,7 @@ TRB.Data.barTextVariables = {
     icons = {},
     values = {},
 	pipe = {
-		{ variable = "||n", description = "Insert a Newline", printInSettings = true },
+		{ variable = "||n", description = "Insert a Newline. Alternative to pressing Enter.", printInSettings = true },
 		{ variable = "||c", description = "", printInSettings = false },
 		{ variable = "||r", description = "", printInSettings = false },
 	},

@@ -415,6 +415,7 @@ function TRB.UiFunctions:CreateVariablesSidePanel(parent, name)
     local grandparent = parent:GetParent()
     local variablesPanelParent = TRB.UiFunctions:CreateTabFrameContainer("TRB_" .. name .. "_BarTextVariables_Frame", grandparent, 300, 500)
     local variablesPanel = variablesPanelParent.scrollFrame.scrollChild
+    variablesPanelParent:SetBackdropColor(0, 0, 0, 0.8)
     variablesPanelParent:ClearAllPoints()
     variablesPanelParent:SetPoint("TOPLEFT", grandparent, "TOPRIGHT", 55, 5)
     TRB.UiFunctions:BuildSectionHeader(variablesPanel, "Bar Text Variables", 0, 5)

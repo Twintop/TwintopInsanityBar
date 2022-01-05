@@ -3440,6 +3440,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local xCoord2 = 290
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
+		local namePrefix = "Priest_Holy"
 
 		TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 		
@@ -3451,8 +3452,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 30
 		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.priest.holy.displayText.left.text,
-														500, 440, 24, xCoord+95, yCoord)
+		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", TRB.Data.settings.priest.holy.displayText.left.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.priest.holy.displayText.left.text = self:GetText()
@@ -3462,11 +3463,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 70
 		controls.labels.middleText = TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.priest.holy.displayText.middle.text,
-														500, 440, 24, xCoord+95, yCoord)
+		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", TRB.Data.settings.priest.holy.displayText.middle.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.priest.holy.displayText.middle.text = self:GetText()
@@ -3476,11 +3477,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.priest.holy.displayText.right.text,
-														500, 440, 24, xCoord+95, yCoord)
+		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", TRB.Data.settings.priest.holy.displayText.right.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.priest.holy.displayText.right.text = self:GetText()
@@ -3490,8 +3491,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "Priest_Holy")
+		yCoord = yCoord - 70
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
@@ -6631,6 +6632,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local xCoord2 = 290
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
+		local namePrefix = "Priest_Shadow"
 
 		TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 
@@ -6642,7 +6644,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 30
 		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, "Priest_Shadow_Left", TRB.Data.settings.priest.shadow.displayText.left.text,
+		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", TRB.Data.settings.priest.shadow.displayText.left.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
@@ -6657,7 +6659,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 70
 		controls.labels.middleText = TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, "Priest_Shadow_Middle", TRB.Data.settings.priest.shadow.displayText.middle.text,
+		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", TRB.Data.settings.priest.shadow.displayText.middle.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
@@ -6672,7 +6674,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, "Priest_Shadow_Right", TRB.Data.settings.priest.shadow.displayText.right.text,
+		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", TRB.Data.settings.priest.shadow.displayText.right.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
@@ -6685,7 +6687,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetCursorPosition(0)
 
 		yCoord = yCoord - 70
-		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "Priest_Shadow")
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end

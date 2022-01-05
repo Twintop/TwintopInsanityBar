@@ -3222,6 +3222,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local xCoord2 = 290
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
+		local namePrefix = "Hunter_BeastMastery"
 
 		TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 		controls.buttons.exportButton_Hunter_BeastMastery_BarText = TRB.UiFunctions:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
@@ -3232,8 +3233,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.beastMastery.displayText.left.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", TRB.Data.settings.hunter.beastMastery.displayText.left.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.beastMastery.displayText.left.text = self:GetText()
@@ -3242,11 +3243,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.beastMastery.displayText.middle.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", TRB.Data.settings.hunter.beastMastery.displayText.middle.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.beastMastery.displayText.middle.text = self:GetText()
@@ -3255,11 +3256,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.beastMastery.displayText.right.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", TRB.Data.settings.hunter.beastMastery.displayText.right.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.beastMastery.displayText.right.text = self:GetText()
@@ -3267,8 +3268,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.beastMastery)
 		end)
 
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "Hunter_BeastMastery")
+		yCoord = yCoord - 70
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
@@ -6403,6 +6404,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local xCoord2 = 290
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
+		local namePrefix = "Hunter_Marksmanship"
 
 		TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 		controls.buttons.exportButton_Hunter_Marksmanship_BarText = TRB.UiFunctions:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
@@ -6413,8 +6415,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.marksmanship.displayText.left.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", TRB.Data.settings.hunter.marksmanship.displayText.left.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.marksmanship.displayText.left.text = self:GetText()
@@ -6423,11 +6425,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.marksmanship.displayText.middle.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", TRB.Data.settings.hunter.marksmanship.displayText.middle.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.marksmanship.displayText.middle.text = self:GetText()
@@ -6436,11 +6438,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.marksmanship.displayText.right.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", TRB.Data.settings.hunter.marksmanship.displayText.right.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.marksmanship.displayText.right.text = self:GetText()
@@ -6448,8 +6450,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.marksmanship)
 		end)
 
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "Hunter_Marksmanship")
+		yCoord = yCoord - 70
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
@@ -9169,6 +9171,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local xCoord2 = 290
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
+		local namePrefix = "Hunter_Survival"
 
 		TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 		controls.buttons.exportButton_Hunter_Survival_BarText = TRB.UiFunctions:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
@@ -9179,8 +9182,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.survival.displayText.left.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", TRB.Data.settings.hunter.survival.displayText.left.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.survival.displayText.left.text = self:GetText()
@@ -9188,11 +9191,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.survival)
 		end)
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.survival.displayText.middle.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", TRB.Data.settings.hunter.survival.displayText.middle.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.survival.displayText.middle.text = self:GetText()
@@ -9200,11 +9203,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.survival)
 		end)
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.hunter.survival.displayText.right.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", TRB.Data.settings.hunter.survival.displayText.right.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.hunter.survival.displayText.right.text = self:GetText()
@@ -9212,8 +9215,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.survival)
 		end)
 
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "Hunter_Survival")
+		yCoord = yCoord - 70
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end

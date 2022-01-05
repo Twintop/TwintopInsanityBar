@@ -2659,6 +2659,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local xCoord2 = 290
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
+		local namePrefix = "Warrior_Arms"
 
 		controls.buttons.exportButton_Warrior_Arms_BarText = TRB.UiFunctions:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Arms_BarText:SetScript("OnClick", function(self, ...)
@@ -2670,8 +2671,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 30
 		controls.labels.leftText = TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.warrior.arms.displayText.left.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", TRB.Data.settings.warrior.arms.displayText.left.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.warrior.arms.displayText.left.text = self:GetText()
@@ -2679,11 +2680,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
 		end)
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 70
 		controls.labels.middleText = TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.warrior.arms.displayText.middle.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", TRB.Data.settings.warrior.arms.displayText.middle.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.warrior.arms.displayText.middle.text = self:GetText()
@@ -2691,11 +2692,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
 		end)
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 70
 		controls.labels.rightText = TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.warrior.arms.displayText.right.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", TRB.Data.settings.warrior.arms.displayText.right.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.warrior.arms.displayText.right.text = self:GetText()
@@ -2703,8 +2704,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
 		end)
 
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "Warrior_Arms")
+		yCoord = yCoord - 70
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
@@ -4987,6 +4988,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local xCoord2 = 290
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
+		local namePrefix = "Warrior_Fury"
 
 		controls.buttons.exportButton_Warrior_Fury_BarText = TRB.UiFunctions:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Fury_BarText:SetScript("OnClick", function(self, ...)
@@ -4998,8 +5000,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 30
 		controls.labels.leftText = TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.warrior.fury.displayText.left.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", TRB.Data.settings.warrior.fury.displayText.left.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.warrior.fury.displayText.left.text = self:GetText()
@@ -5007,11 +5009,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.fury)
 		end)
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 70
 		controls.labels.middleText = TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.warrior.fury.displayText.middle.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", TRB.Data.settings.warrior.fury.displayText.middle.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.warrior.fury.displayText.middle.text = self:GetText()
@@ -5019,11 +5021,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.fury)
 		end)
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 70
 		controls.labels.rightText = TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.warrior.fury.displayText.right.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", TRB.Data.settings.warrior.fury.displayText.right.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.warrior.fury.displayText.right.text = self:GetText()
@@ -5031,8 +5033,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.fury)
 		end)
 
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "Warrior_Fury")
+		yCoord = yCoord - 70
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end

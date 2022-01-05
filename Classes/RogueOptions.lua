@@ -3610,6 +3610,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local xCoord2 = 290
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
+		local namePrefix = "Rogue_Assassination"
 
 		TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 		controls.buttons.exportButton_Rogue_Assassination_BarText = TRB.UiFunctions:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
@@ -3620,8 +3621,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 30
 		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.rogue.assassination.displayText.left.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", TRB.Data.settings.rogue.assassination.displayText.left.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.rogue.assassination.displayText.left.text = self:GetText()
@@ -3630,11 +3631,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.rogue.assassination.displayText.middle.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", TRB.Data.settings.rogue.assassination.displayText.middle.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.rogue.assassination.displayText.middle.text = self:GetText()
@@ -3643,11 +3644,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.rogue.assassination.displayText.right.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", TRB.Data.settings.rogue.assassination.displayText.right.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.rogue.assassination.displayText.right.text = self:GetText()
@@ -3655,8 +3656,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.rogue.assassination)
 		end)
 
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "Rogue_Assassination")
+		yCoord = yCoord - 70
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end

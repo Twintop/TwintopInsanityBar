@@ -2427,6 +2427,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local xCoord2 = 290
 		local xOffset1 = 50
 		local xOffset2 = xCoord2 + xOffset1
+		local namePrefix = "DemonHunter_Havoc"
 
 		controls.buttons.exportButton_DemonHunter_Havoc_BarText = TRB.UiFunctions:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_DemonHunter_Havoc_BarText:SetScript("OnClick", function(self, ...)
@@ -2438,8 +2439,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 30
 		controls.labels.leftText = TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.demonhunter.havoc.displayText.left.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", TRB.Data.settings.demonhunter.havoc.displayText.left.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.demonhunter.havoc.displayText.left.text = self:GetText()
@@ -2447,11 +2448,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.demonhunter.havoc)
 		end)
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 70
 		controls.labels.middleText = TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.demonhunter.havoc.displayText.middle.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", TRB.Data.settings.demonhunter.havoc.displayText.middle.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.demonhunter.havoc.displayText.middle.text = self:GetText()
@@ -2459,11 +2460,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.demonhunter.havoc)
 		end)
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 70
 		controls.labels.rightText = TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions:BuildTextBox(parent, TRB.Data.settings.demonhunter.havoc.displayText.right.text,
-														500, 440, 24, xCoord+100, yCoord)
+		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", TRB.Data.settings.demonhunter.havoc.displayText.right.text,
+														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			TRB.Data.settings.demonhunter.havoc.displayText.right.text = self:GetText()
@@ -2471,8 +2472,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.demonhunter.havoc)
 		end)
 
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, "DemonHuner_Havoc")
+		yCoord = yCoord - 70
+		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
