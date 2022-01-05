@@ -333,20 +333,24 @@ function TRB.UiFunctions:BuildLabel(parent, text, posX, posY, width, height, fon
     return f
 end
 
-function TRB.UiFunctions:CreateScrollFrameContainer(name, parent, width, height)
+function TRB.UiFunctions:CreateScrollFrameContainer(name, parent, width, height, scrollChild)
     width = width or 560
     height = height or 540
 	local sf = CreateFrame("ScrollFrame", name, parent, "UIPanelScrollFrameTemplate")
 	sf:SetWidth(width)
 	sf:SetHeight(height)
-	sf.scrollChild = CreateFrame("Frame")
+    if scrollChild then
+        sf.scrollChild = scrollChild
+    else
+	    sf.scrollChild = CreateFrame("Frame")
+    end
 	sf.scrollChild:SetWidth(width)
 	sf.scrollChild:SetHeight(height-10)
 	sf:SetScrollChild(sf.scrollChild)
 	return sf
 end
 
-function TRB.UiFunctions:CreateTabFrameContainer(name, parent, width, height)
+function TRB.UiFunctions:CreateTabFrameContainer(name, parent, width, height, isManualScrollFrame)
     width = width or 580
     height = height or 503
     local cf = CreateFrame("Frame", name, parent, "BackdropTemplate")
@@ -368,8 +372,10 @@ function TRB.UiFunctions:CreateTabFrameContainer(name, parent, width, height)
     cf:SetHeight(height)
     cf:SetPoint("TOPLEFT", 0, 10)
 
-    cf.scrollFrame = TRB.UiFunctions:CreateScrollFrameContainer(name .. "ScrollFrame", cf, width - 30, height - 8)
-    cf.scrollFrame:SetPoint("TOPLEFT", cf, "TOPLEFT", 5, -5)
+    if not isManualScrollFrame then
+        cf.scrollFrame = TRB.UiFunctions:CreateScrollFrameContainer(name .. "ScrollFrame", cf, width - 30, height - 8)
+        cf.scrollFrame:SetPoint("TOPLEFT", cf, "TOPLEFT", 5, -5)
+    end
     return cf
 end
 
@@ -410,9 +416,66 @@ function TRB.UiFunctions:CreateVariablesSidePanel(parent, name)
     local variablesPanelParent = TRB.UiFunctions:CreateTabFrameContainer("TRB_" .. name .. "_BarTextVariables_Frame", grandparent, 300, 500)
     local variablesPanel = variablesPanelParent.scrollFrame.scrollChild
     variablesPanelParent:ClearAllPoints()
-    variablesPanelParent:SetPoint("TOPLEFT", grandparent, "TOPRIGHT", 50, 5)
+    variablesPanelParent:SetPoint("TOPLEFT", grandparent, "TOPRIGHT", 55, 5)
     TRB.UiFunctions:BuildSectionHeader(variablesPanel, "Bar Text Variables", 0, 5)
     return variablesPanel
+end
+
+function TRB.UiFunctions:CreateBarTextInputPanel(parent, name, text, width, height, xPos, yPos)
+    --[[
+    --local ebParent = ebFrame.scrollFrame
+    local eb = TRB.UiFunctions:BuildTextBox(nil, text, 500, width, height, 0, 0)
+    local ebFrame = TRB.UiFunctions:CreateScrollFrameContainer("TRB_" .. name .. "_BarText_Frame", parent, width, height, eb)
+    eb:SetSize(ebFrame:GetSize())
+    eb:SetMultiLine(true)
+	ebFrame:SetPoint("TOPLEFT", parent, "TOPLEFT", xPos, yPos)
+    --ebFrame:SetScrollChild(eb)
+    return eb]]
+
+    local s = CreateFrame("ScrollFrame", "TRB_" .. name .. "_BarTextBox", parent, "UIPanelScrollFrameTemplate, BackdropTemplate") -- or your actual parent instead
+    s:SetSize(width, height)
+    s:SetPoint("TOPLEFT", parent, "TOPLEFT", xPos, yPos)
+    
+    s.ScrollFrame = CreateFrame("EditBox", nil, s, "BackdropTemplate")
+    local e = s.ScrollFrame
+    e:SetTextInsets(4, 4, 0, 0)
+    s:SetBackdrop({
+        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        tile = true,
+        edgeSize = 1,
+        tileSize = 5
+	})
+    s:SetBackdropColor(0, 0, 0, 1)
+    s:SetBackdropBorderColor(0.2, 0.2, 0.2, 1.0)
+    e:SetScript("OnEnter", function(self)
+        self:GetParent():SetBackdropBorderColor(0.4, 0.4, 0.4, 1.0)
+    end)
+    e:SetScript("OnLeave", function(self)
+        self:GetParent():SetBackdropBorderColor(0.2, 0.2, 0.2, 1.0)
+    end)
+    e:SetScript("OnEscapePressed", function(self)
+        self:ClearFocus()
+    end)
+	e:SetCursorPosition(0)
+    e:SetScript("OnCursorChanged", function(self, arg1, arg2, arg3, arg4)
+        local vs = self:GetParent():GetVerticalScroll();
+        local h  = self:GetParent():GetHeight();
+    
+        if vs+arg2 > 0 or 0 > vs+arg2-arg4+h then
+            self:GetParent():SetVerticalScroll(arg2*-1);
+        end
+    end)
+
+    e:SetMultiLine(true)
+    e:SetFontObject(ChatFontNormal)
+    e:SetWidth(width)
+    e:SetText(text)
+    e:SetAutoFocus(false)
+
+
+    s:SetScrollChild(e)
+    return e
 end
 
 function TRB.UiFunctions:ToggleCheckboxEnabled(checkbox, enable)

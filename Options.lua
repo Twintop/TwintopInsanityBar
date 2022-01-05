@@ -1517,10 +1517,7 @@ function TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 end
 
 
-function TRB.Options:CreateBarTextVariables(cache, parent, xCoord, yCoord, variableSplit)
-    if variableSplit == nil then
-        variableSplit = 135
-    end
+function TRB.Options:CreateBarTextVariables(cache, parent, xCoord, yCoord)
     local height = 15
     local width = 260
     local entries1 = TRB.Functions.TableLength(cache.barTextVariables.values)
