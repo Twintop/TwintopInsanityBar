@@ -1205,6 +1205,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	end
 
 	local function ConstructResourceBar(settings)
+		local specId = GetSpecialization()
 		local entries = TRB.Functions.TableLength(resourceFrame.thresholds)
 		if entries > 0 then
 			for x = 1, entries do
@@ -1228,6 +1229,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
         end
 
 		TRB.Functions.ConstructResourceBar(settings)
+
+		if specId == 1 or specId == 2 then
+			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+		end
 	end
 
     local function IsValidVariableForSpec(var)

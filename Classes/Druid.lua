@@ -1237,7 +1237,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.character.talents.feralFrenzy.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 	
 			if settings ~= nil then
-				--TRB.Data.character.isPvp = TRB.Functions.ArePvpTalentsActive()
 				if maxComboPoints ~= TRB.Data.character.maxResource2 then
 					TRB.Data.character.maxResource2 = maxComboPoints
 					TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
@@ -1489,6 +1488,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		TRB.Functions.ConstructResourceBar(settings)
+
+		if specId == 1 or specId == 2 then
+			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+		end
 	end
 	
 	local function GetTigersFuryRemainingTime()
@@ -3952,8 +3955,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if TRB.Data.barConstructedForSpec ~= "balance" then
 				TRB.Data.barConstructedForSpec = "balance"
 				ConstructResourceBar(TRB.Data.settings.druid.balance)
-			else
-				TRB.Functions.RepositionBar(TRB.Data.settings.druid.balance, TRB.Frames.barContainerFrame)
 			end
 		elseif specId == 2 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.druid.feral)
@@ -3965,8 +3966,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if TRB.Data.barConstructedForSpec ~= "feral" then
 				TRB.Data.barConstructedForSpec = "feral"
 				ConstructResourceBar(TRB.Data.settings.druid.feral)
-			else
-				TRB.Functions.RepositionBar(TRB.Data.settings.druid.feral, TRB.Frames.barContainerFrame)
 			end
 		end
 		EventRegistration()

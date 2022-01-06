@@ -1738,6 +1738,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		TRB.Functions.ConstructResourceBar(settings)
+		if specId == 2 or specId == 3 then
+			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+		end
 	end
 
 	local function CalculateRemainingHungeringVoidTime()

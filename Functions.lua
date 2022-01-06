@@ -1020,6 +1020,10 @@ end
 TRB.Functions.RepositionBarForPRD = RepositionBarForPRD
 
 local function RepositionBar(settings, containerFrame)
+	if settings == nil then
+		return
+	end
+
 	if settings.bar.pinToPersonalResourceDisplay then
 		TRB.Functions.RepositionBarForPRD(settings, containerFrame)
 	else

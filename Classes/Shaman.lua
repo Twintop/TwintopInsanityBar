@@ -1269,6 +1269,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		TRB.Functions.ConstructResourceBar(settings)
+
+		if specId == 1 or specId == 3 then
+			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+		end
 	end
 	
 	local function GetStormkeeperRemainingTime()
@@ -3090,8 +3094,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			if TRB.Data.barConstructedForSpec ~= "elemental" then
 				TRB.Data.barConstructedForSpec = "elemental"
 				ConstructResourceBar(TRB.Data.settings.shaman.elemental)
-			else
-				TRB.Functions.RepositionBar(TRB.Data.settings.shaman.elemental, TRB.Frames.barContainerFrame)
 			end
 		elseif specId == 2 then
 		elseif specId == 3 then

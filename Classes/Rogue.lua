@@ -995,7 +995,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end
 	end
 
-	local function ConstructResourceBar(settings)
+	local function ConstructResourceBar(settings)		
+		local specId = GetSpecialization()
 		local entries = TRB.Functions.TableLength(resourceFrame.thresholds)
 		if entries > 0 then
 			for x = 1, entries do
@@ -1020,6 +1021,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Frames.resource2ContainerFrame:Show()
 
 		TRB.Functions.ConstructResourceBar(settings)
+		
+		if specId == 1 then
+			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+		end
 	end
 
     local function IsValidVariableForSpec(var)

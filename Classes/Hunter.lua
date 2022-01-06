@@ -1593,6 +1593,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
         end
 
 		TRB.Functions.ConstructResourceBar(settings)
+		TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
 	end
 
     local function IsValidVariableForSpec(var)

@@ -601,7 +601,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end
 	end
 
-	local function ConstructResourceBar(settings)
+	local function ConstructResourceBar(settings)		
+		local specId = GetSpecialization()
 		local entries = TRB.Functions.TableLength(TRB.Frames.resourceFrame.thresholds)
 		if entries > 0 then
 			for x = 1, entries do
@@ -609,22 +610,28 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			end
 		end
 
-        for k, v in pairs(TRB.Data.spells) do
-            local spell = TRB.Data.spells[k]
-            if spell ~= nil and spell.id ~= nil and spell.fury ~= nil and spell.fury < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
-					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+		if specId == 1 then
+			for k, v in pairs(TRB.Data.spells) do
+				local spell = TRB.Data.spells[k]
+				if spell ~= nil and spell.id ~= nil and spell.fury ~= nil and spell.fury < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+					if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
+						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+					end
+					TRB.Functions.ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
+					TRB.Functions.SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(0)
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
 				end
-				TRB.Functions.ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-				TRB.Functions.SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+			end
 
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(0)
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
-            end
-        end
+			TRB.Functions.ConstructResourceBar(settings)
+		end
 
-		TRB.Functions.ConstructResourceBar(settings)
+		if specId == 1 then
+			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+		end
 	end
 
     local function IsValidVariableForSpec(var)
@@ -1439,6 +1446,23 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end
 	end)
 
+	local function SwitchSpec()
+		local specId = GetSpecialization()
+		if specId == 1 then
+			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.demonhunter.havoc)
+			TRB.Functions.IsTtdActive(TRB.Data.settings.demonhunter.havoc)
+			FillSpellData_Havoc()
+			TRB.Functions.LoadFromSpecCache(specCache.havoc)
+			TRB.Functions.RefreshLookupData = RefreshLookupData_Havoc
+
+			if TRB.Data.barConstructedForSpec ~= "havoc" then
+				TRB.Data.barConstructedForSpec = "havoc"
+				ConstructResourceBar(TRB.Data.settings.demonhunter.havoc)
+			end
+		end
+		EventRegistration()
+	end
+
 	resourceFrame:RegisterEvent("ADDON_LOADED")
 	resourceFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
 	resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
@@ -1460,7 +1484,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 						TRB.Data.settings = settings
 					end
 					FillSpecCache()
-					FillSpellData_Havoc()
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"
@@ -1485,7 +1508,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
 					C_Timer.After(0, function()
 						C_Timer.After(1, function()
-						TRB.Data.settings.demonhunter.havoc = TRB.Functions.ValidateLsmValues("Havoc Demon Hunter", TRB.Data.settings.demonhunter.havoc)
+							TRB.Data.settings.demonhunter.havoc = TRB.Functions.ValidateLsmValues("Havoc Demon Hunter", TRB.Data.settings.demonhunter.havoc)
+							
+							FillSpellData_Havoc()
+							TRB.Data.barConstructedForSpec = nil
+							SwitchSpec()
 							TRB.Options.DemonHunter.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case
 							ConstructResourceBar(TRB.Data.settings.demonhunter[TRB.Data.barConstructedForSpec])
@@ -1495,19 +1522,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				end
 
 				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
-					if specId == 1 then
-						TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.demonhunter.havoc)
-						TRB.Functions.IsTtdActive(TRB.Data.settings.demonhunter.havoc)
-						FillSpellData_Havoc()
-						TRB.Functions.LoadFromSpecCache(specCache.havoc)
-						TRB.Functions.RefreshLookupData = RefreshLookupData_Havoc
-						
-						if TRB.Data.barConstructedForSpec ~= "havoc" then
-							TRB.Data.barConstructedForSpec = "havoc"
-							ConstructResourceBar(TRB.Data.settings.demonhunter.havoc)
-						end
-					end
-					EventRegistration()
+					SwitchSpec()
 				end
 			end
 		end
