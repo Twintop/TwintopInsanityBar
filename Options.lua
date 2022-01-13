@@ -593,9 +593,6 @@ local function ConstructImportExportPanel()
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Havoc Demon Hunter (Bar Text).", 12, 1, false, false, false, true, false)
     end)
 
-
-
-
     yCoord = yCoord - 35
     controls.labels.druid = TRB.UiFunctions:BuildLabel(parent, "Druid", xCoord, yCoord, 110, 20)
 
@@ -1325,7 +1322,7 @@ function TRB.Options:PortForwardSettings()
     TwintopInsanityBarSettings.druid.balance.thresholdWidth ~= nil then
     
         TwintopInsanityBarSettings.druid.balance.thresholds = {
-            width = TwintopInsanityBarSettings.druid.balance.thresholdWidth,            
+            width = TwintopInsanityBarSettings.druid.balance.thresholdWidth,
             overlapBorder = TwintopInsanityBarSettings.druid.balance.thresholdsOverlapBorder,
             starsurgeThresholdOnlyOverShow = TwintopInsanityBarSettings.druid.balance.starsurgeThresholdOnlyOverShow,
             starsurge = {
