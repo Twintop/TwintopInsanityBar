@@ -1006,7 +1006,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Data.character.torghast.depletedTeslaCoil = false
 			end
 		elseif specId == 3 then
-			TRB.Data.character.specName = "elemental"
+			TRB.Data.character.specName = "restoration"
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
 			TRB.Functions.FillSpellDataManaCost(TRB.Data.spells)
 
@@ -1095,29 +1095,31 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
 		else
-			--TRB.Data.resource = MANA
 			TRB.Data.specSupported = false
-			targetsTimerFrame:SetScript("OnUpdate", nil)
-			timerFrame:SetScript("OnUpdate", nil)
-			barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
-			barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-			TRB.Details.addonData.registered = false
-			barContainerFrame:Hide()
 		end
 
 		if TRB.Data.specSupported then
             CheckCharacter()
-            
+
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-			barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			TRB.Frames.barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
+			TRB.Frames.barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 
 			TRB.Details.addonData.registered = true
+		else
+			--TRB.Data.resource = MANA
+			TRB.Data.specSupported = false
+			targetsTimerFrame:SetScript("OnUpdate", nil)
+			timerFrame:SetScript("OnUpdate", nil)
+			TRB.Frames.barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+			TRB.Frames.barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
+			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+			TRB.Details.addonData.registered = false
+			TRB.Frames.barContainerFrame:Hide()
 		end
 		TRB.Functions.HideResourceBar()
 	end
@@ -1136,6 +1138,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
 				TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
 				TRB.Data.snapshotData.targetData.targets[guid].echoingShockSpell = nil
+			elseif specId == 3 then -- Restoration
+				TRB.Functions.InitializeTarget(guid)
 			end
 		end
 		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()

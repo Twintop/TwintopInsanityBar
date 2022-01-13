@@ -2322,7 +2322,7 @@ local function Import(input)
 		(configuration.rogue ~= nil and configuration.rogue.assassination ~= nil) or
 		(configuration.hunter ~= nil and (configuration.hunter.beastMastery ~= nil or configuration.hunter.marksmanship ~= nil or configuration.hunter.survival ~= nil)) or
 		(configuration.priest ~= nil and (configuration.priest.holy ~= nil or configuration.priest.shadow ~= nil)) or
-		(configuration.shaman ~= nil and configuration.shaman.elemental ~= nil) or
+		(configuration.shaman ~= nil and (configuration.shaman.elemental ~= nil or configuration.shaman.restoration ~= nil)) or
 		(configuration.druid ~= nil and configuration.druid.balance ~= nil)) then
 		return -3
 	end
