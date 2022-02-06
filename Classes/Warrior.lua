@@ -997,6 +997,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			if naturesFury == false and backItemLink ~= nil  then
 				naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(backItemLink, 173242, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
 			end
+			
+			if naturesFury == false and waistItemLink ~= nil  then
+				naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(waistItemLink, 171418, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+			end
 
 			local glory = false
 			if chestItemLink ~= nil  then
@@ -1038,6 +1042,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			
 			if naturesFury == false and backItemLink ~= nil  then
 				naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(backItemLink, 173242, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+			end
+			
+			if naturesFury == false and waistItemLink ~= nil  then
+				naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(waistItemLink, 171418, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
 			end
 
 			local glory = false

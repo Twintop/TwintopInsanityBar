@@ -337,131 +337,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				duration = 8,
 				isActive = false
 			},
-			--[[restorationWordSerenity = {
-				id = 2050,
-				name = "",
-				icon = "",
-				duration = 60
-			},
-			heal = {
-				id = 2060,
-				name = "",
-				icon = "",
-				restorationWordKey = "restorationWordSerenity",
-				restorationWordReduction = 6
-			},
-			flashHeal = {
-				id = 2061,
-				name = "",
-				icon = "",
-				restorationWordKey = "restorationWordSerenity",
-				restorationWordReduction = 6
-			},
-			prayerOfMending = {
-				id = 33076,
-				name = "",
-				icon = "",
-				restorationWordKey = "restorationWordSerenity",
-				restorationWordReduction = 4
-			},
-			restorationWordSanctify = {
-				id = 34861,
-				name = "",
-				icon = "",
-				duration = 60
-			},
-			prayerOfHealing = {
-				id = 596,
-				name = "",
-				icon = "",
-				restorationWordKey = "restorationWordSanctify",
-				restorationWordReduction = 6
-			},
-			circleOfHealing = {
-				id = 204883,
-				name = "",
-				icon = "",
-				restorationWordKey = "restorationWordSanctify",
-				restorationWordReduction = 4
-			},
-			renew = {
-				id = 139,
-				name = "",
-				icon = "",
-				restorationWordKey = "restorationWordSanctify",
-				restorationWordReduction = 2
-			},
-			restorationWordChastise = {
-				id = 88625,
-				name = "",
-				icon = "",
-				duration = 60
-			},
-			smite = {
-				id = 585,
-				name = "",
-				icon = "",
-				restorationWordKey = "restorationWordChastise",
-				restorationWordReduction = 4
-			},
-			restorationFire = {
-				id = 14914,
-				name = "",
-				icon = "",
-				restorationWordKey = "restorationWordChastise",
-				restorationWordReduction = 4
-			},
-			shadowWordPain = {
-				id = 589,
-				icon = "",
-				name = "",
-				baseDuration = 16,
-				pandemic = true,
-				pandemicTime = 16 * 0.3
-			},]]
-
-			-- Talents
-
-			--[[
-			surgeOfLight = {
-				id = 114255,
-				name = "",
-				icon = "",
-				duration = 20,
-				isActive = false
-			},
-			bindingHeal = {
-				id = 32546,
-				name = "",
-				icon = "",
-				restorationWordKey = "restorationWordSerenity",
-				restorationWordReduction = 3,
-				restorationWordKey2 = "restorationWordSanctify",
-				restorationWordReduction2 = 3
-			},
-			lightOfTheNaaru = {
-				id = 196985,
-				name = "",
-				icon = "",
-				restorationWordModifier = (4/3), -- 33% more
-			},
-			apotheosis = {
-				id = 200183,
-				name = "",
-				icon = "",
-				restorationWordModifier = 4, -- 300% more
-				duration = 20,
-				isActive = false
-			},]]
 
 			-- External mana
 			symbolOfHope = {
 				id = 64901,
 				name = "",
 				icon = "",
-				duration = 5.0, --Hasted
+				duration = 4.0, --Hasted
 				manaPercent = 0.03,
-				ticks = 5, -- initial + 5 ticks, 18% total restored
+				ticks = 3,
 				tickId = 265144
 			},
 			innervate = {
