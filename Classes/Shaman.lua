@@ -322,6 +322,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				isActive = false
 			},
 
+			flameShock = {
+				id = 188389,
+				name = "",
+				icon = "",
+				baseDuration = 18,
+				pandemic = true,
+				pandemicTime = 18 * 0.3
+			},
+
 			-- External mana
 			symbolOfHope = {
 				id = 64901,
@@ -762,6 +771,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Data.snapshotData.targetData.targets[guid].echoingShockSpell = nil
 			elseif specId == 3 then -- Restoration
 				TRB.Functions.InitializeTarget(guid)
+				TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
+				TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
 			end
 		end
 		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
@@ -1694,6 +1705,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.snapshotData.potion.onCooldown = true
 		else
 			TRB.Data.snapshotData.potion.onCooldown = false
+		end
+				
+		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShock then
+				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.flameShock.id, "target", "player"))
+			
+				if expiration ~= nil then
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining = expiration - currentTime
+				end
+			end
 		end
 	end
 

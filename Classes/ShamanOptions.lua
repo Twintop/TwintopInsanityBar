@@ -194,7 +194,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 
 	-- Restoration
-	
 	local function RestorationLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
