@@ -283,18 +283,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				overgrowthSeedlingModifier = 1
 			},
 			talents = {
-				--[[surgeOfLight = {
-					isSelected = false
-				},
-				bindingHeal = {
-					isSelected = false
-				},
-				lightOfTheNaaru = {
-					isSelected = false
-				},
-				apotheosis = {
-					isSelected = false
-				}]]
 			},
 			items = {
 				potions = {
@@ -315,13 +303,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						mana = 4000
 					}
 				},
-				--[[harmoniousApparatus = false,
-				flashConcentration = false,]]
 				alchemyStone = false
 			},
 			torghast = {
-				--dreamspunMushroomsModifier = 1,
-				--phantasmicInfuserModifier = 1,
 				rampaging = {
 					spellCostModifier = 1.0,
 					coolDownReduction = 1.0
@@ -359,49 +343,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			-- Covenant
 
 			-- Conduit
-			--[[
-			wrathfulFaerieFermata = {
-				id = 345452,
-				name = "",
-				icon = "",
-				manaPercent = 0, -- We'll use modifier against wrathfulFaerie instead
-				modifier = 0.8,
-				icd = 0.75,
-				energizeId = 345456,
-				conduitId = 101,
-				conduitRanks = {}
-			},
-			restorationOration = {
-				id = 338345,
-				name = "",
-				icon = "",
-				conduitId = 116,
-				conduitRanks = {}
-			},]]
-
-			-- Legendary
-			--[[harmoniousApparatus = {
-				id = 336314,
-				name = "",
-				icon = "",
-				idLegendaryBonus = 6977
-			},
-			flashConcentration = {
-				id = 336267,
-				name = "",
-				icon = "",
-				idLegendaryBonus = 6974,
-				maxStacks = 5
-			},
-			hauntedMask = {
-				id = 356968,
-				name = "",
-				icon = "",
-				manaPercent = 0.005,
-				duration = 20,
-				icd = 0.75,
-				--energizeId = 327703
-			},]]
 
 			-- Potions
 			potionOfSpiritualClarity = {
@@ -468,16 +409,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		specCache.restoration.snapshotData.manaRegen = 0
 		specCache.restoration.snapshotData.audio = {
-			innervateCue = false,
-			--[[surgeOfLightCue = false,
-			surgeOfLight2Cue = false,
-			flashConcentrationCue = false]]
+			innervateCue = false
 		}
 		specCache.restoration.snapshotData.targetData = {
 			ttdIsActive = false,
 			currentTargetGuid = nil,
-			--wrathfulFaerieGuid = nil,
-			--shadowWordPain = 0,
+			flameShock = 0,
 			targets = {}
 		}
 		specCache.restoration.snapshotData.innervate = {
@@ -494,26 +431,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			remainingTime = 0,
 			mana = 0
 		}
-		--[[specCache.restoration.snapshotData.apotheosis = {
-			spellId = nil,
-			duration = 0,
-			endTime = nil,
-			remainingTime = 0
-		}
-		specCache.restoration.snapshotData.surgeOfLight = {
-			spellId = nil,
-			duration = 0,
-			endTime = nil,
-			remainingTime = 0,
-			stacks = 0
-		}
-		specCache.restoration.snapshotData.flashConcentration = {
-			spellId = nil,
-			duration = 0,
-			endTime = nil,
-			remainingTime = 0,
-			stacks = 0
-		}]]
 		specCache.restoration.snapshotData.symbolOfHope = {
 			isActive = false,
 			ticksRemaining = 0,
@@ -525,50 +442,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			resourceRaw = 0,
 			resourceFinal = 0
 		}
-		--[[specCache.restoration.snapshotData.restorationWordSerenity = {
-			startTime = nil,
-			duration = 0,
-			onCooldown = false
-		}
-		specCache.restoration.snapshotData.restorationWordSanctify = {
-			startTime = nil,
-			duration = 0,
-			onCooldown = false
-		}
-		specCache.restoration.snapshotData.restorationWordChastise = {
-			startTime = nil,
-			duration = 0,
-			onCooldown = false
-		}
-		specCache.restoration.snapshotData.wrathfulFaerie = {
-			main = {
-				isActive = false,
-				procTime = 0,
-				remaining = {
-					procs = 0,
-					gcds = 0,
-					time = 0
-				},
-				resourceRaw = 0,
-				resourceFinal = 0
-			},
-			fermata = {
-				isActive = false,
-				procTime = 0,
-				remaining = {
-					procs = 0,
-					gcds = 0,
-					time = 0
-				},
-				resourceRaw = 0,
-				resourceFinal = 0
-			},
-			hauntedMask = {
-				isActive = false
-			},
-			resourceRaw = 0,
-			resourceFinal = 0,
-		}]]
 		specCache.restoration.snapshotData.potionOfSpiritualClarity = {
 			isActive = false,
 			ticksRemaining = 0,
@@ -679,90 +552,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		Setup_Restoration()
 		local spells = TRB.Functions.FillSpellData(specCache.restoration.spells)
 
-		-- Conduit Ranks
-		--[[spells.wrathfulFaerieFermata.conduitRanks[0] = 0
-		spells.wrathfulFaerieFermata.conduitRanks[1] = 3.8
-		spells.wrathfulFaerieFermata.conduitRanks[2] = 4.18
-		spells.wrathfulFaerieFermata.conduitRanks[3] = 4.56
-		spells.wrathfulFaerieFermata.conduitRanks[4] = 4.94
-		spells.wrathfulFaerieFermata.conduitRanks[5] = 5.32
-		spells.wrathfulFaerieFermata.conduitRanks[6] = 5.7
-		spells.wrathfulFaerieFermata.conduitRanks[7] = 6.08
-		spells.wrathfulFaerieFermata.conduitRanks[8] = 6.46
-		spells.wrathfulFaerieFermata.conduitRanks[9] = 6.84
-		spells.wrathfulFaerieFermata.conduitRanks[10] = 7.22
-		spells.wrathfulFaerieFermata.conduitRanks[11] = 7.6
-		spells.wrathfulFaerieFermata.conduitRanks[12] = 7.98
-		spells.wrathfulFaerieFermata.conduitRanks[13] = 8.36
-		spells.wrathfulFaerieFermata.conduitRanks[14] = 8.74
-		spells.wrathfulFaerieFermata.conduitRanks[15] = 9.12
-		
-		spells.restorationOration.conduitRanks[0] = 0
-		spells.restorationOration.conduitRanks[1] = 0.06
-		spells.restorationOration.conduitRanks[2] = 0.088
-		spells.restorationOration.conduitRanks[3] = 0.096
-		spells.restorationOration.conduitRanks[4] = 0.104
-		spells.restorationOration.conduitRanks[5] = 0.112
-		spells.restorationOration.conduitRanks[6] = 0.120
-		spells.restorationOration.conduitRanks[7] = 0.128
-		spells.restorationOration.conduitRanks[8] = 0.136
-		spells.restorationOration.conduitRanks[9] = 0.144
-		spells.restorationOration.conduitRanks[10] = 0.152
-		spells.restorationOration.conduitRanks[11] = 0.16
-		spells.restorationOration.conduitRanks[12] = 0.168
-		spells.restorationOration.conduitRanks[13] = 0.176
-		spells.restorationOration.conduitRanks[14] = 0.184
-		spells.restorationOration.conduitRanks[15] = 0.192]]
-		-- TODO: Add these conduits to the bar icon variables too!
-
-
 		-- This is done here so that we can get icons for the options menu!
 		specCache.restoration.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the mana spending spell you are currently casting", printInSettings = true },
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-			--[[{ variable = "#apotheosis", icon = spells.apotheosis.icon, description = spells.apotheosis.name, printInSettings = true },
-			{ variable = "#bh", icon = spells.bindingHeal.icon, description = spells.bindingHeal.name, printInSettings = true },
-			{ variable = "#bindingHeal", icon = spells.bindingHeal.icon, description = spells.bindingHeal.name, printInSettings = false },
-			{ variable = "#coh", icon = spells.circleOfHealing.icon, description = spells.circleOfHealing.name, printInSettings = true },
-			{ variable = "#circleOfHealing", icon = spells.circleOfHealing.icon, description = spells.circleOfHealing.name, printInSettings = false },
-			{ variable = "#fc", icon = spells.flashConcentration.icon, description = spells.flashConcentration.name, printInSettings = true },
-			{ variable = "#flashConcentration", icon = spells.flashConcentration.icon, description = spells.flashConcentration.name, printInSettings = false },
-			{ variable = "#flashHeal", icon = spells.flashHeal.icon, description = spells.flashHeal.name, printInSettings = true },
-			{ variable = "#ha", icon = spells.harmoniousApparatus.icon, description = spells.harmoniousApparatus.name, printInSettings = true },
-			{ variable = "#harmoniousApparatus", icon = spells.harmoniousApparatus.icon, description = spells.harmoniousApparatus.name, printInSettings = false },
-			{ variable = "#heal", icon = spells.heal.icon, description = spells.heal.name, printInSettings = true },
-			{ variable = "#hf", icon = spells.restorationFire.icon, description = spells.restorationFire.name, printInSettings = true },
-			{ variable = "#restorationFire", icon = spells.restorationFire.icon, description = spells.restorationFire.name, printInSettings = false },
-			{ variable = "#ho", icon = spells.restorationOration.icon, description = spells.restorationOration.name, printInSettings = true },
-			{ variable = "#restorationOration", icon = spells.restorationOration.icon, description = spells.restorationOration.name, printInSettings = false },
-			{ variable = "#hwChastise", icon = spells.restorationWordChastise.icon, description = spells.restorationWordChastise.name, printInSettings = true },
-			{ variable = "#chastise", icon = spells.restorationWordChastise.icon, description = spells.restorationWordChastise.name, printInSettings = false },
-			{ variable = "#restorationWordChastise", icon = spells.restorationWordChastise.icon, description = spells.restorationWordChastise.name, printInSettings = false },
-			{ variable = "#hwSanctify", icon = spells.restorationWordSanctify.icon, description = spells.restorationWordSanctify.name, printInSettings = true },
-			{ variable = "#sanctify", icon = spells.restorationWordSanctify.icon, description = spells.restorationWordSanctify.name, printInSettings = false },
-			{ variable = "#restorationWordSanctify", icon = spells.restorationWordSanctify.icon, description = spells.restorationWordSanctify.name, printInSettings = false },
-			{ variable = "#hwSerenity", icon = spells.restorationWordSerenity.icon, description = spells.restorationWordSerenity.name, printInSettings = true },
-			{ variable = "#serenity", icon = spells.restorationWordSerenity.icon, description = spells.restorationWordSerenity.name, printInSettings = false },
-			{ variable = "#restorationWordSerenity", icon = spells.restorationWordSerenity.icon, description = spells.restorationWordSerenity.name, printInSettings = false },
-			{ variable = "#innervate", icon = spells.innervate.icon, description = spells.innervate.name, printInSettings = true },]]
-			--{ variable = "#lotn", icon = spells.lightOfTheNaaru.icon, description = spells.lightOfTheNaaru.name, printInSettings = true },
-			--{ variable = "#lightOfTheNaaru", icon = spells.lightOfTheNaaru.icon, description = spells.lightOfTheNaaru.name, printInSettings = false },
 			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
 			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
-			--[[{ variable = "#poh", icon = spells.prayerOfHealing.icon, description = spells.prayerOfHealing.name, printInSettings = true },
-			{ variable = "#prayerOfHealing", icon = spells.prayerOfHealing.icon, description = spells.prayerOfHealing.name, printInSettings = false },
-			{ variable = "#pom", icon = spells.prayerOfMending.icon, description = spells.prayerOfMending.name, printInSettings = true },
-			{ variable = "#prayerOfMending", icon = spells.prayerOfMending.icon, description = spells.prayerOfMending.name, printInSettings = false },
-			{ variable = "#renew", icon = spells.renew.icon, description = spells.renew.name, printInSettings = true },
-			{ variable = "#smite", icon = spells.smite.icon, description = spells.smite.name, printInSettings = true },]]
 			{ variable = "#soh", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = true },
 			{ variable = "#symbolOfHope", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = false },
-			--{ variable = "#sol", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = true },
-			--{ variable = "#surgeOfLight", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = false },
-			--{ variable = "#wf", icon = spells.wrathfulFaerie.icon, description = spells.wrathfulFaerie.name, printInSettings = true },
-			--{ variable = "#wrathfulFaerie", icon = spells.wrathfulFaerie.icon, description = spells.wrathfulFaerie.name, printInSettings = false },
 
 			{ variable = "#psc", icon = spells.potionOfSpiritualClarity.icon, description = spells.potionOfSpiritualClarity.name, printInSettings = true },
 			{ variable = "#potionOfSpiritualClarity", icon = spells.potionOfSpiritualClarity.icon, description = spells.potionOfSpiritualClarity.name, printInSettings = false },
@@ -771,8 +570,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "#spiritualManaPotion", icon = spells.spiritualManaPotion.icon, description = spells.spiritualManaPotion.name, printInSettings = true },
 			{ variable = "#soulfulManaPotion", icon = spells.soulfulManaPotion.icon, description = spells.soulfulManaPotion.name, printInSettings = true },
 
-			--{ variable = "#swp", icon = spells.shadowWordPain.icon, description = "Shadow Word: Pain", printInSettings = true },
-			--{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = "Shadow Word: Pain", printInSettings = false },
+			{ variable = "#flameShock", icon = spells.flameShock.icon, description = spells.flameShock.name, printInSettings = true },
 		}
 		specCache.restoration.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -803,28 +601,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$resourcePlusPassive", description = "Current + Passive Mana Total", printInSettings = false, color = false },
 			{ variable = "$manaTotal", description = "Current + Passive + Casting Mana Total", printInSettings = true, color = false },
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Mana Total", printInSettings = false, color = false },
-			--[[
-			{ variable = "$hwChastiseTime", description = "Time left on Holy Word: Chastise's cooldown", printInSettings = true, color = false },
-			{ variable = "$chastiseTime", description = "Time left on Holy Word: Chastise's cooldown", printInSettings = false, color = false },
-			{ variable = "$restorationWordChastiseTime", description = "Time left on Holy Word: Chastise's cooldown", printInSettings = false, color = false },
-			
-			{ variable = "$hwSanctifyTime", description = "Time left on Holy Word: Sanctify's cooldown", printInSettings = true, color = false },
-			{ variable = "$sanctifyTime", description = "Time left on Holy Word: Sanctify's cooldown", printInSettings = false, color = false },
-			{ variable = "$restorationWordSanctifyTime", description = "Time left on Holy Word: Sanctify's cooldown", printInSettings = false, color = false },
-			
-			{ variable = "$hwSerenityTime", description = "Time left on Holy Word: Serenity's cooldown", printInSettings = true, color = false },
-			{ variable = "$serenityTime", description = "Time left on Holy Word: Serenity's cooldown", printInSettings = false, color = false },
-			{ variable = "$restorationWordSerenityTime", description = "Time left on Holy Word: Serenity's cooldown", printInSettings = false, color = false },
 
-			{ variable = "$apotheosisTime", description = "Time remaining on Apotheosis", printInSettings = true, color = false },
-			
-			{ variable = "$solStacks", description = "Number of Surge of Light stacks", printInSettings = true, color = false },
-			{ variable = "$solTime", description = "Time left on Surge of Light", printInSettings = true, color = false },
-
-			{ variable = "$fcEquipped", description = "Checks if you have Flash Concentration equipped. Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$fcStacks", description = "Number of Flash Concentration stacks", printInSettings = true, color = false },
-			{ variable = "$fcTime", description = "Time left on Flash Concentration", printInSettings = true, color = false },
-			]]
 			{ variable = "$sohMana", description = "Mana from Symbol of Hope", printInSettings = true, color = false },
 			{ variable = "$sohTime", description = "Time left on Symbol of Hope", printInSettings = true, color = false },
 			{ variable = "$sohTicks", description = "Number of ticks left from Symbol of Hope", printInSettings = true, color = false },
@@ -847,8 +624,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$potionCooldown", description = "How long, in seconds, is left on your potion's cooldown in MM:SS format", printInSettings = true, color = false },
 			{ variable = "$potionCooldownSeconds", description = "How long, in seconds, is left on your potion's cooldown in seconds", printInSettings = true, color = false },
 
-			--{ variable = "$swpCount", description = "Number of Shadow Word: Pains active on targets", printInSettings = true, color = false },
-			--{ variable = "$swpTime", description = "Time remaining on Shadow Word: Pain on your current target", printInSettings = true, color = false },
+			{ variable = "$fsCount", description = "Number of Flame Shocks active on targets", printInSettings = true, color = false },
+			{ variable = "$fsTime", description = "Time remaining on Flame Shock on your current target", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -894,47 +671,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
 			TRB.Functions.FillSpellDataManaCost(TRB.Data.spells)
 
-			--[[
-			TRB.Data.character.talents.surgeOfLight.isSelected = select(4, GetTalentInfo(5, 1, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.bindingHeal.isSelected = select(4, GetTalentInfo(5, 2, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.lightOfTheNaaru.isSelected = select(4, GetTalentInfo(7, 1, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.apotheosis.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
-			]]
 
 			-- Legendaries
-			--[[local neckItemLink = GetInventoryItemLink("player", 2)
-			local shoulderItemLink = GetInventoryItemLink("player", 3)
-			local wristItemLink = GetInventoryItemLink("player", 9)
-			local ring1ItemLink = GetInventoryItemLink("player", 11)
-			local ring2ItemLink = GetInventoryItemLink("player", 12)]]
 			local trinket1ItemLink = GetInventoryItemLink("player", 13)
 			local trinket2ItemLink = GetInventoryItemLink("player", 14)
 			
-			--local harmoniousApparatus = false
-			--local flashConcentration = false
 			local alchemyStone = false
-			--[[if neckItemLink ~= nil then
-				flashConcentration = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(neckItemLink, 178927, TRB.Data.spells.flashConcentration.idLegendaryBonus)
-			end
-
-			if flashConcentration == false and wristItemLink ~= nil then
-				flashConcentration = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(wristItemLink, 173249, TRB.Data.spells.flashConcentration.idLegendaryBonus)
-			end
-			TRB.Data.character.items.flashConcentration = flashConcentration
-
-			if shoulderItemLink ~= nil then
-				harmoniousApparatus = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(shoulderItemLink, 173247, TRB.Data.spells.harmoniousApparatus.idLegendaryBonus)
-			end
-
-			if harmoniousApparatus == false and ring1ItemLink ~= nil then
-				harmoniousApparatus = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(ring1ItemLink, 178926, TRB.Data.spells.harmoniousApparatus.idLegendaryBonus)
-			end
-
-			if harmoniousApparatus == false and ring2ItemLink ~= nil then
-				harmoniousApparatus = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(ring2ItemLink, 178926, TRB.Data.spells.harmoniousApparatus.idLegendaryBonus)
-			end
-			TRB.Data.character.items.harmoniousApparatus = harmoniousApparatus
-			]]
+			
 			if trinket1ItemLink ~= nil then
 				for x = 1, TRB.Functions.TableLength(TRB.Data.spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
@@ -957,11 +700,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			TRB.Data.character.items.alchemyStone = alchemyStone
 			-- Torghast
-			--[[if IsInJailersTower() then
-				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1 + ((select(16, TRB.Functions.FindAuraById(TRB.Data.spells.dreamspunMushrooms.id, "player", "MAW")) or 0) / 100)
-			else -- Elsewhere
-				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1
-			end]]
 		end
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
@@ -1062,25 +800,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.snapshotData.targetData.flameShock = fsTotal
 			TRB.Data.snapshotData.echoingShock.spell = echoingShockSpell
 		elseif specId == 3 then -- Restoration
-			--[[local swpTotal = 0
-			local hauntedMask = false
+			local fsTotal = 0
 			for tguid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
 				if (currentTime - TRB.Data.snapshotData.targetData.targets[tguid].lastUpdate) > 10 then
-					TRB.Data.snapshotData.targetData.targets[tguid].shadowWordPain = false
-					TRB.Data.snapshotData.targetData.targets[tguid].shadowWordPainRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[tguid].hauntedMask = false
+					TRB.Data.snapshotData.targetData.targets[tguid].flameShock = false
+					TRB.Data.snapshotData.targetData.targets[tguid].flameShockRemaining = 0
 				else
-					if TRB.Data.snapshotData.targetData.targets[tguid].shadowWordPain == true then
-						swpTotal = swpTotal + 1
-					end
-					if TRB.Data.snapshotData.targetData.targets[tguid].hauntedMask == true then
-						hauntedMask = true
+					if TRB.Data.snapshotData.targetData.targets[tguid].flameShock == true then
+						fsTotal = fsTotal + 1
 					end
 				end
 			end
 
-			TRB.Data.snapshotData.targetData.shadowWordPain = swpTotal
-			specCache.restoration.snapshotData.wrathfulFaerie.hauntedMask.isActive = hauntedMask]]
+			TRB.Data.snapshotData.targetData.flameShock = fsTotal
 		end
 	end
 
@@ -1095,8 +827,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		elseif specId == 3 then
 			if clearAll == true then
-				--TRB.Data.snapshotData.targetData.flameShock = 0
-				--TRB.Data.snapshotData.echoingShock.spell = nil
+				TRB.Data.snapshotData.targetData.flameShock = 0
 			end
 		end
 	end
@@ -1248,19 +979,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if TRB.Data.snapshotData.echoingShock.spell ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom > 0 then
 					valid = true
 				end
-			elseif var == "$fsCount" then
-				if TRB.Data.snapshotData.targetData.flameShock > 0 then
-					valid = true
-				end
-			elseif var == "$fsTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining > 0 then
-					valid = true
-				end
 			elseif var == "$ifMaelstrom" then
 				if TRB.Data.snapshotData.icefury.maelstrom > 0 then
 					valid = true
@@ -1286,7 +1004,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					valid = true
 				end
 			end
-		elseif specId == 2 then
+		elseif specId == 3 then
 			if var == "$resource" or var == "$mana" then
 				valid = true
 			elseif var == "$resourceMax" or var == "$manaMax" then
@@ -1305,14 +1023,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if IsValidVariableForSpec("$pscMana") or
 					IsValidVariableForSpec("$sohMana") or
 					IsValidVariableForSpec("$innervateMana") or
-					--IsValidVariableForSpec("$wfMana") or
 					IsValidVariableForSpec("$mttMana") then
 					valid = true
 				end
-			--[[elseif var == "$wfMana" then
-				if TRB.Data.snapshotData.wrathfulFaerie.resourceRaw > 0 then
-					valid = true
-				end]]
 			elseif var == "$sohMana" then
 				if TRB.Data.snapshotData.symbolOfHope.resourceRaw > 0 then
 					valid = true
@@ -1361,45 +1074,25 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if TRB.Data.snapshotData.potion.onCooldown then
 					valid = true
 				end
-			--[[elseif var == "$fcEquipped" then
-				if TRB.Data.character.items.flashConcentration then
-					valid = true
-				end
-			elseif var == "$fcStacks" then
-				if TRB.Data.snapshotData.flashConcentration.stacks > 0 then
-					valid = true
-				end
-			elseif var == "$fcTime" then
-				if TRB.Data.snapshotData.flashConcentration.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$solStacks" then
-				if TRB.Data.snapshotData.surgeOfLight.stacks > 0 then
-					valid = true
-				end
-			elseif var == "$solTime" then
-				if TRB.Data.snapshotData.surgeOfLight.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$apotheosisTime" then
-				if TRB.Data.snapshotData.apotheosis.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$hwChastiseTime" then
-				if GetHolyWordChastiseCooldownRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$hwSerenityTime" then
-				if GetHolyWordSerenityCooldownRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$hwSanctifyTime" then
-				if GetHolyWordSanctifyCooldownRemainingTime() > 0 then
-					valid = true
-				end]]
 			end
 		else
 			valid = false
+		end
+		
+		-- Spec Agnostic
+		if var == "$fsCount" then
+			if TRB.Data.snapshotData.targetData.flameShock > 0 then
+				valid = true
+			end
+		elseif var == "$fsTime" then
+			if not UnitIsDeadOrGhost("target") and
+				UnitCanAttack("player", "target") and
+				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+				TRB.Data.snapshotData.targetData.targets ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining > 0 then
+				valid = true
+			end
 		end
 
 		return valid
@@ -1574,18 +1267,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		--$casting
 		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.casting.resourceFinal, manaPrecision, "floor"))
 
-		--[[
-		--$wfMana
-		local _wfMana = TRB.Data.snapshotData.wrathfulFaerie.resourceFinal
-		local wfMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_wfMana, manaPrecision, "floor"))
-		--$wfGcds
-		local wfGcds = string.format("%.0f", math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.gcds, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds))
-		--$wfProcs
-		local wfProcs = string.format("%.0f", math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.procs, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.procs))
-		--$wfTime
-		local wfTime = string.format("%.1f", math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds))
-		]]
-
 		--$sohMana
 		local _sohMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
 		local sohMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor"))
@@ -1649,84 +1330,40 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.RoundTo((normalizedMana/maxResource)*100, manaPrecision, "floor"))
 
-		--[[
-		--$hwChastiseTime
-		local _hwChastiseTime = GetHolyWordChastiseCooldownRemainingTime()
-		local hwChastiseTime = string.format("%.1f", _hwChastiseTime)
-
-		--$hwSanctifyTime
-		local _hwSanctifyTime = GetHolyWordSanctifyCooldownRemainingTime()
-		local hwSanctifyTime = string.format("%.1f", _hwSanctifyTime)
-
-		--$hwSerenityTime
-		local _hwSerenityTime = GetHolyWordSerenityCooldownRemainingTime()
-		local hwSerenityTime = string.format("%.1f", _hwSerenityTime)
-
-		--$apotheosisTime
-		local _apotheosisTime = TRB.Data.snapshotData.apotheosis.remainingTime
-		local apotheosisTime = string.format("%.1f", _apotheosisTime)
-
-		--$solStacks
-		local solStacks = string.format("%.0f", TRB.Data.snapshotData.surgeOfLight.stacks or 0)
-		--$solTime
-		local solTime = string.format("%.1f", TRB.Data.snapshotData.surgeOfLight.remainingTime or 0)
-
-		--$fcStacks
-		local fcStacks = string.format("%.0f", TRB.Data.snapshotData.flashConcentration.stacks or 0)
-		--$fcTime
-		local fcTime = string.format("%.1f", TRB.Data.snapshotData.flashConcentration.remainingTime or 0)
-
-		-----------
-		--$swpCount and $swpTime
-		local _shadowWordPainCount = TRB.Data.snapshotData.targetData.shadowWordPain or 0
-		local shadowWordPainCount = _shadowWordPainCount
-		local _shadowWordPainTime = 0
+		----------
+		--$fsCount and $fsTime
+		local _flameShockCount = TRB.Data.snapshotData.targetData.flameShock or 0
+		local flameShockCount = _flameShockCount
+		local _flameShockTime = 0
 		
 		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
-			_shadowWordPainTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining or 0
+			_flameShockTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining or 0
 		end
 
-		local shadowWordPainTime
+		local flameShockTime
 
-		if TRB.Data.settings.shaman.restoration.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPain then
-				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining > TRB.Data.spells.shadowWordPain.pandemicTime then
-					shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.restoration.colors.text.dots.up, _shadowWordPainCount)
-					shadowWordPainTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.restoration.colors.text.dots.up, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining)
+		if TRB.Data.settings.shaman.elemental.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShock then
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining > TRB.Data.spells.flameShock.pandemicTime then
+					flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.up, _flameShockCount)
+					flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.up, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining)
 				else
-					shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.restoration.colors.text.dots.pandemic, _shadowWordPainCount)
-					shadowWordPainTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.restoration.colors.text.dots.pandemic, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining)
+					flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.pandemic, _flameShockCount)
+					flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.pandemic, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining)
 				end
 			else
-				shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.restoration.colors.text.dots.down, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.restoration.colors.text.dots.down, 0)
+				flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.down, _flameShockCount)
+				flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.down, 0)
 			end
 		else
-			shadowWordPainTime = string.format("%.1f", _shadowWordPainTime)
+			flameShockTime = string.format("%.1f", _flameShockTime)
 		end
-		]]
 
 		Global_TwintopResourceBar.resource.passive = _passiveMana
-		--Global_TwintopResourceBar.resource.wrathfulFaerie = _wfMana or 0
 		Global_TwintopResourceBar.resource.potionOfSpiritualClarity = _pscMana or 0
 		Global_TwintopResourceBar.resource.manaTideTotem = _mttMana or 0
 		Global_TwintopResourceBar.resource.innervate = _innervateMana or 0
 		Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
-		--[[Global_TwintopResourceBar.wrathfulFaerie = {
-			mana = _wfMana,
-			main = {
-				mana = TRB.Data.snapshotData.wrathfulFaerie.main.resourceFinal or 0,
-				gcds = TRB.Data.snapshotData.wrathfulFaerie.main.remaining.gcds or 0,
-				procs = TRB.Data.snapshotData.wrathfulFaerie.main.remaining.procs or 0,
-				time = TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time or 0
-			},
-			fermata = {
-				mana = TRB.Data.snapshotData.wrathfulFaerie.fermata.resourceFinal or 0,
-				gcds = TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds or 0,
-				procs = TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.procs or 0,
-				time = TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.time or 0
-			}
-		}]]
 		Global_TwintopResourceBar.potionOfSpiritualClarity = {
 			mana = _pscMana,
 			ticks = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining or 0
@@ -1735,63 +1372,26 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			mana = _sohMana,
 			ticks = TRB.Data.snapshotData.symbolOfHope.ticksRemaining or 0
 		}
-		--Global_TwintopResourceBar.dots = {
-		--	swpCount = _shadowWordPainCount or 0
-		--}
+		Global_TwintopResourceBar.dots = {
+			fsCount = flameShockCount or 0,
+		}
 
 
 		local lookup = TRB.Data.lookup or {}
-		--[[lookup["#apotheosis"] = TRB.Data.spells.apotheosis.icon
-		lookup["#bh"] = TRB.Data.spells.bindingHeal.icon
-		lookup["#bindingHeal"] = TRB.Data.spells.bindingHeal.icon
-		lookup["#coh"] = TRB.Data.spells.circleOfHealing.icon
-		lookup["#circleOfHealing"] = TRB.Data.spells.circleOfHealing.icon
-		lookup["#fc"] = TRB.Data.spells.flashConcentration.icon
-		lookup["#flashConcentration"] = TRB.Data.spells.flashConcentration.icon
-		lookup["#flashHeal"] = TRB.Data.spells.flashHeal.icon
-		lookup["#ha"] = TRB.Data.spells.harmoniousApparatus.icon
-		lookup["#harmoniousApparatus"] = TRB.Data.spells.harmoniousApparatus.icon
-		lookup["#heal"] = TRB.Data.spells.heal.icon
-		lookup["#hf"] = TRB.Data.spells.restorationFire.icon
-		lookup["#restorationFire"] = TRB.Data.spells.restorationFire.icon
-		lookup["#ho"] = TRB.Data.spells.restorationOration.icon
-		lookup["#restorationOration"] = TRB.Data.spells.restorationOration.icon
-		lookup["#hwChastise"] = TRB.Data.spells.restorationWordChastise.icon
-		lookup["#chastise"] = TRB.Data.spells.restorationWordChastise.icon
-		lookup["#restorationWordChastise"] = TRB.Data.spells.restorationWordChastise.icon
-		lookup["#hwSanctify"] = TRB.Data.spells.restorationWordSanctify.icon
-		lookup["#sanctify"] = TRB.Data.spells.restorationWordSanctify.icon
-		lookup["#restorationWordSanctify"] = TRB.Data.spells.restorationWordSanctify.icon
-		lookup["#hwSerenity"] = TRB.Data.spells.restorationWordSerenity.icon
-		lookup["#serenity"] = TRB.Data.spells.restorationWordSerenity.icon
-		lookup["#restorationWordSerenity"] = TRB.Data.spells.restorationWordSerenity.icon]]
+		lookup["#flameShock"] = TRB.Data.spells.flameShock.icon
 		lookup["#innervate"] = TRB.Data.spells.innervate.icon
-		--lookup["#lotn"] = TRB.Data.spells.lightOfTheNaaru.icon
-		--lookup["#lightOfTheNaaru"] = TRB.Data.spells.lightOfTheNaaru.icon
 		lookup["#mtt"] = TRB.Data.spells.manaTideTotem.icon
 		lookup["#manaTideTotem"] = TRB.Data.spells.manaTideTotem.icon
-		--[[lookup["#poh"] = TRB.Data.spells.prayerOfHealing.icon
-		lookup["#prayerOfHealing"] = TRB.Data.spells.prayerOfHealing.icon
-		lookup["#pom"] = TRB.Data.spells.prayerOfMending.icon
-		lookup["#prayerOfMending"] = TRB.Data.spells.prayerOfMending.icon
-		lookup["#renew"] = TRB.Data.spells.renew.icon
-		lookup["#smite"] = TRB.Data.spells.smite.icon]]
 		lookup["#soh"] = TRB.Data.spells.symbolOfHope.icon
 		lookup["#symbolOfHope"] = TRB.Data.spells.symbolOfHope.icon
-		--[[lookup["#sol"] = TRB.Data.spells.surgeOfLight.icon
-		lookup["#surgeOfLight"] = TRB.Data.spells.surgeOfLight.icon
-		lookup["#wf"] = TRB.Data.spells.wrathfulFaerie.icon
-		lookup["#wrathfulFaerie"] = TRB.Data.spells.wrathfulFaerie.icon]]
 		lookup["#psc"] = TRB.Data.spells.potionOfSpiritualClarity.icon
 		lookup["#potionOfSpiritualClarity"] = TRB.Data.spells.potionOfSpiritualClarity.icon
 		lookup["#srp"] = TRB.Data.spells.spiritualRejuvenationPotion.icon
 		lookup["#spiritualRejuvenationPotion"] = TRB.Data.spells.spiritualRejuvenationPotion.icon
 		lookup["#spiritualManaPotion"] = TRB.Data.spells.spiritualManaPotion.icon
 		lookup["#soulfulManaPotion"] = TRB.Data.spells.soulfulManaPotion.icon
-		
-		--lookup["#swp"] = TRB.Data.spells.shadowWordPain.icon
-		--lookup["#shadowWordPain"] = TRB.Data.spells.shadowWordPain.icon
-
+		lookup["$fsCount"] = flameShockCount
+		lookup["$fsTime"] = flameShockTime
 		lookup["$manaPlusCasting"] = manaPlusCasting
 		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$manaTotal"] = manaTotal
@@ -1806,24 +1406,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["$resource"] = currentMana
 		lookup["$casting"] = castingMana
 		lookup["$passive"] = passiveMana
-
-		--[[
-		lookup["$hwChastiseTime"] = hwChastiseTime
-		lookup["$chastiseTime"] = hwChastiseTime
-		lookup["$restorationWordChastiseTime"] = hwChastiseTime
-
-		lookup["$hwSanctifyTime"] = hwSanctifyTime
-		lookup["$sanctifyTime"] = hwSanctifyTime
-		lookup["$restorationWordSanctifyTime"] = hwSanctifyTime
-
-		lookup["$hwSerenityTime"] = hwSerenityTime
-		lookup["$serenityTime"] = hwSerenityTime
-		lookup["$restorationWordSerenityTime"] = hwSerenityTime
-
-		lookup["$wfMana"] = wfMana
-		lookup["$wfGcds"] = wfGcds
-		lookup["$wfProcs"] = wfProcs
-		lookup["$wfTime"] = wfTime]]
 		lookup["$sohMana"] = sohMana
 		lookup["$sohTime"] = sohTime
 		lookup["$sohTicks"] = sohTicks
@@ -1836,19 +1418,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["$pscTime"] = pscTime
 		lookup["$potionCooldown"] = potionCooldown
 		lookup["$potionCooldownSeconds"] = potionCooldownSeconds
-		
-		--[[
-		lookup["$fcEquipped"] = TRB.Data.character.items.flashConcentration
-		lookup["$fcStacks"] = fcStacks
-		lookup["$fcTime"] = fcTime
-
-		lookup["$solStacks"] = solStacks
-		lookup["$solTime"] = solTime
-		lookup["$apotheosisTime"] = apotheosisTime
-
-		lookup["$swpCount"] = shadowWordPainCount
-		lookup["$swpTime"] = shadowWordPainTime]]
-
 		TRB.Data.lookup = lookup
 	end
 
@@ -1949,27 +1518,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						TRB.Data.snapshotData.casting.icon = string.format("|T%s:0|t", spellIcon)
 
 						UpdateCastingResourceFinal_Restoration()
-						--[[if currentSpellId == TRB.Data.spells.heal.id then
-							TRB.Data.snapshotData.casting.spellKey = "heal"
-						elseif currentSpellId == TRB.Data.spells.flashHeal.id then
-							TRB.Data.snapshotData.casting.spellKey = "flashHeal"
-						elseif currentSpellId == TRB.Data.spells.prayerOfHealing.id then
-							TRB.Data.snapshotData.casting.spellKey = "prayerOfHealing"
-						elseif currentSpellId == TRB.Data.spells.renew.id then --This shouldn't happen
-							TRB.Data.snapshotData.casting.spellKey = "renew"
-						elseif currentSpellId == TRB.Data.spells.smite.id then
-							TRB.Data.snapshotData.casting.spellKey = "smite"
-						elseif currentSpellId == TRB.Data.spells.bindingHeal.id then --If talented
-							TRB.Data.snapshotData.casting.spellKey = "bindingHeal"
-						elseif TRB.Data.character.items.harmoniousApparatus then
-							if currentSpellId == TRB.Data.spells.circleOfHealing.id then --Harmonious Apparatus / This shouldn't happen
-								TRB.Data.snapshotData.casting.spellKey = "circleOfHealing"
-							elseif currentSpellId == TRB.Data.spells.prayerOfMending.id then --Harmonious Apparatus / This shouldn't happen
-								TRB.Data.snapshotData.casting.spellKey = "prayerOfMending"
-							elseif currentSpellId == TRB.Data.spells.restorationFire.id then --Harmonious Apparatus
-								TRB.Data.snapshotData.casting.spellKey = "restorationFire"
-							end
-						end]]
 					else
 						TRB.Functions.ResetCastingSnapshotData()
 						return false
@@ -2124,7 +1672,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function UpdateSnapshot_Restoration()
 		UpdateSnapshot()
-		--UpdateWrathfulFaerieValues()
 		UpdateSymbolOfHope()
 		UpdatePotionOfSpiritualClarity()
 		UpdateInnervate()
@@ -2132,15 +1679,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local currentTime = GetTime()
 		local _
-
-		--[[
-		if TRB.Data.snapshotData.apotheosis.startTime ~= nil and currentTime > (TRB.Data.snapshotData.apotheosis.startTime + TRB.Data.snapshotData.apotheosis.duration) then
-            TRB.Data.snapshotData.apotheosis.startTime = nil
-            TRB.Data.snapshotData.apotheosis.duration = 0
-			TRB.Data.snapshotData.apotheosis.remainingTime = 0
-		else
-			TRB.Data.snapshotData.apotheosis.remainingTime = GetApotheosisRemainingTime()
-        end]]
 
 		if TRB.Data.snapshotData.innervate.startTime ~= nil and currentTime > (TRB.Data.snapshotData.innervate.startTime + TRB.Data.snapshotData.innervate.duration) then
             TRB.Data.snapshotData.innervate.startTime = nil
@@ -2150,43 +1688,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.snapshotData.innervate.remainingTime = GetInnervateRemainingTime()
         end
 
-		--[[
-		if TRB.Data.snapshotData.restorationWordSerenity.startTime ~= nil then
----@diagnostic disable-next-line: redundant-parameter
-			TRB.Data.snapshotData.restorationWordSerenity.startTime, TRB.Data.snapshotData.restorationWordSerenity.duration, _, _ = GetSpellCooldown(TRB.Data.spells.restorationWordSerenity.id)
-			
-			if TRB.Data.snapshotData.restorationWordSerenity.startTime == 0 then
-				TRB.Data.snapshotData.restorationWordSerenity.startTime = nil
-			end
-		end
-
-		if TRB.Data.snapshotData.restorationWordSanctify.startTime ~= nil then
----@diagnostic disable-next-line: redundant-parameter
-			TRB.Data.snapshotData.restorationWordSanctify.startTime, TRB.Data.snapshotData.restorationWordSanctify.duration, _, _ = GetSpellCooldown(TRB.Data.spells.restorationWordSanctify.id)
-			
-			if TRB.Data.snapshotData.restorationWordSanctify.startTime == 0 then
-				TRB.Data.snapshotData.restorationWordSanctify.startTime = nil
-			end
-		end
-
-		if TRB.Data.snapshotData.restorationWordChastise.startTime ~= nil then
----@diagnostic disable-next-line: redundant-parameter
-			TRB.Data.snapshotData.restorationWordChastise.startTime, TRB.Data.snapshotData.restorationWordChastise.duration, _, _ = GetSpellCooldown(TRB.Data.spells.restorationWordChastise.id)
-
-			if TRB.Data.snapshotData.restorationWordChastise.startTime == 0 then
-				TRB.Data.snapshotData.restorationWordChastise.startTime = nil
-			end
-		end
-
-		if TRB.Data.character.items.flashConcentration then
-			_, _, TRB.Data.snapshotData.flashConcentration.stacks, _, TRB.Data.snapshotData.flashConcentration.duration, TRB.Data.snapshotData.flashConcentration.endTime, _, _, _, TRB.Data.snapshotData.flashConcentration.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.flashConcentration.id)
-			TRB.Data.snapshotData.flashConcentration.remainingTime = GetFlashConcentrationRemainingTime()
-		end
-
-		_, _, TRB.Data.snapshotData.surgeOfLight.stacks, _, TRB.Data.snapshotData.surgeOfLight.duration, TRB.Data.snapshotData.surgeOfLight.endTime, _, _, _, TRB.Data.snapshotData.surgeOfLight.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.surgeOfLight.id)
-		TRB.Data.snapshotData.surgeOfLight.remainingTime = GetSurgeOfLightRemainingTime()
-		]]
-
 		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldownMS
 		TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration, _ = GetItemCooldown(TRB.Data.character.items.potions.potionOfSpiritualClarity.id)
 		if TRB.Data.snapshotData.potion.startTime > 0 and TRB.Data.snapshotData.potion.duration > 0 then
@@ -2194,17 +1695,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		else
 			TRB.Data.snapshotData.potion.onCooldown = false
 		end
-
-		--[[
-		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPain then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.shadowWordPain.id, "target", "player"))
-
-				if expiration ~= nil then
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining = expiration - currentTime
-				end
-			end
-		end]]
 	end
 
 	local function HideResourceBar(force)
@@ -2360,26 +1850,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					local currentMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 					local barBorderColor = TRB.Data.settings.shaman.restoration.colors.bar.border
 
-					--[[if TRB.Data.snapshotData.surgeOfLight.stacks == 1 and TRB.Data.settings.shaman.restoration.colors.bar.surgeOfLightBorderChange1 then
-						barBorderColor = TRB.Data.settings.shaman.restoration.colors.bar.surgeOfLight1
-
-						if TRB.Data.settings.shaman.restoration.audio.surgeOfLight.enabled and not TRB.Data.snapshotData.audio.surgeOfLightCue then
-							TRB.Data.snapshotData.audio.surgeOfLightCue = true
----@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					end
-
-					if TRB.Data.snapshotData.surgeOfLight.stacks == 2 and TRB.Data.settings.shaman.restoration.colors.bar.surgeOfLightBorderChange2 then
-						barBorderColor = TRB.Data.settings.shaman.restoration.colors.bar.surgeOfLight2
-
-						if TRB.Data.settings.shaman.restoration.audio.surgeOfLight2.enabled and not TRB.Data.snapshotData.audio.surgeOfLight2Cue then
-							TRB.Data.snapshotData.audio.surgeOfLight2Cue = true
----@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					end]]
-
 					if TRB.Data.spells.innervate.isActive and TRB.Data.settings.shaman.restoration.colors.bar.innervateBorderChange then
 						barBorderColor = TRB.Data.settings.shaman.restoration.colors.bar.innervate
 
@@ -2389,37 +1859,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					end
-
-					--[[if TRB.Data.character.items.flashConcentration then
-						local affectingCombat = UnitAffectingCombat("player")
-						if TRB.Data.settings.shaman.restoration.flashConcentration.enabledUncapped and (affectingCombat or TRB.Data.settings.shaman.restoration.flashConcentration.enabledUncappedOutOfCombat) and (TRB.Data.snapshotData.flashConcentration.stacks == nil or TRB.Data.snapshotData.flashConcentration.stacks < TRB.Data.spells.flashConcentration.maxStacks) then
-							barBorderColor = TRB.Data.settings.shaman.restoration.colors.bar.flashConcentration
-						end
-
-						if TRB.Data.snapshotData.flashConcentration.remainingTime ~= nil and TRB.Data.snapshotData.flashConcentration.remainingTime > 0 then
-							local fcTimeThreshold = 0
-							if TRB.Data.settings.shaman.restoration.flashConcentration.mode == "gcd" then
-								local gcd = TRB.Functions.GetCurrentGCDTime()
-								fcTimeThreshold = gcd * TRB.Data.settings.shaman.restoration.flashConcentration.gcdsMax
-							elseif TRB.Data.settings.shaman.restoration.flashConcentration.mode == "time" then
-								fcTimeThreshold = TRB.Data.settings.shaman.restoration.flashConcentration.timeMax
-							end
-
-							if TRB.Data.snapshotData.flashConcentration.remainingTime <= fcTimeThreshold then
-								if TRB.Data.settings.shaman.restoration.flashConcentration.enabled and (affectingCombat or TRB.Data.settings.shaman.restoration.flashConcentration.enabledUncappedOutOfCombat) then
-									barBorderColor = TRB.Data.settings.shaman.restoration.colors.bar.flashConcentration
-								end
-
-								if TRB.Data.settings.shaman.restoration.audio.flashConcentration.enabled and TRB.Data.snapshotData.audio.flashConcentrationCue == false then
-									TRB.Data.snapshotData.audio.flashConcentrationCue = true
----@diagnostic disable-next-line: redundant-parameter
-									PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.flashConcentration.sound, TRB.Data.settings.core.audio.channel.channel)
-								end
-							else
-								TRB.Data.snapshotData.audio.flashConcentrationCue = false
-							end
-						end
-					end]]
 
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
 
@@ -2521,22 +1960,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Frames.passiveFrame.thresholds[1]:Hide()
 						end
 
-						--[[
-						if TRB.Data.snapshotData.wrathfulFaerie.resourceFinal > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshotData.wrathfulFaerie.resourceFinal
-
-							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.restoration, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, TRB.Data.settings.shaman.restoration.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.threshold.mindbender, true))
-								TRB.Frames.passiveFrame.thresholds[2]:Show()
-							else
-								TRB.Frames.passiveFrame.thresholds[2]:Hide()
-							end
-						else
-							TRB.Frames.passiveFrame.thresholds[2]:Hide()
-						end]]
-
 						if TRB.Data.snapshotData.innervate.mana > 0 then
 							passiveValue = passiveValue + TRB.Data.snapshotData.innervate.mana
 
@@ -2614,64 +2037,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 					local resourceBarColor = nil
 
-					--[[
-					if TRB.Data.snapshotData.casting.spellKey ~= nil then
-						if TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey] ~= nil and
-							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordKey ~= nil and
-							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordReduction ~= nil and
-							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordReduction >= 0 then
-
-							local castTimeRemains = TRB.Data.snapshotData.casting.endTime - currentTime
-
-							if TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordKey2 ~= nil and
-								TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordReduction2 ~= nil and
-								TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordReduction2 >= 0 then --We have an edge case, boiz
-								local restorationWordCooldownRemaining1 = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordKey])
-								local restorationWordCooldownRemaining2 = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordKey2])
-
-								local remaining1 = restorationWordCooldownRemaining1 - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordReduction) - castTimeRemains
-								local remaining2 = restorationWordCooldownRemaining2 - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordReduction2) - castTimeRemains
-
-								if remaining1 <= 0 and remaining2 > 0 and TRB.Data.settings.shaman.restoration.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordKey .. "Enabled"] then
-									resourceBarColor = TRB.Data.settings.shaman.restoration.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordKey]
-								elseif remaining1 > 0 and remaining2 <= 0 and TRB.Data.settings.shaman.restoration.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordKey2 .. "Enabled"] then
-									resourceBarColor = TRB.Data.settings.shaman.restoration.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordKey2]
-								elseif remaining1 <= 0 and remaining2 <= 0 and TRB.Data.settings.shaman.restoration.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordKey .. "Enabled"] then
-									resourceBarColor = TRB.Data.settings.shaman.restoration.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordKey]
-								end
-							else
-								local restorationWordCooldownRemaining = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordKey])
-
-								if (restorationWordCooldownRemaining - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordReduction) - castTimeRemains) <= 0 and TRB.Data.settings.shaman.restoration.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordKey .. "Enabled"] then
-									resourceBarColor = TRB.Data.settings.shaman.restoration.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].restorationWordKey]
-								end
-							end
-						end
-					end]]
-
-					--[[
-					if TRB.Data.snapshotData.apotheosis.spellId and resourceBarColor == nil then
-						local timeThreshold = 0
-						local useEndOfApotheosisColor = false
-
-						if TRB.Data.settings.shaman.restoration.endOfApotheosis.enabled then
-							useEndOfApotheosisColor = true
-							if TRB.Data.settings.shaman.restoration.endOfApotheosis.mode == "gcd" then
-								local gcd = TRB.Functions.GetCurrentGCDTime()
-								timeThreshold = gcd * TRB.Data.settings.shaman.restoration.endOfApotheosis.gcdsMax
-							elseif TRB.Data.settings.shaman.restoration.endOfApotheosis.mode == "time" then
-								timeThreshold = TRB.Data.settings.shaman.restoration.endOfApotheosis.timeMax
-							end
-						end
-
-						if useEndOfApotheosisColor and TRB.Data.snapshotData.apotheosis.remainingTime <= timeThreshold then
-							resourceBarColor = TRB.Data.settings.shaman.restoration.colors.bar.apotheosisEnd
-						else
-							resourceBarColor = TRB.Data.settings.shaman.restoration.colors.bar.apotheosis
-						end
-					elseif resourceBarColor == nil then
-						resourceBarColor = TRB.Data.settings.shaman.restoration.colors.bar.base
-					end]]
 					resourceBarColor = TRB.Data.settings.shaman.restoration.colors.bar.base
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(resourceBarColor, true))
@@ -2718,15 +2083,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Data.snapshotData.symbolOfHope.firstTickTime = currentTime
 							TRB.Data.snapshotData.symbolOfHope.previousTickTime = currentTime
 							TRB.Data.snapshotData.symbolOfHope.ticksRemaining = TRB.Data.spells.symbolOfHope.ticks
-							--[[if sourceGUID == TRB.Data.character.guid then
-								TRB.Data.snapshotData.symbolOfHope.endTime = currentTime + (TRB.Data.spells.symbolOfHope.duration / (1.5 / TRB.Functions.GetCurrentGCDTime(true)))
-								TRB.Data.snapshotData.symbolOfHope.tickRate = (TRB.Data.spells.symbolOfHope.duration / TRB.Data.spells.symbolOfHope.ticks) / (1.5 / TRB.Functions.GetCurrentGCDTime(true))
-								TRB.Data.snapshotData.symbolOfHope.tickRateFound = true
-							else -- If the player isn't the one casting this, we can't know the tickrate until there are multiple ticks.
-							]]
-								TRB.Data.snapshotData.symbolOfHope.tickRate = (TRB.Data.spells.symbolOfHope.duration / TRB.Data.spells.symbolOfHope.ticks)
-								TRB.Data.snapshotData.symbolOfHope.endTime = currentTime + TRB.Data.spells.symbolOfHope.duration
-							--end
+							TRB.Data.snapshotData.symbolOfHope.tickRate = (TRB.Data.spells.symbolOfHope.duration / TRB.Data.spells.symbolOfHope.ticks)
+							TRB.Data.snapshotData.symbolOfHope.endTime = currentTime + TRB.Data.spells.symbolOfHope.duration
 						else
 							if TRB.Data.snapshotData.symbolOfHope.ticksRemaining >= 1 then
 								if sourceGUID ~= TRB.Data.character.guid then
@@ -2778,23 +2136,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			if sourceGUID == TRB.Data.character.guid then
 				if specId == 1 then
-					if spellId == TRB.Data.spells.flameShock.id then
-						if InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- FS Applied to Target
-								TRB.Data.snapshotData.targetData.targets[destGUID].flameShock = true
-								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshotData.targetData.flameShock = TRB.Data.snapshotData.targetData.flameShock + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshotData.targetData.targets[destGUID].flameShock = false
-								TRB.Data.snapshotData.targetData.targets[destGUID].flameShockRemaining = 0
-								TRB.Data.snapshotData.targetData.flameShock = TRB.Data.snapshotData.targetData.flameShock - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
-						end
-					elseif spellId == TRB.Data.spells.chainLightning.id or spellId == TRB.Data.spells.lavaBeam.id then
+					if spellId == TRB.Data.spells.chainLightning.id or spellId == TRB.Data.spells.lavaBeam.id then
 						if type == "SPELL_DAMAGE" then
 							if TRB.Data.snapshotData.chainLightning.hitTime == nil or currentTime > (TRB.Data.snapshotData.chainLightning.hitTime + 0.1) then --This is a new hit
 								TRB.Data.snapshotData.chainLightning.targetsHit = 0
@@ -2890,46 +2232,25 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							-- Let UpdatePotionOfSpiritualClarity() clean this up
 							UpdatePotionOfSpiritualClarity(true)
 						end
-					--[[elseif spellId == TRB.Data.spells.apotheosis.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.spells.apotheosis.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.apotheosis.duration, TRB.Data.snapshotData.apotheosis.endTime, _, _, _, TRB.Data.snapshotData.apotheosis.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.apotheosis.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.spells.apotheosis.isActive = false
-							TRB.Data.snapshotData.apotheosis.spellId = nil
-							TRB.Data.snapshotData.apotheosis.duration = 0
-							TRB.Data.snapshotData.apotheosis.endTime = nil
+					end
+				end
+
+				-- Spec agnostic abilities				
+				if spellId == TRB.Data.spells.flameShock.id then
+					if InitializeTarget(destGUID) then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- FS Applied to Target
+							TRB.Data.snapshotData.targetData.targets[destGUID].flameShock = true
+							if type == "SPELL_AURA_APPLIED" then
+								TRB.Data.snapshotData.targetData.flameShock = TRB.Data.snapshotData.targetData.flameShock + 1
+							end
+							triggerUpdate = true
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.targetData.targets[destGUID].flameShock = false
+							TRB.Data.snapshotData.targetData.targets[destGUID].flameShockRemaining = 0
+							TRB.Data.snapshotData.targetData.flameShock = TRB.Data.snapshotData.targetData.flameShock - 1
+							triggerUpdate = true
+						--elseif type == "SPELL_PERIODIC_DAMAGE" then
 						end
-					elseif spellId == TRB.Data.spells.surgeOfLight.id then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.spells.surgeOfLight.isActive = true
-							_, _, TRB.Data.snapshotData.surgeOfLight.stacks, _, TRB.Data.snapshotData.surgeOfLight.duration, TRB.Data.snapshotData.surgeOfLight.endTime, _, _, _, TRB.Data.snapshotData.surgeOfLight.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.surgeOfLight.id)
-						elseif type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
-							TRB.Data.snapshotData.audio.surgeOfLight2Cue = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.spells.surgeOfLight.isActive = false
-							TRB.Data.snapshotData.surgeOfLight.spellId = nil
-							TRB.Data.snapshotData.surgeOfLight.duration = 0
-							TRB.Data.snapshotData.surgeOfLight.stacks = 0
-							TRB.Data.snapshotData.surgeOfLight.endTime = nil
-							TRB.Data.snapshotData.audio.surgeOfLightCue = false
-							TRB.Data.snapshotData.audio.surgeOfLight2Cue = false
-						end
-					elseif spellId == TRB.Data.spells.restorationWordSerenity.id then
-						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Serenity
----@diagnostic disable-next-line: redundant-parameter
-							TRB.Data.snapshotData.restorationWordSerenity.startTime, TRB.Data.snapshotData.restorationWordSerenity.duration, _, _ = GetSpellCooldown(TRB.Data.spells.restorationWordSerenity.id)
-						end
-					elseif spellId == TRB.Data.spells.restorationWordSanctify.id then
-						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Sanctify
----@diagnostic disable-next-line: redundant-parameter
-							TRB.Data.snapshotData.restorationWordSanctify.startTime, TRB.Data.snapshotData.restorationWordSanctify.duration, _, _ = GetSpellCooldown(TRB.Data.spells.restorationWordSanctify.id)
-						end
-					elseif spellId == TRB.Data.spells.restorationWordChastise.id then
-						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Chastise
----@diagnostic disable-next-line: redundant-parameter
-							TRB.Data.snapshotData.restorationWordChastise.startTime, TRB.Data.snapshotData.restorationWordChastise.duration, _, _ = GetSpellCooldown(TRB.Data.spells.restorationWordChastise.id)
-						end]]
 					end
 				end
             end

@@ -1016,13 +1016,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
         elseif specId == 2 then
 			TRB.Data.character.specName = "fury"
 			TRB.Data.character.talents.suddenDeath.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
-			--TRB.Data.character.talents.skullsplitter.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.impendingVictory.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.massacre.isSelected = select(4, GetTalentInfo(3, 1, TRB.Data.character.specGroup))
-            --TRB.Data.character.talents.rend.isSelected = select(4, GetTalentInfo(3, 3, TRB.Data.character.specGroup))
-            --TRB.Data.character.talents.cleave.isSelected = select(4, GetTalentInfo(5, 3, TRB.Data.character.specGroup))
-            --TRB.Data.character.talents.deadlyCalm.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
-            --TRB.Data.character.talents.ravager.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 
 			-- Legendaries
 			local chestItemLink = GetInventoryItemLink("player", 5)
