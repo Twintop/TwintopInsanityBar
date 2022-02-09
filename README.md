@@ -26,7 +26,7 @@ Currently supported specs:
 - Hunter - Beast Mastery, Marksmanship, Survival
 - Priest - Holy, Shadow
 - Rogue - Assassination
-- Shaman - Elemental
+- Shaman - Elemental, Restoration (Experimental)
 - Warrior - Arms, Fury
 
 This is a fully customizable resource bar for multiple classes and specs to use to track their primary resource while in combat. Features include:
