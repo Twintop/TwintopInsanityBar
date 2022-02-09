@@ -12,7 +12,7 @@
 ## X-Website: https://github.com/Twintop/TwintopInsanityBar
 ## X-Curse-Project-ID: 293075
 ## X-WoWI-ID: 24628
-## X-Wago-ID: as3Dfg57
+## X-Wago-ID: Qb6mM46P
 
 Libs\TaintLess.xml
 Libs\LibStub.lua
