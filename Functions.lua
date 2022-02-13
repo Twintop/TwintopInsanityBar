@@ -2012,8 +2012,7 @@ local function CheckCharacter()
 
 	-- Sanctum of Domination
 	if C_Map.GetBestMapForUnit("player") == TRB.Data.constants.sanctumOfDominationZoneId and TRB.Functions.FindAuraById(TRB.Data.constants.overgrowthSeedling.id, "player", "MAW") then
-		TRB.Data.character.effects.overgrowthSeedlingModifier = 
-		TRB.Data.constants.overgrowthSeedling.resourceModifier
+		TRB.Data.character.effects.overgrowthSeedlingModifier = TRB.Data.constants.overgrowthSeedling.resourceModifier
 	else
 		TRB.Data.character.effects.overgrowthSeedlingModifier = 1
 	end

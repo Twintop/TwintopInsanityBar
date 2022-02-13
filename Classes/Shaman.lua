@@ -1679,8 +1679,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 	end
 
-	
-
 	local function UpdateSnapshot_Restoration()
 		UpdateSnapshot()
 		UpdateSymbolOfHope()
@@ -1699,7 +1697,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.snapshotData.innervate.remainingTime = GetInnervateRemainingTime()
         end
 
-		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldownMS
+		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
 		TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration, _ = GetItemCooldown(TRB.Data.character.items.potions.potionOfSpiritualClarity.id)
 		if TRB.Data.snapshotData.potion.startTime > 0 and TRB.Data.snapshotData.potion.duration > 0 then
 			TRB.Data.snapshotData.potion.onCooldown = true

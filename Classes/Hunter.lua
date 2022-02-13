@@ -97,7 +97,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 4,
 				settingKey = "cobraShot",
-				isSnowflake = false,
+				isSnowflake = true,
 				thresholdUsable = false
 			},
 			killCommand = {
@@ -271,6 +271,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				itemId = 186414
 			},
 
+			-- T28
+			killingFrenzy = {
+				id = 363760,
+				name = "",
+				icon = "",
+			}
 
 		}
 
@@ -346,6 +352,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			duration = 0,
 			stacks = 0,
 			spellId = 0
+		}
+
+		specCache.beastMastery.snapshotData.killingFrenzy = {
+			isActive = false,
+			spellId = nil,
+			duration = 0,
+			endTime = nil
 		}
 
 		specCache.beastMastery.barTextVariables = {
@@ -1136,7 +1149,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#nesingwarys", icon = spells.nesingwarysTrappingApparatus.icon, description = "Nesingwary's Trapping Apparatus", printInSettings = true },
 			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
 			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
-			{ variable = "#wailingArrow", icon = spells.wailingArrow.icon, description = "Wailing Arrow", printInSettings = true }
+			{ variable = "#wailingArrow", icon = spells.wailingArrow.icon, description = "Wailing Arrow", printInSettings = true },
+			{ variable = "#killingFrenzy", icon = spells.killingFrenzy.icon, description = "(T28) Killing Frenzy", printInSettings = true },
+			{ variable = "#t28", icon = spells.killingFrenzy.icon, description = "(T28) Killing Frenzy", printInSettings = false }
+			
         }
 		specCache.beastMastery.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -1182,6 +1198,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$nesingwarysTime", description = "Time remaining on Nesingwary's Trapping Apparatus buff", printInSettings = true, color = false },
 
 			{ variable = "$raeshalareEquipped", description = "Checks if you have Rae'shalare, Death's Whisper equipped. Logic variable only!", printInSettings = true, color = false },
+
+			{ variable = "$killingFrenzyTime", description = "Time remaining on (T28) Killing Frenzy buff", printInSettings = true, color = false },
+			{ variable = "$t28Time", description = "Time remaining on (T28) Killing Frenzy buff", printInSettings = false, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -1479,6 +1498,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.frenzy)
 	end
 
+	local function GetKillingFrenzyRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.killingFrenzy)
+	end
+
 	local function GetBeastialWrathCooldownRemainingTime()
 		local currentTime = GetTime()
 		local gcd = TRB.Functions.GetCurrentGCDTime(true)
@@ -1630,6 +1653,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				end
 			elseif var == "$frenzyStacks" then
 				if TRB.Data.snapshotData.frenzy.stacks ~= nil and TRB.Data.snapshotData.frenzy.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$killingFrenzyTime" or var == "$t28Time" then
+				if TRB.Data.snapshotData.killingFrenzy.endTime ~= nil then
 					valid = true
 				end
 			end
@@ -1858,6 +1885,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			nesingwarysTime = string.format("%.1f", _nesingwarysTime)
 		end
 
+		--$killingFrenzyTime
+		local _killingFrenzyTime = GetKillingFrenzyRemainingTime()
+		local killingFrenzyTime = 0
+		if _killingFrenzyTime ~= nil then
+			killingFrenzyTime = string.format("%.1f", _killingFrenzyTime)
+		end
+
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveFocus
@@ -1887,6 +1921,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#nesingwarys"] = TRB.Data.spells.nesingwarysTrappingApparatus.icon
 		lookup["#revivePet"] = TRB.Data.spells.revivePet.icon
 		lookup["#scareBeast"] = TRB.Data.spells.scareBeast.icon
+		lookup["#killingFrenzy"] = TRB.Data.spells.killingFrenzy.icon
+		lookup["#t28"] = TRB.Data.spells.killingFrenzy.icon
+		lookup["$killingFrenzyTime"] = killingFrenzyTime
+		lookup["$t28Time"] = killingFrenzyTime
 		lookup["$frenzyTime"] = frenzyTime
 		lookup["$frenzyStacks"] = frenzyStacks
 		lookup["$nesingwarysTime"] = nesingwarysTime
@@ -2752,7 +2790,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							local showThreshold = true
 							local thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.over
 							local frameLevel = 129
-
+							
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.killShot.id then
 									local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
@@ -2799,6 +2837,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										end
 									else
 										showThreshold = false
+									end
+								elseif spell.id == TRB.Data.spells.cobraShot.id then
+									if TRB.Data.snapshotData.killingFrenzy.isActive then
+										thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.special
+									elseif TRB.Data.snapshotData.resource >= -focusAmount then
+										thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.under
+										frameLevel = 128
 									end
 								end
 							elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
@@ -3467,6 +3514,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.wailingArrow.startTime = currentTime
 							TRB.Data.snapshotData.wailingArrow.duration = TRB.Data.spells.wailingArrow.cooldown
+						end
+					elseif spellId == TRB.Data.spells.killingFrenzy.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
+							TRB.Data.snapshotData.killingFrenzy.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.killingFrenzy.duration, TRB.Data.snapshotData.killingFrenzy.endTime, _, _, _, TRB.Data.snapshotData.killingFrenzy.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.killingFrenzy.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.killingFrenzy.spellId = nil
+							TRB.Data.snapshotData.killingFrenzy.isActive = false
+							TRB.Data.snapshotData.killingFrenzy.duration = 0
+							TRB.Data.snapshotData.killingFrenzy.endTime = nil
 						end
 					end
 				elseif specId == 2 then --Marksmanship

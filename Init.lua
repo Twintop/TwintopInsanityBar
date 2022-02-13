@@ -242,12 +242,6 @@ local function IsValidVariableForSpec(input)
 end
 TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
 
--- This gets overwritten with a spec/class specific version of the function
-local function BarText()
-    return "", "", ""
-end
-TRB.Data.BarText = BarText
-
 -- Taken from BlizzBugsSuck (which appears to be abandoned) -- https://www.curseforge.com/wow/addons/blizzbugssuck
 -- Fix InterfaceOptionsFrame_OpenToCategory not actually opening the category (and not even scrolling to it)
 -- Confirmed still broken in 6.2.2.20490 (6.2.2a)
