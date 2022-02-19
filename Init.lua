@@ -56,7 +56,7 @@ TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 
 -- For the following specs, we need to have a secondary bar/bars created
 -- We're going to make these as StatusBars so we can use them for Death Knight runes and Warlock soulshards in the future
-if classIndexId == 4 or classIndexId == 11 then
+if classIndexId == 4 or classIndexId == 10 or classIndexId == 11 then
 	TRB.Frames.resource2Frames = {}
 	TRB.Frames.resource2ContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame2", TRB.Frames.barContainerFrame, "BackdropTemplate")
 	

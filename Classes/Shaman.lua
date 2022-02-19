@@ -3100,7 +3100,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				ConstructResourceBar(TRB.Data.settings.shaman.elemental)
 			end
 		elseif specId == 2 then
-		elseif specId == 3 then
+		elseif specId == 3 and TRB.Data.settings.core.experimental.specs.shaman.restoration then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.shaman.restoration)
 			TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.restoration)
 			FillSpellData_Restoration()

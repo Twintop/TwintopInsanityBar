@@ -33,6 +33,8 @@ Classes\DruidOptions.lua
 Classes\Druid.lua
 Classes\HunterOptions.lua
 Classes\Hunter.lua
+Classes\Monk.lua
+Classes\MonkOptions.lua
 Classes\PriestOptions.lua
 Classes\Priest.lua
 Classes\RogueOptions.lua
