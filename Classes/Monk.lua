@@ -48,24 +48,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				overgrowthSeedling = 1.0
 			},
 			talents = {
-				--[[blindside = {
+				fistOfTheWhiteTiger = {
 					isSelected = false
-				},
-				subterfuge = {
-					isSelected = false
-				},
-				internalBleeding = {
-					isSelected = false
-				},
-				exsanguinate = {
-					isSelected = false
-				},
-				hiddenBlades = {
-					isSelected = false
-				},
-				crimsonTempest = {
-					isSelected = false
-				}]]
+				}
 			},
 			items = {
 				--tinyToxicBlade = false
@@ -79,313 +64,180 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		}
 
 		specCache.windwalker.spells = {
-			--[[
-            -- Poisons
-			cripplingPoison = {
-				id = 3409,
-				name = "",
-				icon = ""
-			},
-			deadlyPoison = {
-				id = 2818,
-				name = "",
-				icon = ""
-			},
-			numbingPoison = {
-				id = 5760,
-				name = "",
-				icon = ""
-			},
-			woundPoison = {
-				id = 8680,
-				name = "",
-				icon = ""
-			},
-
 			-- Monk Class Abilities
-            ambush = {
-				id = 8676,
+            blackoutKick = {
+				id = 100784,
 				name = "",
 				icon = "",
-				energy = -50,
-                comboPointsGenerated = 2,
-                stealth = true,
-				texture = "",
-				thresholdId = 1,
-				settingKey = "ambush",
-                --isSnowflake = true,
-				thresholdUsable = false
+                comboPoints = 1,
 			},
-			cheapShot = {
-				id = 1833,
-				name = "",
-				icon = "",
-				energy = -40,
-                comboPointsGenerated = 1,
-                stealth = true,
-				texture = "",
-				thresholdId = 2,
-				settingKey = "cheapShot",
-				--isSnowflake = false,
-				thresholdUsable = false
-			},
-			crimsonVial = {
-				id = 185311,
+			cracklingJadeLightning = {
+				id = 117952,
 				name = "",
 				icon = "",
 				energy = -20,
                 comboPointsGenerated = 0,
 				texture = "",
-				thresholdId = 3,
-				settingKey = "crimsonVial",
-				hasCooldown = true,
-                cooldown = 30,
+				thresholdId = 1,
+				settingKey = "cracklingJadeLightning",
 				thresholdUsable = false
 			},
-			distract = {
-				id = 1725,
+			detox = {
+				id = 218164,
+				name = "",
+				icon = "",
+				energy = -20,
+                comboPointsGenerated = 0,
+				texture = "",
+				thresholdId = 2,
+				settingKey = "detox",
+				hasCooldown = true,
+				cooldown = 8,
+				thresholdUsable = false
+			},
+			expelHarm = {
+				id = 322101,
+				name = "",
+				icon = "",
+				energy = -15,
+                comboPointsGenerated = 1,
+				texture = "",
+				thresholdId = 3,
+				settingKey = "expelHarm",
+				hasCooldown = true,
+                cooldown = 15,
+				thresholdUsable = false
+			},
+			paralysis = {
+				id = 115078,
+				name = "",
+				icon = "",
+				energy = -20,
+                comboPointsGenerated = 0,
+				texture = "",
+				thresholdId = 4,
+				settingKey = "paralysis",
+				hasCooldown = true,
+                cooldown = 30, -- Assumes Rank2
+				thresholdUsable = false
+			},
+			spinningCraneKick = {
+				id = 101546,
+				name = "",
+				icon = "",
+                comboPoints = 2,
+			},
+			tigerPalm = {
+				id = 100780,
+				name = "",
+				icon = "",
+				energy = -50,
+                comboPointsGenerated = 2,
+				texture = "",
+				thresholdId = 5,
+				settingKey = "tigerPalm",
+				thresholdUsable = false
+			},
+			touchOfDeath = {
+				id = 322109,
+				name = "",
+				icon = "",
+				healthPercent = 0.35,
+				eliteHealthPercent = 0.15
+			},
+			vivify = {
+				id = 116670,
 				name = "",
 				icon = "",
 				energy = -30,
                 comboPointsGenerated = 0,
 				texture = "",
-				thresholdId = 4,
-				settingKey = "distract",
-				hasCooldown = true,
-                cooldown = 30,
-				thresholdUsable = false
-			},
-			feint = {
-				id = 1966,
-				name = "",
-				icon = "",
-				energy = -35,
-                comboPointsGenerated = 0,
-				texture = "",
-				thresholdId = 5,
-				settingKey = "feint",
-                hasCooldown = true,
-                cooldown = 15,
-				thresholdUsable = false
-			},
-			kidneyShot = {
-				id = 408,
-				name = "",
-				icon = "",
-				energy = -25,
-                comboPoints = true,
-				texture = "",
 				thresholdId = 6,
-				settingKey = "kidneyShot",
-                hasCooldown = true,
-                cooldown = 20,
+				settingKey = "vivify",
 				thresholdUsable = false
-			},
-			sap = {
-				id = 6770,
-				name = "",
-				icon = "",
-				energy = -35,
-                comboPointsGenerated = 0,
-                stealth = true,
-				texture = "",
-				thresholdId = 7,
-				settingKey = "sap",
-				thresholdUsable = false
-			},
-			shiv = {
-				id = 5938,
-				name = "",
-				icon = "",
-				energy = -20,
-                comboPointsGenerated = 1,
-				texture = "",
-				thresholdId = 8,
-				settingKey = "shiv",
-                hasCooldown = true,
-				isSnowflake = true,
-                cooldown = 25,
-				thresholdUsable = false,
-				idLegendaryBonus = 7112
-			},
-			sliceAndDice = {
-				id = 315496,
-				name = "",
-				icon = "",
-				energy = -25,
-                comboPoints = true,
-				texture = "",
-				thresholdId = 9,
-				settingKey = "sliceAndDice",
-                hasCooldown = false,
-				thresholdUsable = false,
-				pandemicTimes = {
-					12 * 0.3, -- 0 CP, show same as if we had 1
-					12 * 0.3,
-					18 * 0.3,
-					24 * 0.3,
-					30 * 0.3,
-					36 * 0.3,
-					42 * 0.3
-				}
 			},
 
             -- Windwalker Spec Abilities
 
-			envenom = {
-				id = 32645,
+			disable = {
+				id = 116095,
 				name = "",
 				icon = "",
-				energy = -35,
+				energy = -15,
                 comboPoints = true,
 				texture = "",
-				thresholdId = 10,
-				settingKey = "envenom",
+				thresholdId = 7,
+				settingKey = "disable",
                 hasCooldown = false,
 				thresholdUsable = false
 			},
-			fanOfKnives = {
-				id = 51723,
+			fistsOfFury = {
+				id = 113656,
 				name = "",
 				icon = "",
-				energy = -35,
-                comboPointsGenerated = 1,
-				texture = "",
-				thresholdId = 11,
-				settingKey = "fanOfKnives",
-                hasCooldown = false,
-				thresholdUsable = false
+                comboPoints = 3
 			},
-			garrote = {
-				id = 703,
+			invokeXuenTheWhiteTiger = {
+				id = 123904,
 				name = "",
-				icon = "",
-				energy = -45,
-                comboPointsGenerated = 1,
-				texture = "",
-				thresholdId = 12,
-				settingKey = "garrote",
-                hasCooldown = true,
-                cooldown = 6,
-				thresholdUsable = false,
-				pandemicTime = 18 * 0.3
+				icon = ""
 			},
-			mutilate = {
-				id = 1329,
+			risingSunKick = {
+				id = 107428,
 				name = "",
 				icon = "",
-				energy = -50,
-                comboPointsGenerated = 2,
-				texture = "",
-				thresholdId = 13,
-				settingKey = "mutilate",
-                hasCooldown = false,
-				thresholdUsable = false
+                comboPoints = 2
 			},
-			poisonedKnife = {
-				id = 185565,
+			stormEarthAndFire = {
+				id = 137639,
 				name = "",
-				icon = "",
-				energy = -40,
-                comboPointsGenerated = 1,
-				texture = "",
-				thresholdId = 14,
-				settingKey = "poisonedKnife",
-                hasCooldown = false,
-				thresholdUsable = false
-			},
-			rupture = {
-				id = 1943,
-				name = "",
-				icon = "",
-				energy = -25,
-                comboPoints = true,
-				texture = "",
-				thresholdId = 15,
-				settingKey = "rupture",
-                hasCooldown = false,
-				thresholdUsable = false,
-				pandemicTimes = {
-					8 * 0.3, -- 0 CP, show same as if we had 1
-					8 * 0.3,
-					12 * 0.3,
-					16 * 0.3,
-					20 * 0.3,
-					24 * 0.3,
-					28 * 0.3,
-					32 * 0.3, -- 7 CP Kyrian ability buff
-				}
-			},
-			vendetta = {
-				id = 79140,
-				name = "",
-				icon = "",
-				energy = 60,
-                duration = 3
+				icon = ""
 			},
 
 			-- Talents
-			blindside = {
-				id = 121153,
+			fistOfTheWhiteTiger = {
+				id = 261947,
 				name = "",
 				icon = "",
-				duration = 10,
-				isActive = false,
-			},
-			subterfuge = {
-				id = 115192,
-				name = "",
-				icon = "",
-				isActive = false
-			},
-			internalBleeding = {
-				id = 154953,
-				name = "",
-				icon = ""
-			},
-			exsanguinate = {
-				id = 200806,
-				name = "",
-				icon = "",
-				energy = -25,
+				energy = -40,
 				texture = "",
-				thresholdId = 16,
-				settingKey = "exsanguinate",
+				comboPointsGenerated = 3,
+				thresholdId = 8,
+				settingKey = "fistOfTheWhiteTiger",
 				hasCooldown = true,
 				isTalent = true,
-				isSnowflake = true,
 				thresholdUsable = false,
-				cooldown = 45
+				cooldown = 30
 			},
-			hiddenBlades = {
-				id = 270061,
+			energizingElixir = {
+				id = 115288,
+				name = "",
+				icon = "",
+				comboPointsGenerated = 2,
+				energyPerTick = 15,
+				ticks = 5,
+				tickRate = 1,
+				isTalent = true
+			},
+			rushingJadeWind = {
+				id = 116847,
+				name = "",
+				icon = "",
+				comboPoints = 1,
+				isTalent = true
+			},
+			danceOfChiJi = {
+				id = 325201,
 				name = "",
 				icon = ""
 			},
-			crimsonTempest = {
-				id = 121411,
+			serenity = {
+				id = 152173,
 				name = "",
-				icon = "",
-				energy = -35,
-				comboPoints = true,
-				texture = "",
-				thresholdId = 17,
-				settingKey = "crimsonTempest",
-				hasCooldown = false,
-				isTalent = true,
-				thresholdUsable = false,
-				pandemicTimes = {
-					4 * 0.3, -- 0 CP, show same as if we had 1
-					4 * 0.3,
-					6 * 0.3,
-					8 * 0.3,
-					10 * 0.3,
-					12 * 0.3,
-					14 * 0.3,
-					16 * 0.3, -- Kyrian ability buff
-				}
+				icon = ""
 			},
 
+			--[[
 			-- Covenants
 			echoingReprimand = { -- Kyrian
 				id = 323547,
@@ -499,32 +351,27 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			serratedBoneSpike = 0,]]
 			targets = {}
 		}
-		--[[specCache.windwalker.snapshotData.crimsonVial = {
+		specCache.windwalker.snapshotData.detox = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.windwalker.snapshotData.distract = {
+		specCache.windwalker.snapshotData.expelHarm = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.windwalker.snapshotData.feint = {
+		specCache.windwalker.snapshotData.paralysis = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.windwalker.snapshotData.kidneyShot = {
+		specCache.windwalker.snapshotData.fistOfTheWhiteTiger = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.windwalker.snapshotData.shiv = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}
-		specCache.windwalker.snapshotData.garrote = {
+		--[[specCache.windwalker.snapshotData.garrote = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
@@ -739,8 +586,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
             settings = TRB.Data.settings.monk.windwalker
 			TRB.Data.character.specName = "windwalker"
+			TRB.Data.character.talents.fistOfTheWhiteTiger.isSelected = select(4, GetTalentInfo(3, 2, TRB.Data.character.specGroup))
 			--[[
-            TRB.Data.character.talents.blindside.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
+            
 			TRB.Data.character.talents.subterfuge.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.internalBleeding.isSelected = select(4, GetTalentInfo(5, 1, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.exsanguinate.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
@@ -1633,27 +1481,23 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			TRB.Data.snapshotData.serratedBoneSpike.startTime = nil
 			TRB.Data.snapshotData.serratedBoneSpike.duration = 0
 		end
-
-        if TRB.Data.snapshotData.distract.startTime ~= nil and currentTime > (TRB.Data.snapshotData.distract.startTime + TRB.Data.snapshotData.distract.duration) then
-            TRB.Data.snapshotData.distract.startTime = nil
-            TRB.Data.snapshotData.distract.duration = 0
+		]]
+        if TRB.Data.snapshotData.detox.startTime ~= nil and currentTime > (TRB.Data.snapshotData.detox.startTime + TRB.Data.snapshotData.detox.duration) then
+            TRB.Data.snapshotData.detox.startTime = nil
+            TRB.Data.snapshotData.detox.duration = 0
         end
 
-        if TRB.Data.snapshotData.feint.startTime ~= nil and currentTime > (TRB.Data.snapshotData.feint.startTime + TRB.Data.snapshotData.feint.duration) then
-            TRB.Data.snapshotData.feint.startTime = nil
-            TRB.Data.snapshotData.feint.duration = 0
+        if TRB.Data.snapshotData.expelHarm.startTime ~= nil and currentTime > (TRB.Data.snapshotData.expelHarm.startTime + TRB.Data.snapshotData.expelHarm.duration) then
+            TRB.Data.snapshotData.expelHarm.startTime = nil
+            TRB.Data.snapshotData.expelHarm.duration = 0
         end
 
-        if TRB.Data.snapshotData.kidneyShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.kidneyShot.startTime + TRB.Data.snapshotData.kidneyShot.duration) then
-            TRB.Data.snapshotData.kidneyShot.startTime = nil
-            TRB.Data.snapshotData.kidneyShot.duration = 0
+        if TRB.Data.snapshotData.paralysis.startTime ~= nil and currentTime > (TRB.Data.snapshotData.paralysis.startTime + TRB.Data.snapshotData.paralysis.duration) then
+            TRB.Data.snapshotData.paralysis.startTime = nil
+            TRB.Data.snapshotData.paralysis.duration = 0
         end
 
-        if TRB.Data.snapshotData.shiv.startTime ~= nil and currentTime > (TRB.Data.snapshotData.shiv.startTime + TRB.Data.snapshotData.shiv.duration) then
-            TRB.Data.snapshotData.shiv.startTime = nil
-            TRB.Data.snapshotData.shiv.duration = 0
-        end
-
+		--[[
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].cripplingPoison then
 				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.cripplingPoison.id, "target", "player"))
@@ -1694,6 +1538,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local currentTime = GetTime()
 		local _
 
+        if TRB.Data.snapshotData.fistOfTheWhiteTiger.startTime ~= nil and currentTime > (TRB.Data.snapshotData.fistOfTheWhiteTiger.startTime + TRB.Data.snapshotData.fistOfTheWhiteTiger.duration) then
+            TRB.Data.snapshotData.fistOfTheWhiteTiger.startTime = nil
+            TRB.Data.snapshotData.fistOfTheWhiteTiger.duration = 0
+        end
         --[[
         if TRB.Data.snapshotData.crimsonVial.startTime ~= nil and currentTime > (TRB.Data.snapshotData.crimsonVial.startTime + TRB.Data.snapshotData.crimsonVial.duration) then
             TRB.Data.snapshotData.crimsonVial.startTime = nil
@@ -2085,12 +1933,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 			if sourceGUID == TRB.Data.character.guid then
 				if specId == 3 then --Windwalker
-					--[[if spellId == TRB.Data.spells.exsanguinate.id then
+					if spellId == TRB.Data.spells.fistOfTheWhiteTiger.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.exsanguinate.startTime = currentTime
-							TRB.Data.snapshotData.exsanguinate.duration = TRB.Data.spells.exsanguinate.cooldown
+							TRB.Data.snapshotData.fistOfTheWhiteTiger.startTime = currentTime
+							TRB.Data.snapshotData.fistOfTheWhiteTiger.duration = TRB.Data.spells.fistOfTheWhiteTiger.cooldown
 						end
-					elseif spellId == TRB.Data.spells.blindside.id then
+					--[[elseif spellId == TRB.Data.spells.blindside.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.blindside.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.blindside.duration, TRB.Data.snapshotData.blindside.endTime, _, _, _, TRB.Data.snapshotData.blindside.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.blindside.id)
@@ -2252,47 +2100,27 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.dismantle.startTime = currentTime
 							TRB.Data.snapshotData.dismantle.duration = TRB.Data.spells.dismantle.cooldown
-						end
-					end]]
+						end]]
+					end
 				end
 
 				-- Spec agnostic
-				--[[if spellId == TRB.Data.spells.crimsonVial.id then
+				if spellId == TRB.Data.spells.detox.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						TRB.Data.snapshotData.crimsonVial.startTime = currentTime
-						TRB.Data.snapshotData.crimsonVial.duration = TRB.Data.spells.crimsonVial.cooldown
+						TRB.Data.snapshotData.detox.startTime = currentTime
+						TRB.Data.snapshotData.detox.duration = TRB.Data.spells.detox.cooldown
 					end
-				elseif spellId == TRB.Data.spells.sliceAndDice.id then
-					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
-						TRB.Data.spells.sliceAndDice.isActive = true
-						_, _, _, _, TRB.Data.snapshotData.sliceAndDice.duration, TRB.Data.snapshotData.sliceAndDice.endTime, _, _, _, TRB.Data.snapshotData.sliceAndDice.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.sliceAndDice.id)
-					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-						TRB.Data.spells.sliceAndDice.isActive = false
-						TRB.Data.snapshotData.sliceAndDice.spellId = nil
-						TRB.Data.snapshotData.sliceAndDice.duration = 0
-						TRB.Data.snapshotData.sliceAndDice.endTime = nil
-					end
-				elseif spellId == TRB.Data.spells.distract.id then
+				elseif spellId == TRB.Data.spells.expelHarm.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						TRB.Data.snapshotData.distract.startTime = currentTime
-						TRB.Data.snapshotData.distract.duration = TRB.Data.spells.distract.cooldown
+						TRB.Data.snapshotData.expelHarm.startTime = currentTime
+						TRB.Data.snapshotData.expelHarm.duration = TRB.Data.spells.expelHarm.cooldown
 					end
-				elseif spellId == TRB.Data.spells.feint.id then
+				elseif spellId == TRB.Data.spells.paralysis.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						TRB.Data.snapshotData.feint.startTime = currentTime
-						TRB.Data.snapshotData.feint.duration = TRB.Data.spells.feint.cooldown
+						TRB.Data.snapshotData.paralysis.startTime = currentTime
+						TRB.Data.snapshotData.paralysis.duration = TRB.Data.spells.paralysis.cooldown
 					end
-				elseif spellId == TRB.Data.spells.kidneyShot.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						TRB.Data.snapshotData.kidneyShot.startTime = currentTime
-						TRB.Data.snapshotData.kidneyShot.duration = TRB.Data.spells.kidneyShot.cooldown
-					end
-				elseif spellId == TRB.Data.spells.shiv.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						TRB.Data.snapshotData.shiv.startTime = currentTime
-						TRB.Data.snapshotData.shiv.duration = TRB.Data.spells.shiv.cooldown
-					end
-				elseif spellId == TRB.Data.spells.adrenalineRush.id then
+				--[[elseif spellId == TRB.Data.spells.adrenalineRush.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REMOVED" then -- For right now, just redo the CheckCharacter() to get update Energy values
 						CheckCharacter()
 					end
@@ -2355,8 +2183,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							triggerUpdate = true
 						--elseif type == "SPELL_PERIODIC_DAMAGE" then
 						end
-					end
-				end]]
+					end]]
+				end
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.

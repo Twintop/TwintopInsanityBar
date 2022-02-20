@@ -97,61 +97,34 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					height=24
 				},
 				-- Core Monk
-				--[[ambush = {
+				cracklingJadeLightning = {
 					enabled = true, -- 1
 				},
-				cheapShot = {
+				detox = {
 					enabled = false, -- 2
 				},
-				crimsonVial = {
+				expelHarm = {
 					enabled = true, -- 3
 				},
-				distract = {
+				paralysis = {
 					enabled = false, -- 4
 				},
-				feint = {
+				tigerPalm = {
 					enabled = true, -- 5
 				},
-				kidneyShot = {
+				vivify = {
 					enabled = false, -- 6
 				},
-				sap = {
+				-- Windwalker
+				disable = {
 					enabled = false, -- 7
 				},
-				shiv = {
-					enabled = false, -- 8
-				},
-				sliceAndDice = {
-					enabled = true, -- 9
-				},
-				-- Windwalker
-				envenom = {
-					enabled = true, -- 10
-				},
-				fanOfKnives = {
-					enabled = true, -- 11
-				},
-				garrote = {
-					enabled = true, -- 12
-				},
-				mutilate = {
-					enabled = true, -- 13
-				},
-				poisonedKnife = {
-					enabled = false, -- 14
-				},
-				rupture = {
-					enabled = true, -- 15
-				},
 				-- Talents
-				exsanguinate = {
-					enabled = true, -- 16
-				},
-				crimsonTempest = {
-					enabled = true, -- 17
+				fistOfTheWhiteTiger = {
+					enabled = true, -- 8
 				},
 				-- Covenants
-				echoingReprimand = { -- Kyrian
+				--[[echoingReprimand = { -- Kyrian
 					enabled = true, -- 18
 				},
 				sepsis = { -- Night Fae
@@ -234,9 +207,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					overcapEnabled=true,
 				},
 				comboPoints = {
-					border="FFFFD300",
+					border="FF00FF98",
 					background="66000000",
-					base="FFFFFF00",
+					base="FFB5FFEB",
 					penultimate="FFFF9900",
 					final="FFFF0000",
 					--echoingReprimand="FF68CCEF",
@@ -1884,6 +1857,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 
 		yCoord = yCoord - 30
+		--[[
 		controls.colors.noSliceAndDice = TRB.UiFunctions:BuildColorPicker(parent, "Energy when Slice and Dice is not up", TRB.Data.settings.monk.windwalker.colors.bar.noSliceAndDice, 275, 25, xCoord, yCoord)
 		f = controls.colors.noSliceAndDice
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1903,7 +1877,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					TRB.Data.settings.monk.windwalker.colors.bar.noSliceAndDice = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
-		end)
+		end)]]
 
 		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.monk.windwalker.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
@@ -1973,7 +1947,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 		end)
 
-		yCoord = yCoord - 30		
+		yCoord = yCoord - 30
 		controls.colors.comboPointPenultimate = TRB.UiFunctions:BuildColorPicker(parent, "Penultimate Chi", TRB.Data.settings.monk.windwalker.colors.comboPoints.penultimate, 300, 25, xCoord, yCoord)
 		f = controls.colors.comboPointPenultimate
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1994,6 +1968,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 		end)
 
+		--[[
 		controls.colors.comboPointEchoingReprimand = TRB.UiFunctions:BuildColorPicker(parent, "Chi when Echoing Reprimand (|cFF68CCEFKyrian|r) buff is up", TRB.Data.settings.monk.windwalker.colors.comboPoints.echoingReprimand, 275, 25, xCoord2, yCoord)
 		f = controls.colors.comboPointEchoingReprimand
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2013,9 +1988,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
                     TRB.Data.settings.monk.windwalker.colors.comboPoints.echoingReprimand = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
-		end)
+		end)]]
 
-		yCoord = yCoord - 30		
+		yCoord = yCoord - 30
 		controls.colors.comboPointFinal = TRB.UiFunctions:BuildColorPicker(parent, "Final Chi", TRB.Data.settings.monk.windwalker.colors.comboPoints.final, 300, 25, xCoord, yCoord)
 		f = controls.colors.comboPointFinal
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2036,6 +2011,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 		end)
 
+		--[[
 		controls.colors.comboPointSerratedBoneSpike = TRB.UiFunctions:BuildColorPicker(parent, "Chi that wil generate on next Serrated Bone Spike (|cFF40BF40Necrolord|r) use", TRB.Data.settings.monk.windwalker.colors.comboPoints.serratedBoneSpike, 275, 25, xCoord2, yCoord)
 		f = controls.colors.comboPointSerratedBoneSpike
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2055,7 +2031,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
                     TRB.Data.settings.monk.windwalker.colors.comboPoints.serratedBoneSpike = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
-		end)
+		end)]]
 
 		yCoord = yCoord - 30
 
@@ -2178,200 +2154,97 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		
 		controls.labels.builders = TRB.UiFunctions:BuildLabel(parent, "Builders", 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
-        --[[
-		controls.checkBoxes.ambushThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_ambush", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.ambushThresholdShow
+		controls.checkBoxes.expelHarmThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_expelHarm", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.expelHarmThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Ambush")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ambush. Only visible when in Stealth or usable via the Blindside or Subterfuge talent."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.ambush.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Expel Harm")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Expel Harm. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.expelHarm.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.ambush.enabled = self:GetChecked()
+			TRB.Data.settings.monk.windwalker.thresholds.expelHarm.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.cheapShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_cheapShot", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.cheapShotThresholdShow
+		controls.checkBoxes.tigerPalmThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_tigerPalm", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.tigerPalmThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Cheap Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Cheap Shot. Only visible when in Stealth or usable via the Subterfuge talent."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.cheapShot.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Tiger Palm")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Tiger Palm."
+		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.tigerPalm.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.cheapShot.enabled = self:GetChecked()
+			TRB.Data.settings.monk.windwalker.thresholds.tigerPalm.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.fanOfKnivesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_fanOfKnives", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.fanOfKnivesThresholdShow
+		controls.checkBoxes.fistOfTheWhiteTigerThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_fistOfTheWhiteTiger", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.fistOfTheWhiteTigerThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Fan of Knives")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Fan of Knives."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.fanOfKnives.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Fist of the White Tiger (if talented)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Fist of the White Tiger. Only visible if talented in to Fist of the White Tiger. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.fistOfTheWhiteTiger.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.fanOfKnives.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.garroteThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_garrote", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.garroteThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Garrote")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Garrote. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.garrote.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.garrote.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.mutilateThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_mutilate", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.mutilateThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mutilate")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Mutilate."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.mutilate.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.mutilate.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.poisonedKnifeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_poisonedKnife", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.poisonedKnifeThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Poisoned Knife")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Poisoned Knife."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.poisonedKnife.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.poisonedKnife.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.shivThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_shiv", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.shivThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Shiv")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If on cooldown, will be colored as 'unusable'. If using the Tiny Toxic Blade legendary, no threshold will be shown."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.shiv.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.shiv.enabled = self:GetChecked()
-		end)
-
-
-		yCoord = yCoord - 25
-		controls.labels.finishers = TRB.UiFunctions:BuildLabel(parent, "Finishers", 5, yCoord, 110, 20)
-		yCoord = yCoord - 20
-
-		controls.checkBoxes.crimsonTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_crimsonTempest", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.crimsonTempestThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Crimson Tempest (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Tempest. Only visible if talented in to Crimson Tempest. If you do not have any Chi, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.crimsonTempest.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.crimsonTempest.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.envenomThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_envenom", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.envenomThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Envenom")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Envenom. If you do not have any Chi, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.envenom.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.envenom.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.kidneyShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_kidneyShot", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.kidneyShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Kidney Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Kidney Shot. Only visible when in Stealth or usable via the Subterfuge talent. If on cooldown or if you do not have any Chi, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.kidneyShot.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.kidneyShot.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.sliceAndDiceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_sliceAndDice", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.sliceAndDiceThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Slice and Dice")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Slice and Dice. If you do not have any Chi, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.sliceAndDice.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.sliceAndDice.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.ruptureThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_rupture", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.ruptureThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Rupture")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Rupture. If you do not have any Chi, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.rupture.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.rupture.enabled = self:GetChecked()
+			TRB.Data.settings.monk.windwalker.thresholds.fistOfTheWhiteTiger.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25		
 		controls.labels.utility = TRB.UiFunctions:BuildLabel(parent, "General / Utility", 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
-		controls.checkBoxes.crimsonVialThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_crimsonVial", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.crimsonVialThresholdShow
+		controls.checkBoxes.cracklingJadeLightningThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_cracklingJadeLightning", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.cracklingJadeLightningThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Crimson Vial")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Vial. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.crimsonVial.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Crackling Jade Lightning")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crackling Jade Lightning."
+		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.cracklingJadeLightning.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.crimsonVial.enabled = self:GetChecked()
+			TRB.Data.settings.monk.windwalker.thresholds.cracklingJadeLightning.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.distractThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_distract", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.distractThresholdShow
+		controls.checkBoxes.detoxThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_detox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.detoxThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Distract")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Distract. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.distract.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Detox")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Detox. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.detox.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.distract.enabled = self:GetChecked()
+			TRB.Data.settings.monk.windwalker.thresholds.detox.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.exsanguinateThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_exsanguinate", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.exsanguinateThresholdShow
+		controls.checkBoxes.paralysisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_paralysis", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.paralysisThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Exsanguinate (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Exsanguinate. Only visible if talented in to Exsanguinate. If on cooldown or the current target has no bleeds, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.exsanguinate.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Paralysis")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Paralysis. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.paralysis.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.exsanguinate.enabled = self:GetChecked()
+			TRB.Data.settings.monk.windwalker.thresholds.paralysis.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.feintThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_feint", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.feintThresholdShow
+		controls.checkBoxes.vivifyThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_vivify", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.vivifyThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Feint")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feint. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.feint.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Vivify")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Vivify."
+		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.vivify.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.feint.enabled = self:GetChecked()
+			TRB.Data.settings.monk.windwalker.thresholds.vivify.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.sapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_sap", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.sapThresholdShow
+		controls.checkBoxes.disableThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_disable", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.disableThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sap")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sap. Only visible when in Stealth or usable via the Subterfuge talent."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.sap.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Disable")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Disable."
+		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.disable.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.sap.enabled = self:GetChecked()
+			TRB.Data.settings.monk.windwalker.thresholds.disable.enabled = self:GetChecked()
 		end)
 
+		--[[
 		yCoord = yCoord - 25
 		controls.labels.covenant = TRB.UiFunctions:BuildLabel(parent, "Covenant", 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
