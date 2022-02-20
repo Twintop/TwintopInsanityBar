@@ -61,6 +61,9 @@ local function LoadDefaultSettings()
                     marksmanship = true,
                     survival = true
                 },
+                monk = {
+                    windwalker = true
+                },
                 priest = {
                     holy = true,
                     shadow = true
@@ -79,6 +82,9 @@ local function LoadDefaultSettings()
             },
             experimental = {
                 specs = {
+                    monk = {
+                        windwalker = false
+                    },
                     shaman = {
                         restoration = false
                     }
@@ -96,6 +102,9 @@ local function LoadDefaultSettings()
             beastMastery = {},
             marksmanship = {},
             survival = {}
+        },
+        monk = {
+            windwalker = {}
         },
         priest = {
             holy = {},
@@ -366,7 +375,18 @@ local function ConstructAddonOptionsPanel()
     controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Experimental Features", 0, yCoord)
 
     yCoord = yCoord - 30
-    controls.checkBoxes.experimentalShamanRestoration = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental", parent, "ChatConfigCheckButtonTemplate")
+    controls.checkBoxes.experimentalMonkWindwalker = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Monk_Windwalker", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.experimentalMonkWindwalker
+    f:SetPoint("TOPLEFT", xCoord, yCoord)
+    getglobal(f:GetName() .. 'Text'):SetText("Windwalker Monk support")
+    f.tooltip = "This will enable experimental Windwalker Monk support within the bar. If you change this setting and are currently logged in on a Shaman, you'll need to reload your UI before Windwalker Monk configuration options become available."
+    f:SetChecked(TRB.Data.settings.core.experimental.specs.monk.windwalker)
+    f:SetScript("OnClick", function(self, ...)
+        TRB.Data.settings.core.experimental.specs.monk.windwalker = self:GetChecked()
+    end)
+
+    yCoord = yCoord - 30
+    controls.checkBoxes.experimentalShamanRestoration = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Shaman_Restoration", parent, "ChatConfigCheckButtonTemplate")
     f = controls.checkBoxes.experimentalShamanRestoration
     f:SetPoint("TOPLEFT", xCoord, yCoord)
     getglobal(f:GetName() .. 'Text'):SetText("Restoration Shaman support")
@@ -830,6 +850,46 @@ local function ConstructImportExportPanel()
     controls.exportButton_Hunter_Survival_BarText:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Survival Hunter (Bar Text).", 3, 3, false, false, false, true, false)
     end)
+    
+
+    if TRB.Data.settings.core.experimental.specs.monk.windwalker then        
+        yCoord = yCoord - 35
+        controls.labels.monk = TRB.UiFunctions:BuildLabel(parent, "Monk", xCoord, yCoord, 110, 20)
+
+        yCoord = yCoord - 25
+        specName = "Windwalker"
+        controls.labels.monkWindwalker = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    
+        buttonOffset = xCoord + xPadding + 100
+        controls.buttons.exportButton_Monk_Windwalker_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+        controls.buttons.exportButton_Monk_Windwalker_All:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Windwalker Monk (All).", 10, 3, true, true, true, true, false)
+        end)
+    
+        buttonOffset = buttonOffset + buttonSpacing + 50
+        controls.exportButton_Monk_Windwalker_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+        controls.exportButton_Monk_Windwalker_BarDisplay:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Windwalker Monk (Bar Display).", 10, 3, true, false, false, false, false)
+        end)
+    
+        buttonOffset = buttonOffset + buttonSpacing + 80
+        controls.exportButton_Monk_Windwalker_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+        controls.exportButton_Monk_Windwalker_FontAndText:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Windwalker Monk (Font & Text).", 10, 3, false, true, false, false, false)
+        end)
+    
+        buttonOffset = buttonOffset + buttonSpacing + 90
+        controls.exportButton_Monk_Windwalker_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+        controls.exportButton_Monk_Windwalker_AudioAndTracking:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Windwalker Monk (Audio & Tracking).", 10, 3, false, false, true, false, false)
+        end)
+    
+        buttonOffset = buttonOffset + buttonSpacing + 120
+        controls.exportButton_Monk_Windwalker_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+        controls.exportButton_Monk_Windwalker_BarText:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Windwalker Monk (Bar Text).", 10, 3, false, false, false, true, false)
+        end)  
+    end
 
     yCoord = yCoord - 35
     controls.labels.priest = TRB.UiFunctions:BuildLabel(parent, "Priest", xCoord, yCoord, 110, 20)
@@ -1071,7 +1131,7 @@ local function ConstructImportExportPanel()
         controls.exportButton_Shaman_Restoration_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
         controls.exportButton_Shaman_Restoration_BarText:SetScript("OnClick", function(self, ...)
             TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (Bar Text).", 7, 3, false, false, false, true, false)
-        end)  
+        end)
     end
 
 
