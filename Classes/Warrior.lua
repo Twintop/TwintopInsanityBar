@@ -979,36 +979,118 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
             TRB.Data.character.talents.ravager.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 
 			-- Legendaries
+			local headItemLink = GetInventoryItemLink("player", 1)
+			local neckItemLink = GetInventoryItemLink("player", 2)
+			local shoulderItemLink = GetInventoryItemLink("player", 3)
 			local chestItemLink = GetInventoryItemLink("player", 5)
 			local waistItemLink = GetInventoryItemLink("player", 6)
+			local legItemLink = GetInventoryItemLink("player", 7)
+			local feetItemLink = GetInventoryItemLink("player", 8)
 			local wristItemLink = GetInventoryItemLink("player", 9)
 			local handItemLink = GetInventoryItemLink("player", 10)
+			local ring1ItemLink = GetInventoryItemLink("player", 11)
+			local ring2ItemLink = GetInventoryItemLink("player", 12)
 			local backItemLink = GetInventoryItemLink("player", 15)
 
 			local naturesFury = false
-			if wristItemLink ~= nil  then
-				naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(wristItemLink, 171419, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
-			end
-			
-			if naturesFury == false and handItemLink ~= nil  then
-				naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(handItemLink, 171414, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
-			end
-			
-			if naturesFury == false and backItemLink ~= nil  then
-				naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(backItemLink, 173242, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
-			end
-			
-			if naturesFury == false and waistItemLink ~= nil  then
-				naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(waistItemLink, 171418, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
-			end
-
 			local glory = false
-			if chestItemLink ~= nil  then
-				glory = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(chestItemLink, 171412, TRB.Data.spells.conquerorsBanner.idLegendaryBonus)
-			end
-			
-			if glory == false and waistItemLink ~= nil  then
-				glory = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(waistItemLink, 171418, TRB.Data.spells.conquerorsBanner.idLegendaryBonus)
+
+			if TRB.Data.character.covenantId == 3 then
+				if headItemLink ~= nil  then
+					naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(headItemLink, 171415, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+				end
+				
+				if naturesFury == false and neckItemLink ~= nil  then
+					naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(neckItemLink, 178927, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+				end
+				
+				if naturesFury == false and shoulderItemLink ~= nil  then
+					naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(shoulderItemLink, 171417, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+				end
+
+				if naturesFury == false and chestItemLink ~= nil  then
+					naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(chestItemLink, 171412, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+				end
+				
+				if naturesFury == false and waistItemLink ~= nil  then
+					naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(waistItemLink, 171418, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+				end
+
+				if naturesFury == false and legItemLink ~= nil  then
+					naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(legItemLink, 171416, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+				end
+
+				if naturesFury == false and feetItemLink ~= nil  then
+					naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(feetItemLink, 171413, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+				end
+
+				if naturesFury == false and wristItemLink ~= nil  then
+					naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(wristItemLink, 171419, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+				end
+				
+				if naturesFury == false and handItemLink ~= nil  then
+					naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(handItemLink, 171414, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+				end
+				
+				if naturesFury == false and ring1ItemLink ~= nil  then
+					naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(ring1ItemLink, 178926, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+				end
+				
+				if naturesFury == false and ring2ItemLink ~= nil  then
+					naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(ring2ItemLink, 178926, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+				end
+				
+				if naturesFury == false and backItemLink ~= nil  then
+					naturesFury = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(backItemLink, 173242, TRB.Data.spells.ancientAftershock.idLegendaryBonus)
+				end
+			elseif TRB.Data.character.covenantId == 4 then
+				if headItemLink ~= nil  then
+					glory = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(headItemLink, 171415, TRB.Data.spells.conquerorsBanner.idLegendaryBonus)
+				end
+				
+				if glory == false and neckItemLink ~= nil  then
+					glory = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(neckItemLink, 178927, TRB.Data.spells.conquerorsBanner.idLegendaryBonus)
+				end
+				
+				if glory == false and shoulderItemLink ~= nil  then
+					glory = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(shoulderItemLink, 171417, TRB.Data.spells.conquerorsBanner.idLegendaryBonus)
+				end
+
+				if glory == false and chestItemLink ~= nil  then
+					glory = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(chestItemLink, 171412, TRB.Data.spells.conquerorsBanner.idLegendaryBonus)
+				end
+				
+				if glory == false and waistItemLink ~= nil  then
+					glory = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(waistItemLink, 171418, TRB.Data.spells.conquerorsBanner.idLegendaryBonus)
+				end
+
+				if glory == false and legItemLink ~= nil  then
+					glory = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(legItemLink, 171416, TRB.Data.spells.conquerorsBanner.idLegendaryBonus)
+				end
+
+				if glory == false and feetItemLink ~= nil  then
+					glory = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(feetItemLink, 171413, TRB.Data.spells.conquerorsBanner.idLegendaryBonus)
+				end
+
+				if glory == false and wristItemLink ~= nil  then
+					glory = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(wristItemLink, 171419, TRB.Data.spells.conquerorsBanner.idLegendaryBonus)
+				end
+				
+				if glory == false and handItemLink ~= nil  then
+					glory = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(handItemLink, 171414, TRB.Data.spells.conquerorsBanner.idLegendaryBonus)
+				end
+				
+				if glory == false and ring1ItemLink ~= nil  then
+					glory = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(ring1ItemLink, 178926, TRB.Data.spells.conquerorsBanner.idLegendaryBonus)
+				end
+				
+				if glory == false and ring2ItemLink ~= nil  then
+					glory = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(ring2ItemLink, 178926, TRB.Data.spells.conquerorsBanner.idLegendaryBonus)
+				end
+				
+				if glory == false and backItemLink ~= nil  then
+					glory = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(backItemLink, 173242, TRB.Data.spells.conquerorsBanner.idLegendaryBonus)
+				end
 			end
 
 			TRB.Data.character.items.naturesFury = naturesFury
@@ -2055,11 +2137,15 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					local passiveValue = 0
 					if TRB.Data.settings.warrior.arms.bar.showPassive then
 						if TRB.Data.snapshotData.ravager.rage > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshotData.ravager.rage 
+							passiveValue = passiveValue + TRB.Data.snapshotData.ravager.rage
 						end
 
 						if TRB.Data.snapshotData.ancientAftershock.rage > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshotData.ancientAftershock.rage 
+							passiveValue = passiveValue + TRB.Data.snapshotData.ancientAftershock.rage
+						end
+
+						if TRB.Data.snapshotData.conquerorsBanner.rage > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.conquerorsBanner.rage
 						end
 					end
 
@@ -2272,6 +2358,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					if TRB.Data.settings.warrior.fury.bar.showPassive then
 						if TRB.Data.snapshotData.ancientAftershock.rage > 0 then
 							passiveValue = passiveValue + TRB.Data.snapshotData.ancientAftershock.rage
+						end
+
+						if TRB.Data.snapshotData.conquerorsBanner.rage > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.conquerorsBanner.rage
 						end
 					end
 
