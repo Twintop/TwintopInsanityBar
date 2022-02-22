@@ -183,7 +183,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				threshold = {
 					under="FFFFFFFF",
 					over="FF00FF00",
-					unusable="FFFF0000"
+					unusable="FFFF0000",
+					special="FFFF00FF"
 				}
 			},
 			displayText = {},
@@ -1861,9 +1862,30 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end)
 
+		controls.colors.thresholdSpecial = TRB.UiFunctions:BuildColorPicker(parent, "(T28) Cobra Shot's damage is buffed", TRB.Data.settings.hunter.beastMastery.colors.threshold.special, 275, 25, xCoord2, yCoord-90)
+		f = controls.colors.thresholdSpecial
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.hunter.beastMastery.colors.threshold.special, true)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+---@diagnostic disable-next-line: deprecated
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+
+                    controls.colors.thresholdSpecial.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.hunter.beastMastery.colors.threshold.special = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-120)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.overlapBorder)

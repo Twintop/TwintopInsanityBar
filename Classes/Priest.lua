@@ -76,9 +76,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				surgeOfLight = {
 					isSelected = false
 				},
-				bindingHeal = {
-					isSelected = false
-				},
 				lightOfTheNaaru = {
 					isSelected = false
 				},
@@ -206,9 +203,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 64901,
 				name = "",
 				icon = "",
-				duration = 5.0, --Hasted
+				duration = 4.0, --Hasted
 				manaPercent = 0.03,
-				ticks = 5, -- initial + 5 ticks, 18% total restored
+				ticks = 3,
 				tickId = 265144
 			},
 
@@ -220,15 +217,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				duration = 20,
 				isActive = false
-			},
-			bindingHeal = {
-				id = 32546,
-				name = "",
-				icon = "",
-				holyWordKey = "holyWordSerenity",
-				holyWordReduction = 3,
-				holyWordKey2 = "holyWordSanctify",
-				holyWordReduction2 = 3
 			},
 			lightOfTheNaaru = {
 				id = 196985,
@@ -371,6 +359,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				}
 			},
 
+			-- Set Bonuses
+			divineConversation = {
+				id = 363727,
+				name = "",
+				icon = "",
+				reduction = 15
+			},
+
 			-- Torghast
 			dreamspunMushrooms = {
 				id = 342409,
@@ -498,6 +494,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			onCooldown = false,
 			startTime = nil,
 			duration = 0
+		}
+		specCache.holy.snapshotData.divineConversation = {
+			isActive = false
 		}
 
 		specCache.holy.barTextVariables = {
@@ -885,7 +884,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 347240,
 				name = "",
 				icon = ""
+			},
+			
+			-- Misc
+			decryptedUrhCypher = {
+				id = 368239,
+				name = "",
+				icon = "",
+				modifier = 3
+			},
+			architectsIngenuity = {
+				id = 367307,
+				name = "",
+				icon = "",
+				modifier = 1.15
 			}
+
 		}
 
 		specCache.shadow.snapshotData.voidform = {
@@ -988,6 +1002,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			resourceRaw = 0,
 			resourceFinal = 0,
 		}
+		specCache.shadow.snapshotData.decryptedUrhCypher = {
+			spellId = nil,
+			isActive = false,
+			endTime = nil,
+			duration = 0
+		}
+		specCache.shadow.snapshotData.architectsIngenuity = {
+			spellId = nil,
+			isActive = false,
+			endTime = nil,
+			duration = 0
+		}
 
 		specCache.shadow.barTextVariables = {
 			icons = {},
@@ -1051,8 +1077,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#apotheosis", icon = spells.apotheosis.icon, description = spells.apotheosis.name, printInSettings = true },
-			{ variable = "#bh", icon = spells.bindingHeal.icon, description = spells.bindingHeal.name, printInSettings = true },
-			{ variable = "#bindingHeal", icon = spells.bindingHeal.icon, description = spells.bindingHeal.name, printInSettings = false },
 			{ variable = "#coh", icon = spells.circleOfHealing.icon, description = spells.circleOfHealing.name, printInSettings = true },
 			{ variable = "#circleOfHealing", icon = spells.circleOfHealing.icon, description = spells.circleOfHealing.name, printInSettings = false },
 			{ variable = "#fc", icon = spells.flashConcentration.icon, description = spells.flashConcentration.name, printInSettings = true },
@@ -1402,7 +1426,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.FillSpellDataManaCost(TRB.Data.spells)
 
 			TRB.Data.character.talents.surgeOfLight.isSelected = select(4, GetTalentInfo(5, 1, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.bindingHeal.isSelected = select(4, GetTalentInfo(5, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.lightOfTheNaaru.isSelected = select(4, GetTalentInfo(7, 1, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.apotheosis.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 			
@@ -1476,8 +1499,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.character.talents.mindbender.isSelected = select(4, GetTalentInfo(6, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.hungeringVoid.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.surrenderToMadeness.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
-
-			-- Legendaries
+			
+			-- Legendaries and Set Bonuses
 			local wristItemLink = GetInventoryItemLink("player", 9)
 			local handsItemLink = GetInventoryItemLink("player", 10)
 
@@ -1490,7 +1513,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				callToTheVoid = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(handsItemLink, 173244, TRB.Data.spells.eternalCallToTheVoid_Tendril.idLegendaryBonus)
 			end
 			TRB.Data.character.items.callToTheVoid = callToTheVoid
-			
+
 			-- Torghast
 			if IsInJailersTower() then
 				TRB.Data.character.torghast.dreamspunMushroomsModifier = 1 + ((select(16, TRB.Functions.FindAuraById(TRB.Data.spells.dreamspunMushrooms.id, "player", "MAW")) or 0) / 100)
@@ -1761,12 +1784,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			local remainingTime = (expirationTime - currentTime) or 0
 
 			if TRB.Data.character.talents.hungeringVoid.isSelected == true then
+				local decryptedUrhCypherMod = 1
+				local architectsIngenuityMod = 1
+
+				if TRB.Data.snapshotData.decryptedUrhCypher.isActive and TRB.Data.snapshotData.decryptedUrhCypher.endTime > currentTime then
+					decryptedUrhCypherMod = TRB.Data.spells.decryptedUrhCypher.modifier
+				end
+
+				if TRB.Data.snapshotData.architectsIngenuity.isActive and TRB.Data.snapshotData.architectsIngenuity.endTime > currentTime then
+					architectsIngenuityMod = TRB.Data.spells.architectsIngenuity.modifier
+				end
+
 				local reaction = TRB.Data.settings.core.reactionTime
 				local latency = TRB.Functions.GetLatency()
 ---@diagnostic disable-next-line: redundant-parameter
 				local vbStart, vbDuration, _, _ = GetSpellCooldown(TRB.Data.spells.voidBolt.id)
 				local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(TRB.Data.spells.voidBolt.id)
-				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier * TRB.Data.character.torghast.phantasmicInfuserModifier * TRB.Data.character.torghast.rampaging.coolDownReduction), 0.75) + latency + reaction
+				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier * TRB.Data.character.torghast.phantasmicInfuserModifier * TRB.Data.character.torghast.rampaging.coolDownReduction * decryptedUrhCypherMod * architectsIngenuityMod), 0.75) + latency + reaction
 				local gcdLockRemaining = TRB.Functions.GetCurrentGCDLockRemaining()
 
 				local castGrantsExtension = true
@@ -1976,6 +2010,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function CalculateHolyWordCooldown(base)
 		local holyOrationValue = TRB.Data.spells.holyOration.conduitRanks[TRB.Functions.GetSoulbindEquippedConduitRank(TRB.Data.spells.holyOration.conduitId)]
 		local mod = 1 * TRB.Data.character.torghast.rampaging.coolDownReduction
+		local divineConversationValue = 0
+
+		if TRB.Data.snapshotData.divineConversation.isActive then
+			divineConversationValue = TRB.Data.spells.divineConversation.reduction
+		end
 
 		if TRB.Data.spells.apotheosis.isActive then
 			mod = mod * TRB.Data.spells.apotheosis.holyWordModifier
@@ -1986,7 +2025,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 		mod = mod + holyOrationValue
 
-		return mod * base
+		return mod * base + divineConversationValue
 	end
 
 	local function CalculateManaGain(mana, isPotion)
@@ -2503,8 +2542,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#apotheosis"] = TRB.Data.spells.apotheosis.icon
-		lookup["#bh"] = TRB.Data.spells.bindingHeal.icon
-		lookup["#bindingHeal"] = TRB.Data.spells.bindingHeal.icon
 		lookup["#coh"] = TRB.Data.spells.circleOfHealing.icon
 		lookup["#circleOfHealing"] = TRB.Data.spells.circleOfHealing.icon
 		lookup["#fc"] = TRB.Data.spells.flashConcentration.icon
@@ -3079,8 +3116,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.casting.spellKey = "renew"
 						elseif currentSpellId == TRB.Data.spells.smite.id then
 							TRB.Data.snapshotData.casting.spellKey = "smite"
-						elseif currentSpellId == TRB.Data.spells.bindingHeal.id then --If talented
-							TRB.Data.snapshotData.casting.spellKey = "bindingHeal"
 						elseif TRB.Data.character.items.harmoniousApparatus then
 							if currentSpellId == TRB.Data.spells.circleOfHealing.id then --Harmonious Apparatus / This shouldn't happen
 								TRB.Data.snapshotData.casting.spellKey = "circleOfHealing"
@@ -4405,6 +4440,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 ---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.snapshotData.holyWordChastise.startTime, TRB.Data.snapshotData.holyWordChastise.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordChastise.id)
 						end
+					elseif spellId == TRB.Data.spells.divineConversation.id then
+						if type == "SPELL_AURA_APPLIED" then -- Gained buff
+							TRB.Data.snapshotData.divineConversation.isActive = true
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.divineConversation.isActive = false
+						end
 					end
 				elseif specId == 3 then
 					if spellId == TRB.Data.spells.s2m.id then
@@ -4539,6 +4580,26 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.twistOfFate.spellId = nil
 							TRB.Data.snapshotData.twistOfFate.duration = 0
 							TRB.Data.snapshotData.twistOfFate.endTime = nil
+						end
+					elseif spellId == TRB.Data.spells.decryptedUrhCypher.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
+							TRB.Data.snapshotData.decryptedUrhCypher.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.decryptedUrhCypher.duration, TRB.Data.snapshotData.decryptedUrhCypher.endTime, _, _, _, TRB.Data.snapshotData.decryptedUrhCypher.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.decryptedUrhCypher.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.decryptedUrhCypher.spellId = nil
+							TRB.Data.snapshotData.decryptedUrhCypher.isActive = false
+							TRB.Data.snapshotData.decryptedUrhCypher.duration = 0
+							TRB.Data.snapshotData.decryptedUrhCypher.endTime = nil
+						end
+					elseif spellId == TRB.Data.spells.architectsIngenuity.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
+							TRB.Data.snapshotData.architectsIngenuity.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.architectsIngenuity.duration, TRB.Data.snapshotData.architectsIngenuity.endTime, _, _, _, TRB.Data.snapshotData.architectsIngenuity.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.architectsIngenuity.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.architectsIngenuity.spellId = nil
+							TRB.Data.snapshotData.architectsIngenuity.isActive = false
+							TRB.Data.snapshotData.architectsIngenuity.duration = 0
+							TRB.Data.snapshotData.architectsIngenuity.endTime = nil
 						end
 					elseif type == "SPELL_SUMMON" and settings.voidTendrilTracker and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.id or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.id) then
 						InitializeVoidTendril(destGUID)

@@ -746,7 +746,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.character.talents.exsanguinate.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.hiddenBlades.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.crimsonTempest.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
-			
+						
 			-- Legendaries
 			local waistItemLink = GetInventoryItemLink("player", 6)
 			local feetItemLink = GetInventoryItemLink("player", 8)
@@ -761,7 +761,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 			TRB.Data.character.items.tinyToxicBlade = tinyToxicBlade			
 		end
-
         
         if settings ~= nil then
 			TRB.Data.character.isPvp = TRB.Functions.ArePvpTalentsActive()

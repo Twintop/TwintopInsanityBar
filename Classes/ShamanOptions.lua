@@ -194,7 +194,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 
 	-- Restoration
-	
 	local function RestorationLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
@@ -298,34 +297,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
-				showCasting=true,
-				--restorationWordChastiseEnabled=false,
-				--restorationWordSanctifyEnabled=true,
-				--restorationWordSerenityEnabled=true
+				showCasting=true
 			},
-			--[[wrathfulFaerie={
-				mode="time",
-				procsMax=4,
-				gcdsMax=2,
-				timeMax=90.0,
-				procDelay=0.15,
-				enabled=true
-			},
-			endOfApotheosis = {
-				enabled=true,
-				mode="gcd",
-				gcdsMax=2,
-				timeMax=3.0
-			},
-			flashConcentration = {
-				enabled=true,
-				enabledUncapped=false,
-				enabledOutOfCombat=true,
-				enabledUncappedOutOfCombat=false,
-				mode="gcd",
-				gcdsMax=3.5,
-				timeMax=5.0
-			},]]
 			passiveGeneration = {
 				innervate = true,
 				manaTideTotem = true,
@@ -339,35 +312,21 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
 					right="FFFFFFFF",
-					--[[dots={
+					dots={
 						enabled=true,
 						up="FFFFFFFF",
 						down="FFFF0000",
 						pandemic="FFFFFF00"
-					}]]
+					}
 				},
 				bar={
 					border="FF000099",
 					background="66000000",
 					base="FF0000FF",
 					innervate="FF00FF00",
-					--[[apotheosis="FFFADA5E",
-					apotheosisEnd="FFFF0000",
-					restorationWordChastise="FFAAFFAA",
-					restorationWordSanctify="FF55FF55",
-					restorationWordSerenity="FF00FF00",
-					surgeOfLight1="FFFCE58E",
-					surgeOfLight2="FFAF9942",
-					flashConcentration="FFFF0000",]]
-					--casting="FF555555",
 					spending="FFFFFFFF",
 					passive="FF8080FF",
-					--surgeOfLightBorderChange1=true,
-					--surgeOfLightBorderChange2=true,
-					innervateBorderChange=true,
-					--flashAlpha=0.70,
-					--flashPeriod=0.5,
-					--flashEnabled=true,
+					innervateBorderChange=true
 				},
 				threshold={
 					unusable="FFFF0000",
@@ -382,25 +341,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
-				},
-				--[[surgeOfLight={
-					name = "Innervate (1 stack)",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-					soundName="TRB: Boxing Arena Gong"
-				},
-				surgeOfLight2={
-					name = "Innervate (2 stacks)",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},
-				flashConcentration={
-					name = "Flash Concentration",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				}]]
+				}
 			},
 			textures={
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -3441,41 +3382,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = yCoord - 70
 		controls.barDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display", 0, yCoord)
 
-		--[[
-		yCoord = yCoord - 50
-		title = "Devouring Plague Flash Alpha"
-		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, TRB.Data.settings.shaman.restoration.colors.bar.flashAlpha, 0.01, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
-		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.shaman.restoration.colors.bar.flashAlpha = value
-		end)
-
-		title = "Devouring Plague Flash Period (sec)"
-		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0, 2, TRB.Data.settings.shaman.restoration.colors.bar.flashPeriod, 0.05, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.shaman.restoration.colors.bar.flashPeriod = value
-		end)
-		]]
-
 		yCoord = yCoord - 30
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_RB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
@@ -3569,52 +3475,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.restoration.bar.showPassive = self:GetChecked()
 		end)
 
-		--[[
-		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_CB1_5", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
-		getglobal(f:GetName() .. 'Text'):SetText("Flash bar when DP is usable")
-		f.tooltip = "This will flash the bar when Devouring Plague can be cast."
-		f:SetChecked(TRB.Data.settings.shaman.restoration.colors.bar.flashEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.restoration.colors.bar.flashEnabled = self:GetChecked()
-		end)]]
-
-		--[[
-		yCoord = yCoord - 70
-		controls.checkBoxes.restorationWordChastiseEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_restorationWordChastiseEnabled", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.restorationWordChastiseEnabled
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change mana bar color for Restoration Word: Chastise cooldown")
-		f.tooltip = "This will change the mana bar color when your current cast will complete the cooldown of Restoration Word: Chastise."
-		f:SetChecked(TRB.Data.settings.shaman.restoration.bar.restorationWordChastiseEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.restoration.bar.restorationWordChastiseEnabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 20
-		controls.checkBoxes.restorationWordSanctifyEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_restorationWordSanctifyEnabled", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.restorationWordSanctifyEnabled
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change mana bar color for Restoration Word: Sanctify cooldown")
-		f.tooltip = "This will change the mana bar color when your current cast will complete the cooldown of Restoration Word: Sanctify."
-		f:SetChecked(TRB.Data.settings.shaman.restoration.bar.restorationWordSanctifyEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.restoration.bar.restorationWordSanctifyEnabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 20
-		controls.checkBoxes.restorationWordSerenityEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_restorationWordSerenityEnabled", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.restorationWordSerenityEnabled
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change mana bar color for Restoration Word: Serenity cooldown")
-		f.tooltip = "This will change the mana bar color when your current cast will complete the cooldown of Restoration Word: Serenity."
-		f:SetChecked(TRB.Data.settings.shaman.restoration.bar.restorationWordSerenityEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.restoration.bar.restorationWordSerenityEnabled = self:GetChecked()
-		end)
-		]]
-
 		yCoord = yCoord - 30
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
@@ -3639,29 +3499,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end)
 			end
 		end)
-		
-		--[[
-		controls.colors.restorationWordChastise = TRB.UiFunctions:BuildColorPicker(parent, "Mana when your cast will complete the cooldown of Restoration Word: Chastise", TRB.Data.settings.shaman.restoration.colors.bar.restorationWordChastise, 275, 25, xCoord2, yCoord)
-		f = controls.colors.restorationWordChastise
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.bar.restorationWordChastise, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.restorationWordChastise.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.shaman.restoration.colors.bar.restorationWordChastise = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-		]]
 
 		yCoord = yCoord - 30
 		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Mana cost of current hardcast spell", TRB.Data.settings.shaman.restoration.colors.bar.spending, 300, 25, xCoord, yCoord)
@@ -3685,93 +3522,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end)
 			end
 		end)
-
-		--[[
-		controls.colors.restorationWordSanctify = TRB.UiFunctions:BuildColorPicker(parent, "Mana when your cast will complete the cooldown of Restoration Word: Sanctify", TRB.Data.settings.shaman.restoration.colors.bar.restorationWordSanctify, 275, 25, xCoord2, yCoord)
-		f = controls.colors.restorationWordSanctify
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.bar.restorationWordSanctify, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.restorationWordSanctify.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.shaman.restoration.colors.bar.restorationWordSanctify = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.inApotheosis = TRB.UiFunctions:BuildColorPicker(parent, "Mana while Apotheosis is active", TRB.Data.settings.shaman.restoration.colors.bar.apotheosis, 300, 25, xCoord, yCoord)
-		f = controls.colors.inApotheosis
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.bar.apotheosis, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.inApotheosis.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.shaman.restoration.colors.bar.apotheosis = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-
-		controls.colors.restorationWordSerenity = TRB.UiFunctions:BuildColorPicker(parent, "Mana when your cast will complete the cooldown of Restoration Word: Serenity", TRB.Data.settings.shaman.restoration.colors.bar.restorationWordSerenity, 275, 25, xCoord2, yCoord)
-		f = controls.colors.restorationWordSerenity
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.bar.restorationWordSerenity, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.restorationWordSerenity.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.shaman.restoration.colors.bar.restorationWordSerenity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.inApotheosisEnd = TRB.UiFunctions:BuildColorPicker(parent, "Mana when Apotheosis is close to ending (configurable/if enabled)", TRB.Data.settings.shaman.restoration.colors.bar.apotheosisEnd, 300, 25, xCoord, yCoord)
-		f = controls.colors.inApotheosisEnd
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.bar.apotheosisEnd, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.inApotheosisEnd.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.shaman.restoration.colors.bar.apotheosisEnd = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)]]
 
 		yCoord = yCoord - 30
 		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.shaman.restoration.colors.bar.background, 275, 25, xCoord2, yCoord)
@@ -3867,71 +3617,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)
 
-		--[[
-		controls.colors.surgeOfLight1 = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", TRB.Data.settings.shaman.restoration.colors.bar.surgeOfLight1, 275, 25, xCoord2, yCoord-60)
-		f = controls.colors.surgeOfLight1
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.bar.surgeOfLight1, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.surgeOfLight1.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.shaman.restoration.colors.bar.surgeOfLight1 = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-						
-		controls.colors.surgeOfLight2 = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have 2 stacks of Surge of Light", TRB.Data.settings.shaman.restoration.colors.bar.surgeOfLight2, 275, 25, xCoord2, yCoord-90)
-		f = controls.colors.surgeOfLight2
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.bar.surgeOfLight2, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.surgeOfLight2.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.shaman.restoration.colors.bar.surgeOfLight2 = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-
-		controls.colors.flashConcentration = TRB.UiFunctions:BuildColorPicker(parent, "Border when Flash Concentration is expiring or not up (per settings)", TRB.Data.settings.shaman.restoration.colors.bar.flashConcentration, 275, 25, xCoord2, yCoord-120)
-		f = controls.colors.flashConcentration
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.bar.flashConcentration, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.flashConcentration.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.shaman.restoration.colors.bar.flashConcentration = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)
-		]]
-
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervateBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Threshold_Option_innervateBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.innervateBorderChange
@@ -3943,30 +3628,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.settings.shaman.restoration.colors.bar.innervateBorderChange = self:GetChecked()
 		end)
 		
-		--[[
-		yCoord = yCoord - 30
-		controls.checkBoxes.surgeOfLight1BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Threshold_Option_surgeOfLight1BorderChange", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.surgeOfLight1BorderChange
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Surge of Light (1 stack)")
-		f.tooltip = "This will change the bar border color when you have 1 stack of Surge of Light."
-		f:SetChecked(TRB.Data.settings.shaman.restoration.colors.bar.surgeOfLightBorderChange1)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.restoration.colors.bar.surgeOfLightBorderChange1 = self:GetChecked()
-		end)
-		
-		yCoord = yCoord - 30
-		controls.checkBoxes.surgeOfLight2BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Threshold_Option_surgeOfLight2BorderChange", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.surgeOfLight2BorderChange
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Surge of Light (2 stacks)")
-		f.tooltip = "This will change the bar border color when you have 2 stacks of Surge of Light."
-		f:SetChecked(TRB.Data.settings.shaman.restoration.colors.bar.surgeOfLightBorderChange2)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.restoration.colors.bar.surgeOfLightBorderChange2 = self:GetChecked()
-		end)
-		]]
-
 		yCoord = yCoord - 30
 
 		yCoord = yCoord - 40
@@ -4378,208 +4039,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.shaman.restoration.thresholds.potionCooldown.timeMax = value
 		end)
-
-		--[[
-		yCoord = yCoord - 30
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "End of Apotheosis Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.endOfApotheosis = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_EOA_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfApotheosis
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Apotheosis")
-		f.tooltip = "Changes the bar color when Apotheosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(TRB.Data.settings.shaman.restoration.endOfApotheosis.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.restoration.endOfApotheosis.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 40
-		controls.checkBoxes.endOfApotheosisModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_EOA_M_GCD", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.endOfApotheosisModeGCDs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Apotheosis ends")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many GCDs remain until Apotheosis ends."
-		if TRB.Data.settings.shaman.restoration.endOfApotheosis.mode == "gcd" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.endOfApotheosisModeGCDs:SetChecked(true)
-			controls.checkBoxes.endOfApotheosisModeTime:SetChecked(false)
-			TRB.Data.settings.shaman.restoration.endOfApotheosis.mode = "gcd"
-		end)
-
-		title = "Apotheosis GCDs - 0.75sec Floor"
-		controls.endOfApotheosisGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 10, TRB.Data.settings.shaman.restoration.endOfApotheosis.gcdsMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.endOfApotheosisGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
-			TRB.Data.settings.shaman.restoration.endOfApotheosis.gcdsMax = value
-		end)
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.endOfApotheosisModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_EOA_M_TIME", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.endOfApotheosisModeTime
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time until Apotheosis ends")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many seconds remain until Apotheosis will end."
-		if TRB.Data.settings.shaman.restoration.endOfApotheosis.mode == "time" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.endOfApotheosisModeGCDs:SetChecked(false)
-			controls.checkBoxes.endOfApotheosisModeTime:SetChecked(true)
-			TRB.Data.settings.shaman.restoration.endOfApotheosis.mode = "time"
-		end)
-
-		title = "Apotheosis Time Remaining"
-		controls.endOfApotheosisTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, TRB.Data.settings.shaman.restoration.endOfApotheosis.timeMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.endOfApotheosisTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.shaman.restoration.endOfApotheosis.timeMax = value
-		end)
-
-
-		yCoord = yCoord - 30
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Flash Concentration Expiration Configuration", 0, yCoord)
-
-
-		--NOTE: the order of these checkboxes is reversed!
-		yCoord = yCoord - 30
-		controls.checkBoxes.flashConcentrationOOC = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_flashConcentrationOOC_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashConcentrationOOC
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-20)
-		getglobal(f:GetName() .. 'Text'):SetText("Also change bar border color for expiration when out of combat?")
-		f.tooltip = "Changes the bar's border color for Flash Concentration when your buff will expire when both in and out of combat."
-		f:SetChecked(TRB.Data.settings.shaman.restoration.flashConcentration.enabledOutOfCombat)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.restoration.flashConcentration.enabledOutOfCombat = self:GetChecked()
-		end)
-
-		controls.checkBoxes.flashConcentration = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_flashConcentration_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashConcentration
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar border when your Flash Concentration buff is close to expiring (if equipped)")
-		f.tooltip = "Changes the bar border color when your Flash Concentration buff is expiring in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(TRB.Data.settings.shaman.restoration.flashConcentration.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.restoration.flashConcentration.enabled = self:GetChecked()
-
-			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.flashConcentrationOOC, TRB.Data.settings.shaman.restoration.flashConcentration.enabled)
-		end)
-
-		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.flashConcentrationOOC, TRB.Data.settings.shaman.restoration.flashConcentration.enableOutOfCombat)
-
-
-		--NOTE: the order of these checkboxes is reversed!
-		yCoord = yCoord - 40
-		controls.checkBoxes.flashConcentrationUncappedOOC = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_flashConcentrationUncappedOOC_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashConcentrationUncappedOOC
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord-20)
-		getglobal(f:GetName() .. 'Text'):SetText("Also change bar border color for < 5 stacks when out of combat?")
-		f.tooltip = "Changes the bar's border color for Flash Concentration when you do not have max stacks when both in and out of combat."
-		f:SetChecked(TRB.Data.settings.shaman.restoration.flashConcentration.enabledUncappedOutOfCombat)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.restoration.flashConcentration.enabledUncappedOutOfCombat = self:GetChecked()
-		end)
-
-		controls.checkBoxes.flashConcentrationUncapped = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_flashConcentrationUncapped_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashConcentrationUncapped
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar border when your Flash Concentration buff has < 5 stacks (if equipped)")
-		f.tooltip = "Changes the bar border color when your Flash Concentration buff has fewer than 5 (max) stacks."
-		f:SetChecked(TRB.Data.settings.shaman.restoration.flashConcentration.enabledUncapped)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.restoration.flashConcentration.enabledUncapped = self:GetChecked()
-
-			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.flashConcentrationUncappedOOC, TRB.Data.settings.shaman.restoration.flashConcentration.enabledUncapped)
-		end)
-
-		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.flashConcentrationUncappedOOC, TRB.Data.settings.shaman.restoration.flashConcentration.enabledUncapped)
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.flashConcentrationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_flashConcentration_M_GCD", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.flashConcentrationModeGCDs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs left on Flash Concentration buff")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar border color based on how many GCDs remain until Flash Concentration will end."
-		if TRB.Data.settings.shaman.restoration.flashConcentration.mode == "gcd" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.flashConcentrationModeGCDs:SetChecked(true)
-			controls.checkBoxes.flashConcentrationModeTime:SetChecked(false)
-			TRB.Data.settings.shaman.restoration.flashConcentration.mode = "gcd"
-		end)
-
-		title = "Flash Concentration GCDs - 0.75sec Floor"
-		controls.flashConcentrationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 30, TRB.Data.settings.shaman.restoration.flashConcentration.gcdsMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.flashConcentrationGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
-			TRB.Data.settings.shaman.restoration.flashConcentration.gcdsMax = value
-		end)
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.flashConcentrationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_flashConcentration_M_TIME", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.flashConcentrationModeTime
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time left on Flash Concentration buff")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar border color based on how many seconds remain until Flash Concentration will end."
-		if TRB.Data.settings.shaman.restoration.flashConcentration.mode == "time" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.flashConcentrationModeGCDs:SetChecked(false)
-			controls.checkBoxes.flashConcentrationModeTime:SetChecked(true)
-			TRB.Data.settings.shaman.restoration.flashConcentration.mode = "time"
-		end)
-
-		title = "Flash Concentration Time Remaining"
-		controls.flashConcentrationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 20, TRB.Data.settings.shaman.restoration.flashConcentration.timeMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.flashConcentrationTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.shaman.restoration.flashConcentration.timeMax = value
-		end)
-		]]
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = controls
@@ -5081,8 +4540,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end)
 	
-
-		--[[
 		yCoord = yCoord - 30
 		controls.dotColorSection = TRB.UiFunctions:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
 
@@ -5092,7 +4549,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter and DoT timer color based on DoT status?")
-		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($swpCount, $vtCount) will change based on whether or not the DoT is on the current target."
+		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($fsCount) will change based on whether or not the DoT is on the current target."
 		f:SetChecked(TRB.Data.settings.shaman.restoration.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.shaman.restoration.colors.text.dots.enabled = self:GetChecked()
@@ -5160,7 +4617,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
                 end)
 			end
 		end)
-		]]
 
 		yCoord = yCoord - 130
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
@@ -5281,205 +4737,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
-
-		--[[
-		yCoord = yCoord - 60
-		controls.checkBoxes.surgeOfLight = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_SurgeOfLightCB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.surgeOfLight
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Surge of Light proc occurs")
-		f.tooltip = "Play an audio cue when a Surge of Light proc occurs. This will only play for the first proc."
-		f:SetChecked(TRB.Data.settings.shaman.restoration.audio.surgeOfLight.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.restoration.audio.surgeOfLight.enabled = self:GetChecked()
-
-			if TRB.Data.settings.shaman.restoration.audio.surgeOfLight.enabled then
----@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.surgeOfLightAudio = CreateFrame("FRAME", "TwintopResourceBar_Shaman_Restoration_SurgeOfLightAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.surgeOfLightAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.surgeOfLightAudio, sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.surgeOfLightAudio, TRB.Data.settings.shaman.restoration.audio.surgeOfLight.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.surgeOfLightAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.surgeOfLightAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.shaman.restoration.audio.surgeOfLight.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.surgeOfLightAudio:SetValue(newValue, newName)
-			TRB.Data.settings.shaman.restoration.audio.surgeOfLight.sound = newValue
-			TRB.Data.settings.shaman.restoration.audio.surgeOfLight.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.surgeOfLightAudio, newName)
-			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.surgeOfLight2 = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_SurgeOfLight2CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.surgeOfLight2
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you have two (max) Surge of Light procs")
-		f.tooltip = "Play audio cue when you get a second (and maximum) Surge of Light proc. If both are checked, only this sound will play."
-		f:SetChecked(TRB.Data.settings.shaman.restoration.audio.surgeOfLight2.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.restoration.audio.surgeOfLight2.enabled = self:GetChecked()
-
-			if TRB.Data.settings.shaman.restoration.audio.surgeOfLight2.enabled then
----@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.surgeOfLight2Audio = CreateFrame("FRAME", "TwintopResourceBar_Shaman_Restoration_SurgeOfLightAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.surgeOfLight2Audio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.surgeOfLight2Audio, sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.surgeOfLight2Audio, TRB.Data.settings.shaman.restoration.audio.surgeOfLight2.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.surgeOfLight2Audio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.surgeOfLight2Audio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.shaman.restoration.audio.surgeOfLight2.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.surgeOfLight2Audio:SetValue(newValue, newName)
-			TRB.Data.settings.shaman.restoration.audio.surgeOfLight2.sound = newValue
-			TRB.Data.settings.shaman.restoration.audio.surgeOfLight2.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.surgeOfLight2Audio, newName)
-			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.flashConcentrationAudioCB = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_FlashConcentration", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashConcentrationAudioCB
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Flash Concentration is going to expire, based on settings")
-		f.tooltip = "Play audio cue when your Flash Concentration buff is close to expiring. This uses the configuration from the Bar Settings menu for border color change even if that feature is disabled."
-		f:SetChecked(TRB.Data.settings.shaman.restoration.audio.flashConcentration.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.restoration.audio.flashConcentration.enabled = self:GetChecked()
-
-			if TRB.Data.settings.shaman.restoration.audio.flashConcentration.enabled then
----@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.flashConcentration.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.flashConcentrationAudio = CreateFrame("FRAME", "TwintopResourceBar_Shaman_Restoration_flashConcentrationAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.flashConcentrationAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.flashConcentrationAudio, sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.flashConcentrationAudio, TRB.Data.settings.shaman.restoration.audio.flashConcentration.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.flashConcentrationAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.flashConcentrationAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.shaman.restoration.audio.flashConcentration.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.flashConcentrationAudio:SetValue(newValue, newName)
-			TRB.Data.settings.shaman.restoration.audio.flashConcentration.sound = newValue
-			TRB.Data.settings.shaman.restoration.audio.flashConcentration.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.flashConcentrationAudio, newName)
-			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.flashConcentration.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-		]]
 		
 		yCoord = yCoord - 60
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Passive External Mana Generation Tracking", 0, yCoord)
@@ -5516,137 +4773,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.shaman.restoration.passiveGeneration.symbolOfHope = self:GetChecked()
 		end)
-
-		--[[
-		yCoord = yCoord - 30
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Wrathful Faerie Tracking", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.wrathfulFaerie = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_WrathfulFaerieTracking_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.wrathfulFaerie
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Track Wrathful Faerie and Fae Fermata Mana Gain")
-		f.tooltip = "Show the gain of mana over the next serveral procs, GCDs, or fixed length of time. Select which to track from the options below."
-		f:SetChecked(TRB.Data.settings.shaman.restoration.wrathfulFaerie.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.shaman.restoration.wrathfulFaerie.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 40
-		title = "Proc Delay after ICD Reset"
-		controls.wrathfulFaerieGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 0.75, TRB.Data.settings.shaman.restoration.wrathfulFaerie.procDelay, 0.05, 2,
-										sliderWidth, sliderHeight, xCoord, yCoord)
-		controls.wrathfulFaerieGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.shaman.restoration.wrathfulFaerie.procDelay = value
-		end)
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.wrathfulFaerieModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_WrathfulFaerieTracking_1", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.wrathfulFaerieModeGCDs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mana from GCDs remaining")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Mana incoming over the up to next X GCDs, based on player's current GCD."
-		if TRB.Data.settings.shaman.restoration.wrathfulFaerie.mode == "gcd" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.wrathfulFaerieModeGCDs:SetChecked(true)
-			controls.checkBoxes.wrathfulFaerieModeProcs:SetChecked(false)
-			controls.checkBoxes.wrathfulFaerieModeTime:SetChecked(false)
-			TRB.Data.settings.shaman.restoration.wrathfulFaerie.mode = "gcd"
-		end)
-
-		title = "GCDs - 0.75sec Floor"
-		controls.wrathfulFaerieGCDs = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, TRB.Data.settings.shaman.restoration.wrathfulFaerie.gcdsMax, 1, 0,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.wrathfulFaerieGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
-			TRB.Data.settings.shaman.restoration.wrathfulFaerie.gcdsMax = value
-		end)
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.wrathfulFaerieModeProcs = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_WrathfulFaerieTracking_2", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.wrathfulFaerieModeProcs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mana from Procs remaining")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Mana incoming over the up to next X procs from Wrathful Faerie/Fae Fermata."
-		if TRB.Data.settings.shaman.restoration.wrathfulFaerie.mode == "procs" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.wrathfulFaerieModeGCDs:SetChecked(false)
-			controls.checkBoxes.wrathfulFaerieModeProcs:SetChecked(true)
-			controls.checkBoxes.wrathfulFaerieModeTime:SetChecked(false)
-			TRB.Data.settings.shaman.restoration.wrathfulFaerie.mode = "procs"
-		end)
-
-		title = "Wrathful Faerie Procs - No Floor"
-		controls.wrathfulFaerieProcs = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, TRB.Data.settings.shaman.restoration.wrathfulFaerie.procsMax, 1, 0,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.wrathfulFaerieProcs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
-			TRB.Data.settings.shaman.restoration.wrathfulFaerie.procsMax = value
-		end)
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.wrathfulFaerieModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_WrathfulFaerieTracking_3", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.wrathfulFaerieModeTime
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mana from Time remaining")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Mana incoming over the up to next X seconds."
-		if TRB.Data.settings.shaman.restoration.wrathfulFaerie.mode == "time" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.wrathfulFaerieModeGCDs:SetChecked(false)
-			controls.checkBoxes.wrathfulFaerieModeProcs:SetChecked(false)
-			controls.checkBoxes.wrathfulFaerieModeTime:SetChecked(true)
-			TRB.Data.settings.shaman.restoration.wrathfulFaerie.mode = "time"
-		end)
-
-		title = "Wrathful Faerie Time Remaining (sec)"
-		controls.wrathfulFaerieTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 90, TRB.Data.settings.shaman.restoration.wrathfulFaerie.timeMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.wrathfulFaerieTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.shaman.restoration.wrathfulFaerie.timeMax = value
-		end)
-		]]
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = controls

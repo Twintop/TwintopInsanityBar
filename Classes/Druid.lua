@@ -50,6 +50,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				astralPower = 0,
 				ticks = 0,
 				remaining = 0
+			},
+			umbralEmbrace = {
+				astralPower = 0,
+				ticks = 0,
+				remaining = 0
 			}
 		}
 		
@@ -89,7 +94,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				}
 			},
 			items = {
-				primordialArcanicPulsar = false
+				primordialArcanicPulsar = false,
+				t28Pieces = 0
 			},
 			torghast = {
 				rampaging = {
@@ -250,9 +256,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				astralPower = 2.5,
-				duration = 10,
+				duration = 8,
 				ticks = 16,
-				tickRate = 0.625
+				tickRate = 0.5
 			},
 			newMoon = {
 				id = 274281,
@@ -276,13 +282,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			onethsClearVision = {
 				id = 339797,
-				name = "", 
+				name = "",
 				icon = "",
 				isActive = false
 			}, 
 			onethsPerception = {
 				id = 339800,
-				name = "", 
+				name = "",
 				icon = "",
 				isActive = false
 			}, 
@@ -291,7 +297,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				isActive = false,
-				modifier = -0.15
+				modifier = -0.1
 			},
 			primordialArcanicPulsar = {
 				id = 338825,
@@ -299,6 +305,22 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				icon = "",
 				maxAstralPower = 300,
 				idLegendaryBonus = 7088
+			},
+
+			umbralEmbrace = {
+				id = 367907,
+				name = "",
+				icon = "",
+				astralPower = 2.5,
+				duration = 8,
+				ticks = 16,
+				tickRate = 0.5
+			},
+			umbralInfusion = {
+				id = 363497,
+				name = "",
+				icon = "",
+				modifier = -0.2
 			}
 		}
 		
@@ -317,6 +339,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			targets = {}
 		}
 		specCache.balance.snapshotData.furyOfElune = {
+			isActive = false,
+			ticksRemaining = 0,
+			startTime = nil,
+			astralPower = 0
+		}
+		specCache.balance.snapshotData.umbralEmbrace = {
 			isActive = false,
 			ticksRemaining = 0,
 			startTime = nil,
@@ -916,7 +944,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			{ variable = "#foe", icon = spells.furyOfElune.icon, description = "Fury Of Elune", printInSettings = false },
 			{ variable = "#furyOfElune", icon = spells.furyOfElune.icon, description = "Fury Of Elune", printInSettings = true },
-
+			
+			{ variable = "#ue", icon = spells.umbralEmbrace.icon, description = "Umbral Embrace", printInSettings = false },
+			{ variable = "#umbralEmbrace", icon = spells.umbralEmbrace.icon, description = "Umbral Embrace", printInSettings = true },
+			
 			{ variable = "#newMoon", icon = spells.newMoon.icon, description = "New Moon", printInSettings = true },
 			{ variable = "#halfMoon", icon = spells.halfMoon.icon, description = "Half Moon", printInSettings = true },
 			{ variable = "#fullMoon", icon = spells.fullMoon.icon, description = "Full Moon", printInSettings = true },
@@ -971,7 +1002,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Astral Power Total", printInSettings = false, color = false },     
 			{ variable = "$foeAstralPower", description = "Passive Astral Power incoming from Fury of Elune", printInSettings = true, color = false },   
 			{ variable = "$foeTicks", description = "Number of ticks of Fury of Elune remaining", printInSettings = true, color = false },   
-			{ variable = "$foeTime", description = "Amount of time remaining on Fury of Elune's effect", printInSettings = true, color = false },   
+			{ variable = "$foeTime", description = "Amount of time remaining on Fury of Elune's effect", printInSettings = true, color = false },        
+			{ variable = "$ueAstralPower", description = "Passive Astral Power incoming from Umbral Embrace", printInSettings = true, color = false },   
+			{ variable = "$ueTicks", description = "Number of ticks of Umbral Embrace remaining", printInSettings = true, color = false },   
+			{ variable = "$ueTime", description = "Amount of time remaining on Umbral Embrace's effect", printInSettings = true, color = false },   
 
 			{ variable = "$sunfireCount", description = "Number of Sunfires active on targets", printInSettings = true, color = false },
 			{ variable = "$sunfireTime", description = "Time remaining on Sunfire on your current target", printInSettings = true, color = false },
@@ -1177,26 +1211,29 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			GetCurrentMoonSpell()
 
-			if TRB.Data.settings.druid ~= nil and TRB.Data.settings.druid.balance ~= nil then
-				local currentResource = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
-				local timewornModifier = TRB.Data.snapshotData.timewornDreambinder.stacks * TRB.Data.spells.timewornDreambinder.modifier
-
-				if TRB.Data.settings.druid.balance.thresholds.starsurge.enabled and TRB.Data.character.starsurgeThreshold < TRB.Data.character.maxResource then
-					resourceFrame.thresholds[1]:Show()
-					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
-				else
-					resourceFrame.thresholds[1]:Hide()
-				end
-
-				if TRB.Data.settings.druid.balance.thresholds.starfall.enabled and TRB.Data.character.starfallThreshold < TRB.Data.character.maxResource then
-					resourceFrame.thresholds[4]:Show()
-					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starfallThreshold*(1+timewornModifier), TRB.Data.character.maxResource)
-				else
-					resourceFrame.thresholds[4]:Hide()
-				end
+			local t28Pieces = 0
+			if IsEquippedItem(188847) then
+				t28Pieces = t28Pieces + 1
 			end
+			
+			if IsEquippedItem(188851) then
+				t28Pieces = t28Pieces + 1
+			end
+			
+			if IsEquippedItem(188849) then
+				t28Pieces = t28Pieces + 1
+			end
+			
+			if IsEquippedItem(188853) then
+				t28Pieces = t28Pieces + 1
+			end
+			
+			if IsEquippedItem(188848) then
+				t28Pieces = t28Pieces + 1
+			end
+			TRB.Data.character.items.t28Pieces = t28Pieces
 
-			-- Legendaries		
+			-- Legendaries
 			local shoulderItemLink = GetInventoryItemLink("player", 3)
 			local handItemLink = GetInventoryItemLink("player", 10)
 			local ring1ItemLink = GetInventoryItemLink("player", 11)
@@ -1652,7 +1689,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$passive" then
-				if (TRB.Data.character.talents.naturesBalance.isSelected and (affectingCombat or (TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) < 50)) or TRB.Data.snapshotData.furyOfElune.astralPower > 0 then
+				if (TRB.Data.character.talents.naturesBalance.isSelected and (affectingCombat or (TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) < 50)) or TRB.Data.snapshotData.furyOfElune.astralPower > 0 or TRB.Data.snapshotData.umbralEmbrace.astralPower > 0 then
 					valid = true
 				end
 			elseif var == "$sunfireCount" then
@@ -1710,6 +1747,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				if TRB.Data.snapshotData.furyOfElune.startTime ~= nil then
 					valid = true
 				end
+			elseif var == "$ueAstralPower" then
+				if TRB.Data.snapshotData.umbralEmbrace.astralPower > 0 then
+					valid = true
+				end
+			elseif var == "$ueTicks" then
+				if TRB.Data.snapshotData.umbralEmbrace.remainingTicks > 0 then
+					valid = true
+				end
+			elseif var == "$ueTime" then
+				if TRB.Data.snapshotData.umbralEmbrace.startTime ~= nil then
+					valid = true
+				end				
 			elseif var == "$onethTime" then
 				if TRB.Data.spells.onethsClearVision.isActive or TRB.Data.spells.onethsClearVision.isActive  then
 					valid = true
@@ -2032,7 +2081,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		--$casting
 		local castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, astralPowerPrecision, "floor"))
 		--$passive
-        local _passiveAstralPower = TRB.Data.snapshotData.furyOfElune.astralPower
+        local _passiveAstralPower = TRB.Data.snapshotData.furyOfElune.astralPower + TRB.Data.snapshotData.umbralEmbrace.astralPower
 		if TRB.Data.character.talents.naturesBalance.isSelected then
 			if UnitAffectingCombat("player") then
 				_passiveAstralPower = _passiveAstralPower + TRB.Data.spells.naturesBalance.astralPower
@@ -2151,7 +2200,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if TRB.Data.snapshotData.furyOfElune.startTime ~= nil then
 			foeTime = string.format("%.1f", math.abs(currentTime - (TRB.Data.snapshotData.furyOfElune.startTime + TRB.Data.spells.furyOfElune.duration)))
 		end
-
+		
+        ----------
+        --$foeAstralPower
+        local ueAstralPower = TRB.Data.snapshotData.umbralEmbrace.astralPower or 0
+        --$foeTicks
+		local ueTicks = TRB.Data.snapshotData.umbralEmbrace.ticksRemaining or 0
+		--$foeTime
+		local ueTime = 0
+		if TRB.Data.snapshotData.umbralEmbrace.startTime ~= nil then
+			ueTime = string.format("%.1f", math.abs(currentTime - (TRB.Data.snapshotData.umbralEmbrace.startTime + TRB.Data.spells.umbralEmbrace.duration)))
+		end
+		
 		--New Moon
 		local currentMoonIcon = TRB.Data.spells.newMoon.icon
 		--$moonAstralPower
@@ -2195,13 +2255,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local pulsarRemainingPercent = string.format("%.1f", TRB.Functions.RoundTo((pulsarRemaining / TRB.Data.spells.primordialArcanicPulsar.maxAstralPower) * 100, 1))
 		local pulsarNextStarsurge = ""
 		local pulsarNextStarfall = ""
-		local pulsarStarsurgeCount = TRB.Functions.RoundTo(pulsarRemaining / TRB.Data.character.starsurgeThreshold, 0, ceil)
-		local pulsarStarfallCount = TRB.Functions.RoundTo(pulsarRemaining / TRB.Data.character.starfallThreshold, 0, ceil)
+		local pulsarStarsurgeCount = TRB.Functions.RoundTo(pulsarRemaining / TRB.Data.spells.starsurge.astralPower, 0, ceil)
+		local pulsarStarfallCount = TRB.Functions.RoundTo(pulsarRemaining / TRB.Data.spells.starfall.astralPower, 0, ceil)
 		
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveAstralPower or 0
 		Global_TwintopResourceBar.resource.furyOfElune = foeAstralPower or 0
+		Global_TwintopResourceBar.resource.umbralEmbrace = ueAstralPower or 0
 		Global_TwintopResourceBar.dots = {
 			sunfireCount = _sunfireCount or 0,
 			moonfireCount = _moonfireCount or 0,
@@ -2212,7 +2273,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			ticks = foeTicks or 0,
 			remaining = foeTime or 0
 		}
-
+		Global_TwintopResourceBar.umbralEmbrace = {
+			astralPower = ueAstralPower or 0,
+			ticks = ueTicks or 0,
+			remaining = ueTime or 0
+		}
+		
 		local lookup = TRB.Data.lookup or {}
 		lookup["#wrath"] = TRB.Data.spells.wrath.icon
 		lookup["#moonkinForm"] = TRB.Data.spells.moonkinForm.icon
@@ -2241,6 +2307,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#soulOfTheForest"] = TRB.Data.spells.soulOfTheForest.icon
 		lookup["#foe"] = TRB.Data.spells.furyOfElune.icon
 		lookup["#furyOfElune"] = TRB.Data.spells.furyOfElune.icon
+		lookup["#ue"] = TRB.Data.spells.umbralEmbrace.icon
+		lookup["#umbralEmbrace"] = TRB.Data.spells.umbralEmbrace.icon
 		lookup["#stellarFlare"] = TRB.Data.spells.stellarFlare.icon
 		lookup["#newMoon"] = TRB.Data.spells.newMoon.icon
 		lookup["#halfMoon"] = TRB.Data.spells.halfMoon.icon
@@ -2301,6 +2369,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$foeAstralPower"] = foeAstralPower
 		lookup["$foeTicks"] = foeTicks
 		lookup["$foeTime"] = foeTime
+		lookup["$ueAstralPower"] = ueAstralPower
+		lookup["$ueTicks"] = ueTicks
+		lookup["$ueTime"] = ueTime
 		lookup["$talentStellarFlare"] = TRB.Data.character.talents.stellarFlare.isSelected
 		TRB.Data.lookup = lookup
 	end
@@ -2811,6 +2882,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 	end
 
+	local function UpdateUmbralEmbrace()
+		if TRB.Data.snapshotData.umbralEmbrace.isActive then
+			local currentTime = GetTime()
+			if TRB.Data.snapshotData.umbralEmbrace.startTime == nil or currentTime > (TRB.Data.snapshotData.umbralEmbrace.startTime + TRB.Data.spells.umbralEmbrace.duration) then
+				TRB.Data.snapshotData.umbralEmbrace.ticksRemaining = 0
+				TRB.Data.snapshotData.umbralEmbrace.startTime = nil
+				TRB.Data.snapshotData.umbralEmbrace.astralPower = 0
+				TRB.Data.snapshotData.umbralEmbrace.isActive = false
+			end
+		end
+	end
+
 	local function UpdateSnapshot()
 		TRB.Functions.UpdateSnapshot()
 	end
@@ -2818,14 +2901,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function UpdateSnapshot_Balance()
 		UpdateSnapshot()
 
-		local currentTime = GetTime()
+		local currentTime = GetTime()	
 
-		TRB.Data.character.starsurgeThreshold = TRB.Data.spells.starsurge.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
-		TRB.Data.character.starfallThreshold = TRB.Data.spells.starfall.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
+		local timewornModifier = TRB.Data.snapshotData.timewornDreambinder.stacks * TRB.Data.spells.timewornDreambinder.modifier
+		local umbralInfusionModifier = 0
+		if TRB.Data.character.items.t28Pieces >= 4 and TRB.Data.spells.eclipseLunar.isActive then
+			umbralInfusionModifier = TRB.Data.spells.umbralInfusion.modifier
+		end
+
+		TRB.Data.character.starsurgeThreshold = TRB.Data.spells.starsurge.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier * (1+timewornModifier) * (1+umbralInfusionModifier)
+		TRB.Data.character.starfallThreshold = TRB.Data.spells.starfall.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier * (1+timewornModifier) * (1+umbralInfusionModifier)
 
 		TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))
 
         UpdateFuryOfElune()
+        UpdateUmbralEmbrace()
 		GetCurrentMoonSpell()
 
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
@@ -3055,7 +3145,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, castingFrame, castingBarValue)
 
 					if TRB.Data.settings.druid.balance.bar.showPassive then
-						passiveBarValue = currentResource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower
+						passiveBarValue = currentResource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower + TRB.Data.snapshotData.umbralEmbrace.astralPower
 
 						if TRB.Data.character.talents.naturesBalance.isSelected then
 							if affectingCombat then
@@ -3068,7 +3158,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						if TRB.Data.character.talents.naturesBalance.isSelected and (affectingCombat or (not affectingCombat and currentResource < 50)) then
 
 						else
-							passiveBarValue = currentResource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower
+							passiveBarValue = currentResource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower + TRB.Data.snapshotData.umbralEmbrace.astralPower
 						end
 					else
 						passiveBarValue = castingBarValue
@@ -3087,116 +3177,128 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					else
 						resourceFrame.thresholds[4]:Hide()
 					end
-				
-					local timewornModifier = TRB.Data.snapshotData.timewornDreambinder.stacks * TRB.Data.spells.timewornDreambinder.modifier
 
-				if currentResource >= TRB.Data.character.starsurgeThreshold then
----@diagnostic disable-next-line: undefined-field
-					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
----@diagnostic disable-next-line: undefined-field
-					resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+					if TRB.Data.settings.druid.balance.thresholds.starsurge.enabled and TRB.Data.character.starsurgeThreshold < TRB.Data.character.maxResource then
+						resourceFrame.thresholds[1]:Show()
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
 
-					if TRB.Data.spells.onethsClearVision.isActive and TRB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
-						TRB.Data.snapshotData.audio.playedOnethsCue = true
-						TRB.Data.snapshotData.audio.playedSfCue = true
----@diagnostic disable-next-line: redundant-parameter
-						PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
-					elseif TRB.Data.settings.druid.balance.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
-						TRB.Data.snapshotData.audio.playedSsCue = true
----@diagnostic disable-next-line: redundant-parameter
-						PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
-					end
-				else
----@diagnostic disable-next-line: undefined-field
-					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
----@diagnostic disable-next-line: undefined-field
-					resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-					TRB.Data.snapshotData.audio.playedSsCue = false
-					TRB.Data.snapshotData.audio.playedOnethsCue = false
-				end
+						if currentResource >= TRB.Data.character.starsurgeThreshold then
+		---@diagnostic disable-next-line: undefined-field
+							resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+		---@diagnostic disable-next-line: undefined-field
+							resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
 
-				if TRB.Data.settings.druid.balance.thresholds.starsurge2.enabled and
-					(not TRB.Data.settings.druid.balance.thresholds.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold) and
-					(TRB.Data.character.starsurgeThreshold * 2) < TRB.Data.character.maxResource then
-					resourceFrame.thresholds[2]:Show()
-					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*(1+timewornModifier)*2, TRB.Data.character.maxResource)
-
-					if currentResource >= TRB.Data.character.starsurgeThreshold * 2 then
----@diagnostic disable-next-line: undefined-field
-						resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
----@diagnostic disable-next-line: undefined-field
-						resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+							if TRB.Data.spells.onethsClearVision.isActive and TRB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
+								TRB.Data.snapshotData.audio.playedOnethsCue = true
+								TRB.Data.snapshotData.audio.playedSfCue = true
+		---@diagnostic disable-next-line: redundant-parameter
+								PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
+							elseif TRB.Data.settings.druid.balance.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
+								TRB.Data.snapshotData.audio.playedSsCue = true
+		---@diagnostic disable-next-line: redundant-parameter
+								PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
+						else
+		---@diagnostic disable-next-line: undefined-field
+							resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+		---@diagnostic disable-next-line: undefined-field
+							resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+							TRB.Data.snapshotData.audio.playedSsCue = false
+							TRB.Data.snapshotData.audio.playedOnethsCue = false
+						end
 					else
----@diagnostic disable-next-line: undefined-field
-						resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
----@diagnostic disable-next-line: undefined-field
-						resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+						resourceFrame.thresholds[1]:Hide()
 					end
-				else
-					resourceFrame.thresholds[2]:Hide()
-				end
 
-				if TRB.Data.settings.druid.balance.thresholds.starsurge3.enabled and
-					(not TRB.Data.settings.druid.balance.thresholds.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold*2) and
-					(TRB.Data.character.starsurgeThreshold * 3) < TRB.Data.character.maxResource then
-					resourceFrame.thresholds[3]:Show()
-					TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*(1+timewornModifier)*3, TRB.Data.character.maxResource)
+					if TRB.Data.settings.druid.balance.thresholds.starsurge2.enabled and
+						(not TRB.Data.settings.druid.balance.thresholds.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold) and
+						(TRB.Data.character.starsurgeThreshold * 2) < TRB.Data.character.maxResource then
+						resourceFrame.thresholds[2]:Show()
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*2, TRB.Data.character.maxResource)
 
-					if currentResource >= TRB.Data.character.starsurgeThreshold * 3 then
----@diagnostic disable-next-line: undefined-field
-						resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
----@diagnostic disable-next-line: undefined-field
-						resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+						if currentResource >= TRB.Data.character.starsurgeThreshold * 2 then
+	---@diagnostic disable-next-line: undefined-field
+							resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+	---@diagnostic disable-next-line: undefined-field
+							resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+						else
+	---@diagnostic disable-next-line: undefined-field
+							resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+	---@diagnostic disable-next-line: undefined-field
+							resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+						end
 					else
----@diagnostic disable-next-line: undefined-field
-						resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
----@diagnostic disable-next-line: undefined-field
-						resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+						resourceFrame.thresholds[2]:Hide()
 					end
-				else
-					resourceFrame.thresholds[3]:Hide()
-				end
 
-				if TRB.Data.character.talents.stellarDrift.isSelected and GetStarfallCooldownRemainingTime() > 0 then
----@diagnostic disable-next-line: undefined-field
-					resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
----@diagnostic disable-next-line: undefined-field
-					resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
-				elseif currentResource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.onethsPerception.isActive then
-					if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > TRB.Data.spells.starfall.pandemicTime then
----@diagnostic disable-next-line: undefined-field
-						resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
----@diagnostic disable-next-line: undefined-field
-						resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
+					if TRB.Data.settings.druid.balance.thresholds.starsurge3.enabled and
+						(not TRB.Data.settings.druid.balance.thresholds.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold*2) and
+						(TRB.Data.character.starsurgeThreshold * 3) < TRB.Data.character.maxResource then
+						resourceFrame.thresholds[3]:Show()
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*3, TRB.Data.character.maxResource)
+
+						if currentResource >= TRB.Data.character.starsurgeThreshold * 3 then
+	---@diagnostic disable-next-line: undefined-field
+							resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+	---@diagnostic disable-next-line: undefined-field
+							resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+						else
+	---@diagnostic disable-next-line: undefined-field
+							resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+	---@diagnostic disable-next-line: undefined-field
+							resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+						end
 					else
----@diagnostic disable-next-line: undefined-field
-						resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
----@diagnostic disable-next-line: undefined-field
-						resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+						resourceFrame.thresholds[3]:Hide()
 					end
 
-					if TRB.Data.spells.onethsPerception.isActive and TRB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
-						TRB.Data.snapshotData.audio.playedOnethsCue = true
-						TRB.Data.snapshotData.audio.playedSfCue = true
-						---@diagnostic disable-next-line: redundant-parameter
-						PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
-					elseif TRB.Data.settings.druid.balance.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
-						TRB.Data.snapshotData.audio.playedSfCue = true
-						---@diagnostic disable-next-line: redundant-parameter
-						PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
+					if TRB.Data.settings.druid.balance.thresholds.starfall.enabled and TRB.Data.character.starfallThreshold < TRB.Data.character.maxResource then
+						resourceFrame.thresholds[4]:Show()
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
+
+						if TRB.Data.character.talents.stellarDrift.isSelected and GetStarfallCooldownRemainingTime() > 0 then
+		---@diagnostic disable-next-line: undefined-field
+							resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
+		---@diagnostic disable-next-line: undefined-field
+							resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
+						elseif currentResource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.onethsPerception.isActive then
+							if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > TRB.Data.spells.starfall.pandemicTime then
+		---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
+		---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
+							else
+		---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+		---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+							end
+
+							if TRB.Data.spells.onethsPerception.isActive and TRB.Data.settings.druid.balance.audio.onethsReady.enabled and TRB.Data.snapshotData.audio.playedOnethsCue == false then
+								TRB.Data.snapshotData.audio.playedOnethsCue = true
+								TRB.Data.snapshotData.audio.playedSfCue = true
+								---@diagnostic disable-next-line: redundant-parameter
+								PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsProc.sound, TRB.Data.settings.core.audio.channel.channel)
+							elseif TRB.Data.settings.druid.balance.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
+								TRB.Data.snapshotData.audio.playedSfCue = true
+								---@diagnostic disable-next-line: redundant-parameter
+								PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
+						else
+		---@diagnostic disable-next-line: undefined-field
+							resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+		---@diagnostic disable-next-line: undefined-field
+							resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
+							TRB.Data.snapshotData.audio.playedSfCue = false
+							TRB.Data.snapshotData.audio.playedOnethsCue = false
+						end
+					else
+						resourceFrame.thresholds[4]:Hide()
 					end
-				else
----@diagnostic disable-next-line: undefined-field
-					resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
----@diagnostic disable-next-line: undefined-field
-					resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-					TRB.Data.snapshotData.audio.playedSfCue = false
-					TRB.Data.snapshotData.audio.playedOnethsCue = false
-				end
 					
-				if TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled and currentResource >= TRB.Data.character.starsurgeThreshold then
-					flashBar = true
-				end
+					if TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled and currentResource >= TRB.Data.character.starsurgeThreshold then
+						flashBar = true
+					end
 
 					local barColor = TRB.Data.settings.druid.balance.colors.bar.base
 
@@ -3621,7 +3723,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Data.snapshotData.furyOfElune.ticksRemaining = TRB.Data.snapshotData.furyOfElune.ticksRemaining - 1
 							TRB.Data.snapshotData.furyOfElune.astralPower = TRB.Data.snapshotData.furyOfElune.ticksRemaining * TRB.Data.spells.furyOfElune.astralPower
 						end
-
+					elseif spellId == TRB.Data.spells.umbralEmbrace.id then
+						if type == "SPELL_AURA_APPLIED" then -- Gain Death and Madness
+							TRB.Data.snapshotData.umbralEmbrace.isActive = true
+							TRB.Data.snapshotData.umbralEmbrace.ticksRemaining = TRB.Data.spells.umbralEmbrace.ticks
+							TRB.Data.snapshotData.umbralEmbrace.astralPower = TRB.Data.snapshotData.umbralEmbrace.ticksRemaining * TRB.Data.spells.umbralEmbrace.astralPower
+							TRB.Data.snapshotData.umbralEmbrace.startTime = currentTime
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.umbralEmbrace.isActive = false
+							TRB.Data.snapshotData.umbralEmbrace.ticksRemaining = 0
+							TRB.Data.snapshotData.umbralEmbrace.astralPower = 0
+							TRB.Data.snapshotData.umbralEmbrace.startTime = nil
+						elseif type == "SPELL_PERIODIC_ENERGIZE" then
+							TRB.Data.snapshotData.umbralEmbrace.ticksRemaining = TRB.Data.snapshotData.umbralEmbrace.ticksRemaining - 1
+							TRB.Data.snapshotData.umbralEmbrace.astralPower = TRB.Data.snapshotData.umbralEmbrace.ticksRemaining * TRB.Data.spells.umbralEmbrace.astralPower
+						end						
 					elseif spellId == TRB.Data.spells.eclipseSolar.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.eclipseSolar.isActive = true
