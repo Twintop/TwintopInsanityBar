@@ -2317,12 +2317,13 @@ local function Import(input)
 	end
 
 	if not (configuration.core ~= nil or
-		(configuration.warrior ~= nil and configuration.warrior.arms ~= nil) or
+		(configuration.warrior ~= nil and (configuration.warrior.arms ~= nil or configuration.warrior.fury ~= nil)) or
 		(configuration.rogue ~= nil and configuration.rogue.assassination ~= nil) or
 		(configuration.hunter ~= nil and (configuration.hunter.beastMastery ~= nil or configuration.hunter.marksmanship ~= nil or configuration.hunter.survival ~= nil)) or
+		(configuration.monk ~= nil and configuration.monk.windwalker) or
 		(configuration.priest ~= nil and (configuration.priest.holy ~= nil or configuration.priest.shadow ~= nil)) or
 		(configuration.shaman ~= nil and (configuration.shaman.elemental ~= nil or configuration.shaman.restoration ~= nil)) or
-		(configuration.druid ~= nil and configuration.druid.balance ~= nil)) then
+		(configuration.druid ~= nil and (configuration.druid.balance ~= nil or configuration.druid.feral ~= nil))) then
 		return -3
 	end
 
@@ -2379,6 +2380,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
 			elseif TRB.Data.settings.core.experimental.specs.shaman.restoration and specId == 3 then -- Restoration
+			end
+		elseif classId == 10 then -- Monk
+			if TRB.Data.settings.core.experimental.specs.monk.windwalker and specId == 3 then -- Windwalker
 			end
 		elseif classId == 11 then -- Druids
 			if specId == 1 then -- Balance
@@ -2438,6 +2442,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 1 then -- Elemental
 			elseif TRB.Data.settings.core.experimental.specs.shaman.restoration and specId == 3 then -- Restoration
 			end
+		elseif classId == 10 then -- Monk
+			if TRB.Data.settings.core.experimental.specs.monk.windwalker and specId == 3 then -- Windwalker
+			end
 		elseif classId == 11 then -- Druids
 			if specId == 1 then -- Balance
 				configuration.astralPowerPrecision = settings.astralPowerPrecision
@@ -2477,6 +2484,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
 			elseif TRB.Data.settings.core.experimental.specs.shaman.restoration and specId == 3 then -- Restoration
+			end
+		elseif classId == 10 then -- Monk
+			if TRB.Data.settings.core.experimental.specs.monk.windwalker and specId == 3 then -- Windwalker
 			end
 		elseif classId == 11 then -- Druid
 			if specId == 1 then -- Balance
@@ -2576,6 +2586,14 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 					configuration.shaman.restoration = TRB.Functions.ExportConfigurationSections(7, 3, settings.shaman.restoration, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 				end
 			end
+		elseif classId == 10 and settings.monk ~= nil then -- Monk
+			configuration.monk = {}
+
+			if TRB.Data.settings.core.experimental.specs.monk.windwalker then
+				if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.monk.windwalker) > 0 then -- Windwalker
+					configuration.smonk.windwalker = TRB.Functions.ExportConfigurationSections(10, 3, settings.monk.windwalker, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+				end
+			end
 		elseif classId == 11 and settings.druid ~= nil then -- Druid
 			configuration.druid = {}
 			
@@ -2609,6 +2627,12 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Survival
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+
+		-- Monks
+		if TRB.Data.settings.core.experimental.specs.monk.windwalker then
+			-- Windwalker
+			configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(10, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		end
 
 		-- Priests
 		-- Holy
