@@ -897,7 +897,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 367307,
 				name = "",
 				icon = "",
-				modifier = 1.15
+				modifier = 1.05
 			}
 
 		}
