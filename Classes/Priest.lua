@@ -307,6 +307,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			-- Potions
 			potionOfSpiritualClarity = {
 				itemId = 171272,
+				spellId = 307161,
 				name = "",
 				icon = "",
 				texture = "",
@@ -4382,7 +4383,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 				end
 			end
-
+			
 			if sourceGUID == TRB.Data.character.guid then
 				if specId == 2 then
 					if spellId == TRB.Data.spells.symbolOfHope.id then
@@ -4390,7 +4391,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							-- Let UpdateSymbolOfHope() clean this up
 							UpdateSymbolOfHope(true)
 						end
-					elseif spellId == TRB.Data.spells.potionOfSpiritualClarity.id then
+					elseif spellId == TRB.Data.spells.potionOfSpiritualClarity.spellId then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Potion of Spiritual Clarity
 							TRB.Data.snapshotData.potionOfSpiritualClarity.isActive = true
 							TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining = TRB.Data.spells.potionOfSpiritualClarity.ticks
