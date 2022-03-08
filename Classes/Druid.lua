@@ -320,7 +320,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 363497,
 				name = "",
 				icon = "",
-				modifier = -0.2
+				modifier = -0.15
 			}
 		}
 		
