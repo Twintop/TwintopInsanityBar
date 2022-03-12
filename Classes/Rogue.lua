@@ -1279,7 +1279,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		--$regenEnergy
 		local regenEnergy = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.passive, _regenEnergy)
 
-		_passiveEnergy = _regenEnergy --+ _barbedShotEnergy
+		_passiveEnergy = _regenEnergy
 		_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
 
 		local passiveEnergy = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.passive, _passiveEnergy)

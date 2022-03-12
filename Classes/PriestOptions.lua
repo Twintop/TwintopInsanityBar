@@ -2809,7 +2809,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end)
 
-		controls.colors.castingManaText = TRB.UiFunctions:BuildColorPicker(parent, "Mana from hardcasting spells", TRB.Data.settings.priest.holy.colors.text.casting, 275, 25, xCoord2, yCoord)
+		controls.colors.castingManaText = TRB.UiFunctions:BuildColorPicker(parent, "Mana spent from hardcasting spells", TRB.Data.settings.priest.holy.colors.text.casting, 275, 25, xCoord2, yCoord)
 		f = controls.colors.castingManaText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then

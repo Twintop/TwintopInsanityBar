@@ -123,23 +123,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				fistOfTheWhiteTiger = {
 					enabled = true, -- 8
 				},
-				-- Covenants
-				--[[echoingReprimand = { -- Kyrian
-					enabled = true, -- 18
-				},
-				sepsis = { -- Night Fae
-					enabled = true, -- 19
-				},
-				serratedBoneSpike = { -- Necrolord
-					enabled = true, -- 20
-				},
-				-- PvP					
-				deathFromAbove = {
-					enabled = false, -- 21
-				},
-				dismantle = {
-					enabled = false, -- 22
-				},]]
 			},
 			generation = {
 				mode="gcd",
@@ -174,6 +157,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
                 relativeToName="Above - Middle",
                 fullWidth=false,
             },
+			endOfSerenity = {
+				enabled=true,
+				mode="gcd",
+				gcdsMax=2,
+				timeMax=3.0
+			},
 			colors = {
 				text = {
 					current="FFFFFF00",
@@ -199,11 +188,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					borderOvercap="FFFF0000",
 					background="66000000",
 					base="FFFFFF00",
-					--noSliceAndDice="FFFF0000",
-					--sliceAndDicePandemic="FFFF9900",
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FF9F4500",
+					serenity="FF00FF98",
+					serenityEnd="FFFF0000",
 					overcapEnabled=true,
 				},
 				comboPoints = {
@@ -212,8 +201,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					base="FFB5FFEB",
 					penultimate="FFFF9900",
 					final="FFFF0000",
-					--echoingReprimand="FF68CCEF",
-					--serratedBoneSpike="FF40BF40",
 					sameColor=false
 				},
 				threshold = {
@@ -230,18 +217,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-				--[[blindside={
-					name = "Blindside Proc",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},
-				sepsis={
-					name = "Flayer's Mark Proc",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},]]
             },
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -357,19 +332,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		--[[StaticPopupDialogs["TwintopResourceBar_Monk_Windwalker_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Windwalker Monk settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
-			OnAccept = function()
-				TRB.Data.settings.monk.windwalker.displayText = WindwalkerLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()
-			end,
-			timeout = 0,
-			whileDead = true,
-			hideOnEscape = true,
-			preferredIndex = 3
-		}]]
 
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
@@ -388,13 +350,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			StaticPopup_Show("TwintopResourceBar_Monk_Windwalker_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
-
-		--[[
-		controls.resetButton2 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
-		controls.resetButton2:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_Monk_Windwalker_ResetBarTextNarrowAdvanced")
-		end)
-		]]
 
 		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
 		controls.resetButton3:SetScript("OnClick", function(self, ...)
@@ -1613,42 +1568,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.barDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display", 0, yCoord)
 
 		yCoord = yCoord - 40
-
-        --[[
-		title = "Beastial Wrath Flash Alpha"
-		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, TRB.Data.settings.monk.windwalker.colors.bar.flashAlpha, 0.01, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
-		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.colors.bar.flashAlpha = value
-		end)
-
-		title = "Beastial Wrath Flash Period (sec)"
-		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0.05, 2, TRB.Data.settings.monk.windwalker.colors.bar.flashPeriod, 0.05, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
-		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.colors.bar.flashPeriod = value
-		end)
-
-		yCoord = yCoord - 40]]
-
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_RB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -1721,48 +1640,25 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			TRB.Functions.HideResourceBar()
 		end)
 
-		--[[
 		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
-		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f.tooltip = "This will show the casting bar when hardcasting Cracking Jade Lightning. Uncheck to hide this bar."
 		f:SetChecked(TRB.Data.settings.monk.windwalker.bar.showCasting)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.monk.windwalker.bar.showCasting = self:GetChecked()
-		end)]]
+		end)
 
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-15)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
 		f:SetChecked(TRB.Data.settings.monk.windwalker.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.monk.windwalker.bar.showPassive = self:GetChecked()
 		end)
-
-        --[[
-		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_CB1_5", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
-		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Beastial Wrath is usable")
-		f.tooltip = "This will flash the bar when Beastial Wrath can be cast."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.colors.bar.flashEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.colors.bar.flashEnabled = self:GetChecked()
-		end)
-
-		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_CB1_6", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.esThresholdShow
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
-		getglobal(f:GetName() .. 'Text'):SetText("Border color when Beastial Wrath is usable")
-		f.tooltip = "This will change the bar's border color (as configured below) when Beastial Wrath is usable."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.colors.bar.beastialWrathEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.colors.bar.beastialWrathEnabled = self:GetChecked()
-		end)
-        ]]
 
 		yCoord = yCoord - 60
 
@@ -1812,28 +1708,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		yCoord = yCoord - 30
-		--[[controls.colors.sliceAndDicePandemic = TRB.UiFunctions:BuildColorPicker(parent, "Energy when Slice and Dice is within Pandemic refresh range (current CPs)", TRB.Data.settings.monk.windwalker.colors.bar.sliceAndDicePandemic, 275, 25, xCoord, yCoord)
-		f = controls.colors.sliceAndDicePandemic
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.sliceAndDicePandemic, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.sliceAndDicePandemic.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.windwalker.colors.bar.sliceAndDicePandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)]]
-
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Energy gain from Passive Sources", TRB.Data.settings.monk.windwalker.colors.bar.passive, 275, 25, xCoord2, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Energy gain from Passive Sources", TRB.Data.settings.monk.windwalker.colors.bar.passive, 275, 25, xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1855,14 +1730,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 		end)
 
-
-		yCoord = yCoord - 30
-		--[[
-		controls.colors.noSliceAndDice = TRB.UiFunctions:BuildColorPicker(parent, "Energy when Slice and Dice is not up", TRB.Data.settings.monk.windwalker.colors.bar.noSliceAndDice, 275, 25, xCoord, yCoord)
-		f = controls.colors.noSliceAndDice
+		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Energy spent from hardcasting spells", TRB.Data.settings.monk.windwalker.colors.bar.casting, 275, 25, xCoord2, yCoord)
+		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.noSliceAndDice, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.casting, true)
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -1873,11 +1745,34 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						a = OpacitySliderFrame:GetValue()
 					end
 
-					controls.colors.noSliceAndDice.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.windwalker.colors.bar.noSliceAndDice = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.casting.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.monk.windwalker.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					castingFrame:SetStatusBarColor(r, g, b, 1-a)
 				end)
 			end
-		end)]]
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.serenity = TRB.UiFunctions:BuildColorPicker(parent, "Energy while Serenity is active", TRB.Data.settings.monk.windwalker.colors.bar.serenity, 275, 25, xCoord, yCoord)
+		f = controls.colors.serenity
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.serenity, true)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+---@diagnostic disable-next-line: deprecated
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.serenity.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.monk.windwalker.colors.bar.serenity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)	
 
 		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.monk.windwalker.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
@@ -1900,6 +1795,28 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
                 end)
 			end
 		end)
+
+		yCoord = yCoord - 30
+		controls.colors.serenityEnd = TRB.UiFunctions:BuildColorPicker(parent, "Energy while you have less than 1 GCD left in Serenity", TRB.Data.settings.monk.windwalker.colors.bar.serenityEnd, 275, 25, xCoord, yCoord)
+		f = controls.colors.serenityEnd
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.serenityEnd, true)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+---@diagnostic disable-next-line: deprecated
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.serenityEnd.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.monk.windwalker.colors.bar.serenityEnd = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)		
 
 		yCoord = yCoord - 40
 
@@ -1948,7 +1865,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.comboPointPenultimate = TRB.UiFunctions:BuildColorPicker(parent, "Penultimate Chi", TRB.Data.settings.monk.windwalker.colors.comboPoints.penultimate, 300, 25, xCoord, yCoord)
+		controls.colors.comboPointPenultimate = TRB.UiFunctions:BuildColorPicker(parent, "Penultimate Chi", TRB.Data.settings.monk.windwalker.colors.comboPoints.penultimate, 275, 25, xCoord, yCoord)
 		f = controls.colors.comboPointPenultimate
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -1968,30 +1885,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 		end)
 
-		--[[
-		controls.colors.comboPointEchoingReprimand = TRB.UiFunctions:BuildColorPicker(parent, "Chi when Echoing Reprimand (|cFF68CCEFKyrian|r) buff is up", TRB.Data.settings.monk.windwalker.colors.comboPoints.echoingReprimand, 275, 25, xCoord2, yCoord)
-		f = controls.colors.comboPointEchoingReprimand
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.echoingReprimand, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.comboPointEchoingReprimand.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.comboPoints.echoingReprimand = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)]]
-
-		yCoord = yCoord - 30
-		controls.colors.comboPointFinal = TRB.UiFunctions:BuildColorPicker(parent, "Final Chi", TRB.Data.settings.monk.windwalker.colors.comboPoints.final, 300, 25, xCoord, yCoord)
+		controls.colors.comboPointFinal = TRB.UiFunctions:BuildColorPicker(parent, "Final Chi", TRB.Data.settings.monk.windwalker.colors.comboPoints.final, 275, 25, xCoord2, yCoord)
 		f = controls.colors.comboPointFinal
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -2011,30 +1905,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 		end)
 
-		--[[
-		controls.colors.comboPointSerratedBoneSpike = TRB.UiFunctions:BuildColorPicker(parent, "Chi that wil generate on next Serrated Bone Spike (|cFF40BF40Necrolord|r) use", TRB.Data.settings.monk.windwalker.colors.comboPoints.serratedBoneSpike, 275, 25, xCoord2, yCoord)
-		f = controls.colors.comboPointSerratedBoneSpike
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.serratedBoneSpike, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.comboPointSerratedBoneSpike.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.comboPoints.serratedBoneSpike = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)]]
-
 		yCoord = yCoord - 30
-
 		controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sameColorComboPoint
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -2244,69 +2115,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			TRB.Data.settings.monk.windwalker.thresholds.disable.enabled = self:GetChecked()
 		end)
 
-		--[[
-		yCoord = yCoord - 25
-		controls.labels.covenant = TRB.UiFunctions:BuildLabel(parent, "Covenant", 5, yCoord, 110, 20)
-		yCoord = yCoord - 20
-
-		controls.checkBoxes.echoingReprimandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_echoingReprimand", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.echoingReprimandThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand (if |cFF68CCEFKyrian|r)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand. Only visible if |cFF68CCEFKyrian|r. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.echoingReprimand.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.echoingReprimand.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.sepsisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_sepsis", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.sepsisThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sepsis (if |cFFA330C9Night Fae|r)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis. Only visible if |cFFA330C9Night Fae|r. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.sepsis.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.sepsis.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.serratedBoneSpikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_serratedBoneSpike", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.serratedBoneSpikeThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Serrated Bone Spike (if |cFF40BF40Necrolord|r)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Serrated Bone Spike. Only visible if |cFF40BF40Necrolord|r. If no available charges, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.serratedBoneSpike.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.serratedBoneSpike.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.labels.covenant = TRB.UiFunctions:BuildLabel(parent, "PvP Abilities", 5, yCoord, 110, 20)
-		yCoord = yCoord - 20
-
-		controls.checkBoxes.deathFromAboveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_deathFromAbove", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.deathFromAboveThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Death From Above")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Death From Above. If on cooldown or if you do not have any Chi, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.deathFromAbove.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.deathFromAbove.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.dismantleThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_dismantle", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.dismantleThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Dismantle")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dismantle. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.dismantle.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.dismantle.enabled = self:GetChecked()
-		end)
-        ]]
-
 		yCoord = yCoord - 30
 
         -- Create the dropdown, and configure its appearance
@@ -2485,7 +2293,84 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 
 		yCoord = yCoord - 60
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "End of Serenity Configuration", 0, yCoord)
 
+		yCoord = yCoord - 30
+		controls.checkBoxes.endOfSerenity = CreateFrame("CheckButton", "TRB_EOVF_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfSerenity
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Serenity")
+		f.tooltip = "Changes the bar color when Serenity is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(TRB.Data.settings.monk.windwalker.endOfSerenity.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.monk.windwalker.endOfSerenity.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 40
+		controls.checkBoxes.endOfSerenityModeGCDs = CreateFrame("CheckButton", "TRB_EOFV_M_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfSerenityModeGCDs
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Serenity ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many GCDs remain until Serenity ends."
+		if TRB.Data.settings.monk.windwalker.endOfSerenity.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfSerenityModeGCDs:SetChecked(true)
+			controls.checkBoxes.endOfSerenityModeTime:SetChecked(false)
+			TRB.Data.settings.monk.windwalker.endOfSerenity.mode = "gcd"
+		end)
+
+		title = "Serenity GCDs - 0.75sec Floor"
+		controls.endOfSerenityGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 10, TRB.Data.settings.monk.windwalker.endOfSerenity.gcdsMax, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.endOfSerenityGCDs:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			self.EditBox:SetText(value)
+			TRB.Data.settings.monk.windwalker.endOfSerenity.gcdsMax = value
+		end)
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.endOfSerenityModeTime = CreateFrame("CheckButton", "TRB_EOFV_M_TIME", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfSerenityModeTime
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Time until Serenity ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many seconds remain until Serenity will end."
+		if TRB.Data.settings.monk.windwalker.endOfSerenity.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfSerenityModeGCDs:SetChecked(false)
+			controls.checkBoxes.endOfSerenityModeTime:SetChecked(true)
+			TRB.Data.settings.monk.windwalker.endOfSerenity.mode = "time"
+		end)
+
+		title = "Serenity Time Remaining"
+		controls.endOfSerenityTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, TRB.Data.settings.monk.windwalker.endOfSerenity.timeMax, 0.25, 2,
+										sliderWidth, sliderHeight, xCoord2, yCoord)
+		controls.endOfSerenityTime:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			end
+
+			value = TRB.Functions.RoundTo(value, 2)
+			self.EditBox:SetText(value)
+			TRB.Data.settings.monk.windwalker.endOfSerenity.timeMax = value
+		end)
+
+
+		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -3195,73 +3080,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
-        --[[
-		yCoord = yCoord - 30
-		controls.checkBoxes.blindsideAudio = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_blindside_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.blindsideAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Blidside proc occurs")
-		f.tooltip = "Play an audio cue when a Blindside proc occurs, allowing Ambush to be used outside of stealth."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.audio.blindside.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.audio.blindside.enabled = self:GetChecked()
-
-			if TRB.Data.settings.monk.windwalker.audio.blindside.enabled then
-				---@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.blindsideAudio = CreateFrame("FRAME", "TwintopResourceBar_Monk_Windwalker_blindside_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.blindsideAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.blindsideAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.blindsideAudio, TRB.Data.settings.monk.windwalker.audio.blindside.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.blindsideAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.blindsideAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.monk.windwalker.audio.blindside.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.blindsideAudio:SetValue(newValue, newName)
-			TRB.Data.settings.monk.windwalker.audio.blindside.sound = newValue
-			TRB.Data.settings.monk.windwalker.audio.blindside.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.blindsideAudio, newName)
-			CloseDropDownMenus()
-			---@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-        ]]
-
 		yCoord = yCoord - 60
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
@@ -3326,73 +3144,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
-
-		--[[
-		yCoord = yCoord - 60
-		controls.checkBoxes.sepsisAudio = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_sepsis_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.sepsisAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you gain Sepsis buff (if |cFF68CCEFKyrian|r)")
-		f.tooltip = "Play an audio cue when you gain Sepsis buff that allows you to use a stealth ability outside of steath."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.audio.sepsis.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.audio.sepsis.enabled = self:GetChecked()
-
-			if TRB.Data.settings.monk.windwalker.audio.sepsis.enabled then
-				---@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.sepsisAudio = CreateFrame("FRAME", "TwintopResourceBar_Monk_Windwalker_sepsis_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.sepsisAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.sepsisAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.sepsisAudio, TRB.Data.settings.monk.windwalker.audio.sepsis.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.sepsisAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.sepsisAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else  
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.monk.windwalker.audio.sepsis.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.sepsisAudio:SetValue(newValue, newName)
-			TRB.Data.settings.monk.windwalker.audio.sepsis.sound = newValue
-			TRB.Data.settings.monk.windwalker.audio.sepsis.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.sepsisAudio, newName)
-			CloseDropDownMenus()
-			---@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-        ]]
 
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Energy Regeneration", 0, yCoord)

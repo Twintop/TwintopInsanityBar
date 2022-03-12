@@ -50,11 +50,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			talents = {
 				fistOfTheWhiteTiger = {
 					isSelected = false
+				},
+				serenity = {
+					isSelected = false
 				}
 			},
-			items = {
-				--tinyToxicBlade = false
-			},
+			items = {},
 			torghast = {
 				rampaging = {
 					spellCostModifier = 1.0,
@@ -236,98 +237,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				name = "",
 				icon = ""
 			},
-
-			--[[
-			-- Covenants
-			echoingReprimand = { -- Kyrian
-				id = 323547,
-				name = "",
-				icon = "",
-				energy = -10,
-				comboPointsGenerated = 2,
-				texture = "",
-				thresholdId = 18,
-				settingKey = "echoingReprimand",
-				hasCooldown = true,
-				isSnowflake = true,
-				thresholdUsable = false,
-				isActive = false,
-				cooldown = 45,
-				buffId = {
-					323558, -- 2
-					323559, -- 3
-					323560, -- 4
-					354835, -- 4
-					354838, -- 5
-				}
-			},
-			sepsis = { -- Night Fae
-				id = 328305,
-				name = "",
-				icon = "",
-				energy = -25,
-				comboPointsGenerated = 1,
-				texture = "",
-				thresholdId = 19,
-				settingKey = "sepsis",
-				hasCooldown = true,
-				isSnowflake = true,
-				cooldown = 90,
-				buffId = 347037,
-				isActive = false
-			},
-			adrenalineRush = {
-				id = 13750,
-				name = "",
-				icon = "",
-			},
-			serratedBoneSpike = {
-				id = 328547,
-				name = "",
-				icon = "",
-				energy = -15,
-				comboPointsGenerated = 2,
-				texture = "",
-				thresholdId = 20,
-				settingKey = "serratedBoneSpike",
-				hasCooldown = true,
-				isSnowflake = true,
-				debuffId = 324073
-			},
-			flagellation = {
-				id = 323654,
-				name = "",
-				icon = ""
-			},
-
-			-- PvP
-			deathFromAbove = {
-				id = 269513,
-				name = "",
-				icon = "",
-				energy = -25,
-				texture = "",
-				thresholdId = 21,
-				settingKey = "deathFromAbove",
-				comboPoints = true,
-				hasCooldown = true,
-				isPvp = true,
-				thresholdUsable = false,
-				cooldown = 30
-			},
-			dismantle = {
-				id = 207777,
-				name = "",
-				icon = "",
-				energy = -25,
-				texture = "",
-				thresholdId = 22,
-				settingKey = "dismantle",
-				hasCooldown = true,
-				isPvp = true,
-				thresholdUsable = false,
-				cooldown = 45
-			},]]
 		}
 
 		specCache.windwalker.snapshotData.energyRegen = 0
@@ -337,18 +246,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		specCache.windwalker.snapshotData.targetData = {
 			ttdIsActive = false,
 			currentTargetGuid = nil,
-			--Bleeds
-			--[[garrote = 0,
-			rupture = 0,
-			internalBleeding = 0,
-			crimsonTempest = 0,
-			--Poisons
-			deadlyPoison = 0,
-			cripplingPoison = 0,
-			woundPoison = 0,
-			numbingPoison = 0,
-			--Covenant
-			serratedBoneSpike = 0,]]
 			targets = {}
 		}
 		specCache.windwalker.snapshotData.detox = {
@@ -371,63 +268,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			duration = 0,
 			enabled = false
 		}
-		--[[specCache.windwalker.snapshotData.garrote = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}
-		specCache.windwalker.snapshotData.exsanguinate = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}
-		specCache.windwalker.snapshotData.blindside = {
-			spellId = nil,
-			endTime = nil,
-			duration = 0
-		}
-		specCache.windwalker.snapshotData.sliceAndDice = {
-			spellId = nil,
-			endTime = nil,
-			duration = 0
-		}
-
-		specCache.windwalker.snapshotData.echoingReprimand = {
-			startTime = nil,
-			duration = 0,
-		}
-		for x = 1, 6 do -- 1 and 6 CPs doesn't get it, but including it just in case it gets added/changed
-			specCache.windwalker.snapshotData.echoingReprimand[x] = {
-				endTime = nil,
-				duration = 0,
-				enabled = false,
-				comboPoints = 0
-			}
-		end
-		
-		specCache.windwalker.snapshotData.sepsis = {
-			startTime = nil,
-			endTime = nil,
-			duration = 0,
-			enabled = false
-		}
-		specCache.windwalker.snapshotData.serratedBoneSpike = {
+		specCache.windwalker.snapshotData.serenity = {
 			isActive = false,
-			-- Charges
-			charges = 0,
-			startTime = nil,
-			duration = 0
-		}
-		specCache.windwalker.snapshotData.deathFromAbove = {
-			startTime = nil,
+			spellId = nil,
 			duration = 0,
-			enabled = false
+			endTime = nil
 		}
-		specCache.windwalker.snapshotData.dismantle = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}]]
 
 		specCache.windwalker.barTextVariables = {
 			icons = {},
@@ -453,31 +299,33 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-            --[[
-			{ variable = "#blindside", icon = spells.blindside.icon, description = spells.blindside.name, printInSettings = true },
-			{ variable = "#covenantAbility", icon = spells.echoingReprimand.icon .. spells.flagellation.icon .. spells.sepsis.icon .. spells.serratedBoneSpike.icon, description = "Covenant on-use Ability", printInSettings = true},
-			{ variable = "#crimsonTempest", icon = spells.crimsonTempest.icon, description = spells.crimsonTempest.name, printInSettings = true },
-			{ variable = "#ct", icon = spells.crimsonTempest.icon, description = spells.crimsonTempest.name, printInSettings = false },
-			{ variable = "#cripplingPoison", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = true },
-			{ variable = "#cp", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = false },
-			{ variable = "#deadlyPoison", icon = spells.deadlyPoison.icon, description = spells.deadlyPoison.name, printInSettings = true },
-			{ variable = "#dp", icon = spells.deadlyPoison.icon, description = spells.deadlyPoison.name, printInSettings = false },
-			{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
-			{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
-			{ variable = "#echoingReprimand", icon = spells.echoingReprimand.icon, description = spells.echoingReprimand.name, printInSettings = true },
-			{ variable = "#garrote", icon = spells.garrote.icon, description = spells.garrote.name, printInSettings = true },
-			{ variable = "#internalBleeding", icon = spells.internalBleeding.icon, description = spells.internalBleeding.name, printInSettings = true },
-			{ variable = "#ib", icon = spells.internalBleeding.icon, description = spells.internalBleeding.name, printInSettings = false },
-			{ variable = "#numbingPoison", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = true },
-			{ variable = "#np", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = false },
-			{ variable = "#rupture", icon = spells.rupture.icon, description = spells.rupture.name, printInSettings = true },
-			{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
-			{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
-			{ variable = "#sepsis", icon = spells.sepsis.icon, description = spells.sepsis.name, printInSettings = true },
-			{ variable = "#serratedBoneSpike", icon = spells.serratedBoneSpike.icon, description = spells.serratedBoneSpike.name, printInSettings = true },
-			{ variable = "#woundPoison", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = true },
-			{ variable = "#wp", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = false },
-            ]]
+			{ variable = "#blackoutKick", icon = spells.blackoutKick.icon, description = spells.blackoutKick.name, printInSettings = true },
+			{ variable = "#cracklingJadeLightning", icon = spells.cracklingJadeLightning.icon, description = spells.cracklingJadeLightning.name, printInSettings = true },
+			{ variable = "#cjl", icon = spells.cracklingJadeLightning.icon, description = spells.cracklingJadeLightning.name, printInSettings = false },
+			{ variable = "#danceOfChiJi", icon = spells.danceOfChiJi.icon, description = spells.danceOfChiJi.name, printInSettings = true },
+			{ variable = "#detox", icon = spells.detox.icon, description = spells.detox.name, printInSettings = true },
+			{ variable = "#disable", icon = spells.disable.icon, description = spells.disable.name, printInSettings = true },
+			{ variable = "#energizingElixir", icon = spells.energizingElixir.icon, description = spells.energizingElixir.name, printInSettings = true },
+			{ variable = "#expelHarm", icon = spells.expelHarm.icon, description = spells.expelHarm.name, printInSettings = true },
+			{ variable = "#fistsOfFury", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = true },
+			{ variable = "#fof", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = false },
+			{ variable = "#fistOfTheWhiteTiger", icon = spells.fistOfTheWhiteTiger.icon, description = spells.fistOfTheWhiteTiger.name, printInSettings = true },
+			{ variable = "#fotwt", icon = spells.fistOfTheWhiteTiger.icon, description = spells.fistOfTheWhiteTiger.name, printInSettings = false },
+			{ variable = "#paralysis", icon = spells.paralysis.icon, description = spells.paralysis.name, printInSettings = true },
+			{ variable = "#risingSunKick", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = true },
+			{ variable = "#rsk", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = false },
+			{ variable = "#rushingJadeWind", icon = spells.rushingJadeWind.icon, description = spells.rushingJadeWind.name, printInSettings = true },
+			{ variable = "#rjw", icon = spells.rushingJadeWind.icon, description = spells.rushingJadeWind.name, printInSettings = false },
+			{ variable = "#serenity", icon = spells.serenity.icon, description = spells.serenity.name, printInSettings = true },
+			{ variable = "#spinningCraneKick", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = true },
+			{ variable = "#sck", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = false },
+			{ variable = "#stormEarthAndFire", icon = spells.stormEarthAndFire.icon, description = spells.stormEarthAndFire.name, printInSettings = true },
+			{ variable = "#sef", icon = spells.stormEarthAndFire.icon, description = spells.stormEarthAndFire.name, printInSettings = false },			
+			{ variable = "#tigerPalm", icon = spells.tigerPalm.icon, description = spells.tigerPalm.name, printInSettings = true },
+			{ variable = "#touchOfDeath", icon = spells.touchOfDeath.icon, description = spells.touchOfDeath.name, printInSettings = true },
+			{ variable = "#vivify", icon = spells.vivify.icon, description = spells.vivify.name, printInSettings = true },
+			{ variable = "#xuen", icon = spells.invokeXuenTheWhiteTiger.icon, description = spells.invokeXuenTheWhiteTiger.name, printInSettings = true },
+			{ variable = "#invokeXuenTheWhiteTiger", icon = spells.invokeXuenTheWhiteTiger.icon, description = spells.invokeXuenTheWhiteTiger.name, printInSettings = false },
         }
 		specCache.windwalker.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -516,55 +364,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "$chiMax", description = "Maximum Chi", printInSettings = true, color = false },
 			{ variable = "$comboPointsMax", description = "Maximum Chi", printInSettings = false, color = false },
 
-			{ variable = "$sadTime", description = "Time remaining on Slice and Dice buff", printInSettings = true, color = false },
-			{ variable = "$sliceAndDiceTime", description = "Time remaining on Slice and Dice buff", printInSettings = false, color = false },
-
-            --[[
-			-- Bleeds
-			{ variable = "$isBleeding", description = "Does your current target have a bleed active on it? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$ctCount", description = "Number of Crimson Tempest bleeds active on targets", printInSettings = true, color = false },
-			{ variable = "$crimsonTempestCount", description = "Number of Crimson Tempest bleeds active on targets", printInSettings = false, color = false },
-			{ variable = "$ctTime", description = "Time remaining on Crimson Tempest on your current target", printInSettings = true, color = false },
-			{ variable = "$crimsonTempestTime", description = "Time remaining on Crimson Tempest on your current target", printInSettings = false, color = false },
-
-			{ variable = "$garroteCount", description = "Number of Garrote bleeds active on targets", printInSettings = true, color = false },
-			{ variable = "$garroteTime", description = "Time remaining on Garrote on your current target", printInSettings = true, color = false },
-
-			{ variable = "$ibCount", description = "Number of Internal Bleeding bleeds active on targets", printInSettings = true, color = false },
-			{ variable = "$internalBleedingCount", description = "Number of Internal Bleeding bleeds active on targets", printInSettings = false, color = false },
-			{ variable = "$ibTime", description = "Time remaining on Internal Bleeding on your current target", printInSettings = true, color = false },
-			{ variable = "$internalBleedingTime", description = "Time remaining on Internal Bleeding on your current target", printInSettings = false, color = false },
-
-			{ variable = "$ruptureCount", description = "Number of Rupture bleeds active on targets", printInSettings = true, color = false },
-			{ variable = "$ruptureTime", description = "Time remaining on Rupture on your current target", printInSettings = true, color = false },
-		
-			{ variable = "$sbsCount", description = "Number of Serrated Bone Spike bleeds active on targets (if |cFF40BF40Necrolord|r)", printInSettings = true, color = false },
-			{ variable = "$serratedBoneSpikeCount", description = "Number of Serrated Bone Spike bleeds active on targets (if |cFF40BF40Necrolord|r)", printInSettings = false, color = false },
-
-			-- Poisons
-			{ variable = "$cpCount", description = "Number of Crippling Poisons active on targets", printInSettings = true, color = false },
-			{ variable = "$cripplingPoisonCount", description = "Number of Crippling Poisons active on targets", printInSettings = false, color = false },
-			{ variable = "$cpTime", description = "Time remaining on Crippling Poison on your current target", printInSettings = true, color = false },
-			{ variable = "$cripplingPoisonTime", description = "Time remaining on Crippling Poisons on your current target", printInSettings = false, color = false },
-
-			{ variable = "$dpCount", description = "Number of Deadly Poisons active on targets", printInSettings = true, color = false },
-			{ variable = "$deadlyPoisonCount", description = "Number of Deadly Poisons active on targets", printInSettings = false, color = false },
-			{ variable = "$dpTime", description = "Time remaining on Deadly Poisons on your current target", printInSettings = true, color = false },
-			{ variable = "$deadlyPoisonTime", description = "Time remaining on Deadly Poisons on your current target", printInSettings = false, color = false },
-
-			{ variable = "$npCount", description = "Number of Numbing Poisons active on targets", printInSettings = true, color = false },
-			{ variable = "$numbingPoisonCount", description = "Number of Numbing Poisons active on targets", printInSettings = false, color = false },
-			{ variable = "$npTime", description = "Time remaining on Numbing Poison on your current target", printInSettings = true, color = false },
-			{ variable = "$numbingPoisonTime", description = "Time remaining on Numbing Poison on your current target", printInSettings = false, color = false },
-
-			{ variable = "$wpCount", description = "Number of Wound Poisons active on targets", printInSettings = true, color = false },
-			{ variable = "$woundPoisonCount", description = "Number of Wound Poisons active on targets", printInSettings = false, color = false },
-			{ variable = "$wpTime", description = "Time remaining on Wound Poison on your current target", printInSettings = true, color = false },
-			{ variable = "$woundPoisonTime", description = "Time remaining on Wound Poison on your current target", printInSettings = false, color = false },
-
-			-- Proc
-			{ variable = "$blindsideTime", description = "Time remaining on Blindside proc", printInSettings = true, color = false },
-            ]]
+			{ variable = "$serenityTime", description = "Time remaining on Serenity buff", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -587,28 +387,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
             settings = TRB.Data.settings.monk.windwalker
 			TRB.Data.character.specName = "windwalker"
 			TRB.Data.character.talents.fistOfTheWhiteTiger.isSelected = select(4, GetTalentInfo(3, 2, TRB.Data.character.specGroup))
-			--[[
-            
-			TRB.Data.character.talents.subterfuge.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.internalBleeding.isSelected = select(4, GetTalentInfo(5, 1, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.exsanguinate.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.hiddenBlades.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.crimsonTempest.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
-						
-			-- Legendaries
-			local waistItemLink = GetInventoryItemLink("player", 6)
-			local feetItemLink = GetInventoryItemLink("player", 8)
-
-			local tinyToxicBlade = false
-			if waistItemLink ~= nil then
-				tinyToxicBlade = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(waistItemLink, 172320, TRB.Data.spells.shiv.idLegendaryBonus)
-			end
-
-			if tinyToxicBlade == false and waistItemLink ~= nil then
-				tinyToxicBlade = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(feetItemLink, 173244, TRB.Data.spells.shiv.idLegendaryBonus)
-			end
-			TRB.Data.character.items.tinyToxicBlade = tinyToxicBlade
-            ]]
+			TRB.Data.character.talents.serenity.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 		end
         
         if settings ~= nil then
@@ -677,27 +456,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		if specId == 3 then
 			if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
 				TRB.Functions.InitializeTarget(guid)
-				--[[
-                --Bleeds
-				TRB.Data.snapshotData.targetData.targets[guid].garrote = false
-				TRB.Data.snapshotData.targetData.targets[guid].garroteRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].rupture = false
-				TRB.Data.snapshotData.targetData.targets[guid].ruptureRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].internalBleeding = false
-				TRB.Data.snapshotData.targetData.targets[guid].internalBleedingRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].crimsonTempest = false
-				TRB.Data.snapshotData.targetData.targets[guid].crimsonTempestRemaining = 0
-				--Poisons
-				TRB.Data.snapshotData.targetData.targets[guid].deadlyPoison = false
-				TRB.Data.snapshotData.targetData.targets[guid].deadlyPoisonRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].cripplingPoison = false
-				TRB.Data.snapshotData.targetData.targets[guid].cripplingPoisonRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].woundPoison = false
-				TRB.Data.snapshotData.targetData.targets[guid].woundPoisonRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].numbingPoison = false
-				TRB.Data.snapshotData.targetData.targets[guid].numbingPoisonRemaining = 0
-				-- Covenant
-				TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpike = false]]
 			end
 		end
 		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
@@ -709,6 +467,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 	local function UpdateCastingResourceFinal()
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
+	end	
+
+	local function GetSerenityRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.serenity)
 	end
 
 	local function RefreshTargetTracking()
@@ -716,90 +478,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local specId = GetSpecialization()
         
 		if specId == 3 then -- Windwalker
-			--[[
-            -- Bleeds
-			local garroteTotal = 0
-			local ruptureTotal = 0
-			local internalBleedingTotal = 0
-			local crimsonTempestTotal = 0
-			-- Poisons
-			local deadlyPoisonTotal = 0
-			local cripplingPoisonTotal = 0
-			local woundPoisonTotal = 0
-			local numbingPoisonTotal = 0
-			-- Covenant
-			local serratedBoneSpikeTotal = 0]]
 			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
 				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
-					--[[
-                    -- Bleeds
-					TRB.Data.snapshotData.targetData.targets[guid].garrote = false
-					TRB.Data.snapshotData.targetData.targets[guid].garroteRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].rupture = false
-					TRB.Data.snapshotData.targetData.targets[guid].ruptureRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].internalBleeding = false
-					TRB.Data.snapshotData.targetData.targets[guid].internalBleedingRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].crimsonTempest = false
-					TRB.Data.snapshotData.targetData.targets[guid].crimsonTempestRemaining = 0
-					-- Poisons
-					TRB.Data.snapshotData.targetData.targets[guid].deadlyPoison = false
-					TRB.Data.snapshotData.targetData.targets[guid].deadlyPoisonRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoison = false
-					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoisonRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].woundPoison = false
-					TRB.Data.snapshotData.targetData.targets[guid].woundPoisonRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].numbingPoison = false
-					TRB.Data.snapshotData.targetData.targets[guid].numbingPoisonRemaining = 0
-					-- Covenant
-					TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpike = false]]
 				else
-					--[[
-                    -- Bleeds
-					if TRB.Data.snapshotData.targetData.targets[guid].garrote == true then
-						garroteTotal = garroteTotal + 1
-					end
-					if TRB.Data.snapshotData.targetData.targets[guid].rupture == true then
-						ruptureTotal = ruptureTotal + 1
-					end
-					if TRB.Data.snapshotData.targetData.targets[guid].internalBleeding == true then
-						internalBleedingTotal = internalBleedingTotal + 1
-					end
-					if TRB.Data.snapshotData.targetData.targets[guid].crimsonTempest == true then
-						crimsonTempestTotal = crimsonTempestTotal + 1
-					end
-					-- Poisons
-					if TRB.Data.snapshotData.targetData.targets[guid].deadlyPoison == true then
-						deadlyPoisonTotal = deadlyPoisonTotal + 1
-					end
-					if TRB.Data.snapshotData.targetData.targets[guid].cripplingPoison == true then
-						cripplingPoisonTotal = cripplingPoisonTotal + 1
-					end
-					if TRB.Data.snapshotData.targetData.targets[guid].woundPoison == true then
-						woundPoisonTotal = woundPoisonTotal + 1
-					end
-					if TRB.Data.snapshotData.targetData.targets[guid].numbingPoison == true then
-						numbingPoisonTotal = numbingPoisonTotal + 1
-					end
-					-- Covenant
-					if TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpike == true then
-						serratedBoneSpikeTotal = serratedBoneSpikeTotal + 1
-					end]]
 				end
 			end
-			--[[
-            --Bleeds
-			TRB.Data.snapshotData.targetData.garrote = garroteTotal
-			TRB.Data.snapshotData.targetData.rupture = ruptureTotal
-			TRB.Data.snapshotData.targetData.internalBleeding = internalBleedingTotal
-			TRB.Data.snapshotData.targetData.crimsonTempest = crimsonTempestTotal
-			--Poisons
-			TRB.Data.snapshotData.targetData.deadlyPoison = deadlyPoisonTotal
-			TRB.Data.snapshotData.targetData.cripplingPoison = cripplingPoisonTotal
-			TRB.Data.snapshotData.targetData.woundPoison = woundPoisonTotal
-			TRB.Data.snapshotData.targetData.numbingPoison = numbingPoisonTotal
-			--Covenant
-			TRB.Data.snapshotData.targetData.serratedBoneSpike = serratedBoneSpikeTotal
-            ]]
 		end
 	end
 
@@ -807,20 +490,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		TRB.Functions.TargetsCleanup(clearAll)
 		if clearAll == true then
 			local specId = GetSpecialization()
-			if specId == 3 then			 
-				--[[
-                --Bleeds
-				TRB.Data.snapshotData.targetData.garrote = 0
-				TRB.Data.snapshotData.targetData.rupture = 0
-				TRB.Data.snapshotData.targetData.internalBleeding = 0
-				TRB.Data.snapshotData.targetData.crimsonTempest = 0
-				--Poisons
-				TRB.Data.snapshotData.targetData.deadlyPoison = 0
-				TRB.Data.snapshotData.targetData.cripplingPoison = 0
-				TRB.Data.snapshotData.targetData.woundPoison = 0
-				TRB.Data.snapshotData.targetData.numbingPoison = 0
-				--Covenant
-				TRB.Data.snapshotData.targetData.serratedBoneSpike = 0]]
+			if specId == 3 then
 			end
 		end
 	end
@@ -869,150 +539,49 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end
 
 		if specId == 3 then --Windwalker
-			-- Bleeds
-			--[[if var == "$isBleeding" then
-				if IsTargetBleeding() then
+			if var == "$serenityTime" then
+				if GetSerenityRemainingTime() > 0 then
+					valid = true
+				end			
+			elseif var == "$resource" or var == "$energy" then
+				if TRB.Data.snapshotData.resource > 0 then
 					valid = true
 				end
-			elseif var == "$ctCount" or var == "$crimsonTempestCount" then
-				if TRB.Data.snapshotData.targetData.crimsonTempest > 0 then
+			elseif var == "$resourceMax" or var == "$energyMax" then
+				valid = true
+			elseif var == "$resourceTotal" or var == "$energyTotal" then
+				if TRB.Data.snapshotData.resource > 0 or
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
+					then
 					valid = true
 				end
-			elseif var == "$ctTime" or var == "$crimsonTempestTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].crimsonTempestRemaining > 0 then
+			elseif var == "$resourcePlusCasting" or var == "$energyPlusCasting" then
+				if TRB.Data.snapshotData.resource > 0 or
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
 					valid = true
 				end
-			elseif var == "$garroteCount" then
-				if TRB.Data.snapshotData.targetData.garrote > 0 then
+			elseif var == "$overcap" or var == "$energyOvercap" or var == "$resourceOvercap" then
+				if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
 					valid = true
 				end
-			elseif var == "$garroteTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].garroteRemaining > 0 then
+			elseif var == "$resourcePlusPassive" or var == "$energyPlusPassive" then
+				if TRB.Data.snapshotData.resource > 0 then
 					valid = true
 				end
-			elseif var == "$ibCount" or var == "$internalBleedingCount" then
-				if TRB.Data.snapshotData.targetData.internalBleeding > 0 then
+			elseif var == "$regen" or var == "$regenEnergy" or var == "$energyRegen" then
+				if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
+					((settings.generation.mode == "time" and settings.generation.time > 0) or
+					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 					valid = true
 				end
-			elseif var == "$ibTime" or var == "$internalBleedingTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].internalBleedingRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$ruptureCount" then
-				if TRB.Data.snapshotData.targetData.rupture > 0 then
-					valid = true
-				end
-			elseif var == "$ruptureTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ruptureRemaining > 0 then
-					valid = true
-				end
-			-- Poisons
-			elseif var == "$cpCount" or var == "$cripplingPoisonCount" then
-				if TRB.Data.snapshotData.targetData.cripplingPoison > 0 then
-					valid = true
-				end
-			elseif var == "$cpTime" or var == "$cripplingPoisonTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].cripplingPoisonRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$dpCount" or var == "$deadlyPoisonCount" then
-				if TRB.Data.snapshotData.targetData.deadlyPoison > 0 then
-					valid = true
-				end
-			elseif var == "$dpTime" or var == "$deadlyPoisonTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deadlyPoisonRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$npCount" or var == "$numbingPoisonCount" then
-				if TRB.Data.snapshotData.targetData.numbingPoison > 0 then
-					valid = true
-				end
-			elseif var == "$npTime" or var == "$numbingPoisonTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].numbingPoisonRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$wpCount" or var == "$woundPoisonCount" then
-				if TRB.Data.snapshotData.targetData.woundPoison > 0 then
-					valid = true
-				end
-			elseif var == "$wpTime" or var == "$woundPoisonTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].woundPoisonRemaining > 0 then
-					valid = true
-				end
-			-- Other abilities
-			elseif var == "$blindsideTime" then
-				if TRB.Data.snapshotData.blindside.spellId ~= nil then
-					valid = true
-				end
-			end]]
+			elseif var == "$comboPoints" or var == "$chi" then
+				valid = true
+			elseif var == "$comboPointsMax"or var == "$chiMax" then
+				valid = true
+			end
 		end
 
-		if var == "$resource" or var == "$energy" then
-			if TRB.Data.snapshotData.resource > 0 then
-				valid = true
-			end
-		elseif var == "$resourceMax" or var == "$energyMax" then
-			valid = true
-		elseif var == "$resourceTotal" or var == "$energyTotal" then
-			if TRB.Data.snapshotData.resource > 0 or
-				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
-				then
-				valid = true
-			end
-		elseif var == "$resourcePlusCasting" or var == "$energyPlusCasting" then
-			if TRB.Data.snapshotData.resource > 0 or
-				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
-				valid = true
-			end
-		elseif var == "$overcap" or var == "$energyOvercap" or var == "$resourceOvercap" then
-			if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
-				valid = true
-			end
-		elseif var == "$resourcePlusPassive" or var == "$energyPlusPassive" then
-			if TRB.Data.snapshotData.resource > 0 then
-				valid = true
-			end
-		elseif var == "$casting" then
+		if var == "$casting" then
 			if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0 then
 				valid = true
 			end
@@ -1023,24 +592,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 				valid = true
 			end
-		elseif var == "$regen" or var == "$regenEnergy" or var == "$energyRegen" then
-			if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
-				((settings.generation.mode == "time" and settings.generation.time > 0) or
-				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-				valid = true
-			end
-		elseif var == "$comboPoints" or var == "$chi" then
-			valid = true
-		elseif var == "$comboPointsMax"or var == "$chiMax" then
-			valid = true
-		--[[elseif var == "$sadTime" or var == "$sliceAndDiceTime" then
-			if TRB.Data.snapshotData.sliceAndDice.spellId ~= nil then
-				valid = true
-			end
-		elseif var == "$sbsCount" or var == "$serratedBoneSpikeCount" then
-			if TRB.Data.snapshotData.targetData.serratedBoneSpike > 0 then
-				valid = true
-			end]]
 		end
 
 		return valid
@@ -1122,251 +673,49 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		--$energyPlusPassive
 		local _energyPlusPassive = math.min(_passiveEnergy + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
 		local energyPlusPassive = string.format("|c%s%.0f|r", currentEnergyColor, _energyPlusPassive)
-
-
-        --[[
-		-- Bleeds
-		-- TODO: Somehow account for pandemic being variable
-		--$ctCount and $ctTime
-		local _ctCount = TRB.Data.snapshotData.targetData.crimsonTempest or 0
-		local ctCount = _ctCount
-		local _ctTime = 0
-		local ctTime
 		
-		--$garroteCount and $garroteTime
-		local _garroteCount = TRB.Data.snapshotData.targetData.garrote or 0
-		local garroteCount = _garroteCount
-		local _garroteTime = 0
-		local garroteTime
-		
-		--$ibCount and $ibTime
-		local _ibCount = TRB.Data.snapshotData.targetData.internalBleeding or 0
-		local ibCount = _ibCount
-		local _ibTime = 0
-		local ibTime
-		
-		--$ruptureCount and $ruptureTime
-		local _ruptureCount = TRB.Data.snapshotData.targetData.rupture or 0
-		local ruptureCount = _ruptureCount
-		local _ruptureTime = 0
-		local ruptureTime
-		
-		-- Poisons
-		--$cpCount and $cpTime
-		local _cpCount = TRB.Data.snapshotData.targetData.cripplingPoison or 0
-		local cpCount = _cpCount
-		local _cpTime = 0
-		local cpTime
-				
-		--$dpCount and $cpTime
-		local _dpCount = TRB.Data.snapshotData.targetData.deadlyPoison or 0
-		local dpCount = _dpCount
-		local _dpTime = 0
-		local dpTime
-				
-		--$npCount and $npTime
-		local _npCount = TRB.Data.snapshotData.targetData.numbingPoison or 0
-		local npCount = _npCount
-		local _npTime = 0
-		local npTime
-				
-		--$wpCount and $wpTime
-		local _wpCount = TRB.Data.snapshotData.targetData.woundPoison or 0
-		local wpCount = _wpCount
-		local _wpTime = 0
-		local wpTime
-		
-		--$sbsCount
-		local _sbsCount = TRB.Data.snapshotData.targetData.serratedBoneSpike or 0
-		local sbsCount = _sbsCount
-		local _sbsOnTarget = false
-
-
-		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
-			_ctTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].crimsonTempestRemaining or 0
-			_garroteTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].garroteRemaining or 0
-			_ibTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].internalBleedingRemaining or 0
-			_ruptureTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ruptureRemaining or 0
-			_cpTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].cripplingPoisonRemaining or 0
-			_dpTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deadlyPoisonRemaining or 0
-			_npTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].numbingPoisonRemaining or 0
-			_wpTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].woundPoisonRemaining or 0
-			_sbsOnTarget = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serratedBoneSpike or false
-		end
-
-
-		if TRB.Data.settings.monk.windwalker.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			-- Bleeds
-			if _ctTime > TRB.Data.spells.crimsonTempest.pandemicTimes[TRB.Data.snapshotData.resource2 + 1] then
-				ctCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _ctCount)
-				ctTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _ctTime)
-			elseif _ctTime > 0 then
-				ctCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic, _ctCount)
-				ctTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic, _ctTime)
-			else
-				ctCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, _ctCount)
-				ctTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, 0)
-			end
-
-			if _garroteTime > TRB.Data.spells.garrote.pandemicTime then
-				garroteCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _garroteCount)
-				garroteTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _garroteTime)
-			elseif _garroteTime > 0 then
-				garroteCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic, _garroteCount)
-				garroteTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic, _garroteTime)
-			else
-				garroteCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, _garroteCount)
-				garroteTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, 0)
-			end
-						
-			if _ibTime > 0 then
-				ibCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _ibCount)
-				ibTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _ibTime)
-			else
-				ibCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, _ibCount)
-				ibTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, 0)
-			end
-
-			if _ruptureTime > TRB.Data.spells.rupture.pandemicTimes[TRB.Data.snapshotData.resource2 + 1] then
-				ruptureCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _ruptureCount)
-				ruptureTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _ruptureTime)
-			elseif _ruptureTime > 0 then
-				ruptureCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic, _ruptureCount)
-				ruptureTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic, _ruptureTime)
-			else
-				ruptureCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, _ruptureCount)
-				ruptureTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, 0)
-			end
-
-			--Poisons
-			if _cpTime > 0 then
-				cpCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _cpCount)
-				cpTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _cpTime)
-			else
-				cpCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, _cpCount)
-				cpTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, 0)
-			end
-
-			if _dpTime > 0 then
-				dpCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _dpCount)
-				dpTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _dpTime)
-			else
-				dpCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, _dpCount)
-				dpTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, 0)
-			end
-
-			if _npTime > 0 then
-				npCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _npCount)
-				npTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _npTime)
-			else
-				npCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, _npCount)
-				npTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, 0)
-			end
-
-			if _wpTime > 0 then
-				wpCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _wpCount)
-				wpTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _wpTime)
-			else
-				wpCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, _wpCount)
-				wpTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, 0)
-			end
-
-			if _sbsOnTarget == false and TRB.Data.character.covenantId == 4 then
-				sbsCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, _sbsCount)
-			else
-				sbsCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _sbsCount)
-			end
-		else
-			-- Bleeds
-			ctTime = string.format("%.1f", _ctTime)
-			garroteTime = string.format("%.1f", _garroteTime)
-			ibTime = string.format("%.1f", _ibTime)
-			ruptureTime = string.format("%.1f", _ruptureTime)
-
-			-- Poisons
-			cpTime = string.format("%.1f", _cpTime)
-			dpTime = string.format("%.1f", _dpTime)
-			npTime = string.format("%.1f", _npTime)
-			wpTime = string.format("%.1f", _wpTime)
+		--$serenityTime
+		local _serenityTime = GetSerenityRemainingTime()
+		local serenityTime = 0
+		if _serenityTime ~= nil then
+			serenityTime = string.format("%.1f", _serenityTime)
 		end
 		
-
-		--$sadTime
-		local _sadTime = 0
-		local sadTime
-		if TRB.Data.snapshotData.sliceAndDice.spellId ~= nil then
-			_sadTime = GetSliceAndDiceRemainingTime()
-		end
-		
-		if _sadTime > TRB.Data.spells.sliceAndDice.pandemicTimes[TRB.Data.snapshotData.resource2 + 1] then
-			sadTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _sadTime)
-		elseif _sadTime > 0 then
-			sadTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic, _sadTime)
-		else
-			sadTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, 0)
-		end
-
-		
-		--$blindsideTime
-		local _blindsideTime = GetBlindsideRemainingTime()
-		local blindsideTime = 0
-		if _blindsideTime ~= nil then
-			blindsideTime = string.format("%.1f", _blindsideTime)
-		end
-
-		--#covenantAbility
-		local covenantAbilityIcon = ""
-
-		if TRB.Data.character.covenantId == 1 then
-			covenantAbilityIcon = TRB.Data.spells.echoingReprimand.icon
-		elseif TRB.Data.character.covenantId == 2 then
-			covenantAbilityIcon = TRB.Data.spells.flagellation.icon
-		elseif TRB.Data.character.covenantId == 3 then
-			covenantAbilityIcon = TRB.Data.spells.sepsis.icon
-		elseif TRB.Data.character.covenantId == 4 then
-			covenantAbilityIcon = TRB.Data.spells.serratedBoneSpike.icon
-		end
-        ]]
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveEnergy
 		Global_TwintopResourceBar.resource.regen = _regenEnergy
 		Global_TwintopResourceBar.dots = {
-			--[[cripplingPoisonCount = _cpCount,
-			deadlyPoisonCount = _dpCount,
-			numbingPoisonCount = _npCount,
-			woundPoisonCount = _wpCount,
-			crimsonTempestCount = _ctCount,
-			garroteCount = _garroteCount,
-			internalBleedingCount = _ibCount,
-			ruptureCount = _ruptureCount,
-			serratedBoneSpikeCount = _sbsCount]]
 		}
 
 		local lookup = TRB.Data.lookup or {}
-		--[[lookup["#blindside"] = TRB.Data.spells.blindside.icon
-		lookup["#covenantAbility"] = covenantAbilityIcon
-		lookup["#crimsonTempest"] = TRB.Data.spells.crimsonTempest.icon
-		lookup["#ct"] = TRB.Data.spells.crimsonTempest.icon
-		lookup["#cripplingPoison"] = TRB.Data.spells.cripplingPoison.icon
-		lookup["#cp"] = TRB.Data.spells.cripplingPoison.icon
-		lookup["#deadlyPoison"] = TRB.Data.spells.deadlyPoison.icon
-		lookup["#dp"] = TRB.Data.spells.deadlyPoison.icon
-		lookup["#deathFromAbove"] = TRB.Data.spells.deathFromAbove.icon
-		lookup["#dismantle"] = TRB.Data.spells.dismantle.icon
-		lookup["#echoingReprimand"] = TRB.Data.spells.echoingReprimand.icon
-		lookup["#garrote"] = TRB.Data.spells.garrote.icon
-		lookup["#internalBleeding"] = TRB.Data.spells.internalBleeding.icon
-		lookup["#ib"] = TRB.Data.spells.internalBleeding.icon
-		lookup["#numbingPoison"] = TRB.Data.spells.numbingPoison.icon
-		lookup["#np"] = TRB.Data.spells.numbingPoison.icon
-		lookup["#rupture"] = TRB.Data.spells.rupture.icon
-		lookup["#sad"] = TRB.Data.spells.sliceAndDice.icon
-		lookup["#sliceAndDice"] = TRB.Data.spells.sliceAndDice.icon
-		lookup["#sepsis"] = TRB.Data.spells.sepsis.icon
-		lookup["#serratedBoneSpike"] = TRB.Data.spells.serratedBoneSpike.icon
-		lookup["#woundPoison"] = TRB.Data.spells.woundPoison.icon
-		lookup["#wp"] = TRB.Data.spells.woundPoison.icon]]
+		lookup["#blackoutKick"] = TRB.Data.spells.blackoutKick.icon
+		lookup["#cracklingJadeLightning"] = TRB.Data.spells.cracklingJadeLightning.icon
+		lookup["#cjl"] = TRB.Data.spells.cracklingJadeLightning.icon
+		lookup["#danceOfChiJi"] = TRB.Data.spells.danceOfChiJi.icon
+		lookup["#detox"] = TRB.Data.spells.detox.icon
+		lookup["#disable"] = TRB.Data.spells.disable.icon
+		lookup["#energizingElixir"] = TRB.Data.spells.energizingElixir.icon
+		lookup["#expelHarm"] = TRB.Data.spells.expelHarm.icon
+		lookup["#fistsOfFury"] = TRB.Data.spells.fistsOfFury.icon
+		lookup["#fof"] = TRB.Data.spells.fistsOfFury.icon
+		lookup["#fistOfTheWhiteTiger"] = TRB.Data.spells.fistOfTheWhiteTiger.icon
+		lookup["#fotwt"] = TRB.Data.spells.fistOfTheWhiteTiger.icon
+		lookup["#paralysis"] = TRB.Data.spells.paralysis.icon
+		lookup["#risingSunKick"] = TRB.Data.spells.risingSunKick.icon
+		lookup["#rsk"] = TRB.Data.spells.risingSunKick.icon
+		lookup["#rushingJadeWind"] = TRB.Data.spells.rushingJadeWind.icon
+		lookup["#rjw"] = TRB.Data.spells.rushingJadeWind.icon
+		lookup["#serenity"] = TRB.Data.spells.serenity.icon
+		lookup["#spinningCraneKick"] = TRB.Data.spells.spinningCraneKick.icon
+		lookup["#sck"] = TRB.Data.spells.spinningCraneKick.icon
+		lookup["#stormEarthAndFire"] = TRB.Data.spells.stormEarthAndFire.icon
+		lookup["#sef"] = TRB.Data.spells.stormEarthAndFire.icon
+		lookup["#tigerPalm"] = TRB.Data.spells.tigerPalm.icon
+		lookup["#touchOfDeath"] = TRB.Data.spells.touchOfDeath.icon
+		lookup["#vivify"] = TRB.Data.spells.vivify.icon
+		lookup["#xuen"] = TRB.Data.spells.invokeXuenTheWhiteTiger.icon
+		lookup["#invokeXuenTheWhiteTiger"] = TRB.Data.spells.invokeXuenTheWhiteTiger.icon
 
 		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$energyTotal"] = energyTotal
@@ -1382,40 +731,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["$comboPoints"] = TRB.Data.character.resource2
 		lookup["$chiMax"] = TRB.Data.character.maxResource2
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
-		--[[lookup["$cpCount"] = cpCount
-		lookup["$cripplingPoisonCount"] = cpCount
-		lookup["$cpTime"] = cpTime
-		lookup["$cripplingPoisonTime"] = cpTime
-		lookup["$dpCount"] = dpCount
-		lookup["$deadlyPoisonCount"] = dpCount
-		lookup["$dpTime"] = dpTime
-		lookup["$deadlyPoisonTime"] = dpTime
-		lookup["$npCount"] = npCount
-		lookup["$numbingPoisonCount"] = npCount
-		lookup["$npTime"] = npTime
-		lookup["$numbingPoisonTime"] = npTime
-		lookup["$wpCount"] = wpCount
-		lookup["$woundPoisonCount"] = wpCount
-		lookup["$wpTime"] = wpTime
-		lookup["$woundPoisonTime"] = wpTime
-		lookup["$ctCount"] = ctCount
-		lookup["$crimsonTempestCount"] = ctCount
-		lookup["$ctTime"] = ctTime
-		lookup["$crimsonTempestTime"] = ctTime
-		lookup["$garroteCount"] = garroteCount
-		lookup["$garroteTime"] = garroteTime
-		lookup["$ibCount"] = ibCount
-		lookup["$internalBleedingCount"] = ibCount
-		lookup["$ibTime"] = ibTime
-		lookup["$internalBleedingTime"] = ibTime
-		lookup["$ruptureCount"] = ruptureCount
-		lookup["$ruptureTime"] = ruptureTime
-		lookup["$sbsCount"] = sbsCount
-		lookup["$serratedBoneSpikeCount"] = sbsCount
-		lookup["$sadTime"] = sadTime
-		lookup["$sliceAndDiceTime"] = sadTime
-		lookup["$blindsideTime"] = blindsideTime
-		lookup["$isBleeding"] = ""]]
 
 		if TRB.Data.character.maxResource == TRB.Data.snapshotData.resource then
 			lookup["$passive"] = passiveEnergyMinusRegen
@@ -1429,6 +744,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["$overcap"] = overcap
 		lookup["$resourceOvercap"] = overcap
 		lookup["$energyOvercap"] = overcap
+		lookup["$serenityTime"] = serenityTime
 		TRB.Data.lookup = lookup
 	end
 
@@ -1470,18 +786,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		TRB.Functions.UpdateSnapshot()
 		local currentTime = GetTime()
 
-        --[[
-		_, _, _, _, TRB.Data.snapshotData.sliceAndDice.duration, TRB.Data.snapshotData.sliceAndDice.endTime, _, _, _, TRB.Data.snapshotData.sliceAndDice.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.sliceAndDice.id)
-
-		if TRB.Data.character.covenantId == 4 then
----@diagnostic disable-next-line: redundant-parameter
-			TRB.Data.snapshotData.serratedBoneSpike.charges, _, TRB.Data.snapshotData.serratedBoneSpike.startTime, TRB.Data.snapshotData.serratedBoneSpike.duration, _ = GetSpellCharges(TRB.Data.spells.serratedBoneSpike.id)
-		else
-			TRB.Data.snapshotData.serratedBoneSpike.charges = 0
-			TRB.Data.snapshotData.serratedBoneSpike.startTime = nil
-			TRB.Data.snapshotData.serratedBoneSpike.duration = 0
-		end
-		]]
         if TRB.Data.snapshotData.detox.startTime ~= nil and currentTime > (TRB.Data.snapshotData.detox.startTime + TRB.Data.snapshotData.detox.duration) then
             TRB.Data.snapshotData.detox.startTime = nil
             TRB.Data.snapshotData.detox.duration = 0
@@ -1496,116 +800,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
             TRB.Data.snapshotData.paralysis.startTime = nil
             TRB.Data.snapshotData.paralysis.duration = 0
         end
-
-		--[[
-		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].cripplingPoison then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.cripplingPoison.id, "target", "player"))
-
-				if expiration ~= nil then
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].cripplingPoisonRemaining = expiration - currentTime
-				end
-			end
-			
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deadlyPoison then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.deadlyPoison.id, "target", "player"))
-
-				if expiration ~= nil then
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deadlyPoisonRemaining = expiration - currentTime
-				end
-			end
-			
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].numbingPoison then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.numbingPoison.id, "target", "player"))
-
-				if expiration ~= nil then
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].numbingPoisonRemaining = expiration - currentTime
-				end
-			end
-			
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].woundPoison then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.woundPoison.id, "target", "player"))
-
-				if expiration ~= nil then
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].woundPoisonRemaining = expiration - currentTime
-				end
-			end
-		end]]
 	end
 
 	local function UpdateSnapshot_Windwalker()
 		UpdateSnapshot()
 		local currentTime = GetTime()
 		local _
-
+		
         if TRB.Data.snapshotData.fistOfTheWhiteTiger.startTime ~= nil and currentTime > (TRB.Data.snapshotData.fistOfTheWhiteTiger.startTime + TRB.Data.snapshotData.fistOfTheWhiteTiger.duration) then
             TRB.Data.snapshotData.fistOfTheWhiteTiger.startTime = nil
             TRB.Data.snapshotData.fistOfTheWhiteTiger.duration = 0
         end
-        --[[
-        if TRB.Data.snapshotData.crimsonVial.startTime ~= nil and currentTime > (TRB.Data.snapshotData.crimsonVial.startTime + TRB.Data.snapshotData.crimsonVial.duration) then
-            TRB.Data.snapshotData.crimsonVial.startTime = nil
-            TRB.Data.snapshotData.crimsonVial.duration = 0
-        end
-
-        if TRB.Data.snapshotData.exsanguinate.startTime ~= nil and currentTime > (TRB.Data.snapshotData.exsanguinate.startTime + TRB.Data.snapshotData.exsanguinate.duration) then
-            TRB.Data.snapshotData.exsanguinate.startTime = nil
-            TRB.Data.snapshotData.exsanguinate.duration = 0
-        end
-
-        if TRB.Data.snapshotData.garrote.startTime ~= nil and currentTime > (TRB.Data.snapshotData.garrote.startTime + TRB.Data.snapshotData.garrote.duration) then
-            TRB.Data.snapshotData.garrote.startTime = nil
-            TRB.Data.snapshotData.garrote.duration = 0
-        end
-
-        if TRB.Data.snapshotData.echoingReprimand.startTime ~= nil and currentTime > (TRB.Data.snapshotData.echoingReprimand.startTime + TRB.Data.snapshotData.echoingReprimand.duration) then
-            TRB.Data.snapshotData.echoingReprimand.startTime = nil
-            TRB.Data.snapshotData.echoingReprimand.duration = 0
-        end
-
-		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].crimsonTempest then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.crimsonTempest.id, "target", "player"))
-
-				if expiration ~= nil then
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].crimsonTempestRemaining = expiration - currentTime
-				end
-			end
-			
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].garrote then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.garrote.id, "target", "player"))
-
-				if expiration ~= nil then
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].garroteRemaining = expiration - currentTime
-				end
-			end
-			
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].internalBleeding then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.internalBleeding.id, "target", "player"))
-
-				if expiration ~= nil then
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].internalBleedingRemaining = expiration - currentTime
-				end
-			end
-			
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rupture then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.rupture.id, "target", "player"))
-
-				if expiration ~= nil then
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ruptureRemaining = expiration - currentTime
-				end
-			end
-		end
-	
-        if TRB.Data.snapshotData.deathFromAbove.startTime ~= nil and currentTime > (TRB.Data.snapshotData.deathFromAbove.startTime + TRB.Data.snapshotData.deathFromAbove.duration) then
-            TRB.Data.snapshotData.deathFromAbove.startTime = nil
-            TRB.Data.snapshotData.deathFromAbove.duration = 0
-        end
-
-        if TRB.Data.snapshotData.dismantle.startTime ~= nil and currentTime > (TRB.Data.snapshotData.dismantle.startTime + TRB.Data.snapshotData.dismantle.duration) then
-            TRB.Data.snapshotData.dismantle.startTime = nil
-            TRB.Data.snapshotData.dismantle.duration = 0
-        end]]
 	end
 
 	local function HideResourceBar(force)
@@ -1709,64 +914,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							local frameLevel = 129
 
                             if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-                                --[[if spell.id == TRB.Data.spells.exsanguinate.id then
-                                    if not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
-                                        showThreshold = false
-                                    elseif not IsTargetBleeding(TRB.Data.snapshotData.targetData.currentTargetGuid) or (TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
-                                        thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.unusable
-                                        frameLevel = 127
-                                    elseif TRB.Data.snapshotData.resource >= -energyAmount then
-                                        thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.over
-                                    else
-                                        thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.under
-                                        frameLevel = 128
-                                    end
-                                elseif spell.id == TRB.Data.spells.shiv.id then
-                                    if TRB.Data.character.items.tinyToxicBlade == true then -- Don't show this threshold
-                                        showThreshold = false
-                                    elseif TRB.Data.snapshotData.resource >= -energyAmount then
-                                        thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.over
-                                    else
-                                        thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.under
-                                        frameLevel = 128
-                                    end
-                                elseif spell.id == TRB.Data.spells.echoingReprimand.id then
-                                    if TRB.Data.character.covenantId ~= 1 then -- Not Kyrian
-                                        showThreshold = false
-                                    elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-                                            thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.unusable
-                                            frameLevel = 127
-                                    elseif TRB.Data.snapshotData.resource >= -energyAmount then
-                                        thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.over
-                                    else
-                                        thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.under
-                                        frameLevel = 128
-                                    end
-                                elseif spell.id == TRB.Data.spells.sepsis.id then
-                                    if TRB.Data.character.covenantId ~= 3 then -- Not Night Fae
-                                        showThreshold = false
-                                    elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-                                            thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.unusable
-                                            frameLevel = 127
-                                    elseif TRB.Data.snapshotData.resource >= -energyAmount then
-                                        thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.over
-                                    else
-                                        thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.under
-                                        frameLevel = 128
-                                    end
-                                elseif spell.id == TRB.Data.spells.serratedBoneSpike.id then
-                                    if TRB.Data.character.covenantId ~= 4 then -- Not Necrolord
-                                        showThreshold = false
-                                    elseif TRB.Data.snapshotData[spell.settingKey].charges == 0 then
-                                        thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.unusable
-                                        frameLevel = 127
-                                    elseif TRB.Data.snapshotData.resource >= -energyAmount then
-                                        thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.over
-                                    else
-                                        thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.under
-                                        frameLevel = 128
-                                    end
-                                end]]
                             elseif spell.isPvp and not TRB.Data.character.isPvp then
                                 showThreshold = false
                             elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
@@ -1817,22 +964,23 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					end
 
 					local barColor = TRB.Data.settings.monk.windwalker.colors.bar.base
-
-					local latency = TRB.Functions.GetLatency()
-
-					local affectingCombat = UnitAffectingCombat("player")
-
-					if affectingCombat then
-						--[[local sadTime = GetSliceAndDiceRemainingTime()
-						if sadTime == 0 then
-							barColor = TRB.Data.settings.monk.windwalker.colors.bar.noSliceAndDice
-						elseif sadTime < TRB.Data.spells.sliceAndDice.pandemicTimes[TRB.Data.snapshotData.resource2 + 1] then
-							barColor = TRB.Data.settings.monk.windwalker.colors.bar.sliceAndDicePandemic
-						end]]
+					if TRB.Data.snapshotData.serenity.spellId and TRB.Data.settings.monk.windwalker.endOfSerenity.enabled then
+						local timeThreshold = 0
+						if TRB.Data.settings.monk.windwalker.endOfSerenity.mode == "gcd" then
+							local gcd = TRB.Functions.GetCurrentGCDTime()
+							timeThreshold = gcd * TRB.Data.settings.monk.windwalker.endOfSerenity.gcdsMax
+						elseif TRB.Data.settings.monk.windwalker.endOfSerenity.mode == "time" then
+							timeThreshold = TRB.Data.settings.monk.windwalker.endOfSerenity.timeMax
+						end
+						
+						if GetSerenityRemainingTime() <= timeThreshold then
+							barColor = TRB.Data.settings.monk.windwalker.colors.bar.serenityEnd
+						else
+							barColor = TRB.Data.settings.monk.windwalker.colors.bar.serenity
+						end
 					end
 
 					local barBorderColor = TRB.Data.settings.monk.windwalker.colors.bar.border
-
 					if TRB.Data.settings.monk.windwalker.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
 						barBorderColor = TRB.Data.settings.monk.windwalker.colors.bar.borderOvercap
 
@@ -1851,18 +999,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
 					
-                    --[[
-					local sbsCp = 0
-					
-					if TRB.Data.character.covenantId == 4 and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.serratedBoneSpike.charges > 0 then
-						sbsCp = 1 + TRB.Data.snapshotData.targetData.serratedBoneSpike
-
-						if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] == nil or
-							TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serratedBoneSpike == false then
-							sbsCp = sbsCp + 1
-						end
-					end]]
-
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.background, true)
 
                     for x = 1, TRB.Data.character.maxResource2 do
@@ -1883,16 +1019,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
                             TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.windwalker, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
                         end
 
-                        --[[]
-						if TRB.Data.snapshotData.echoingReprimand[x].enabled then
-							cpColor = TRB.Data.settings.monk.windwalker.colors.comboPoints.echoingReprimand
-							cpBorderColor = TRB.Data.settings.monk.windwalker.colors.comboPoints.echoingReprimand
-							cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.echoingReprimand, true)
-						elseif sbsCp > 0 and x > TRB.Data.snapshotData.resource2 and x <= (TRB.Data.snapshotData.resource2 + sbsCp) then
-							cpBorderColor = TRB.Data.settings.monk.windwalker.colors.comboPoints.serratedBoneSpike
-							cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.serratedBoneSpike, true)
-						end]]
-                        
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(cpBorderColor, true))
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
@@ -1938,169 +1064,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							TRB.Data.snapshotData.fistOfTheWhiteTiger.startTime = currentTime
 							TRB.Data.snapshotData.fistOfTheWhiteTiger.duration = TRB.Data.spells.fistOfTheWhiteTiger.cooldown
 						end
-					--[[elseif spellId == TRB.Data.spells.blindside.id then
+					elseif spellId == TRB.Data.spells.serenity.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.spells.blindside.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.blindside.duration, TRB.Data.snapshotData.blindside.endTime, _, _, _, TRB.Data.snapshotData.blindside.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.blindside.id)
-							if TRB.Data.settings.monk.windwalker.audio.blindside.enabled then
-								---@diagnostic disable-next-line: redundant-parameter
-								PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
-							end
+							TRB.Data.snapshotData.serenity.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.serenity.duration, TRB.Data.snapshotData.serenity.endTime, _, _, _, TRB.Data.snapshotData.serenity.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.serenity.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.spells.blindside.isActive = false
-							TRB.Data.snapshotData.blindside.spellId = nil
-							TRB.Data.snapshotData.blindside.duration = 0
-							TRB.Data.snapshotData.blindside.endTime = nil
+							TRB.Data.snapshotData.serenity.isActive = false
+							TRB.Data.snapshotData.serenity.spellId = nil
+							TRB.Data.snapshotData.serenity.duration = 0
+							TRB.Data.snapshotData.serenity.endTime = nil
 						end
-					elseif spellId == TRB.Data.spells.subterfuge.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.spells.subterfuge.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.spells.subterfuge.isActive = false
-						end
-					elseif spellId == TRB.Data.spells.garrote.id then
-						if InitializeTarget(destGUID) then
-							if type == "SPELL_CAST_SUCCESS" then
-								if not((TRB.Data.character.talents.subterfuge.isSelected and IsStealthed()) or TRB.Data.spells.subterfuge.isActive) then
-									TRB.Data.snapshotData.garrote.startTime = currentTime
-									TRB.Data.snapshotData.garrote.duration = TRB.Data.spells.garrote.cooldown
-								end
-							elseif type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Garrote Applied to Target
-								TRB.Data.snapshotData.targetData.targets[destGUID].garrote = true
-								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshotData.targetData.garrote = TRB.Data.snapshotData.targetData.garrote + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshotData.targetData.targets[destGUID].garrote = false
-								TRB.Data.snapshotData.targetData.targets[destGUID].garroteRemaining = 0
-								TRB.Data.snapshotData.targetData.garrote = TRB.Data.snapshotData.targetData.garrote - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
-						end
-					elseif spellId == TRB.Data.spells.rupture.id then
-						if InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rupture Applied to Target
-								TRB.Data.snapshotData.targetData.targets[destGUID].rupture = true
-								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshotData.targetData.rupture = TRB.Data.snapshotData.targetData.rupture + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshotData.targetData.targets[destGUID].rupture = false
-								TRB.Data.snapshotData.targetData.targets[destGUID].ruptureRemaining = 0
-								TRB.Data.snapshotData.targetData.rupture = TRB.Data.snapshotData.targetData.rupture - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
-						end
-					elseif spellId == TRB.Data.spells.internalBleeding.id then
-						if InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- IB Applied to Target
-								TRB.Data.snapshotData.targetData.targets[destGUID].internalBleeding = true
-								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshotData.targetData.internalBleeding = TRB.Data.snapshotData.targetData.internalBleeding + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshotData.targetData.targets[destGUID].internalBleeding = false
-								TRB.Data.snapshotData.targetData.targets[destGUID].internalBleedingRemaining = 0
-								TRB.Data.snapshotData.targetData.internalBleeding = TRB.Data.snapshotData.targetData.internalBleeding - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
-						end
-					elseif spellId == TRB.Data.spells.crimsonTempest.id then
-						if InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- CT Applied to Target
-								TRB.Data.snapshotData.targetData.targets[destGUID].crimsonTempest = true
-								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshotData.targetData.crimsonTempest = TRB.Data.snapshotData.targetData.crimsonTempest + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshotData.targetData.targets[destGUID].crimsonTempest = false
-								TRB.Data.snapshotData.targetData.targets[destGUID].crimsonTempestRemaining = 0
-								TRB.Data.snapshotData.targetData.crimsonTempest = TRB.Data.snapshotData.targetData.crimsonTempest - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
-						end
-					elseif spellId == TRB.Data.spells.deadlyPoison.id then
-						if InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- DP Applied to Target
-								TRB.Data.snapshotData.targetData.targets[destGUID].deadlyPoison = true
-								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshotData.targetData.deadlyPoison = TRB.Data.snapshotData.targetData.deadlyPoison + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshotData.targetData.targets[destGUID].deadlyPoison = false
-								TRB.Data.snapshotData.targetData.targets[destGUID].deadlyPoisonRemaining = 0
-								TRB.Data.snapshotData.targetData.deadlyPoison = TRB.Data.snapshotData.targetData.deadlyPoison - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
-						end
-					elseif spellId == TRB.Data.spells.cripplingPoison.id then
-						if InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- CP Applied to Target
-								TRB.Data.snapshotData.targetData.targets[destGUID].cripplingPoison = true
-								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshotData.targetData.cripplingPoison = TRB.Data.snapshotData.targetData.cripplingPoison + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshotData.targetData.targets[destGUID].cripplingPoison = false
-								TRB.Data.snapshotData.targetData.targets[destGUID].cripplingPoisonRemaining = 0
-								TRB.Data.snapshotData.targetData.cripplingPoison = TRB.Data.snapshotData.targetData.cripplingPoison - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
-						end
-					elseif spellId == TRB.Data.spells.woundPoison.id then
-						if InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- WP Applied to Target
-								TRB.Data.snapshotData.targetData.targets[destGUID].woundPoison = true
-								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshotData.targetData.woundPoison = TRB.Data.snapshotData.targetData.woundPoison + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshotData.targetData.targets[destGUID].woundPoison = false
-								TRB.Data.snapshotData.targetData.targets[destGUID].woundPoisonRemaining = 0
-								TRB.Data.snapshotData.targetData.woundPoison = TRB.Data.snapshotData.targetData.woundPoison - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
-						end
-					elseif spellId == TRB.Data.spells.numbingPoison.id then
-						if InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- NP Applied to Target
-								TRB.Data.snapshotData.targetData.targets[destGUID].numbingPoison = true
-								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshotData.targetData.numbingPoison = TRB.Data.snapshotData.targetData.numbingPoison + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshotData.targetData.targets[destGUID].numbingPoison = false
-								TRB.Data.snapshotData.targetData.targets[destGUID].numbingPoisonRemaining = 0
-								TRB.Data.snapshotData.targetData.numbingPoison = TRB.Data.snapshotData.targetData.numbingPoison - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
-						end
-					elseif spellId == TRB.Data.spells.deathFromAbove.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.deathFromAbove.startTime = currentTime
-							TRB.Data.snapshotData.deathFromAbove.duration = TRB.Data.spells.deathFromAbove.cooldown
-						end
-					elseif spellId == TRB.Data.spells.dismantle.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.dismantle.startTime = currentTime
-							TRB.Data.snapshotData.dismantle.duration = TRB.Data.spells.dismantle.cooldown
-						end]]
 					end
 				end
 
@@ -2120,70 +1093,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						TRB.Data.snapshotData.paralysis.startTime = currentTime
 						TRB.Data.snapshotData.paralysis.duration = TRB.Data.spells.paralysis.cooldown
 					end
-				--[[elseif spellId == TRB.Data.spells.adrenalineRush.id then
-					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REMOVED" then -- For right now, just redo the CheckCharacter() to get update Energy values
-						CheckCharacter()
-					end
-				elseif spellId == TRB.Data.spells.echoingReprimand.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						TRB.Data.snapshotData.echoingReprimand.startTime = currentTime
-						TRB.Data.snapshotData.echoingReprimand.duration = TRB.Data.spells.echoingReprimand.cooldown
-					--elseif type == "SPELL_PERIODIC_DAMAGE" then
-					end
-				elseif spellId == TRB.Data.spells.echoingReprimand.buffId[1] or spellId == TRB.Data.spells.echoingReprimand.buffId[2] or spellId == TRB.Data.spells.echoingReprimand.buffId[3] or spellId == TRB.Data.spells.echoingReprimand.buffId[4] or spellId == TRB.Data.spells.echoingReprimand.buffId[5] then
-					local cpEntry = 1
-
-					if spellId == TRB.Data.spells.echoingReprimand.buffId[1] then
-						cpEntry = 2
-					elseif spellId == TRB.Data.spells.echoingReprimand.buffId[2] then
-						cpEntry = 3
-					elseif spellId == TRB.Data.spells.echoingReprimand.buffId[3] or spellId == TRB.Data.spells.echoingReprimand.buffId[4] then 
-						cpEntry = 4
-					elseif spellId == TRB.Data.spells.echoingReprimand.buffId[5] then
-						cpEntry = 5
-					end
-
-					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Echoing Reprimand Applied to Target
-						TRB.Data.snapshotData.echoingReprimand[cpEntry].enabled = true
-						_, _, TRB.Data.snapshotData.echoingReprimand[cpEntry].comboPoints, _, TRB.Data.snapshotData.echoingReprimand[cpEntry].duration, TRB.Data.snapshotData.echoingReprimand[cpEntry].endTime, _, _, _, TRB.Data.snapshotData.echoingReprimand[cpEntry].spellId = TRB.Functions.FindBuffById(spellId)
-					elseif type == "SPELL_AURA_REMOVED" then
-						TRB.Data.snapshotData.echoingReprimand[cpEntry].enabled = false
-						TRB.Data.snapshotData.echoingReprimand[cpEntry].spellId = nil
-						TRB.Data.snapshotData.echoingReprimand[cpEntry].endTime = nil
-						TRB.Data.snapshotData.echoingReprimand[cpEntry].comboPoints = 0
-					end
-				elseif spellId == TRB.Data.spells.sepsis.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						TRB.Data.snapshotData.sepsis.startTime = currentTime
-						TRB.Data.snapshotData.sepsis.duration = TRB.Data.spells.sepsis.cooldown
-					end
-				elseif spellId == TRB.Data.spells.sepsis.buffId then
-					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-						TRB.Data.spells.sepsis.isActive = true
-						if TRB.Data.settings.monk.windwalker.audio.sepsis.enabled then
-							---@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-						TRB.Data.spells.sepsis.isActive = false
-					end
-				elseif spellId == TRB.Data.spells.serratedBoneSpike.id then
-					if type == "SPELL_CAST_SUCCESS" then -- Serrated Bone Spike
-						---@diagnostic disable-next-line: redundant-parameter
-						TRB.Data.snapshotData.serratedBoneSpike.charges, _, TRB.Data.snapshotData.serratedBoneSpike.startTime, TRB.Data.snapshotData.serratedBoneSpike.duration, _ = GetSpellCharges(TRB.Data.spells.serratedBoneSpike.id)
-					end
-				elseif spellId == TRB.Data.spells.serratedBoneSpike.debuffId then
-					if InitializeTarget(destGUID) then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- NP Applied to Target
-							TRB.Data.snapshotData.targetData.targets[destGUID].serratedBoneSpike = true
-							triggerUpdate = true
-						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshotData.targetData.targets[destGUID].serratedBoneSpike = false
-							TRB.Data.snapshotData.targetData.serratedBoneSpike = TRB.Data.snapshotData.targetData.serratedBoneSpike - 1
-							triggerUpdate = true
-						--elseif type == "SPELL_PERIODIC_DAMAGE" then
-						end
-					end]]
 				end
 			end
 
