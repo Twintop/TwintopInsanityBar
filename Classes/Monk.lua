@@ -402,7 +402,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 	local function EventRegistration()
 		local specId = GetSpecialization()
-		if specId == 3 and TRB.Data.settings.core.enabled.monk.windwalker == true and TRB.Data.settings.core.experimental.specs.monk.windwalker then
+		if specId == 3 and TRB.Data.settings.core.enabled.monk.windwalker == true then
 			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.windwalker)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Energy
@@ -522,9 +522,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		TRB.Functions.ConstructResourceBar(settings)
 		
-		if specId == 3 and TRB.Data.settings.core.experimental.specs.monk.windwalker then
-			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
-		end
+		TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
 	end
 
     local function IsValidVariableForSpec(var)
@@ -823,8 +821,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local specId = GetSpecialization()
 
 		if specId == 3 then
-			if not TRB.Data.settings.core.experimental.specs.monk.windwalker or
-				not TRB.Data.specSupported or force or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.monk.windwalker.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.monk.windwalker.displayBar.notZeroShow) or
@@ -1141,7 +1138,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local specId = GetSpecialization()
 		if specId == 1 then
 		elseif specId == 2 then
-		elseif specId == 3 and TRB.Data.settings.core.experimental.specs.monk.windwalker then
+		elseif specId == 3 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.monk.windwalker)
 			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.windwalker)
 			FillSpellData_Windwalker()
@@ -1202,11 +1199,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					C_Timer.After(0, function()
 						C_Timer.After(1, function()
 							TRB.Data.barConstructedForSpec = nil
-							if TRB.Data.settings.core.experimental.specs.monk.windwalker then
-								TRB.Data.settings.monk.windwalker = TRB.Functions.ValidateLsmValues("Windwalker Monk", TRB.Data.settings.monk.windwalker)
-								FillSpellData_Windwalker()
-								SwitchSpec()
-							end
+							TRB.Data.settings.monk.windwalker = TRB.Functions.ValidateLsmValues("Windwalker Monk", TRB.Data.settings.monk.windwalker)
+							FillSpellData_Windwalker()
+							SwitchSpec()
 
 							TRB.Options.Monk.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case

@@ -251,14 +251,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
-
-		if TwintopInsanityBarSettings.core ~= nil and
-			TwintopInsanityBarSettings.core.experimental ~= nil and
-			TwintopInsanityBarSettings.core.experimental.specs ~= nil and
-			TwintopInsanityBarSettings.core.experimental.specs.monk ~= nil and 
-			TwintopInsanityBarSettings.core.experimental.specs.monk.windwalker then
-			settings.monk.windwalker = WindwalkerLoadDefaultSettings()
-		end
+		settings.monk.windwalker = WindwalkerLoadDefaultSettings()
 		return settings
 	end
     TRB.Options.Monk.LoadDefaultSettings = LoadDefaultSettings
@@ -3397,9 +3390,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 	local function ConstructOptionsPanel(specCache)
 		TRB.Options:ConstructOptionsPanel()
-		if TRB.Data.settings.core.experimental.specs.monk.windwalker then
-			WindwalkerConstructOptionsPanel(specCache.windwalker)
-		end
+		WindwalkerConstructOptionsPanel(specCache.windwalker)
 	end
 	TRB.Options.Monk.ConstructOptionsPanel = ConstructOptionsPanel
 end

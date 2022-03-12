@@ -2382,7 +2382,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif TRB.Data.settings.core.experimental.specs.shaman.restoration and specId == 3 then -- Restoration
 			end
 		elseif classId == 10 then -- Monk
-			if TRB.Data.settings.core.experimental.specs.monk.windwalker and specId == 3 then -- Windwalker
+			if specId == 3 then -- Windwalker
+				configuration.endOfSerenity = settings.endOfSerenity
 			end
 		elseif classId == 11 then -- Druids
 			if specId == 1 then -- Balance
@@ -2443,7 +2444,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif TRB.Data.settings.core.experimental.specs.shaman.restoration and specId == 3 then -- Restoration
 			end
 		elseif classId == 10 then -- Monk
-			if TRB.Data.settings.core.experimental.specs.monk.windwalker and specId == 3 then -- Windwalker
+			if specId == 3 then -- Windwalker
 			end
 		elseif classId == 11 then -- Druids
 			if specId == 1 then -- Balance
@@ -2486,7 +2487,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif TRB.Data.settings.core.experimental.specs.shaman.restoration and specId == 3 then -- Restoration
 			end
 		elseif classId == 10 then -- Monk
-			if TRB.Data.settings.core.experimental.specs.monk.windwalker and specId == 3 then -- Windwalker
+			if specId == 3 then -- Windwalker
 			end
 		elseif classId == 11 then -- Druid
 			if specId == 1 then -- Balance
@@ -2589,10 +2590,8 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		elseif classId == 10 and settings.monk ~= nil then -- Monk
 			configuration.monk = {}
 
-			if TRB.Data.settings.core.experimental.specs.monk.windwalker then
-				if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.monk.windwalker) > 0 then -- Windwalker
-					configuration.smonk.windwalker = TRB.Functions.ExportConfigurationSections(10, 3, settings.monk.windwalker, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
-				end
+			if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.monk.windwalker) > 0 then -- Windwalker
+				configuration.monk.windwalker = TRB.Functions.ExportConfigurationSections(10, 3, settings.monk.windwalker, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 11 and settings.druid ~= nil then -- Druid
 			configuration.druid = {}
@@ -2629,10 +2628,8 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Monks
-		if TRB.Data.settings.core.experimental.specs.monk.windwalker then
-			-- Windwalker
-			configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(10, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-		end
+		-- Windwalker
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(10, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Priests
 		-- Holy
