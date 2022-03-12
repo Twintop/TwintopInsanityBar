@@ -758,22 +758,27 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
     end
 
 	local function CastingSpell()
+		local currentTime = GetTime()
+		local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
+		local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
 		local specId = GetSpecialization()
-		local currentSpell = UnitCastingInfo("player")
-		local currentChannel = UnitChannelInfo("player")
 
-		if currentSpell == nil and currentChannel == nil then
+		if currentSpellName == nil and currentChannelName == nil then
 			TRB.Functions.ResetCastingSnapshotData()
 			return false
 		else
 			if specId == 3 then
-				if currentSpell == nil then
-					local spellName = select(1, currentChannel)
-						TRB.Functions.ResetCastingSnapshotData()
-						return false
-					--See Priest implementation for handling channeled spells
+				if currentSpellName == nil then
+					if currentChannelId == TRB.Data.spells.cracklingJadeLightning.id then
+						TRB.Data.snapshotData.casting.cracklingJadeLightning = TRB.Data.spells.cracklingJadeLightning.id
+						TRB.Data.snapshotData.casting.startTime = currentTime
+						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.cracklingJadeLightning.energy
+						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.cracklingJadeLightning.icon
+						UpdateCastingResourceFinal()
+					end
+					return true
 				else
-					local spellName = select(1, currentSpell)
+					TRB.Functions.ResetCastingSnapshotData()
 					return false
 				end
 			end
