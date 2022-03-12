@@ -36,7 +36,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				fontSize=18
 			},
 			middle={
-				text="",
+				text="{$serenityTime}[$serenityTime sec]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -63,7 +63,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				fontSize = 13
 			},
 			middle = {
-				text="",
+				text="{$serenityTime}[#serenity $serenityTime #serenity]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
