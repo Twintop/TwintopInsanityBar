@@ -3478,7 +3478,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = yCoord - 30
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 60
 		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Mana", TRB.Data.settings.shaman.restoration.colors.bar.base, 300, 25, xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -3496,6 +3496,27 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 					controls.colors.base.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.shaman.restoration.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.shaman.restoration.colors.bar.background, 275, 25, xCoord2, yCoord)
+		f = controls.colors.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.bar.background, true)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+---@diagnostic disable-next-line: deprecated
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.shaman.restoration.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					barContainerFrame:SetBackdropColor(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -3519,29 +3540,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					controls.colors.spending.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.shaman.restoration.colors.bar.spending = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 					castingFrame:SetStatusBarColor(r, g, b, 1-a)
-				end)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.shaman.restoration.colors.bar.background, 275, 25, xCoord2, yCoord)
-		f = controls.colors.background
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.bar.background, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.shaman.restoration.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					barContainerFrame:SetBackdropColor(r, g, b, 1-a)
 				end)
 			end
 		end)
@@ -4950,12 +4948,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		RestorationConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
 	end	
 
-	local function ConstructOptionsPanel(cache)
+	local function ConstructOptionsPanel(specCache)
 		TRB.Options:ConstructOptionsPanel()
-		ElementalConstructOptionsPanel(cache.elemental)
+		ElementalConstructOptionsPanel(specCache.elemental)
 		
 		if TRB.Data.settings.core.experimental.specs.shaman.restoration then
-			RestorationConstructOptionsPanel(cache.restoration)
+			RestorationConstructOptionsPanel(specCache.restoration)
 		end
 	end
 	TRB.Options.Shaman.ConstructOptionsPanel = ConstructOptionsPanel

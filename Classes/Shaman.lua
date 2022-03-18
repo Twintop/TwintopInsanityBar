@@ -872,8 +872,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			
 			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.earthShock.settingKey, settings)
-		elseif specId == 3 then
-			for x = 1, 4 do -- ES
+		elseif specId == 3 and TRB.Data.settings.core.experimental.specs.shaman.restoration then
+			for x = 1, 4 do
 				if TRB.Frames.resourceFrame.thresholds[x] == nil then
 					TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
@@ -901,7 +901,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		TRB.Functions.ConstructResourceBar(settings)
 
-		if specId == 1 or specId == 3 then
+		if specId == 1 or (specId == 3 and TRB.Data.settings.core.experimental.specs.shaman.restoration) then
 			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
 		end
 	end
@@ -955,6 +955,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local settings = nil
 		if specId == 1 then
 			settings = TRB.Data.settings.shaman.elemental
+		elseif specId == 2 then
+			settings = TRB.Data.settings.shaman.restoration
 		end
 
 		if specId == 1 then
@@ -1458,7 +1460,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			return false
 		else
 			if specId == 1 then
-				if currentSpellName == nil then					
+				if currentSpellName == nil then
 					TRB.Functions.ResetCastingSnapshotData()
 					return false
 					--See Priest implementation for handling channeled spells
@@ -1507,16 +1509,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				return true
 			elseif specId == 3 then	
 				if currentSpellName == nil then
-					if currentChannelId == TRB.Data.spells.symbolOfHope.id then
-						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.symbolOfHope.id
-						TRB.Data.snapshotData.casting.startTime = currentChannelStartTime / 1000
-						TRB.Data.snapshotData.casting.endTime = currentChannelEndTime / 1000
-						TRB.Data.snapshotData.casting.resourceRaw = 0
-						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.symbolOfHope.icon
-					else
-						TRB.Functions.ResetCastingSnapshotData()
-						return false
-					end
+					TRB.Functions.ResetCastingSnapshotData()
+					return false
 				else
 					local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
@@ -2385,6 +2379,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
 					C_Timer.After(0, function()
 						C_Timer.After(1, function()
+							TRB.Data.barConstructedForSpec = nil
 							TRB.Data.settings.shaman.elemental = TRB.Functions.ValidateLsmValues("Elemental Shaman", TRB.Data.settings.shaman.elemental)
 							FillSpellData_Elemental()
 							
@@ -2393,7 +2388,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 								FillSpellData_Restoration()
 							end
 
-							TRB.Data.barConstructedForSpec = nil
 							SwitchSpec()
 							TRB.Options.Shaman.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case

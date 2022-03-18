@@ -62,6 +62,7 @@ local function LoadDefaultSettings()
                     survival = true
                 },
                 monk = {
+                    mistweaver = true,
                     windwalker = true
                 },
                 priest = {
@@ -82,6 +83,9 @@ local function LoadDefaultSettings()
             },
             experimental = {
                 specs = {
+                    monk = {
+                        mistweaver = false
+                    },
                     shaman = {
                         restoration = false
                     }
@@ -101,6 +105,7 @@ local function LoadDefaultSettings()
             survival = {}
         },
         monk = {
+            mistweaver = {},
             windwalker = {}
         },
         priest = {
@@ -109,8 +114,6 @@ local function LoadDefaultSettings()
         },
         rogue = {
             assassination = {},
-            --outlaw = {},
-            --subtlety = {}
         },
         shaman = {
             elemental = {}
@@ -370,6 +373,17 @@ local function ConstructAddonOptionsPanel()
 
     yCoord = yCoord - 60
     controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Experimental Features", 0, yCoord)
+
+    yCoord = yCoord - 30
+    controls.checkBoxes.experimentalMonkMistweaver = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Shaman_Mistweaver", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.experimentalMonkMistweaver
+    f:SetPoint("TOPLEFT", xCoord, yCoord)
+    getglobal(f:GetName() .. 'Text'):SetText("Mistweaver Monk support")
+    f.tooltip = "This will enable experimental Mistweaver Monk support within the bar. If you change this setting and are currently logged in on a Monk, you'll need to reload your UI before Mistweaver Monk configuration options become available."
+    f:SetChecked(TRB.Data.settings.core.experimental.specs.monk.mistweaver)
+    f:SetScript("OnClick", function(self, ...)
+        TRB.Data.settings.core.experimental.specs.monk.mistweaver = self:GetChecked()
+    end)
 
     yCoord = yCoord - 30
     controls.checkBoxes.experimentalShamanRestoration = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Shaman_Restoration", parent, "ChatConfigCheckButtonTemplate")
@@ -840,6 +854,74 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 35
     controls.labels.monk = TRB.UiFunctions:BuildLabel(parent, "Monk", xCoord, yCoord, 110, 20)
+
+    if TRB.Data.settings.core.experimental.specs.monk.restoration then
+        buttonOffset = xCoord + xPadding + 100
+        controls.buttons.exportButton_Monk_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+        controls.buttons.exportButton_Monk_All:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Monk specializations (All).", 10, nil, true, true, true, true, false)
+        end)
+
+        buttonOffset = buttonOffset + buttonSpacing + 50
+        controls.exportButton_Monk_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+        controls.exportButton_Monk_BarDisplay:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Monk specializations (Bar Display).", 10, nil, true, false, false, false, false)
+        end)
+
+        buttonOffset = buttonOffset + buttonSpacing + 80
+        controls.exportButton_Monk_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+        controls.exportButton_Monk_FontAndText:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Monk specializations (Font & Text).", 10, nil, false, true, false, false, false)
+        end)
+
+        buttonOffset = buttonOffset + buttonSpacing + 90
+        controls.exportButton_Monk_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+        controls.exportButton_Monk_AudioAndTracking:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Monk specializations (Audio & Tracking).", 10, nil, false, false, true, false, false)
+        end)
+
+        buttonOffset = buttonOffset + buttonSpacing + 120
+        controls.exportButton_Monk_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+        controls.exportButton_Monk_BarText:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Monk specializations (Bar Text).", 10, nil, false, false, false, true, false)
+        end)
+    end
+ 
+    if TRB.Data.settings.core.experimental.specs.monk.mistweaver then
+        yCoord = yCoord - 25
+        specName = "Mistweaver"
+        controls.labels.monkMistweaver = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    
+        buttonOffset = xCoord + xPadding + 100
+        controls.buttons.exportButton_Monk_Mistweaver_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+        controls.buttons.exportButton_Monk_Mistweaver_All:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (All).", 10, 2, true, true, true, true, false)
+        end)
+    
+        buttonOffset = buttonOffset + buttonSpacing + 50
+        controls.exportButton_Monk_Mistweaver_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+        controls.exportButton_Monk_Mistweaver_BarDisplay:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (Bar Display).", 10, 2, true, false, false, false, false)
+        end)
+    
+        buttonOffset = buttonOffset + buttonSpacing + 80
+        controls.exportButton_Monk_Mistweaver_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+        controls.exportButton_Monk_Mistweaver_FontAndText:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (Font & Text).", 10, 2, false, true, false, false, false)
+        end)
+    
+        buttonOffset = buttonOffset + buttonSpacing + 90
+        controls.exportButton_Monk_Mistweaver_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+        controls.exportButton_Monk_Mistweaver_AudioAndTracking:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (Audio & Tracking).", 10, 2, false, false, true, false, false)
+        end)
+    
+        buttonOffset = buttonOffset + buttonSpacing + 120
+        controls.exportButton_Monk_Mistweaver_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+        controls.exportButton_Monk_Mistweaver_BarText:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (Bar Text).", 10, 2, false, false, false, true, false)
+        end)
+    end
 
     yCoord = yCoord - 25
     specName = "Windwalker"
