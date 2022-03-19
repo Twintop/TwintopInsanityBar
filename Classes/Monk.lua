@@ -2125,7 +2125,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 
 			if sourceGUID == TRB.Data.character.guid then
-				if specId == 3 then
+				if specId == 2 then
 					if spellId == TRB.Data.spells.symbolOfHope.id then
 						if type == "SPELL_AURA_REMOVED" then -- Lost Symbol of Hope
 							-- Let UpdateSymbolOfHope() clean this up
