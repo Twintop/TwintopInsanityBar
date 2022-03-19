@@ -26,7 +26,215 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		}
 	}
 
-	local function FillSpecCache()
+	local function FillSpecCache()		
+		-- Mistweaver
+		specCache.mistweaver.Global_TwintopResourceBar = {
+			ttd = 0,
+			resource = {
+				resource = 0,
+				casting = 0,
+				passive = 0,
+			},
+			dots = {
+			},
+		}
+
+		specCache.mistweaver.character = {
+			guid = UnitGUID("player"),
+			specGroup = GetActiveSpecGroup(),
+			maxResource = 100,
+			effects = {
+				overgrowthSeedlingModifier = 1
+			},
+			talents = {
+			},
+			items = {
+				potions = {
+					potionOfSpiritualClarity = {
+						id = 171272,
+						mana = 10000
+					},
+					spiritualRejuvenationPotion = {
+						id = 171269,
+						mana = 2500
+					},
+					spiritualManaPotion = {
+						id = 171268,
+						mana = 6000
+					},
+					soulfulManaPotion = {
+						id = 180318,
+						mana = 4000
+					}
+				},
+				alchemyStone = false
+			},
+			torghast = {
+				rampaging = {
+					spellCostModifier = 1.0,
+					coolDownReduction = 1.0
+				}
+			}
+		}
+
+		specCache.mistweaver.spells = {
+			manaTideTotem = {
+				id = 320763,
+				name = "",
+				icon = "",
+				duration = 8,
+				isActive = false
+			},
+
+			flameShock = {
+				id = 188389,
+				name = "",
+				icon = "",
+				baseDuration = 18,
+				pandemic = true,
+				pandemicTime = 18 * 0.3
+			},
+
+			-- External mana
+			symbolOfHope = {
+				id = 64901,
+				name = "",
+				icon = "",
+				duration = 4.0, --Hasted
+				manaPercent = 0.03,
+				ticks = 3,
+				tickId = 265144
+			},
+			innervate = {
+				id = 29166,
+				name = "",
+				icon = "",
+				duration = 10,
+				isActive = false
+			},
+
+			-- Covenant
+
+			-- Conduit
+
+			-- Potions
+			potionOfSpiritualClarity = {
+				itemId = 171272,
+				spellId = 307161,
+				name = "",
+				icon = "",
+				texture = "",
+				thresholdId = 1,
+				settingKey = "potionOfSpiritualClarity",
+				thresholdUsable = false,
+				mana = 1000,
+				duration = 10,
+				ticks = 10
+			},
+			spiritualRejuvenationPotion = {
+				itemId = 171269,
+				name = "",
+				icon = "",
+				texture = "",
+				thresholdId = 2,
+				settingKey = "spiritualRejuvenationPotion",
+				thresholdUsable = false
+			},
+			spiritualManaPotion = {
+				itemId = 171268,
+				name = "",
+				icon = "",
+				texture = "",
+				thresholdId = 3,
+				settingKey = "spiritualManaPotion",
+				thresholdUsable = false
+			},
+			soulfulManaPotion = {
+				itemId = 180318,
+				name = "",
+				icon = "",
+				texture = "",
+				thresholdId = 4,
+				settingKey = "soulfulManaPotion",
+				thresholdUsable = false
+			},
+
+			-- Alchemist Stone
+			alchemistStone = {
+				id = 17619,
+				name = "",
+				icon = "",
+				manaModifier = 1.4,
+				itemIds = {
+					171323,
+					175941,
+					175942,
+					175943
+				}
+			},
+
+			-- Torghast
+			elethiumMuzzle = {
+				id = 319276,
+				name = "",
+				icon = ""
+			}
+		}
+
+		specCache.mistweaver.snapshotData.manaRegen = 0
+		specCache.mistweaver.snapshotData.audio = {
+			innervateCue = false
+		}
+		specCache.mistweaver.snapshotData.targetData = {
+			ttdIsActive = false,
+			currentTargetGuid = nil,
+			flameShock = 0,
+			targets = {}
+		}
+		specCache.mistweaver.snapshotData.innervate = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0,
+			mana = 0
+		}
+		specCache.mistweaver.snapshotData.manaTideTotem = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0,
+			mana = 0
+		}
+		specCache.mistweaver.snapshotData.symbolOfHope = {
+			isActive = false,
+			ticksRemaining = 0,
+			tickRate = 0,
+			tickRateFound = false,
+			previousTickTime = nil,
+			firstTickTime = nil, -- First time we saw a tick.
+			endTime = nil,
+			resourceRaw = 0,
+			resourceFinal = 0
+		}
+		specCache.mistweaver.snapshotData.potionOfSpiritualClarity = {
+			isActive = false,
+			ticksRemaining = 0,
+			mana = 0,
+			endTime = nil,
+			lastTick = nil
+		}
+		specCache.mistweaver.snapshotData.potion = {
+			onCooldown = false,
+			startTime = nil,
+			duration = 0
+		}
+
+		specCache.mistweaver.barTextVariables = {
+			icons = {},
+			values = {}
+		}
+
+
 		-- Windwalker
 		specCache.windwalker.Global_TwintopResourceBar = {
 			ttd = 0,
@@ -232,7 +440,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				isTalent = true
 			},
 			danceOfChiJi = {
-				id = 325201,
+				id = 325202,
 				name = "",
 				icon = ""
 			},
@@ -245,7 +453,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		specCache.windwalker.snapshotData.energyRegen = 0
 		specCache.windwalker.snapshotData.audio = {
-			overcapCue = false
+			overcapCue = false,
+			playedDanceOfChiJiCue = false
 		}
 		specCache.windwalker.snapshotData.targetData = {
 			ttdIsActive = false,
@@ -278,218 +487,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			duration = 0,
 			endTime = nil
 		}
+		specCache.windwalker.snapshotData.danceOfChiJi = {
+			isActive = false,
+			spellId = nil,
+			duration = 0,
+			endTime = nil
+		}
 
 		specCache.windwalker.barTextVariables = {
-			icons = {},
-			values = {}
-		}
-
-		
-		-- Mistweaver
-		specCache.mistweaver.Global_TwintopResourceBar = {
-			ttd = 0,
-			resource = {
-				resource = 0,
-				casting = 0,
-				passive = 0,
-				wrathfulFaerie = 0
-			},
-			dots = {
-				--swpCount = 0
-			},
-		}
-
-		specCache.mistweaver.character = {
-			guid = UnitGUID("player"),
-			specGroup = GetActiveSpecGroup(),
-			maxResource = 100,
-			effects = {
-				overgrowthSeedlingModifier = 1
-			},
-			talents = {
-			},
-			items = {
-				potions = {
-					potionOfSpiritualClarity = {
-						id = 171272,
-						mana = 10000
-					},
-					spiritualRejuvenationPotion = {
-						id = 171269,
-						mana = 2500
-					},
-					spiritualManaPotion = {
-						id = 171268,
-						mana = 6000
-					},
-					soulfulManaPotion = {
-						id = 180318,
-						mana = 4000
-					}
-				},
-				alchemyStone = false
-			},
-			torghast = {
-				rampaging = {
-					spellCostModifier = 1.0,
-					coolDownReduction = 1.0
-				}
-			}
-		}
-
-		specCache.mistweaver.spells = {
-			manaTideTotem = {
-				id = 320763,
-				name = "",
-				icon = "",
-				duration = 8,
-				isActive = false
-			},
-
-			flameShock = {
-				id = 188389,
-				name = "",
-				icon = "",
-				baseDuration = 18,
-				pandemic = true,
-				pandemicTime = 18 * 0.3
-			},
-
-			-- External mana
-			symbolOfHope = {
-				id = 64901,
-				name = "",
-				icon = "",
-				duration = 4.0, --Hasted
-				manaPercent = 0.03,
-				ticks = 3,
-				tickId = 265144
-			},
-			innervate = {
-				id = 29166,
-				name = "",
-				icon = "",
-				duration = 10,
-				isActive = false
-			},
-
-			-- Covenant
-
-			-- Conduit
-
-			-- Potions
-			potionOfSpiritualClarity = {
-				itemId = 171272,
-				spellId = 307161,
-				name = "",
-				icon = "",
-				texture = "",
-				thresholdId = 1,
-				settingKey = "potionOfSpiritualClarity",
-				thresholdUsable = false,
-				mana = 1000,
-				duration = 10,
-				ticks = 10
-			},
-			spiritualRejuvenationPotion = {
-				itemId = 171269,
-				name = "",
-				icon = "",
-				texture = "",
-				thresholdId = 2,
-				settingKey = "spiritualRejuvenationPotion",
-				thresholdUsable = false
-			},
-			spiritualManaPotion = {
-				itemId = 171268,
-				name = "",
-				icon = "",
-				texture = "",
-				thresholdId = 3,
-				settingKey = "spiritualManaPotion",
-				thresholdUsable = false
-			},
-			soulfulManaPotion = {
-				itemId = 180318,
-				name = "",
-				icon = "",
-				texture = "",
-				thresholdId = 4,
-				settingKey = "soulfulManaPotion",
-				thresholdUsable = false
-			},
-
-			-- Alchemist Stone
-			alchemistStone = {
-				id = 17619,
-				name = "",
-				icon = "",
-				manaModifier = 1.4,
-				itemIds = {
-					171323,
-					175941,
-					175942,
-					175943
-				}
-			},
-
-			-- Torghast
-			elethiumMuzzle = {
-				id = 319276,
-				name = "",
-				icon = ""
-			}
-		}
-
-		specCache.mistweaver.snapshotData.manaRegen = 0
-		specCache.mistweaver.snapshotData.audio = {
-			innervateCue = false
-		}
-		specCache.mistweaver.snapshotData.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			flameShock = 0,
-			targets = {}
-		}
-		specCache.mistweaver.snapshotData.innervate = {
-			spellId = nil,
-			duration = 0,
-			endTime = nil,
-			remainingTime = 0,
-			mana = 0
-		}
-		specCache.mistweaver.snapshotData.manaTideTotem = {
-			spellId = nil,
-			duration = 0,
-			endTime = nil,
-			remainingTime = 0,
-			mana = 0
-		}
-		specCache.mistweaver.snapshotData.symbolOfHope = {
-			isActive = false,
-			ticksRemaining = 0,
-			tickRate = 0,
-			tickRateFound = false,
-			previousTickTime = nil,
-			firstTickTime = nil, -- First time we saw a tick.
-			endTime = nil,
-			resourceRaw = 0,
-			resourceFinal = 0
-		}
-		specCache.mistweaver.snapshotData.potionOfSpiritualClarity = {
-			isActive = false,
-			ticksRemaining = 0,
-			mana = 0,
-			endTime = nil,
-			lastTick = nil
-		}
-		specCache.mistweaver.snapshotData.potion = {
-			onCooldown = false,
-			startTime = nil,
-			duration = 0
-		}
-
-		specCache.mistweaver.barTextVariables = {
 			icons = {},
 			values = {}
 		}
@@ -913,6 +918,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.serenity)
 	end
 
+	local function GetDanceOfChiJiRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.danceOfChiJi)
+	end
+
 	local function GetPotionOfSpiritualClarityRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.potionOfSpiritualClarity)
 	end
@@ -1043,6 +1052,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				end
 			elseif var == "$serenityTime" then
 				if GetSerenityRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$danceOfChiJiTime" then
+				if GetDanceOfChiJiRemainingTime() > 0 then
 					valid = true
 				end
 			elseif var == "$resource" or var == "$energy" then
@@ -1309,6 +1322,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			serenityTime = string.format("%.1f", _serenityTime)
 		end
 		
+		--$danceOfChiJiTime
+		local _danceOfChiJiTime = GetDanceOfChiJiRemainingTime()
+		local danceOfChiJiTime = 0
+		if _danceOfChiJiTime ~= nil then
+			danceOfChiJiTime = string.format("%.1f", _danceOfChiJiTime)
+		end
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveEnergy
@@ -1373,6 +1392,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["$resourceOvercap"] = overcap
 		lookup["$energyOvercap"] = overcap
 		lookup["$serenityTime"] = serenityTime
+		lookup["$danceOfChiJiTime"] = danceOfChiJiTime
 		TRB.Data.lookup = lookup
 	end
 
@@ -1989,7 +2009,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					end
 
 					local barBorderColor = TRB.Data.settings.monk.windwalker.colors.bar.border
-					if TRB.Data.settings.monk.windwalker.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					if GetDanceOfChiJiRemainingTime() > 0 then
+						barBorderColor = TRB.Data.settings.monk.windwalker.colors.bar.borderChiJi
+					elseif TRB.Data.settings.monk.windwalker.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
 						barBorderColor = TRB.Data.settings.monk.windwalker.colors.bar.borderOvercap
 
 						if TRB.Data.settings.monk.windwalker.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -2157,6 +2179,23 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							TRB.Data.snapshotData.serenity.spellId = nil
 							TRB.Data.snapshotData.serenity.duration = 0
 							TRB.Data.snapshotData.serenity.endTime = nil
+						end
+					elseif spellId == TRB.Data.spells.danceOfChiJi.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.snapshotData.danceOfChiJi.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.danceOfChiJi.duration, TRB.Data.snapshotData.danceOfChiJi.endTime, _, _, _, TRB.Data.snapshotData.danceOfChiJi.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.danceOfChiJi.id)
+
+							if TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.enabled and not TRB.Data.snapshotData.audio.playedDanceOfChiJiCue then
+								TRB.Data.snapshotData.audio.playedDanceOfChiJiCue = true
+								---@diagnostic disable-next-line: redundant-parameter
+								PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.danceOfChiJi.isActive = false
+							TRB.Data.snapshotData.danceOfChiJi.spellId = nil
+							TRB.Data.snapshotData.danceOfChiJi.duration = 0
+							TRB.Data.snapshotData.danceOfChiJi.endTime = nil
+							TRB.Data.snapshotData.audio.playedDanceOfChiJiCue = false
 						end
 					elseif spellId == TRB.Data.spells.detox.id then
 						if type == "SPELL_CAST_SUCCESS" then

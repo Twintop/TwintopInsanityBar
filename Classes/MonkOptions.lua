@@ -361,6 +361,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				bar = {
 					border="FFFFD300",
 					borderOvercap="FFFF0000",
+					borderChiJi="FF00FF00",
 					background="66000000",
 					base="FFFFFF00",
 					casting="FFFFFFFF",
@@ -388,6 +389,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			audio = {
 				overcap={
 					name = "Overcap",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+				danceOfChiJi={
+					name = "Dance of Chi-Ji",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -1261,7 +1268,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				end)
 			end
 		end)
-		
+
 		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.monk.mistweaver.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2709,7 +2716,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		MistweaverConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
 		MistweaverConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
 		MistweaverConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
-	end	
+	end
 
 
 	--[[
@@ -4179,25 +4186,25 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 		end)
 
-		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Energy spent from hardcasting spells", TRB.Data.settings.monk.windwalker.colors.bar.casting, 275, 25, xCoord2, yCoord)
-		f = controls.colors.casting
+		controls.colors.borderChiJi = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border with Dance of Chi-Ji proc", TRB.Data.settings.monk.windwalker.colors.bar.borderChiJi, 225, 25, xCoord2, yCoord)
+		f = controls.colors.borderChiJi
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.casting, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.borderChiJi, true)
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
+                    local r, g, b, a
+                    if color then
 ---@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.casting.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.windwalker.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					castingFrame:SetStatusBarColor(r, g, b, 1-a)
-				end)
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.borderChiJi.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.monk.windwalker.colors.bar.borderChiJi = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
+                end)
 			end
 		end)
 
@@ -4221,27 +4228,27 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					TRB.Data.settings.monk.windwalker.colors.bar.serenity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
-		end)	
+		end)
 
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.monk.windwalker.colors.bar.background, 275, 25, xCoord2, yCoord)
-		f = controls.colors.background
+		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Energy spent from hardcasting spells", TRB.Data.settings.monk.windwalker.colors.bar.casting, 275, 25, xCoord2, yCoord)
+		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.background, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.casting, true)
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
+					local r, g, b, a
+					if color then
 ---@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
-                end)
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.casting.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.monk.windwalker.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					castingFrame:SetStatusBarColor(r, g, b, 1-a)
+				end)
 			end
 		end)
 
@@ -4264,6 +4271,28 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					controls.colors.serenityEnd.Texture:SetColorTexture(r, g, b, 1-a)
 					TRB.Data.settings.monk.windwalker.colors.bar.serenityEnd = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
+			end
+		end)
+
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.monk.windwalker.colors.bar.background, 275, 25, xCoord2, yCoord)
+		f = controls.colors.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.background, true)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+---@diagnostic disable-next-line: deprecated
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+        
+                    controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.monk.windwalker.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
+                end)
 			end
 		end)		
 
@@ -5593,6 +5622,75 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
+
+
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.danceOfChiJiAudio = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_danceOfChiJi_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.danceOfChiJiAudio
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Dance of Chi-Ji proc")
+		f.tooltip = "Play an audio cue when you get a Dance of Chi-Ji proc that allows you to use Spinning Crane Kick for no Chi."
+		f:SetChecked(TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.enabled = self:GetChecked()
+
+			if TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.enabled then
+---@diagnostic disable-next-line: redundant-parameter
+				PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.danceOfChiJiAudio = CreateFrame("FRAME", "TwintopResourceBar_Monk_Windwalker_danceOfChiJi_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.danceOfChiJiAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.danceOfChiJiAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.danceOfChiJiAudio, TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.danceOfChiJiAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		UIDropDownMenu_Initialize(controls.dropDown.danceOfChiJiAudio, function(self, level, menuList)
+			local entries = 25
+			local info = UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					UIDropDownMenu_AddButton(info)
+				end
+			else  
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.danceOfChiJiAudio:SetValue(newValue, newName)
+			TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.sound = newValue
+			TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.danceOfChiJiAudio, newName)
+			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
+			PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
 
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Energy Regeneration", 0, yCoord)
