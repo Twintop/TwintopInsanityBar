@@ -321,6 +321,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
                 cooldown = 15,
 				thresholdUsable = false
 			},
+			markOfTheCrane = {
+				id = 228287,
+				name = "",
+				icon = "",
+				duration = 20
+			},
 			paralysis = {
 				id = 115078,
 				name = "",
@@ -459,7 +465,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		specCache.windwalker.snapshotData.targetData = {
 			ttdIsActive = false,
 			currentTargetGuid = nil,
-			targets = {}
+			targets = {},
+			markOfTheCrane = 0
 		}
 		specCache.windwalker.snapshotData.detox = {
 			startTime = nil,
@@ -493,103 +500,19 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			duration = 0,
 			endTime = nil
 		}
+		specCache.windwalker.snapshotData.markOfTheCrane = {
+			isActive = false,
+			count = 0,
+			activeCount = 0,
+			minEndTime = nil,
+			maxEndTime = nil,
+			list = {}
+		}
 
 		specCache.windwalker.barTextVariables = {
 			icons = {},
 			values = {}
 		}
-	end
-
-	local function Setup_Windwalker()
-		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-			return
-		end
-
-		TRB.Functions.LoadFromSpecCache(specCache.windwalker)
-	end
-
-	local function FillSpellData_Windwalker()
-		Setup_Windwalker()
-		local spells = TRB.Functions.FillSpellData(specCache.windwalker.spells)
-
-		-- This is done here so that we can get icons for the options menu!
-		specCache.windwalker.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the Energy generating spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
-
-			{ variable = "#blackoutKick", icon = spells.blackoutKick.icon, description = spells.blackoutKick.name, printInSettings = true },
-			{ variable = "#cracklingJadeLightning", icon = spells.cracklingJadeLightning.icon, description = spells.cracklingJadeLightning.name, printInSettings = true },
-			{ variable = "#cjl", icon = spells.cracklingJadeLightning.icon, description = spells.cracklingJadeLightning.name, printInSettings = false },
-			{ variable = "#danceOfChiJi", icon = spells.danceOfChiJi.icon, description = spells.danceOfChiJi.name, printInSettings = true },
-			{ variable = "#detox", icon = spells.detox.icon, description = spells.detox.name, printInSettings = true },
-			{ variable = "#disable", icon = spells.disable.icon, description = spells.disable.name, printInSettings = true },
-			{ variable = "#energizingElixir", icon = spells.energizingElixir.icon, description = spells.energizingElixir.name, printInSettings = true },
-			{ variable = "#expelHarm", icon = spells.expelHarm.icon, description = spells.expelHarm.name, printInSettings = true },
-			{ variable = "#fistsOfFury", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = true },
-			{ variable = "#fof", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = false },
-			{ variable = "#fistOfTheWhiteTiger", icon = spells.fistOfTheWhiteTiger.icon, description = spells.fistOfTheWhiteTiger.name, printInSettings = true },
-			{ variable = "#fotwt", icon = spells.fistOfTheWhiteTiger.icon, description = spells.fistOfTheWhiteTiger.name, printInSettings = false },
-			{ variable = "#paralysis", icon = spells.paralysis.icon, description = spells.paralysis.name, printInSettings = true },
-			{ variable = "#risingSunKick", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = true },
-			{ variable = "#rsk", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = false },
-			{ variable = "#rushingJadeWind", icon = spells.rushingJadeWind.icon, description = spells.rushingJadeWind.name, printInSettings = true },
-			{ variable = "#rjw", icon = spells.rushingJadeWind.icon, description = spells.rushingJadeWind.name, printInSettings = false },
-			{ variable = "#serenity", icon = spells.serenity.icon, description = spells.serenity.name, printInSettings = true },
-			{ variable = "#spinningCraneKick", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = true },
-			{ variable = "#sck", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = false },
-			{ variable = "#stormEarthAndFire", icon = spells.stormEarthAndFire.icon, description = spells.stormEarthAndFire.name, printInSettings = true },
-			{ variable = "#sef", icon = spells.stormEarthAndFire.icon, description = spells.stormEarthAndFire.name, printInSettings = false },			
-			{ variable = "#tigerPalm", icon = spells.tigerPalm.icon, description = spells.tigerPalm.name, printInSettings = true },
-			{ variable = "#touchOfDeath", icon = spells.touchOfDeath.icon, description = spells.touchOfDeath.name, printInSettings = true },
-			{ variable = "#vivify", icon = spells.vivify.icon, description = spells.vivify.name, printInSettings = true },
-			{ variable = "#xuen", icon = spells.invokeXuenTheWhiteTiger.icon, description = spells.invokeXuenTheWhiteTiger.name, printInSettings = true },
-			{ variable = "#invokeXuenTheWhiteTiger", icon = spells.invokeXuenTheWhiteTiger.icon, description = spells.invokeXuenTheWhiteTiger.name, printInSettings = false },
-        }
-		specCache.windwalker.barTextVariables.values = {
-			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility% (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versatility", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
-
-			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
-
-			{ variable = "$energy", description = "Current Energy", printInSettings = true, color = false },
-			{ variable = "$resource", description = "Current Energy", printInSettings = false, color = false },
-			{ variable = "$energyMax", description = "Maximum Energy", printInSettings = true, color = false },
-			{ variable = "$resourceMax", description = "Maximum Energy", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Builder Energy from Hardcasting Spells", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Spender Energy from Hardcasting Spells", printInSettings = false, color = false },
-			{ variable = "$passive", description = "Energy from Passive Sources including Regen and Barbed Shot buffs", printInSettings = true, color = false },
-			{ variable = "$regen", description = "Energy from Passive Regen", printInSettings = true, color = false },
-			{ variable = "$regenEnergy", description = "Energy from Passive Regen", printInSettings = false, color = false },
-			{ variable = "$energyRegen", description = "Energy from Passive Regen", printInSettings = false, color = false },
-			{ variable = "$energyPlusCasting", description = "Current + Casting Energy Total", printInSettings = false, color = false },
-			{ variable = "$resourcePlusCasting", description = "Current + Casting Energy Total", printInSettings = false, color = false },
-			{ variable = "$energyPlusPassive", description = "Current + Passive Energy Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusPassive", description = "Current + Passive Energy Total", printInSettings = false, color = false },
-			{ variable = "$energyTotal", description = "Current + Passive + Casting Energy Total", printInSettings = true, color = false },
-			{ variable = "$resourceTotal", description = "Current + Passive + Casting Energy Total", printInSettings = false, color = false },
-			
-			{ variable = "$chi", description = "Current Chi", printInSettings = true, color = false },
-			{ variable = "$comboPoints", description = "Current Chi", printInSettings = false, color = false },
-			{ variable = "$chiMax", description = "Maximum Chi", printInSettings = true, color = false },
-			{ variable = "$comboPointsMax", description = "Maximum Chi", printInSettings = false, color = false },
-
-			{ variable = "$serenityTime", description = "Time remaining on Serenity buff", printInSettings = true, color = false },
-
-			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
-		}
-
-		specCache.windwalker.spells = spells
 	end
 
 	local function Setup_Mistweaver()
@@ -684,6 +607,103 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		}
 
 		specCache.mistweaver.spells = spells
+	end
+
+	local function Setup_Windwalker()
+		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
+			return
+		end
+
+		TRB.Functions.LoadFromSpecCache(specCache.windwalker)
+	end
+
+	local function FillSpellData_Windwalker()
+		Setup_Windwalker()
+		local spells = TRB.Functions.FillSpellData(specCache.windwalker.spells)
+
+		-- This is done here so that we can get icons for the options menu!
+		specCache.windwalker.barTextVariables.icons = {
+			{ variable = "#casting", icon = "", description = "The icon of the Energy generating spell you are currently hardcasting", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+
+			{ variable = "#blackoutKick", icon = spells.blackoutKick.icon, description = spells.blackoutKick.name, printInSettings = true },
+			{ variable = "#cracklingJadeLightning", icon = spells.cracklingJadeLightning.icon, description = spells.cracklingJadeLightning.name, printInSettings = true },
+			{ variable = "#cjl", icon = spells.cracklingJadeLightning.icon, description = spells.cracklingJadeLightning.name, printInSettings = false },
+			{ variable = "#danceOfChiJi", icon = spells.danceOfChiJi.icon, description = spells.danceOfChiJi.name, printInSettings = true },
+			{ variable = "#detox", icon = spells.detox.icon, description = spells.detox.name, printInSettings = true },
+			{ variable = "#disable", icon = spells.disable.icon, description = spells.disable.name, printInSettings = true },
+			{ variable = "#energizingElixir", icon = spells.energizingElixir.icon, description = spells.energizingElixir.name, printInSettings = true },
+			{ variable = "#expelHarm", icon = spells.expelHarm.icon, description = spells.expelHarm.name, printInSettings = true },
+			{ variable = "#fistsOfFury", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = true },
+			{ variable = "#fof", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = false },
+			{ variable = "#fistOfTheWhiteTiger", icon = spells.fistOfTheWhiteTiger.icon, description = spells.fistOfTheWhiteTiger.name, printInSettings = true },
+			{ variable = "#fotwt", icon = spells.fistOfTheWhiteTiger.icon, description = spells.fistOfTheWhiteTiger.name, printInSettings = false },
+			{ variable = "#paralysis", icon = spells.paralysis.icon, description = spells.paralysis.name, printInSettings = true },
+			{ variable = "#risingSunKick", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = true },
+			{ variable = "#rsk", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = false },
+			{ variable = "#rushingJadeWind", icon = spells.rushingJadeWind.icon, description = spells.rushingJadeWind.name, printInSettings = true },
+			{ variable = "#rjw", icon = spells.rushingJadeWind.icon, description = spells.rushingJadeWind.name, printInSettings = false },
+			{ variable = "#serenity", icon = spells.serenity.icon, description = spells.serenity.name, printInSettings = true },
+			{ variable = "#spinningCraneKick", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = true },
+			{ variable = "#sck", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = false },
+			{ variable = "#stormEarthAndFire", icon = spells.stormEarthAndFire.icon, description = spells.stormEarthAndFire.name, printInSettings = true },
+			{ variable = "#sef", icon = spells.stormEarthAndFire.icon, description = spells.stormEarthAndFire.name, printInSettings = false },			
+			{ variable = "#tigerPalm", icon = spells.tigerPalm.icon, description = spells.tigerPalm.name, printInSettings = true },
+			{ variable = "#touchOfDeath", icon = spells.touchOfDeath.icon, description = spells.touchOfDeath.name, printInSettings = true },
+			{ variable = "#vivify", icon = spells.vivify.icon, description = spells.vivify.name, printInSettings = true },
+			{ variable = "#xuen", icon = spells.invokeXuenTheWhiteTiger.icon, description = spells.invokeXuenTheWhiteTiger.name, printInSettings = true },
+			{ variable = "#invokeXuenTheWhiteTiger", icon = spells.invokeXuenTheWhiteTiger.icon, description = spells.invokeXuenTheWhiteTiger.name, printInSettings = false },
+        }
+		specCache.windwalker.barTextVariables.values = {
+			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
+			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
+			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
+			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
+			{ variable = "$vers", description = "Current Versatility% (damage increase/offensive)", printInSettings = true, color = false },
+			{ variable = "$versatility", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
+
+			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
+
+			{ variable = "$energy", description = "Current Energy", printInSettings = true, color = false },
+			{ variable = "$resource", description = "Current Energy", printInSettings = false, color = false },
+			{ variable = "$energyMax", description = "Maximum Energy", printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "Maximum Energy", printInSettings = false, color = false },
+			{ variable = "$casting", description = "Builder Energy from Hardcasting Spells", printInSettings = false, color = false },
+			{ variable = "$casting", description = "Spender Energy from Hardcasting Spells", printInSettings = false, color = false },
+			{ variable = "$passive", description = "Energy from Passive Sources including Regen and Barbed Shot buffs", printInSettings = true, color = false },
+			{ variable = "$regen", description = "Energy from Passive Regen", printInSettings = true, color = false },
+			{ variable = "$regenEnergy", description = "Energy from Passive Regen", printInSettings = false, color = false },
+			{ variable = "$energyRegen", description = "Energy from Passive Regen", printInSettings = false, color = false },
+			{ variable = "$energyPlusCasting", description = "Current + Casting Energy Total", printInSettings = false, color = false },
+			{ variable = "$resourcePlusCasting", description = "Current + Casting Energy Total", printInSettings = false, color = false },
+			{ variable = "$energyPlusPassive", description = "Current + Passive Energy Total", printInSettings = true, color = false },
+			{ variable = "$resourcePlusPassive", description = "Current + Passive Energy Total", printInSettings = false, color = false },
+			{ variable = "$energyTotal", description = "Current + Passive + Casting Energy Total", printInSettings = true, color = false },
+			{ variable = "$resourceTotal", description = "Current + Passive + Casting Energy Total", printInSettings = false, color = false },
+			
+			{ variable = "$chi", description = "Current Chi", printInSettings = true, color = false },
+			{ variable = "$comboPoints", description = "Current Chi", printInSettings = false, color = false },
+			{ variable = "$chiMax", description = "Maximum Chi", printInSettings = true, color = false },
+			{ variable = "$comboPointsMax", description = "Maximum Chi", printInSettings = false, color = false },
+
+			{ variable = "$serenityTime", description = "Time remaining on Serenity buff", printInSettings = true, color = false },
+
+			{ variable = "$motcCount", description = "Number of unique targets contributing to Mark of the Crane", printInSettings = true, color = false },
+			{ variable = "$motcActiveCount", description = "Number of still alive unique targets contributing to Mark of the Crane", printInSettings = true, color = false },
+			{ variable = "$motcMinTime", description = "Time until your oldest Mark of the Crane debuff expires", printInSettings = true, color = false },
+			{ variable = "$motcMaxTime", description = "Time until your newest Mark of the Crane debuff expires", printInSettings = true, color = false },
+
+			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+		}
+
+		specCache.windwalker.spells = spells
 	end
 
 	local function CheckCharacter()
@@ -811,6 +831,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				TRB.Functions.InitializeTarget(guid)
 			elseif specId == 3 then
 				TRB.Functions.InitializeTarget(guid)
+				TRB.Data.snapshotData.targetData.targets[guid].markOfTheCrane = false
+				TRB.Data.snapshotData.targetData.targets[guid].markOfTheCraneRemaining = 0
 			end
 		end
 		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
@@ -824,19 +846,24 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local specId = GetSpecialization()
         
 		if specId == 2 then -- Mistweaver
-			local fsTotal = 0
-			for tguid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
-				if (currentTime - TRB.Data.snapshotData.targetData.targets[tguid].lastUpdate) > 10 then
-				else
-				end
-			end
-		end
-		if specId == 3 then -- Windwalker
 			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
 				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
 				else
 				end
 			end
+		elseif specId == 3 then -- Windwalker
+			local motcTotal = 0
+			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
+				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
+					TRB.Data.snapshotData.targetData.targets[guid].markOfTheCrane = false
+					TRB.Data.snapshotData.targetData.targets[guid].markOfTheCraneRemaining = 0
+				else
+					if TRB.Data.snapshotData.targetData.targets[guid].serpentSting == true then
+						motcTotal = motcTotal + 1
+					end
+				end
+			end
+			TRB.Data.snapshotData.targetData.markOfTheCrane = motcTotal
 		end
 	end
 
@@ -908,10 +935,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		if (specId == 2 and TRB.Data.settings.core.experimental.specs.monk.mistweaver) or specId == 3 then
 			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
 		end
-	end
-
-	local function UpdateCastingResourceFinal()
-		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
 	end
 
 	local function GetSerenityRemainingTime()
@@ -1056,6 +1079,22 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				end
 			elseif var == "$danceOfChiJiTime" then
 				if GetDanceOfChiJiRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$motcCount" then
+				if TRB.Data.snapshotData.markOfTheCrane.count > 0 then
+					valid = true
+				end
+			elseif var == "$motcActiveCount" then
+				if TRB.Data.snapshotData.markOfTheCrane.activeCount > 0 then
+					valid = true
+				end
+			elseif var == "$motcMinTime" then
+				if TRB.Data.snapshotData.markOfTheCrane.minEndTime ~= nil then
+					valid = true
+				end
+			elseif var == "$motcMaxTime" then
+				if TRB.Data.snapshotData.markOfTheCrane.maxEndTime ~= nil then
 					valid = true
 				end
 			elseif var == "$resource" or var == "$energy" then
@@ -1300,7 +1339,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		--$regenEnergy
 		local regenEnergy = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.passive, _regenEnergy)
 
-		_passiveEnergy = _regenEnergy --+ _barbedShotEnergy
+		_passiveEnergy = _regenEnergy --+ _markOfTheCraneEnergy
 		_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
 
 		local passiveEnergy = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.passive, _passiveEnergy)
@@ -1327,6 +1366,20 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local danceOfChiJiTime = 0
 		if _danceOfChiJiTime ~= nil then
 			danceOfChiJiTime = string.format("%.1f", _danceOfChiJiTime)
+		end
+		
+		--$motcMinTime
+		local _motcMinTime = (TRB.Data.snapshotData.markOfTheCrane.minEndTime or 0) - currentTime
+		local motcMinTime = 0
+		if _motcMinTime > 0 then
+			motcMinTime = string.format("%.1f", _motcMinTime)
+		end
+		
+		--$motcMaxTime
+		local _motcMaxTime = (TRB.Data.snapshotData.markOfTheCrane.maxEndTime or 0) - currentTime
+		local motcMaxTime = 0
+		if _motcMaxTime > 0 then
+			motcMaxTime = string.format("%.1f", _motcMaxTime)
 		end
 		----------------------------
 
@@ -1393,6 +1446,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["$energyOvercap"] = overcap
 		lookup["$serenityTime"] = serenityTime
 		lookup["$danceOfChiJiTime"] = danceOfChiJiTime
+		lookup["$motcMinTime"] = motcMinTime
+		lookup["$motcMaxTime"] = motcMaxTime
+		lookup["$motcCount"] = TRB.Data.snapshotData.markOfTheCrane.count
+		lookup["$motcActiveCount"] = TRB.Data.snapshotData.markOfTheCrane.activeCount
 		TRB.Data.lookup = lookup
 	end
 
@@ -1404,6 +1461,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
         TRB.Data.snapshotData.casting.spellId = spell.id
         TRB.Data.snapshotData.casting.icon = spell.icon
     end
+
+	local function UpdateCastingResourceFinal()
+		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
+	end
 
 	local function UpdateCastingResourceFinal_Mistweaver()
 		-- Do nothing for now
@@ -1461,6 +1522,105 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			TRB.Functions.ResetCastingSnapshotData()
 			return false
 		end
+	end
+
+	local function GetGuidPositionInMarkOfTheCraneList(guid)
+		local entries = TRB.Functions.TableLength(TRB.Data.snapshotData.markOfTheCrane.list)
+		for x = 1, entries do
+			if TRB.Data.snapshotData.markOfTheCrane.list[x].guid == guid then
+				return x
+			end
+		end
+		return 0
+	end
+
+	local function ApplyMarkOfTheCrane(guid)
+		local currentTime = GetTime()
+		TRB.Data.snapshotData.targetData.targets[guid].markOfTheCrane = true
+		
+		local listPosition = GetGuidPositionInMarkOfTheCraneList(guid)
+		print(listPosition, guid, currentTime)
+		if listPosition > 0 then
+			TRB.Data.snapshotData.markOfTheCrane.list[listPosition].endTime = currentTime + TRB.Data.spells.markOfTheCrane.duration
+		else
+			TRB.Data.snapshotData.targetData.markOfTheCrane = TRB.Data.snapshotData.targetData.markOfTheCrane + 1
+			table.insert(TRB.Data.snapshotData.markOfTheCrane.list, {
+				guid = guid,
+				endTime = currentTime + TRB.Data.spells.markOfTheCrane.duration
+			})
+		end
+	end
+
+	local function GetOldestOrExpiredMarkOfTheCraneListEntry()
+		local currentTime = GetTime()
+		local entries = TRB.Functions.TableLength(TRB.Data.snapshotData.markOfTheCrane.list)
+		local oldestTime = currentTime
+		local oldestId = 0
+		for x = 1, entries do
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.markOfTheCrane.list[x].guid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.markOfTheCrane.list[x].guid].markOfTheCraneRemaining > 0 then
+				TRB.Data.snapshotData.markOfTheCrane.list[x].endTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.markOfTheCrane.list[x].guid].markOfTheCraneRemaining + currentTime
+			end
+
+			if TRB.Data.snapshotData.markOfTheCrane.list[x].endTime == nil or currentTime > TRB.Data.snapshotData.markOfTheCrane.list[x].endTime or TRB.Data.snapshotData.markOfTheCrane.list[x].endTime < oldestTime then
+				oldestId = x
+			end
+		end
+		return oldestId
+	end
+
+	local function RemoveExcessMarkOfTheCraneEntries()
+		while true do
+			local id = GetOldestOrExpiredMarkOfTheCraneListEntry()
+
+			if id == 0 then
+				return
+			else
+				print("REMOVE",TRB.Data.snapshotData.markOfTheCrane.list[id].guid)
+				table.remove(TRB.Data.snapshotData.markOfTheCrane.list, id)
+			end
+		end
+	end
+
+	local function UpdateMarkOfTheCrane()
+		RemoveExcessMarkOfTheCraneEntries()
+		local entries = TRB.Functions.TableLength(TRB.Data.snapshotData.markOfTheCrane.list)
+		local minEndTime = nil
+		local maxEndTime = nil
+		local activeCount = 0
+		if entries > 0 then
+			local currentTime = GetTime()
+
+			for x = 1, entries do
+				activeCount = activeCount + 1
+				TRB.Data.snapshotData.markOfTheCrane.isActive = true
+
+				if TRB.Data.snapshotData.markOfTheCrane.list[x].endTime > (maxEndTime or 0) then
+					maxEndTime = TRB.Data.snapshotData.markOfTheCrane.list[x].endTime
+				end
+				
+				if TRB.Data.snapshotData.markOfTheCrane.list[x].endTime < (minEndTime or currentTime+999) then
+					minEndTime = TRB.Data.snapshotData.markOfTheCrane.list[x].endTime
+				end
+			end
+		end
+
+		if activeCount > 0 then
+			TRB.Data.snapshotData.markOfTheCrane.isActive = true
+		else
+			TRB.Data.snapshotData.markOfTheCrane.isActive = false
+		end
+---@diagnostic disable-next-line: redundant-parameter
+		TRB.Data.snapshotData.markOfTheCrane.count = GetSpellCount(TRB.Data.spells.spinningCraneKick.id)
+		
+		-- Avoid race conditions from combat log events saying we have 6 marks when 5 is the max
+		if TRB.Data.snapshotData.markOfTheCrane.count < activeCount then
+			TRB.Data.snapshotData.markOfTheCrane.activeCount = TRB.Data.snapshotData.markOfTheCrane.count
+		else
+			TRB.Data.snapshotData.markOfTheCrane.activeCount = activeCount
+		end
+
+		TRB.Data.snapshotData.markOfTheCrane.minEndTime = minEndTime
+		TRB.Data.snapshotData.markOfTheCrane.maxEndTime = maxEndTime
 	end
 
 	local function UpdatePotionOfSpiritualClarity(forceCleanup)
@@ -1592,6 +1752,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 	local function UpdateSnapshot_Windwalker()
 		UpdateSnapshot()
+		UpdateMarkOfTheCrane()
+		
 		local currentTime = GetTime()
 		local _
 		
@@ -2196,6 +2358,39 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							TRB.Data.snapshotData.danceOfChiJi.duration = 0
 							TRB.Data.snapshotData.danceOfChiJi.endTime = nil
 							TRB.Data.snapshotData.audio.playedDanceOfChiJiCue = false
+						end
+					elseif spellId == TRB.Data.spells.markOfTheCrane.id then
+						if InitializeTarget(destGUID) then
+							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+								ApplyMarkOfTheCrane(destGUID)
+								triggerUpdate = true
+							elseif type == "SPELL_AURA_REMOVED" then
+								TRB.Data.snapshotData.targetData.targets[destGUID].markOfTheCrane = false
+								TRB.Data.snapshotData.targetData.targets[destGUID].markOfTheCraneRemaining = 0
+								TRB.Data.snapshotData.targetData.markOfTheCrane = TRB.Data.snapshotData.targetData.markOfTheCrane - 1
+								triggerUpdate = true
+							end
+						end
+					elseif spellId == TRB.Data.spells.tigerPalm.id then
+						if InitializeTarget(destGUID) then
+							if type == "SPELL_CAST_SUCCESS" then
+								ApplyMarkOfTheCrane(destGUID)
+								triggerUpdate = true
+							end
+						end
+					elseif spellId == TRB.Data.spells.blackoutKick.id then
+						if InitializeTarget(destGUID) then
+							if type == "SPELL_CAST_SUCCESS" then
+								ApplyMarkOfTheCrane(destGUID)
+								triggerUpdate = true
+							end
+						end
+					elseif spellId == TRB.Data.spells.risingSunKick.id then
+						if InitializeTarget(destGUID) then
+							if type == "SPELL_CAST_SUCCESS" then
+								ApplyMarkOfTheCrane(destGUID)
+								triggerUpdate = true
+							end
 						end
 					elseif spellId == TRB.Data.spells.detox.id then
 						if type == "SPELL_CAST_SUCCESS" then

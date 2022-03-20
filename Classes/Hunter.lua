@@ -2481,7 +2481,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local entries = TRB.Functions.TableLength(TRB.Data.snapshotData.barbedShot.list)
 		local totalFocus = 0
 		local totalTicksRemaining = 0
-		local longestRemaining = 0
 		local maxEndTime = nil
 		local activeCount = 0
 		if entries > 0 then
