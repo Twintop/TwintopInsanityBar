@@ -694,6 +694,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 			{ variable = "$serenityTime", description = "Time remaining on Serenity buff", printInSettings = true, color = false },
 
+			{ variable = "$danceOfChiJiTime", description = "Time remaining on Dance of Chi-Ji proc", printInSettings = true, color = false },
+
 			{ variable = "$motcCount", description = "Number of unique targets contributing to Mark of the Crane", printInSettings = true, color = false },
 			{ variable = "$motcActiveCount", description = "Number of still alive unique targets contributing to Mark of the Crane", printInSettings = true, color = false },
 			{ variable = "$motcMinTime", description = "Time until your oldest Mark of the Crane debuff expires", printInSettings = true, color = false },
@@ -1539,7 +1541,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		TRB.Data.snapshotData.targetData.targets[guid].markOfTheCrane = true
 		
 		local listPosition = GetGuidPositionInMarkOfTheCraneList(guid)
-		print(listPosition, guid, currentTime)
 		if listPosition > 0 then
 			TRB.Data.snapshotData.markOfTheCrane.list[listPosition].endTime = currentTime + TRB.Data.spells.markOfTheCrane.duration
 		else
@@ -1575,7 +1576,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			if id == 0 then
 				return
 			else
-				print("REMOVE",TRB.Data.snapshotData.markOfTheCrane.list[id].guid)
 				table.remove(TRB.Data.snapshotData.markOfTheCrane.list, id)
 			end
 		end
