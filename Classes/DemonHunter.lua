@@ -357,47 +357,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			endTime = nil,
 			lastTick = nil
 		}
-		--[[
-		specCache.havoc.snapshotData.deadlyCalm = {
-			endTime = nil,
-			duration = 0,
-			stacks = 0
-		}
-		specCache.havoc.snapshotData.suddenDeath = {
-			endTime = nil,
-			duration = 0,
-			spellId = nil
-		}
-		specCache.havoc.snapshotData.ravager = {
-			isActive = false,
-			ticksRemaining = 0,
-			fury = 0,
-			endTime = nil,
-			lastTick = nil,
-			totalDuration = 0
-		}
-		specCache.havoc.snapshotData.condemn = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}
-		specCache.havoc.snapshotData.conquerorsBanner = {
-			isActive = false,
-			ticksRemaining = 0,
-			fury = 0,
-			endTime = nil,
-			lastTick = nil
-		}
-		specCache.havoc.snapshotData.ancientAftershock = {
-			isActive = false,
-			ticksRemaining = 0,
-			fury = 0,
-			endTime = nil,
-			lastTick = nil,
-			targetsHit = 0,
-			hitTime = nil
-		}
-        ]]
 	end
 
 	local function Setup_Havoc()
@@ -1146,7 +1105,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							local furyAmount = CalculateAbilityResourceValue(spell.fury)
 							local normalizedFury = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 							
-							if spell.id == TRB.Data.spells.bladeDance.id and TRB.Data.character.talents.firstBlood.isSelected then
+							if (spell.id == TRB.Data.spells.bladeDance.id or spell.id == TRB.Data.spells.deathSweep.id) and TRB.Data.character.talents.firstBlood.isSelected then
 								furyAmount = furyAmount - TRB.Data.spells.firstBlood.furyAdjustment
 							end
 
@@ -1169,7 +1128,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 								showThreshold = false
 								isUsable = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-								if spell.Id == TRB.Data.spells.deathSweep.id then
+								if spell.id == TRB.Data.spells.deathSweep.id then
 									if TRB.Data.snapshotData.bladeDance.startTime ~= nil and currentTime < (TRB.Data.snapshotData.bladeDance.startTime + TRB.Data.snapshotData.bladeDance.duration) then
 										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
 										frameLevel = 127
