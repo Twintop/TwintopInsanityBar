@@ -24,7 +24,7 @@ Currently supported specs:
 - Demon Hunter - Havoc
 - Druid - Balance, Feral
 - Hunter - Beast Mastery, Marksmanship, Survival
-- Monk - Windwalker (Experimental)
+- Monk - Mistweaver (Experimental/Minimal), Windwalker (Experimental)
 - Priest - Holy, Shadow
 - Rogue - Assassination
 - Shaman - Elemental, Restoration (Experimental/Minimal)
