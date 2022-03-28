@@ -205,13 +205,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			fontSizeLock=true,
 			fontFaceLock=true,
 			left={
-				text="",
+				text="{$serenityTime}[$serenityTime sec]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
 			},
 			middle={
-				text="{$serenityTime}[$serenityTime sec]",
+				text="{$danceOfChiJiTime}[$danceOfChiJiTime] {$motcCount}[#sck $motcCount | $motcMinTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -232,13 +232,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "{$ttd}[TTD: $ttd]",
+				text = "{$serenityTime}[#serenity $serenityTime #serenity]{$ttd}[||nTTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			middle = {
-				text="{$serenityTime}[#serenity $serenityTime #serenity]",
+				text="{$danceOfChiJiTime}[$danceOfChiJiTime]{$motcCount}[||n#sck$motcCount - $motcMinTime#sck]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -355,7 +355,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						enabled=true,
 						up="FFFFFFFF",
 						down="FFFF0000",
-						pandemic="FFFFFF00"
+						pandemic="FFFF00FF"
 					}
 				},
 				bar = {
@@ -5460,7 +5460,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 		end)
 
-		controls.colors.dotPandemic = TRB.UiFunctions:BuildColorPicker(parent, "Mark of the Crane is active on current target but has the lowest remaining duration", TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
+		controls.colors.dotPandemic = TRB.UiFunctions:BuildColorPicker(parent, "Mark of the Crane is active on current target but has the lowest remaining duration of alive targets", TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
 		f = controls.colors.dotPandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then

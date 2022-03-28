@@ -1178,7 +1178,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end
 	end
 
-	local function GetOldestOrExpiredMarkOfTheCraneListEntry(any)
+	local function GetOldestOrExpiredMarkOfTheCraneListEntry(any, aliveOnly)
 		local currentTime = GetTime()
 		local entries = TRB.Functions.TableLength(TRB.Data.snapshotData.markOfTheCrane.list)
 		local oldestTime = currentTime
@@ -1193,7 +1193,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.markOfTheCrane.list[x].guid].markOfTheCraneRemaining = TRB.Data.snapshotData.markOfTheCrane.list[x].endTime - currentTime
 			end
 
-			if TRB.Data.snapshotData.markOfTheCrane.list[x].endTime == nil or TRB.Data.snapshotData.markOfTheCrane.list[x].endTime < oldestTime then
+			if TRB.Data.snapshotData.markOfTheCrane.list[x].endTime == nil or TRB.Data.snapshotData.markOfTheCrane.list[x].endTime < oldestTime and (not aliveOnly or TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.markOfTheCrane.list[x].guid] ~= nil) then
 				oldestId = x
 				oldestTime = TRB.Data.snapshotData.markOfTheCrane.list[x].endTime
 			end
@@ -1222,7 +1222,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			return false
 		end
 
-		local oldest = GetOldestOrExpiredMarkOfTheCraneListEntry(true)
+		local oldest = GetOldestOrExpiredMarkOfTheCraneListEntry(true, true)
 		if oldest > 0 and TRB.Data.snapshotData.markOfTheCrane.list[oldest].guid == TRB.Data.snapshotData.targetData.currentTargetGuid then
 			return true
 		end
