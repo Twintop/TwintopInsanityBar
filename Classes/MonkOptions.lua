@@ -5378,7 +5378,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 		end)
 
-		controls.colors.overcapenergyText = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy is above overcap threshold", TRB.Data.settings.monk.windwalker.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		controls.colors.overcapenergyText = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy is above overcap threshold", TRB.Data.settings.monk.windwalker.colors.text.overcap, 275, 25, xCoord2, yCoord)
 		f = controls.colors.overcapenergyText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -5425,21 +5425,21 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		
 
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.UiFunctions:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.UiFunctions:BuildSectionHeader(parent, "Mark of the Crane Count and Time Remaining Tracking", 0, yCoord)
 
 		yCoord = yCoord - 25
 
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter and DoT timer color based on time remaining?")
-		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers will change based on whether or not the DoT is on the current target."
+		getglobal(f:GetName() .. 'Text'):SetText("Change total Mark of the Crane counter and Mark of the Crane timer color based on time remaining?")
+		f.tooltip = "When checked, the color of total Mark of the Crane debuffs up counters and timers will change based on whether or not Mark of the Crane is on the current target."
 		f:SetChecked(TRB.Data.settings.monk.windwalker.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.monk.windwalker.colors.text.dots.enabled = self:GetChecked()
 		end)
 
-		controls.colors.dotUp = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", TRB.Data.settings.monk.windwalker.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
+		controls.colors.dotUp = TRB.UiFunctions:BuildColorPicker(parent, "Mark of the Crane is active on current target", TRB.Data.settings.monk.windwalker.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
 		f = controls.colors.dotUp
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -5460,7 +5460,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 		end)
 
-		controls.colors.dotPandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
+		controls.colors.dotPandemic = TRB.UiFunctions:BuildColorPicker(parent, "Mark of the Crane is active on current target but has the lowest remaining duration", TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
 		f = controls.colors.dotPandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -5481,7 +5481,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 		end)
 
-		controls.colors.dotDown = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", TRB.Data.settings.monk.windwalker.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
+		controls.colors.dotDown = TRB.UiFunctions:BuildColorPicker(parent, "Mark of the Crane is not active on current target", TRB.Data.settings.monk.windwalker.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
 		f = controls.colors.dotDown
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then

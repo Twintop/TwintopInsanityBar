@@ -698,6 +698,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 			{ variable = "$motcCount", description = "Number of unique targets contributing to Mark of the Crane", printInSettings = true, color = false },
 			{ variable = "$motcActiveCount", description = "Number of still alive unique targets contributing to Mark of the Crane", printInSettings = true, color = false },
+			{ variable = "$motcTime", description = "Time until your Mark of the Crane debuff expires on your current target", printInSettings = true, color = false },
 			{ variable = "$motcMinTime", description = "Time until your oldest Mark of the Crane debuff expires", printInSettings = true, color = false },
 			{ variable = "$motcMaxTime", description = "Time until your newest Mark of the Crane debuff expires", printInSettings = true, color = false },
 
@@ -849,14 +850,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
         
 		if specId == 2 then -- Mistweaver
 			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
-				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
+				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 20 then
 				else
 				end
 			end
 		elseif specId == 3 then -- Windwalker
 			local motcTotal = 0
 			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
-				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
+				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 20 then
 					TRB.Data.snapshotData.targetData.targets[guid].markOfTheCrane = false
 					TRB.Data.snapshotData.targetData.targets[guid].markOfTheCraneRemaining = 0
 				else
@@ -1099,6 +1100,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				if TRB.Data.snapshotData.markOfTheCrane.maxEndTime ~= nil then
 					valid = true
 				end
+			elseif var == "$motcTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].markOfTheCraneRemaining > 0 then
+					valid = true
+				end
 			elseif var == "$resource" or var == "$energy" then
 				if TRB.Data.snapshotData.resource > 0 then
 					valid = true
@@ -1141,6 +1151,84 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	end
 	TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
 
+	local function GetGuidPositionInMarkOfTheCraneList(guid)
+		local entries = TRB.Functions.TableLength(TRB.Data.snapshotData.markOfTheCrane.list)
+		for x = 1, entries do
+			if TRB.Data.snapshotData.markOfTheCrane.list[x].guid == guid then
+				return x
+			end
+		end
+		return 0
+	end
+
+	local function ApplyMarkOfTheCrane(guid)
+		local currentTime = GetTime()
+		TRB.Data.snapshotData.targetData.targets[guid].markOfTheCrane = true
+		TRB.Data.snapshotData.targetData.targets[guid].markOfTheCraneRemaining = TRB.Data.spells.markOfTheCrane.duration
+		local listPosition = GetGuidPositionInMarkOfTheCraneList(guid)
+		if listPosition > 0 then
+			TRB.Data.snapshotData.markOfTheCrane.list[listPosition].startTime = currentTime
+			TRB.Data.snapshotData.markOfTheCrane.list[listPosition].endTime = currentTime + TRB.Data.spells.markOfTheCrane.duration
+		else
+			TRB.Data.snapshotData.targetData.markOfTheCrane = TRB.Data.snapshotData.targetData.markOfTheCrane + 1
+			table.insert(TRB.Data.snapshotData.markOfTheCrane.list, {
+				guid = guid,
+				endTime = currentTime + TRB.Data.spells.markOfTheCrane.duration
+			})
+		end
+	end
+
+	local function GetOldestOrExpiredMarkOfTheCraneListEntry(any)
+		local currentTime = GetTime()
+		local entries = TRB.Functions.TableLength(TRB.Data.snapshotData.markOfTheCrane.list)
+		local oldestTime = currentTime
+		local oldestId = 0
+
+		if any then
+			oldestTime = oldestTime + TRB.Data.spells.markOfTheCrane.duration
+		end
+
+		for x = 1, entries do
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.markOfTheCrane.list[x].guid] ~= nil and TRB.Data.snapshotData.markOfTheCrane.list[x].endTime > currentTime then
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.markOfTheCrane.list[x].guid].markOfTheCraneRemaining = TRB.Data.snapshotData.markOfTheCrane.list[x].endTime - currentTime
+			end
+
+			if TRB.Data.snapshotData.markOfTheCrane.list[x].endTime == nil or TRB.Data.snapshotData.markOfTheCrane.list[x].endTime < oldestTime then
+				oldestId = x
+				oldestTime = TRB.Data.snapshotData.markOfTheCrane.list[x].endTime
+			end
+		end
+		return oldestId
+	end
+
+	local function RemoveExcessMarkOfTheCraneEntries()
+		while true do
+			local id = GetOldestOrExpiredMarkOfTheCraneListEntry(false)
+
+			if id == 0 then
+				return
+			else
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.markOfTheCrane.list[id].guid] ~= nil then
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.markOfTheCrane.list[id].guid].markOfTheCrane = false
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.markOfTheCrane.list[id].guid].markOfTheCraneRemaining = 0
+				end
+				table.remove(TRB.Data.snapshotData.markOfTheCrane.list, id)
+			end
+		end
+	end
+	
+	local function IsTargetLowestInMarkOfTheCraneList()
+		if TRB.Data.snapshotData.targetData.currentTargetGuid == nil then
+			return false
+		end
+
+		local oldest = GetOldestOrExpiredMarkOfTheCraneListEntry(true)
+		if oldest > 0 and TRB.Data.snapshotData.markOfTheCrane.list[oldest].guid == TRB.Data.snapshotData.targetData.currentTargetGuid then
+			return true
+		end
+
+		return false
+	end
 
 	local function RefreshLookupData_Mistweaver()
 		local currentTime = GetTime()
@@ -1383,11 +1471,57 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		if _motcMaxTime > 0 then
 			motcMaxTime = string.format("%.1f", _motcMaxTime)
 		end
+
+		
+		local targetMotcId = GetGuidPositionInMarkOfTheCraneList(TRB.Data.snapshotData.targetData.currentTargetGuid)
+		--$motcTime
+		local _motcTime = 0
+
+		if targetMotcId > 0 and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
+			_motcTime = TRB.Data.snapshotData.markOfTheCrane.list[targetMotcId].endTime - currentTime
+		end
+
+		local _motcCount = TRB.Data.snapshotData.markOfTheCrane.count or 0
+		local motcCount = _motcCount
+		local _motcActiveCount = TRB.Data.snapshotData.markOfTheCrane.activeCount or 0
+		local motcActiveCount = _motcActiveCount
+
+		local motcTime
+
+		if TRB.Data.settings.monk.windwalker.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if targetMotcId > 0 and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].markOfTheCrane then
+				if not IsTargetLowestInMarkOfTheCraneList() then
+					motcCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, TRB.Data.snapshotData.markOfTheCrane.count)
+					motcActiveCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, TRB.Data.snapshotData.markOfTheCrane.activeCount)
+					motcTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.up, _motcTime)
+				else
+					motcCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic, TRB.Data.snapshotData.markOfTheCrane.count)
+					motcActiveCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic, TRB.Data.snapshotData.markOfTheCrane.activeCount)
+					motcTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic, _motcTime)
+				end
+			else
+				motcCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, TRB.Data.snapshotData.markOfTheCrane.count)
+				motcActiveCount = string.format("|c%s%.0f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, TRB.Data.snapshotData.markOfTheCrane.activeCount)
+				motcTime = string.format("|c%s%.1f|r", TRB.Data.settings.monk.windwalker.colors.text.dots.down, 0)
+			end
+		else
+			motcTime = string.format("%.1f", _motcTime)
+		end
+
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveEnergy
 		Global_TwintopResourceBar.resource.regen = _regenEnergy
 		Global_TwintopResourceBar.dots = {
+			motcCount = _motcCount,
+			motcActiveCount = _motcActiveCount
+		}
+		Global_TwintopResourceBar.markOfTheCrane = {
+			count = _motcCount,
+			activeCount = _motcActiveCount,
+			targetTime = _motcTime,
+			minTime = _motcMinTime,
+			maxTime = _motcMaxTime
 		}
 
 		local lookup = TRB.Data.lookup or {}
@@ -1450,8 +1584,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["$danceOfChiJiTime"] = danceOfChiJiTime
 		lookup["$motcMinTime"] = motcMinTime
 		lookup["$motcMaxTime"] = motcMaxTime
-		lookup["$motcCount"] = TRB.Data.snapshotData.markOfTheCrane.count
-		lookup["$motcActiveCount"] = TRB.Data.snapshotData.markOfTheCrane.activeCount
+		lookup["$motcTime"] = motcTime
+		lookup["$motcCount"] = motcCount
+		lookup["$motcActiveCount"] = motcActiveCount
 		TRB.Data.lookup = lookup
 	end
 
@@ -1526,70 +1661,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end
 	end
 
-	local function GetGuidPositionInMarkOfTheCraneList(guid)
-		local entries = TRB.Functions.TableLength(TRB.Data.snapshotData.markOfTheCrane.list)
-		for x = 1, entries do
-			if TRB.Data.snapshotData.markOfTheCrane.list[x].guid == guid then
-				return x
-			end
-		end
-		return 0
-	end
-
-	local function ApplyMarkOfTheCrane(guid)
-		local currentTime = GetTime()
-		TRB.Data.snapshotData.targetData.targets[guid].markOfTheCrane = true
-		
-		local listPosition = GetGuidPositionInMarkOfTheCraneList(guid)
-		if listPosition > 0 then
-			TRB.Data.snapshotData.markOfTheCrane.list[listPosition].endTime = currentTime + TRB.Data.spells.markOfTheCrane.duration
-		else
-			TRB.Data.snapshotData.targetData.markOfTheCrane = TRB.Data.snapshotData.targetData.markOfTheCrane + 1
-			table.insert(TRB.Data.snapshotData.markOfTheCrane.list, {
-				guid = guid,
-				endTime = currentTime + TRB.Data.spells.markOfTheCrane.duration
-			})
-		end
-	end
-
-	local function GetOldestOrExpiredMarkOfTheCraneListEntry()
-		local currentTime = GetTime()
-		local entries = TRB.Functions.TableLength(TRB.Data.snapshotData.markOfTheCrane.list)
-		local oldestTime = currentTime
-		local oldestId = 0
-		for x = 1, entries do
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.markOfTheCrane.list[x].guid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.markOfTheCrane.list[x].guid].markOfTheCraneRemaining > 0 then
-				TRB.Data.snapshotData.markOfTheCrane.list[x].endTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.markOfTheCrane.list[x].guid].markOfTheCraneRemaining + currentTime
-			end
-
-			if TRB.Data.snapshotData.markOfTheCrane.list[x].endTime == nil or currentTime > TRB.Data.snapshotData.markOfTheCrane.list[x].endTime or TRB.Data.snapshotData.markOfTheCrane.list[x].endTime < oldestTime then
-				oldestId = x
-			end
-		end
-		return oldestId
-	end
-
-	local function RemoveExcessMarkOfTheCraneEntries()
-		while true do
-			local id = GetOldestOrExpiredMarkOfTheCraneListEntry()
-
-			if id == 0 then
-				return
-			else
-				table.remove(TRB.Data.snapshotData.markOfTheCrane.list, id)
-			end
-		end
-	end
-
 	local function UpdateMarkOfTheCrane()
 		RemoveExcessMarkOfTheCraneEntries()
 		local entries = TRB.Functions.TableLength(TRB.Data.snapshotData.markOfTheCrane.list)
 		local minEndTime = nil
 		local maxEndTime = nil
 		local activeCount = 0
+		local currentTime = GetTime()
 		if entries > 0 then
-			local currentTime = GetTime()
-
 			for x = 1, entries do
 				activeCount = activeCount + 1
 				TRB.Data.snapshotData.markOfTheCrane.isActive = true
@@ -1611,7 +1690,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end
 ---@diagnostic disable-next-line: redundant-parameter
 		TRB.Data.snapshotData.markOfTheCrane.count = GetSpellCount(TRB.Data.spells.spinningCraneKick.id)
-		
+
 		-- Avoid race conditions from combat log events saying we have 6 marks when 5 is the max
 		if TRB.Data.snapshotData.markOfTheCrane.count < activeCount then
 			TRB.Data.snapshotData.markOfTheCrane.activeCount = TRB.Data.snapshotData.markOfTheCrane.count
@@ -1737,17 +1816,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			TRB.Data.snapshotData.potion.onCooldown = true
 		else
 			TRB.Data.snapshotData.potion.onCooldown = false
-		end
-				
-		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShock then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.flameShock.id, "target", "player"))
-			
-				if expiration ~= nil then
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining = expiration - currentTime
-				end
-			end
-		end
+		end				
 	end
 
 	local function UpdateSnapshot_Windwalker()
@@ -1756,7 +1825,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		
 		local currentTime = GetTime()
 		local _
-		
+
         if TRB.Data.snapshotData.fistOfTheWhiteTiger.startTime ~= nil and currentTime > (TRB.Data.snapshotData.fistOfTheWhiteTiger.startTime + TRB.Data.snapshotData.fistOfTheWhiteTiger.duration) then
             TRB.Data.snapshotData.fistOfTheWhiteTiger.startTime = nil
             TRB.Data.snapshotData.fistOfTheWhiteTiger.duration = 0
