@@ -549,8 +549,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		}
 		specCache.assassination.snapshotData.sliceAndDice = {
 			spellId = nil,
-			endTime = nil,
-			duration = 0
+			endTime = nil
 		}
 
 		specCache.assassination.snapshotData.echoingReprimand = {
@@ -994,7 +993,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end
 	end
 
-	local function ConstructResourceBar(settings)		
+	local function ConstructResourceBar(settings)
 		local specId = GetSpecialization()
 		local entries = TRB.Functions.TableLength(resourceFrame.thresholds)
 		if entries > 0 then
@@ -1638,7 +1637,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Functions.UpdateSnapshot()
 		local currentTime = GetTime()
 
-		_, _, _, _, TRB.Data.snapshotData.sliceAndDice.duration, TRB.Data.snapshotData.sliceAndDice.endTime, _, _, _, TRB.Data.snapshotData.sliceAndDice.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.sliceAndDice.id)
+		_, _, _, _, _, TRB.Data.snapshotData.sliceAndDice.endTime, _, _, _, TRB.Data.snapshotData.sliceAndDice.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.sliceAndDice.id)
 
 		if TRB.Data.character.covenantId == 4 then
 ---@diagnostic disable-next-line: redundant-parameter
@@ -2311,11 +2310,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				elseif spellId == TRB.Data.spells.sliceAndDice.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
 						TRB.Data.spells.sliceAndDice.isActive = true
-						_, _, _, _, TRB.Data.snapshotData.sliceAndDice.duration, TRB.Data.snapshotData.sliceAndDice.endTime, _, _, _, TRB.Data.snapshotData.sliceAndDice.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.sliceAndDice.id)
+						_, _, _, _, _, TRB.Data.snapshotData.sliceAndDice.endTime, _, _, _, TRB.Data.snapshotData.sliceAndDice.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.sliceAndDice.id)
 					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 						TRB.Data.spells.sliceAndDice.isActive = false
 						TRB.Data.snapshotData.sliceAndDice.spellId = nil
-						TRB.Data.snapshotData.sliceAndDice.duration = 0
 						TRB.Data.snapshotData.sliceAndDice.endTime = nil
 					end
 				elseif spellId == TRB.Data.spells.distract.id then

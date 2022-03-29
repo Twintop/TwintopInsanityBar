@@ -353,19 +353,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		specCache.balance.snapshotData.eclipseSolar = {
 			spellId = nil,
-			startTime = nil
+			endTime = nil
 		}
 		specCache.balance.snapshotData.eclipseLunar = {
 			spellId = nil,
-			startTime = nil
+			endTime = nil
 		}
 		specCache.balance.snapshotData.celestialAlignment = {
 			spellId = nil,
-			startTime = nil
+			endTime = nil
 		}
 		specCache.balance.snapshotData.incarnationChosenOfElune = {
 			spellId = nil,
-			startTime = nil
+			endTime = nil
 		}
 		specCache.balance.snapshotData.starfall = {
 			spellId = nil,
@@ -1560,21 +1560,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 
 	local function GetEclipseRemainingTime()
-		local currentTime = GetTime()
 		local remainingTime = 0
 		local icon = nil
 
 		if TRB.Data.spells.celestialAlignment.isActive then
-			remainingTime = TRB.Data.snapshotData.celestialAlignment.endTime - currentTime
+			remainingTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.celestialAlignment)
 			icon = TRB.Data.spells.celestialAlignment.icon
 		elseif TRB.Data.spells.incarnationChosenOfElune.isActive then
-			remainingTime = TRB.Data.snapshotData.incarnationChosenOfElune.endTime - currentTime
+			remainingTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.incarnationChosenOfElune)
 			icon = TRB.Data.spells.incarnationChosenOfElune.icon
 		elseif TRB.Data.spells.eclipseSolar.isActive then
-			remainingTime = TRB.Data.snapshotData.eclipseSolar.endTime - currentTime
+			remainingTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.eclipseSolar)
 			icon = TRB.Data.spells.eclipseSolar.icon
 		elseif TRB.Data.spells.eclipseLunar.isActive then
-			remainingTime = TRB.Data.snapshotData.eclipseLunar.endTime - currentTime
+			remainingTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.eclipseLunar)
 			icon = TRB.Data.spells.eclipseLunar.icon
 		end
 
@@ -2901,7 +2900,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function UpdateSnapshot_Balance()
 		UpdateSnapshot()
 
-		local currentTime = GetTime()	
+		local currentTime = GetTime()
 
 		local timewornModifier = TRB.Data.snapshotData.timewornDreambinder.stacks * TRB.Data.spells.timewornDreambinder.modifier
 		local umbralInfusionModifier = 0
@@ -2917,6 +2916,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         UpdateFuryOfElune()
         UpdateUmbralEmbrace()
 		GetCurrentMoonSpell()
+
+		_, _, _, _, _, TRB.Data.snapshotData.celestialAlignment.endTime, _, _, _, TRB.Data.snapshotData.celestialAlignment.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.celestialAlignment.id)
+		_, _, _, _, _, TRB.Data.snapshotData.incarnationChosenOfElune.endTime, _, _, _, TRB.Data.snapshotData.incarnationChosenOfElune.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.incarnationChosenOfElune.id)
+		_, _, _, _, _, TRB.Data.snapshotData.eclipseSolar.endTime, _, _, _, TRB.Data.snapshotData.eclipseSolar.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.eclipseSolar.id)
+		_, _, _, _, _, TRB.Data.snapshotData.eclipseLunar.endTime, _, _, _, TRB.Data.snapshotData.eclipseLunar.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.eclipseLunar.id)
 
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].sunfire then
@@ -3741,41 +3745,37 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif spellId == TRB.Data.spells.eclipseSolar.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.eclipseSolar.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.eclipseSolar.duration, TRB.Data.snapshotData.eclipseSolar.endTime, _, _, _, TRB.Data.snapshotData.eclipseSolar.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.eclipseSolar.id)
+							_, _, _, _, _, TRB.Data.snapshotData.eclipseSolar.endTime, _, _, _, TRB.Data.snapshotData.eclipseSolar.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.eclipseSolar.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.eclipseSolar.isActive = false
 							TRB.Data.snapshotData.eclipseSolar.spellId = nil
-							TRB.Data.snapshotData.eclipseSolar.duration = 0
 							TRB.Data.snapshotData.eclipseSolar.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.eclipseLunar.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.eclipseLunar.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.eclipseLunar.duration, TRB.Data.snapshotData.eclipseLunar.endTime, _, _, _, TRB.Data.snapshotData.eclipseLunar.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.eclipseLunar.id)
+							_, _, _, _, _, TRB.Data.snapshotData.eclipseLunar.endTime, _, _, _, TRB.Data.snapshotData.eclipseLunar.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.eclipseLunar.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.eclipseLunar.isActive = false
 							TRB.Data.snapshotData.eclipseLunar.spellId = nil
-							TRB.Data.snapshotData.eclipseLunar.duration = 0
 							TRB.Data.snapshotData.eclipseLunar.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.celestialAlignment.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.celestialAlignment.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.celestialAlignment.duration, TRB.Data.snapshotData.celestialAlignment.endTime, _, _, _, TRB.Data.snapshotData.celestialAlignment.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.celestialAlignment.id)
+							_, _, _, _, _, TRB.Data.snapshotData.celestialAlignment.endTime, _, _, _, TRB.Data.snapshotData.celestialAlignment.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.celestialAlignment.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.celestialAlignment.isActive = false
 							TRB.Data.snapshotData.celestialAlignment.spellId = nil
-							TRB.Data.snapshotData.celestialAlignment.duration = 0
 							TRB.Data.snapshotData.celestialAlignment.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.incarnationChosenOfElune.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.incarnationChosenOfElune.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.incarnationChosenOfElune.duration, TRB.Data.snapshotData.incarnationChosenOfElune.endTime, _, _, _, TRB.Data.snapshotData.incarnationChosenOfElune.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.incarnationChosenOfElune.id)
+							_, _, _, _, _, TRB.Data.snapshotData.incarnationChosenOfElune.endTime, _, _, _, TRB.Data.snapshotData.incarnationChosenOfElune.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.incarnationChosenOfElune.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.incarnationChosenOfElune.isActive = false
 							TRB.Data.snapshotData.incarnationChosenOfElune.spellId = nil
-							TRB.Data.snapshotData.incarnationChosenOfElune.duration = 0
 							TRB.Data.snapshotData.incarnationChosenOfElune.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.starfall.id then
