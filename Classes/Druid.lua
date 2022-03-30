@@ -2904,7 +2904,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local timewornModifier = TRB.Data.snapshotData.timewornDreambinder.stacks * TRB.Data.spells.timewornDreambinder.modifier
 		local umbralInfusionModifier = 0
-		if TRB.Data.character.items.t28Pieces >= 4 and TRB.Data.spells.eclipseLunar.isActive then
+		if TRB.Data.character.items.t28Pieces >= 4 and (TRB.Data.spells.eclipseLunar.isActive or TRB.Data.spells.eclipseSolar.isActive) then
 			umbralInfusionModifier = TRB.Data.spells.umbralInfusion.modifier
 		end
 
