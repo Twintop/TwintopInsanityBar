@@ -510,11 +510,19 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
-	local function InitializeTarget(guid)
-		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
-			TRB.Functions.InitializeTarget(guid)
-			TRB.Data.snapshotData.targetData.targets[guid].rend = false
+	local function InitializeTarget(guid, selfInitializeAllowed)
+		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
+			return false
 		end
+
+		if guid ~= nil then
+			if not TRB.Functions.CheckTargetExists(guid) then
+				TRB.Functions.InitializeTarget(guid)
+			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			return true
+		end
+		return false
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 
@@ -542,13 +550,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	local function UpdateCastingResourceFinal()
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
 	end
-
-	local function InitializeTarget(guid)
-		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
-			TRB.Functions.InitializeTarget(guid)
-		end
-	end
-	TRB.Functions.InitializeTarget_Class = InitializeTarget
 
 	local function RefreshTargetTracking()
 	end

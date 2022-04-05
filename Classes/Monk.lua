@@ -829,18 +829,19 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		local specId = GetSpecialization()
 		
-		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
-			if specId == 2 then
+		if guid ~= nil then
+			if not TRB.Functions.CheckTargetExists(guid) then
 				TRB.Functions.InitializeTarget(guid)
-			elseif specId == 3 then
-				TRB.Functions.InitializeTarget(guid)
-				TRB.Data.snapshotData.targetData.targets[guid].markOfTheCrane = false
-				TRB.Data.snapshotData.targetData.targets[guid].markOfTheCraneRemaining = 0
+				if specId == 2 then
+				elseif specId == 3 then
+					TRB.Data.snapshotData.targetData.targets[guid].markOfTheCrane = false
+					TRB.Data.snapshotData.targetData.targets[guid].markOfTheCraneRemaining = 0
+				end
 			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			return true
 		end
-		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
-
-		return true
+		return false
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 

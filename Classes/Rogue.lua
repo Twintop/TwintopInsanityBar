@@ -849,34 +849,36 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local specId = GetSpecialization()
 		
-		if specId == 1 then
-			if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
+		if guid ~= nil then
+			if not TRB.Functions.CheckTargetExists(guid) then
 				TRB.Functions.InitializeTarget(guid)
-				--Bleeds
-				TRB.Data.snapshotData.targetData.targets[guid].garrote = false
-				TRB.Data.snapshotData.targetData.targets[guid].garroteRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].rupture = false
-				TRB.Data.snapshotData.targetData.targets[guid].ruptureRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].internalBleeding = false
-				TRB.Data.snapshotData.targetData.targets[guid].internalBleedingRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].crimsonTempest = false
-				TRB.Data.snapshotData.targetData.targets[guid].crimsonTempestRemaining = 0
-				--Poisons
-				TRB.Data.snapshotData.targetData.targets[guid].deadlyPoison = false
-				TRB.Data.snapshotData.targetData.targets[guid].deadlyPoisonRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].cripplingPoison = false
-				TRB.Data.snapshotData.targetData.targets[guid].cripplingPoisonRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].woundPoison = false
-				TRB.Data.snapshotData.targetData.targets[guid].woundPoisonRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].numbingPoison = false
-				TRB.Data.snapshotData.targetData.targets[guid].numbingPoisonRemaining = 0
-				-- Covenant
-				TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpike = false
+				if specId == 1 then
+					--Bleeds
+					TRB.Data.snapshotData.targetData.targets[guid].garrote = false
+					TRB.Data.snapshotData.targetData.targets[guid].garroteRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].rupture = false
+					TRB.Data.snapshotData.targetData.targets[guid].ruptureRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].internalBleeding = false
+					TRB.Data.snapshotData.targetData.targets[guid].internalBleedingRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].crimsonTempest = false
+					TRB.Data.snapshotData.targetData.targets[guid].crimsonTempestRemaining = 0
+					--Poisons
+					TRB.Data.snapshotData.targetData.targets[guid].deadlyPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].deadlyPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].woundPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].woundPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].numbingPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].numbingPoisonRemaining = 0
+					-- Covenant
+					TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpike = false
+				end
 			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			return true
 		end
-		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
-
-		return true
+		return false
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 

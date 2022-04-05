@@ -1182,11 +1182,25 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
-	local function InitializeTarget(guid)
-		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
-			TRB.Functions.InitializeTarget(guid)
-			TRB.Data.snapshotData.targetData.targets[guid].rend = false
+	local function InitializeTarget(guid, selfInitializeAllowed)
+		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
+			return false
 		end
+		
+		local specId = GetSpecialization()
+
+		if guid ~= nil then
+			if not TRB.Functions.CheckTargetExists(guid) then
+				TRB.Functions.InitializeTarget(guid)
+				if specId == 1 then
+					TRB.Data.snapshotData.targetData.targets[guid].rend = false
+				elseif specId == 2 then
+				end
+			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			return true
+		end
+		return false
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 
