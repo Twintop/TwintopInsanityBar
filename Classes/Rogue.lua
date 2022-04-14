@@ -842,6 +842,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -35,
+				comboPoints = true,
 				texture = "",
 				thresholdId = 12,
 				settingKey = "dispatch",
@@ -935,7 +936,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = ""
 			},
 			dreadblades = {
-				id = 343152,
+				id = 343142,
 				name = "",
 				icon = "",
 				energy = -30,
@@ -2840,22 +2841,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		UpdateSnapshot()
 		local currentTime = GetTime()
 		local _
-
-        if TRB.Data.snapshotData.rollTheBones.startTime ~= nil and currentTime > (TRB.Data.snapshotData.rollTheBones.startTime + TRB.Data.snapshotData.rollTheBones.duration) then
-            TRB.Data.snapshotData.rollTheBones.startTime = nil
-            TRB.Data.snapshotData.rollTheBones.duration = 0
-        end
-
-        if TRB.Data.snapshotData.dreadblades.startTime ~= nil and currentTime > (TRB.Data.snapshotData.dreadblades.startTime + TRB.Data.snapshotData.dreadblades.duration) then
-            TRB.Data.snapshotData.dreadblades.startTime = nil
-            TRB.Data.snapshotData.dreadblades.duration = 0
-        end
-
-        if TRB.Data.snapshotData.ghostlyStrike.startTime ~= nil and currentTime > (TRB.Data.snapshotData.ghostlyStrike.startTime + TRB.Data.snapshotData.ghostlyStrike.duration) then
-            TRB.Data.snapshotData.ghostlyStrike.startTime = nil
-            TRB.Data.snapshotData.ghostlyStrike.duration = 0
-        end
-	
+		
         if TRB.Data.snapshotData.bladeRush.startTime ~= nil and currentTime > (TRB.Data.snapshotData.bladeRush.startTime + TRB.Data.snapshotData.bladeRush.duration) then
             TRB.Data.snapshotData.bladeRush.startTime = nil
             TRB.Data.snapshotData.bladeRush.duration = 0
@@ -2871,9 +2857,24 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
             TRB.Data.snapshotData.betweenTheEyes.duration = 0
         end
 
+        if TRB.Data.snapshotData.dreadblades.startTime ~= nil and currentTime > (TRB.Data.snapshotData.dreadblades.startTime + TRB.Data.snapshotData.dreadblades.duration) then
+            TRB.Data.snapshotData.dreadblades.startTime = nil
+            TRB.Data.snapshotData.dreadblades.duration = 0
+        end
+
+        if TRB.Data.snapshotData.ghostlyStrike.startTime ~= nil and currentTime > (TRB.Data.snapshotData.ghostlyStrike.startTime + TRB.Data.snapshotData.ghostlyStrike.duration) then
+            TRB.Data.snapshotData.ghostlyStrike.startTime = nil
+            TRB.Data.snapshotData.ghostlyStrike.duration = 0
+        end
+
         if TRB.Data.snapshotData.gouge.startTime ~= nil and currentTime > (TRB.Data.snapshotData.gouge.startTime + TRB.Data.snapshotData.gouge.duration) then
             TRB.Data.snapshotData.gouge.startTime = nil
             TRB.Data.snapshotData.gouge.duration = 0
+        end
+
+        if TRB.Data.snapshotData.rollTheBones.startTime ~= nil and currentTime > (TRB.Data.snapshotData.rollTheBones.startTime + TRB.Data.snapshotData.rollTheBones.duration) then
+            TRB.Data.snapshotData.rollTheBones.startTime = nil
+            TRB.Data.snapshotData.rollTheBones.duration = 0
         end
 	end
 
@@ -2907,16 +2908,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		elseif specId == 2 then
 			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
-					(not TRB.Data.settings.rogue.assassination.displayBar.alwaysShow) and (
-						(not TRB.Data.settings.rogue.assassination.displayBar.notZeroShow) or
-						(TRB.Data.settings.rogue.assassination.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource)
+					(not TRB.Data.settings.rogue.outlaw.displayBar.alwaysShow) and (
+						(not TRB.Data.settings.rogue.outlaw.displayBar.notZeroShow) or
+						(TRB.Data.settings.rogue.outlaw.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource)
 					)
 				)) then
 				TRB.Frames.barContainerFrame:Hide()
 				TRB.Data.snapshotData.isTracking = false
 			else
 				TRB.Data.snapshotData.isTracking = true
-				if TRB.Data.settings.rogue.assassination.displayBar.neverShow == true then
+				if TRB.Data.settings.rogue.outlaw.displayBar.neverShow == true then
 					TRB.Frames.barContainerFrame:Hide()
 				else
 					TRB.Frames.barContainerFrame:Show()
@@ -3602,6 +3603,38 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
+						end
+					end
+				elseif specId == 2 then
+					if spellId == TRB.Data.spells.betweenTheEyes.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.betweenTheEyes.startTime = currentTime
+							TRB.Data.snapshotData.betweenTheEyes.duration = TRB.Data.spells.betweenTheEyes.cooldown
+						end
+					elseif spellId == TRB.Data.spells.bladeFlurry.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.bladeFlurry.startTime = currentTime
+							TRB.Data.snapshotData.bladeFlurry.duration = TRB.Data.spells.bladeFlurry.cooldown
+						end
+					elseif spellId == TRB.Data.spells.dreadblades.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.dreadblades.startTime = currentTime
+							TRB.Data.snapshotData.dreadblades.duration = TRB.Data.spells.dreadblades.cooldown
+						end
+					elseif spellId == TRB.Data.spells.ghostlyStrike.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.ghostlyStrike.startTime = currentTime
+							TRB.Data.snapshotData.ghostlyStrike.duration = TRB.Data.spells.ghostlyStrike.cooldown
+						end
+					elseif spellId == TRB.Data.spells.gouge.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.gouge.startTime = currentTime
+							TRB.Data.snapshotData.gouge.duration = TRB.Data.spells.gouge.cooldown
+						end
+					elseif spellId == TRB.Data.spells.rollTheBones.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.rollTheBones.startTime = currentTime
+							TRB.Data.snapshotData.rollTheBones.duration = TRB.Data.spells.rollTheBones.cooldown
 						end
 					end
 				end

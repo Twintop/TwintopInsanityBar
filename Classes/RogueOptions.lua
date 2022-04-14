@@ -4198,7 +4198,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 			controls.borderWidth.EditBox:SetText(borderSize)
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.UpdateBarWidth(TRB.Data.settings.rogue.outlaw)
 				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
 
@@ -4235,7 +4235,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 			controls.borderWidth.EditBox:SetText(borderSize)
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.UpdateBarHeight(TRB.Data.settings.rogue.outlaw)
 				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
 			end
@@ -4255,7 +4255,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.rogue.outlaw.bar.xPos = value
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
 				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.rogue.outlaw.bar.xPos, TRB.Data.settings.rogue.outlaw.bar.yPos)
@@ -4276,7 +4276,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.rogue.outlaw.bar.yPos = value
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
 				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.rogue.outlaw.bar.xPos, TRB.Data.settings.rogue.outlaw.bar.yPos)
@@ -4298,7 +4298,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.rogue.outlaw.bar.border = value
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				barContainerFrame:SetWidth(TRB.Data.settings.rogue.outlaw.bar.width-(TRB.Data.settings.rogue.outlaw.bar.border*2))
 				barContainerFrame:SetHeight(TRB.Data.settings.rogue.outlaw.bar.height-(TRB.Data.settings.rogue.outlaw.bar.border*2))
 				barBorderFrame:SetWidth(TRB.Data.settings.rogue.outlaw.bar.width)
@@ -4360,7 +4360,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.rogue.outlaw.thresholds.width = value
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
 					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.rogue.outlaw.thresholds.width)
 				end
@@ -4430,7 +4430,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			controls.comboPointBorderWidth.MaxLabel:SetText(maxBorderSize)
 			controls.comboPointBorderWidth.EditBox:SetText(borderSize)
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
 			end
 		end)
@@ -4459,7 +4459,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			controls.comboPointBorderWidth.MaxLabel:SetText(maxBorderSize)
 			controls.comboPointBorderWidth.EditBox:SetText(borderSize)
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
 			end
 		end)
@@ -4480,7 +4480,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.rogue.outlaw.comboPoints.xPos = value
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
 			end
 		end)
@@ -4498,7 +4498,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.rogue.outlaw.comboPoints.yPos = value
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
 			end
 		end)
@@ -4519,7 +4519,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.rogue.outlaw.comboPoints.border = value
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
 
 				--TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.rogue.outlaw)
@@ -4548,7 +4548,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.rogue.outlaw.comboPoints.spacing = value
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
 			end
 		end)
@@ -4600,7 +4600,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
             UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, newName)
             CloseDropDownMenus()
 
-            if GetSpecialization() == 1 then
+            if GetSpecialization() == 2 then
                 TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
             end
         end
@@ -4615,7 +4615,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.rogue.outlaw.comboPoints.fullWidth = self:GetChecked()
             
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
 			end
 		end)
@@ -4683,7 +4683,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, newName)
 			end
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				resourceFrame:SetStatusBarTexture(TRB.Data.settings.rogue.outlaw.textures.resourceBar)
 				if TRB.Data.settings.rogue.outlaw.textures.textureLock then
 					castingFrame:SetStatusBarTexture(TRB.Data.settings.rogue.outlaw.textures.castingBar)
@@ -4758,7 +4758,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, newName)
 			end
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				castingFrame:SetStatusBarTexture(TRB.Data.settings.rogue.outlaw.textures.castingBar)
 				if TRB.Data.settings.rogue.outlaw.textures.textureLock then
 					resourceFrame:SetStatusBarTexture(TRB.Data.settings.rogue.outlaw.textures.resourceBar)
@@ -4836,7 +4836,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, newName)
 			end
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				passiveFrame:SetStatusBarTexture(TRB.Data.settings.rogue.outlaw.textures.passiveBar)
 				if TRB.Data.settings.rogue.outlaw.textures.textureLock then
 					resourceFrame:SetStatusBarTexture(TRB.Data.settings.rogue.outlaw.textures.resourceBar)
@@ -4911,7 +4911,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
 			end
 
-			if GetSpecialization() == 1 then					
+			if GetSpecialization() == 2 then					
 				local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 				for x = 1, length do
 					TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(TRB.Data.settings.rogue.outlaw.textures.comboPointsBar)
@@ -4977,7 +4977,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.settings.rogue.outlaw.textures.border = newValue
 			TRB.Data.settings.rogue.outlaw.textures.borderName = newName
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				if TRB.Data.settings.rogue.outlaw.bar.border < 1 then
 					barBorderFrame:SetBackdrop({ })
 				else
@@ -4998,7 +4998,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				TRB.Data.settings.rogue.outlaw.textures.comboPointsBorder = newValue
 				TRB.Data.settings.rogue.outlaw.textures.comboPointsBorderName = newName
 	
-				if GetSpecialization() == 1 then
+				if GetSpecialization() == 2 then
 					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 					for x = 1, length do
 						if TRB.Data.settings.rogue.outlaw.comboPoints.border < 1 then
@@ -5068,7 +5068,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.settings.rogue.outlaw.textures.background = newValue
 			TRB.Data.settings.rogue.outlaw.textures.backgroundName = newName
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				barContainerFrame:SetBackdrop({ 
 					bgFile = TRB.Data.settings.rogue.outlaw.textures.background,
 					tile = true,
@@ -5085,7 +5085,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				TRB.Data.settings.rogue.outlaw.textures.comboPointsBackground = newValue
 				TRB.Data.settings.rogue.outlaw.textures.comboPointsBackgroundName = newName
 	
-				if GetSpecialization() == 1 then
+				if GetSpecialization() == 2 then
 					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 					for x = 1, length do
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
@@ -5155,7 +5155,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.settings.rogue.outlaw.textures.comboPointsBorder = newValue
 			TRB.Data.settings.rogue.outlaw.textures.comboPointsBorderName = newName
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 				for x = 1, length do
 					if TRB.Data.settings.rogue.outlaw.comboPoints.border < 1 then
@@ -5244,7 +5244,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.settings.rogue.outlaw.textures.comboPointsBackground = newValue
 			TRB.Data.settings.rogue.outlaw.textures.comboPointsBackgroundName = newName
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 				for x = 1, length do
 					TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
@@ -5264,7 +5264,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				TRB.Data.settings.rogue.outlaw.textures.background = newValue
 				TRB.Data.settings.rogue.outlaw.textures.backgroundName = newName
 
-				if GetSpecialization() == 1 then
+				if GetSpecialization() == 2 then
 					barContainerFrame:SetBackdrop({ 
 						bgFile = TRB.Data.settings.rogue.outlaw.textures.background,
 						tile = true,
@@ -5309,7 +5309,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				TRB.Data.settings.rogue.outlaw.textures.comboPointsBackgroundName = TRB.Data.settings.rogue.outlaw.textures.backgroundName
 				UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, TRB.Data.settings.rogue.outlaw.textures.comboPointsBackgroundName)
 
-				if GetSpecialization() == 1 then
+				if GetSpecialization() == 2 then
 					resourceFrame:SetStatusBarTexture(TRB.Data.settings.rogue.outlaw.textures.resourceBar)
 					passiveFrame:SetStatusBarTexture(TRB.Data.settings.rogue.outlaw.textures.passiveBar)
 					castingFrame:SetStatusBarTexture(TRB.Data.settings.rogue.outlaw.textures.castingBar)
@@ -5907,6 +5907,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 25
+		controls.checkBoxes.dreadbladesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_dreadblades", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.dreadbladesThresholdShow
+		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Dreadblades (if talented)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dreadblades. Only visible if talented in to Dreadblades. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
+		f:SetChecked(TRB.Data.settings.rogue.outlaw.thresholds.dreadblades.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.rogue.outlaw.thresholds.dreadblades.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
 		controls.checkBoxes.ghostlyStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_ghostlyStrike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ghostlyStrikeThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -5966,7 +5977,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.labels.finishers = TRB.UiFunctions:BuildLabel(parent, "Finishers", 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
-		yCoord = yCoord - 25
 		controls.checkBoxes.betweenTheEyesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_betweenTheEyes", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.betweenTheEyesThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -5986,16 +5996,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetChecked(TRB.Data.settings.rogue.outlaw.thresholds.dispatch.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.rogue.outlaw.thresholds.dispatch.enabled = self:GetChecked()
-		end)
-
-		controls.checkBoxes.dreadbladesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_dreadblades", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.dreadbladesThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Dreadblades (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dreadblades. Only visible if talented in to Dreadblades. If you do not have any combo points, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.rogue.outlaw.thresholds.dreadblades.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.outlaw.thresholds.dreadblades.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -6024,7 +6024,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.labels.utility = TRB.UiFunctions:BuildLabel(parent, "General / Utility", 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
-		yCoord = yCoord - 25
 		controls.checkBoxes.bladeFlurryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_bladeFlurry", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.bladeFlurryThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -6035,6 +6034,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.settings.rogue.outlaw.thresholds.bladeFlurry.enabled = self:GetChecked()
 		end)
 
+		yCoord = yCoord - 25
 		controls.checkBoxes.crimsonVialThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_crimsonVial", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.crimsonVialThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
@@ -6190,7 +6190,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
             TRB.Data.settings.rogue.outlaw.thresholds.icons.relativeTo = newValue
             TRB.Data.settings.rogue.outlaw.thresholds.icons.relativeToName = newName
 			
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.rogue.outlaw)
 			end
 
@@ -6207,7 +6207,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.rogue.outlaw.thresholds.icons.enabled = self:GetChecked()
 			
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.rogue.outlaw)
 			end
 		end)
@@ -6278,7 +6278,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.rogue.outlaw.thresholds.icons.xPos = value
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
 			end
 		end)
@@ -6321,7 +6321,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			controls.thresholdIconWidth:SetMinMaxValues(minsliderWidth, 128)
 			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.rogue.outlaw)
 			end
 		end)
@@ -6452,7 +6452,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				leftTextFrame.font:SetFont(TRB.Data.settings.rogue.outlaw.displayText.left.fontFace, TRB.Data.settings.rogue.outlaw.displayText.left.fontSize, "OUTLINE")
 				if TRB.Data.settings.rogue.outlaw.displayText.fontFaceLock then
 					middleTextFrame.font:SetFont(TRB.Data.settings.rogue.outlaw.displayText.middle.fontFace, TRB.Data.settings.rogue.outlaw.displayText.middle.fontSize, "OUTLINE")
@@ -6519,7 +6519,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				middleTextFrame.font:SetFont(TRB.Data.settings.rogue.outlaw.displayText.middle.fontFace, TRB.Data.settings.rogue.outlaw.displayText.middle.fontSize, "OUTLINE")
 				if TRB.Data.settings.rogue.outlaw.displayText.fontFaceLock then
 					leftTextFrame.font:SetFont(TRB.Data.settings.rogue.outlaw.displayText.left.fontFace, TRB.Data.settings.rogue.outlaw.displayText.left.fontSize, "OUTLINE")
@@ -6588,7 +6588,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 			end
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				rightTextFrame.font:SetFont(TRB.Data.settings.rogue.outlaw.displayText.right.fontFace, TRB.Data.settings.rogue.outlaw.displayText.right.fontSize, "OUTLINE")
 				if TRB.Data.settings.rogue.outlaw.displayText.fontFaceLock then
 					leftTextFrame.font:SetFont(TRB.Data.settings.rogue.outlaw.displayText.left.fontFace, TRB.Data.settings.rogue.outlaw.displayText.left.fontSize, "OUTLINE")
@@ -6615,7 +6615,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				TRB.Data.settings.rogue.outlaw.displayText.right.fontFaceName = TRB.Data.settings.rogue.outlaw.displayText.left.fontFaceName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.rogue.outlaw.displayText.right.fontFaceName)
 
-				if GetSpecialization() == 1 then
+				if GetSpecialization() == 2 then
 					middleTextFrame.font:SetFont(TRB.Data.settings.rogue.outlaw.displayText.middle.fontFace, TRB.Data.settings.rogue.outlaw.displayText.middle.fontSize, "OUTLINE")
 					rightTextFrame.font:SetFont(TRB.Data.settings.rogue.outlaw.displayText.right.fontFace, TRB.Data.settings.rogue.outlaw.displayText.right.fontSize, "OUTLINE")
 				end
@@ -6640,7 +6640,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.rogue.outlaw.displayText.left.fontSize = value
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				leftTextFrame.font:SetFont(TRB.Data.settings.rogue.outlaw.displayText.left.fontFace, TRB.Data.settings.rogue.outlaw.displayText.left.fontSize, "OUTLINE")
 			end
 
@@ -6750,7 +6750,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.rogue.outlaw.displayText.middle.fontSize = value
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				middleTextFrame.font:SetFont(TRB.Data.settings.rogue.outlaw.displayText.middle.fontFace, TRB.Data.settings.rogue.outlaw.displayText.middle.fontSize, "OUTLINE")
 			end
 
@@ -6774,7 +6774,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			self.EditBox:SetText(value)
 			TRB.Data.settings.rogue.outlaw.displayText.right.fontSize = value
 
-			if GetSpecialization() == 1 then
+			if GetSpecialization() == 2 then
 				rightTextFrame.font:SetFont(TRB.Data.settings.rogue.outlaw.displayText.right.fontFace, TRB.Data.settings.rogue.outlaw.displayText.right.fontSize, "OUTLINE")
 			end
 
