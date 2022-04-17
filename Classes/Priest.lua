@@ -1637,29 +1637,28 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local specId = GetSpecialization()
 
-		if specId == 2 then
-			if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
+		if guid ~= nil then
+			if not TRB.Functions.CheckTargetExists(guid) then
 				TRB.Functions.InitializeTarget(guid)
-				TRB.Data.snapshotData.targetData.targets[guid].shadowWordPain = false
-				TRB.Data.snapshotData.targetData.targets[guid].shadowWordPainRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].hauntedMask = false
+				if specId == 2 then
+					TRB.Data.snapshotData.targetData.targets[guid].shadowWordPain = false
+					TRB.Data.snapshotData.targetData.targets[guid].shadowWordPainRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].hauntedMask = false
+				elseif specId == 3 then
+					TRB.Data.snapshotData.targetData.targets[guid].auspiciousSpirits = 0
+					TRB.Data.snapshotData.targetData.targets[guid].shadowWordPain = false
+					TRB.Data.snapshotData.targetData.targets[guid].shadowWordPainRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].vampiricTouch = false
+					TRB.Data.snapshotData.targetData.targets[guid].vampiricTouchRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].devouringPlague = false
+					TRB.Data.snapshotData.targetData.targets[guid].devouringPlagueRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].hauntedMask = false
+				end
 			end
-		elseif specId == 3 then
-			if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
-				TRB.Functions.InitializeTarget(guid)
-				TRB.Data.snapshotData.targetData.targets[guid].auspiciousSpirits = 0
-				TRB.Data.snapshotData.targetData.targets[guid].shadowWordPain = false
-				TRB.Data.snapshotData.targetData.targets[guid].shadowWordPainRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].vampiricTouch = false
-				TRB.Data.snapshotData.targetData.targets[guid].vampiricTouchRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].devouringPlague = false
-				TRB.Data.snapshotData.targetData.targets[guid].devouringPlagueRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].hauntedMask = false
-			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			return true
 		end
-		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
-
-		return true
+		return false
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 
@@ -4494,6 +4493,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					elseif spellId == TRB.Data.spells.mindSear.idTick then
 						if type == "SPELL_DAMAGE" then
+							InitializeTarget(destGUID)
 							if currentTime > (TRB.Data.snapshotData.mindSear.hitTime + 0.1) then --This is a new tick
 								TRB.Data.snapshotData.mindSear.targetsHit = 0
 							end

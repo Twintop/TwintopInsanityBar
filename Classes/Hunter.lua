@@ -1479,14 +1479,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return false
 		end
 
-		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
-			TRB.Functions.InitializeTarget(guid)
-			TRB.Data.snapshotData.targetData.targets[guid].serpentSting = false
-			TRB.Data.snapshotData.targetData.targets[guid].serpentStingRemaining = 0
-		end
-		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+		local specId = GetSpecialization()
 
-		return true
+		if guid ~= nil then
+			if not TRB.Functions.CheckTargetExists(guid) then
+				TRB.Functions.InitializeTarget(guid)
+				if specId == 2 or specId == 3 then
+					TRB.Data.snapshotData.targetData.targets[guid].serpentSting = false
+					TRB.Data.snapshotData.targetData.targets[guid].serpentStingRemaining = 0
+				end
+			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			return true
+		end
+		return false
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 

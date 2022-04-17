@@ -1350,35 +1350,35 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local specId = GetSpecialization()
 
-		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
-			if specId == 1 then -- Balance
+		if guid ~= nil then
+			if not TRB.Functions.CheckTargetExists(guid) then
 				TRB.Functions.InitializeTarget(guid)
-				TRB.Data.snapshotData.targetData.targets[guid].sunfire = false
-				TRB.Data.snapshotData.targetData.targets[guid].sunfireRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].moonfire = false
-				TRB.Data.snapshotData.targetData.targets[guid].moonfireRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].stellarFlare = false
-				TRB.Data.snapshotData.targetData.targets[guid].stellarFlareRemaining = 0
-			elseif specId == 2 then -- Feral
-				TRB.Functions.InitializeTarget(guid)
-				TRB.Data.snapshotData.targetData.targets[guid].rake = false
-				TRB.Data.snapshotData.targetData.targets[guid].rakeRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].rakeSnapshot = 0
-				TRB.Data.snapshotData.targetData.targets[guid].rip = false
-				TRB.Data.snapshotData.targetData.targets[guid].ripRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].ripSnapshot = 0
-				TRB.Data.snapshotData.targetData.targets[guid].thrash = false
-				TRB.Data.snapshotData.targetData.targets[guid].thrashRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].thrashSnapshot = 0
-				TRB.Data.snapshotData.targetData.targets[guid].moonfire = false
-				TRB.Data.snapshotData.targetData.targets[guid].moonfireRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].moonfireSnapshot = 0
-				TRB.Functions.InitializeTarget(guid)
+				if specId == 1 then -- Balance
+					TRB.Data.snapshotData.targetData.targets[guid].sunfire = false
+					TRB.Data.snapshotData.targetData.targets[guid].sunfireRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].moonfire = false
+					TRB.Data.snapshotData.targetData.targets[guid].moonfireRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].stellarFlare = false
+					TRB.Data.snapshotData.targetData.targets[guid].stellarFlareRemaining = 0
+				elseif specId == 2 then -- Feral
+					TRB.Data.snapshotData.targetData.targets[guid].rake = false
+					TRB.Data.snapshotData.targetData.targets[guid].rakeRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].rakeSnapshot = 0
+					TRB.Data.snapshotData.targetData.targets[guid].rip = false
+					TRB.Data.snapshotData.targetData.targets[guid].ripRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].ripSnapshot = 0
+					TRB.Data.snapshotData.targetData.targets[guid].thrash = false
+					TRB.Data.snapshotData.targetData.targets[guid].thrashRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].thrashSnapshot = 0
+					TRB.Data.snapshotData.targetData.targets[guid].moonfire = false
+					TRB.Data.snapshotData.targetData.targets[guid].moonfireRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].moonfireSnapshot = 0
+				end
 			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			return true
 		end
-		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
-
-		return true
+		return false
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 

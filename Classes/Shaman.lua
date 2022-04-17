@@ -764,21 +764,22 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local specId = GetSpecialization()
 
-		if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
-			if specId == 1 then -- Elemental
+		if guid ~= nil then
+			if not TRB.Functions.CheckTargetExists(guid) then
 				TRB.Functions.InitializeTarget(guid)
-				TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
-				TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].echoingShockSpell = nil
-			elseif specId == 3 then -- Restoration
-				TRB.Functions.InitializeTarget(guid)
-				TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
-				TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
+				if specId == 1 then -- Elemental
+					TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
+					TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].echoingShockSpell = nil
+				elseif specId == 3 then -- Restoration
+					TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
+					TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
+				end
 			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			return true
 		end
-		TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
-
-		return true
+		return false
 	end
 	TRB.Functions.InitializeTarget_Class = InitializeTarget
 
