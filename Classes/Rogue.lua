@@ -842,18 +842,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 10,
 				settingKey = "betweenTheEyes",
-                hasCooldown = true,				
+                hasCooldown = true,
+				isSnowflake = true,
 				thresholdUsable = false,
-				cooldown = 45,
-				--[[pandemicTimes = {
-					3 * 0.3, -- 0 CP, show same as if we had 1
-					3 * 0.3,
-					6 * 0.3,
-					9 * 0.3,
-					12 * 0.3,
-					15 * 0.3,
-					18 * 0.3,
-				}]]
+				cooldown = 45
 			},
 			bladeFlurry = {
 				id = 13877,
@@ -902,6 +894,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 14,
 				settingKey = "pistolShot",
                 hasCooldown = false,
+				isSnowflake = true,
 				thresholdUsable = false
 			},
 			rollTheBones = {
@@ -926,6 +919,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 16,
 				settingKey = "sinisterStrike",
                 hasCooldown = false,
+				isSnowflake = true,
 				thresholdUsable = false,
 			},
 
@@ -934,7 +928,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				id = 195627,
 				name = "",
 				icon = "",
-				isActive = false
+				isActive = false,
+				energyModifier = 0.5
 			},
 
 			-- Roll the Bones
@@ -3028,6 +3023,19 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local currentTime = GetTime()
 		local _
 		
+		---@diagnostic disable-next-line: redundant-parameter
+		TRB.Data.snapshotData.bladeRush.startTime, TRB.Data.snapshotData.bladeRush.duration, _, _ = GetSpellCooldown(TRB.Data.spells.bladeRush.id)
+		---@diagnostic disable-next-line: redundant-parameter
+		TRB.Data.snapshotData.bladeFlurry.startTime, TRB.Data.snapshotData.bladeFlurry.duration, _, _ = GetSpellCooldown(TRB.Data.spells.bladeFlurry.id)
+		---@diagnostic disable-next-line: redundant-parameter
+		TRB.Data.snapshotData.betweenTheEyes.startTime, TRB.Data.snapshotData.bladeRush.duration, _, _ = GetSpellCooldown(TRB.Data.spells.betweenTheEyes.id)
+		---@diagnostic disable-next-line: redundant-parameter
+		TRB.Data.snapshotData.dreadblades.startTime, TRB.Data.snapshotData.dreadblades.duration, _, _ = GetSpellCooldown(TRB.Data.spells.dreadblades.id)
+		---@diagnostic disable-next-line: redundant-parameter
+		TRB.Data.snapshotData.ghostlyStrike.startTime, TRB.Data.snapshotData.ghostlyStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ghostlyStrike.id)
+		---@diagnostic disable-next-line: redundant-parameter
+		TRB.Data.snapshotData.rollTheBones.startTime, TRB.Data.snapshotData.rollTheBones.duration, _, _ = GetSpellCooldown(TRB.Data.spells.rollTheBones.id)
+
         if TRB.Data.snapshotData.bladeRush.startTime ~= nil and currentTime > (TRB.Data.snapshotData.bladeRush.startTime + TRB.Data.snapshotData.bladeRush.duration) then
             TRB.Data.snapshotData.bladeRush.startTime = nil
             TRB.Data.snapshotData.bladeRush.duration = 0
@@ -3070,9 +3078,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end
 		TRB.Data.snapshotData.rollTheBones.count = rollTheBonesCount
-
-		--if TRB.Data.snapshotData.rollTheBones.buffs.
-
 	end
 
 	local function UpdateSnapshot_Subtlety()
@@ -3526,6 +3531,61 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
 											frameLevel = 128
 										end
+									elseif spell.id == TRB.Data.spells.sinisterStrike.id then
+										if TRB.Data.snapshotData.resource >= -energyAmount then
+											if TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones) > 0 then
+												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.special
+											else
+												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+											end
+										else
+											if TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones) > 0 then
+												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.special
+											else
+												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
+											end
+											frameLevel = 128
+										end
+									elseif spell.id == TRB.Data.spells.pistolShot.id then
+										local opportunityTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.opportunity)
+
+										if opportunityTime > 0 then
+											energyAmount = energyAmount * TRB.Data.spells.opportunity.energyModifier
+											TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.outlaw, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.rogue.outlaw.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
+										end
+
+										if TRB.Data.snapshotData.resource >= -energyAmount then
+											if opportunityTime > 0 then
+												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.special
+											else
+												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+											end
+										else
+											if opportunityTime > 0 then
+												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.special
+											else
+												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
+											end
+											frameLevel = 128
+										end
+									elseif spell.id == TRB.Data.spells.betweenTheEyes.id then
+										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.unusable
+											frameLevel = 127
+										elseif TRB.Data.snapshotData.resource >= -energyAmount then
+											if TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision) > 0 then
+												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.special
+											else
+												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+											end
+										else
+											if TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision) > 0 then
+												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.special
+											else
+												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
+											end
+											frameLevel = 128
+										end
 									end
 								elseif spell.isPvp and not TRB.Data.character.isPvp then
 									showThreshold = false
@@ -3833,10 +3893,20 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							TRB.Data.snapshotData.rollTheBones.startTime = currentTime
 							TRB.Data.snapshotData.rollTheBones.duration = TRB.Data.spells.rollTheBones.cooldown
 						end
-					elseif spellId == TRB.Data.spells.rollTheBones.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.rollTheBones.startTime = currentTime
-							TRB.Data.snapshotData.rollTheBones.duration = TRB.Data.spells.rollTheBones.cooldown
+					elseif spellId == TRB.Data.spells.opportunity.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.opportunity.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.opportunity.duration, TRB.Data.snapshotData.opportunity.endTime, _, _, _, TRB.Data.snapshotData.opportunity.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.opportunity.id)
+							
+							if TRB.Data.settings.rogue.outlaw.audio.opportunity.enabled then
+								---@diagnostic disable-next-line: redundant-parameter
+								PlaySoundFile(TRB.Data.settings.rogue.outlaw.audio.opportunity.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.broadside.isActive = false
+							TRB.Data.snapshotData.opportunity.spellId = nil
+							TRB.Data.snapshotData.opportunity.duration = 0
+							TRB.Data.snapshotData.opportunity.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.broadside.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
