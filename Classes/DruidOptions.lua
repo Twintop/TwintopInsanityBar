@@ -426,6 +426,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					base="FFFFFF00",
 					clearcasting="FF4A95CE",
 					maxBite="FF009900",
+					apexPredator="FFE75480",
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FF9F4500",
@@ -4800,7 +4801,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f = controls.colors.maxBite
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.noSliceAndDice, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.maxBite, true)
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -4836,6 +4837,29 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                     TRB.Data.settings.druid.feral.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barContainerFrame:SetBackdropColor(r, g, b, 1-a)
                 end)
+			end
+		end)
+
+
+		yCoord = yCoord - 30
+		controls.colors.apexPredator = TRB.UiFunctions:BuildColorPicker(parent, "Energy when you have an Apex Predator's Craving proc", TRB.Data.settings.druid.feral.colors.bar.apexPredator, 275, 25, xCoord, yCoord)
+		f = controls.colors.apexPredator
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.apexPredator, true)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+---@diagnostic disable-next-line: deprecated
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.apexPredator.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.druid.feral.colors.bar.apexPredator = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
 			end
 		end)
 
