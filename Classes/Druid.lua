@@ -3580,8 +3580,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						barColor = TRB.Data.settings.druid.feral.colors.bar.clearcasting
 					end
 
-					if (TRB.Data.snapshotData.resource2 == 5 and TRB.Data.snapshotData.resource >= -CalculateAbilityResourceValue(TRB.Data.spells.ferociousBiteMaximum.energy, true)) or TRB.Data.spells.apexPredatorsCraving.isActive == true then
+					if (TRB.Data.snapshotData.resource2 == 5 and TRB.Data.snapshotData.resource >= -CalculateAbilityResourceValue(TRB.Data.spells.ferociousBiteMaximum.energy, true)) then
 						barColor = TRB.Data.settings.druid.feral.colors.bar.maxBite
+					end
+
+					if TRB.Data.spells.apexPredatorsCraving.isActive == true then
+						barColor = TRB.Data.settings.druid.feral.colors.bar.apexPredator
 					end
 
 					local barBorderColor = TRB.Data.settings.druid.feral.colors.bar.border
