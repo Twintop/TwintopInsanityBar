@@ -525,7 +525,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				threshold = {
 					under="FFFFFFFF",
 					over="FF00FF00",
-					unusable="FFFF0000"
+					unusable="FFFF0000",
+					special="FFFF00FF"
 				}
 			},
 			displayText = {},
@@ -536,8 +537,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-				blindside={
-					name = "Blindside Proc",
+				opportunity={
+					name = "Opportunity Proc",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -3598,7 +3599,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.blindsideAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_blindside_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.blindsideAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Blidside proc occurs")
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Blindside proc occurs")
 		f.tooltip = "Play an audio cue when a Blindside proc occurs, allowing Ambush to be used outside of stealth."
 		f:SetChecked(TRB.Data.settings.rogue.assassination.audio.blindside.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -5871,9 +5872,30 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end)
 
+		controls.colors.thresholdSpecial = TRB.UiFunctions:BuildColorPicker(parent, "Skull and Crossbones, Ruthless Precision, or Opportunity effect up", TRB.Data.settings.rogue.outlaw.colors.threshold.special, 275, 25, xCoord2, yCoord-90)
+		f = controls.colors.thresholdSpecial
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.threshold.special, true)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+---@diagnostic disable-next-line: deprecated
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+
+                    controls.colors.thresholdSpecial.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.rogue.outlaw.colors.threshold.special = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-120)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(TRB.Data.settings.rogue.outlaw.thresholds.overlapBorder)
@@ -5889,7 +5911,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.ambushThresholdShow
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Ambush (if stealthed)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ambush. Only visible when in Stealth or usable via the Blindside or Subterfuge talent."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ambush. Only visible when in Stealth."
 		f:SetChecked(TRB.Data.settings.rogue.outlaw.thresholds.ambush.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.rogue.outlaw.thresholds.ambush.enabled = self:GetChecked()
@@ -7038,32 +7060,31 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
-		--[[
 		yCoord = yCoord - 30
-		controls.checkBoxes.blindsideAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_blindside_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.blindsideAudio
+		controls.checkBoxes.opportunityAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_opportunity_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.opportunityAudio
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Blidside proc occurs")
-		f.tooltip = "Play an audio cue when a Blindside proc occurs, allowing Ambush to be used outside of stealth."
-		f:SetChecked(TRB.Data.settings.rogue.outlaw.audio.blindside.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when an Opportunity proc occurs")
+		f.tooltip = "Play an audio cue when an Opportunity proc occurs."
+		f:SetChecked(TRB.Data.settings.rogue.outlaw.audio.opportunity.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.rogue.outlaw.audio.blindside.enabled = self:GetChecked()
+			TRB.Data.settings.rogue.outlaw.audio.opportunity.enabled = self:GetChecked()
 
-			if TRB.Data.settings.rogue.outlaw.audio.blindside.enabled then
+			if TRB.Data.settings.rogue.outlaw.audio.opportunity.enabled then
 				---@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.rogue.outlaw.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
+				PlaySoundFile(TRB.Data.settings.rogue.outlaw.audio.opportunity.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.blindsideAudio = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_blindside_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.blindsideAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.blindsideAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.blindsideAudio, TRB.Data.settings.rogue.outlaw.audio.blindside.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.blindsideAudio, "LEFT")
+		controls.dropDown.opportunityAudio = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_opportunity_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.opportunityAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.opportunityAudio, dropdownWidth)
+		UIDropDownMenu_SetText(controls.dropDown.opportunityAudio, TRB.Data.settings.rogue.outlaw.audio.opportunity.soundName)
+		UIDropDownMenu_JustifyText(controls.dropDown.opportunityAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.blindsideAudio, function(self, level, menuList)
+		UIDropDownMenu_Initialize(controls.dropDown.opportunityAudio, function(self, level, menuList)
 			local entries = 25
 			local info = UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
@@ -7084,7 +7105,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.rogue.outlaw.audio.blindside.sound
+						info.checked = sounds[v] == TRB.Data.settings.rogue.outlaw.audio.opportunity.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -7095,15 +7116,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.blindsideAudio:SetValue(newValue, newName)
-			TRB.Data.settings.rogue.outlaw.audio.blindside.sound = newValue
-			TRB.Data.settings.rogue.outlaw.audio.blindside.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.blindsideAudio, newName)
+		function controls.dropDown.opportunityAudio:SetValue(newValue, newName)
+			TRB.Data.settings.rogue.outlaw.audio.opportunity.sound = newValue
+			TRB.Data.settings.rogue.outlaw.audio.opportunity.soundName = newName
+			UIDropDownMenu_SetText(controls.dropDown.opportunityAudio, newName)
 			CloseDropDownMenus()
 			---@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.rogue.outlaw.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-		]]
+			PlaySoundFile(TRB.Data.settings.rogue.outlaw.audio.opportunity.sound, TRB.Data.settings.core.audio.channel.channel)
+		end		
 
 		yCoord = yCoord - 60
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
