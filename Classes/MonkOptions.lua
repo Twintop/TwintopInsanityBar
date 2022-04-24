@@ -367,8 +367,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FF9F4500",
-					serenity="FF00FF98",
+					serenity="FF00FF96",
 					serenityEnd="FFFF0000",
+					t28="FF006D40",
 					overcapEnabled=true,
 				},
 				comboPoints = {
@@ -4293,6 +4294,28 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
                     TRB.Data.settings.monk.windwalker.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barContainerFrame:SetBackdropColor(r, g, b, 1-a)
                 end)
+			end
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.t28 = TRB.UiFunctions:BuildColorPicker(parent, "Energy while you have the Primordial Power (T28) buff", TRB.Data.settings.monk.windwalker.colors.bar.t28, 275, 25, xCoord, yCoord)
+		f = controls.colors.t28
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.t28, true)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+---@diagnostic disable-next-line: deprecated
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.t28.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.monk.windwalker.colors.bar.t28 = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
 			end
 		end)		
 
