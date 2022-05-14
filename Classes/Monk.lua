@@ -929,7 +929,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				end
 
 				TRB.Frames.resourceFrame.thresholds[x]:Show()
-				TRB.Frames.resourceFrame.thresholds[x]:SetFrameLevel(0)
+				TRB.Frames.resourceFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 
@@ -939,7 +939,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				end
 
 				TRB.Frames.passiveFrame.thresholds[x]:Show()
-				TRB.Frames.passiveFrame.thresholds[x]:SetFrameLevel(0)
+				TRB.Frames.passiveFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 				TRB.Frames.passiveFrame.thresholds[x]:Hide()
 			end
 			
@@ -959,7 +959,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					TRB.Functions.SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
 
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(0)
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
 				end
 			end
@@ -2046,6 +2046,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[1]:Show()
+								
+							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[1].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[1].icon.cooldown:SetCooldown(0, 0)
+							end
 						else
 							TRB.Frames.resourceFrame.thresholds[1]:Hide()
 						end
@@ -2058,6 +2064,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[2]:Show()
+								
+							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[2].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[2].icon.cooldown:SetCooldown(0, 0)
+							end
 						else
 							TRB.Frames.resourceFrame.thresholds[2]:Hide()
 						end
@@ -2070,6 +2082,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[3]:Show()
+								
+							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[3].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[3].icon.cooldown:SetCooldown(0, 0)
+							end
 						else
 							TRB.Frames.resourceFrame.thresholds[3]:Hide()
 						end
@@ -2082,6 +2100,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[4]:Show()
+								
+							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[4].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[4].icon.cooldown:SetCooldown(0, 0)
+							end
 						else
 							TRB.Frames.resourceFrame.thresholds[4]:Hide()
 						end
@@ -2248,6 +2272,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.passive, true))
 					end
 
+					local pairOffset = 0
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then	
@@ -2256,7 +2281,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 							local showThreshold = true
 							local thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.over
-							local frameLevel = 129
+							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
                             if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
                             elseif spell.isPvp and not TRB.Data.character.isPvp then
@@ -2266,46 +2291,59 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
                             elseif spell.hasCooldown then
                                 if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
                                     thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.unusable
-                                    frameLevel = 127
+                                    frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
                                 elseif TRB.Data.snapshotData.resource >= -energyAmount then
                                     thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.over
                                 else
                                     thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.under
-                                    frameLevel = 128
+                                    frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
                                 end
                             else -- This is an active/available/normal spell threshold
                                 if TRB.Data.snapshotData.resource >= -energyAmount then
                                     thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.over
                                 else
                                     thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.under
-                                    frameLevel = 128
+                                    frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
                                 end
                             end
 
 							if spell.comboPoints == true and TRB.Data.snapshotData.resource2 == 0 then
 								thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.unusable
-								frameLevel = 127
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
 							if TRB.Data.settings.monk.windwalker.thresholds[spell.settingKey].enabled and showThreshold then
+								if not spell.hasCooldown then
+									frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
+								end
+
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
+								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 ---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel+10)
+								resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
+---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
-								if frameLevel == 129 then
+								if frameLevel == TRB.Data.constants.frameLevels.thresholdOver then
 									spell.thresholdUsable = true
 								else
 									spell.thresholdUsable = false
+								end
+								
+                                if TRB.Data.settings.monk.windwalker.thresholds.icons.showCooldown and spell.hasCooldown and TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) and (TRB.Data.snapshotData[spell.settingKey].maxCharges == nil or TRB.Data.snapshotData[spell.settingKey].charges < TRB.Data.snapshotData[spell.settingKey].maxCharges) then
+									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(TRB.Data.snapshotData[spell.settingKey].startTime, TRB.Data.snapshotData[spell.settingKey].duration)
+								else
+									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(0, 0)
 								end
 							else
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
 								spell.thresholdUsable = false
 							end
 						end
+						pairOffset = pairOffset + 3
 					end
 
 					local barColor = TRB.Data.settings.monk.windwalker.colors.bar.base

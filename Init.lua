@@ -186,6 +186,28 @@ TRB.Data.constants = {
 			sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 			soundName="TRB: Air Horn"
 		}
+	},
+	frameLevels = {
+		barContainer = 0,
+		barPassive = 80,
+		barCasting = 90,
+		barResource = 100,
+		barBorder = 101,
+		cpContainer = 0,
+		cpResource = 110,
+		cpBorder = 111,						--OLD:
+		thresholdBase = 1000,				--0
+		thresholdBleedSame = 1200,			--125
+		thresholdBleedBetter = 1400,		--126
+		thresholdUnusable = 1600,			--127
+		thresholdUnder = 1800,				--128
+		thresholdOver = 2000,				--129
+		thresholdBleedDownOrWorse = 2200,	--131
+		thresholdOffsetLine = 2,
+		thresholdOffsetIcon = 1,
+		thresholdOffsetCooldown = 0,
+		thresholdOffsetNoCooldown = 100,
+		barText = 5000
 	}
 }
 

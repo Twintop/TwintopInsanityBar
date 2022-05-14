@@ -701,6 +701,20 @@ end
 TRB.Functions.SetThresholdIcon = SetThresholdIcon
 
 local function ResetThresholdLine(threshold, settings, hasIcon)
+	--[[
+		Threshold StrataFrameLevel info, decreasing:
+		- Starts at 1200 for unusable
+		- Starts at 1400 for not enough resources
+		- Starts at 1600 for usable
+		- Counter increments by 3 on every render in modules that source threshold data from the spell table
+		- Threshold Line Frame is X-2, Icon Frame Level is X-1, Cooldown Frame Level is X, for X = Counter
+		Example:
+		Threshold doesn't have enough resources and is the 4th threshold processed.
+		Counter = 9 (seen 3).
+		Line = 1389, Icon = 1390, Cooldown = 1391
+
+		This is done to maintain backward compatability for how threshold line stacking used to work before this change.
+	]]
 	local borderSubtraction = 0
 
 	if not settings.thresholds.overlapBorder then
@@ -712,21 +726,21 @@ local function ResetThresholdLine(threshold, settings, hasIcon)
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, TRB.Data.settings.core.strata.level)
 	threshold.texture:SetAllPoints(threshold)
 	threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
-	threshold:SetFrameLevel(127)
+	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Hide()
 	
 	if hasIcon == true then
 		threshold.icon = threshold.icon or CreateFrame("Frame", nil, threshold, "BackdropTemplate")
-		--threshold.icon:SetPoint("TOP", threshold, "BOTTOM", 0, -10)
-		--threshold.icon:SetSize(20, 20)
-		threshold.icon:SetFrameLevel(137)
+
+		threshold.icon:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
 		threshold.icon:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		threshold.icon.texture = threshold.icon.texture or threshold.icon:CreateTexture(nil, TRB.Data.settings.core.strata.level)
 		threshold.icon.texture:SetAllPoints(threshold.icon)
-		--threshold.icon.texture:SetTexture("Interface\\Icons\\Ability_Druid_TreeofLife")
-		--threshold.icon.cooldown = threshold.icon.cooldown or CreateFrame("Cooldown", nil, threshold.icon, "CooldownFrameTemplate")
-		--threshold.icon.cooldown:SetAllPoints(threshold.icon)
-		--threshold.icon.cooldown:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		threshold.icon.cooldown = threshold.icon.cooldown or CreateFrame("Cooldown", nil, threshold.icon, "CooldownFrameTemplate")
+		threshold.icon.cooldown:SetAllPoints(threshold.icon)
+		threshold.icon.cooldown:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
+		threshold.icon.cooldown:SetFrameStrata(TRB.Data.settings.core.strata.level)
+
 		if settings.thresholds.icons.border < 1 then
 			threshold.icon:SetBackdrop({
 				insets = {0, 0, 0, 0}
@@ -799,7 +813,7 @@ local function ConstructResourceBar(settings)
         barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
         barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
         barContainerFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        barContainerFrame:SetFrameLevel(0)
+        barContainerFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barContainer)
 
         barContainerFrame:SetScript("OnMouseDown", function(self, button)
             if button == "LeftButton" and not self.isMoving and settings.bar.dragAndDrop then
@@ -858,7 +872,7 @@ local function ConstructResourceBar(settings)
         barBorderFrame:SetWidth(settings.bar.width)
         barBorderFrame:SetHeight(settings.bar.height)
         barBorderFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        barBorderFrame:SetFrameLevel(101)
+        barBorderFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barBorder)
 
         resourceFrame:Show()
         resourceFrame:SetMinMaxValues(0, settings.bar.width)
@@ -868,7 +882,7 @@ local function ConstructResourceBar(settings)
         resourceFrame:SetStatusBarTexture(settings.textures.resourceBar)
         resourceFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
         resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		resourceFrame:SetFrameLevel(100)
+		resourceFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barResource)
 
         castingFrame:Show()
         castingFrame:SetMinMaxValues(0, settings.bar.width)
@@ -878,7 +892,7 @@ local function ConstructResourceBar(settings)
         castingFrame:SetStatusBarTexture(settings.textures.castingBar)
         castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting, true))
         castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        castingFrame:SetFrameLevel(90)
+        castingFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barCasting)
 
         passiveFrame:Show()
         passiveFrame:SetMinMaxValues(0, settings.bar.width)
@@ -888,7 +902,7 @@ local function ConstructResourceBar(settings)
         passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
         passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive, true))
         passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		passiveFrame:SetFrameLevel(80)
+		passiveFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barPassive)
 
 		if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil then
 			local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
@@ -918,7 +932,7 @@ local function ConstructResourceBar(settings)
 				--container:SetWidth(nodeWidth-(settings.comboPoints.border*2))
 				container:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
 				container:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				container:SetFrameLevel(0)
+				container:SetFrameLevel(TRB.Data.constants.frameLevels.cpContainer)
 
 				--[[
 				if settings.comboPoints.border < 1 then
@@ -953,7 +967,7 @@ local function ConstructResourceBar(settings)
 				--border:SetWidth(nodeWidth)
 				--border:SetHeight(settings.comboPoints.height)
 				border:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				border:SetFrameLevel(111)
+				border:SetFrameLevel(TRB.Data.constants.frameLevels.cpBorder)
 		
 				resource:Show()
 				resource:SetMinMaxValues(0, 1)
@@ -963,7 +977,7 @@ local function ConstructResourceBar(settings)
 				resource:SetStatusBarTexture(settings.textures.comboPointsBar)
 				resource:SetStatusBarColor(GetRGBAFromString(settings.colors.comboPoints.base))
 				resource:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				resource:SetFrameLevel(110)
+				resource:SetFrameLevel(TRB.Data.constants.frameLevels.cpContainer)
 			end
 		end
 
@@ -977,7 +991,7 @@ local function ConstructResourceBar(settings)
         leftTextFrame:SetHeight(settings.bar.height * 3.5)
         leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 2, 0)
         leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        leftTextFrame:SetFrameLevel(2000)
+        leftTextFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
         leftTextFrame.font:SetPoint("LEFT", 0, 0)
         leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
         leftTextFrame.font:SetJustifyH("LEFT")
@@ -989,7 +1003,7 @@ local function ConstructResourceBar(settings)
         middleTextFrame:SetHeight(settings.bar.height * 3.5)
         middleTextFrame:SetPoint("CENTER", barContainerFrame, "CENTER", 0, 0)
         middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        middleTextFrame:SetFrameLevel(2000)
+        middleTextFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
         middleTextFrame.font:SetPoint("CENTER", 0, 0)
         middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
         middleTextFrame.font:SetJustifyH("CENTER")
@@ -1001,7 +1015,7 @@ local function ConstructResourceBar(settings)
         rightTextFrame:SetHeight(settings.bar.height * 3.5)
         rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        rightTextFrame:SetFrameLevel(2000)
+        rightTextFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
         rightTextFrame.font:SetPoint("RIGHT", 0, 0)
         rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
         rightTextFrame.font:SetJustifyH("RIGHT")
@@ -1112,7 +1126,7 @@ local function RepositionBar(settings, containerFrame)
         containerFrame2:SetWidth(totalWidth)
         containerFrame2:SetHeight(settings.comboPoints.height)
         containerFrame2:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        containerFrame2:SetFrameLevel(0)
+        containerFrame2:SetFrameLevel(TRB.Data.constants.frameLevels.cpContainer)
 		containerFrame2:ClearAllPoints()
 		containerFrame2:SetPoint(setPoint, containerFrame, setPointRelativeTo, xPos, yPos)
 

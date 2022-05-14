@@ -84,6 +84,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				width = 2,
 				overlapBorder=true,
 				icons = {
+					showCooldown=true,
 					border=2,
 					relativeTo = "TOP",
 					relativeToName = "Above",
@@ -1433,9 +1434,22 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
             CloseDropDownMenus()
         end
 
+		--NOTE: the order of these checkboxes is reversed!
+		controls.checkBoxes.thresholdIconCooldown = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_thresholdIconThresholdEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdIconCooldown
+		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
+		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for potion icons that are on cooldown."
+		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.icons.showCooldown)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.demonhunter.havoc.thresholds.icons.showCooldown = self:GetChecked()
+		end)
+		
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.demonhunter.havoc.thresholds.icons.enabled)
+
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 		f:SetChecked(TRB.Data.settings.demonhunter.havoc.thresholds.icons.enabled)

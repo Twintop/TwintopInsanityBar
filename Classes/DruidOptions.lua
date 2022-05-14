@@ -94,6 +94,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				width = 2,
 				overlapBorder=true,
 				icons = {
+					showCooldown=true,
 					border=2,
 					relativeTo = "BOTTOM",
 					relativeToName = "Below",
@@ -306,6 +307,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				overlapBorder=true,
 				bleedColors=true,
 				icons = {
+					showCooldown=true,
 					border=2,
 					relativeTo = "BOTTOM",
 					relativeToName = "Below",
@@ -1823,15 +1825,29 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
             CloseDropDownMenus()
         end
+		
+		--NOTE: the order of these checkboxes is reversed!
+		controls.checkBoxes.thresholdIconCooldown = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_thresholdIconThresholdEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdIconCooldown
+		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
+		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for Starfall when it is on Cooldown (with the Stellar Flare talent)."
+		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.icons.showCooldown)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.balance.thresholds.icons.showCooldown = self:GetChecked()
+		end)
+		
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.druid.balance.thresholds.icons.enabled)
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.icons.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.balance.thresholds.icons.enabled = self:GetChecked()
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.druid.balance.thresholds.icons.enabled)
 			
 			if GetSpecialization() == 1 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.balance)
@@ -5349,15 +5365,30 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
             CloseDropDownMenus()
         end
+		
+		--NOTE: the order of these checkboxes is reversed!
+		controls.checkBoxes.thresholdIconCooldown = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_thresholdIconThresholdEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdIconCooldown
+		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
+		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for any abilities currently on cooldown."
+		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.icons.showCooldown)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.druid.feral.thresholds.icons.showCooldown = self:GetChecked()
+		end)
+		
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.druid.feral.thresholds.icons.enabled)
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.icons.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.druid.feral.thresholds.icons.enabled = self:GetChecked()
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.druid.feral.thresholds.icons.enabled)
+	
 			
 			if GetSpecialization() == 2 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.feral)

@@ -1497,7 +1497,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 
 				TRB.Frames.resourceFrame.thresholds[x]:Show()
-				TRB.Frames.resourceFrame.thresholds[x]:SetFrameLevel(0)
+				TRB.Frames.resourceFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 			
@@ -1517,7 +1517,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Functions.SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
 	
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(0)
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
 				end
 			end
@@ -3178,6 +3178,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 					if TRB.Data.settings.druid.balance.thresholds.starfall.enabled then
 						resourceFrame.thresholds[4]:Show()
+								
+						if TRB.Data.settings.druid.balance.thresholds.icons.showCooldown and TRB.Data.character.talents.stellarDrift.isSelected and TRB.Data.snapshotData.starfall.cdStartTime ~= nil and currentTime < (TRB.Data.snapshotData.starfall.cdStartTime + TRB.Data.snapshotData.starfall.cdDuration) then
+							TRB.Frames.resourceFrame.thresholds[4].icon.cooldown:SetCooldown(TRB.Data.snapshotData.starfall.cdStartTime, TRB.Data.snapshotData.starfall.cdDuration)
+						end
 					else
 						resourceFrame.thresholds[4]:Hide()
 					end
@@ -3403,6 +3407,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.passive, true))
 					end
 
+					local pairOffset = 0
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then	
@@ -3411,7 +3416,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 							local showThreshold = true
 							local thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
-							local frameLevel = 129
+							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 							local overrideOk = true
 
 							if spell.hasSnapshot and TRB.Data.settings.druid.feral.thresholds.bleedColors then
@@ -3420,26 +3425,26 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 								if UnitIsDeadOrGhost("target") or not UnitCanAttack("player", "target") or TRB.Data.snapshotData.targetData.currentTargetGuid == nil then
 									thresholdColor = TRB.Data.settings.druid.feral.colors.text.dots.same
-									frameLevel = 125
+									frameLevel = TRB.Data.constants.frameLevels.thresholdBleedSame
 								elseif TRB.Data.snapshotData.targetData.targets == nil or TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] == nil then
 									thresholdColor = TRB.Data.settings.druid.feral.colors.text.dots.down
-									frameLevel = 131
+									frameLevel = TRB.Data.constants.frameLevels.thresholdBleedDownOrWorse
 								else	
 									local snapshotValue = (TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid][spell.settingKey .. "Snapshot"] or 1) / TRB.Data.snapshotData.snapshots[spell.settingKey]
 									local bleedUp = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid][spell.settingKey]
 									
 									if not bleedUp then
 										thresholdColor = TRB.Data.settings.druid.feral.colors.text.dots.down
-										frameLevel = 131
+										frameLevel = TRB.Data.constants.frameLevels.thresholdBleedDownOrWorse
 									elseif snapshotValue > 1 then
 										thresholdColor = TRB.Data.settings.druid.feral.colors.text.dots.better
-										frameLevel = 126
+										frameLevel = TRB.Data.constants.frameLevels.thresholdBleedBetter
 									elseif snapshotValue < 1 then
 										thresholdColor = TRB.Data.settings.druid.feral.colors.text.dots.worse
-										frameLevel = 131
+										frameLevel = TRB.Data.constants.frameLevels.thresholdBleedDownOrWorse
 									else
 										thresholdColor = TRB.Data.settings.druid.feral.colors.text.dots.same
-										frameLevel = 125
+										frameLevel = TRB.Data.constants.frameLevels.thresholdBleedSame
 									end
 								end
 
@@ -3454,7 +3459,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.unusable
-										frameLevel = 127
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									end
 								elseif spell.id == TRB.Data.spells.swipe.id then
 									if TRB.Data.character.talents["brutalSlash"].isSelected then
@@ -3473,21 +3478,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
-										frameLevel = 128
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.ferociousBiteMinimum.id and spell.settingKey == "ferociousBiteMinimum" then
 									if TRB.Data.snapshotData.resource >= -energyAmount or TRB.Data.spells.apexPredatorsCraving.isActive == true then
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
-										frameLevel = 128
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.ferociousBiteMaximum.id and spell.settingKey == "ferociousBiteMaximum" then
 									if TRB.Data.snapshotData.resource >= -energyAmount or TRB.Data.spells.apexPredatorsCraving.isActive == true then
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
-										frameLevel = 128
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.moonfire.id then
 									if not TRB.Data.character.talents["lunarInspiration"].isSelected then
@@ -3496,7 +3501,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
-										frameLevel = 128
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.swipe.id then
 									if TRB.Data.character.talents["brutalSlash"].isSelected then
@@ -3505,19 +3510,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
-										frameLevel = 128
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.brutalSlash.id then
 									if not TRB.Data.character.talents[spell.settingKey].isSelected then
 										showThreshold = false
 									elseif TRB.Data.snapshotData.brutalSlash.charges == 0 then
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.unusable
-										frameLevel = 127
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif TRB.Data.snapshotData.resource >= -energyAmount then
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
-										frameLevel = 128
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.bloodtalons.id then
 									--TODO: How much energy is required to start this? Then do we move it?
@@ -3527,47 +3532,59 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							elseif spell.hasCooldown then
 								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 									thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.unusable
-									frameLevel = 127
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif TRB.Data.snapshotData.resource >= -energyAmount then
 									thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
 								else
 									thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
-									frameLevel = 128
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
 								if TRB.Data.snapshotData.resource >= -energyAmount then
 									thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
 								else
 									thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
-									frameLevel = 128
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							end
 
-
 							if overrideOk == true and spell.comboPoints == true and TRB.Data.snapshotData.resource2 == 0 then
 								thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.unusable
-								frameLevel = 127
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 							
 							if TRB.Data.settings.druid.feral.thresholds[spell.settingKey].enabled and showThreshold then
+								if not spell.hasCooldown then
+									frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
+								end
+
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
+								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 ---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel+10)
+								resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
+---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
-								if frameLevel >= 129 then
+								if frameLevel >= TRB.Data.constants.frameLevels.thresholdOver then
 									spell.thresholdUsable = true
 								else
 									spell.thresholdUsable = false
+								end
+								
+                                if TRB.Data.settings.druid.feral.thresholds.icons.showCooldown and spell.hasCooldown and TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) and (TRB.Data.snapshotData[spell.settingKey].maxCharges == nil or TRB.Data.snapshotData[spell.settingKey].charges < TRB.Data.snapshotData[spell.settingKey].maxCharges) then
+									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(TRB.Data.snapshotData[spell.settingKey].startTime, TRB.Data.snapshotData[spell.settingKey].duration)
+								else
+									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(0, 0)
 								end
 							else
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
 								spell.thresholdUsable = false
 							end
 						end
+						pairOffset = pairOffset + 3
 					end
 
 					local barColor = TRB.Data.settings.druid.feral.colors.bar.base

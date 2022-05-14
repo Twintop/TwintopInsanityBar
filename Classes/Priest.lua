@@ -3895,6 +3895,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[1]:Show()
+								
+							if TRB.Data.settings.priest.holy.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[1].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[1].icon.cooldown:SetCooldown(0, 0)
+							end
 						else
 							TRB.Frames.resourceFrame.thresholds[1]:Hide()
 						end
@@ -3907,6 +3913,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[2]:Show()
+								
+							if TRB.Data.settings.priest.holy.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[2].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[2].icon.cooldown:SetCooldown(0, 0)
+							end
 						else
 							TRB.Frames.resourceFrame.thresholds[2]:Hide()
 						end
@@ -3919,6 +3931,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[3]:Show()
+							
+							if TRB.Data.settings.priest.holy.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[3].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[3].icon.cooldown:SetCooldown(0, 0)
+							end
 						else
 							TRB.Frames.resourceFrame.thresholds[3]:Hide()
 						end
@@ -3931,6 +3949,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[4]:Show()
+								
+							if TRB.Data.settings.priest.holy.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[4].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[4].icon.cooldown:SetCooldown(0, 0)
+							end
 						else
 							TRB.Frames.resourceFrame.thresholds[4]:Hide()
 						end

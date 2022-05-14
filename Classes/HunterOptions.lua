@@ -87,6 +87,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				width = 2,
 				overlapBorder=true,
 				icons = {
+					showCooldown=true,
 					border=2,
 					relativeTo = "TOP",
 					relativeToName = "Above",
@@ -302,6 +303,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				width = 2,
 				overlapBorder=true,
 				icons = {
+					showCooldown=true,
 					border=2,
 					relativeTo = "TOP",
 					relativeToName = "Above",
@@ -563,6 +565,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				width = 2,
 				overlapBorder=true,
 				icons = {
+					showCooldown=true,
 					border=2,
 					relativeTo = "TOP",
 					relativeToName = "Above",
@@ -2050,15 +2053,29 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
             CloseDropDownMenus()
         end
+		
+		--NOTE: the order of these checkboxes is reversed!
+		controls.checkBoxes.thresholdIconCooldown = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_thresholdIconThresholdEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdIconCooldown
+		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
+		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for any abilities currently on cooldown."
+		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.icons.showCooldown)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.beastMastery.thresholds.icons.showCooldown = self:GetChecked()
+		end)
+		
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.hunter.beastMastery.thresholds.icons.enabled)
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 		f:SetChecked(TRB.Data.settings.hunter.beastMastery.thresholds.icons.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.beastMastery.thresholds.icons.enabled = self:GetChecked()
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.hunter.beastMastery.thresholds.icons.enabled)
 			
 			if GetSpecialization() == 1 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.beastMastery)
@@ -4753,15 +4770,29 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
             CloseDropDownMenus()
         end
+		
+		--NOTE: the order of these checkboxes is reversed!
+		controls.checkBoxes.thresholdIconCooldown = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_thresholdIconThresholdEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdIconCooldown
+		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
+		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for any abilities currently on cooldown."
+		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.icons.showCooldown)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.marksmanship.thresholds.icons.showCooldown = self:GetChecked()
+		end)
+		
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.hunter.marksmanship.thresholds.icons.enabled)
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 		f:SetChecked(TRB.Data.settings.hunter.marksmanship.thresholds.icons.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.marksmanship.thresholds.icons.enabled = self:GetChecked()
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.hunter.marksmanship.thresholds.icons.enabled)
 			
 			if GetSpecialization() == 2 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.marksmanship)
@@ -7888,15 +7919,29 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
             CloseDropDownMenus()
         end
+		
+		--NOTE: the order of these checkboxes is reversed!
+		controls.checkBoxes.thresholdIconCooldown = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_thresholdIconThresholdEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdIconCooldown
+		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
+		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for any abilities currently on cooldown."
+		f:SetChecked(TRB.Data.settings.hunter.survival.thresholds.icons.showCooldown)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.hunter.survival.thresholds.icons.showCooldown = self:GetChecked()
+		end)
+		
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.hunter.survival.thresholds.icons.enabled)
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 		f:SetChecked(TRB.Data.settings.hunter.survival.thresholds.icons.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.hunter.survival.thresholds.icons.enabled = self:GetChecked()
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.hunter.survival.thresholds.icons.enabled)
 			
 			if GetSpecialization() == 3 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.survival)
