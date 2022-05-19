@@ -868,7 +868,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 
 				TRB.Frames.resourceFrame.thresholds[x]:Show()
-				TRB.Frames.resourceFrame.thresholds[x]:SetFrameLevel(0)
+				TRB.Frames.resourceFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 			
@@ -880,7 +880,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 
 				TRB.Frames.resourceFrame.thresholds[x]:Show()
-				TRB.Frames.resourceFrame.thresholds[x]:SetFrameLevel(0)
+				TRB.Frames.resourceFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 
@@ -890,7 +890,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 
 				TRB.Frames.passiveFrame.thresholds[x]:Show()
-				TRB.Frames.passiveFrame.thresholds[x]:SetFrameLevel(0)
+				TRB.Frames.passiveFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 				TRB.Frames.passiveFrame.thresholds[x]:Hide()
 			end
 			
@@ -1912,6 +1912,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[1]:Show()
+								
+							if TRB.Data.settings.shaman.restoration.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[1].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[1].icon.cooldown:SetCooldown(0, 0)
+							end
 						else
 							TRB.Frames.resourceFrame.thresholds[1]:Hide()
 						end
@@ -1924,6 +1930,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[2]:Show()
+								
+							if TRB.Data.settings.shaman.restoration.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[2].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[2].icon.cooldown:SetCooldown(0, 0)
+							end
 						else
 							TRB.Frames.resourceFrame.thresholds[2]:Hide()
 						end
@@ -1936,6 +1948,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[3]:Show()
+								
+							if TRB.Data.settings.shaman.restoration.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[3].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[3].icon.cooldown:SetCooldown(0, 0)
+							end
 						else
 							TRB.Frames.resourceFrame.thresholds[3]:Hide()
 						end
@@ -1948,6 +1966,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[4]:Show()
+								
+							if TRB.Data.settings.shaman.restoration.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[4].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[4].icon.cooldown:SetCooldown(0, 0)
+							end
 						else
 							TRB.Frames.resourceFrame.thresholds[4]:Hide()
 						end

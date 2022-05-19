@@ -88,6 +88,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				width = 2,
 				overlapBorder=true,
 				icons = {
+					showCooldown=true,
 					border=2,
 					relativeTo = "TOP",
 					relativeToName = "Above",
@@ -262,6 +263,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				width = 2,
 				overlapBorder=true,
 				icons = {
+					showCooldown=true,
 					border=2,
 					relativeTo = "BOTTOM",
 					relativeToName = "Below",
@@ -367,8 +369,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					casting="FFFFFFFF",
 					spending="FF555555",
 					passive="FF9F4500",
-					serenity="FF00FF98",
+					serenity="FF00FF96",
 					serenityEnd="FFFF0000",
+					t28="FF006D40",
 					overcapEnabled=true,
 				},
 				comboPoints = {
@@ -1574,17 +1577,31 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
             CloseDropDownMenus()
         end
+		
+		--NOTE: the order of these checkboxes is reversed!
+		controls.checkBoxes.thresholdIconCooldown = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_thresholdIconThresholdEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdIconCooldown
+		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
+		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for potion icons that are on cooldown."
+		f:SetChecked(TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown = self:GetChecked()
+		end)
+		
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.monk.mistweaver.thresholds.icons.enabled)
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 		f:SetChecked(TRB.Data.settings.monk.mistweaver.thresholds.icons.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.monk.mistweaver.thresholds.icons.enabled = self:GetChecked()
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.monk.mistweaver.thresholds.icons.enabled)
 			
-			if GetSpecialization() == 3 then
+			if GetSpecialization() == 2 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.monk.mistweaver)
 
 				if TRB.Data.settings.monk.mistweaver.thresholds.icons.enabled then
@@ -4294,6 +4311,28 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
                     barContainerFrame:SetBackdropColor(r, g, b, 1-a)
                 end)
 			end
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.t28 = TRB.UiFunctions:BuildColorPicker(parent, "Energy while you have the Primordial Power (T28) buff", TRB.Data.settings.monk.windwalker.colors.bar.t28, 275, 25, xCoord, yCoord)
+		f = controls.colors.t28
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.t28, true)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+---@diagnostic disable-next-line: deprecated
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.t28.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.monk.windwalker.colors.bar.t28 = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
 		end)		
 
 		yCoord = yCoord - 40
@@ -4640,16 +4679,30 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
             CloseDropDownMenus()
         end
+		
+		--NOTE: the order of these checkboxes is reversed!
+		controls.checkBoxes.thresholdIconCooldown = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_thresholdIconThresholdEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdIconCooldown
+		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
+		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for potion icons that are on cooldown."
+		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.icons.showCooldown)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.monk.windwalker.thresholds.icons.showCooldown = self:GetChecked()
+		end)
+		
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.monk.windwalker.thresholds.icons.enabled)
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.icons.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.monk.windwalker.thresholds.icons.enabled = self:GetChecked()
-			
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.monk.windwalker.thresholds.icons.enabled)
+
 			if GetSpecialization() == 3 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.monk.windwalker)
 			end

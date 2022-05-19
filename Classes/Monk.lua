@@ -454,7 +454,20 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				id = 152173,
 				name = "",
 				icon = ""
+			}, 
+
+			-- T28
+			primordialPotential = {
+				id = 363911,
+				name = "",
+				icon = "",
+				maxStacks = 10
 			},
+			primordialPower = {
+				id = 363924,
+				name = "",
+				icon = ""
+			}
 		}
 
 		specCache.windwalker.snapshotData.energyRegen = 0
@@ -507,6 +520,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			minEndTime = nil,
 			maxEndTime = nil,
 			list = {}
+		}
+		specCache.windwalker.snapshotData.primordialPotential = {
+			spellId = nil,
+			stacks = 0,
+			duration = 0,
+			endTime = nil
+		}
+		specCache.windwalker.snapshotData.primordialPower = {
+			stacks = 0,
+			duration = 0,
+			endTime = nil
 		}
 
 		specCache.windwalker.barTextVariables = {
@@ -640,6 +664,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "#fistOfTheWhiteTiger", icon = spells.fistOfTheWhiteTiger.icon, description = spells.fistOfTheWhiteTiger.name, printInSettings = true },
 			{ variable = "#fotwt", icon = spells.fistOfTheWhiteTiger.icon, description = spells.fistOfTheWhiteTiger.name, printInSettings = false },
 			{ variable = "#paralysis", icon = spells.paralysis.icon, description = spells.paralysis.name, printInSettings = true },
+			{ variable = "#primordialPotential", icon = spells.primordialPotential.icon, description = spells.primordialPotential.name, printInSettings = true },
+			{ variable = "#primordialPower", icon = spells.primordialPower.icon, description = spells.primordialPower.name, printInSettings = true },
 			{ variable = "#risingSunKick", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = true },
 			{ variable = "#rsk", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = false },
 			{ variable = "#rushingJadeWind", icon = spells.rushingJadeWind.icon, description = spells.rushingJadeWind.name, printInSettings = true },
@@ -702,6 +728,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "$motcMinTime", description = "Time until your oldest Mark of the Crane debuff expires", printInSettings = true, color = false },
 			{ variable = "$motcMaxTime", description = "Time until your newest Mark of the Crane debuff expires", printInSettings = true, color = false },
 
+			{ variable = "$t28BuildingStacks", description = "Number of stacks on the Primordial Potential (T28 4P) builder buff", printInSettings = true, color = false },
+			{ variable = "$t28BuildingStacksRemaining", description = "Number of additional stacks of the Primordial Potential (T28 4P) builder buff until Primordial Power will proc", printInSettings = true, color = false },
+			{ variable = "$t28BuildingTime", description = "Time remaining on your Primordial Potential (T28 4P) builder buff", printInSettings = true, color = false },
+			{ variable = "$t28Stacks", description = "Number of stacks on the Primordial Power (T28 4P) spender buff", printInSettings = true, color = false },
+			{ variable = "$t28Time", description = "Time remaining on your Primordial Power (T28 4P) spender buff", printInSettings = true, color = false },
+			
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
@@ -850,11 +882,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local specId = GetSpecialization()
         
 		if specId == 2 then -- Mistweaver
-			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
+			--[[for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
 				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 20 then
 				else
 				end
-			end
+			end]]
 		elseif specId == 3 then -- Windwalker
 			local motcTotal = 0
 			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
@@ -897,7 +929,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				end
 
 				TRB.Frames.resourceFrame.thresholds[x]:Show()
-				TRB.Frames.resourceFrame.thresholds[x]:SetFrameLevel(0)
+				TRB.Frames.resourceFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 
@@ -907,7 +939,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				end
 
 				TRB.Frames.passiveFrame.thresholds[x]:Show()
-				TRB.Frames.passiveFrame.thresholds[x]:SetFrameLevel(0)
+				TRB.Frames.passiveFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 				TRB.Frames.passiveFrame.thresholds[x]:Hide()
 			end
 			
@@ -927,7 +959,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					TRB.Functions.SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
 
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(0)
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
 				end
 			end
@@ -947,6 +979,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 	local function GetDanceOfChiJiRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.danceOfChiJi)
+	end
+
+	local function GetPrimordialPotentialRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.primordialPotential)
+	end
+
+	local function GetPrimordialPowerRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.primordialPower)
 	end
 
 	local function GetPotionOfSpiritualClarityRemainingTime()
@@ -1108,6 +1148,26 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					TRB.Data.snapshotData.targetData.targets ~= nil and
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].markOfTheCraneRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$t28BuildingStacks" then
+				if TRB.Data.snapshotData.primordialPotential.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$t28BuildingStacksRemaining" then
+				if TRB.Data.snapshotData.primordialPotential.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$t28BuildingTime" then
+				if TRB.Data.snapshotData.primordialPotential.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$t28Stacks" then
+				if TRB.Data.snapshotData.primordialPower.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$t28Time" then
+				if TRB.Data.snapshotData.primordialPower.stacks > 0 then
 					valid = true
 				end
 			elseif var == "$resource" or var == "$energy" then
@@ -1328,7 +1388,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#flameShock"] = TRB.Data.spells.flameShock.icon
 		lookup["#innervate"] = TRB.Data.spells.innervate.icon
 		lookup["#mtt"] = TRB.Data.spells.manaTideTotem.icon
 		lookup["#manaTideTotem"] = TRB.Data.spells.manaTideTotem.icon
@@ -1508,6 +1567,25 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		else
 			motcTime = string.format("%.1f", _motcTime)
 		end
+		
+		local t28BuildingStacks = TRB.Data.snapshotData.primordialPotential.stacks
+		local t28BuildingStacksRemaining = TRB.Data.spells.primordialPotential.maxStacks - TRB.Data.snapshotData.primordialPotential.stacks
+
+		--$t28BuildingTime
+		local _t28BuildingTime = GetPrimordialPotentialRemainingTime()
+		local t28BuildingTime = 0
+		if _t28BuildingTime ~= nil then
+			t28BuildingTime = string.format("%.1f", _t28BuildingTime)
+		end
+
+		local t28Stacks = TRB.Data.snapshotData.primordialPower.stacks
+	
+		--$t28Time
+		local _t28Time = GetPrimordialPowerRemainingTime()
+		local t28Time = 0
+		if _t28Time ~= nil then
+			t28Time = string.format("%.1f", _t28Time)
+		end
 
 		----------------------------
 
@@ -1539,6 +1617,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["#fistOfTheWhiteTiger"] = TRB.Data.spells.fistOfTheWhiteTiger.icon
 		lookup["#fotwt"] = TRB.Data.spells.fistOfTheWhiteTiger.icon
 		lookup["#paralysis"] = TRB.Data.spells.paralysis.icon
+		lookup["#primordialPotential"] = TRB.Data.spells.primordialPotential.icon
+		lookup["#primordialPower"] = TRB.Data.spells.primordialPower.icon
 		lookup["#risingSunKick"] = TRB.Data.spells.risingSunKick.icon
 		lookup["#rsk"] = TRB.Data.spells.risingSunKick.icon
 		lookup["#rushingJadeWind"] = TRB.Data.spells.rushingJadeWind.icon
@@ -1588,6 +1668,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["$motcTime"] = motcTime
 		lookup["$motcCount"] = motcCount
 		lookup["$motcActiveCount"] = motcActiveCount
+		lookup["$t28BuildingStacks"] = t28BuildingStacks
+		lookup["$t28BuildingStacksRemaining"] = t28BuildingStacksRemaining
+		lookup["$t28BuildingTime"] = t28BuildingTime
+		lookup["$t28Stacks"] = t28Stacks
+		lookup["$t28Time"] = t28Time
 		TRB.Data.lookup = lookup
 	end
 
@@ -1961,6 +2046,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[1]:Show()
+								
+							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[1].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[1].icon.cooldown:SetCooldown(0, 0)
+							end
 						else
 							TRB.Frames.resourceFrame.thresholds[1]:Hide()
 						end
@@ -1973,6 +2064,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[2]:Show()
+								
+							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[2].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[2].icon.cooldown:SetCooldown(0, 0)
+							end
 						else
 							TRB.Frames.resourceFrame.thresholds[2]:Hide()
 						end
@@ -1985,6 +2082,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[3]:Show()
+								
+							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[3].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[3].icon.cooldown:SetCooldown(0, 0)
+							end
 						else
 							TRB.Frames.resourceFrame.thresholds[3]:Hide()
 						end
@@ -1997,6 +2100,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[4]:Show()
+								
+							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[4].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[4].icon.cooldown:SetCooldown(0, 0)
+							end
 						else
 							TRB.Frames.resourceFrame.thresholds[4]:Hide()
 						end
@@ -2163,6 +2272,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.passive, true))
 					end
 
+					local pairOffset = 0
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then	
@@ -2171,7 +2281,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 							local showThreshold = true
 							local thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.over
-							local frameLevel = 129
+							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
                             if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
                             elseif spell.isPvp and not TRB.Data.character.isPvp then
@@ -2181,46 +2291,59 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
                             elseif spell.hasCooldown then
                                 if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
                                     thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.unusable
-                                    frameLevel = 127
+                                    frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
                                 elseif TRB.Data.snapshotData.resource >= -energyAmount then
                                     thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.over
                                 else
                                     thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.under
-                                    frameLevel = 128
+                                    frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
                                 end
                             else -- This is an active/available/normal spell threshold
                                 if TRB.Data.snapshotData.resource >= -energyAmount then
                                     thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.over
                                 else
                                     thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.under
-                                    frameLevel = 128
+                                    frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
                                 end
                             end
 
 							if spell.comboPoints == true and TRB.Data.snapshotData.resource2 == 0 then
 								thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.unusable
-								frameLevel = 127
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
 							if TRB.Data.settings.monk.windwalker.thresholds[spell.settingKey].enabled and showThreshold then
+								if not spell.hasCooldown then
+									frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
+								end
+
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
+								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 ---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel+10)
+								resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
+---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
-								if frameLevel == 129 then
+								if frameLevel == TRB.Data.constants.frameLevels.thresholdOver then
 									spell.thresholdUsable = true
 								else
 									spell.thresholdUsable = false
+								end
+								
+                                if TRB.Data.settings.monk.windwalker.thresholds.icons.showCooldown and spell.hasCooldown and TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) and (TRB.Data.snapshotData[spell.settingKey].maxCharges == nil or TRB.Data.snapshotData[spell.settingKey].charges < TRB.Data.snapshotData[spell.settingKey].maxCharges) then
+									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(TRB.Data.snapshotData[spell.settingKey].startTime, TRB.Data.snapshotData[spell.settingKey].duration)
+								else
+									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(0, 0)
 								end
 							else
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
 								spell.thresholdUsable = false
 							end
 						end
+						pairOffset = pairOffset + 3
 					end
 
 					local barColor = TRB.Data.settings.monk.windwalker.colors.bar.base
@@ -2238,6 +2361,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						else
 							barColor = TRB.Data.settings.monk.windwalker.colors.bar.serenity
 						end
+					end
+
+					if GetPrimordialPowerRemainingTime() > 0 then
+						barColor = TRB.Data.settings.monk.windwalker.colors.bar.t28
 					end
 
 					local barBorderColor = TRB.Data.settings.monk.windwalker.colors.bar.border
@@ -2476,6 +2603,32 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.paralysis.startTime = currentTime
 							TRB.Data.snapshotData.paralysis.duration = TRB.Data.spells.paralysis.cooldown
+						end
+					elseif spellId == TRB.Data.spells.primordialPotential.id then
+						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							_, _, TRB.Data.snapshotData.primordialPotential.stacks, _, TRB.Data.snapshotData.primordialPotential.duration, TRB.Data.snapshotData.primordialPotential.endTime, _, _, _, TRB.Data.snapshotData.primordialPotential.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.primordialPotential.id)
+						elseif type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
+							--TRB.Data.snapshotData.audio.surgeOfLight2Cue = false
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.primordialPotential.spellId = nil
+							TRB.Data.snapshotData.primordialPotential.duration = 0
+							TRB.Data.snapshotData.primordialPotential.stacks = 0
+							TRB.Data.snapshotData.primordialPotential.endTime = nil
+							--TRB.Data.snapshotData.audio.surgeOfLightCue = false
+							--TRB.Data.snapshotData.audio.surgeOfLight2Cue = false
+						end
+					elseif spellId == TRB.Data.spells.primordialPower.id then
+						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REMOVED_DOSE" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							_, _, TRB.Data.snapshotData.primordialPower.stacks, _, TRB.Data.snapshotData.primordialPower.duration, TRB.Data.snapshotData.primordialPower.endTime, _, _, _, TRB.Data.snapshotData.primordialPower.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.primordialPower.id)
+						elseif type == "SPELL_AURA_APPLIED_DOSE" then -- Lost stack
+							--TRB.Data.snapshotData.audio.surgeOfLight2Cue = false
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.primordialPower.spellId = nil
+							TRB.Data.snapshotData.primordialPower.duration = 0
+							TRB.Data.snapshotData.primordialPower.stacks = 0
+							TRB.Data.snapshotData.primordialPower.endTime = nil
+							--TRB.Data.snapshotData.audio.surgeOfLightCue = false
+							--TRB.Data.snapshotData.audio.surgeOfLight2Cue = false
 						end
 					end
 				end
