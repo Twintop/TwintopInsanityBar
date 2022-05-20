@@ -3495,7 +3495,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 							local showThreshold = true
 							local thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
-							local frameLevel = 129
+							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
 							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed. TODO: add override check for certain buffs.
 								showThreshold = false
@@ -3508,43 +3508,43 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
 										else
 											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
-											frameLevel = 128
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.echoingReprimand.id then
 										if TRB.Data.character.covenantId ~= 1 then -- Not Kyrian
 											showThreshold = false
 										elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.unusable
-												frameLevel = 127
+												frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
 											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
 										else
 											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
-											frameLevel = 128
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.sepsis.id then
 										if TRB.Data.character.covenantId ~= 3 then -- Not Night Fae
 											showThreshold = false
 										elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.unusable
-												frameLevel = 127
+												frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
 											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
 										else
 											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
-											frameLevel = 128
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.serratedBoneSpike.id then
 										if TRB.Data.character.covenantId ~= 4 then -- Not Necrolord
 											showThreshold = false
 										elseif TRB.Data.snapshotData[spell.settingKey].charges == 0 then
 											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.unusable
-											frameLevel = 127
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
 											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
 										else
 											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
-											frameLevel = 128
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.sinisterStrike.id then
 										if TRB.Data.snapshotData.resource >= -energyAmount then
@@ -3559,7 +3559,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											else
 												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
 											end
-											frameLevel = 128
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.pistolShot.id then
 										local opportunityTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.opportunity)
@@ -3581,12 +3581,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											else
 												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
 											end
-											frameLevel = 128
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.betweenTheEyes.id then
 										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.unusable
-											frameLevel = 127
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
 											if TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision) > 0 then
 												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.special
@@ -3599,7 +3599,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											else
 												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
 											end
-											frameLevel = 128
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									end
 								elseif spell.isPvp and not TRB.Data.character.isPvp then
@@ -3609,26 +3609,26 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								elseif spell.hasCooldown then
 									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.unusable
-										frameLevel = 127
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif TRB.Data.snapshotData.resource >= -energyAmount then
 										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
-										frameLevel = 128
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								else -- This is an active/available/normal spell threshold
 									if TRB.Data.snapshotData.resource >= -energyAmount then
 										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
-										frameLevel = 128
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								end
 							end
 
 							if spell.comboPoints == true and TRB.Data.snapshotData.resource2 == 0 then
 								thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.unusable
-								frameLevel = 127
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
 							if TRB.Data.settings.rogue.outlaw.thresholds[spell.settingKey].enabled and showThreshold then
