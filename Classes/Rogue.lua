@@ -968,7 +968,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 			-- Talents
 			ghostlyStrike = {
-				id = 185763,
+				id = 196937,
 				name = "",
 				icon = "",
 				energy = -30,
@@ -1784,20 +1784,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					-- Covenant
 					TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpike = false
 				end
+			elseif specId == 2 then
+				if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
+					TRB.Functions.InitializeTarget(guid)
+					--Poisons
+					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].woundPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].woundPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].numbingPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].numbingPoisonRemaining = 0
+					-- Covenant
+					TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpike = false
+				end
 			end
-		elseif specId == 2 then
-			if guid ~= nil and not TRB.Functions.CheckTargetExists(guid) then
-				TRB.Functions.InitializeTarget(guid)
-				--Poisons
-				TRB.Data.snapshotData.targetData.targets[guid].cripplingPoison = false
-				TRB.Data.snapshotData.targetData.targets[guid].cripplingPoisonRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].woundPoison = false
-				TRB.Data.snapshotData.targetData.targets[guid].woundPoisonRemaining = 0
-				TRB.Data.snapshotData.targetData.targets[guid].numbingPoison = false
-				TRB.Data.snapshotData.targetData.targets[guid].numbingPoisonRemaining = 0
-				-- Covenant
-				TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpike = false
-			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			return true
 		end
 		return false
 	end
@@ -1826,7 +1828,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			-- Covenant
 			local serratedBoneSpikeTotal = 0
 			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
-				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
+				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 20 then
 					-- Bleeds
 					TRB.Data.snapshotData.targetData.targets[guid].garrote = false
 					TRB.Data.snapshotData.targetData.targets[guid].garroteRemaining = 0
@@ -1900,7 +1902,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			-- Covenant
 			local serratedBoneSpikeTotal = 0
 			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
-				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
+				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 20 then
 					-- Poisons
 					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoison = false
 					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoisonRemaining = 0
@@ -3487,6 +3489,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.bar.passive, true))
 					end
 
+					local pairOffset = 0
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then	
@@ -3632,24 +3635,37 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							end
 
 							if TRB.Data.settings.rogue.outlaw.thresholds[spell.settingKey].enabled and showThreshold then
+								if not spell.hasCooldown then
+									frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
+								end
+
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel)
+								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 ---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel+10)
+								resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
+---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
-								if frameLevel == 129 then
+								if frameLevel == TRB.Data.constants.frameLevels.thresholdOver then
 									spell.thresholdUsable = true
 								else
 									spell.thresholdUsable = false
+								end
+								
+                                if TRB.Data.settings.rogue.outlaw.thresholds.icons.showCooldown and spell.hasCooldown and TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) and (TRB.Data.snapshotData[spell.settingKey].maxCharges == nil or TRB.Data.snapshotData[spell.settingKey].charges < TRB.Data.snapshotData[spell.settingKey].maxCharges) then
+									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(TRB.Data.snapshotData[spell.settingKey].startTime, TRB.Data.snapshotData[spell.settingKey].duration)
+								else
+									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(0, 0)
 								end
 							else
 								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
 								spell.thresholdUsable = false
 							end
 						end
+						pairOffset = pairOffset + 3
 					end
 
 					local barColor = TRB.Data.settings.rogue.outlaw.colors.bar.base
