@@ -505,6 +505,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				bar = {
 					border="FFFFD300",
 					borderOvercap="FFFF0000",
+					borderRtbBad="FF990000",
+					borderRtbGood="FF00FF00",
 					background="66000000",
 					base="FFFFFF00",
 					noSliceAndDice="FFFF0000",

@@ -445,12 +445,14 @@ local function GetSpellRemainingTime(snapshotSpell, leeway)
 	local remainingTime = 0
 	local endTime = nil
 
-	if snapshotSpell ~= nil then
-		if leeway and snapshotSpell.endTimeLeeway ~= nil then
-			endTime = snapshotSpell.endTimeLeeway
-		else
-			endTime = snapshotSpell.endTime
-		end
+	if snapshotSpell == nil then
+		return remainingTime
+	end
+	
+	if leeway and snapshotSpell.endTimeLeeway ~= nil then
+		endTime = snapshotSpell.endTimeLeeway
+	else
+		endTime = snapshotSpell.endTime
 	end
 
 	if endTime ~= nil and (snapshotSpell.isActive or endTime > currentTime) then

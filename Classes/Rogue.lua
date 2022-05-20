@@ -1031,6 +1031,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				conduitId = 235,
 				conduitRanks = {}
 			},
+			countTheOdds = {
+				id = 341546,
+				name = "",
+				icon = "",
+				duration = 5
+			},
 
 			-- Covenants
 			echoingReprimand = { -- Kyrian
@@ -1237,37 +1243,45 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				broadside = {
 					endTime = nil,
 					duration = 0,
-					spellId = nil
+					spellId = nil,
+					fromCountTheOdds = false
 				},
 				buriedTreasure = {
 					endTime = nil,
 					duration = 0,
-					spellId = nil
+					spellId = nil,
+					fromCountTheOdds = false
 				},
 				grandMelee = {
 					endTime = nil,
 					duration = 0,
-					spellId = nil
+					spellId = nil,
+					fromCountTheOdds = false
 				},
 				ruthlessPrecision = {
 					endTime = nil,
 					duration = 0,
-					spellId = nil
+					spellId = nil,
+					fromCountTheOdds = false
 				},
 				skullAndCrossbones = {
 					endTime = nil,
 					duration = 0,
-					spellId = nil
+					spellId = nil,
+					fromCountTheOdds = false
 				},
 				trueBearing = {
 					endTime = nil,
 					duration = 0,
-					spellId = nil
+					spellId = nil,
+					fromCountTheOdds = false
 				}
 			},
 			count = 0,
+			temporaryCount = 0,
 			startTime = nil,
-			duration = 0
+			duration = 0,
+			goodBuffs = false
 		}
 
 		specCache.outlaw.barTextVariables = {
@@ -1558,6 +1572,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 			{ variable = "$rtbCount", description = "Current number of Roll the Bones buffs active", printInSettings = true, color = false },
 			{ variable = "$rollTheBonesCount", description = "Current number of Roll the Bones buffs active", printInSettings = false, color = false },
+
+			{ variable = "$rtbTemporaryCount", description = "Current number of full Roll the Bones buffs active", printInSettings = true, color = false },
+			{ variable = "$rollTheBonesTemporaryCount", description = "Current number of temporary Roll the Bones buffs (from Count the Odds) active", printInSettings = false, color = false },
+
+			{ variable = "$rtbAllCount", description = "Current number of Roll the Bones buffs active from all sources", printInSettings = true, color = false },
+			{ variable = "$rollTheBonesAllCount", description = "Current number of Roll the Bones buffs active from all sources", printInSettings = false, color = false },
 
 			{ variable = "$sadTime", description = "Time remaining on Slice and Dice buff", printInSettings = true, color = false },
 			{ variable = "$sliceAndDiceTime", description = "Time remaining on Slice and Dice buff", printInSettings = false, color = false },
@@ -2721,6 +2741,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end
 
 		local rollTheBonesCount = TRB.Data.snapshotData.rollTheBones.count
+		local rollTheBonesTemporaryCount = TRB.Data.snapshotData.rollTheBones.temporaryCount
+		local rollTheBonesAllCount = TRB.Data.snapshotData.rollTheBones.count + TRB.Data.snapshotData.rollTheBones.temporaryCount
 
 		--$sadTime
 		local _sadTime = 0
@@ -2736,15 +2758,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		else
 			sadTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.outlaw.colors.text.dots.down, 0)
 		end
-
-		--[[
-		--$blindsideTime
-		local _blindsideTime = GetBlindsideRemainingTime()
-		local blindsideTime = 0
-		if _blindsideTime ~= nil then
-			blindsideTime = string.format("%.1f", _blindsideTime)
-		end
-		]]
 
 		--#covenantAbility
 		local covenantAbilityIcon = ""
@@ -2831,6 +2844,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		--lookup["$blindsideTime"] = blindsideTime
 		lookup["$rtbCount"] = rollTheBonesCount
 		lookup["$rollTheBonesCount"] = rollTheBonesCount
+		lookup["$rtbAllCount"] = rollTheBonesAllCount
+		lookup["$rollTheBonesAllCount"] = rollTheBonesAllCount
+		lookup["$rtbTemporaryCount"] = rollTheBonesTemporaryCount
+		lookup["$rollTheBonesTemporaryCount"] = rollTheBonesTemporaryCount
 
 		if TRB.Data.character.maxResource == TRB.Data.snapshotData.resource then
 			lookup["$passive"] = passiveEnergyMinusRegen
@@ -3036,8 +3053,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Data.snapshotData.dreadblades.startTime, TRB.Data.snapshotData.dreadblades.duration, _, _ = GetSpellCooldown(TRB.Data.spells.dreadblades.id)
 		---@diagnostic disable-next-line: redundant-parameter
 		TRB.Data.snapshotData.ghostlyStrike.startTime, TRB.Data.snapshotData.ghostlyStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ghostlyStrike.id)
-		---@diagnostic disable-next-line: redundant-parameter
-		TRB.Data.snapshotData.rollTheBones.startTime, TRB.Data.snapshotData.rollTheBones.duration, _, _ = GetSpellCooldown(TRB.Data.spells.rollTheBones.id)
 
         if TRB.Data.snapshotData.bladeRush.startTime ~= nil and currentTime > (TRB.Data.snapshotData.bladeRush.startTime + TRB.Data.snapshotData.bladeRush.duration) then
             TRB.Data.snapshotData.bladeRush.startTime = nil
@@ -3069,18 +3084,34 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
             TRB.Data.snapshotData.gouge.duration = 0
         end
 
-        if TRB.Data.snapshotData.rollTheBones.startTime ~= nil and currentTime > (TRB.Data.snapshotData.rollTheBones.startTime + TRB.Data.snapshotData.rollTheBones.duration) then
-            TRB.Data.snapshotData.rollTheBones.startTime = nil
-            TRB.Data.snapshotData.rollTheBones.duration = 0
-        end
+		if TRB.Data.snapshotData.rollTheBones.startTime ~= nil then	
+---@diagnostic disable-next-line: redundant-parameter
+			TRB.Data.snapshotData.rollTheBones.startTime, TRB.Data.snapshotData.rollTheBones.duration, _, _ = GetSpellCooldown(TRB.Data.spells.rollTheBones.id)
+
+			if TRB.Data.snapshotData.rollTheBones.startTime ~= nil and currentTime > (TRB.Data.snapshotData.rollTheBones.startTime + TRB.Data.snapshotData.rollTheBones.duration) then
+				TRB.Data.snapshotData.rollTheBones.startTime = nil
+				TRB.Data.snapshotData.rollTheBones.duration = 0
+			end
+		end
 		
 		local rollTheBonesCount = 0
+		local rollTheBonesTemporaryCount = 0
 		for _, v in pairs(TRB.Data.snapshotData.rollTheBones.buffs) do
-			if TRB.Functions.GetSpellRemainingTime(v) > 0 then
+			local remaining = TRB.Functions.GetSpellRemainingTime(v)
+			if remaining > TRB.Data.spells.countTheOdds.duration then
 				rollTheBonesCount = rollTheBonesCount + 1
+			elseif remaining > 0 then
+				rollTheBonesTemporaryCount = rollTheBonesTemporaryCount + 1
 			end
 		end
 		TRB.Data.snapshotData.rollTheBones.count = rollTheBonesCount
+		TRB.Data.snapshotData.rollTheBones.temporaryCount = rollTheBonesTemporaryCount
+
+		if TRB.Data.snapshotData.rollTheBones.count >= 2 or TRB.Data.snapshotData.rollTheBones.buffs.broadside.duration > 0 or TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.duration > 0 then
+			TRB.Data.snapshotData.rollTheBones.goodBuffs = true
+		else
+			TRB.Data.snapshotData.rollTheBones.goodBuffs = false
+		end
 	end
 
 	local function UpdateSnapshot_Subtlety()
@@ -3670,8 +3701,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 					local barColor = TRB.Data.settings.rogue.outlaw.colors.bar.base
 
-					local latency = TRB.Functions.GetLatency()
-
 					local affectingCombat = UnitAffectingCombat("player")
 
 					if affectingCombat then
@@ -3685,7 +3714,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 					local barBorderColor = TRB.Data.settings.rogue.outlaw.colors.bar.border
 
-					if TRB.Data.settings.rogue.outlaw.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					if TRB.Data.snapshotData.rollTheBones.goodBuffs == true and TRB.Data.snapshotData.rollTheBones.startTime == nil then
+						barBorderColor = TRB.Data.settings.rogue.outlaw.colors.bar.borderRtbGood
+					elseif TRB.Data.snapshotData.rollTheBones.goodBuffs == false and TRB.Data.snapshotData.rollTheBones.startTime == nil then
+						barBorderColor = TRB.Data.settings.rogue.outlaw.colors.bar.borderRtbBad
+					elseif TRB.Data.settings.rogue.outlaw.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
 						barBorderColor = TRB.Data.settings.rogue.outlaw.colors.bar.borderOvercap
 
 						if TRB.Data.settings.rogue.outlaw.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -3943,61 +3976,103 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.broadside.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.rollTheBones.buffs.broadside.duration, TRB.Data.snapshotData.rollTheBones.buffs.broadside.endTime, _, _, _, TRB.Data.snapshotData.rollTheBones.buffs.broadside.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.broadside.id)
+							
+							if TRB.Data.snapshotData.rollTheBones.buffs.broadside.duration > TRB.Data.spells.countTheOdds.duration then
+								TRB.Data.snapshotData.rollTheBones.buffs.broadside.fromCountTheOdds = false
+							else
+								TRB.Data.snapshotData.rollTheBones.buffs.broadside.fromCountTheOdds = true
+							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.broadside.isActive = false
 							TRB.Data.snapshotData.rollTheBones.buffs.broadside.spellId = nil
 							TRB.Data.snapshotData.rollTheBones.buffs.broadside.duration = 0
 							TRB.Data.snapshotData.rollTheBones.buffs.broadside.endTime = nil
+							TRB.Data.snapshotData.rollTheBones.buffs.broadside.fromCountTheOdds = false
 						end
 					elseif spellId == TRB.Data.spells.buriedTreasure.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.buriedTreasure.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure.duration, TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure.endTime, _, _, _, TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.buriedTreasure.id)
+							
+							if TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure.duration > TRB.Data.spells.countTheOdds.duration then
+								TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure.fromCountTheOdds = false
+							else
+								TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure.fromCountTheOdds = true
+							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.buriedTreasure.isActive = false
 							TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure.spellId = nil
 							TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure.duration = 0
 							TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure.endTime = nil
+							TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure.fromCountTheOdds = false
 						end
 					elseif spellId == TRB.Data.spells.grandMelee.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.grandMelee.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.rollTheBones.buffs.grandMelee.duration, TRB.Data.snapshotData.rollTheBones.buffs.grandMelee.endTime, _, _, _, TRB.Data.snapshotData.rollTheBones.buffs.grandMelee.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.grandMelee.id)
+							
+							if TRB.Data.snapshotData.rollTheBones.buffs.grandMelee.duration > TRB.Data.spells.countTheOdds.duration then
+								TRB.Data.snapshotData.rollTheBones.buffs.grandMelee.fromCountTheOdds = false
+							else
+								TRB.Data.snapshotData.rollTheBones.buffs.grandMelee.fromCountTheOdds = true
+							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.grandMelee.isActive = false
 							TRB.Data.snapshotData.rollTheBones.buffs.grandMelee.spellId = nil
 							TRB.Data.snapshotData.rollTheBones.buffs.grandMelee.duration = 0
 							TRB.Data.snapshotData.rollTheBones.buffs.grandMelee.endTime = nil
+							TRB.Data.snapshotData.rollTheBones.buffs.grandMelee.fromCountTheOdds = false
 						end
 					elseif spellId == TRB.Data.spells.ruthlessPrecision.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.ruthlessPrecision.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision.duration, TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision.endTime, _, _, _, TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.ruthlessPrecision.id)
+							
+							if TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision.duration > TRB.Data.spells.countTheOdds.duration then
+								TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision.fromCountTheOdds = false
+							else
+								TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision.fromCountTheOdds = true
+							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.ruthlessPrecision.isActive = false
 							TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision.spellId = nil
 							TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision.duration = 0
 							TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision.endTime = nil
+							TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision.fromCountTheOdds = false
 						end
 					elseif spellId == TRB.Data.spells.skullAndCrossbones.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.skullAndCrossbones.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones.duration, TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones.endTime, _, _, _, TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.skullAndCrossbones.id)
+							
+							if TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones.duration > TRB.Data.spells.countTheOdds.duration then
+								TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones.fromCountTheOdds = false
+							else
+								TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones.fromCountTheOdds = true
+							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.skullAndCrossbones.isActive = false
 							TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones.spellId = nil
 							TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones.duration = 0
 							TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones.endTime = nil
+							TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones.fromCountTheOdds = false
 						end
 					elseif spellId == TRB.Data.spells.trueBearing.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.trueBearing.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.duration, TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.endTime, _, _, _, TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.trueBearing.id)
+
+							if TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.duration > TRB.Data.spells.countTheOdds.duration then
+								TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.fromCountTheOdds = false
+							else
+								TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.fromCountTheOdds = true
+							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.trueBearing.isActive = false
 							TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.spellId = nil
 							TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.duration = 0
 							TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.endTime = nil
+							TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.fromCountTheOdds = false
 						end
 					end
 				end
