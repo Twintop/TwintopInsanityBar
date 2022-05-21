@@ -931,49 +931,20 @@ local function ConstructResourceBar(settings)
 				})
 				
 				container:SetBackdropColor(GetRGBAFromString(settings.colors.comboPoints.background, true))
-				--container:SetWidth(nodeWidth-(settings.comboPoints.border*2))
 				container:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
 				container:SetFrameStrata(TRB.Data.settings.core.strata.level)
 				container:SetFrameLevel(TRB.Data.constants.frameLevels.cpContainer)
-
-				--[[
-				if settings.comboPoints.border < 1 then
-					border:Show()
-					border.backdropInfo = {
-						edgeFile = settings.textures.comboPointsBorder,
-						tile = true,
-						tileSize=4,
-						edgeSize = 1,
-						insets = {0, 0, 0, 0}
-					}
-					border:ApplyBackdrop()
-					border:Hide()
-				else
-					border:Show()
-					border.backdropInfo = {
-						edgeFile = settings.textures.comboPointsBorder,
-						tile = true,
-						tileSize = 4,
-						edgeSize = settings.comboPoints.border,
-						insets = {0, 0, 0, 0}
-					}
-					border:ApplyBackdrop()
-				end
-				]]
 		
 				border:ClearAllPoints()
 				border:SetPoint("CENTER", container)
 				border:SetPoint("CENTER", 0, 0)
 				border:SetBackdropColor(0, 0, 0, 0)
 				border:SetBackdropBorderColor(GetRGBAFromString(settings.colors.comboPoints.border, true))
-				--border:SetWidth(nodeWidth)
-				--border:SetHeight(settings.comboPoints.height)
 				border:SetFrameStrata(TRB.Data.settings.core.strata.level)
 				border:SetFrameLevel(TRB.Data.constants.frameLevels.cpBorder)
 		
 				resource:Show()
 				resource:SetMinMaxValues(0, 1)
-				--resource:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
 				resource:SetPoint("LEFT", container, "LEFT", 0, 0)
 				resource:SetPoint("RIGHT", container, "RIGHT", 0, 0)
 				resource:SetStatusBarTexture(settings.textures.comboPointsBar)

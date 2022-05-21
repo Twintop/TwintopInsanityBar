@@ -307,13 +307,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			fontSizeLock=true,
 			fontFaceLock=true,
 			left={
-				text="",
+				text="{$rtbBuffTime}[#rollTheBones $rtbBuffTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
 			},
 			middle={
-				text="{$sadTime}[$sadTime]",
+				text="{$sadTime}[#sliceAndDice $sadTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=18
@@ -334,7 +334,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "",
+				text = "{$rtbBuffTime}[#rollTheBones $rtbBuffTime #rollTheBones]{$ttd}[||nTTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -388,7 +388,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					enabled = false, -- 4
 				},
 				feint = {
-					enabled = true, -- 5
+					enabled = false, -- 5
 				},
 				kidneyShot = {
 					enabled = false, -- 6
@@ -416,7 +416,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					enabled = true, -- 13
 				},
 				pistolShot = {
-					enabled = false, -- 14
+					enabled = true, -- 14
 				},
 				rollTheBones = {
 					enabled = true, -- 15
@@ -505,7 +505,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				bar = {
 					border="FFFFD300",
 					borderOvercap="FFFF0000",
-					borderRtbBad="FF990000",
+					borderRtbBad="FFFF8888",
 					borderRtbGood="FF00FF00",
 					background="66000000",
 					base="FFFFFF00",
@@ -530,7 +530,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					under="FFFFFFFF",
 					over="FF00FF00",
 					unusable="FFFF0000",
-					special="FFFF00FF"
+					special="FFFF00FF",
+					restlessBlades="FFFFFF00"
 				}
 			},
 			displayText = {},
@@ -2138,25 +2139,24 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end)
 
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Energy gain from Passive Sources", TRB.Data.settings.rogue.assassination.colors.bar.passive, 275, 25, xCoord2, yCoord)
-		f = controls.colors.passive
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you are overcapping Energy", TRB.Data.settings.rogue.assassination.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.passive, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.borderOvercap, true)
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
+					local r, g, b, a
+					if color then
 ---@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    
-					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
-					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
-                    TRB.Data.settings.rogue.assassination.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.rogue.assassination.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
 			end
 		end)
 
@@ -2201,6 +2201,30 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                     controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
                     TRB.Data.settings.rogue.assassination.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barContainerFrame:SetBackdropColor(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+
+		yCoord = yCoord - 30
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Energy gain from Passive Sources", TRB.Data.settings.rogue.assassination.colors.bar.passive, 275, 25, xCoord, yCoord)
+		f = controls.colors.passive
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.passive, true)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+---@diagnostic disable-next-line: deprecated
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+                    
+					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
+					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
+                    TRB.Data.settings.rogue.assassination.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
@@ -5585,7 +5609,29 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end)
 
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Energy gain from Passive Sources", TRB.Data.settings.rogue.outlaw.colors.bar.passive, 275, 25, xCoord2, yCoord)
+		controls.colors.borderRtbGood = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you should not use Roll the Bones (keep current rolls)", TRB.Data.settings.rogue.outlaw.colors.bar.borderRtbGood, 275, 25, xCoord2, yCoord)
+		f = controls.colors.borderRtbGood
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.bar.borderRtbGood, true)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+---@diagnostic disable-next-line: deprecated
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.borderRtbGood.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.rogue.outlaw.colors.bar.borderRtbGood = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
+			end
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Energy gain from Passive Sources", TRB.Data.settings.rogue.outlaw.colors.bar.passive, 275, 25, xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -5607,13 +5653,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end)
 
-
-		yCoord = yCoord - 30
-		controls.colors.noSliceAndDice = TRB.UiFunctions:BuildColorPicker(parent, "Energy when Slice and Dice is not up", TRB.Data.settings.rogue.outlaw.colors.bar.noSliceAndDice, 275, 25, xCoord, yCoord)
-		f = controls.colors.noSliceAndDice
+		controls.colors.borderRtbBad = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you should use Roll the Bones (not up or should reroll)", TRB.Data.settings.rogue.outlaw.colors.bar.borderRtbBad, 275, 25, xCoord2, yCoord)
+		f = controls.colors.borderRtbBad
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.bar.noSliceAndDice, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.bar.borderRtbBad, true)
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -5624,13 +5668,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						a = OpacitySliderFrame:GetValue()
 					end
 
-					controls.colors.noSliceAndDice.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.rogue.outlaw.colors.bar.noSliceAndDice = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					controls.colors.borderRtbBad.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.rogue.outlaw.colors.bar.borderRtbBad = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
 
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.rogue.outlaw.colors.bar.background, 275, 25, xCoord2, yCoord)
+		yCoord = yCoord - 30
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.rogue.outlaw.colors.bar.background, 275, 25, xCoord, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -5649,6 +5694,27 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                     TRB.Data.settings.rogue.outlaw.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barContainerFrame:SetBackdropColor(r, g, b, 1-a)
                 end)
+			end
+		end)
+
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you are overcapping Energy", TRB.Data.settings.rogue.outlaw.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		f = controls.colors.borderOvercap
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.bar.borderOvercap, true)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
+					local r, g, b, a
+					if color then
+---@diagnostic disable-next-line: deprecated
+						r, g, b, a = unpack(color)
+					else
+						r, g, b = ColorPickerFrame:GetColorRGB()
+						a = OpacitySliderFrame:GetValue()
+					end
+
+					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
+					TRB.Data.settings.rogue.outlaw.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+				end)
 			end
 		end)
 
@@ -5890,7 +5956,28 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end)
 
-		controls.colors.thresholdSpecial = TRB.UiFunctions:BuildColorPicker(parent, "Skull and Crossbones, Ruthless Precision, or Opportunity effect up", TRB.Data.settings.rogue.outlaw.colors.threshold.special, 275, 25, xCoord2, yCoord-90)
+		controls.colors.thresholdRestlessBlades = TRB.UiFunctions:BuildColorPicker(parent, "Ability usable after next finisher (via Restless Blades+True Bearing)", TRB.Data.settings.rogue.outlaw.colors.threshold.restlessBlades, 275, 25, xCoord2, yCoord-90)
+		f = controls.colors.thresholdRestlessBlades
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.threshold.restlessBlades, true)
+				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
+                    local r, g, b, a
+                    if color then
+---@diagnostic disable-next-line: deprecated
+                        r, g, b, a = unpack(color)
+                    else
+                        r, g, b = ColorPickerFrame:GetColorRGB()
+                        a = OpacitySliderFrame:GetValue()
+                    end
+
+                    controls.colors.thresholdRestlessBlades.Texture:SetColorTexture(r, g, b, 1-a)
+                    TRB.Data.settings.rogue.outlaw.colors.threshold.restlessBlades = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                end)
+			end
+		end)
+
+		controls.colors.thresholdSpecial = TRB.UiFunctions:BuildColorPicker(parent, "Skull and Crossbones, Ruthless Precision, or Opportunity effect up", TRB.Data.settings.rogue.outlaw.colors.threshold.special, 275, 25, xCoord2, yCoord-120)
 		f = controls.colors.thresholdSpecial
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
@@ -5913,7 +6000,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-120)
+		f:SetPoint("TOPLEFT", xCoord2, yCoord-150)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(TRB.Data.settings.rogue.outlaw.thresholds.overlapBorder)
