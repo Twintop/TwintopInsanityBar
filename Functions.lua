@@ -1573,6 +1573,7 @@ local function ScanForLogicSymbols(input)
 	local a, b, c, d, e, e_1, e_2, e_3, f, g, h, i, j
 	local _
 	local currentLevel = 0
+	local currentParenthesisLevel = 0
 	local min
 	local index = 0
 
@@ -1622,25 +1623,32 @@ local function ScanForLogicSymbols(input)
 			local ins = {
 				position = min,
 				level = currentLevel,
+				parenthesisLevel = currentParenthesisLevel,
 				index = index
 			}
 
 			if min == a then
 				currentLevel = currentLevel + 1
+				currentParenthesisLevel = currentParenthesisLevel + 1
 				ins.level = currentLevel
+				ins.parenthesisLevel = currentParenthesisLevel
 				ins.symbol = "{"
 				currentPosition = a + 1
 			elseif min == b then
 				currentLevel = currentLevel - 1
+				currentParenthesisLevel = currentParenthesisLevel - 1
 				ins.symbol = "}"
 				currentPosition = b + 1
 			elseif min == c then
 				currentLevel = currentLevel + 1
+				currentParenthesisLevel = currentParenthesisLevel + 1
 				ins.level = currentLevel
+				ins.parenthesisLevel = currentParenthesisLevel
 				ins.symbol = "["
 				currentPosition = c + 1
 			elseif min == d then
 				currentLevel = currentLevel - 1
+				currentParenthesisLevel = currentParenthesisLevel - 1
 				ins.symbol = "]"
 				currentPosition = d + 1
 			elseif min == e then
@@ -1656,13 +1664,13 @@ local function ScanForLogicSymbols(input)
 				ins.symbol = "$"
 				currentPosition = h + 1
 			elseif min == i then
-				currentLevel = currentLevel + 1
-				ins.level = currentLevel
+				currentParenthesisLevel = currentParenthesisLevel + 1
+				ins.parenthesisLevel = currentParenthesisLevel
 				ins.symbol = "("
 				currentPosition = i + 1
 			elseif min == j then
 				ins.symbol = ")"
-				currentLevel = currentLevel - 1
+				currentParenthesisLevel = currentParenthesisLevel - 1
 				currentPosition = j + 1
 			else -- Something went wrong. Break for safety
 				currentPosition = string.len(input) + 1
@@ -1869,6 +1877,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 							returnText = returnText .. string.sub(input, p, nextOpenResult.position - positionOffset)
 							p = nextOpenResult.position - positionOffset + 1
 							lastIndex = nextOpenResult.index
+							print("error")
 						end
 					else -- Dump all of the previous "if" stuff verbatim
 						returnText = returnText .. string.sub(input, p, matchedCloseIf.position - positionOffset)
