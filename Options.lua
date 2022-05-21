@@ -1062,6 +1062,36 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 35
     controls.labels.rogue = TRB.UiFunctions:BuildLabel(parent, "Rogue", xCoord, yCoord, 110, 20)
+    
+    buttonOffset = xCoord + xPadding + 100
+    controls.buttons.exportButton_Rogue_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.buttons.exportButton_Rogue_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Rogue specializations (All).", 4, nil, true, true, true, true, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 50
+    controls.exportButton_Rogue_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Rogue_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Rogue specializations (Bar Display).", 4, nil, true, false, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 80
+    controls.exportButton_Rogue_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Rogue_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Rogue specializations (Font & Text).", 4, nil, false, true, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 90
+    controls.exportButton_Rogue_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Rogue_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Rogue specializations (Audio & Tracking).", 4, nil, false, false, true, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 120
+    controls.exportButton_Rogue_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Rogue_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Rogue specializations (Bar Text).", 4, nil, false, false, false, true, false)
+    end)
 
     yCoord = yCoord - 25
     specName = "Assassination"
@@ -1095,6 +1125,41 @@ local function ConstructImportExportPanel()
     controls.exportButton_Rogue_Assassination_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
     controls.exportButton_Rogue_Assassination_BarText:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Assassination Rogue (Bar Text).", 4, 1, false, false, false, true, false)
+    end)
+
+
+    yCoord = yCoord - 25
+    specName = "Outlaw"
+    controls.labels.rogueOutlaw = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+
+    buttonOffset = xCoord + xPadding + 100
+    controls.buttons.exportButton_Rogue_Outlaw_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.buttons.exportButton_Rogue_Outlaw_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Outlaw Rogue (All).", 4, 2, true, true, true, true, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 50
+    controls.exportButton_Rogue_Outlaw_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Rogue_Outlaw_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Outlaw Rogue (Bar Display).", 4, 2, true, false, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 80
+    controls.exportButton_Rogue_Outlaw_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Rogue_Outlaw_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Outlaw Rogue (Font & Text).", 4, 2, false, true, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 90
+    controls.exportButton_Rogue_Outlaw_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Rogue_Outlaw_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Outlaw Rogue (Audio & Tracking).", 4, 2, false, false, true, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 120
+    controls.exportButton_Rogue_Outlaw_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Rogue_Outlaw_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Outlaw Rogue (Bar Text).", 4, 2, false, false, false, true, false)
     end)
 
     yCoord = yCoord - 35
