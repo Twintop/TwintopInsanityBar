@@ -797,6 +797,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				termsOfEngagement = {
 					isSelected = false
 				},
+				guerrillaTactics = {
+					isSelected = false
+				},
 				butchery = {
 					isSelected = false
 				},
@@ -950,6 +953,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				isActive = false
 			},
+			wildfireBomb = {
+				id = 259495,
+				name = "",
+				icon = ""
+			},
 
 			serpentSting = {
 				id = 259491,
@@ -1028,6 +1036,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				isActive = false,
 				modifier = 2.0
 			},
+
+			--T28 2P
+			madBombardier = {
+				id = 363805,
+				name = "",
+				icon = ""
+			},
 		}
 
 		specCache.survival.snapshotData.focusRegen = 0
@@ -1090,6 +1105,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		}
 		specCache.survival.snapshotData.nesingwarysTrappingApparatus = {
 			spellId = nil,
+			duration = 0,
+			endTime = nil
+		}
+		specCache.survival.snapshotData.wildfireBomb = {
+			charges = 0,
+			maxCharges = 1,
+			startTime = nil,
+			duration = 0
+		}
+		specCache.survival.snapshotData.madBombardier = {
+			isActive = false,
+			spellId = nil,			
 			duration = 0,
 			endTime = nil
 		}
@@ -1337,6 +1364,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
 			{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = "Steady Shot", printInSettings = true },
 			{ variable = "#termsOfEngagement", icon = spells.termsOfEngagement.icon, description = "Terms of Engagement", printInSettings = true },
+			{ variable = "#wildfireBomb", icon = spells.wildfireBomb.icon, description = "Wildfire Bomb", printInSettings = true },
 			{ variable = "#wingClip", icon = spells.wingClip.icon, description = "Wing Clip", printInSettings = true },
         }
 		specCache.survival.barTextVariables.values = {
@@ -1379,6 +1407,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$toeFocus", description = "Focus from Terms of Engagement", printInSettings = true, color = false },
 			{ variable = "$toeTicks", description = "Number of ticks left on Terms of Engagement", printInSettings = true, color = false },
 
+			{ variable = "$wildfireBombCharges", description = "Number of charges of Wildfire Bomb available", printInSettings = true, color = false },
+			{ variable = "$madBombardierTime", description = "Time remaining on Mad Bombardier (T28) proc", printInSettings = true, color = false },
+
 			{ variable = "$flayersMarkTime", description = "Time remaining on Flayer's Mark buff", printInSettings = true, color = false },
 
 			{ variable = "$nesingwarysTime", description = "Time remaining on Nesingwary's Trapping Apparatus buff", printInSettings = true, color = false },
@@ -1417,11 +1448,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.character.specName = "survival"
 			TRB.Data.character.talents.vipersVenom.isSelected = select(4, GetTalentInfo(1, 1, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.termsOfEngagement.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
+			TRB.Data.character.talents.guerrillaTactics.isSelected = select(4, GetTalentInfo(2, 1, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.butchery.isSelected = select(4, GetTalentInfo(2, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.aMurderOfCrows.isSelected = select(4, GetTalentInfo(4, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.mongooseBite.isSelected = select(4, GetTalentInfo(6, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.flankingStrike.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.chakrams.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
+		
+			if TRB.Data.character.talents.guerrillaTactics.isSelected then
+				TRB.Data.snapshotData.wildfireBomb.maxCharges = 2
+			else
+				TRB.Data.snapshotData.wildfireBomb.maxCharges = 1
+			end
 		end
 
 		if specId == 1 or specId == 2 then
@@ -1706,6 +1744,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				end
 			elseif var == "$toeTicks" then
 				if TRB.Data.snapshotData.termsOfEngagement.ticksRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$wildfireBombCharges" then
+				if TRB.Data.snapshotData.wildfireBomb.charges > 0 then
+					valid = true
+				end
+			elseif var == "$madBombardierTime" then
+				if TRB.Data.snapshotData.madBombardier.isActive then
 					valid = true
 				end
 			end
@@ -2272,7 +2318,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			nesingwarysTime = string.format("%.1f", _nesingwarysTime)
 		end
 
-		--$ssCount
+		--$wildfireBombCharges
+		local wildfireBombCharges = TRB.Data.snapshotData.wildfireBomb.charges or 0
+		
+		--$madBombardierTime
+		local _madBombardierTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.madBombardier)
+		local madBombardierTime = 0
+		if _madBombardierTime ~= nil then
+			madBombardierTime = string.format("%.1f", _madBombardierTime)
+		end
 
 		--$ssCount and $ssTime
 		local _serpentStingCount = TRB.Data.snapshotData.targetData.serpentSting or 0
@@ -2338,12 +2392,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#steadyShot"] = TRB.Data.spells.steadyShot.icon
 		lookup["#termsOfEngagement"] = TRB.Data.spells.termsOfEngagement.icon
 		lookup["#wingClip"] = TRB.Data.spells.wingClip.icon
+		lookup["#wildfireBomb"] = TRB.Data.spells.wildfireBomb.icon
 		lookup["$coordinatedAssaultTime"] = coordinatedAssaultTime
 		lookup["$flayersMarkTime"] = flayersMarkTime
 		lookup["$nesingwarysTime"] = nesingwarysTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
+		lookup["$wildfireBombCharges"] = wildfireBombCharges
+		lookup["$madBombardierTime"] = madBombardierTime
 		lookup["$focusTotal"] = focusTotal
 		lookup["$focusMax"] = TRB.Data.character.maxResource
 		lookup["$focus"] = currentFocus
@@ -2636,8 +2693,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local currentTime = GetTime()
         local _
 
----@diagnostic disable-next-line: redundant-parameter
+		---@diagnostic disable-next-line: redundant-parameter
 		TRB.Data.snapshotData.butchery.charges, TRB.Data.snapshotData.butchery.maxCharges, TRB.Data.snapshotData.butchery.startTime, TRB.Data.snapshotData.butchery.duration, _ = GetSpellCharges(TRB.Data.spells.butchery.id)
+						
+		---@diagnostic disable-next-line: redundant-parameter
+		TRB.Data.snapshotData.wildfireBomb.charges, TRB.Data.snapshotData.wildfireBomb.maxCharges, TRB.Data.snapshotData.wildfireBomb.startTime, TRB.Data.snapshotData.wildfireBomb.duration, _ = GetSpellCharges(TRB.Data.spells.wildfireBomb.id)
 
 		if TRB.Data.snapshotData.carve.startTime ~= nil and currentTime > (TRB.Data.snapshotData.carve.startTime + TRB.Data.snapshotData.carve.duration) then
             TRB.Data.snapshotData.carve.startTime = nil
@@ -3746,6 +3806,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
+						end
+					elseif spellId == TRB.Data.spells.wildfireBomb.id then
+						---@diagnostic disable-next-line: redundant-parameter
+							TRB.Data.snapshotData.wildfireBomb.charges, TRB.Data.snapshotData.wildfireBomb.maxCharges, TRB.Data.snapshotData.wildfireBomb.startTime, TRB.Data.snapshotData.wildfireBomb.duration, _ = GetSpellCharges(TRB.Data.spells.wildfireBomb.id)
+					elseif spellId == TRB.Data.spells.madBombardier.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.snapshotData.madBombardier.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.madBombardier.duration, TRB.Data.snapshotData.madBombardier.endTime, _, _, _, TRB.Data.snapshotData.madBombardier.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.madBombardier.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.madBombardier.isActive = false
+							TRB.Data.snapshotData.madBombardier.spellId = nil
+							TRB.Data.snapshotData.madBombardier.duration = 0
+							TRB.Data.snapshotData.madBombardier.endTime = nil
 						end
 					end
 				end
