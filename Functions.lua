@@ -2314,7 +2314,7 @@ local function Import(input)
 
 	if not (configuration.core ~= nil or
 		(configuration.warrior ~= nil and (configuration.warrior.arms ~= nil or configuration.warrior.fury ~= nil)) or
-		(configuration.rogue ~= nil and configuration.rogue.assassination ~= nil) or
+		(configuration.rogue ~= nil and (configuration.rogue.assassination ~= nil or configuration.rogue.outlaw ~= nil)) or
 		(configuration.hunter ~= nil and (configuration.hunter.beastMastery ~= nil or configuration.hunter.marksmanship ~= nil or configuration.hunter.survival ~= nil)) or
 		(configuration.monk ~= nil and (configuration.monk.mistweaver ~= nil or configuration.monk.windwalker ~= nil)) or
 		(configuration.priest ~= nil and (configuration.priest.holy ~= nil or configuration.priest.shadow ~= nil)) or
@@ -2363,9 +2363,14 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Survival
 				configuration.endOfCoordinatedAssault = settings.endOfCoordinatedAssault
 			end
-		elseif classId == 4 and specId == 1 then -- Assassination Rogue
-			configuration.colors.comboPoints = settings.colors.comboPoints
-			configuration.comboPoints = settings.comboPoints
+		elseif classId == 4 then -- Rogue
+			if specId == 1 then -- Assassination
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
+			elseif specId == 2 then -- Outlaw
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
+			end 
 		elseif classId == 5 then -- Priests
 			if specId == 2 then -- Holy
 				configuration.endOfApotheosis = settings.endOfApotheosis
@@ -2426,7 +2431,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Marksmanship
 			elseif specId == 3 then -- Survival
 			end
-		elseif classId == 4 and specId == 1 then -- Assassination Rogue
+		elseif classId == 4 then -- Rogue
+			if specId == 1 then -- Assassination
+			elseif specId == 2 then -- Outlaw
+			end 
 		elseif classId == 5 then -- Priests
 			if specId == 2 then -- Holy
 			elseif specId == 3 then -- Shadow
@@ -2468,8 +2476,12 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Marksmanship
 			elseif specId == 3 then -- Survival
 			end
-		elseif classId == 4 and specId == 1 then -- Assassination Rogue
-			configuration.generation = settings.generation
+		elseif classId == 4 then -- Rogues
+			if specId == 1 then -- Assassination
+				configuration.generation = settings.generation
+			elseif specId == 2 then -- Outlaw
+				configuration.generation = settings.generation
+			end
 		elseif classId == 5 then -- Priests
 			if specId == 2 then -- Holy
 				configuration.wrathfulFaerie = settings.wrathfulFaerie
@@ -2564,6 +2576,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.rogue.assassination) > 0 then -- Assassination
 				configuration.rogue.assassination = TRB.Functions.ExportConfigurationSections(4, 1, settings.rogue.assassination, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
+
+			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.rogue.outlaw) > 0 then -- Outlaw
+				configuration.rogue.outlaw = TRB.Functions.ExportConfigurationSections(4, 2, settings.rogue.outlaw, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
 		elseif classId == 5 and settings.priest ~= nil then -- Priest
 			configuration.priest = {}
 
@@ -2648,7 +2664,9 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 
 		-- Rogues
 		-- Assassination
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(4, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Outlaw
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(4, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Shamans
 		-- Elemental
