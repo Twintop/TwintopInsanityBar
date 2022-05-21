@@ -70,7 +70,8 @@ local function LoadDefaultSettings()
                     shadow = true
                 },
                 rogue = {
-                    assassination = true
+                    assassination = true,
+                    outlaw = true
                 },
                 shaman = {
                     elemental = true,

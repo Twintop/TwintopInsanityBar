@@ -203,6 +203,7 @@ TRB.Data.constants = {
 		thresholdUnder = 1800,				--128
 		thresholdOver = 2000,				--129
 		thresholdBleedDownOrWorse = 2200,	--131
+		thresholdHighPriority = 2400,
 		thresholdOffsetLine = 2,
 		thresholdOffsetIcon = 1,
 		thresholdOffsetCooldown = 0,
