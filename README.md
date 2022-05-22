@@ -22,11 +22,11 @@ A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insan
 
 Currently supported specs:
 - Demon Hunter - Havoc
-- Druid - Balance, Feral
+- Druid - Balance, Feral, Restoration (Experimental/Minimal)
 - Hunter - Beast Mastery, Marksmanship, Survival
 - Monk - Mistweaver (Experimental/Minimal), Windwalker
 - Priest - Holy, Shadow
-- Rogue - Assassination
+- Rogue - Assassination, Outlaw
 - Shaman - Elemental, Restoration (Experimental/Minimal)
 - Warrior - Arms, Fury
 
