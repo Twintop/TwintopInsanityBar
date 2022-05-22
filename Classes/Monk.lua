@@ -78,23 +78,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		}
 
 		specCache.mistweaver.spells = {
-			manaTideTotem = {
-				id = 320763,
-				name = "",
-				icon = "",
-				duration = 8,
-				isActive = false
-			},
-
-			flameShock = {
-				id = 188389,
-				name = "",
-				icon = "",
-				baseDuration = 18,
-				pandemic = true,
-				pandemicTime = 18 * 0.3
-			},
-
 			-- External mana
 			symbolOfHope = {
 				id = 64901,
@@ -110,6 +93,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				name = "",
 				icon = "",
 				duration = 10,
+				isActive = false
+			},
+			manaTideTotem = {
+				id = 320763,
+				name = "",
+				icon = "",
+				duration = 8,
 				isActive = false
 			},
 
@@ -188,7 +178,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		specCache.mistweaver.snapshotData.targetData = {
 			ttdIsActive = false,
 			currentTargetGuid = nil,
-			flameShock = 0,
 			targets = {}
 		}
 		specCache.mistweaver.snapshotData.innervate = {
@@ -196,7 +185,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			duration = 0,
 			endTime = nil,
 			remainingTime = 0,
-			mana = 0
+			mana = 0,
+			modifier = 1
 		}
 		specCache.mistweaver.snapshotData.manaTideTotem = {
 			spellId = nil,
@@ -568,8 +558,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "#spiritualRejuvenationPotion", icon = spells.spiritualRejuvenationPotion.icon, description = spells.spiritualRejuvenationPotion.name, printInSettings = false },
 			{ variable = "#spiritualManaPotion", icon = spells.spiritualManaPotion.icon, description = spells.spiritualManaPotion.name, printInSettings = true },
 			{ variable = "#soulfulManaPotion", icon = spells.soulfulManaPotion.icon, description = spells.soulfulManaPotion.name, printInSettings = true },
-
-			{ variable = "#flameShock", icon = spells.flameShock.icon, description = spells.flameShock.name, printInSettings = true },
 		}
 		specCache.mistweaver.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -1691,7 +1679,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 	local function UpdateCastingResourceFinal_Mistweaver()
 		-- Do nothing for now
-		TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceRaw
+		TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceRaw * TRB.Data.snapshotData.innervate.modifier
 	end
 
 	local function CastingSpell()
@@ -2480,12 +2468,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.innervate.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.innervate.duration, TRB.Data.snapshotData.innervate.endTime, _, _, _, TRB.Data.snapshotData.innervate.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.innervate.id)
+							TRB.Data.snapshotData.innervate.modifier = 0
 							TRB.Data.snapshotData.audio.innervateCue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.innervate.isActive = false
 							TRB.Data.snapshotData.innervate.spellId = nil
 							TRB.Data.snapshotData.innervate.duration = 0
 							TRB.Data.snapshotData.innervate.endTime = nil
+							TRB.Data.snapshotData.innervate.modifier = 1
 							TRB.Data.snapshotData.audio.innervateCue = false
 						end
 					elseif spellId == TRB.Data.spells.manaTideTotem.id then

@@ -54,7 +54,8 @@ local function LoadDefaultSettings()
                 },
                 druid = {
                     balance = true,
-                    feral = true
+                    feral = true,
+                    restoration = true
                 },
                 hunter = {
                     beastMastery = true,
@@ -84,6 +85,9 @@ local function LoadDefaultSettings()
             },
             experimental = {
                 specs = {
+                    druid = {
+                        restoration = false
+                    },
                     monk = {
                         mistweaver = false
                     },
@@ -98,7 +102,8 @@ local function LoadDefaultSettings()
         },
         druid = {
             balance = {},
-            feral = {}
+            feral = {},
+            restoration = {}
         },
         hunter = {
             beastMastery = {},
@@ -395,6 +400,17 @@ local function ConstructAddonOptionsPanel()
     f:SetChecked(TRB.Data.settings.core.experimental.specs.shaman.restoration)
     f:SetScript("OnClick", function(self, ...)
         TRB.Data.settings.core.experimental.specs.shaman.restoration = self:GetChecked()
+    end)
+
+    yCoord = yCoord - 30
+    controls.checkBoxes.experimentalDruidRestoration = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Druid_Restoration", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.experimentalDruidRestoration
+    f:SetPoint("TOPLEFT", xCoord, yCoord)
+    getglobal(f:GetName() .. 'Text'):SetText("Restoration Druid support")
+    f.tooltip = "This will enable experimental Restoration Druid support within the bar. If you change this setting and are currently logged in on a Druid, you'll need to reload your UI before Restoration Druid configuration options become available."
+    f:SetChecked(TRB.Data.settings.core.experimental.specs.druid.restoration)
+    f:SetScript("OnClick", function(self, ...)
+        TRB.Data.settings.core.experimental.specs.druid.restoration = self:GetChecked()
     end)
 
 
@@ -715,6 +731,42 @@ local function ConstructImportExportPanel()
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Feral Druid (Bar Text).", 11, 2, false, false, false, true, false)
     end)
 
+    
+    if TRB.Data.settings.core.experimental.specs.druid.restoration then
+        yCoord = yCoord - 25
+        specName = "Restoration"
+        controls.labels.druidRestoration = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    
+        buttonOffset = xCoord + xPadding + 100
+        controls.buttons.exportButton_Druid_Restoration_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+        controls.buttons.exportButton_Druid_Restoration_All:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (All).", 11, 4, true, true, true, true, false)
+        end)
+    
+        buttonOffset = buttonOffset + buttonSpacing + 50
+        controls.exportButton_Druid_Restoration_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+        controls.exportButton_Druid_Restoration_BarDisplay:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Bar Display).", 11, 4, true, false, false, false, false)
+        end)
+    
+        buttonOffset = buttonOffset + buttonSpacing + 80
+        controls.exportButton_Druid_Restoration_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+        controls.exportButton_Druid_Restoration_FontAndText:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Font & Text).", 11, 4, false, true, false, false, false)
+        end)
+    
+        buttonOffset = buttonOffset + buttonSpacing + 90
+        controls.exportButton_Druid_Restoration_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+        controls.exportButton_Druid_Restoration_AudioAndTracking:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Audio & Tracking).", 11, 4, false, false, true, false, false)
+        end)
+    
+        buttonOffset = buttonOffset + buttonSpacing + 120
+        controls.exportButton_Druid_Restoration_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+        controls.exportButton_Druid_Restoration_BarText:SetScript("OnClick", function(self, ...)
+            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Bar Text).", 11, 4, false, false, false, true, false)
+        end)
+    end
 
     yCoord = yCoord - 35
     controls.labels.hunter = TRB.UiFunctions:BuildLabel(parent, "Hunter", xCoord, yCoord, 110, 20)
@@ -856,7 +908,7 @@ local function ConstructImportExportPanel()
     yCoord = yCoord - 35
     controls.labels.monk = TRB.UiFunctions:BuildLabel(parent, "Monk", xCoord, yCoord, 110, 20)
 
-    if TRB.Data.settings.core.experimental.specs.monk.restoration then
+    if TRB.Data.settings.core.experimental.specs.monk.mistweaver then
         buttonOffset = xCoord + xPadding + 100
         controls.buttons.exportButton_Monk_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
         controls.buttons.exportButton_Monk_All:SetScript("OnClick", function(self, ...)

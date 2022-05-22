@@ -2392,7 +2392,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.endOfEclipse = settings.endOfEclipse
 			elseif specId == 2 then -- Feral
 				configuration.colors.comboPoints = settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
+				configuration.comboPoints = settings.comboPoints				
+			elseif TRB.Data.settings.core.experimental.specs.druid.restoration and specId == 4 then -- Restoration
 			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 			configuration.endOfMetamorphosis = settings.endOfMetamorphosis
@@ -2456,6 +2457,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 1 then -- Balance
 				configuration.astralPowerPrecision = settings.astralPowerPrecision
 			elseif specId == 2 then -- Feral
+			elseif TRB.Data.settings.core.experimental.specs.druid.restoration and specId == 4 then -- Restoration
 			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 		end
@@ -2503,6 +2505,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 11 then -- Druid
 			if specId == 1 then -- Balance
 			elseif specId == 2 then -- Feral
+			elseif TRB.Data.settings.core.experimental.specs.druid.restoration and specId == 4 then -- Restoration
 			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 		end
@@ -2624,6 +2627,12 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.druid.feral) > 0 then -- Feral
 				configuration.druid.feral = TRB.Functions.ExportConfigurationSections(11, 2, settings.druid.feral, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
+
+			if TRB.Data.settings.core.experimental.specs.druid.restoration then
+				if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.druid.restoration) > 0 then -- Restoration
+					configuration.druid.restoration = TRB.Functions.ExportConfigurationSections(11, 4, settings.druid.restoration, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+				end
+			end
 		elseif classId == 12 and settings.demonhunter ~= nil then -- Demon Hunter
 			configuration.demonhunter = {}
 			
@@ -2682,6 +2691,11 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Feral
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+
+		if TRB.Data.settings.core.experimental.specs.druid.restoration then
+			-- Restoration
+			configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 4, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		end
 
 		-- Demon Hunter
 		-- Havoc

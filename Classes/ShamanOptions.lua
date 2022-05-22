@@ -192,7 +192,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		return settings
 	end
 
-
 	-- Restoration
 	local function RestorationLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
@@ -384,6 +383,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		return settings
 	end
     TRB.Options.Shaman.LoadDefaultSettings = LoadDefaultSettings
+
+	--[[
+
+	Elemental Option Menus
+
+	]]
 
 
 	local function ElementalConstructResetDefaultsPanel(parent)
@@ -2681,11 +2686,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 
-	--[[
-
-	Restoration Option Menus
-
-	]]
+	--	Restoration Option Menus
 
 	local function RestorationConstructResetDefaultsPanel(parent)
 		if parent == nil then

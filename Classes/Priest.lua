@@ -402,7 +402,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			duration = 0,
 			endTime = nil,
 			remainingTime = 0,
-			mana = 0
+			mana = 0,
+			modifier = 1
 		}
 		specCache.holy.snapshotData.manaTideTotem = {
 			spellId = nil,
@@ -3070,7 +3071,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function UpdateCastingResourceFinal_Holy()
 		-- Do nothing for now
-		TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceRaw
+		TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceRaw * TRB.Data.snapshotData.innervate.modifier
 	end
 
 	local function UpdateCastingResourceFinal_Shadow(fotm)
@@ -3088,7 +3089,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.ResetCastingSnapshotData()
 			return false
 		else
-			if specId == 2 then				
+			if specId == 2 then
 				if currentSpellName == nil then
 					if currentChannelId == TRB.Data.spells.symbolOfHope.id then
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.symbolOfHope.id
@@ -4378,12 +4379,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.innervate.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.innervate.duration, TRB.Data.snapshotData.innervate.endTime, _, _, _, TRB.Data.snapshotData.innervate.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.innervate.id)
+							TRB.Data.snapshotData.innervate.modifier = 0
 							TRB.Data.snapshotData.audio.innervateCue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.innervate.isActive = false
 							TRB.Data.snapshotData.innervate.spellId = nil
 							TRB.Data.snapshotData.innervate.duration = 0
 							TRB.Data.snapshotData.innervate.endTime = nil
+							TRB.Data.snapshotData.innervate.modifier = 1							
 							TRB.Data.snapshotData.audio.innervateCue = false
 						end
 					elseif spellId == TRB.Data.spells.manaTideTotem.id then
