@@ -1408,7 +1408,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$toeTicks", description = "Number of ticks left on Terms of Engagement", printInSettings = true, color = false },
 
 			{ variable = "$wildfireBombCharges", description = "Number of charges of Wildfire Bomb available", printInSettings = true, color = false },
-			{ variable = "$madBombardierTime", description = "Time remaining on Mad Bombardier (T28) proc", printInSettings = true, color = false },
+			{ variable = "$t28Time", description = "Time remaining on Mad Bombardier (T28) proc", printInSettings = true, color = false },
+			{ variable = "$madBombardierTime", description = "Time remaining on Mad Bombardier (T28) proc", printInSettings = false, color = false },
 
 			{ variable = "$flayersMarkTime", description = "Time remaining on Flayer's Mark buff", printInSettings = true, color = false },
 
@@ -1750,7 +1751,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				if TRB.Data.snapshotData.wildfireBomb.charges > 0 then
 					valid = true
 				end
-			elseif var == "$madBombardierTime" then
+			elseif var == "$t28Time" or var == "$madBombardierTime" then
 				if TRB.Data.snapshotData.madBombardier.isActive then
 					valid = true
 				end
@@ -2400,6 +2401,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
 		lookup["$wildfireBombCharges"] = wildfireBombCharges
+		lookup["$t28Time"] = madBombardierTime
 		lookup["$madBombardierTime"] = madBombardierTime
 		lookup["$focusTotal"] = focusTotal
 		lookup["$focusMax"] = TRB.Data.character.maxResource
