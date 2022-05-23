@@ -1862,7 +1862,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 									
 									if classIndexId == 5 and specId == 3 then
 										valid = TRB.Data.lookupLogic[var]
-										print(var, valid)
+										--print(var, valid)
 									end
 ---@diagnostic disable-next-line: undefined-field
 									local beforeVar = string.trim(string.sub(logicString, s-p, nextVariable.position - positionOffset - p - 1))
