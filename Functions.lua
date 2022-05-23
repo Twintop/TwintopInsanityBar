@@ -1877,7 +1877,6 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 							returnText = returnText .. string.sub(input, p, nextOpenResult.position - positionOffset)
 							p = nextOpenResult.position - positionOffset + 1
 							lastIndex = nextOpenResult.index
-							print("error")
 						end
 					else -- Dump all of the previous "if" stuff verbatim
 						returnText = returnText .. string.sub(input, p, matchedCloseIf.position - positionOffset)
