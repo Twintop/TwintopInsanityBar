@@ -2660,15 +2660,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local currentTime = GetTime()
 		local normalizedInsanity = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 		--$vfTime
-		local voidformTime = string.format("%.1f", TRB.Data.snapshotData.voidform.remainingTime)
+		local _voidformTime = TRB.Data.snapshotData.voidform.remainingTime
+		local voidformTime = string.format("%.1f", _voidformTime)
 		--$hvTime
-		local hungeringVoidTime = string.format("%.1f", TRB.Data.snapshotData.voidform.remainingHvTime)
+		local _hungeringVoidTime = TRB.Data.snapshotData.voidform.remainingHvTime
+		local hungeringVoidTime = string.format("%.1f", _hungeringVoidTime)
 		--$vbCasts
-		local voidBoltCasts = string.format("%.0f", TRB.Data.snapshotData.voidform.additionalVbCasts)
+		local _voidBoltCasts = TRB.Data.snapshotData.voidform.additionalVbCasts
+		local voidBoltCasts = string.format("%.0f", _voidBoltCasts)
 		--$hvAvgTime
-		local hungeringVoidTimeAvg = string.format("%.1f", TRB.Data.snapshotData.voidform.remainingHvAvgTime)
+		local _hungeringVoidTimeAvg = TRB.Data.snapshotData.voidform.remainingHvAvgTime
+		local hungeringVoidTimeAvg = string.format("%.1f", _hungeringVoidTimeAvg)
 		--$vbAvgCasts
-		local voidBoltCastsAvg = string.format("%.0f", TRB.Data.snapshotData.voidform.additionalVbAvgCasts)
+		local _voidBoltCastsAvg = TRB.Data.snapshotData.voidform.additionalVbAvgCasts
+		local voidBoltCastsAvg = string.format("%.0f", _voidBoltCastsAvg)
 
 		if TRB.Data.snapshotData.voidform.isInfinite then
 			hungeringVoidTime = "∞"
@@ -2704,39 +2709,53 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		--$insanity
 		local insanityPrecision = TRB.Data.settings.priest.shadow.insanityPrecision or 0
-		local currentInsanity = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.RoundTo(normalizedInsanity, insanityPrecision, "floor"))
+		local _currentInsanity = normalizedInsanity
+		local currentInsanity = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.RoundTo(_currentInsanity, insanityPrecision, "floor"))
 		--$casting
-		local castingInsanity = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, insanityPrecision, "floor"))
+		local _castingInsanity = TRB.Data.snapshotData.casting.resourceFinal
+		local castingInsanity = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.RoundTo(_castingInsanity, insanityPrecision, "floor"))
 		--$mbInsanity
-		local mbInsanity = string.format("%.0f", TRB.Data.snapshotData.mindbender.resourceFinal)
+		local _mbInsanity = TRB.Data.snapshotData.mindbender.resourceFinal
+		local mbInsanity = string.format("%.0f", _mbInsanity)
 		--$mbGcds
-		local mbGcds = string.format("%.0f", TRB.Data.snapshotData.mindbender.remaining.gcds)
+		local _mbGcds = TRB.Data.snapshotData.mindbender.remaining.gcds
+		local mbGcds = string.format("%.0f", _mbGcds)
 		--$mbSwings
-		local mbSwings = string.format("%.0f", TRB.Data.snapshotData.mindbender.remaining.swings)
+		local _mbSwings = TRB.Data.snapshotData.mindbender.remaining.swings
+		local mbSwings = string.format("%.0f", _mbSwings)
 		--$mbTime
-		local mbTime = string.format("%.1f", TRB.Data.snapshotData.mindbender.remaining.time)
+		local _mbTime = TRB.Data.snapshotData.mindbender.remaining.time
+		local mbTime = string.format("%.1f", _mbTime)
 		--$wfInsanity
 		local _wfInsanity = TRB.Data.snapshotData.wrathfulFaerie.resourceFinal
 		local wfInsanity = string.format("%s", TRB.Functions.RoundTo(_wfInsanity, insanityPrecision, "floor"))
 		--$wfGcds
-		local wfGcds = string.format("%.0f", math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.gcds, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds))
+		local _wfGcds = math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.gcds, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds)
+		local wfGcds = string.format("%.0f", _wfGcds)
 		--$wfProcs
-		local wfProcs = string.format("%.0f", math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.procs, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.procs))
+		local _wfProcs = math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.procs, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.procs)
+		local wfProcs = string.format("%.0f", _wfProcs)
 		--$wfTime
-		local wfTime = string.format("%.1f", math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds))
+		local _wfTime = math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds)
+		local wfTime = string.format("%.1f", _wfTime)
 		--$loiInsanity
-		local loiInsanity = string.format("%.0f", TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal)
+		local _loiInsanity = TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal
+		local loiInsanity = string.format("%.0f", _loiInsanity)
 		--$loiTicks
-		local loiTicks = string.format("%.0f", TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining)
+		local _loiTicks = TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining
+		local loiTicks = string.format("%.0f", _loiTicks)
 		--$ecttvCount
-		local ecttvCount = string.format("%.0f", TRB.Data.snapshotData.eternalCallToTheVoid.numberActive)
+		local _ecttvCount = TRB.Data.snapshotData.eternalCallToTheVoid.numberActive
+		local ecttvCount = string.format("%.0f", _ecttvCount)
 		--$asCount
-		local asCount = string.format("%.0f", TRB.Data.snapshotData.targetData.auspiciousSpirits)
+		local _asCount = TRB.Data.snapshotData.targetData.auspiciousSpirits
+		local asCount = string.format("%.0f", _asCount)
 		--$damInsanity
 		local _damInsanity = CalculateInsanityGain(TRB.Data.snapshotData.deathAndMadness.insanity, false)
 		local damInsanity = string.format("%.0f", _damInsanity)
 		--$damStacks
-		local damTicks = string.format("%.0f", TRB.Data.snapshotData.deathAndMadness.ticksRemaining)
+		local _damTicks = TRB.Data.snapshotData.deathAndMadness.ticksRemaining
+		local damTicks = string.format("%.0f", _damTicks)
 		--$asInsanity
 		local _asInsanity = CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity, false) * TRB.Data.snapshotData.targetData.auspiciousSpirits
 		local asInsanity = string.format("%.0f", _asInsanity)
@@ -2833,12 +2852,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 		local tofTime = string.format("%.1f", _tofTime)
 
+
+		--$s2m
+		local s2m = IsValidVariableForSpec("$s2m")
+
+		--$cttvEquipped
+		local cttvEquipped = IsValidVariableForSpec("$cttvEquipped")
+
 		----------
 
 		--We have extra custom stuff we want to do with TTD for Priests
 		--$ttd
 		local _ttd = ""
+		local __ttd = 0
 		local ttd = ""
+		local _ttdTotalSeconds = 0
 		local ttdTotalSeconds = 0
 
 		if TRB.Data.snapshotData.targetData.ttdIsActive and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd ~= 0 then
@@ -2851,6 +2879,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 ---@diagnostic disable-next-line: redundant-parameter
 			local s2mStart, s2mDuration, _, _ = GetSpellCooldown(TRB.Data.spells.s2m.id)
 
+			_ttdTotalSeconds = TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor")
+			__ttd = _ttdTotalSeconds
 			if TRB.Data.character.talents.surrenderToMadeness.isSelected and not TRB.Data.snapshotData.voidform.s2m.active then
 				if TRB.Data.settings.priest.shadow.s2mThreshold <= target.ttd then
 					_ttdColor = TRB.Data.settings.priest.shadow.colors.text.s2mAbove
@@ -2861,12 +2891,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 
 				ttd = string.format("|c%s%d:%0.2d|c%s", _ttdColor, ttdMinutes, ttdSeconds, TRB.Data.settings.priest.shadow.colors.text.left)
-				ttdTotalSeconds = string.format("|c%s%s|c%s", _ttdColor, TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor"), TRB.Data.settings.priest.shadow.colors.text.left)
+				ttdTotalSeconds = string.format("|c%s%s|c%s", _ttdColor, _ttdTotalSeconds, TRB.Data.settings.priest.shadow.colors.text.left)
 			else
 				ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
 				ttdTotalSeconds = string.format("%s", TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor"))
 			end
-		else
+		else			
+			_ttdTotalSeconds = 0
+			__ttd = 0
 			ttd = "--"
 			ttdTotalSeconds = string.format("%s", TRB.Functions.RoundTo(0, TRB.Data.settings.core.ttd.precision or 1, "floor"))
 		end
@@ -2874,7 +2906,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		----------------------------
 
 		Global_TwintopInsanityBar = {
-			ttd = ttd or "--",
+			ttd = _ttd or "--",
 			voidform = {
 				hungeringVoid = {
 					timeRemaining = TRB.Data.snapshotData.voidform.remainingHvTime,
@@ -3067,6 +3099,57 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$s2m"] = ""
 		lookup["$surrenderToMadness"] = ""
 		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$swpCount"] = _shadowWordPainCount
+		lookupLogic["$swpTime"] = _shadowWordPainTime
+		lookupLogic["$vtCount"] = _vampiricTouchCount
+		lookupLogic["$vtTime"] = _vampiricTouchTime
+		lookupLogic["$dpCount"] = devouringPlagueCount
+		lookupLogic["$dpTime"] = devouringPlagueTime
+		lookupLogic["$mdTime"] = _mdTime
+		lookupLogic["$tofTime"] = _tofTime
+		lookupLogic["$vfTime"] = _voidformTime
+		lookupLogic["$hvTime"] = _hungeringVoidTime
+		lookupLogic["$vbCasts"] = _voidBoltCasts
+		lookupLogic["$hvAvgTime"] = _hungeringVoidTimeAvg
+		lookupLogic["$vbAvgCasts"] = _voidBoltCastsAvg
+		lookupLogic["$insanityPlusCasting"] = _insanityPlusCasting
+		lookupLogic["$insanityPlusPassive"] = _insanityPlusPassive
+		lookupLogic["$insanityTotal"] = _insanityTotal
+		lookupLogic["$insanityMax"] = TRB.Data.character.maxResource
+		lookupLogic["$insanity"] = _currentInsanity
+		lookupLogic["$resourcePlusCasting"] = _insanityPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _insanityPlusPassive
+		lookupLogic["$resourceTotal"] = _insanityTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = _currentInsanity
+		lookupLogic["$casting"] = _castingInsanity
+		lookupLogic["$passive"] = _passiveInsanity
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$insanityOvercap"] = overcap
+		lookupLogic["$mbInsanity"] = _mbInsanity
+		lookupLogic["$mbGcds"] = _mbGcds
+		lookupLogic["$mbSwings"] = _mbSwings
+		lookupLogic["$mbTime"] = _mbTime
+		lookupLogic["$wfInsanity"] = _wfInsanity
+		lookupLogic["$wfGcds"] = _wfGcds
+		lookupLogic["$wfProcs"] = _wfProcs
+		lookupLogic["$wfTime"] = _wfTime
+		lookupLogic["$loiInsanity"] = _loiInsanity
+		lookupLogic["$loiTicks"] = _loiTicks
+		lookupLogic["$cttvEquipped"] = cttvEquipped
+		lookupLogic["$ecttvCount"] = _ecttvCount
+		lookupLogic["$damInsanity"] = _damInsanity
+		lookupLogic["$damTicks"] = _damTicks
+		lookupLogic["$asCount"] = _asCount
+		lookupLogic["$asInsanity"] = _asInsanity
+		lookupLogic["$ttd"] = __ttd --Custom TTD for Shadow
+		lookupLogic["$ttdSeconds"] = _ttdTotalSeconds
+		lookupLogic["$s2m"] = s2m
+		lookupLogic["$surrenderToMadness"] = s2m
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
 	local function UpdateCastingResourceFinal_Holy()

@@ -1570,7 +1570,7 @@ local function ScanForLogicSymbols(input)
 		return returnTable
 	end
 
-	local a, b, c, d, e, e_1, e_2, e_3, f, g, h, i, j
+	local a, b, c, d, e, e_1, e_2, e_3, f, g, h, i, j, k, l, m, n, o, p
 	local _
 	local currentLevel = 0
 	local currentParenthesisLevel = 0
@@ -1596,6 +1596,12 @@ local function ScanForLogicSymbols(input)
 		h, _ = string.find(input, "%$", currentPosition)
 		i, _ = string.find(input, "%(", currentPosition)
 		j, _ = string.find(input, ")", currentPosition)
+		k, _ = string.find(input, "==", currentPosition)
+		l, _ = string.find(input, "~=", currentPosition)
+		m, _ = string.find(input, ">=", currentPosition)
+		n, _ = string.find(input, "&<=", currentPosition)
+		o, _ = string.find(input, ">", currentPosition)
+		p, _ = string.find(input, "&<", currentPosition)
 
 
 		a = a or endLength
@@ -1611,6 +1617,12 @@ local function ScanForLogicSymbols(input)
 		h = h or endLength
 		i = i or endLength
 		j = j or endLength
+		k = k or endLength
+		l = l or endLength
+		m = m or endLength
+		n = n or endLength
+		o = o or endLength
+		p = p or endLength
 
 		if e == e_1 or e == e_2 or e == e_3 then
 			e = endLength
@@ -1672,6 +1684,24 @@ local function ScanForLogicSymbols(input)
 				ins.symbol = ")"
 				currentParenthesisLevel = currentParenthesisLevel - 1
 				currentPosition = j + 1
+			elseif min == k then
+				ins.symbol = "=="
+				currentPosition = k + 1
+			elseif min == l then
+				ins.symbol = "~="
+				currentPosition = l + 1
+			elseif min == m then
+				ins.symbol = ">="
+				currentPosition = m + 1
+			elseif min == n then
+				ins.symbol = "<="
+				currentPosition = n + 1
+			elseif min == o then
+				ins.symbol = ">"
+				currentPosition = o + 1
+			elseif min == p then
+				ins.symbol = "<"
+				currentPosition = p + 1
 			else -- Something went wrong. Break for safety
 				currentPosition = string.len(input) + 1
 				break
@@ -1756,6 +1786,9 @@ end
 TRB.Functions.FindNextSymbolLevel = FindNextSymbolLevel
 
 local function RemoveInvalidVariablesFromBarText(inputString)
+	local _, _, classIndexId = UnitClass("player")
+	local specId = GetSpecialization()
+	local lookup = TRB.Data.lookupLogic
 	local scan = TRB.Functions.ScanForLogicSymbols(inputString)
 
     local function RemoveInvalidVariablesFromBarText_Inner(input, indexOffset, maxIndex, positionOffset, maxPosition)
@@ -1824,7 +1857,13 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 
 ---@diagnostic disable-next-line: undefined-field
 									local var = string.trim(string.sub(logicString, nextVariable.position - positionOffset - p, variableEnd))
+									var = string.gsub(var, " ", "")
 									local valid = TRB.Data.IsValidVariableForSpec(var)
+									
+									if classIndexId == 5 and specId == 3 then
+										valid = TRB.Data.lookupLogic[var]
+										print(var, valid)
+									end
 ---@diagnostic disable-next-line: undefined-field
 									local beforeVar = string.trim(string.sub(logicString, s-p, nextVariable.position - positionOffset - p - 1))
 
@@ -1845,6 +1884,9 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 							end
 
 							outputString = string.lower(outputString)
+							--outputString = string.gsub(outputString, "  ", "")
+							--outputString = string.gsub(outputString, "%()", "")
+							outputString = string.gsub(outputString, "!=", "~=")
 							outputString = string.gsub(outputString, "!", " not ")
 							outputString = string.gsub(outputString, "&", " and ")
 							outputString = string.gsub(outputString, "||", " or ")
@@ -1877,7 +1919,6 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 							returnText = returnText .. string.sub(input, p, nextOpenResult.position - positionOffset)
 							p = nextOpenResult.position - positionOffset + 1
 							lastIndex = nextOpenResult.index
-							print("error")
 						end
 					else -- Dump all of the previous "if" stuff verbatim
 						returnText = returnText .. string.sub(input, p, matchedCloseIf.position - positionOffset)
