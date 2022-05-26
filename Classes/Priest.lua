@@ -2424,37 +2424,45 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local manaPrecision = TRB.Data.settings.priest.holy.manaPrecision or 1
 		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 		--$casting
-		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.casting.resourceFinal, manaPrecision, "floor", true))
+		local _castingMana = TRB.Data.snapshotData.casting.resourceFinal
+		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
 		--$wfMana
 		local _wfMana = TRB.Data.snapshotData.wrathfulFaerie.resourceFinal
 		local wfMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_wfMana, manaPrecision, "floor", true))
 		--$wfGcds
-		local wfGcds = string.format("%.0f", math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.gcds, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds))
+		local _wfGcds = math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.gcds, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds)
+		local wfGcds = string.format("%.0f", _wfGcds)
 		--$wfProcs
-		local wfProcs = string.format("%.0f", math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.procs, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.procs))
+		local _wfProcs = math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.procs, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.procs)
+		local wfProcs = string.format("%.0f", _wfProcs)
 		--$wfTime
-		local wfTime = string.format("%.1f", math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds))
+		local _wfTime = math.max(TRB.Data.snapshotData.wrathfulFaerie.main.remaining.time, TRB.Data.snapshotData.wrathfulFaerie.fermata.remaining.gcds)
+		local wfTime = string.format("%.1f", _wfTime)
 
 		--$sohMana
 		local _sohMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
 		local sohMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor", true))
 		--$sohTicks
-		local sohTicks = string.format("%.0f", TRB.Data.snapshotData.symbolOfHope.ticksRemaining)
+		local _sohTicks = TRB.Data.snapshotData.symbolOfHope.ticksRemaining or 0
+		local sohTicks = string.format("%.0f", _sohTicks)
 		--$sohTime
-		local sohTime = string.format("%.1f", GetSymbolOfHopeRemainingTime())
+		local _sohTime = GetSymbolOfHopeRemainingTime()
+		local sohTime = string.format("%.1f", _sohTime)
 
 		--$innervateMana
 		local _innervateMana = TRB.Data.snapshotData.innervate.mana
 		local innervateMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
 		--$innervateTime
-		local innervateTime = string.format("%.1f", GetInnervateRemainingTime())
+		local _innervateTime = GetInnervateRemainingTime()
+		local innervateTime = string.format("%.1f", _innervateTime)
 
 		--$mttMana
 		local _mttMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
 		local mttMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
-		local mttTime = string.format("%.1f", GetManaTideTotemRemainingTime())
+		local _mttTime = GetManaTideTotemRemainingTime()
+		local mttTime = string.format("%.1f", _mttTime)
 
 		--$potionCooldownSeconds
 		local _potionCooldown = 0
@@ -2471,7 +2479,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _pscMana = CalculateManaGain(TRB.Data.snapshotData.potionOfSpiritualClarity.mana, true)
 		local pscMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_pscMana, manaPrecision, "floor", true))
 		--$pscTicks
-		local pscTicks = string.format("%.0f", TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining)
+		local _pscTicks = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining or 0
+		local pscTicks = string.format("%.0f", _pscTicks)
 		--$pscTime
 		local _pscTime = GetPotionOfSpiritualClarityRemainingTime()
 		local pscTime = string.format("%.1f", _pscTime)
@@ -2497,7 +2506,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		if maxResource == 0 then
 			maxResource = 1
 		end
-		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.RoundTo((normalizedMana/maxResource)*100, manaPrecision, "floor"))
+		local _manaPercent = (normalizedMana/maxResource)
+		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.RoundTo(_manaPercent*100, manaPrecision, "floor"))
 
 		--$hwChastiseTime
 		local _hwChastiseTime = GetHolyWordChastiseCooldownRemainingTime()
@@ -2516,14 +2526,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local apotheosisTime = string.format("%.1f", _apotheosisTime)
 
 		--$solStacks
-		local solStacks = string.format("%.0f", TRB.Data.snapshotData.surgeOfLight.stacks or 0)
+		local _solStacks = TRB.Data.snapshotData.surgeOfLight.stacks or 0
+		local solStacks = string.format("%.0f", _solStacks)
 		--$solTime
-		local solTime = string.format("%.1f", TRB.Data.snapshotData.surgeOfLight.remainingTime or 0)
+		local _solTime = TRB.Data.snapshotData.surgeOfLight.remainingTime or 0
+		local solTime = string.format("%.1f", _solTime)
 
 		--$fcStacks
-		local fcStacks = string.format("%.0f", TRB.Data.snapshotData.flashConcentration.stacks or 0)
+		local _fcStacks = TRB.Data.snapshotData.flashConcentration.stacks or 0
+		local fcStacks = string.format("%.0f", _fcStacks)
 		--$fcTime
-		local fcTime = string.format("%.1f", TRB.Data.snapshotData.flashConcentration.remainingTime or 0)
+		local _fcTime = TRB.Data.snapshotData.flashConcentration.remainingTime or 0
+		local fcTime = string.format("%.1f", _fcTime)
 
 		-----------
 		--$swpCount and $swpTime
@@ -2633,8 +2647,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#srp"] = TRB.Data.spells.spiritualRejuvenationPotion.icon
 		lookup["#spiritualRejuvenationPotion"] = TRB.Data.spells.spiritualRejuvenationPotion.icon
 		lookup["#spiritualManaPotion"] = TRB.Data.spells.spiritualManaPotion.icon
-		lookup["#soulfulManaPotion"] = TRB.Data.spells.soulfulManaPotion.icon
-		
+		lookup["#soulfulManaPotion"] = TRB.Data.spells.soulfulManaPotion.icon		
 		lookup["#swp"] = TRB.Data.spells.shadowWordPain.icon
 		lookup["#shadowWordPain"] = TRB.Data.spells.shadowWordPain.icon
 
@@ -2652,19 +2665,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$resource"] = currentMana
 		lookup["$casting"] = castingMana
 		lookup["$passive"] = passiveMana
-
 		lookup["$hwChastiseTime"] = hwChastiseTime
 		lookup["$chastiseTime"] = hwChastiseTime
 		lookup["$holyWordChastiseTime"] = hwChastiseTime
-
 		lookup["$hwSanctifyTime"] = hwSanctifyTime
 		lookup["$sanctifyTime"] = hwSanctifyTime
 		lookup["$holyWordSanctifyTime"] = hwSanctifyTime
-
 		lookup["$hwSerenityTime"] = hwSerenityTime
 		lookup["$serenityTime"] = hwSerenityTime
 		lookup["$holyWordSerenityTime"] = hwSerenityTime
-
 		lookup["$wfMana"] = wfMana
 		lookup["$wfGcds"] = wfGcds
 		lookup["$wfProcs"] = wfProcs
@@ -2681,19 +2690,65 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$pscTime"] = pscTime
 		lookup["$potionCooldown"] = potionCooldown
 		lookup["$potionCooldownSeconds"] = potionCooldownSeconds
-		
 		lookup["$fcEquipped"] = TRB.Data.character.items.flashConcentration
 		lookup["$fcStacks"] = fcStacks
 		lookup["$fcTime"] = fcTime
-
 		lookup["$solStacks"] = solStacks
 		lookup["$solTime"] = solTime
 		lookup["$apotheosisTime"] = apotheosisTime
-
 		lookup["$swpCount"] = shadowWordPainCount
 		lookup["$swpTime"] = shadowWordPainTime
-
 		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$manaPlusCasting"] = _manaPlusCasting
+		lookupLogic["$manaPlusPassive"] = _manaPlusPassive
+		lookupLogic["$manaTotal"] = _manaTotal
+		lookupLogic["$manaMax"] = maxResource
+		lookupLogic["$mana"] = normalizedMana
+		lookupLogic["$resourcePlusCasting"] = _manaPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _manaPlusPassive
+		lookupLogic["$resourceTotal"] = _manaTotal
+		lookupLogic["$resourceMax"] = maxResource
+		lookupLogic["$manaPercent"] = _manaPercent
+		lookupLogic["$resourcePercent"] = _manaPercent
+		lookupLogic["$resource"] = normalizedMana
+		lookupLogic["$casting"] = _castingMana
+		lookupLogic["$passive"] = _passiveMana
+		lookupLogic["$hwChastiseTime"] = _hwChastiseTime
+		lookupLogic["$chastiseTime"] = _hwChastiseTime
+		lookupLogic["$holyWordChastiseTime"] = _hwChastiseTime
+		lookupLogic["$hwSanctifyTime"] = _hwSanctifyTime
+		lookupLogic["$sanctifyTime"] = _hwSanctifyTime
+		lookupLogic["$holyWordSanctifyTime"] = _hwSanctifyTime
+		lookupLogic["$hwSerenityTime"] = _hwSerenityTime
+		lookupLogic["$serenityTime"] = _hwSerenityTime
+		lookupLogic["$holyWordSerenityTime"] = _hwSerenityTime
+		lookupLogic["$wfMana"] = _wfMana
+		lookupLogic["$wfGcds"] = _wfGcds
+		lookupLogic["$wfProcs"] = _wfProcs
+		lookupLogic["$wfTime"] = _wfTime
+		lookupLogic["$sohMana"] = _sohMana
+		lookupLogic["$sohTime"] = _sohTime
+		lookupLogic["$sohTicks"] = _sohTicks
+		lookupLogic["$innervateMana"] = _innervateMana
+		lookupLogic["$innervateTime"] = _innervateTime
+		lookupLogic["$mttMana"] = _mttMana
+		lookupLogic["$mttTime"] = _mttTime
+		lookupLogic["$pscMana"] = _pscMana
+		lookupLogic["$pscTicks"] = _pscTicks
+		lookupLogic["$pscTime"] = _pscTime
+		lookupLogic["$potionCooldown"] = potionCooldown
+		lookupLogic["$potionCooldownSeconds"] = potionCooldown
+		lookupLogic["$fcEquipped"] = TRB.Data.character.items.flashConcentration
+		lookupLogic["$fcStacks"] = _fcStacks
+		lookupLogic["$fcTime"] = _fcTime
+		lookupLogic["$solStacks"] = _solStacks
+		lookupLogic["$solTime"] = _solTime
+		lookupLogic["$apotheosisTime"] = _apotheosisTime
+		lookupLogic["$swpCount"] = _shadowWordPainCount
+		lookupLogic["$swpTime"] = _shadowWordPainTime
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
 	local function RefreshLookupData_Shadow()

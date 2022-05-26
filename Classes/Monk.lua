@@ -1326,34 +1326,39 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		-- This probably needs to be pulled every refresh
 		TRB.Data.snapshotData.manaRegen, _ = GetPowerRegen()
 
-		local currentManaColor = TRB.Data.settings.monk.mistweaver.colors.text.current
-		local castingManaColor = TRB.Data.settings.monk.mistweaver.colors.text.casting
+		local currentManaColor = TRB.Data.settings.priest.holy.colors.text.current
+		local castingManaColor = TRB.Data.settings.priest.holy.colors.text.casting
 
 		--$mana
-		local manaPrecision = TRB.Data.settings.monk.mistweaver.manaPrecision or 1
+		local manaPrecision = TRB.Data.settings.priest.holy.manaPrecision or 1
 		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 		--$casting
-		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.casting.resourceFinal, manaPrecision, "floor", true))
+		local _castingMana = TRB.Data.snapshotData.casting.resourceFinal
+		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
 		--$sohMana
 		local _sohMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
 		local sohMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor", true))
 		--$sohTicks
-		local sohTicks = string.format("%.0f", TRB.Data.snapshotData.symbolOfHope.ticksRemaining)
+		local _sohTicks = TRB.Data.snapshotData.symbolOfHope.ticksRemaining or 0
+		local sohTicks = string.format("%.0f", _sohTicks)
 		--$sohTime
-		local sohTime = string.format("%.1f", GetSymbolOfHopeRemainingTime())
+		local _sohTime = GetSymbolOfHopeRemainingTime()
+		local sohTime = string.format("%.1f", _sohTime)
 
 		--$innervateMana
 		local _innervateMana = TRB.Data.snapshotData.innervate.mana
 		local innervateMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
 		--$innervateTime
-		local innervateTime = string.format("%.1f", GetInnervateRemainingTime())
+		local _innervateTime = GetInnervateRemainingTime()
+		local innervateTime = string.format("%.1f", _innervateTime)
 
 		--$mttMana
 		local _mttMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
 		local mttMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
-		local mttTime = string.format("%.1f", GetManaTideTotemRemainingTime())
+		local _mttTime = GetManaTideTotemRemainingTime()
+		local mttTime = string.format("%.1f", _mttTime)
 
 		--$potionCooldownSeconds
 		local _potionCooldown = 0
@@ -1370,13 +1375,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local _pscMana = CalculateManaGain(TRB.Data.snapshotData.potionOfSpiritualClarity.mana, true)
 		local pscMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_pscMana, manaPrecision, "floor", true))
 		--$pscTicks
-		local pscTicks = string.format("%.0f", TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining)
+		local _pscTicks = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining or 0
+		local pscTicks = string.format("%.0f", _pscTicks)
 		--$pscTime
 		local _pscTime = GetPotionOfSpiritualClarityRemainingTime()
 		local pscTime = string.format("%.1f", _pscTime)
 		--$passive
-		local _passiveMana = _sohMana + _pscMana + _innervateMana + _mttMana
-		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.monk.mistweaver.colors.text.passive, TRB.Functions.ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
+		local _passiveMana = _wfMana + _sohMana + _pscMana + _innervateMana + _mttMana
+		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.priest.holy.colors.text.passive, TRB.Functions.ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
 		local _manaTotal = math.min(_passiveMana + TRB.Data.snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 		local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
@@ -1396,7 +1402,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		if maxResource == 0 then
 			maxResource = 1
 		end
-		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.RoundTo((normalizedMana/maxResource)*100, manaPrecision, "floor"))
+		local _manaPercent = (normalizedMana/maxResource)
+		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.RoundTo(_manaPercent*100, manaPrecision, "floor"))
 
 		----------
 
@@ -1454,6 +1461,35 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["$potionCooldown"] = potionCooldown
 		lookup["$potionCooldownSeconds"] = potionCooldownSeconds
 		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$manaPlusCasting"] = _manaPlusCasting
+		lookupLogic["$manaPlusPassive"] = _manaPlusPassive
+		lookupLogic["$manaTotal"] = _manaTotal
+		lookupLogic["$manaMax"] = maxResource
+		lookupLogic["$mana"] = normalizedMana
+		lookupLogic["$resourcePlusCasting"] = _manaPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _manaPlusPassive
+		lookupLogic["$resourceTotal"] = _manaTotal
+		lookupLogic["$resourceMax"] = maxResource
+		lookupLogic["$manaPercent"] = _manaPercent
+		lookupLogic["$resourcePercent"] = _manaPercent
+		lookupLogic["$resource"] = normalizedMana
+		lookupLogic["$casting"] = _castingMana
+		lookupLogic["$passive"] = _passiveMana
+		lookupLogic["$sohMana"] = _sohMana
+		lookupLogic["$sohTime"] = _sohTime
+		lookupLogic["$sohTicks"] = _sohTicks
+		lookupLogic["$innervateMana"] = _innervateMana
+		lookupLogic["$innervateTime"] = _innervateTime
+		lookupLogic["$mttMana"] = _mttMana
+		lookupLogic["$mttTime"] = _mttTime
+		lookupLogic["$pscMana"] = _pscMana
+		lookupLogic["$pscTicks"] = _pscTicks
+		lookupLogic["$pscTime"] = _pscTime
+		lookupLogic["$potionCooldown"] = potionCooldown
+		lookupLogic["$potionCooldownSeconds"] = potionCooldown
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
 	local function RefreshLookupData_Windwalker()

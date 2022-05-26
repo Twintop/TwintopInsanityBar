@@ -718,7 +718,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local _
 		local normalizedFury = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 		--Spec specific implementation
-		local currentTime = GetTime()
 
 		--$overcap
 		local overcap = IsValidVariableForSpec("$overcap")
@@ -728,7 +727,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		if TRB.Data.settings.demonhunter.havoc.colors.text.overcapEnabled and overcap then
 			currentFuryColor = TRB.Data.settings.demonhunter.havoc.colors.text.overcap
-            --castingFuryColor = TRB.Data.settings.demonhunter.havoc.colors.text.overcap
 		elseif TRB.Data.settings.demonhunter.havoc.colors.text.overThresholdEnabled then
 			local _overThreshold = false
 			for k, v in pairs(TRB.Data.spells) do
@@ -741,7 +739,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 			if _overThreshold then
 				currentFuryColor = TRB.Data.settings.demonhunter.havoc.colors.text.overThreshold
-				--castingFuryColor = TRB.Data.settings.demonhunter.havoc.colors.text.overThreshold
 			end
 		end
 
@@ -793,12 +790,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local furyPrecision = TRB.Data.settings.demonhunter.havoc.furyPrecision or 0
 		local currentFury = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.RoundTo(normalizedFury, furyPrecision, "floor"))
 		--$casting
-		local castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, furyPrecision, "floor"))
+		local _castingFury = TRB.Data.snapshotData.casting.resourceFinal
+		local castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.RoundTo(_castingFury, furyPrecision, "floor"))
 		--$passive
 		local _passiveFury = bhFury + preparedFury
-
-		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
-
 		local passiveFury = string.format("|c%s%s|r", TRB.Data.settings.demonhunter.havoc.colors.text.passive, TRB.Functions.RoundTo(_passiveFury, furyPrecision, "floor"))
 		
 		--$furyTotal
@@ -877,6 +872,34 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookup["$resourceOvercap"] = overcap
 		lookup["$furyOvercap"] = overcap
 		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}		
+		lookupLogic["$metaTime"] = _metamorphosisTime
+		lookupLogic["$metamorphosisTime"] = _metamorphosisTime
+		lookupLogic["$bhFury"] = bhFury
+		lookupLogic["$bhTicks"] = bhTicks
+		lookupLogic["$iaTicks"] = bhTicks
+		lookupLogic["$iaTime"] = _bhTime
+		lookupLogic["$bhTime"] = _bhTime
+		lookupLogic["$preparedFury"] = preparedFury
+		lookupLogic["$preparedTicks"] = preparedTicks
+		lookupLogic["$preparedTime"] = _preparedTime
+		lookupLogic["$ucTime"] = _unboundChaosTime
+		lookupLogic["$furyPlusCasting"] = _furyPlusCasting
+		lookupLogic["$furyTotal"] = _furyTotal
+		lookupLogic["$furyMax"] = TRB.Data.character.maxResource
+		lookupLogic["$fury"] = normalizedFury
+		lookupLogic["$resourcePlusCasting"] = _furyPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _furyPlusPassive
+		lookupLogic["$resourceTotal"] = _furyTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = normalizedFury
+		lookupLogic["$casting"] = _castingFury
+		lookupLogic["$passive"] = _passiveFury
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$furyOvercap"] = overcap
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
     local function FillSnapshotDataCasting(spell)

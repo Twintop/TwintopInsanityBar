@@ -1925,9 +1925,6 @@ end
 TRB.Functions.FindNextSymbolLevel = FindNextSymbolLevel
 
 local function RemoveInvalidVariablesFromBarText(inputString)
-	local _, _, classIndexId = UnitClass("player")
-	local specId = GetSpecialization()
-	local lookup = TRB.Data.lookupLogic
 	local scan = TRB.Functions.ScanForLogicSymbols(inputString)
 
     local function RemoveInvalidVariablesFromBarText_Inner(input, indexOffset, maxIndex, positionOffset, maxPosition)
@@ -2004,20 +2001,18 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 ---@diagnostic disable-next-line: undefined-field
 									local afterVar = string.trim(string.sub(logicString, variableEnd, variableEnd))
 
-									if classIndexId == 5 and specId == 3 then
-										local prevSymbol = TRB.Functions.FindNextSymbolIndex(scan.all, '$', true, nextVariable.index-1, nextVariable.index, nil, nil)
-										local nextNextSymbol = TRB.Functions.FindNextSymbolIndex(scan.all, '$', true, nextVariable.index+1, nextVariable.index+1, nil, nil)										
-										local pSymbol = ""
-										local nSymbol = ""
+									local prevSymbol = TRB.Functions.FindNextSymbolIndex(scan.all, '$', true, nextVariable.index-1, nextVariable.index, nil, nil)
+									local nextNextSymbol = TRB.Functions.FindNextSymbolIndex(scan.all, '$', true, nextVariable.index+1, nextVariable.index+1, nil, nil)										
+									local pSymbol = ""
+									local nSymbol = ""
 
-										if prevSymbol ~= nil and nextNextSymbol ~= nil then
-											pSymbol = prevSymbol.symbol
-											nSymbol = nextNextSymbol.symbol
-										end
+									if prevSymbol ~= nil and nextNextSymbol ~= nil then
+										pSymbol = prevSymbol.symbol
+										nSymbol = nextNextSymbol.symbol
+									end
 
-										if TRB.Data.lookupLogic[var] ~= nil and pSymbol ~= "!" and ((pSymbol ~= "{" and pSymbol ~= "|" and pSymbol ~= "&" and pSymbol ~= "(") or (nSymbol ~= "}" and nSymbol ~= "|" and nSymbol ~= "&" and nSymbol ~= ")")) then
-											valid = TRB.Data.lookupLogic[var]
-										end
+									if TRB.Data.lookupLogic[var] ~= nil and pSymbol ~= "!" and ((pSymbol ~= "{" and pSymbol ~= "|" and pSymbol ~= "&" and pSymbol ~= "(") or (nSymbol ~= "}" and nSymbol ~= "|" and nSymbol ~= "&" and nSymbol ~= ")")) then
+										valid = TRB.Data.lookupLogic[var]									
 									end
 
 									if string.sub(beforeVar, string.len(beforeVar)) == "!" then
