@@ -1738,6 +1738,48 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["$t28Stacks"] = t28Stacks
 		lookup["$t28Time"] = t28Time
 		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
+		lookupLogic["$energyTotal"] = _energyTotal
+		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
+		lookupLogic["$energy"] = TRB.Data.snapshotData.resource
+		lookupLogic["$resourcePlusCasting"] = _energyPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _energyPlusPassive
+		lookupLogic["$resourceTotal"] = _energyTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = TRB.Data.snapshotData.resource
+		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
+		lookupLogic["$chi"] = TRB.Data.character.resource2
+		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
+		lookupLogic["$chiMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+
+		if TRB.Data.character.maxResource == TRB.Data.snapshotData.resource then
+			lookupLogic["$passive"] = _passiveEnergyMinusRegen
+		else
+			lookupLogic["$passive"] = _passiveEnergy
+		end
+
+		lookupLogic["$regen"] = _regenEnergy
+		lookupLogic["$regenEnergy"] = _regenEnergy
+		lookupLogic["$energyRegen"] = _regenEnergy
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$energyOvercap"] = overcap
+		lookupLogic["$serenityTime"] = _serenityTime
+		lookupLogic["$danceOfChiJiTime"] = _danceOfChiJiTime
+		lookupLogic["$motcMinTime"] = _motcMinTime
+		lookupLogic["$motcMaxTime"] = _motcMaxTime
+		lookupLogic["$motcTime"] = _motcTime
+		lookupLogic["$motcCount"] = _motcCount
+		lookupLogic["$motcActiveCount"] = _motcActiveCount
+		lookupLogic["$t28BuildingStacks"] = t28BuildingStacks
+		lookupLogic["$t28BuildingStacksRemaining"] = t28BuildingStacksRemaining
+		lookupLogic["$t28BuildingTime"] = _t28BuildingTime
+		lookupLogic["$t28Stacks"] = t28Stacks
+		lookupLogic["$t28Time"] = _t28Time
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
     local function FillSnapshotDataCasting(spell)
