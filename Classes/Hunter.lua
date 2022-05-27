@@ -2076,6 +2076,41 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$resourceOvercap"] = overcap
 		lookup["$focusOvercap"] = overcap
 		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$killingFrenzyTime"] = _killingFrenzyTime
+		lookupLogic["$t28Time"] = _killingFrenzyTime
+		lookupLogic["$frenzyTime"] = _frenzyTime
+		lookupLogic["$frenzyStacks"] = frenzyStacks
+		lookupLogic["$nesingwarysTime"] = _nesingwarysTime
+		lookupLogic["$flayersMarkTime"] = _flayersMarkTime
+		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
+		lookupLogic["$focusTotal"] = _focusTotal
+		lookupLogic["$focusMax"] = TRB.Data.character.maxResource
+		lookupLogic["$focus"] = TRB.Data.snapshotData.resource
+		lookupLogic["$resourcePlusCasting"] = _focusPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _focusPlusPassive
+		lookupLogic["$resourceTotal"] = _focusTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = TRB.Data.snapshotData.resource
+		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
+
+		if TRB.Data.character.maxResource == TRB.Data.snapshotData.resource then
+			lookupLogic["$passive"] = _passiveFocusMinusRegen
+		else
+			lookupLogic["$passive"] = _passiveFocus
+		end
+
+		lookupLogic["$barbedShotFocus"] = _barbedShotFocus
+		lookupLogic["$barbedShotTicks"] = TRB.Data.snapshotData.barbedShot.ticksRemaining
+		lookupLogic["$barbedShotTime"] = _barbedShotTime
+		lookupLogic["$regen"] = _regenFocus
+		lookupLogic["$regenFocus"] = _regenFocus
+		lookupLogic["$focusRegen"] = _regenFocus
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$focusOvercap"] = overcap
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
 	local function RefreshLookupData_Marksmanship()
@@ -2277,6 +2312,34 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$resourceOvercap"] = overcap
 		lookup["$focusOvercap"] = overcap
 		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$steadyFocusTime"] = _steadyFocusTime
+		lookupLogic["$trueshotTime"] = _trueshotTime
+		lookupLogic["$lockAndLoadTime"] = _lockAndLoadTime
+		lookupLogic["$vigilTime"] = _vigilTime
+		lookupLogic["$nesingwarysTime"] = _nesingwarysTime
+		lookupLogic["$flayersMarkTime"] = _flayersMarkTime
+		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
+		lookupLogic["$ssCount"] = _serpentStingCount
+		lookupLogic["$ssTime"] = _serpentStingTime
+		lookupLogic["$focusTotal"] = _focusTotal
+		lookupLogic["$focusMax"] = TRB.Data.character.maxResource
+		lookupLogic["$focus"] = TRB.Data.snapshotData.resource
+		lookupLogic["$resourcePlusCasting"] = _focusPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _focusPlusPassive
+		lookupLogic["$resourceTotal"] = _focusTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = TRB.Data.snapshotData.resource
+		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
+		lookupLogic["$passive"] = _passiveFocus
+		lookupLogic["$regen"] = _regenFocus
+		lookupLogic["$regenFocus"] = _regenFocus
+		lookupLogic["$focusRegen"] = _regenFocus
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$focusOvercap"] = overcap
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
 	local function RefreshLookupData_Survival()
@@ -2482,6 +2545,37 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$toeFocus"] = toeFocus
 		lookup["$toeTicks"] = toeTicks
 		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+
+		lookupLogic["$coordinatedAssaultTime"] = _coordinatedAssaultTime
+		lookupLogic["$flayersMarkTime"] = _flayersMarkTime
+		lookupLogic["$nesingwarysTime"] = _nesingwarysTime
+		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
+		lookupLogic["$ssCount"] = _serpentStingCount
+		lookupLogic["$ssTime"] = _serpentStingTime
+		lookupLogic["$wildfireBombCharges"] = wildfireBombCharges
+		lookupLogic["$t28Time"] = _madBombardierTime
+		lookupLogic["$madBombardierTime"] = _madBombardierTime
+		lookupLogic["$focusTotal"] = _focusTotal
+		lookupLogic["$focusMax"] = TRB.Data.character.maxResource
+		lookupLogic["$focus"] = TRB.Data.snapshotData.resource
+		lookupLogic["$resourcePlusCasting"] = _focusPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _focusPlusPassive
+		lookupLogic["$resourceTotal"] = _focusTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = TRB.Data.snapshotData.resource
+		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
+		lookupLogic["$passive"] = _passiveFocus
+		lookupLogic["$regen"] = _regenFocus
+		lookupLogic["$regenFocus"] = _regenFocus
+		lookupLogic["$focusRegen"] = _regenFocus
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$focusOvercap"] = overcap
+		lookupLogic["$toeFocus"] = _toeFocus
+		lookupLogic["$toeTicks"] = TRB.Data.snapshotData.termsOfEngagement.ticksRemaining
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
 	local function UpdateRapidFire()
