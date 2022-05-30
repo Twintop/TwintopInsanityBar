@@ -1759,6 +1759,39 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["$resourceOvercap"] = overcap
 		lookup["$rageOvercap"] = overcap
 		TRB.Data.lookup = lookup
+		
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$rend"] = TRB.Data.character.talents.rend.isSelected
+		lookupLogic["$rendCount"] = _rendCount
+		lookupLogic["$rendTime"] = _rendTime
+		lookupLogic["$deepWoundsCount"] = _deepWoundsCount
+		lookupLogic["$deepWoundsTime"] = _deepWoundsTime
+		lookupLogic["$suddenDeathTime"] = _suddenDeathTime
+		lookupLogic["$ravagerRage"] = _ravagerRage
+		lookupLogic["$ravagerTicks"] = ravagerTicks
+		lookupLogic["$ancientAftershockRage"] = _ancientAftershockRage
+		lookupLogic["$ancientAftershockTicks"] = ancientAftershockTicks
+		lookupLogic["$conquerorsBannerRage"] = _conquerorsBannerRage
+		lookupLogic["$conquerorsBannerTicks"] = conquerorsBannerTicks
+		lookupLogic["$covenantAbilityRage"] = covenantAbilityRage
+		lookupLogic["$covenantRage"] = covenantAbilityRage
+		lookupLogic["$covenantAbilityTicks"] = covenantAbilityTicks
+		lookupLogic["$covenantTicks"] = covenantAbilityTicks
+		lookupLogic["$ragePlusCasting"] = _ragePlusCasting
+		lookupLogic["$rageTotal"] = _rageTotal
+		lookupLogic["$rageMax"] = TRB.Data.character.maxResource
+		lookupLogic["$rage"] = normalizedRage
+		lookupLogic["$resourcePlusCasting"] = _ragePlusCasting
+		lookupLogic["$resourcePlusPassive"] = _ragePlusPassive
+		lookupLogic["$resourceTotal"] = _rageTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = normalizedRage
+		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
+		lookupLogic["$passive"] = _passiveRage
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$rageOvercap"] = overcap
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
 	local function RefreshLookupData_Fury()
@@ -1831,10 +1864,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local ragePlusPassive = string.format("|c%s%s|r", currentRageColor, TRB.Functions.RoundTo(_ragePlusPassive, ragePrecision, "floor"))
 
 		--$enrageTime
-		local enrageTime = string.format("%.1f", GetEnrageRemainingTime())
+		local _enrageTime = GetEnrageRemainingTime()
+		local enrageTime = string.format("%.1f", _enrageTime)
 		
 		--$whirlwindTime
-		local whirlwindTime = string.format("%.1f", GetWhirlwindRemainingTime())
+		local _whirlwindTime = GetWhirlwindRemainingTime()
+		local whirlwindTime = string.format("%.1f", _whirlwindTime)
 		--$whirlwindStacks
 		local whirlwindStacks = TRB.Data.snapshotData.whirlwind.stacks or 0
 
@@ -1916,6 +1951,35 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["$resourceOvercap"] = overcap
 		lookup["$rageOvercap"] = overcap
 		TRB.Data.lookup = lookup
+
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$enrageTime"] = _enrageTime
+		lookupLogic["$whirlwindTime"] = _whirlwindTime
+		lookupLogic["$whirlwindStacks"] = whirlwindStacks
+		lookupLogic["$ancientAftershockRage"] = _ancientAftershockRage
+		lookupLogic["$ancientAftershockTicks"] = ancientAftershockTicks
+		lookupLogic["$conquerorsBannerRage"] = _conquerorsBannerRage
+		lookupLogic["$conquerorsBannerTicks"] = conquerorsBannerTicks
+		lookupLogic["$covenantAbilityRage"] = covenantAbilityRage
+		lookupLogic["$covenantRage"] = covenantAbilityRage
+		lookupLogic["$covenantAbilityTicks"] = covenantAbilityTicks
+		lookupLogic["$covenantTicks"] = covenantAbilityTicks
+		lookupLogic["$ragePlusCasting"] = _ragePlusCasting
+		lookupLogic["$rageTotal"] = _rageTotal
+		lookupLogic["$rageMax"] = TRB.Data.character.maxResource
+		lookupLogic["$rage"] = normalizedRage
+		lookupLogic["$resourcePlusCasting"] = _ragePlusCasting
+		lookupLogic["$resourcePlusPassive"] = _ragePlusPassive
+		lookupLogic["$resourceTotal"] = _rageTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = normalizedRage
+		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
+		lookupLogic["$passive"] = _passiveRage
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$rageOvercap"] = overcap
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
     local function FillSnapshotDataCasting(spell)

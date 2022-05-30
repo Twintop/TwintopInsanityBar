@@ -2680,6 +2680,68 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$resourceOvercap"] = overcap
 		lookup["$energyOvercap"] = overcap
 		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
+		lookupLogic["$energyTotal"] = _energyTotal
+		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
+		lookupLogic["$energy"] = TRB.Data.snapshotData.resource
+		lookupLogic["$resourcePlusCasting"] = _energyPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _energyPlusPassive
+		lookupLogic["$resourceTotal"] = _energyTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = TRB.Data.snapshotData.resource
+		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
+		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$cpCount"] = _cpCount
+		lookupLogic["$cripplingPoisonCount"] = _cpCount
+		lookupLogic["$cpTime"] = _cpTime
+		lookupLogic["$cripplingPoisonTime"] = _cpTime
+		lookupLogic["$dpCount"] = _dpCount
+		lookupLogic["$deadlyPoisonCount"] = _dpCount
+		lookupLogic["$dpTime"] = _dpTime
+		lookupLogic["$deadlyPoisonTime"] = _dpTime
+		lookupLogic["$npCount"] = _npCount
+		lookupLogic["$numbingPoisonCount"] = _npCount
+		lookupLogic["$npTime"] = _npTime
+		lookupLogic["$numbingPoisonTime"] = _npTime
+		lookupLogic["$wpCount"] = _wpCount
+		lookupLogic["$woundPoisonCount"] = _wpCount
+		lookupLogic["$wpTime"] = _wpTime
+		lookupLogic["$woundPoisonTime"] = _wpTime
+		lookupLogic["$ctCount"] = _ctCount
+		lookupLogic["$crimsonTempestCount"] = _ctCount
+		lookupLogic["$ctTime"] = _ctTime
+		lookupLogic["$crimsonTempestTime"] = _ctTime
+		lookupLogic["$garroteCount"] = _garroteCount
+		lookupLogic["$garroteTime"] = _garroteTime
+		lookupLogic["$ibCount"] = _ibCount
+		lookupLogic["$internalBleedingCount"] = _ibCount
+		lookupLogic["$ibTime"] = _ibTime
+		lookupLogic["$internalBleedingTime"] = _ibTime
+		lookupLogic["$ruptureCount"] = _ruptureCount
+		lookupLogic["$ruptureTime"] = _ruptureTime
+		lookupLogic["$sbsCount"] = _sbsCount
+		lookupLogic["$serratedBoneSpikeCount"] = _sbsCount
+		lookupLogic["$sadTime"] = _sadTime
+		lookupLogic["$sliceAndDiceTime"] = _sadTime
+		lookupLogic["$blindsideTime"] = _blindsideTime
+		lookupLogic["$isBleeding"] = _""
+
+		if TRB.Data.character.maxResource == TRB.Data.snapshotData.resource then
+			lookupLogic["$passive"] = _passiveEnergyMinusRegen
+		else
+			lookupLogic["$passive"] = _passiveEnergy
+		end
+
+		lookupLogic["$regen"] = _regenEnergy
+		lookupLogic["$regenEnergy"] = _regenEnergy
+		lookupLogic["$energyRegen"] = _regenEnergy
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$energyOvercap"] = overcap
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
 	local function RefreshLookupData_Outlaw()
@@ -3015,6 +3077,65 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$resourceOvercap"] = overcap
 		lookup["$energyOvercap"] = overcap
 		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
+		lookupLogic["$energyTotal"] = _energyTotal
+		lookupLogic["$energyMax"] = _RB.Data.character.maxResource
+		lookupLogic["$energy"] = TRB.Data.snapshotData.resource
+		lookupLogic["$resourcePlusCasting"] = _energyPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _energyPlusPassive
+		lookupLogic["$resourceTotal"] = _energyTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = TRB.Data.snapshotData.resource
+		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
+		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$cpCount"] = _cpCount
+		lookupLogic["$cripplingPoisonCount"] = _cpCount
+		lookupLogic["$cpTime"] = _cpTime
+		lookupLogic["$cripplingPoisonTime"] = _cpTime
+		lookupLogic["$npCount"] = _npCount
+		lookupLogic["$numbingPoisonCount"] = _npCount
+		lookupLogic["$npTime"] = _npTime
+		lookupLogic["$numbingPoisonTime"] = _npTime
+		lookupLogic["$wpCount"] = _wpCount
+		lookupLogic["$woundPoisonCount"] = _wpCount
+		lookupLogic["$wpTime"] = _wpTime
+		lookupLogic["$woundPoisonTime"] = _wpTime
+		lookupLogic["$sbsCount"] = _sbsCount
+		lookupLogic["$serratedBoneSpikeCount"] = _sbsCount
+		lookupLogic["$sadTime"] = _sadTime
+		lookupLogic["$sliceAndDiceTime"] = _sadTime
+		lookupLogic["$opportunityTime"] = _opportunityTime
+		lookupLogic["$rtbCount"] = _rollTheBonesCount
+		lookupLogic["$rollTheBonesCount"] = _rollTheBonesCount
+		lookupLogic["$rtbAllCount"] = _rollTheBonesAllCount
+		lookupLogic["$rollTheBonesAllCount"] = _rollTheBonesAllCount
+		lookupLogic["$rtbTemporaryCount"] = _rollTheBonesTemporaryCount
+		lookupLogic["$rollTheBonesTemporaryCount"] = _rollTheBonesTemporaryCount
+		lookupLogic["$rtbBuffTime"] = _rtbBuffTime
+		lookupLogic["$rollTheBonesBuffTime"] = _rtbBuffTime
+		lookupLogic["$broadsideTime"] = _broadsideTime
+		lookupLogic["$buriedTreasureTime"] = _buriedTreasureTime
+		lookupLogic["$grandMeleeTime"] = _grandMeleeTime
+		lookupLogic["$ruthlessPrecisionTime"] = _ruthlessPrecisionTime
+		lookupLogic["$skullAndCrossbonesTime"] = _skullAndCrossbonesTime
+		lookupLogic["$trueBearingTime"] = _trueBearingTime
+
+		if TRB.Data.character.maxResource == TRB.Data.snapshotData.resource then
+			lookupLogic["$passive"] = _passiveEnergyMinusRegen
+		else
+			lookupLogic["$passive"] = _passiveEnergy
+		end
+
+		lookupLogic["$regen"] = _regenEnergy
+		lookupLogic["$regenEnergy"] = _regenEnergy
+		lookupLogic["$energyRegen"] = _regenEnergy
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$energyOvercap"] = overcap
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
     local function FillSnapshotDataCasting(spell)

@@ -955,6 +955,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function GetEchoesOfGreatSunderingRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.echoesOfGreatSundering)
 	end
+	
+	local function GetIcefuryRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.icefury)
+	end
 
 	local function GetPotionOfSpiritualClarityRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.potionOfSpiritualClarity)
@@ -1233,23 +1237,26 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		--$ifStacks
 		local icefuryStacks = TRB.Data.snapshotData.icefury.stacks or 0
 		--$ifStacks
+		local _icefuryTime = GetIcefuryRemainingTime()
 		local icefuryTime = 0
-		if TRB.Data.snapshotData.icefury.startTime ~= nil then
-			icefuryTime = string.format("%.1f", math.abs(currentTime - (TRB.Data.snapshotData.icefury.startTime + TRB.Data.spells.icefury.duration)))
+		if _icefuryTime > 0 then
+			icefuryTime = string.format("%.1f", _icefuryTime)
 		end
 
 		--$skStacks
 		local stormkeeperStacks = TRB.Data.snapshotData.stormkeeper.stacks or 0
 		--$skStacks
+		local _stormkeeperTime = GetStormkeeperRemainingTime()
 		local stormkeeperTime = 0
 		if stormkeeperStacks > 0 then
-			stormkeeperTime = string.format("%.1f", GetStormkeeperRemainingTime())
+			stormkeeperTime = string.format("%.1f", _stormkeeperTime)
 		end
 
 		--$eogsTime
+		local _eogsTime = GetEchoesOfGreatSunderingRemainingTime()
 		local eogsTime = 0
-		if GetEchoesOfGreatSunderingRemainingTime() > 0 then
-			eogsTime = string.format("%.1f", GetEchoesOfGreatSunderingRemainingTime())
+		if _eogsTime > 0 then
+			eogsTime = string.format("%.1f", _eogsTime)
 		end
 		----------------------------
 
@@ -1305,6 +1312,32 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["$skTime"] = stormkeeperTime
 		lookup["$eogsTime"] = eogsTime
 		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$fsCount"] = _flameShockCount
+		lookupLogic["$fsTime"] = _flameShockTime
+		lookupLogic["$maelstromPlusCasting"] = _maelstromPlusCasting
+		lookupLogic["$maelstromPlusPassive"] = _maelstromPlusPassive
+		lookupLogic["$maelstromTotal"] = _maelstromTotal
+		lookupLogic["$maelstromMax"] = TRB.Data.character.maxResource
+		lookupLogic["$maelstrom"] = TRB.Data.snapshotData.resource
+		lookupLogic["$resourcePlusCasting"] = _maelstromPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _maelstromPlusPassive
+		lookupLogic["$resourceTotal"] = _maelstromTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = TRB.Data.snapshotData.resource
+		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
+		lookupLogic["$passive"] = _passiveMaelstrom
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$maelstromOvercap"] = overcap
+		lookupLogic["$ifMaelstrom"] = icefuryMaelstrom
+		lookupLogic["$ifStacks"] = icefuryStacks
+		lookupLogic["$ifTime"] = icefuryTime
+		lookupLogic["$skStacks"] = stormkeeperStacks
+		lookupLogic["$skTime"] = _stormkeeperTime
+		lookupLogic["$eogsTime"] = _eogsTime
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
 	local function RefreshLookupData_Restoration()
@@ -1512,6 +1545,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookupLogic["$potionCooldownSeconds"] = potionCooldown
 		lookupLogic["$fsCount"] = _flameShockCount
 		lookupLogic["$fsTime"] = _flameShockTime
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
     local function FillSnapshotDataCasting(spell)
