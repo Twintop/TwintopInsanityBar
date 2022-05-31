@@ -248,6 +248,7 @@ TRB.Data.character = {
 TRB.Data.spells = {}
 
 TRB.Data.lookup = {}
+TRB.Data.lookupLogic = {}
 
 -- This is here for reference/what every implementation should use as a minimum
 TRB.Functions.ResetSnapshotData()

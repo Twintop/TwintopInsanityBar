@@ -1189,13 +1189,33 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		}
 		specCache.balance.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility% (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versatility", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
+			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
+			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
+			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
+			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
+			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
+			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$dVers", description = "Current Versatilit y% (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
+			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+
+			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
+			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
+			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
+			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
+			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
+			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
+			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
+			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
 
 			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
@@ -1323,13 +1343,33 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		}
 		specCache.feral.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility% (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versatility", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
+			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
+			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
+			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
+			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
+			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
+			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$dVers", description = "Current Versatilit y% (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
+			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+
+			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
+			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
+			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
+			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
+			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
+			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
+			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
+			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
 
 			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
@@ -1439,13 +1479,33 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		}
 		specCache.restoration.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility% (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versatility", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
+			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
+			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
+			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
+			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
+			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
+			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$dVers", description = "Current Versatilit y% (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
+			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+
+			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
+			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
+			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
+			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
+			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
+			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
+			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
+			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
 
 			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
@@ -2027,6 +2087,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local currentTime = GetTime()
 		local cdRemaining = math.max(0, TRB.Data.snapshotData.starfall.cdDuration - (currentTime - TRB.Data.snapshotData.starfall.cdStartTime))
 		return cdRemaining
+	end
+	
+	local function GetFuryOfEluneRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.furyOfElune)
+	end
+	
+	local function GetUmbralEmbraceRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.umbralEmbrace)
 	end
 
 	local function GetPotionOfSpiritualClarityRemainingTime()
@@ -2630,7 +2698,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local currentTime = GetTime()
 		local normalizedAstralPower = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
-		local moonkinFormActive = TRB.Data.spells.moonkinForm.isActive
+		--local moonkinFormActive = TRB.Data.spells.moonkinForm.isActive
 
 		--$overcap
 		local overcap = IsValidVariableForSpec("$overcap")
@@ -2769,9 +2837,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         --$foeTicks
 		local foeTicks = TRB.Data.snapshotData.furyOfElune.ticksRemaining or 0
 		--$foeTime
-		local foeTime = 0
+		local _foeTime = GetFuryOfEluneRemainingTime()
+		local foeTime = "0.0"
 		if TRB.Data.snapshotData.furyOfElune.startTime ~= nil then
-			foeTime = string.format("%.1f", math.abs(currentTime - (TRB.Data.snapshotData.furyOfElune.startTime + TRB.Data.spells.furyOfElune.duration)))
+			foeTime = string.format("%.1f", _foeTime)
 		end
 		
         ----------
@@ -2780,9 +2849,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         --$foeTicks
 		local ueTicks = TRB.Data.snapshotData.umbralEmbrace.ticksRemaining or 0
 		--$foeTime
-		local ueTime = 0
+		local _ueTime = GetUmbralEmbraceRemainingTime()
+		local ueTime = "0.0"
 		if TRB.Data.snapshotData.umbralEmbrace.startTime ~= nil then
-			ueTime = string.format("%.1f", math.abs(currentTime - (TRB.Data.snapshotData.umbralEmbrace.startTime + TRB.Data.spells.umbralEmbrace.duration)))
+			ueTime = string.format("%.1f",_ueTime)
 		end
 		
 		--New Moon
@@ -2823,11 +2893,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		--$pulsar variables
 		local pulsarCollected = TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower or 0
-		local pulsarCollectedPercent = string.format("%.1f", TRB.Functions.RoundTo((pulsarCollected / TRB.Data.spells.primordialArcanicPulsar.maxAstralPower) * 100, 1))
+		local _pulsarCollectedPercent = pulsarCollected / TRB.Data.spells.primordialArcanicPulsar.maxAstralPower
+		local pulsarCollectedPercent = string.format("%.1f", TRB.Functions.RoundTo(_pulsarCollectedPercent * 100, 1))
 		local pulsarRemaining = TRB.Data.spells.primordialArcanicPulsar.maxAstralPower - pulsarCollected
-		local pulsarRemainingPercent = string.format("%.1f", TRB.Functions.RoundTo((pulsarRemaining / TRB.Data.spells.primordialArcanicPulsar.maxAstralPower) * 100, 1))
-		local pulsarNextStarsurge = ""
-		local pulsarNextStarfall = ""
+		local _pulsarRemainingPercent = pulsarRemaining / TRB.Data.spells.primordialArcanicPulsar.maxAstralPower
+		local pulsarRemainingPercent = string.format("%.1f", TRB.Functions.RoundTo(_pulsarRemainingPercent * 100, 1))
+		--local pulsarNextStarsurge = ""
+		--local pulsarNextStarfall = ""
 		local pulsarStarsurgeCount = TRB.Functions.RoundTo(pulsarRemaining / TRB.Data.spells.starsurge.astralPower, 0, ceil)
 		local pulsarStarfallCount = TRB.Functions.RoundTo(pulsarRemaining / TRB.Data.spells.starfall.astralPower, 0, ceil)
 		
@@ -2897,8 +2969,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$pulsarCollectedPercent"] = pulsarCollectedPercent
 		lookup["$pulsarRemaining"] = pulsarRemaining
 		lookup["$pulsarRemainingPercent"] = pulsarRemainingPercent
-		lookup["$pulsarNextStarsurge"] = pulsarNextStarsurge
-		lookup["$pulsarNextStarfall"] = pulsarNextStarfall
+		lookup["$pulsarNextStarsurge"] = ""
+		lookup["$pulsarNextStarfall"] = ""
 		lookup["$pulsarStarsurgeCount"] = pulsarStarsurgeCount
 		lookup["$pulsarStarfallCount"] = pulsarStarfallCount
 		lookup["$moonkinForm"] = ""
@@ -2945,8 +3017,62 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$ueAstralPower"] = ueAstralPower
 		lookup["$ueTicks"] = ueTicks
 		lookup["$ueTime"] = ueTime
-		lookup["$talentStellarFlare"] = TRB.Data.character.talents.stellarFlare.isSelected
+		lookup["$talentStellarFlare"] = ""
 		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$pulsarCollected"] = pulsarCollected
+		lookupLogic["$pulsarCollectedPercent"] = _pulsarCollectedPercent
+		lookupLogic["$pulsarRemaining"] = pulsarRemaining
+		lookupLogic["$pulsarRemainingPercent"] = _pulsarRemainingPercent
+		--lookupLogic["$pulsarNextStarsurge"] = pulsarNextStarsurge
+		--lookupLogic["$pulsarNextStarfall"] = pulsarNextStarfall
+		lookupLogic["$pulsarStarsurgeCount"] = pulsarStarsurgeCount
+		lookupLogic["$pulsarStarfallCount"] = pulsarStarfallCount
+		--lookupLogic["$moonkinForm"] = moonkinFormActive
+		lookupLogic["$eclipseTime"] = _eclipseTime
+		--[[lookupLogic["$eclipse"] = ""
+		lookupLogic["$lunar"] = ""
+		lookupLogic["$lunarEclipse"] = ""
+		lookupLogic["$eclipseLunar"] = ""
+		lookupLogic["$solar"] = ""
+		lookupLogic["$solarEclipse"] = ""
+		lookupLogic["$eclipseSolar"] = ""
+		lookupLogic["$celestialAlignment"] = ""]]
+		lookupLogic["$onethsTime"] = _onethsTime
+		lookupLogic["$moonAstralPower"] = moonAstralPower
+		lookupLogic["$moonCharges"] = moonCharges
+		lookupLogic["$moonCooldown"] = _moonCooldown
+		lookupLogic["$moonCooldownTotal"] = _moonCooldownTotal
+		lookupLogic["$sunfireCount"] = _sunfireCount
+		lookupLogic["$sunfireTime"] = _sunfireTime
+		lookupLogic["$moonfireCount"] = _moonfireCount
+		lookupLogic["$moonfireTime"] = _moonfireTime
+		lookupLogic["$stellarFlareCount"] = _stellarFlareCount
+		lookupLogic["$stellarFlareTime"] = _stellarFlareTime
+		lookupLogic["$astralPowerPlusCasting"] = _astralPowerPlusCasting
+		lookupLogic["$astralPowerPlusPassive"] = _astralPowerPlusPassive
+		lookupLogic["$astralPowerTotal"] = _astralPowerTotal
+		lookupLogic["$astralPowerMax"] = TRB.Data.character.maxResource
+		lookupLogic["$astralPower"] = normalizedAstralPower
+		lookupLogic["$resourcePlusCasting"] = _astralPowerPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _astralPowerPlusPassive
+		lookupLogic["$resourceTotal"] = _astralPowerTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = normalizedAstralPower
+		lookupLogic["$casting"] = _castingAstralPower
+		lookupLogic["$passive"] = _passiveAstralPower
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$astralPowerOvercap"] = overcap
+		lookupLogic["$foeAstralPower"] = foeAstralPower
+		lookupLogic["$foeTicks"] = foeTicks
+		lookupLogic["$foeTime"] = _foeTime
+		lookupLogic["$ueAstralPower"] = ueAstralPower
+		lookupLogic["$ueTicks"] = ueTicks
+		lookupLogic["$ueTime"] = _ueTime
+		--lookupLogic["$talentStellarFlare"] = TRB.Data.character.talents.stellarFlare.isSelected
+		TRB.Data.lookupLogic = lookupLogic
 	end
 	
 	local function RefreshLookupData_Feral()
@@ -3364,6 +3490,60 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$comboPoints"] = TRB.Data.character.resource2
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 		TRB.Data.lookup = lookup
+		
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$ripCount"] = _ripCount
+		lookupLogic["$ripTime"] = _ripTime
+		lookupLogic["$ripSnapshot"] = _ripSnapshot
+		lookupLogic["$ripCurrent"] = _currentSnapshotRip
+		lookupLogic["$ripPercent"] = _ripPercent
+		lookupLogic["$rakeCount"] = _rakeCount
+		lookupLogic["$rakeTime"] = _rakeTime
+		lookupLogic["$rakeSnapshot"] = _rakeSnapshot
+		lookupLogic["$rakeCurrent"] = _currentSnapshotRake
+		lookupLogic["$rakePercent"] = _rakePercent
+		lookupLogic["$thrashCount"] = _thrashCount
+		lookupLogic["$thrashTime"] = _thrashTime
+		lookupLogic["$thrashSnapshot"] = _thrashSnapshot
+		lookupLogic["$thrashCurrent"] = _currentSnapshotThrash
+		lookupLogic["$thrashPercent"] = _thrashPercent
+		lookupLogic["$moonfireCount"] = _moonfireCount
+		lookupLogic["$moonfireTime"] = _moonfireTime
+		lookupLogic["$moonfireSnapshot"] = _moonfireSnapshot
+		lookupLogic["$moonfireCurrent"] = _currentSnapshotMoonfire
+		lookupLogic["$moonfirePercent"] = _moonfirePercent
+		--lookupLogic["$lunarInspiration"] = ""
+		lookupLogic["$brutalSlashCharges"] = brutalSlashCharges
+		lookupLogic["$brutalSlashCooldown"] = _brutalSlashCooldown
+		lookupLogic["$brutalSlashCooldownTotal"] = _brutalSlashCooldownTotal
+		lookupLogic["$bloodtalonsStacks"] = bloodtalonsStacks
+		lookupLogic["$bloodtalonsTime"] = _bloodtalonsTime
+		lookupLogic["$suddenAmbushTime"] = _suddenAmbushTime
+		lookupLogic["$clearcastingStacks"] = clearcastingStacks
+		lookupLogic["$clearcastingTime"] = _clearcastingTime
+		lookupLogic["$berserkTime"] = _berserkTime
+		lookupLogic["$incarnationTime"] = _berserkTime
+		lookupLogic["$apexPredatorsCravingTime"] = _apexPredatorsCravingTime
+		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
+		lookupLogic["$energyTotal"] = _energyTotal
+		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
+		lookupLogic["$energy"] = TRB.Data.snapshotData.resource
+		lookupLogic["$resourcePlusCasting"] = _energyPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _energyPlusPassive
+		lookupLogic["$resourceTotal"] = _energyTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = TRB.Data.snapshotData.resource
+		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
+		lookupLogic["$regen"] = _regenEnergy
+		lookupLogic["$regenEnergy"] = _regenEnergy
+		lookupLogic["$energyRegen"] = _regenEnergy
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$energyOvercap"] = overcap
+		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
 	local function RefreshLookupData_Restoration()
@@ -3373,34 +3553,39 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		-- This probably needs to be pulled every refresh
 		TRB.Data.snapshotData.manaRegen, _ = GetPowerRegen()
 
-		local currentManaColor = TRB.Data.settings.druid.restoration.colors.text.current
-		local castingManaColor = TRB.Data.settings.druid.restoration.colors.text.casting
+		local currentManaColor = TRB.Data.settings.priest.holy.colors.text.current
+		local castingManaColor = TRB.Data.settings.priest.holy.colors.text.casting
 
 		--$mana
-		local manaPrecision = TRB.Data.settings.druid.restoration.manaPrecision or 1
-		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor"))
+		local manaPrecision = TRB.Data.settings.priest.holy.manaPrecision or 1
+		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 		--$casting
-		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.casting.resourceFinal, manaPrecision, "floor"))
+		local _castingMana = TRB.Data.snapshotData.casting.resourceFinal
+		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
 		--$sohMana
 		local _sohMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
-		local sohMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor"))
+		local sohMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor", true))
 		--$sohTicks
-		local sohTicks = string.format("%.0f", TRB.Data.snapshotData.symbolOfHope.ticksRemaining)
+		local _sohTicks = TRB.Data.snapshotData.symbolOfHope.ticksRemaining or 0
+		local sohTicks = string.format("%.0f", _sohTicks)
 		--$sohTime
-		local sohTime = string.format("%.1f", GetSymbolOfHopeRemainingTime())
+		local _sohTime = GetSymbolOfHopeRemainingTime()
+		local sohTime = string.format("%.1f", _sohTime)
 
 		--$innervateMana
 		local _innervateMana = TRB.Data.snapshotData.innervate.mana
-		local innervateMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor"))
+		local innervateMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
 		--$innervateTime
-		local innervateTime = string.format("%.1f", GetInnervateRemainingTime())
+		local _innervateTime = GetInnervateRemainingTime()
+		local innervateTime = string.format("%.1f", _innervateTime)
 
 		--$mttMana
 		local _mttMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
-		local mttMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor"))
+		local mttMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
-		local mttTime = string.format("%.1f", GetManaTideTotemRemainingTime())
+		local _mttTime = GetManaTideTotemRemainingTime()
+		local mttTime = string.format("%.1f", _mttTime)
 
 		--$potionCooldownSeconds
 		local _potionCooldown = 0
@@ -3415,27 +3600,28 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		--$pscMana
 		local _pscMana = CalculateManaGain(TRB.Data.snapshotData.potionOfSpiritualClarity.mana, true)
-		local pscMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_pscMana, manaPrecision, "floor"))
+		local pscMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_pscMana, manaPrecision, "floor", true))
 		--$pscTicks
-		local pscTicks = string.format("%.0f", TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining)
+		local _pscTicks = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining or 0
+		local pscTicks = string.format("%.0f", _pscTicks)
 		--$pscTime
 		local _pscTime = GetPotionOfSpiritualClarityRemainingTime()
 		local pscTime = string.format("%.1f", _pscTime)
 		--$passive
 		local _passiveMana = _sohMana + _pscMana + _innervateMana + _mttMana
-		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.druid.restoration.colors.text.passive, TRB.Functions.ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor"))
+		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.priest.holy.colors.text.passive, TRB.Functions.ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
 		local _manaTotal = math.min(_passiveMana + TRB.Data.snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
-		local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor"))
+		local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
 		--$manaPlusCasting
 		local _manaPlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
-		local manaPlusCasting = string.format("|c%s%s|r", castingManaColor, TRB.Functions.ConvertToShortNumberNotation(_manaPlusCasting, manaPrecision, "floor"))
+		local manaPlusCasting = string.format("|c%s%s|r", castingManaColor, TRB.Functions.ConvertToShortNumberNotation(_manaPlusCasting, manaPrecision, "floor", true))
 		--$manaPlusPassive
 		local _manaPlusPassive = math.min(_passiveMana + normalizedMana, TRB.Data.character.maxResource)
-		local manaPlusPassive = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(_manaPlusPassive, manaPrecision, "floor"))
+		local manaPlusPassive = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(_manaPlusPassive, manaPrecision, "floor", true))
 
 		--$manaMax
-		local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor"))
+		local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
 		--$manaPercent
 		local maxResource = TRB.Data.character.maxResource
@@ -3443,10 +3629,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if maxResource == 0 then
 			maxResource = 1
 		end
-		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.RoundTo((normalizedMana/maxResource)*100, manaPrecision, "floor"))
+		local _manaPercent = (normalizedMana/maxResource)
+		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.RoundTo(_manaPercent*100, manaPrecision, "floor"))
 
 		--$efflorescenceTime
-		local efflorescenceTime = string.format("%.1f", GetEfflorescenceRemainingTime())
+		local _efflorescenceTime = GetEfflorescenceRemainingTime()
+		local efflorescenceTime = string.format("%.1f", _efflorescenceTime)
 
 
 		----------
@@ -3573,6 +3761,40 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$potionCooldown"] = potionCooldown
 		lookup["$potionCooldownSeconds"] = potionCooldownSeconds
 		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$manaPlusCasting"] = _manaPlusCasting
+		lookupLogic["$manaPlusPassive"] = _manaPlusPassive
+		lookupLogic["$manaTotal"] = _manaTotal
+		lookupLogic["$manaMax"] = maxResource
+		lookupLogic["$mana"] = normalizedMana
+		lookupLogic["$resourcePlusCasting"] = _manaPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _manaPlusPassive
+		lookupLogic["$resourceTotal"] = _manaTotal
+		lookupLogic["$resourceMax"] = maxResource
+		lookupLogic["$manaPercent"] = _manaPercent
+		lookupLogic["$resourcePercent"] = _manaPercent
+		lookupLogic["$resource"] = normalizedMana
+		lookupLogic["$casting"] = _castingMana
+		lookupLogic["$passive"] = _passiveMana
+		lookupLogic["$sohMana"] = _sohMana
+		lookupLogic["$sohTime"] = _sohTime
+		lookupLogic["$sohTicks"] = _sohTicks
+		lookupLogic["$innervateMana"] = _innervateMana
+		lookupLogic["$innervateTime"] = _innervateTime
+		lookupLogic["$mttMana"] = _mttMana
+		lookupLogic["$mttTime"] = _mttTime
+		lookupLogic["$pscMana"] = _pscMana
+		lookupLogic["$pscTicks"] = _pscTicks
+		lookupLogic["$pscTime"] = _pscTime
+		lookupLogic["$potionCooldown"] = potionCooldown
+		lookupLogic["$potionCooldownSeconds"] = potionCooldown
+		lookupLogic["$efflorescenceTime"] = _efflorescenceTime
+		lookupLogic["$sunfireCount"] = _sunfireCount
+		lookupLogic["$sunfireTime"] = _sunfireTime
+		lookupLogic["$moonfireCount"] = _moonfireCount
+		lookupLogic["$moonfireTime"] = _moonfireTime
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
     local function FillSnapshotDataCasting_Balance(spell)

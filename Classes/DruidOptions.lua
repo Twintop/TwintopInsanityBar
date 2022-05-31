@@ -3323,7 +3323,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.balance)
 		end)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 30
 		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
@@ -6702,7 +6702,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.feral)
 		end)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 30
 		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
@@ -9006,7 +9006,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		end)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 30
 		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)

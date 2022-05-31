@@ -1190,13 +1190,33 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
         }
 		specCache.beastMastery.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility% (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versatility", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
+			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
+			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
+			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
+			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
+			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
+			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$dVers", description = "Current Versatilit y% (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
+			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+
+			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
+			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
+			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
+			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
+			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
+			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
+			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
+			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
 
 			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
@@ -1279,13 +1299,33 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
         }
 		specCache.marksmanship.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility% (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versatility", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
+			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
+			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
+			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
+			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
+			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
+			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$dVers", description = "Current Versatilit y% (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
+			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+
+			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
+			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
+			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
+			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
+			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
+			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
+			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
+			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
 
 			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
@@ -1369,13 +1409,33 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
         }
 		specCache.survival.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste%", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Crit%", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery%", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility% (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versatility", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility% (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility% (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
+			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
+			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
+			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
+			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
+			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
+			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$dVers", description = "Current Versatilit y% (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
+			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+
+			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
+			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
+			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
+			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
+			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
+			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
+			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
+			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
 
 			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
@@ -2016,6 +2076,41 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$resourceOvercap"] = overcap
 		lookup["$focusOvercap"] = overcap
 		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$killingFrenzyTime"] = _killingFrenzyTime
+		lookupLogic["$t28Time"] = _killingFrenzyTime
+		lookupLogic["$frenzyTime"] = _frenzyTime
+		lookupLogic["$frenzyStacks"] = frenzyStacks
+		lookupLogic["$nesingwarysTime"] = _nesingwarysTime
+		lookupLogic["$flayersMarkTime"] = _flayersMarkTime
+		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
+		lookupLogic["$focusTotal"] = _focusTotal
+		lookupLogic["$focusMax"] = TRB.Data.character.maxResource
+		lookupLogic["$focus"] = TRB.Data.snapshotData.resource
+		lookupLogic["$resourcePlusCasting"] = _focusPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _focusPlusPassive
+		lookupLogic["$resourceTotal"] = _focusTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = TRB.Data.snapshotData.resource
+		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
+
+		if TRB.Data.character.maxResource == TRB.Data.snapshotData.resource then
+			lookupLogic["$passive"] = _passiveFocusMinusRegen
+		else
+			lookupLogic["$passive"] = _passiveFocus
+		end
+
+		lookupLogic["$barbedShotFocus"] = _barbedShotFocus
+		lookupLogic["$barbedShotTicks"] = TRB.Data.snapshotData.barbedShot.ticksRemaining
+		lookupLogic["$barbedShotTime"] = _barbedShotTime
+		lookupLogic["$regen"] = _regenFocus
+		lookupLogic["$regenFocus"] = _regenFocus
+		lookupLogic["$focusRegen"] = _regenFocus
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$focusOvercap"] = overcap
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
 	local function RefreshLookupData_Marksmanship()
@@ -2217,6 +2312,34 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$resourceOvercap"] = overcap
 		lookup["$focusOvercap"] = overcap
 		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$steadyFocusTime"] = _steadyFocusTime
+		lookupLogic["$trueshotTime"] = _trueshotTime
+		lookupLogic["$lockAndLoadTime"] = _lockAndLoadTime
+		lookupLogic["$vigilTime"] = _vigilTime
+		lookupLogic["$nesingwarysTime"] = _nesingwarysTime
+		lookupLogic["$flayersMarkTime"] = _flayersMarkTime
+		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
+		lookupLogic["$ssCount"] = _serpentStingCount
+		lookupLogic["$ssTime"] = _serpentStingTime
+		lookupLogic["$focusTotal"] = _focusTotal
+		lookupLogic["$focusMax"] = TRB.Data.character.maxResource
+		lookupLogic["$focus"] = TRB.Data.snapshotData.resource
+		lookupLogic["$resourcePlusCasting"] = _focusPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _focusPlusPassive
+		lookupLogic["$resourceTotal"] = _focusTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = TRB.Data.snapshotData.resource
+		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
+		lookupLogic["$passive"] = _passiveFocus
+		lookupLogic["$regen"] = _regenFocus
+		lookupLogic["$regenFocus"] = _regenFocus
+		lookupLogic["$focusRegen"] = _regenFocus
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$focusOvercap"] = overcap
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
 	local function RefreshLookupData_Survival()
@@ -2422,6 +2545,37 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$toeFocus"] = toeFocus
 		lookup["$toeTicks"] = toeTicks
 		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+
+		lookupLogic["$coordinatedAssaultTime"] = _coordinatedAssaultTime
+		lookupLogic["$flayersMarkTime"] = _flayersMarkTime
+		lookupLogic["$nesingwarysTime"] = _nesingwarysTime
+		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
+		lookupLogic["$ssCount"] = _serpentStingCount
+		lookupLogic["$ssTime"] = _serpentStingTime
+		lookupLogic["$wildfireBombCharges"] = wildfireBombCharges
+		lookupLogic["$t28Time"] = _madBombardierTime
+		lookupLogic["$madBombardierTime"] = _madBombardierTime
+		lookupLogic["$focusTotal"] = _focusTotal
+		lookupLogic["$focusMax"] = TRB.Data.character.maxResource
+		lookupLogic["$focus"] = TRB.Data.snapshotData.resource
+		lookupLogic["$resourcePlusCasting"] = _focusPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _focusPlusPassive
+		lookupLogic["$resourceTotal"] = _focusTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = TRB.Data.snapshotData.resource
+		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
+		lookupLogic["$passive"] = _passiveFocus
+		lookupLogic["$regen"] = _regenFocus
+		lookupLogic["$regenFocus"] = _regenFocus
+		lookupLogic["$focusRegen"] = _regenFocus
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$focusOvercap"] = overcap
+		lookupLogic["$toeFocus"] = _toeFocus
+		lookupLogic["$toeTicks"] = TRB.Data.snapshotData.termsOfEngagement.ticksRemaining
+		TRB.Data.lookupLogic = lookupLogic
 	end
 
 	local function UpdateRapidFire()

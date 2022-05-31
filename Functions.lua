@@ -121,8 +121,9 @@ local function RoundTo(num, numDecimalPlaces, mode)
 end
 TRB.Functions.RoundTo = RoundTo
 
-local function ConvertToShortNumberNotation(num, numDecimalPlaces, mode)
+local function ConvertToShortNumberNotation(num, numDecimalPlaces, mode, isInteger)
 	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
+	isInteger = isInteger or false
 	local negative = ""
 
 	if num < 0 then
@@ -137,7 +138,11 @@ local function ConvertToShortNumberNotation(num, numDecimalPlaces, mode)
     elseif num >= 10^3 then
         return string.format(negative .. "%." .. numDecimalPlaces .. "fk", TRB.Functions.RoundTo(num / 10^3, numDecimalPlaces, mode))
     else
-        return string.format(negative .. "%." .. numDecimalPlaces .. "f", TRB.Functions.RoundTo(num, 0, mode))
+		if isInteger then
+        	return string.format(negative .. "%.0f", TRB.Functions.RoundTo(num, 0, mode))
+		else			
+			return string.format(negative .. "%." .. numDecimalPlaces .. "f", TRB.Functions.RoundTo(num, 0, mode))
+		end
     end
 end
 TRB.Functions.ConvertToShortNumberNotation = ConvertToShortNumberNotation
@@ -405,6 +410,14 @@ local function ResetSnapshotData()
 		mastery = 0,
 		versatilityOffensive = 0,
 		versatilityDefensive = 0,
+		hasteRating = 0,
+		critRating = 0,
+		masteryRating = 0,
+		versatilityRating = 0,
+		intellect = 0,
+		strength = 0,
+		agility = 0,
+		stamina = 0,
 		isTracking = false,
 		casting = {
 			spellId = nil,
@@ -1414,8 +1427,14 @@ local function RefreshLookupDataBase(settings)
 	--$crit
 	local critPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.crit, settings.hastePrecision))
 
+	--$critRating
+	local critRating = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.critRating, settings.hastePrecision, "floor", true))
+
 	--$mastery
 	local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.mastery, settings.hastePrecision))
+
+	--$masteryRating
+	local masteryRating = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.masteryRating, settings.hastePrecision, "floor", true))
 
 	--$gcd
 	local _gcd = 1.5 / (1 + (TRB.Data.snapshotData.haste/100))
@@ -1428,13 +1447,28 @@ local function RefreshLookupDataBase(settings)
 
 	--$haste
 	local hastePercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.haste, settings.hastePrecision))
+	
+	--$hasteRating
+	local hasteRating = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.hasteRating, settings.hastePrecision, "floor", true))
 
 	--$vers
 	local versOff = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.versatilityOffensive, settings.hastePrecision))
 	local versDef = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.versatilityDefensive, settings.hastePrecision))
 
+	--$versRating
+	local versRating = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.versatilityRating, settings.hastePrecision, "floor", true))
+	
+	--$int
+	local int = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.intellect, settings.hastePrecision, "floor", true))
+	--$agi
+	local agi = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.agility, settings.hastePrecision, "floor", true))
+	--$str
+	local str = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.strength, settings.hastePrecision, "floor", true))
+	--$stam
+	local stam = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.stamina, settings.hastePrecision, "floor", true))
+
 	--$ttd
-	local _ttd = ""
+	local _ttd = 0
 	local ttd = ""
 	local ttdTotalSeconds = ""
 
@@ -1442,6 +1476,7 @@ local function RefreshLookupDataBase(settings)
 		local target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
 		local ttdMinutes = math.floor(target.ttd / 60)
 		local ttdSeconds = target.ttd % 60
+		_ttd = target.ttd
 		ttdTotalSeconds = string.format("%s", TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor"))
 		ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
 	else
@@ -1455,12 +1490,35 @@ local function RefreshLookupDataBase(settings)
 	local lookup = TRB.Data.lookup or {}
 	lookup["#casting"] = castingIcon
 	lookup["$haste"] = hastePercent
+	lookup["$hastePercent"] = hastePercent
 	lookup["$crit"] = critPercent
+	lookup["$critPercent"] = critPercent
 	lookup["$mastery"] = masteryPercent
+	lookup["$masteryPercent"] = masteryPercent
 	lookup["$vers"] = versOff
+	lookup["$versPercent"] = versOff
 	lookup["$versatility"] = versOff
+	lookup["$versatilityPercent"] = versOff
 	lookup["$oVers"] = versOff
+	lookup["$oVersPercent"] = versOff
 	lookup["$dVers"] = versDef
+	lookup["$dVersPercent"] = versDef
+
+	lookup["$hasteRating"] = hasteRating
+	lookup["$critRating"] = critRating
+	lookup["$masteryRating"] = masteryRating
+	lookup["$versRating"] = versRating
+	lookup["$versatilityRating"] = versRating
+	
+	lookup["$int"] = int
+	lookup["$intellect"] = int
+	lookup["$str"] = str
+	lookup["$strength"] = str
+	lookup["$agi"] = agi
+	lookup["$agility"] = agi
+	lookup["$stam"] = stam
+	lookup["$stamina"] = stam
+
 	lookup["$isKyrian"] = tostring(TRB.Functions.IsValidVariableBase("$isKyrian"))
 	lookup["$isVenthyr"] = tostring(TRB.Functions.IsValidVariableBase("$isVenthyr"))
 	lookup["$isNightFae"] = tostring(TRB.Functions.IsValidVariableBase("$isNightFae"))
@@ -1474,7 +1532,41 @@ local function RefreshLookupDataBase(settings)
 	lookup["%%"] = "%"
 
 
-	TRB.Data.lookup = lookup
+	local lookupLogic = TRB.Data.lookupLogic or {}
+	lookupLogic["$haste"] = TRB.Data.snapshotData.haste
+	lookupLogic["$hastePercent"] = TRB.Data.snapshotData.haste
+	lookupLogic["$crit"] = TRB.Data.snapshotData.crit
+	lookupLogic["$critPercent"] = TRB.Data.snapshotData.crit
+	lookupLogic["$mastery"] = TRB.Data.snapshotData.mastery
+	lookupLogic["$masteryPercent"] = TRB.Data.snapshotData.mastery
+	lookupLogic["$vers"] = TRB.Data.snapshotData.versatilityOffensive
+	lookupLogic["$versPercent"] = TRB.Data.snapshotData.versatilityOffensive
+	lookupLogic["$versatility"] = TRB.Data.snapshotData.versatilityOffensive
+	lookupLogic["$versatilityPercent"] = TRB.Data.snapshotData.versatilityOffensive
+	lookupLogic["$oVers"] = TRB.Data.snapshotData.versatilityOffensive
+	lookupLogic["$oVersPercent"] = TRB.Data.snapshotData.versatilityOffensive
+	lookupLogic["$dVers"] = TRB.Data.snapshotData.versatilityDefensive
+	lookupLogic["$dVersPercent"] = TRB.Data.snapshotData.versatilityDefensive
+
+	lookupLogic["$hasteRating"] = TRB.Data.snapshotData.hasteRating
+	lookupLogic["$critRating"] = TRB.Data.snapshotData.critRating
+	lookupLogic["$masteryRating"] = TRB.Data.snapshotData.masteryRating
+	lookupLogic["$versRating"] = TRB.Data.snapshotData.versatilityRating
+	lookupLogic["$versatilityRating"] = TRB.Data.snapshotData.versatilityRating
+
+	lookupLogic["$int"] = TRB.Data.snapshotData.intellect
+	lookupLogic["$intellect"] = TRB.Data.snapshotData.intellect
+	lookupLogic["$str"] = TRB.Data.snapshotData.strength
+	lookupLogic["$strength"] = TRB.Data.snapshotData.strength
+	lookupLogic["$agi"] = TRB.Data.snapshotData.agility
+	lookupLogic["$agility"] = TRB.Data.snapshotData.agility
+	lookupLogic["$stam"] = TRB.Data.snapshotData.stamina
+	lookupLogic["$stamina"] = TRB.Data.snapshotData.stamina
+
+	lookupLogic["$gcd"] = _gcd
+	lookupLogic["$ttd"] = _ttd
+	lookupLogic["$ttdSeconds"] = _ttd
+	TRB.Data.lookupLogic = lookupLogic
 
 	Global_TwintopResourceBar = {
 		ttd = {
@@ -1523,17 +1615,35 @@ TRB.Functions.UpdateResourceBarText = UpdateResourceBarText
 
 local function IsValidVariableBase(var)
 	local valid = false
-	if var == "$crit" then
+	if var == "$crit" or var == "$critPercent" then
 		valid = true
-	elseif var == "$mastery" then
+	elseif var == "$mastery" or var == "$masteryPercent" then
 		valid = true
-	elseif var == "$haste" then
+	elseif var == "$haste" or var == "$hastePercent" then
 		valid = true
 	elseif var == "$gcd" then
 		valid = true
-	elseif var == "$vers" or var == "$versatility" or var == "$oVers" then
+	elseif var == "$vers" or var == "$versatility" or var == "$oVers" or var == "$versPercent" or var == "$versatilityPercent" or var == "$oVersPercent" then
 		valid = true
-	elseif var == "$dVers" then
+	elseif var == "$dVers" or var == "$dversPercent" then
+		valid = true
+	elseif var == "$critRating" then
+		valid = true
+	elseif var == "$masteryRating" then
+		valid = true
+	elseif var == "$hasteRating" then
+		valid = true
+	elseif var == "$versRating" or var == "$versatilityRating" then
+		valid = true
+	elseif var == "$dVersRating" then
+		valid = true
+	elseif var == "$int" or var == "$intellect" then
+		valid = true
+	elseif var == "$agi" or var == "$agility" then
+		valid = true
+	elseif var == "$str" or var == "$strength" then
+		valid = true
+	elseif var == "$stam" or var == "$stamina" then
 		valid = true
 	elseif var == "$ttd" or var == "$ttdSeconds" then
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
@@ -1570,7 +1680,7 @@ local function ScanForLogicSymbols(input)
 		return returnTable
 	end
 
-	local a, b, c, d, e, e_1, e_2, e_3, f, g, h, i, j
+	local a, b, c, d, e, e_1, e_2, e_3, f, g, h, i, j, k, k_1, l, m, n, o, p, q, r, s, t
 	local _
 	local currentLevel = 0
 	local currentParenthesisLevel = 0
@@ -1585,7 +1695,7 @@ local function ScanForLogicSymbols(input)
     while currentPosition <= string.len(input) do
         a, _ = string.find(input, "{", currentPosition)
         b, _ = string.find(input, "}", currentPosition)
-        c, _ = string.find(input, "%[", currentPosition)
+        c, _ = string.find(input, "%[", currentPosition) --Escape because this isn't regex
         d, _ = string.find(input, "]", currentPosition)
 		e, _ = string.find(input, "||", currentPosition)
 		e_1, _ = string.find(input, "|n", currentPosition)
@@ -1593,9 +1703,20 @@ local function ScanForLogicSymbols(input)
 		e_3, _ = string.find(input, "|r", currentPosition)
 		f, _ = string.find(input, "&", currentPosition)
 		g, _ = string.find(input, "!", currentPosition)
-		h, _ = string.find(input, "%$", currentPosition)
-		i, _ = string.find(input, "%(", currentPosition)
+		h, _ = string.find(input, "%$", currentPosition) --Escape because this isn't regex
+		i, _ = string.find(input, "%(", currentPosition) --Escape because this isn't regex
 		j, _ = string.find(input, ")", currentPosition)
+		k, _ = string.find(input, "==", currentPosition)
+		k_1, _ = string.find(input, "=", currentPosition)
+		l, _ = string.find(input, "~=", currentPosition)
+		m, _ = string.find(input, ">=", currentPosition)
+		n, _ = string.find(input, "<=", currentPosition)
+		o, _ = string.find(input, ">", currentPosition)
+		p, _ = string.find(input, "<", currentPosition)
+		q, _ = string.find(input, "+", currentPosition)
+		r, _ = string.find(input, "-", currentPosition)
+		s, _ = string.find(input, "*", currentPosition)
+		t, _ = string.find(input, "/", currentPosition)
 
 
 		a = a or endLength
@@ -1611,12 +1732,27 @@ local function ScanForLogicSymbols(input)
 		h = h or endLength
 		i = i or endLength
 		j = j or endLength
+		k = k or endLength
+		k_1 = k_1 or endLength
+		l = l or endLength
+		m = m or endLength
+		n = n or endLength
+		o = o or endLength
+		p = p or endLength
+		q = q or endLength
+		r = r or endLength
+		s = s or endLength
+		t = t or endLength
 
 		if e == e_1 or e == e_2 or e == e_3 then
 			e = endLength
 		end
 
-		min = math.min(a, b, c, d, e, f, g, h, i, j)
+		--if k == k_1 then
+		--	k = endLength
+		--end
+
+		min = math.min(a, b, c, d, e, f, g, h, i, j, k, k_1, l, m, n, o, p, q, r, s, t)
 		index = index + 1
 
 		if min <= string.len(input) then
@@ -1672,6 +1808,39 @@ local function ScanForLogicSymbols(input)
 				ins.symbol = ")"
 				currentParenthesisLevel = currentParenthesisLevel - 1
 				currentPosition = j + 1
+			elseif min == k then
+				ins.symbol = "=="
+				currentPosition = k + 2
+			elseif min == l then
+				ins.symbol = "~="
+				currentPosition = l + 2
+			elseif min == m then
+				ins.symbol = ">="
+				currentPosition = m + 2
+			elseif min == n then
+				ins.symbol = "<="
+				currentPosition = n + 2
+			elseif min == k_1 then
+				ins.symbol = "="
+				currentPosition = k_1 + 1
+			elseif min == o then
+				ins.symbol = ">"
+				currentPosition = o + 1
+			elseif min == p then
+				ins.symbol = "<"
+				currentPosition = p + 1
+			elseif min == q then
+				ins.symbol = "+"
+				currentPosition = q + 1
+			elseif min == r then
+				ins.symbol = "-"
+				currentPosition = r + 1
+			elseif min == s then
+				ins.symbol = "*"
+				currentPosition = s + 1
+			elseif min == t then
+				ins.symbol = "/"
+				currentPosition = t + 1
 			else -- Something went wrong. Break for safety
 				currentPosition = string.len(input) + 1
 				break
@@ -1762,7 +1931,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 		local returnText = ""
 
 ---@diagnostic disable-next-line: undefined-field
-		if string.trim(string.len(input)) == 0 then
+		if string.len(string.trim(input)) == 0 then
 			return returnText
 		end
 
@@ -1824,9 +1993,27 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 
 ---@diagnostic disable-next-line: undefined-field
 									local var = string.trim(string.sub(logicString, nextVariable.position - positionOffset - p, variableEnd))
+									var = string.gsub(var, " ", "")
 									local valid = TRB.Data.IsValidVariableForSpec(var)
+									
 ---@diagnostic disable-next-line: undefined-field
 									local beforeVar = string.trim(string.sub(logicString, s-p, nextVariable.position - positionOffset - p - 1))
+---@diagnostic disable-next-line: undefined-field
+									local afterVar = string.trim(string.sub(logicString, variableEnd, variableEnd))
+
+									local prevSymbol = TRB.Functions.FindNextSymbolIndex(scan.all, '$', true, nextVariable.index-1, nextVariable.index, nil, nil)
+									local nextNextSymbol = TRB.Functions.FindNextSymbolIndex(scan.all, '$', true, nextVariable.index+1, nextVariable.index+1, nil, nil)										
+									local pSymbol = ""
+									local nSymbol = ""
+
+									if prevSymbol ~= nil and nextNextSymbol ~= nil then
+										pSymbol = prevSymbol.symbol
+										nSymbol = nextNextSymbol.symbol
+									end
+
+									if TRB.Data.lookupLogic[var] ~= nil and pSymbol ~= "!" and ((pSymbol ~= "{" and pSymbol ~= "|" and pSymbol ~= "&" and pSymbol ~= "(") or (nSymbol ~= "}" and nSymbol ~= "|" and nSymbol ~= "&" and nSymbol ~= ")")) then
+										valid = TRB.Data.lookupLogic[var]									
+									end
 
 									if string.sub(beforeVar, string.len(beforeVar)) == "!" then
 										outputString = outputString .. " " .. string.sub(beforeVar, 0, string.len(beforeVar)-1) .. " (not " .. tostring(valid) .. ") "
@@ -1845,6 +2032,15 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 							end
 
 							outputString = string.lower(outputString)
+							outputString = string.gsub(outputString, " ", "")						
+							outputString = string.gsub(outputString, "%(%)", "")
+							outputString = string.gsub(outputString, "=", "==")
+							outputString = string.gsub(outputString, "!==", "!=")
+							outputString = string.gsub(outputString, "~==", "~=")
+							outputString = string.gsub(outputString, ">==", ">=")
+							outputString = string.gsub(outputString, "<==", "<=")
+							outputString = string.gsub(outputString, "===", "==")
+							outputString = string.gsub(outputString, "!=", "~=")
 							outputString = string.gsub(outputString, "!", " not ")
 							outputString = string.gsub(outputString, "&", " and ")
 							outputString = string.gsub(outputString, "||", " or ")
@@ -1852,12 +2048,14 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 							local resultCode, resultFunc = pcall(assert, loadstring("return (" .. outputString .. ")"))
 							
 							if resultCode then
-								local _, result = pcall(resultFunc)
-								if result == true then
+								local pcallSuccess, result = pcall(resultFunc)
+								if not pcallSuccess then-- Something went wrong, show the error text instead
+									returnText = returnText .. "{INVALID IF/ELSE LOGIC}"
+								elseif result == true or result then
 									-- Recursive call for "IF", once we find the matched ]
 									local trueText = string.sub(input, nextOpenResult.position - positionOffset + 1, nextCloseResult.position - positionOffset - 1)
 									returnText = returnText .. RemoveInvalidVariablesFromBarText_Inner(trueText, nextOpenResult.index, nextCloseResult.index - 1, nextOpenResult.position, nextCloseResult.position - 1)
-								elseif result == false and hasElse == true then
+								elseif elseOpenResult ~= nil and elseCloseResult ~= nil and (result == false or (not result)) and hasElse == true then
 									-- Recursive call for "ELSE", once we find the matched ]
 									local falseText = string.sub(input, elseOpenResult.position - positionOffset + 1, elseCloseResult.position - positionOffset - 1)
 									returnText = returnText .. RemoveInvalidVariablesFromBarText_Inner(falseText, elseOpenResult.index, elseCloseResult.index - 1, elseOpenResult.position, elseCloseResult.position - 1)
@@ -1866,7 +2064,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 								returnText = returnText .. "{INVALID IF/ELSE LOGIC}"
 							end
 
-							if hasElse == true then
+							if elseCloseResult ~= nil and hasElse == true then
 								p = elseCloseResult.position - positionOffset + 1
 								lastIndex = elseCloseResult.index
 							else
@@ -2022,6 +2220,7 @@ end
 TRB.Functions.CheckCharacter_Class = CheckCharacter_Class
 
 local function UpdateSnapshot()
+	local _
 	TRB.Data.snapshotData.resource = UnitPower("player", TRB.Data.resource, true)
 
 	if TRB.Data.resource2 ~= nil then
@@ -2033,6 +2232,16 @@ local function UpdateSnapshot()
 	TRB.Data.snapshotData.mastery = GetMasteryEffect()
 	TRB.Data.snapshotData.versatilityOffensive = GetCombatRatingBonus(29)
 	TRB.Data.snapshotData.versatilityDefensive = GetCombatRatingBonus(31)
+
+	TRB.Data.snapshotData.hasteRating = GetCombatRating(20)
+	TRB.Data.snapshotData.critRating = GetCombatRating(11)
+	TRB.Data.snapshotData.masteryRating = GetCombatRating(26)
+	TRB.Data.snapshotData.versatilityRating = GetCombatRating(29)
+	
+	_, TRB.Data.snapshotData.strength, _, _ = UnitStat("player", 1)
+	_, TRB.Data.snapshotData.agility, _, _ = UnitStat("player", 2)
+	_, TRB.Data.snapshotData.stamina, _, _ = UnitStat("player", 3)
+	_, TRB.Data.snapshotData.intellect, _, _ = UnitStat("player", 4)
 
 	if IsInJailersTower() then
 		TRB.Data.character.torghast.rampaging.spellCostModifier, TRB.Data.character.torghast.rampaging.coolDownReduction = TRB.Functions.GetRampagingBuff()

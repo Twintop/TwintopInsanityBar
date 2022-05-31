@@ -2630,7 +2630,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 		end)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 30
 		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
@@ -5911,7 +5911,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.windwalker)
 		end)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 30
 		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
