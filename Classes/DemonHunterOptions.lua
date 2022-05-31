@@ -2352,74 +2352,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			PlaySoundFile(TRB.Data.settings.demonhunter.havoc.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
-
-        --[[
-		yCoord = yCoord - 60
-		controls.checkBoxes.suddenDeathAudio = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_suddenDeath_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.suddenDeathAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Sudden Death proc (if talented)")
-		f.tooltip = "Play an audio cue when you get a Sudden Death proc that allows you to use Execute/Condemn for 0 Fury and above normal execute range enemy health."
-		f:SetChecked(TRB.Data.settings.demonhunter.havoc.audio.suddenDeath.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.demonhunter.havoc.audio.suddenDeath.enabled = self:GetChecked()
-
-			if TRB.Data.settings.demonhunter.havoc.audio.suddenDeath.enabled then
----@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.demonhunter.havoc.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.suddenDeathAudio = CreateFrame("FRAME", "TwintopResourceBar_DemonHunter_Havoc_suddenDeath_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.suddenDeathAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.suddenDeathAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.suddenDeathAudio, TRB.Data.settings.demonhunter.havoc.audio.suddenDeath.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.suddenDeathAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.suddenDeathAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.demonhunter.havoc.audio.suddenDeath.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-			TRB.Data.settings.demonhunter.havoc.audio.suddenDeath.sound = newValue
-			TRB.Data.settings.demonhunter.havoc.audio.suddenDeath.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
-			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.demonhunter.havoc.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-        ]]
-
 		TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = controls
 	end
 
@@ -2486,7 +2418,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.demonhunter.havoc)
 		end)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 30
 		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)

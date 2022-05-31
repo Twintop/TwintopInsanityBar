@@ -2720,7 +2720,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
 		end)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 30
 		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
@@ -5063,7 +5063,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.fury)
 		end)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 30
 		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
