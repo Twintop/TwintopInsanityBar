@@ -1381,7 +1381,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local _pscTime = GetPotionOfSpiritualClarityRemainingTime()
 		local pscTime = string.format("%.1f", _pscTime)
 		--$passive
-		local _passiveMana = _wfMana + _sohMana + _pscMana + _innervateMana + _mttMana
+		local _passiveMana = _sohMana + _pscMana + _innervateMana + _mttMana
 		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.priest.holy.colors.text.passive, TRB.Functions.ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
 		local _manaTotal = math.min(_passiveMana + TRB.Data.snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)

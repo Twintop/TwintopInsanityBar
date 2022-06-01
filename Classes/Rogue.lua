@@ -2910,53 +2910,36 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end
 
 		--$rtbBuffTime
-		local rtbBuffTime = 0
-		if TRB.Data.snapshotData.rollTheBones.remaining > 0 then
-			rtbBuffTime = string.format("%.1f", TRB.Data.snapshotData.rollTheBones.remaining)
-		end
+		local _rtbBuffTime = TRB.Data.snapshotData.rollTheBones.remaining
+		local rtbBuffTime = string.format("%.1f", _rtbBuffTime)
 
 		--$broadsideTime
-		local broadsideTime = 0
-		if TRB.Data.snapshotData.rollTheBones.buffs.broadside.duration > 0 then
-			broadsideTime = string.format("%.1f", TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.broadside))
-		end
+		local _broadsideTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.broadside)
+		local broadsideTime = string.format("%.1f", _broadsideTime)
 
 		--$buriedTreasureTime
-		local buriedTreasureTime = 0
-		if TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure.duration > 0 then
-			buriedTreasureTime = string.format("%.1f", TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure))
-		end
+		local _buriedTreasureTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure)
+		local buriedTreasureTime = string.format("%.1f", _buriedTreasureTime)
 
 		--$grandMeleeTime
-		local grandMeleeTime = 0
-		if TRB.Data.snapshotData.rollTheBones.buffs.grandMelee.duration > 0 then
-			grandMeleeTime = string.format("%.1f", TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.grandMelee))
-		end
+		local _grandMeleeTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.grandMelee)
+		local grandMeleeTime = string.format("%.1f", _grandMeleeTime)
 
 		--$ruthlessPrecisionTime
-		local ruthlessPrecisionTime = 0
-		if TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision.duration > 0 then
-			ruthlessPrecisionTime = string.format("%.1f", TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision))
-		end
+		local _ruthlessPrecisionTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision)
+		local ruthlessPrecisionTime = string.format("%.1f", _ruthlessPrecisionTime)
 
 		--$skullAndCrossbonesTime
-		local skullAndCrossbonesTime = 0
-		if TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones.duration > 0 then
-			skullAndCrossbonesTime = string.format("%.1f", TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones))
-		end
+		local _skullAndCrossbonesTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones)
+		local skullAndCrossbonesTime = string.format("%.1f", _skullAndCrossbonesTime)
 
 		--$trueBearingTime
-		local trueBearingTime = 0
-		if TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.duration > 0 then
-			trueBearingTime = string.format("%.1f", TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.trueBearing))
-		end
-
+		local _trueBearingTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.trueBearing)
+		local trueBearingTime = string.format("%.1f", _trueBearingTime)
+		
 		--$opportunityTime
 		local _opportunityTime = GetOpportunityRemainingTime()
-		local opportunityTime = 0
-		if _opportunityTime ~= nil then
-			opportunityTime = string.format("%.1f", _opportunityTime)
-		end
+		local opportunityTime = string.format("%.1f", _opportunityTime)
 
 		--#covenantAbility
 		local covenantAbilityIcon = ""
@@ -3108,12 +3091,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookupLogic["$sadTime"] = _sadTime
 		lookupLogic["$sliceAndDiceTime"] = _sadTime
 		lookupLogic["$opportunityTime"] = _opportunityTime
-		lookupLogic["$rtbCount"] = _rollTheBonesCount
-		lookupLogic["$rollTheBonesCount"] = _rollTheBonesCount
-		lookupLogic["$rtbAllCount"] = _rollTheBonesAllCount
-		lookupLogic["$rollTheBonesAllCount"] = _rollTheBonesAllCount
-		lookupLogic["$rtbTemporaryCount"] = _rollTheBonesTemporaryCount
-		lookupLogic["$rollTheBonesTemporaryCount"] = _rollTheBonesTemporaryCount
+		lookupLogic["$rtbCount"] = rollTheBonesCount
+		lookupLogic["$rollTheBonesCount"] = rollTheBonesCount
+		lookupLogic["$rtbAllCount"] = rollTheBonesAllCount
+		lookupLogic["$rollTheBonesAllCount"] = rollTheBonesAllCount
+		lookupLogic["$rtbTemporaryCount"] = rollTheBonesTemporaryCount
+		lookupLogic["$rollTheBonesTemporaryCount"] = rollTheBonesTemporaryCount
 		lookupLogic["$rtbBuffTime"] = _rtbBuffTime
 		lookupLogic["$rollTheBonesBuffTime"] = _rtbBuffTime
 		lookupLogic["$broadsideTime"] = _broadsideTime

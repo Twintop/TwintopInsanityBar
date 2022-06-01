@@ -3030,7 +3030,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookupLogic["$pulsarStarsurgeCount"] = pulsarStarsurgeCount
 		lookupLogic["$pulsarStarfallCount"] = pulsarStarfallCount
 		--lookupLogic["$moonkinForm"] = moonkinFormActive
-		lookupLogic["$eclipseTime"] = _eclipseTime
+		lookupLogic["$eclipseTime"] = _eclispeTime
 		--[[lookupLogic["$eclipse"] = ""
 		lookupLogic["$lunar"] = ""
 		lookupLogic["$lunarEclipse"] = ""
@@ -3060,7 +3060,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookupLogic["$resourceTotal"] = _astralPowerTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = normalizedAstralPower
-		lookupLogic["$casting"] = _castingAstralPower
+		lookupLogic["$casting"] = currentAstralPower
 		lookupLogic["$passive"] = _passiveAstralPower
 		lookupLogic["$overcap"] = overcap
 		lookupLogic["$resourceOvercap"] = overcap
