@@ -3081,7 +3081,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local lookupLogic = TRB.Data.lookupLogic or {}
 		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
 		lookupLogic["$energyTotal"] = _energyTotal
-		lookupLogic["$energyMax"] = _RB.Data.character.maxResource
+		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
 		lookupLogic["$energy"] = TRB.Data.snapshotData.resource
 		lookupLogic["$resourcePlusCasting"] = _energyPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _energyPlusPassive
