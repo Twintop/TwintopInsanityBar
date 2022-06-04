@@ -197,6 +197,37 @@ function TRB.UiFunctions:ShowColorPicker(r, g, b, a, callback)
 	ColorPickerFrame:Show()
 end
 
+function TRB.UiFunctions:ExtractColorFromColorPicker(color)
+    local r, g, b, a
+    if color then
+---@diagnostic disable-next-line: deprecated
+        r, g, b, a = unpack(color)
+    else
+        r, g, b = ColorPickerFrame:GetColorRGB()
+        a = OpacitySliderFrame:GetValue()
+    end
+    return r, g, b, a
+end
+
+function TRB.UiFunctions:ColorOnMouseDown(button, colorTable, colorControlsTable, key, frameType, frames, specId)
+    if button == "LeftButton" then
+        local r, g, b, a = TRB.Functions.GetRGBAFromString(colorTable[key], true)
+        TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
+            local r, g, b, a = TRB.UiFunctions:ExtractColorFromColorPicker(color)
+            colorControlsTable[key].Texture:SetColorTexture(r, g, b, 1-a)
+            colorTable[key] = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+        
+            if frameType == "backdrop" then
+                TRB.Functions.SetBackdropColor(frames, colorTable[key], true, specId)
+            elseif frameType == "border" then
+                TRB.Functions.SetBackdropBorderColor(frames, colorTable[key], true, specId)
+            elseif frameType == "bar" then
+                TRB.Functions.SetStatusBarColor(frames, colorTable[key], true, specId)
+            end
+        end)
+    end
+end
+
 function TRB.UiFunctions:BuildColorPicker(parent, description, settingsEntry, sizeTotal, sizeFrame, posX, posY)
     local settings = TRB.Data.settings
 	local f = CreateFrame("Button", nil, parent, "BackdropTemplate")
