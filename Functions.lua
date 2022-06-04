@@ -217,6 +217,26 @@ local function PulseFrame(frame, alphaOffset, flashPeriod)
 end
 TRB.Functions.PulseFrame = PulseFrame
 
+local function SetBackdropColor(frame, rgbaString, normalize, specId)
+	if specId == nil or specId == GetSpecialization() then
+		frame:SetBackdropColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
+	end
+end
+TRB.Functions.SetBackdropColor = SetBackdropColor
+
+local function SetBackdropBorderColor(frame, rgbaString, normalize, specId)
+	if specId == nil or specId == GetSpecialization() then
+		frame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
+	end
+end
+TRB.Functions.SetBackdropBorderColor = SetBackdropBorderColor
+
+local function SetStatusBarColor(frame, rgbaString, normalize, specId)
+	if specId == nil or specId == GetSpecialization() then
+		frame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
+	end
+end
+TRB.Functions.SetStatusBarColor = SetStatusBarColor
 
 -- Casting, Time, and GCD Functions
 
