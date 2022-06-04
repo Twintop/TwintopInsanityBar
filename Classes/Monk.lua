@@ -41,6 +41,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		specCache.mistweaver.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
 			effects = {
@@ -241,6 +242,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		specCache.windwalker.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
@@ -773,6 +775,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local specId = GetSpecialization()
 		TRB.Functions.CheckCharacter()
 		TRB.Data.character.className = "monk"
+---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
         local maxComboPoints = 0
         local settings = nil
@@ -780,6 +783,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		
 		if specId == 2 then
 			TRB.Data.character.specName = "mistweaver"
+---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
 			TRB.Functions.FillSpellDataManaCost(TRB.Data.spells)
 
@@ -813,7 +817,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			TRB.Data.character.items.alchemyStone = alchemyStone
 			-- Torghast
 		elseif specId == 3 then
+---@diagnostic disable-next-line: missing-parameter, missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
+---@diagnostic disable-next-line: missing-parameter, missing-parameter
 			maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
             settings = TRB.Data.settings.monk.windwalker
 			TRB.Data.character.specName = "windwalker"

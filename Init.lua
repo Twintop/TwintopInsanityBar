@@ -16,11 +16,16 @@ local addonData = {
 	libs = {}
 }
 addonData.libs.SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
+---@diagnostic disable-next-line: undefined-field
 addonData.libs.SharedMedia:Register("sound", "TRB: Wilhelm Scream", "Interface\\Addons\\TwintopInsanityBar\\Sounds\\wilhelm.ogg")
+---@diagnostic disable-next-line: undefined-field
 addonData.libs.SharedMedia:Register("sound", "TRB: Boxing Arena Gong", "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg")
+---@diagnostic disable-next-line: undefined-field
 addonData.libs.SharedMedia:Register("sound", "TRB: Air Horn", "Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg")
 
+---@diagnostic disable-next-line: undefined-field
 if not addonData.libs.SharedMedia:IsValid("border", "1 Pixel") then
+	---@diagnostic disable-next-line: undefined-field
 	addonData.libs.SharedMedia:Register("border", "1 Pixel", "Interface\\Buttons\\WHITE8X8")
 end
 
@@ -239,6 +244,7 @@ TRB.Data.character = {
 	guid = UnitGUID("player"),
 	className = "",
 	specName = "",
+---@diagnostic disable-next-line: missing-parameter
 	specGroup = GetActiveSpecGroup(),
     maxResource = 100,
     talents = {},

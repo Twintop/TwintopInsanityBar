@@ -51,6 +51,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		
 		specCache.elemental.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
 			earthShockThreshold = 60,
@@ -277,6 +278,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		specCache.restoration.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
 			effects = {
@@ -692,6 +694,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		
 		if specId == 1 then
 			TRB.Data.character.specName = "elemental"
+---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom)
 			TRB.Data.character.talents.echoingShock.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.elementalBlast.isSelected = select(4, GetTalentInfo(2, 3, TRB.Data.character.specGroup))
@@ -719,6 +722,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		elseif specId == 3 then
 			TRB.Data.character.specName = "restoration"
+---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
 			TRB.Functions.FillSpellDataManaCost(TRB.Data.spells)
 

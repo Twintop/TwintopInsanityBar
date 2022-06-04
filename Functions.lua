@@ -448,6 +448,7 @@ local function LoadFromSpecCache(cache)
 	TRB.Functions.ResetSnapshotData()
 	TRB.Data.snapshotData = TRB.Functions.MergeSettings(TRB.Data.snapshotData, cache.snapshotData)
 
+---@diagnostic disable-next-line: missing-parameter
 	TRB.Data.character.specGroup = GetActiveSpecGroup()
 end
 TRB.Functions.LoadFromSpecCache = LoadFromSpecCache
@@ -2200,6 +2201,7 @@ TRB.Functions.FindAuraById = FindAuraById
 
 local function CheckCharacter()
 	TRB.Data.character.guid = UnitGUID("player")
+---@diagnostic disable-next-line: missing-parameter
     TRB.Data.character.specGroup = GetActiveSpecGroup()
 	TRB.Data.character.covenantId = C_Covenants.GetActiveCovenantID()
 

@@ -45,6 +45,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		specCache.beastMastery.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			petGuid = UnitGUID("pet"),
 			specId = 1,
@@ -385,6 +386,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		specCache.marksmanship.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			specId = 2,
 			maxResource = 100,
@@ -783,6 +785,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		specCache.survival.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			specId = 3,
 			maxResource = 100,
@@ -1487,6 +1490,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Functions.CheckCharacter()
 		TRB.Data.character.className = "hunter"
 		TRB.Data.character.petGuid = UnitGUID("pet")
+---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Focus)
 
 		if specId == 1 then

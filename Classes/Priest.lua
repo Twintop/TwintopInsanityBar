@@ -68,6 +68,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		specCache.holy.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
 			effects = {
@@ -569,6 +570,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		specCache.shadow.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
 			devouringPlagueThreshold = 50,
@@ -1466,6 +1468,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		if specId == 1 then
 		elseif specId == 2 then
 			TRB.Data.character.specName = "holy"
+---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
 			TRB.Functions.FillSpellDataManaCost(TRB.Data.spells)
 			TRB.Data.character.isPvp = TRB.Functions.ArePvpTalentsActive()
@@ -1537,6 +1540,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		elseif specId == 3 then
 			TRB.Data.character.specName = "shadow"
+---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Insanity)
 			TRB.Data.character.talents.searingNightmare.isSelected = select(4, GetTalentInfo(3, 3, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.fotm.isSelected = select(4, GetTalentInfo(1, 1, TRB.Data.character.specGroup))

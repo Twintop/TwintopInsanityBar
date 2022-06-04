@@ -45,6 +45,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		specCache.havoc.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 120,
@@ -481,6 +482,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	local function CheckCharacter()
 		TRB.Functions.CheckCharacter()
 		TRB.Data.character.className = "demonhunter"
+---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Fury)
 
         if GetSpecialization() == 1 then

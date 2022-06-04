@@ -64,6 +64,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		specCache.arms.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
@@ -505,6 +506,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		specCache.fury.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
@@ -1007,6 +1009,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local specId = GetSpecialization()
 		TRB.Functions.CheckCharacter()
 		TRB.Data.character.className = "warrior"
+---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Rage)
 
         if specId == 1 then		

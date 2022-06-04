@@ -67,6 +67,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 		specCache.balance.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
 			starsurgeThreshold = 30,
@@ -427,6 +428,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		specCache.feral.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
@@ -895,6 +897,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		specCache.restoration.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
 			effects = {
@@ -1597,6 +1600,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 		if specId == 1 then
 			TRB.Data.character.specName = "balance"
+---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.LunarPower)
 			TRB.Data.character.talents.naturesBalance.isSelected = select(4, GetTalentInfo(1, 1, TRB.Data.character.specGroup))
 			TRB.Data.character.talents.warriorOfElune.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
@@ -1657,7 +1661,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.character.items.primordialArcanicPulsar = primordialArcanicPulsar
 		elseif specId == 2 then
 			TRB.Data.character.specName = "feral"
+---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy)
+---@diagnostic disable-next-line: missing-parameter
 			local maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
 			local settings = TRB.Data.settings.druid.feral
 
@@ -1679,6 +1685,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		elseif specId == 4 then
 			TRB.Data.character.specName = "restoration"
+---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
 			TRB.Functions.FillSpellDataManaCost(TRB.Data.spells)
 

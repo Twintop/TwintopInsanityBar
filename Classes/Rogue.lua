@@ -47,6 +47,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		specCache.assassination.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
@@ -637,6 +638,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		specCache.outlaw.character = {
 			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
@@ -1670,6 +1672,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 	local function CheckCharacter()
 		local specId = GetSpecialization()
+---@diagnostic disable-next-line: missing-parameter
 		TRB.Functions.CheckCharacter()
 		TRB.Data.character.className = "rogue"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy)
