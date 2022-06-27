@@ -223,6 +223,8 @@ function TRB.UiFunctions:ColorOnMouseDown(button, colorTable, colorControlsTable
                 TRB.Functions.SetBackdropBorderColor(frames, colorTable[key], true, specId)
             elseif frameType == "bar" then
                 TRB.Functions.SetStatusBarColor(frames, colorTable[key], true, specId)
+            elseif frameType == "threshold" then
+                TRB.Functions.SetThresholdColor(frames, colorTable[key], true, specId)
             end
         end)
     end

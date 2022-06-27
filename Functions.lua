@@ -218,25 +218,35 @@ end
 TRB.Functions.PulseFrame = PulseFrame
 
 local function SetBackdropColor(frame, rgbaString, normalize, specId)
-	if specId == nil or specId == GetSpecialization() then
+	if specId ~= nil and specId == GetSpecialization() then
 		frame:SetBackdropColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
 	end
 end
 TRB.Functions.SetBackdropColor = SetBackdropColor
 
 local function SetBackdropBorderColor(frame, rgbaString, normalize, specId)
-	if specId == nil or specId == GetSpecialization() then
+	if specId ~= nil and specId == GetSpecialization() then
 		frame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
 	end
 end
 TRB.Functions.SetBackdropBorderColor = SetBackdropBorderColor
 
 local function SetStatusBarColor(frame, rgbaString, normalize, specId)
-	if specId == nil or specId == GetSpecialization() then
+	if specId ~= nil and specId == GetSpecialization() then
 		frame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
 	end
 end
 TRB.Functions.SetStatusBarColor = SetStatusBarColor
+
+local function SetThresholdColor(frame, rgbaString, normalize, specId)
+	if specId ~= nil and specId == GetSpecialization() then
+		frame.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
+		if frame.icon ~= nil then
+			frame.icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
+		end
+	end
+end
+TRB.Functions.SetThresholdColor = SetThresholdColor
 
 -- Casting, Time, and GCD Functions
 
