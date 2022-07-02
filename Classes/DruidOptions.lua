@@ -698,6 +698,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			return
 		end
 
+		local spec = TRB.Data.settings.druid.balance
+
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.balance
 		local yCoord = 5
 		local f = nil
@@ -722,7 +724,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.druid.balance = BalanceResetSettings()
+				spec = BalanceResetSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -735,7 +737,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.druid.balance.displayText = BalanceLoadDefaultBarTextSimpleSettings()
+				spec.displayText = BalanceLoadDefaultBarTextSimpleSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -748,7 +750,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.druid.balance.displayText = BalanceLoadDefaultBarTextAdvancedSettings()
+				spec.displayText = BalanceLoadDefaultBarTextAdvancedSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -761,7 +763,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.druid.balance.displayText = BalanceLoadDefaultBarTextNarrowAdvancedSettings()
+				spec.displayText = BalanceLoadDefaultBarTextNarrowAdvancedSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -808,6 +810,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			return
 		end
 
+		local spec = TRB.Data.settings.druid.balance
+
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.balance
 		local yCoord = 5
@@ -829,7 +833,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local sliderHeight = 20
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.druid.balance)
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.bar.width / TRB.Data.constants.borderWidthFactor))
+		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		controls.buttons.exportButton_Druid_Balance_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Balance_BarDisplay:SetScript("OnClick", function(self, ...)
@@ -840,7 +844,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		yCoord = yCoord - 40
 		title = "Bar Width"
-		controls.width = TRB.UiFunctions:BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinWidth, TRB.Data.sanityCheckValues.barMaxWidth, TRB.Data.settings.druid.balance.bar.width, 1, 2,
+		controls.width = TRB.UiFunctions:BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinWidth, TRB.Data.sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -850,10 +854,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.bar.width = value
+			spec.bar.width = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.bar.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.druid.balance.bar.border
+			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.bar.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -866,15 +870,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if GetSpecialization() == 1 then
 				TRB.Functions.UpdateBarWidth(TRB.Data.settings.druid.balance)
 
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*2, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*3, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, spec.thresholds.width, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, spec.thresholds.width, TRB.Data.character.starsurgeThreshold*2, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, spec.thresholds.width, TRB.Data.character.starsurgeThreshold*3, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, spec.thresholds.width, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
 			end
 		end)
 
 		title = "Bar Height"
-		controls.height = TRB.UiFunctions:BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinHeight, TRB.Data.sanityCheckValues.barMaxHeight, TRB.Data.settings.druid.balance.bar.height, 1, 2,
+		controls.height = TRB.UiFunctions:BuildSlider(parent, title, TRB.Data.sanityCheckValues.barMinHeight, TRB.Data.sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -884,10 +888,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.bar.height = value
+			spec.bar.height = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.bar.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.druid.balance.bar.border
+			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.bar.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -904,7 +908,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Bar Horizontal Position"
 		yCoord = yCoord - 60
-		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth/2), math.floor(TRB.Data.sanityCheckValues.barMaxWidth/2), TRB.Data.settings.druid.balance.bar.xPos, 1, 2,
+		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth/2), math.floor(TRB.Data.sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -914,17 +918,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.bar.xPos = value
+			spec.bar.xPos = value
 
 			if GetSpecialization() == 1 then
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
-				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.druid.balance.bar.xPos, TRB.Data.settings.druid.balance.bar.yPos)
+				barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
 			end
 		end)
 
 		title = "Bar Vertical Position"
-		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxHeight/2), math.floor(TRB.Data.sanityCheckValues.barMaxHeight/2), TRB.Data.settings.druid.balance.bar.yPos, 1, 2,
+		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-TRB.Data.sanityCheckValues.barMaxHeight/2), math.floor(TRB.Data.sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -936,16 +940,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			self.EditBox:SetText(value)
 
 			if GetSpecialization() == 1 then
-				TRB.Data.settings.druid.balance.bar.yPos = value
+				spec.bar.yPos = value
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
-				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.druid.balance.bar.xPos, TRB.Data.settings.druid.balance.bar.yPos)
+				barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
 			end
 		end)
 
 		title = "Bar Border Width"
 		yCoord = yCoord - 60
-		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.druid.balance.bar.border, 1, 2,
+		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.borderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -955,16 +959,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.bar.border = value
+			spec.bar.border = value
 
 			if GetSpecialization() == 1 then
-				barContainerFrame:SetWidth(TRB.Data.settings.druid.balance.bar.width-(TRB.Data.settings.druid.balance.bar.border*2))
-				barContainerFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height-(TRB.Data.settings.druid.balance.bar.border*2))
-				barBorderFrame:SetWidth(TRB.Data.settings.druid.balance.bar.width)
-				barBorderFrame:SetHeight(TRB.Data.settings.druid.balance.bar.height)
-				if TRB.Data.settings.druid.balance.bar.border < 1 then
+				barContainerFrame:SetWidth(spec.bar.width-(spec.bar.border*2))
+				barContainerFrame:SetHeight(spec.bar.height-(spec.bar.border*2))
+				barBorderFrame:SetWidth(spec.bar.width)
+				barBorderFrame:SetHeight(spec.bar.height)
+				if spec.bar.border < 1 then
 					barBorderFrame:SetBackdrop({
-						edgeFile = TRB.Data.settings.druid.balance.textures.border,
+						edgeFile = spec.textures.border,
 						tile = true,
 						tileSize = 4,
 						edgeSize = 1,
@@ -973,26 +977,26 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					barBorderFrame:Hide()
 				else
 					barBorderFrame:SetBackdrop({
-						edgeFile = TRB.Data.settings.druid.balance.textures.border,
+						edgeFile = spec.textures.border,
 						tile = true,
 						tileSize=4,
-						edgeSize=TRB.Data.settings.druid.balance.bar.border,
+						edgeSize=spec.bar.border,
 						insets = {0, 0, 0, 0}
 					})
 					barBorderFrame:Show()
 				end
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.border, true))
+				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 
 				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.druid.balance)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*2, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*3, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, spec.thresholds.width, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, spec.thresholds.width, TRB.Data.character.starsurgeThreshold*2, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, spec.thresholds.width, TRB.Data.character.starsurgeThreshold*3, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, spec.thresholds.width, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
 			end
 
-			local minsliderWidth = math.max(TRB.Data.settings.druid.balance.bar.border*2, 120)
-			local minsliderHeight = math.max(TRB.Data.settings.druid.balance.bar.border*2, 1)
+			local minsliderWidth = math.max(spec.bar.border*2, 120)
+			local minsliderHeight = math.max(spec.bar.border*2, 1)
 			controls.height:SetMinMaxValues(minsliderHeight, TRB.Data.sanityCheckValues.barMaxHeight)
 			controls.height.MinLabel:SetText(minsliderHeight)
 			controls.width:SetMinMaxValues(minsliderWidth, TRB.Data.sanityCheckValues.barMaxWidth)
@@ -1000,7 +1004,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, TRB.Data.settings.druid.balance.thresholds.width, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1010,13 +1014,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.thresholds.width = value
+			spec.thresholds.width = value
 			
 			if GetSpecialization() == 1 then
-				resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.druid.balance.thresholds.width)
-				resourceFrame.thresholds[2]:SetWidth(TRB.Data.settings.druid.balance.thresholds.width)
-				resourceFrame.thresholds[3]:SetWidth(TRB.Data.settings.druid.balance.thresholds.width)
-				resourceFrame.thresholds[4]:SetWidth(TRB.Data.settings.druid.balance.thresholds.width)
+				resourceFrame.thresholds[1]:SetWidth(spec.thresholds.width)
+				resourceFrame.thresholds[2]:SetWidth(spec.thresholds.width)
+				resourceFrame.thresholds[3]:SetWidth(spec.thresholds.width)
+				resourceFrame.thresholds[4]:SetWidth(spec.thresholds.width)
 			end
 		end)
 
@@ -1029,32 +1033,32 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
 		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
-		f:SetChecked(TRB.Data.settings.druid.balance.bar.dragAndDrop)
+		f:SetChecked(spec.bar.dragAndDrop)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.bar.dragAndDrop = self:GetChecked()
+			spec.bar.dragAndDrop = self:GetChecked()
 			
 			if GetSpecialization() == 1 then
-				barContainerFrame:SetMovable((not TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.balance.bar.dragAndDrop)
-				barContainerFrame:EnableMouse((not TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.balance.bar.dragAndDrop)
+				barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
+				barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 			end
 		end)
 
-		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay)
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
 
 		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.pinToPRD
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
 		f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
-		f:SetChecked(TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay)
+		f:SetChecked(spec.bar.pinToPersonalResourceDisplay)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay = self:GetChecked()
+			spec.bar.pinToPersonalResourceDisplay = self:GetChecked()
 
-			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay)
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
 
 			if GetSpecialization() == 1 then
-				barContainerFrame:SetMovable((not TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.balance.bar.dragAndDrop)
-				barContainerFrame:EnableMouse((not TRB.Data.settings.druid.balance.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.balance.bar.dragAndDrop)
+				barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
+				barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 				TRB.Functions.RepositionBar(TRB.Data.settings.druid.balance, TRB.Frames.barContainerFrame)
 			end
 		end)
@@ -1070,7 +1074,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, TRB.Data.settings.druid.balance.textures.resourceBarName)
+		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, spec.textures.resourceBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.resourceBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -1095,7 +1099,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.balance.textures.resourceBar
+						info.checked = textures[v] == spec.textures.resourceBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -1108,23 +1112,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.resourceBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.balance.textures.resourceBar = newValue
-			TRB.Data.settings.druid.balance.textures.resourceBarName = newName
+			spec.textures.resourceBar = newValue
+			spec.textures.resourceBarName = newName
 			UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-			if TRB.Data.settings.druid.balance.textures.textureLock then
-				TRB.Data.settings.druid.balance.textures.castingBar = newValue
-				TRB.Data.settings.druid.balance.textures.castingBarName = newName
+			if spec.textures.textureLock then
+				spec.textures.castingBar = newValue
+				spec.textures.castingBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
-				TRB.Data.settings.druid.balance.textures.passiveBar = newValue
-				TRB.Data.settings.druid.balance.textures.passiveBarName = newName
+				spec.textures.passiveBar = newValue
+				spec.textures.passiveBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
 			end
 
 			if GetSpecialization() == 1 then
-				resourceFrame:SetStatusBarTexture(TRB.Data.settings.druid.balance.textures.resourceBar)
-				if TRB.Data.settings.druid.balance.textures.textureLock then
-					castingFrame:SetStatusBarTexture(TRB.Data.settings.druid.balance.textures.castingBar)
-					passiveFrame:SetStatusBarTexture(TRB.Data.settings.druid.balance.textures.passiveBar)
+				resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+				if spec.textures.textureLock then
+					castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+					passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
 				end
 			end
 
@@ -1137,7 +1141,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.druid.balance.textures.castingBarName)
+		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -1162,7 +1166,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.balance.textures.castingBar
+						info.checked = textures[v] == spec.textures.castingBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -1175,23 +1179,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.castingBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.balance.textures.castingBar = newValue
-			TRB.Data.settings.druid.balance.textures.castingBarName = newName
+			spec.textures.castingBar = newValue
+			spec.textures.castingBarName = newName
 			UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
-			if TRB.Data.settings.druid.balance.textures.textureLock then
-				TRB.Data.settings.druid.balance.textures.resourceBar = newValue
-				TRB.Data.settings.druid.balance.textures.resourceBarName = newName
+			if spec.textures.textureLock then
+				spec.textures.resourceBar = newValue
+				spec.textures.resourceBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-				TRB.Data.settings.druid.balance.textures.passiveBar = newValue
-				TRB.Data.settings.druid.balance.textures.passiveBarName = newName
+				spec.textures.passiveBar = newValue
+				spec.textures.passiveBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
 			end
 
 			if GetSpecialization() == 1 then
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.druid.balance.textures.castingBar)
-				if TRB.Data.settings.druid.balance.textures.textureLock then
-					resourceFrame:SetStatusBarTexture(TRB.Data.settings.druid.balance.textures.resourceBar)
-					passiveFrame:SetStatusBarTexture(TRB.Data.settings.druid.balance.textures.passiveBar)
+				castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+				if spec.textures.textureLock then
+					resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+					passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
 				end
 			end
 
@@ -1206,7 +1210,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, TRB.Data.settings.druid.balance.textures.passiveBarName)
+		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, spec.textures.passiveBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -1231,7 +1235,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.balance.textures.passiveBar
+						info.checked = textures[v] == spec.textures.passiveBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -1244,23 +1248,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.passiveBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.balance.textures.passiveBar = newValue
-			TRB.Data.settings.druid.balance.textures.passiveBarName = newName
+			spec.textures.passiveBar = newValue
+			spec.textures.passiveBarName = newName
 			UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
-			if TRB.Data.settings.druid.balance.textures.textureLock then
-				TRB.Data.settings.druid.balance.textures.resourceBar = newValue
-				TRB.Data.settings.druid.balance.textures.resourceBarName = newName
+			if spec.textures.textureLock then
+				spec.textures.resourceBar = newValue
+				spec.textures.resourceBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-				TRB.Data.settings.druid.balance.textures.castingBar = newValue
-				TRB.Data.settings.druid.balance.textures.castingBarName = newName
+				spec.textures.castingBar = newValue
+				spec.textures.castingBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
 			end
 
 			if GetSpecialization() == 1 then
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.druid.balance.textures.passiveBar)
-				if TRB.Data.settings.druid.balance.textures.textureLock then
-					resourceFrame:SetStatusBarTexture(TRB.Data.settings.druid.balance.textures.resourceBar)
-					castingFrame:SetStatusBarTexture(TRB.Data.settings.druid.balance.textures.castingBar)
+				passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
+				if spec.textures.textureLock then
+					resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+					castingFrame:SetStatusBarTexture(spec.textures.castingBar)
 				end
 			end
 
@@ -1272,18 +1276,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
 		f.tooltip = "This will lock the texture for each part of the bar to be the same."
-		f:SetChecked(TRB.Data.settings.druid.balance.textures.textureLock)
+		f:SetChecked(spec.textures.textureLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.textures.textureLock = self:GetChecked()
-			if TRB.Data.settings.druid.balance.textures.textureLock then
-				TRB.Data.settings.druid.balance.textures.passiveBar = TRB.Data.settings.druid.balance.textures.resourceBar
-				TRB.Data.settings.druid.balance.textures.passiveBarName = TRB.Data.settings.druid.balance.textures.resourceBarName
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.druid.balance.textures.passiveBar)
-				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, TRB.Data.settings.druid.balance.textures.passiveBarName)
-				TRB.Data.settings.druid.balance.textures.castingBar = TRB.Data.settings.druid.balance.textures.resourceBar
-				TRB.Data.settings.druid.balance.textures.castingBarName = TRB.Data.settings.druid.balance.textures.resourceBarName
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.druid.balance.textures.castingBar)
-				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.druid.balance.textures.castingBarName)
+			spec.textures.textureLock = self:GetChecked()
+			if spec.textures.textureLock then
+				spec.textures.passiveBar = spec.textures.resourceBar
+				spec.textures.passiveBarName = spec.textures.resourceBarName
+				passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
+				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, spec.textures.passiveBarName)
+				spec.textures.castingBar = spec.textures.resourceBar
+				spec.textures.castingBarName = spec.textures.resourceBarName
+				castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
 			end
 		end)
 
@@ -1296,7 +1300,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.borderTexture, TRB.Data.settings.druid.balance.textures.borderName)
+		UIDropDownMenu_SetText(controls.dropDown.borderTexture, spec.textures.borderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -1321,7 +1325,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.balance.textures.border
+						info.checked = textures[v] == spec.textures.border
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -1334,22 +1338,22 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.borderTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.balance.textures.border = newValue
-			TRB.Data.settings.druid.balance.textures.borderName = newName
+			spec.textures.border = newValue
+			spec.textures.borderName = newName
 			
 			if GetSpecialization() == 1 then
-				if TRB.Data.settings.druid.balance.bar.border < 1 then
+				if spec.bar.border < 1 then
 					barBorderFrame:SetBackdrop({ })
 				else
-					barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.druid.balance.textures.border,
+					barBorderFrame:SetBackdrop({ edgeFile = spec.textures.border,
 												tile = true,
 												tileSize=4,
-												edgeSize=TRB.Data.settings.druid.balance.bar.border,
+												edgeSize=spec.bar.border,
 												insets = {0, 0, 0, 0}
 												})
 				end				
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.border, true))
+				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 			end
 
 			UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
@@ -1362,7 +1366,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, TRB.Data.settings.druid.balance.textures.backgroundName)
+		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, spec.textures.backgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -1387,7 +1391,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.balance.textures.background
+						info.checked = textures[v] == spec.textures.background
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -1400,17 +1404,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.balance.textures.background = newValue
-			TRB.Data.settings.druid.balance.textures.backgroundName = newName
+			spec.textures.background = newValue
+			spec.textures.backgroundName = newName
 			if GetSpecialization() == 1 then
 				barContainerFrame:SetBackdrop({
-					bgFile = TRB.Data.settings.druid.balance.textures.background,
+					bgFile = spec.textures.background,
 					tile = true,
-					tileSize = TRB.Data.settings.druid.balance.bar.width,
+					tileSize = spec.bar.width,
 					edgeSize = 1,
 					insets = {0, 0, 0, 0}
 				})
-				barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.background, true))
+				barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.background, true))
 			end
 			
 			UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, newName)
@@ -1424,7 +1428,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 50
 
 		title = "Bar Flash Alpha"
-		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, TRB.Data.settings.druid.balance.colors.bar.flashAlpha, 0.01, 2,
+		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1436,11 +1440,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.colors.bar.flashAlpha = value
+			spec.colors.bar.flashAlpha = value
 		end)
 
 		title = "Bar Flash Period (sec)"
-		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0, 2, TRB.Data.settings.druid.balance.colors.bar.flashPeriod, 0.05, 2,
+		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0, 2, spec.colors.bar.flashPeriod, 0.05, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1452,7 +1456,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.colors.bar.flashPeriod = value
+			spec.colors.bar.flashPeriod = value
 		end)
 
 		yCoord = yCoord - 40
@@ -1462,15 +1466,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
-		f:SetChecked(TRB.Data.settings.druid.balance.displayBar.alwaysShow)
+		f:SetChecked(spec.displayBar.alwaysShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(true)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.druid.balance.displayBar.alwaysShow = true
-			TRB.Data.settings.druid.balance.displayBar.notZeroShow = false
-			TRB.Data.settings.druid.balance.displayBar.neverShow = false
+			spec.displayBar.alwaysShow = true
+			spec.displayBar.notZeroShow = false
+			spec.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -1480,15 +1484,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Astral Power > 0")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar show out of combat only if Astral Power > 0 (or < 50 with Nature's Balance), hidden otherwise when out of combat."
-		f:SetChecked(TRB.Data.settings.druid.balance.displayBar.notZeroShow)
+		f:SetChecked(spec.displayBar.notZeroShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(true)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.druid.balance.displayBar.alwaysShow = false
-			TRB.Data.settings.druid.balance.displayBar.notZeroShow = true
-			TRB.Data.settings.druid.balance.displayBar.neverShow = false
+			spec.displayBar.alwaysShow = false
+			spec.displayBar.notZeroShow = true
+			spec.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -1498,15 +1502,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
-		f:SetChecked((not TRB.Data.settings.druid.balance.displayBar.alwaysShow) and (not TRB.Data.settings.druid.balance.displayBar.notZeroShow))
+		f:SetChecked((not spec.displayBar.alwaysShow) and (not spec.displayBar.notZeroShow))
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(true)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.druid.balance.displayBar.alwaysShow = false
-			TRB.Data.settings.druid.balance.displayBar.notZeroShow = false
-			TRB.Data.settings.druid.balance.displayBar.neverShow = false
+			spec.displayBar.alwaysShow = false
+			spec.displayBar.notZeroShow = false
+			spec.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -1516,15 +1520,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
-		f:SetChecked(TRB.Data.settings.druid.balance.displayBar.neverShow)
+		f:SetChecked(spec.displayBar.neverShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(true)
-			TRB.Data.settings.druid.balance.displayBar.alwaysShow = false
-			TRB.Data.settings.druid.balance.displayBar.notZeroShow = false
-			TRB.Data.settings.druid.balance.displayBar.neverShow = true
+			spec.displayBar.alwaysShow = false
+			spec.displayBar.notZeroShow = false
+			spec.displayBar.neverShow = true
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -1533,9 +1537,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
 		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
-		f:SetChecked(TRB.Data.settings.druid.balance.bar.showCasting)
+		f:SetChecked(spec.bar.showCasting)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.bar.showCasting = self:GetChecked()
+			spec.bar.showCasting = self:GetChecked()
 		end)
 
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
@@ -1543,9 +1547,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
-		f:SetChecked(TRB.Data.settings.druid.balance.bar.showPassive)
+		f:SetChecked(spec.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.bar.showPassive = self:GetChecked()
+			spec.bar.showPassive = self:GetChecked()
 		end)
 
 		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_CB1_5", parent, "ChatConfigCheckButtonTemplate")
@@ -1553,9 +1557,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash bar when Moonkin Form is missing")
 		f.tooltip = "This will flash the bar when Moonkin Form is missing while in combat."
-		f:SetChecked(TRB.Data.settings.druid.balance.colors.bar.flashEnabled)
+		f:SetChecked(spec.colors.bar.flashEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.colors.bar.flashEnabled = self:GetChecked()
+			spec.colors.bar.flashEnabled = self:GetChecked()
 		end)
 
 		controls.checkBoxes.flashSsEnabled = CreateFrame("CheckButton", "TwintopResourceBar_CB1_6", parent, "ChatConfigCheckButtonTemplate")
@@ -1563,9 +1567,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash bar when Starsurge is usable")
 		f.tooltip = "This will flash the bar when Starsurge can be cast."
-		f:SetChecked(TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled)
+		f:SetChecked(spec.colors.bar.flashSsEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled = self:GetChecked()
+			spec.colors.bar.flashSsEnabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 70
@@ -1573,316 +1577,102 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Astral Power", TRB.Data.settings.druid.balance.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Astral Power", spec.colors.bar.base, 300, 25, xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.base, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.base.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.solar = TRB.UiFunctions:BuildColorPicker(parent, "Eclipse (Solar) is Active", TRB.Data.settings.druid.balance.colors.bar.solar, 275, 25, xCoord2, yCoord)
+		controls.colors.solar = TRB.UiFunctions:BuildColorPicker(parent, "Eclipse (Solar) is Active", spec.colors.bar.solar, 275, 25, xCoord2, yCoord)
 		f = controls.colors.solar
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.solar, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.solar.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.bar.solar = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "solar")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.druid.balance.colors.bar.border, 300, 25, xCoord, yCoord)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 300, 25, xCoord, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.border, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 1)
 		end)
 
-		controls.colors.lunar = TRB.UiFunctions:BuildColorPicker(parent, "Eclipse (Lunar) is Active", TRB.Data.settings.druid.balance.colors.bar.lunar, 275, 25, xCoord2, yCoord)
+		controls.colors.lunar = TRB.UiFunctions:BuildColorPicker(parent, "Eclipse (Lunar) is Active", spec.colors.bar.lunar, 275, 25, xCoord2, yCoord)
 		f = controls.colors.lunar
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.lunar, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.lunar.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.bar.lunar = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "lunar")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Astral Power from hardcasting spells", TRB.Data.settings.druid.balance.colors.bar.casting, 300, 25, xCoord, yCoord)
+		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Astral Power from hardcasting spells", spec.colors.bar.casting, 300, 25, xCoord, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.casting, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.casting.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					castingFrame:SetStatusBarColor(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 1)
 		end)
 
-		controls.colors.celestial = TRB.UiFunctions:BuildColorPicker(parent, "Celestial Alignment / Incarnation: Chosen of Elune is Active", TRB.Data.settings.druid.balance.colors.bar.celestial, 275, 25, xCoord2, yCoord)
+		controls.colors.celestial = TRB.UiFunctions:BuildColorPicker(parent, "Celestial Alignment / Incarnation: Chosen of Elune is Active", spec.colors.bar.celestial, 275, 25, xCoord2, yCoord)
 		f = controls.colors.celestial
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.celestial, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.celestial.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.bar.celestial = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "celestial")
 		end)
 
 		yCoord = yCoord - 30
 
-		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Astral Power", TRB.Data.settings.druid.balance.colors.bar.borderOvercap, 300, 25, xCoord, yCoord)
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Astral Power", spec.colors.bar.borderOvercap, 300, 25, xCoord, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.borderOvercap, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
 		end)
 
-		controls.colors.eclipse1GCD = TRB.UiFunctions:BuildColorPicker(parent, "Astral Power when Eclipse is ending", TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD, 275, 25, xCoord2, yCoord)
+		controls.colors.eclipse1GCD = TRB.UiFunctions:BuildColorPicker(parent, "Astral Power when Eclipse is ending", spec.colors.bar.eclipse1GCD, 275, 25, xCoord2, yCoord)
 		f = controls.colors.eclipse1GCD
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.eclipse1GCD.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "eclipse1GCD")
 		end)
 
 		yCoord = yCoord - 30
 
-		controls.colors.moonkinFormMissing = TRB.UiFunctions:BuildColorPicker(parent, "Moonkin Form missing when in combat", TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing, 300, 25, xCoord, yCoord)
+		controls.colors.moonkinFormMissing = TRB.UiFunctions:BuildColorPicker(parent, "Moonkin Form missing when in combat", spec.colors.bar.moonkinFormMissing, 300, 25, xCoord, yCoord)
 		f = controls.colors.moonkinFormMissing
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.moonkinFormMissing.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "moonkinFormMissing")
 		end)
 
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.druid.balance.colors.bar.background, 275, 25, xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.background, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					barContainerFrame:SetBackdropColor(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Astral Power from Fury of Elune and Nature's Balance", TRB.Data.settings.druid.balance.colors.bar.passive, 300, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Astral Power from Fury of Elune and Nature's Balance", spec.colors.bar.passive, 300, 25, xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.passive, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
-					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive")
 		end)
-
 
 
 		yCoord = yCoord - 40
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
 
+		controls.colors.threshold = {}
+
 		yCoord = yCoord - 25
-
-		controls.colors.thresholdUnder = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Astral Power", TRB.Data.settings.druid.balance.colors.threshold.under, 275, 25, xCoord2, yCoord)
-		f = controls.colors.thresholdUnder
+		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Astral Power", spec.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.thresholdOver = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Astral Power", TRB.Data.settings.druid.balance.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
-		f = controls.colors.thresholdOver
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Astral Power", spec.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.starfallPandemic = TRB.UiFunctions:BuildColorPicker(parent, "Starfall outside Pandemic refresh range or on cooldown w/Stellar Drift", TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, 275, 25, xCoord2, yCoord-60)
-		f = controls.colors.starfallPandemic
+		controls.colors.threshold.starfallPandemic = TRB.UiFunctions:BuildColorPicker(parent, "Starfall outside Pandemic refresh range or on cooldown w/Stellar Drift", spec.colors.threshold.starfallPandemic, 275, 25, xCoord2, yCoord-60)
+		f = controls.colors.threshold.starfallPandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.starfallPandemic.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "starfallPandemic")
 		end)
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
@@ -1890,9 +1680,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.overlapBorder)
+		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.thresholds.overlapBorder = self:GetChecked()
+			spec.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.balance)
 		end)
 
@@ -1902,11 +1692,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Starfall threshold line")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast Starfall."
-		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.starfall.enabled)
+		f:SetChecked(spec.thresholds.starfall.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.thresholds.starfall.enabled = self:GetChecked()
+			spec.thresholds.starfall.enabled = self:GetChecked()
 
-			if TRB.Data.settings.druid.balance.thresholds.starfall.enabled then
+			if spec.thresholds.starfall.enabled then
 				TRB.Frames.resourceFrame.thresholds[4]:Show()
 			else
 				TRB.Frames.resourceFrame.thresholds[4]:Hide()
@@ -1919,11 +1709,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Starsurge threshold line")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast Starsurge."
-		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.starsurge.enabled)
+		f:SetChecked(spec.thresholds.starsurge.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.thresholds.starsurge.enabled = self:GetChecked()
+			spec.thresholds.starsurge.enabled = self:GetChecked()
 
-			if TRB.Data.settings.druid.balance.thresholds.starsurge.enabled then
+			if spec.thresholds.starsurge.enabled then
 				TRB.Frames.resourceFrame.thresholds[1]:Show()
 			else
 				TRB.Frames.resourceFrame.thresholds[1]:Hide()
@@ -1936,9 +1726,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord+20, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show 2x Starsurge threshold line")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast two Starsurges in a row."
-		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.starsurge2.enabled)
+		f:SetChecked(spec.thresholds.starsurge2.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.thresholds.starsurge2.enabled = self:GetChecked()
+			spec.thresholds.starsurge2.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 20
@@ -1947,9 +1737,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord+20, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show 3x Starsurge threshold line")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Astral Power is required to cast three Starsurges in a row."
-		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.starsurge3.enabled)
+		f:SetChecked(spec.thresholds.starsurge3.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.thresholds.starsurge3.enabled = self:GetChecked()
+			spec.thresholds.starsurge3.enabled = self:GetChecked()
 		end)
 		yCoord = yCoord - 20
 		controls.checkBoxes.ssThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurgeOnlyOver", parent, "ChatConfigCheckButtonTemplate")
@@ -1957,9 +1747,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord+20, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Only show current + next threshold line?")
 		f.tooltip = "This will only show Starsurge threshold lines if you already have enough Astral Power to cast it, or, if it is the next threshold you're approaching. Only triggers the next after the previous threshold line has been reached, even if it is not checked above!"
-		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.starsurgeThresholdOnlyOverShow)
+		f:SetChecked(spec.thresholds.starsurgeThresholdOnlyOverShow)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.thresholds.starsurgeThresholdOnlyOverShow = self:GetChecked()
+			spec.thresholds.starsurgeThresholdOnlyOverShow = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 30
@@ -1971,7 +1761,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
         controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
         UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
-        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, TRB.Data.settings.druid.balance.thresholds.icons.relativeToName)
+        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
 
         -- Create and bind the initialization function to the dropdown menu
@@ -1991,7 +1781,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             for k, v in pairs(relativeToList) do
                 info.text = v
                 info.value = relativeTo[v]
-                info.checked = relativeTo[v] == TRB.Data.settings.druid.balance.thresholds.icons.relativeTo
+                info.checked = relativeTo[v] == spec.thresholds.icons.relativeTo
                 info.func = self.SetValue
                 info.arg1 = relativeTo[v]
                 info.arg2 = v
@@ -2000,8 +1790,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         end)
 
         function controls.dropDown.thresholdIconRelativeTo:SetValue(newValue, newName)
-            TRB.Data.settings.druid.balance.thresholds.icons.relativeTo = newValue
-            TRB.Data.settings.druid.balance.thresholds.icons.relativeToName = newName
+            spec.thresholds.icons.relativeTo = newValue
+            spec.thresholds.icons.relativeToName = newName
 			
 			if GetSpecialization() == 1 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.balance)
@@ -2017,27 +1807,27 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
 		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for Starfall when it is on Cooldown (with the Stellar Flare talent)."
-		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.icons.showCooldown)
+		f:SetChecked(spec.thresholds.icons.showCooldown)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.thresholds.icons.showCooldown = self:GetChecked()
+			spec.thresholds.icons.showCooldown = self:GetChecked()
 		end)
 		
-		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.druid.balance.thresholds.icons.enabled)
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
-		f:SetChecked(TRB.Data.settings.druid.balance.thresholds.icons.enabled)
+		f:SetChecked(spec.thresholds.icons.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.thresholds.icons.enabled = self:GetChecked()
-			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.druid.balance.thresholds.icons.enabled)
+			spec.thresholds.icons.enabled = self:GetChecked()
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 			
 			if GetSpecialization() == 1 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.balance)
 
-				if TRB.Data.settings.druid.balance.thresholds.icons.enabled then
+				if spec.thresholds.icons.enabled then
 					resourceFrame.thresholds[1].icon:Show()
 					resourceFrame.thresholds[2].icon:Show()
 					resourceFrame.thresholds[3].icon:Show()
@@ -2053,7 +1843,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		yCoord = yCoord - 80
 		title = "Threshold Icon Width"
-		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, TRB.Data.settings.druid.balance.thresholds.icons.width, 1, 2,
+		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2063,10 +1853,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.thresholds.icons.width = value
+			spec.thresholds.icons.width = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.druid.balance.thresholds.icons.border
+			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.thresholds.icons.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -2085,7 +1875,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Threshold Icon Height"
-		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, TRB.Data.settings.druid.balance.thresholds.icons.height, 1, 2,
+		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2095,10 +1885,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.thresholds.icons.height = value
+			spec.thresholds.icons.height = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.balance.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.druid.balance.thresholds.icons.border
+			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.thresholds.icons.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -2119,7 +1909,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Threshold Icon Horizontal Position (Relative)"
 		yCoord = yCoord - 60
-		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.druid.balance.thresholds.icons.xPos, 1, 2,
+		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2129,7 +1919,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.thresholds.icons.xPos = value
+			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 1 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.druid.balance, TRB.Frames.barContainerFrame)
@@ -2137,7 +1927,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Threshold Icon Vertical Position (Relative)"
-		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.druid.balance.thresholds.icons.yPos, 1, 2,
+		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2147,14 +1937,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.thresholds.icons.yPos = value
+			spec.thresholds.icons.yPos = value
 		end)
 
-		local maxIconBorderHeight = math.min(math.floor(TRB.Data.settings.druid.balance.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.balance.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+		local maxIconBorderHeight = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
 
 		title = "Threshold Icon Border Width"
 		yCoord = yCoord - 60
-		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.druid.balance.thresholds.icons.border, 1, 2,
+		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2164,10 +1954,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.thresholds.icons.border = value
+			spec.thresholds.icons.border = value
 
-			local minsliderWidth = math.max(TRB.Data.settings.druid.balance.thresholds.icons.border*2, 1)
-			local minsliderHeight = math.max(TRB.Data.settings.druid.balance.thresholds.icons.border*2, 1)
+			local minsliderWidth = math.max(spec.thresholds.icons.border*2, 1)
+			local minsliderHeight = math.max(spec.thresholds.icons.border*2, 1)
 
 			controls.thresholdIconHeight:SetMinMaxValues(minsliderHeight, 128)
 			controls.thresholdIconHeight.MinLabel:SetText(minsliderHeight)
@@ -2191,9 +1981,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Eclipse")
 		f.tooltip = "Changes the bar color when Eclipse is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(TRB.Data.settings.druid.balance.endOfEclipse.enabled)
+		f:SetChecked(spec.endOfEclipse.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.endOfEclipse.enabled = self:GetChecked()
+			spec.endOfEclipse.enabled = self:GetChecked()
 		end)
 		yCoord = yCoord - 20
 		controls.checkBoxes.endOfEclipseOnly = CreateFrame("CheckButton", "TRB_EOE_CB_CAO", parent, "ChatConfigCheckButtonTemplate")
@@ -2201,9 +1991,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Only change the bar color when in Celestial Alignment")
 		f.tooltip = "Only changes the bar color when you are exiting an Eclipse from Celestial Alignment or Incarnation: Chosen of Elune."
-		f:SetChecked(TRB.Data.settings.druid.balance.endOfEclipse.celestialAlignmentOnly)
+		f:SetChecked(spec.endOfEclipse.celestialAlignmentOnly)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.endOfEclipse.celestialAlignmentOnly = self:GetChecked()
+			spec.endOfEclipse.celestialAlignmentOnly = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
@@ -2213,17 +2003,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Eclipse ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Change the bar color based on how many GCDs remain until Eclipse ends."
-		if TRB.Data.settings.druid.balance.endOfEclipse.mode == "gcd" then
+		if spec.endOfEclipse.mode == "gcd" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.endOfEclipseModeGCDs:SetChecked(true)
 			controls.checkBoxes.endOfEclipseModeTime:SetChecked(false)
-			TRB.Data.settings.druid.balance.endOfEclipse.mode = "gcd"
+			spec.endOfEclipse.mode = "gcd"
 		end)
 
 		title = "Eclipse GCDs - 0.75sec Floor"
-		controls.endOfEclipseGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 15, TRB.Data.settings.druid.balance.endOfEclipse.gcdsMax, 0.25, 2,
+		controls.endOfEclipseGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 15, spec.endOfEclipse.gcdsMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfEclipseGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2234,7 +2024,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.endOfEclipse.gcdsMax = value
+			spec.endOfEclipse.gcdsMax = value
 		end)
 
 
@@ -2245,17 +2035,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Time until Eclipse ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Change the bar color based on how many seconds remain until Eclipse ends."
-		if TRB.Data.settings.druid.balance.endOfEclipse.mode == "time" then
+		if spec.endOfEclipse.mode == "time" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.endOfEclipseModeGCDs:SetChecked(false)
 			controls.checkBoxes.endOfEclipseModeTime:SetChecked(true)
-			TRB.Data.settings.druid.balance.endOfEclipse.mode = "time"
+			spec.endOfEclipse.mode = "time"
 		end)
 
 		title = "Eclipse Time Remaining (sec)"
-		controls.endOfEclipseTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 20, TRB.Data.settings.druid.balance.endOfEclipse.timeMax, 0.25, 2,
+		controls.endOfEclipseTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 20, spec.endOfEclipse.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfEclipseTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2267,7 +2057,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.endOfEclipse.timeMax = value
+			spec.endOfEclipse.timeMax = value
 		end)
 
 		yCoord = yCoord - 40
@@ -2279,15 +2069,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
 		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Astral Power."
-		f:SetChecked(TRB.Data.settings.druid.balance.colors.bar.overcapEnabled)
+		f:SetChecked(spec.colors.bar.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.colors.bar.overcapEnabled = self:GetChecked()
+			spec.colors.bar.overcapEnabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
 
 		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 100, TRB.Data.settings.druid.balance.overcapThreshold, 0.5, 1,
+		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 100, spec.overcapThreshold, 0.5, 1,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2299,7 +2089,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			value = TRB.Functions.RoundTo(value, 1)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.overcapThreshold = value
+			spec.overcapThreshold = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -2310,6 +2100,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if parent == nil then
 			return
 		end
+
+		local spec = TRB.Data.settings.druid.balance
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.balance
@@ -2345,7 +2137,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontLeft, TRB.Data.settings.druid.balance.displayText.left.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -2370,7 +2162,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.druid.balance.displayText.left.fontFace
+						info.checked = fonts[v] == spec.displayText.left.fontFace
 						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -2383,18 +2175,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		function controls.dropDown.fontLeft:SetValue(newValue, newName)
-			TRB.Data.settings.druid.balance.displayText.left.fontFace = newValue
-			TRB.Data.settings.druid.balance.displayText.left.fontFaceName = newName
-			leftTextFrame.font:SetFont(TRB.Data.settings.druid.balance.displayText.left.fontFace, TRB.Data.settings.druid.balance.displayText.left.fontSize, "OUTLINE")
+			spec.displayText.left.fontFace = newValue
+			spec.displayText.left.fontFaceName = newName
+			leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
 			UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-			if TRB.Data.settings.druid.balance.displayText.fontFaceLock then
-				TRB.Data.settings.druid.balance.displayText.middle.fontFace = newValue
-				TRB.Data.settings.druid.balance.displayText.middle.fontFaceName = newName
-				middleTextFrame.font:SetFont(TRB.Data.settings.druid.balance.displayText.middle.fontFace, TRB.Data.settings.druid.balance.displayText.middle.fontSize, "OUTLINE")
+			if spec.displayText.fontFaceLock then
+				spec.displayText.middle.fontFace = newValue
+				spec.displayText.middle.fontFaceName = newName
+				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-				TRB.Data.settings.druid.balance.displayText.right.fontFace = newValue
-				TRB.Data.settings.druid.balance.displayText.right.fontFaceName = newName
-				rightTextFrame.font:SetFont(TRB.Data.settings.druid.balance.displayText.right.fontFace, TRB.Data.settings.druid.balance.displayText.right.fontSize, "OUTLINE")
+				spec.displayText.right.fontFace = newValue
+				spec.displayText.right.fontFaceName = newName
+				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
 			CloseDropDownMenus()
@@ -2406,7 +2198,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.druid.balance.displayText.middle.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -2431,7 +2223,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.druid.balance.displayText.middle.fontFace
+						info.checked = fonts[v] == spec.displayText.middle.fontFace
 						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -2444,18 +2236,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		function controls.dropDown.fontMiddle:SetValue(newValue, newName)
-			TRB.Data.settings.druid.balance.displayText.middle.fontFace = newValue
-			TRB.Data.settings.druid.balance.displayText.middle.fontFaceName = newName
-			middleTextFrame.font:SetFont(TRB.Data.settings.druid.balance.displayText.middle.fontFace, TRB.Data.settings.druid.balance.displayText.middle.fontSize, "OUTLINE")
+			spec.displayText.middle.fontFace = newValue
+			spec.displayText.middle.fontFaceName = newName
+			middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
 			UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-			if TRB.Data.settings.druid.balance.displayText.fontFaceLock then
-				TRB.Data.settings.druid.balance.displayText.left.fontFace = newValue
-				TRB.Data.settings.druid.balance.displayText.left.fontFaceName = newName
-				leftTextFrame.font:SetFont(TRB.Data.settings.druid.balance.displayText.left.fontFace, TRB.Data.settings.druid.balance.displayText.left.fontSize, "OUTLINE")
+			if spec.displayText.fontFaceLock then
+				spec.displayText.left.fontFace = newValue
+				spec.displayText.left.fontFaceName = newName
+				leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				TRB.Data.settings.druid.balance.displayText.right.fontFace = newValue
-				TRB.Data.settings.druid.balance.displayText.right.fontFaceName = newName
-				rightTextFrame.font:SetFont(TRB.Data.settings.druid.balance.displayText.right.fontFace, TRB.Data.settings.druid.balance.displayText.right.fontSize, "OUTLINE")
+				spec.displayText.right.fontFace = newValue
+				spec.displayText.right.fontFaceName = newName
+				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
 			CloseDropDownMenus()
@@ -2469,7 +2261,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.druid.balance.displayText.right.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -2494,7 +2286,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.druid.balance.displayText.right.fontFace
+						info.checked = fonts[v] == spec.displayText.right.fontFace
 						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -2507,18 +2299,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		function controls.dropDown.fontRight:SetValue(newValue, newName)
-			TRB.Data.settings.druid.balance.displayText.right.fontFace = newValue
-			TRB.Data.settings.druid.balance.displayText.right.fontFaceName = newName
-			rightTextFrame.font:SetFont(TRB.Data.settings.druid.balance.displayText.right.fontFace, TRB.Data.settings.druid.balance.displayText.right.fontSize, "OUTLINE")
+			spec.displayText.right.fontFace = newValue
+			spec.displayText.right.fontFaceName = newName
+			rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-			if TRB.Data.settings.druid.balance.displayText.fontFaceLock then
-				TRB.Data.settings.druid.balance.displayText.left.fontFace = newValue
-				TRB.Data.settings.druid.balance.displayText.left.fontFaceName = newName
-				leftTextFrame.font:SetFont(TRB.Data.settings.druid.balance.displayText.left.fontFace, TRB.Data.settings.druid.balance.displayText.left.fontSize, "OUTLINE")
+			if spec.displayText.fontFaceLock then
+				spec.displayText.left.fontFace = newValue
+				spec.displayText.left.fontFaceName = newName
+				leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				TRB.Data.settings.druid.balance.displayText.middle.fontFace = newValue
-				TRB.Data.settings.druid.balance.displayText.middle.fontFaceName = newName
-				middleTextFrame.font:SetFont(TRB.Data.settings.druid.balance.displayText.middle.fontFace, TRB.Data.settings.druid.balance.displayText.middle.fontSize, "OUTLINE")
+				spec.displayText.middle.fontFace = newValue
+				spec.displayText.middle.fontFaceName = newName
+				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 			end
 			CloseDropDownMenus()
@@ -2529,18 +2321,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
 		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
-		f:SetChecked(TRB.Data.settings.druid.balance.displayText.fontFaceLock)
+		f:SetChecked(spec.displayText.fontFaceLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.displayText.fontFaceLock = self:GetChecked()
-			if TRB.Data.settings.druid.balance.displayText.fontFaceLock then
-				TRB.Data.settings.druid.balance.displayText.middle.fontFace = TRB.Data.settings.druid.balance.displayText.left.fontFace
-				TRB.Data.settings.druid.balance.displayText.middle.fontFaceName = TRB.Data.settings.druid.balance.displayText.left.fontFaceName
-				middleTextFrame.font:SetFont(TRB.Data.settings.druid.balance.displayText.middle.fontFace, TRB.Data.settings.druid.balance.displayText.middle.fontSize, "OUTLINE")
-				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.druid.balance.displayText.middle.fontFaceName)
-				TRB.Data.settings.druid.balance.displayText.right.fontFace = TRB.Data.settings.druid.balance.displayText.left.fontFace
-				TRB.Data.settings.druid.balance.displayText.right.fontFaceName = TRB.Data.settings.druid.balance.displayText.left.fontFaceName
-				rightTextFrame.font:SetFont(TRB.Data.settings.druid.balance.displayText.right.fontFace, TRB.Data.settings.druid.balance.displayText.right.fontSize, "OUTLINE")
-				UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.druid.balance.displayText.right.fontFaceName)
+			spec.displayText.fontFaceLock = self:GetChecked()
+			if spec.displayText.fontFaceLock then
+				spec.displayText.middle.fontFace = spec.displayText.left.fontFace
+				spec.displayText.middle.fontFaceName = spec.displayText.left.fontFaceName
+				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
+				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
+				spec.displayText.right.fontFace = spec.displayText.left.fontFace
+				spec.displayText.right.fontFaceName = spec.displayText.left.fontFaceName
+				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
+				UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 			end
 		end)
 
@@ -2550,7 +2342,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
-		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.druid.balance.displayText.left.fontSize, 1, 0,
+		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2560,9 +2352,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.displayText.left.fontSize = value
-			leftTextFrame.font:SetFont(TRB.Data.settings.druid.balance.displayText.left.fontFace, TRB.Data.settings.druid.balance.displayText.left.fontSize, "OUTLINE")
-			if TRB.Data.settings.druid.balance.displayText.fontSizeLock then
+			spec.displayText.left.fontSize = value
+			leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
+			if spec.displayText.fontSizeLock then
 				controls.fontSizeMiddle:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
@@ -2573,90 +2365,41 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
-		f:SetChecked(TRB.Data.settings.druid.balance.displayText.fontSizeLock)
+		f:SetChecked(spec.displayText.fontSizeLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.displayText.fontSizeLock = self:GetChecked()
-			if TRB.Data.settings.druid.balance.displayText.fontSizeLock then
-				controls.fontSizeMiddle:SetValue(TRB.Data.settings.druid.balance.displayText.left.fontSize)
-				controls.fontSizeRight:SetValue(TRB.Data.settings.druid.balance.displayText.left.fontSize)
+			spec.displayText.fontSizeLock = self:GetChecked()
+			if spec.displayText.fontSizeLock then
+				controls.fontSizeMiddle:SetValue(spec.displayText.left.fontSize)
+				controls.fontSizeRight:SetValue(spec.displayText.left.fontSize)
 			end
 		end)
 
-		controls.colors.leftText = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", TRB.Data.settings.druid.balance.colors.text.left,
+		controls.colors.text = {}
+
+		controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
 														250, 25, xCoord2, yCoord-30)
-		f = controls.colors.leftText
+		f = controls.colors.text.left
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.left, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
 		end)
 
-		controls.colors.middleText = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", TRB.Data.settings.druid.balance.colors.text.middle,
+		controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
 														225, 25, xCoord2, yCoord-70)
-		f = controls.colors.middleText
+		f = controls.colors.text.middle
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.middle, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
 		end)
 
-		controls.colors.rightText = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", TRB.Data.settings.druid.balance.colors.text.right,
+		controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
 														225, 25, xCoord2, yCoord-110)
-		f = controls.colors.rightText
+		f = controls.colors.text.right
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.right, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
 		end)
 
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.druid.balance.displayText.middle.fontSize, 1, 0,
+		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2666,9 +2409,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.displayText.middle.fontSize = value
-			middleTextFrame.font:SetFont(TRB.Data.settings.druid.balance.displayText.middle.fontFace, TRB.Data.settings.druid.balance.displayText.middle.fontSize, "OUTLINE")
-			if TRB.Data.settings.druid.balance.displayText.fontSizeLock then
+			spec.displayText.middle.fontSize = value
+			middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
+			if spec.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
@@ -2676,7 +2419,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.druid.balance.displayText.right.fontSize, 1, 0,
+		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2686,9 +2429,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.displayText.right.fontSize = value
-			rightTextFrame.font:SetFont(TRB.Data.settings.druid.balance.displayText.right.fontFace, TRB.Data.settings.druid.balance.displayText.right.fontSize, "OUTLINE")
-			if TRB.Data.settings.druid.balance.displayText.fontSizeLock then
+			spec.displayText.right.fontSize = value
+			rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
+			if spec.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeMiddle:SetValue(value)
 			end
@@ -2698,121 +2441,36 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Astral Power Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentAstralPowerText = TRB.UiFunctions:BuildColorPicker(parent, "Current Astral Power", TRB.Data.settings.druid.balance.colors.text.current, 300, 25, xCoord, yCoord)
-		f = controls.colors.currentAstralPowerText
+		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Astral Power", spec.colors.text.current, 300, 25, xCoord, yCoord)
+		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.current, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.currentAstralPowerText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.text.current = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.castingAstralPowerText = TRB.UiFunctions:BuildColorPicker(parent, "Astral Power from hardcasting spells", TRB.Data.settings.druid.balance.colors.text.casting, 275, 25, xCoord2, yCoord)
-		f = controls.colors.castingAstralPowerText
+		controls.colors.text.casting = TRB.UiFunctions:BuildColorPicker(parent, "Astral Power from hardcasting spells", spec.colors.text.casting, 275, 25, xCoord2, yCoord)
+		f = controls.colors.text.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.casting, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.castingAstralPowerText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.text.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passiveAstralPowerText = TRB.UiFunctions:BuildColorPicker(parent, "Passive Astral Power", TRB.Data.settings.druid.balance.colors.text.passive, 300, 25, xCoord, yCoord)
-		f = controls.colors.passiveAstralPowerText
+		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Astral Power", spec.colors.text.passive, 300, 25, xCoord, yCoord)
+		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.passive, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.passiveAstralPowerText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.text.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdAstralPowerText = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Astral Power to cast Starsurge or Starfall", TRB.Data.settings.druid.balance.colors.text.overThreshold, 300, 25, xCoord, yCoord)
-		f = controls.colors.thresholdAstralPowerText
+		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Astral Power to cast Starsurge or Starfall", spec.colors.text.overThreshold, 300, 25, xCoord, yCoord)
+		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.overThreshold, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.thresholdAstralPowerText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.overcapAstralPowerText = TRB.UiFunctions:BuildColorPicker(parent, "Cast will overcap Astral Power", TRB.Data.settings.druid.balance.colors.text.overcap, 300, 25, xCoord2, yCoord)
-		f = controls.colors.overcapAstralPowerText
+		controls.colors.text.overcap = TRB.UiFunctions:BuildColorPicker(parent, "Cast will overcap Astral Power", spec.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		f = controls.colors.text.overcap
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.overcap, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.overcapAstralPowerText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.balance.colors.text.overcap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 		end)
 
 		yCoord = yCoord - 30
@@ -2822,9 +2480,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Astral Power text color when you are able to cast Starsurge or Starfall"
-		f:SetChecked(TRB.Data.settings.druid.balance.colors.text.overThresholdEnabled)
+		f:SetChecked(spec.colors.text.overThresholdEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.colors.text.overThresholdEnabled = self:GetChecked()
+			spec.colors.text.overThresholdEnabled = self:GetChecked()
 		end)
 
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TRB_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -2832,9 +2490,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Astral Power text color when your current hardcast spell will result in overcapping maximum Astral Power."
-		f:SetChecked(TRB.Data.settings.druid.balance.colors.text.overcapEnabled)
+		f:SetChecked(spec.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.colors.text.overcapEnabled = self:GetChecked()
+			spec.colors.text.overcapEnabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 30
@@ -2847,72 +2505,29 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter and DoT timer color based on DoT status?")
 		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($sunfireCount, $moonfireCount, $stellarFlareCount) will change based on whether or not the DoT is on the current target."
-		f:SetChecked(TRB.Data.settings.druid.balance.colors.text.dots.enabled)
+		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.colors.text.dots.enabled = self:GetChecked()
+			spec.colors.text.dots.enabled = self:GetChecked()
 		end)
 
-		controls.colors.dotUp = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", TRB.Data.settings.druid.balance.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
-		f = controls.colors.dotUp
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.dots.up, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
+		controls.colors.dots = {}
 
-                    controls.colors.dotUp.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.balance.colors.text.dots.up = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
+		f = controls.colors.dots.up
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
 		end)
 
-		controls.colors.dotPandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", TRB.Data.settings.druid.balance.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
-		f = controls.colors.dotPandemic
+		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
+		f = controls.colors.dots.pandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.dots.pandemic, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.dotPandemic.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.balance.colors.text.dots.pandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
 		end)
 
-		controls.colors.dotDown = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", TRB.Data.settings.druid.balance.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
-		f = controls.colors.dotDown
+		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
+		f = controls.colors.dots.down
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.text.dots.down, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.dotDown.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.balance.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
 		end)
 
 
@@ -2921,7 +2536,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
-		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, TRB.Data.settings.druid.balance.hastePrecision, 1, 0,
+		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2933,11 +2548,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			value = TRB.Functions.RoundTo(value, 0)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.hastePrecision = value
+			spec.hastePrecision = value
 		end)
 
 		title = "Astral Power Decimal Precision"
-		controls.astralPowerPrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, TRB.Data.settings.druid.balance.astralPowerPrecision, 1, 0,
+		controls.astralPowerPrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.astralPowerPrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.astralPowerPrecision:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2949,7 +2564,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			value = TRB.Functions.RoundTo(value, 0)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.balance.astralPowerPrecision = value
+			spec.astralPowerPrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame
@@ -2960,6 +2575,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if parent == nil then
 			return
 		end
+
+		local spec = TRB.Data.settings.druid.balance
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.balance
@@ -2994,13 +2611,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Starsurge is usable")
 		f.tooltip = "Play an audio cue when Starsurge can be cast."
 ---@diagnostic disable-next-line: undefined-field
-		f:SetChecked(TRB.Data.settings.druid.balance.audio.ssReady.enabled)
+		f:SetChecked(spec.audio.ssReady.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.audio.ssReady.enabled = self:GetChecked()
+			spec.audio.ssReady.enabled = self:GetChecked()
 
-			if TRB.Data.settings.druid.balance.audio.ssReady.enabled then
+			if spec.audio.ssReady.enabled then
 ---@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
+				PlaySoundFile(spec.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
@@ -3008,7 +2625,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.ssReadyAudio = CreateFrame("FRAME", "TwintopResourceBar_ssReadyAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.ssReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
 		UIDropDownMenu_SetWidth(controls.dropDown.ssReadyAudio, sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.ssReadyAudio, TRB.Data.settings.druid.balance.audio.ssReady.soundName)
+		UIDropDownMenu_SetText(controls.dropDown.ssReadyAudio, spec.audio.ssReady.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.ssReadyAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -3033,7 +2650,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.druid.balance.audio.ssReady.sound
+						info.checked = sounds[v] == spec.audio.ssReady.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -3045,12 +2662,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.ssReadyAudio:SetValue(newValue, newName)
-			TRB.Data.settings.druid.balance.audio.ssReady.sound = newValue
-			TRB.Data.settings.druid.balance.audio.ssReady.soundName = newName
+			spec.audio.ssReady.sound = newValue
+			spec.audio.ssReady.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.ssReadyAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(spec.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
@@ -3061,13 +2678,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Starfall is usable")
 		f.tooltip = "Play an audio cue when Starfall is usable. This supercedes the regular Starsurge audio sound if both are usable."
 ---@diagnostic disable-next-line: undefined-field
-		f:SetChecked(TRB.Data.settings.druid.balance.audio.sfReady.enabled)
+		f:SetChecked(spec.audio.sfReady.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.audio.sfReady.enabled = self:GetChecked()
+			spec.audio.sfReady.enabled = self:GetChecked()
 
-			if TRB.Data.settings.druid.balance.audio.sfReady.enabled then
+			if spec.audio.sfReady.enabled then
 ---@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
+				PlaySoundFile(spec.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
@@ -3075,7 +2692,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.sfReadyAudio = CreateFrame("FRAME", "TwintopResourceBar_sfReadyAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.sfReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
 		UIDropDownMenu_SetWidth(controls.dropDown.sfReadyAudio, sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.sfReadyAudio, TRB.Data.settings.druid.balance.audio.sfReady.soundName)
+		UIDropDownMenu_SetText(controls.dropDown.sfReadyAudio, spec.audio.sfReady.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.sfReadyAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -3100,7 +2717,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.druid.balance.audio.sfReady.sound
+						info.checked = sounds[v] == spec.audio.sfReady.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -3112,12 +2729,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.sfReadyAudio:SetValue(newValue, newName)
-			TRB.Data.settings.druid.balance.audio.sfReady.sound = newValue
-			TRB.Data.settings.druid.balance.audio.sfReady.soundName = newName
+			spec.audio.sfReady.sound = newValue
+			spec.audio.sfReady.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.sfReadyAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(spec.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
@@ -3128,13 +2745,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Oneth's Clear Vision or Oneth's Perception proc occurs.")
 		f.tooltip = "Play an audio cue when an Oneth's Clear Vision or Oneth's Perception proc occurs. This supercedes the regular Starsurge and Starfall audio sound if both are usable."
 ---@diagnostic disable-next-line: undefined-field
-		f:SetChecked(TRB.Data.settings.druid.balance.audio.onethsReady.enabled)
+		f:SetChecked(spec.audio.onethsReady.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.audio.onethsReady.enabled = self:GetChecked()
+			spec.audio.onethsReady.enabled = self:GetChecked()
 
-			if TRB.Data.settings.druid.balance.audio.onethsReady.enabled then
+			if spec.audio.onethsReady.enabled then
 ---@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsReady.sound, TRB.Data.settings.core.audio.channel.channel)
+				PlaySoundFile(spec.audio.onethsReady.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
@@ -3142,7 +2759,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.onethsReadyAudio = CreateFrame("FRAME", "TwintopResourceBar_onethsReadyAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.onethsReadyAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
 		UIDropDownMenu_SetWidth(controls.dropDown.onethsReadyAudio, sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.onethsReadyAudio, TRB.Data.settings.druid.balance.audio.onethsReady.soundName)
+		UIDropDownMenu_SetText(controls.dropDown.onethsReadyAudio, spec.audio.onethsReady.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.onethsReadyAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -3167,7 +2784,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.druid.balance.audio.onethsReady.sound
+						info.checked = sounds[v] == spec.audio.onethsReady.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -3179,12 +2796,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.onethsReadyAudio:SetValue(newValue, newName)
-			TRB.Data.settings.druid.balance.audio.onethsReady.sound = newValue
-			TRB.Data.settings.druid.balance.audio.onethsReady.soundName = newName
+			spec.audio.onethsReady.sound = newValue
+			spec.audio.onethsReady.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.onethsReadyAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.druid.balance.audio.onethsReady.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(spec.audio.onethsReady.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
@@ -3196,13 +2813,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Astral Power")
 		f.tooltip = "Play an audio cue when your hardcast spell will overcap Astral Power."
 ---@diagnostic disable-next-line: undefined-field
-		f:SetChecked(TRB.Data.settings.druid.balance.audio.overcap.enabled)
+		f:SetChecked(spec.audio.overcap.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.balance.audio.overcap.enabled = self:GetChecked()
+			spec.audio.overcap.enabled = self:GetChecked()
 
-			if TRB.Data.settings.druid.balance.audio.overcap.enabled then
+			if spec.audio.overcap.enabled then
 ---@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.druid.balance.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+				PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
@@ -3210,7 +2827,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_overcapAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-30+10)
 		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.druid.balance.audio.overcap.soundName)
+		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -3235,7 +2852,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.druid.balance.audio.overcap.sound
+						info.checked = sounds[v] == spec.audio.overcap.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -3247,12 +2864,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-			TRB.Data.settings.druid.balance.audio.overcap.sound = newValue
-			TRB.Data.settings.druid.balance.audio.overcap.soundName = newName
+			spec.audio.overcap.sound = newValue
+			spec.audio.overcap.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.druid.balance.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -3263,6 +2880,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if parent == nil then
 			return
 		end
+
+		local spec = TRB.Data.settings.druid.balance
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.balance
@@ -3288,11 +2907,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 30
 		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", TRB.Data.settings.druid.balance.displayText.left.text,
+		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.druid.balance.displayText.left.text = self:GetText()
+			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.balance)
 		end)
@@ -3301,11 +2920,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", TRB.Data.settings.druid.balance.displayText.middle.text,
+		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.druid.balance.displayText.middle.text = self:GetText()
+			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.balance)
 		end)
@@ -3314,11 +2933,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", TRB.Data.settings.druid.balance.displayText.right.text,
+		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.druid.balance.displayText.right.text = self:GetText()
+			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.balance)
 		end)
@@ -3440,6 +3059,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			return
 		end
 
+		local spec = TRB.Data.settings.druid.feral
+
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.feral
 		local yCoord = 5
 		local f = nil
@@ -3464,7 +3085,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.druid.feral = FeralResetSettings()
+				spec = FeralResetSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -3477,7 +3098,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.druid.feral.displayText = FeralLoadDefaultBarTextSimpleSettings()
+				spec.displayText = FeralLoadDefaultBarTextSimpleSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -3490,7 +3111,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.druid.feral.displayText = FeralLoadDefaultBarTextAdvancedSettings()
+				spec.displayText = FeralLoadDefaultBarTextAdvancedSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -3503,7 +3124,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.druid.feral.displayText = FeralLoadDefaultBarTextNarrowAdvancedSettings()
+				spec.displayText = FeralLoadDefaultBarTextNarrowAdvancedSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -3550,6 +3171,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			return
 		end
 
+		local spec = TRB.Data.settings.druid.feral
+
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.feral
 		local yCoord = 5
@@ -3570,7 +3193,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.druid.feral.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.feral.bar.width / TRB.Data.constants.borderWidthFactor))
+		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.druid.feral)
 
@@ -3583,7 +3206,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		yCoord = yCoord - 40
 		title = "Bar Width"
-		controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, TRB.Data.settings.druid.feral.bar.width, 1, 2,
+		controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3593,10 +3216,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.bar.width = value
+			spec.bar.width = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.feral.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.feral.bar.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.druid.feral.bar.border
+			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.bar.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -3612,7 +3235,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["energy"] ~= nil and TRB.Data.spells[k]["energy"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.druid.feral.thresholdWidth, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholdWidth, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -3620,7 +3243,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Bar Height"
-		controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, TRB.Data.settings.druid.feral.bar.height, 1, 2,
+		controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3630,10 +3253,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.bar.height = value
+			spec.bar.height = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.feral.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.feral.bar.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.druid.feral.bar.border
+			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.bar.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -3651,7 +3274,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Bar Horizontal Position"
 		yCoord = yCoord - 60
-		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.druid.feral.bar.xPos, 1, 2,
+		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3661,18 +3284,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.bar.xPos = value
+			spec.bar.xPos = value
 
 			if GetSpecialization() == 2 then
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
-				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.druid.feral.bar.xPos, TRB.Data.settings.druid.feral.bar.yPos)
+				barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
 				TRB.Functions.RepositionBar(TRB.Data.settings.druid.feral, TRB.Frames.barContainerFrame)
 			end
 		end)
 
 		title = "Bar Vertical Position"
-		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.druid.feral.bar.yPos, 1, 2,
+		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3682,19 +3305,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.bar.yPos = value
+			spec.bar.yPos = value
 
 			if GetSpecialization() == 2 then
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
-				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.druid.feral.bar.xPos, TRB.Data.settings.druid.feral.bar.yPos)
+				barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
 				TRB.Functions.RepositionBar(TRB.Data.settings.druid.feral, TRB.Frames.barContainerFrame)
 			end
 		end)
 
 		title = "Bar Border Width"
 		yCoord = yCoord - 60
-		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.druid.feral.bar.border, 1, 2,
+		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.borderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3704,16 +3327,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.bar.border = value
+			spec.bar.border = value
 
 			if GetSpecialization() == 2 then
-				barContainerFrame:SetWidth(TRB.Data.settings.druid.feral.bar.width-(TRB.Data.settings.druid.feral.bar.border*2))
-				barContainerFrame:SetHeight(TRB.Data.settings.druid.feral.bar.height-(TRB.Data.settings.druid.feral.bar.border*2))
-				barBorderFrame:SetWidth(TRB.Data.settings.druid.feral.bar.width)
-				barBorderFrame:SetHeight(TRB.Data.settings.druid.feral.bar.height)
-				if TRB.Data.settings.druid.feral.bar.border < 1 then
+				barContainerFrame:SetWidth(spec.bar.width-(spec.bar.border*2))
+				barContainerFrame:SetHeight(spec.bar.height-(spec.bar.border*2))
+				barBorderFrame:SetWidth(spec.bar.width)
+				barBorderFrame:SetHeight(spec.bar.height)
+				if spec.bar.border < 1 then
 					barBorderFrame:SetBackdrop({
-						edgeFile = TRB.Data.settings.druid.feral.textures.border,
+						edgeFile = spec.textures.border,
 						tile = true,
 						tileSize = 4,
 						edgeSize = 1,
@@ -3722,16 +3345,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					barBorderFrame:Hide()
 				else
 					barBorderFrame:SetBackdrop({ 
-						edgeFile = TRB.Data.settings.druid.feral.textures.border,
+						edgeFile = spec.textures.border,
 						tile = true,
 						tileSize=4,
-						edgeSize=TRB.Data.settings.druid.feral.bar.border,
+						edgeSize=spec.bar.border,
 						insets = {0, 0, 0, 0}
 					})
 					barBorderFrame:Show()
 				end
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.border, true))
+				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 
 				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.druid.feral)                
 				TRB.Functions.UpdateBarHeight(TRB.Data.settings.druid.feral)
@@ -3739,14 +3362,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["energy"] ~= nil and TRB.Data.spells[k]["energy"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.druid.feral.thresholdWidth, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholdWidth, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
 			end
 
-			local minsliderWidth = math.max(TRB.Data.settings.druid.feral.bar.border*2, 120)
-			local minsliderHeight = math.max(TRB.Data.settings.druid.feral.bar.border*2, 1)
+			local minsliderWidth = math.max(spec.bar.border*2, 120)
+			local minsliderHeight = math.max(spec.bar.border*2, 1)
 
 			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.druid.feral)
 			controls.height:SetMinMaxValues(minsliderHeight, scValues.barMaxHeight)
@@ -3756,7 +3379,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, TRB.Data.settings.druid.feral.thresholds.width, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3766,11 +3389,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.thresholds.width = value
+			spec.thresholds.width = value
 
 			if GetSpecialization() == 2 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.druid.feral.thresholds.width)
+					resourceFrame.thresholds[x]:SetWidth(spec.thresholds.width)
 				end
 			end
 		end)
@@ -3784,28 +3407,28 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
 		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
-		f:SetChecked(TRB.Data.settings.druid.feral.bar.dragAndDrop)
+		f:SetChecked(spec.bar.dragAndDrop)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.bar.dragAndDrop = self:GetChecked()
-			barContainerFrame:SetMovable((not TRB.Data.settings.druid.feral.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.feral.bar.dragAndDrop)
-			barContainerFrame:EnableMouse((not TRB.Data.settings.druid.feral.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.feral.bar.dragAndDrop)
+			spec.bar.dragAndDrop = self:GetChecked()
+			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 		end)
 			
-		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.druid.feral.bar.pinToPersonalResourceDisplay)
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
 
 		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.pinToPRD
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
 		f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
-		f:SetChecked(TRB.Data.settings.druid.feral.bar.pinToPersonalResourceDisplay)
+		f:SetChecked(spec.bar.pinToPersonalResourceDisplay)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.bar.pinToPersonalResourceDisplay = self:GetChecked()
+			spec.bar.pinToPersonalResourceDisplay = self:GetChecked()
 			
-			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.druid.feral.bar.pinToPersonalResourceDisplay)
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
 
-			barContainerFrame:SetMovable((not TRB.Data.settings.druid.feral.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.feral.bar.dragAndDrop)
-			barContainerFrame:EnableMouse((not TRB.Data.settings.druid.feral.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.feral.bar.dragAndDrop)
+			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 			TRB.Functions.RepositionBar(TRB.Data.settings.druid.feral, TRB.Frames.barContainerFrame)
 		end)
 
@@ -3815,7 +3438,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		yCoord = yCoord - 40
 		title = "Combo Point Width"
-		controls.comboPointWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), TRB.Data.settings.druid.feral.comboPoints.width, 1, 2,
+		controls.comboPointWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.comboPointWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3825,10 +3448,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.comboPoints.width = value
+			spec.comboPoints.width = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.feral.comboPoints.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.feral.comboPoints.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.druid.feral.comboPoints.border
+			local maxBorderSize = math.min(math.floor(spec.comboPoints.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.comboPoints.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.comboPoints.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -3844,7 +3467,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Combo Point Height"
-		controls.comboPointHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, sanityCheckValues.barMaxHeight, TRB.Data.settings.druid.feral.comboPoints.height, 1, 2,
+		controls.comboPointHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, sanityCheckValues.barMaxHeight, spec.comboPoints.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.comboPointHeight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3854,10 +3477,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.comboPoints.height = value
+			spec.comboPoints.height = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.feral.comboPoints.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.feral.bar.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.druid.feral.comboPoints.border
+			local maxBorderSize = math.min(math.floor(spec.comboPoints.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.comboPoints.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -3876,7 +3499,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Combo Points Horizontal Position (Relative)"
 		yCoord = yCoord - 60
-		controls.comboPointHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.druid.feral.comboPoints.xPos, 1, 2,
+		controls.comboPointHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.comboPoints.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.comboPointHorizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3886,7 +3509,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.comboPoints.xPos = value
+			spec.comboPoints.xPos = value
 
 			if GetSpecialization() == 2 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.druid.feral, TRB.Frames.barContainerFrame)
@@ -3894,7 +3517,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Combo Points Vertical Position (Relative)"
-		controls.comboPointVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.druid.feral.comboPoints.yPos, 1, 2,
+		controls.comboPointVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.comboPoints.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.comboPointVertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3904,7 +3527,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.comboPoints.yPos = value
+			spec.comboPoints.yPos = value
 
 			if GetSpecialization() == 2 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.druid.feral, TRB.Frames.barContainerFrame)
@@ -3915,7 +3538,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Combo Point Border Width"
 		yCoord = yCoord - 60
-		controls.comboPointBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.druid.feral.comboPoints.border, 1, 2,
+		controls.comboPointBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.comboPoints.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.comboPointBorderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3925,7 +3548,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.comboPoints.border = value
+			spec.comboPoints.border = value
 
 			if GetSpecialization() == 2 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.druid.feral, TRB.Frames.barContainerFrame)
@@ -3933,8 +3556,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				--TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.druid.feral)
 			end
 
-			local minsliderWidth = math.max(TRB.Data.settings.druid.feral.comboPoints.border*2, 1)
-			local minsliderHeight = math.max(TRB.Data.settings.druid.feral.comboPoints.border*2, 1)
+			local minsliderWidth = math.max(spec.comboPoints.border*2, 1)
+			local minsliderHeight = math.max(spec.comboPoints.border*2, 1)
 
 			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.druid.feral)
 			controls.comboPointHeight:SetMinMaxValues(minsliderHeight, scValues.comboPointsMaxHeight)
@@ -3944,7 +3567,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Combo Points Spacing"
-		controls.comboPointSpacing = TRB.UiFunctions:BuildSlider(parent, title, 0, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), TRB.Data.settings.druid.feral.comboPoints.spacing, 1, 2,
+		controls.comboPointSpacing = TRB.UiFunctions:BuildSlider(parent, title, 0, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.spacing, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.comboPointSpacing:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3954,7 +3577,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.comboPoints.spacing = value
+			spec.comboPoints.spacing = value
 
 			if GetSpecialization() == 2 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.druid.feral, TRB.Frames.barContainerFrame)
@@ -3968,7 +3591,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         controls.dropDown.comboPointsRelativeTo.label.font:SetFontObject(GameFontNormal)
         controls.dropDown.comboPointsRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
         UIDropDownMenu_SetWidth(controls.dropDown.comboPointsRelativeTo, dropdownWidth)
-        UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, TRB.Data.settings.druid.feral.comboPoints.relativeToName)
+        UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, spec.comboPoints.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.comboPointsRelativeTo, "LEFT")
 
         -- Create and bind the initialization function to the dropdown menu
@@ -3994,7 +3617,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             for k, v in pairs(relativeToList) do
                 info.text = v
                 info.value = relativeTo[v]
-                info.checked = relativeTo[v] == TRB.Data.settings.druid.feral.comboPoints.relativeTo
+                info.checked = relativeTo[v] == spec.comboPoints.relativeTo
                 info.func = self.SetValue
                 info.arg1 = relativeTo[v]
                 info.arg2 = v
@@ -4003,8 +3626,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         end)
 
         function controls.dropDown.comboPointsRelativeTo:SetValue(newValue, newName)
-            TRB.Data.settings.druid.feral.comboPoints.relativeTo = newValue
-            TRB.Data.settings.druid.feral.comboPoints.relativeToName = newName
+            spec.comboPoints.relativeTo = newValue
+            spec.comboPoints.relativeToName = newName
             UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, newName)
             CloseDropDownMenus()
 
@@ -4019,9 +3642,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Combo Points are full bar width?")
 		f.tooltip = "Makes the Combo Point bars take up the same total width of the bar, spaced according to Combo Point Spacing (above). The horizontal position adjustment will be ignored and the width of Combo Point bars will be automatically calculated and will ignore the value set above."
-		f:SetChecked(TRB.Data.settings.druid.feral.comboPoints.fullWidth)
+		f:SetChecked(spec.comboPoints.fullWidth)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.comboPoints.fullWidth = self:GetChecked()
+			spec.comboPoints.fullWidth = self:GetChecked()
             
 			if GetSpecialization() == 2 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.druid.feral, TRB.Frames.barContainerFrame)
@@ -4038,7 +3661,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, TRB.Data.settings.druid.feral.textures.resourceBarName)
+		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, spec.textures.resourceBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.resourceBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -4063,7 +3686,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.feral.textures.resourceBar
+						info.checked = textures[v] == spec.textures.resourceBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -4076,30 +3699,30 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.resourceBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.feral.textures.resourceBar = newValue
-			TRB.Data.settings.druid.feral.textures.resourceBarName = newName
+			spec.textures.resourceBar = newValue
+			spec.textures.resourceBarName = newName
 			UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-			if TRB.Data.settings.druid.feral.textures.textureLock then
-				TRB.Data.settings.druid.feral.textures.castingBar = newValue
-				TRB.Data.settings.druid.feral.textures.castingBarName = newName
+			if spec.textures.textureLock then
+				spec.textures.castingBar = newValue
+				spec.textures.castingBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
-				TRB.Data.settings.druid.feral.textures.passiveBar = newValue
-				TRB.Data.settings.druid.feral.textures.passiveBarName = newName
+				spec.textures.passiveBar = newValue
+				spec.textures.passiveBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
-				TRB.Data.settings.druid.feral.textures.comboPointsBar = newValue
-				TRB.Data.settings.druid.feral.textures.comboPointsBarName = newName
+				spec.textures.comboPointsBar = newValue
+				spec.textures.comboPointsBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, newName)
 			end
 
 			if GetSpecialization() == 2 then
-				resourceFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.resourceBar)
-				if TRB.Data.settings.druid.feral.textures.textureLock then
-					castingFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.castingBar)
-					passiveFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.passiveBar)
+				resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+				if spec.textures.textureLock then
+					castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+					passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
 					
 					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 					for x = 1, length do
-						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.comboPointsBar)
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(spec.textures.comboPointsBar)
 					end
 				end
 			end
@@ -4113,7 +3736,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.druid.feral.textures.castingBarName)
+		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -4138,7 +3761,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.feral.textures.castingBar
+						info.checked = textures[v] == spec.textures.castingBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -4151,30 +3774,30 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.castingBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.feral.textures.castingBar = newValue
-			TRB.Data.settings.druid.feral.textures.castingBarName = newName
+			spec.textures.castingBar = newValue
+			spec.textures.castingBarName = newName
 			UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
-			if TRB.Data.settings.druid.feral.textures.textureLock then
-				TRB.Data.settings.druid.feral.textures.resourceBar = newValue
-				TRB.Data.settings.druid.feral.textures.resourceBarName = newName
+			if spec.textures.textureLock then
+				spec.textures.resourceBar = newValue
+				spec.textures.resourceBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-				TRB.Data.settings.druid.feral.textures.passiveBar = newValue
-				TRB.Data.settings.druid.feral.textures.passiveBarName = newName
+				spec.textures.passiveBar = newValue
+				spec.textures.passiveBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
-				TRB.Data.settings.druid.feral.textures.comboPointsBar = newValue
-				TRB.Data.settings.druid.feral.textures.comboPointsBarName = newName
+				spec.textures.comboPointsBar = newValue
+				spec.textures.comboPointsBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, newName)
 			end
 
 			if GetSpecialization() == 2 then
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.castingBar)
-				if TRB.Data.settings.druid.feral.textures.textureLock then
-					resourceFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.resourceBar)
-					passiveFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.passiveBar)
+				castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+				if spec.textures.textureLock then
+					resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+					passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
 					
 					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 					for x = 1, length do
-						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.comboPointsBar)
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(spec.textures.comboPointsBar)
 					end
 				end
 			end
@@ -4191,7 +3814,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, TRB.Data.settings.druid.feral.textures.passiveBarName)
+		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, spec.textures.passiveBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -4216,7 +3839,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.feral.textures.passiveBar
+						info.checked = textures[v] == spec.textures.passiveBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -4229,30 +3852,30 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.passiveBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.feral.textures.passiveBar = newValue
-			TRB.Data.settings.druid.feral.textures.passiveBarName = newName
+			spec.textures.passiveBar = newValue
+			spec.textures.passiveBarName = newName
 			UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
-			if TRB.Data.settings.druid.feral.textures.textureLock then
-				TRB.Data.settings.druid.feral.textures.resourceBar = newValue
-				TRB.Data.settings.druid.feral.textures.resourceBarName = newName
+			if spec.textures.textureLock then
+				spec.textures.resourceBar = newValue
+				spec.textures.resourceBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-				TRB.Data.settings.druid.feral.textures.castingBar = newValue
-				TRB.Data.settings.druid.feral.textures.castingBarName = newName
+				spec.textures.castingBar = newValue
+				spec.textures.castingBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
-				TRB.Data.settings.druid.feral.textures.comboPointsBar = newValue
-				TRB.Data.settings.druid.feral.textures.comboPointsBarName = newName
+				spec.textures.comboPointsBar = newValue
+				spec.textures.comboPointsBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, newName)
 			end
 
 			if GetSpecialization() == 2 then
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.passiveBar)
-				if TRB.Data.settings.druid.feral.textures.textureLock then
-					resourceFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.resourceBar)
-					castingFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.castingBar)
+				passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
+				if spec.textures.textureLock then
+					resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+					castingFrame:SetStatusBarTexture(spec.textures.castingBar)
 					
 					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 					for x = 1, length do
-						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.comboPointsBar)
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(spec.textures.comboPointsBar)
 					end
 				end
 			end
@@ -4266,7 +3889,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.comboPointsBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.comboPointsBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, TRB.Data.settings.druid.feral.textures.comboPointsBarName)
+		UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, spec.textures.comboPointsBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.comboPointsBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -4291,7 +3914,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.feral.textures.comboPointsBar
+						info.checked = textures[v] == spec.textures.comboPointsBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -4304,31 +3927,31 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.comboPointsBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.feral.textures.comboPointsBar = newValue
-			TRB.Data.settings.druid.feral.textures.comboPointsBarName = newName
+			spec.textures.comboPointsBar = newValue
+			spec.textures.comboPointsBarName = newName
 			UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, newName)
-			if TRB.Data.settings.druid.feral.textures.textureLock then
-				TRB.Data.settings.druid.feral.textures.resourceBar = newValue
-				TRB.Data.settings.druid.feral.textures.resourceBarName = newName
+			if spec.textures.textureLock then
+				spec.textures.resourceBar = newValue
+				spec.textures.resourceBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-				TRB.Data.settings.druid.feral.textures.passiveBar = newValue
-				TRB.Data.settings.druid.feral.textures.passiveBarName = newName
+				spec.textures.passiveBar = newValue
+				spec.textures.passiveBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
-				TRB.Data.settings.druid.feral.textures.castingBar = newValue
-				TRB.Data.settings.druid.feral.textures.castingBarName = newName
+				spec.textures.castingBar = newValue
+				spec.textures.castingBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
 			end
 
 			if GetSpecialization() == 2 then					
 				local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 				for x = 1, length do
-					TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.comboPointsBar)
+					TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(spec.textures.comboPointsBar)
 				end
 
-				if TRB.Data.settings.druid.feral.textures.textureLock then
-				    castingFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.castingBar)
-					resourceFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.resourceBar)
-					passiveFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.passiveBar)
+				if spec.textures.textureLock then
+				    castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+					resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+					passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
 				end
 			end
 
@@ -4344,7 +3967,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.borderTexture, TRB.Data.settings.druid.feral.textures.borderName)
+		UIDropDownMenu_SetText(controls.dropDown.borderTexture, spec.textures.borderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -4369,7 +3992,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.feral.textures.border
+						info.checked = textures[v] == spec.textures.border
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -4382,45 +4005,45 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.borderTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.feral.textures.border = newValue
-			TRB.Data.settings.druid.feral.textures.borderName = newName
+			spec.textures.border = newValue
+			spec.textures.borderName = newName
 
 			if GetSpecialization() == 2 then
-				if TRB.Data.settings.druid.feral.bar.border < 1 then
+				if spec.bar.border < 1 then
 					barBorderFrame:SetBackdrop({ })
 				else
-					barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.druid.feral.textures.border,
+					barBorderFrame:SetBackdrop({ edgeFile = spec.textures.border,
 												tile = true,
 												tileSize=4,
-												edgeSize=TRB.Data.settings.druid.feral.bar.border,
+												edgeSize=spec.bar.border,
 												insets = {0, 0, 0, 0}
 												})
 				end
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.border, true))
+				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 			end
 
 			UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
 
-			if TRB.Data.settings.druid.feral.textures.textureLock then
-				TRB.Data.settings.druid.feral.textures.comboPointsBorder = newValue
-				TRB.Data.settings.druid.feral.textures.comboPointsBorderName = newName
+			if spec.textures.textureLock then
+				spec.textures.comboPointsBorder = newValue
+				spec.textures.comboPointsBorderName = newName
 	
 				if GetSpecialization() == 2 then
 					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 					for x = 1, length do
-						if TRB.Data.settings.druid.feral.comboPoints.border < 1 then
+						if spec.comboPoints.border < 1 then
 							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
 						else
-							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.druid.feral.textures.comboPointsBorder,
+							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = spec.textures.comboPointsBorder,
 														tile = true,
 														tileSize=4,
-														edgeSize=TRB.Data.settings.druid.feral.comboPoints.border,
+														edgeSize=spec.comboPoints.border,
 														insets = {0, 0, 0, 0}
 														})
 						end
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropColor(0, 0, 0, 0)
-						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.border, true))
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.comboPoints.border, true))
 					end
 				end
 				UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, newName)
@@ -4435,7 +4058,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, TRB.Data.settings.druid.feral.textures.backgroundName)
+		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, spec.textures.backgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -4460,7 +4083,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.feral.textures.background
+						info.checked = textures[v] == spec.textures.background
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -4473,37 +4096,37 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.feral.textures.background = newValue
-			TRB.Data.settings.druid.feral.textures.backgroundName = newName
+			spec.textures.background = newValue
+			spec.textures.backgroundName = newName
 
 			if GetSpecialization() == 2 then
 				barContainerFrame:SetBackdrop({ 
-					bgFile = TRB.Data.settings.druid.feral.textures.background,
+					bgFile = spec.textures.background,
 					tile = true,
-					tileSize = TRB.Data.settings.druid.feral.bar.width,
+					tileSize = spec.bar.width,
 					edgeSize = 1,
 					insets = {0, 0, 0, 0}
 				})
-				barContainerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.background, true))
+				barContainerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.background, true))
 			end
 
 			UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, newName)
 			
-			if TRB.Data.settings.druid.feral.textures.textureLock then
-				TRB.Data.settings.druid.feral.textures.comboPointsBackground = newValue
-				TRB.Data.settings.druid.feral.textures.comboPointsBackgroundName = newName
+			if spec.textures.textureLock then
+				spec.textures.comboPointsBackground = newValue
+				spec.textures.comboPointsBackgroundName = newName
 	
 				if GetSpecialization() == 2 then
 					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 					for x = 1, length do
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
-							bgFile = TRB.Data.settings.druid.feral.textures.comboPointsBackground,
+							bgFile = spec.textures.comboPointsBackground,
 							tile = true,
-							tileSize = TRB.Data.settings.druid.feral.comboPoints.width,
+							tileSize = spec.comboPoints.width,
 							edgeSize = 1,
 							insets = {0, 0, 0, 0}
 						})
-						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.background, true))
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(spec.colors.comboPoints.background, true))
 					end
 				end
 
@@ -4522,7 +4145,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.comboPointsBorderTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.comboPointsBorderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBorderTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, TRB.Data.settings.druid.feral.textures.comboPointsBorderName)
+		UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, spec.textures.comboPointsBorderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.comboPointsBorderTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -4547,7 +4170,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.feral.textures.comboPointsBorder
+						info.checked = textures[v] == spec.textures.comboPointsBorder
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -4560,45 +4183,45 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.comboPointsBorderTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.feral.textures.comboPointsBorder = newValue
-			TRB.Data.settings.druid.feral.textures.comboPointsBorderName = newName
+			spec.textures.comboPointsBorder = newValue
+			spec.textures.comboPointsBorderName = newName
 
 			if GetSpecialization() == 2 then
 				local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 				for x = 1, length do
-					if TRB.Data.settings.druid.feral.comboPoints.border < 1 then
+					if spec.comboPoints.border < 1 then
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
 					else
-						TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.druid.feral.textures.comboPointsBorder,
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = spec.textures.comboPointsBorder,
 													tile = true,
 													tileSize=4,
-													edgeSize=TRB.Data.settings.druid.feral.comboPoints.border,
+													edgeSize=spec.comboPoints.border,
 													insets = {0, 0, 0, 0}
 													})
 					end
 					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropColor(0, 0, 0, 0)
-					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.border, true))
+					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.comboPoints.border, true))
 				end
 			end
 
 			UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, newName)
 
-			if TRB.Data.settings.druid.feral.textures.textureLock then
-				TRB.Data.settings.druid.feral.textures.border = newValue
-				TRB.Data.settings.druid.feral.textures.borderName = newName
+			if spec.textures.textureLock then
+				spec.textures.border = newValue
+				spec.textures.borderName = newName
 
-				if TRB.Data.settings.druid.feral.bar.border < 1 then
+				if spec.bar.border < 1 then
 					barBorderFrame:SetBackdrop({ })
 				else
-					barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.druid.feral.textures.border,
+					barBorderFrame:SetBackdrop({ edgeFile = spec.textures.border,
 												tile = true,
 												tileSize=4,
-												edgeSize=TRB.Data.settings.druid.feral.bar.border,
+												edgeSize=spec.bar.border,
 												insets = {0, 0, 0, 0}
 												})
 				end
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.border, true))
+				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 				UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
 			end
 
@@ -4611,7 +4234,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.comboPointsBackgroundTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.comboPointsBackgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBackgroundTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, TRB.Data.settings.druid.feral.textures.comboPointsBackgroundName)
+		UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, spec.textures.comboPointsBackgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.comboPointsBackgroundTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -4636,7 +4259,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.feral.textures.comboPointsBackground
+						info.checked = textures[v] == spec.textures.comboPointsBackground
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -4649,38 +4272,38 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.comboPointsBackgroundTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.feral.textures.comboPointsBackground = newValue
-			TRB.Data.settings.druid.feral.textures.comboPointsBackgroundName = newName
+			spec.textures.comboPointsBackground = newValue
+			spec.textures.comboPointsBackgroundName = newName
 
 			if GetSpecialization() == 2 then
 				local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 				for x = 1, length do
 					TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
-						bgFile = TRB.Data.settings.druid.feral.textures.comboPointsBackground,
+						bgFile = spec.textures.comboPointsBackground,
 						tile = true,
-						tileSize = TRB.Data.settings.druid.feral.comboPoints.width,
+						tileSize = spec.comboPoints.width,
 						edgeSize = 1,
 						insets = {0, 0, 0, 0}
 					})
-					TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.background, true))
+					TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(spec.colors.comboPoints.background, true))
 				end
 			end
 
 			UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, newName)
 			
-			if TRB.Data.settings.druid.feral.textures.textureLock then
-				TRB.Data.settings.druid.feral.textures.background = newValue
-				TRB.Data.settings.druid.feral.textures.backgroundName = newName
+			if spec.textures.textureLock then
+				spec.textures.background = newValue
+				spec.textures.backgroundName = newName
 
 				if GetSpecialization() == 2 then
 					barContainerFrame:SetBackdrop({ 
-						bgFile = TRB.Data.settings.druid.feral.textures.background,
+						bgFile = spec.textures.background,
 						tile = true,
-						tileSize = TRB.Data.settings.druid.feral.bar.width,
+						tileSize = spec.bar.width,
 						edgeSize = 1,
 						insets = {0, 0, 0, 0}
 					})
-					barContainerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.background, true))
+					barContainerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.background, true))
 				end
 
 				UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, newName)
@@ -4697,51 +4320,51 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars, borders, and backgrounds (respectively)")
 		f.tooltip = "This will lock the texture for each type of texture to be the same for all parts of the bar. E.g.: All bar textures will be the same, all border textures will be the same, and all background textures will be the same."
-		f:SetChecked(TRB.Data.settings.druid.feral.textures.textureLock)
+		f:SetChecked(spec.textures.textureLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.textures.textureLock = self:GetChecked()
-			if TRB.Data.settings.druid.feral.textures.textureLock then
-				TRB.Data.settings.druid.feral.textures.passiveBar = TRB.Data.settings.druid.feral.textures.resourceBar
-				TRB.Data.settings.druid.feral.textures.passiveBarName = TRB.Data.settings.druid.feral.textures.resourceBarName
-				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, TRB.Data.settings.druid.feral.textures.passiveBarName)
-				TRB.Data.settings.druid.feral.textures.castingBar = TRB.Data.settings.druid.feral.textures.resourceBar
-				TRB.Data.settings.druid.feral.textures.castingBarName = TRB.Data.settings.druid.feral.textures.resourceBarName
-				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.druid.feral.textures.castingBarName)
-				TRB.Data.settings.druid.feral.textures.comboPointsBar = TRB.Data.settings.druid.feral.textures.resourceBar
-				TRB.Data.settings.druid.feral.textures.comboPointsBarName = TRB.Data.settings.druid.feral.textures.resourceBarName
-				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, TRB.Data.settings.druid.feral.textures.resourceBarName)
-				TRB.Data.settings.druid.feral.textures.comboPointsBorder = TRB.Data.settings.druid.feral.textures.border
-				TRB.Data.settings.druid.feral.textures.comboPointsBorderName = TRB.Data.settings.druid.feral.textures.borderName
-				UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, TRB.Data.settings.druid.feral.textures.comboPointsBorderName)
-				TRB.Data.settings.druid.feral.textures.comboPointsBackground = TRB.Data.settings.druid.feral.textures.background
-				TRB.Data.settings.druid.feral.textures.comboPointsBackgroundName = TRB.Data.settings.druid.feral.textures.backgroundName
-				UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, TRB.Data.settings.druid.feral.textures.comboPointsBackgroundName)
+			spec.textures.textureLock = self:GetChecked()
+			if spec.textures.textureLock then
+				spec.textures.passiveBar = spec.textures.resourceBar
+				spec.textures.passiveBarName = spec.textures.resourceBarName
+				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, spec.textures.passiveBarName)
+				spec.textures.castingBar = spec.textures.resourceBar
+				spec.textures.castingBarName = spec.textures.resourceBarName
+				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
+				spec.textures.comboPointsBar = spec.textures.resourceBar
+				spec.textures.comboPointsBarName = spec.textures.resourceBarName
+				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, spec.textures.resourceBarName)
+				spec.textures.comboPointsBorder = spec.textures.border
+				spec.textures.comboPointsBorderName = spec.textures.borderName
+				UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, spec.textures.comboPointsBorderName)
+				spec.textures.comboPointsBackground = spec.textures.background
+				spec.textures.comboPointsBackgroundName = spec.textures.backgroundName
+				UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, spec.textures.comboPointsBackgroundName)
 
 				if GetSpecialization() == 2 then
-					resourceFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.resourceBar)
-					passiveFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.passiveBar)
-					castingFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.castingBar)
+					resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+					passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
+					castingFrame:SetStatusBarTexture(spec.textures.castingBar)
 
 					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 					for x = 1, length do
-						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(TRB.Data.settings.druid.feral.textures.comboPointsBar)
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(spec.textures.comboPointsBar)
 						
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
-							bgFile = TRB.Data.settings.druid.feral.textures.comboPointsBackground,
+							bgFile = spec.textures.comboPointsBackground,
 							tile = true,
-							tileSize = TRB.Data.settings.druid.feral.comboPoints.width,
+							tileSize = spec.comboPoints.width,
 							edgeSize = 1,
 							insets = {0, 0, 0, 0}
 						})
-						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.background, true))
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(spec.colors.comboPoints.background, true))
 						
-						if TRB.Data.settings.druid.feral.comboPoints.border < 1 then
+						if spec.comboPoints.border < 1 then
 							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
 						else
-							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.druid.feral.textures.comboPointsBorder,
+							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = spec.textures.comboPointsBorder,
 														tile = true,
 														tileSize=4,
-														edgeSize=TRB.Data.settings.druid.feral.comboPoints.border,
+														edgeSize=spec.comboPoints.border,
 														insets = {0, 0, 0, 0}
 														})
 						end
@@ -4757,7 +4380,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
         --[[
 		title = "Beastial Wrath Flash Alpha"
-		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, TRB.Data.settings.druid.feral.colors.bar.flashAlpha, 0.01, 2,
+		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4769,11 +4392,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.colors.bar.flashAlpha = value
+			spec.colors.bar.flashAlpha = value
 		end)
 
 		title = "Beastial Wrath Flash Period (sec)"
-		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0.05, 2, TRB.Data.settings.druid.feral.colors.bar.flashPeriod, 0.05, 2,
+		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0.05, 2, spec.colors.bar.flashPeriod, 0.05, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4785,7 +4408,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.colors.bar.flashPeriod = value
+			spec.colors.bar.flashPeriod = value
 		end)
 
 		yCoord = yCoord - 40]]
@@ -4796,15 +4419,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
-		f:SetChecked(TRB.Data.settings.druid.feral.displayBar.alwaysShow)
+		f:SetChecked(spec.displayBar.alwaysShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(true)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.druid.feral.displayBar.alwaysShow = true
-			TRB.Data.settings.druid.feral.displayBar.notZeroShow = false
-			TRB.Data.settings.druid.feral.displayBar.neverShow = false
+			spec.displayBar.alwaysShow = true
+			spec.displayBar.notZeroShow = false
+			spec.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -4814,15 +4437,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Energy is not capped")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar show out of combat only if Energy is not capped, hidden otherwise when out of combat."
-		f:SetChecked(TRB.Data.settings.druid.feral.displayBar.notZeroShow)
+		f:SetChecked(spec.displayBar.notZeroShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(true)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.druid.feral.displayBar.alwaysShow = false
-			TRB.Data.settings.druid.feral.displayBar.notZeroShow = true
-			TRB.Data.settings.druid.feral.displayBar.neverShow = false
+			spec.displayBar.alwaysShow = false
+			spec.displayBar.notZeroShow = true
+			spec.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -4832,15 +4455,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
-		f:SetChecked((not TRB.Data.settings.druid.feral.displayBar.alwaysShow) and (not TRB.Data.settings.druid.feral.displayBar.notZeroShow))
+		f:SetChecked((not spec.displayBar.alwaysShow) and (not spec.displayBar.notZeroShow))
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(true)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.druid.feral.displayBar.alwaysShow = false
-			TRB.Data.settings.druid.feral.displayBar.notZeroShow = false
-			TRB.Data.settings.druid.feral.displayBar.neverShow = false
+			spec.displayBar.alwaysShow = false
+			spec.displayBar.notZeroShow = false
+			spec.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -4850,15 +4473,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
-		f:SetChecked(TRB.Data.settings.druid.feral.displayBar.neverShow)
+		f:SetChecked(spec.displayBar.neverShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(true)
-			TRB.Data.settings.druid.feral.displayBar.alwaysShow = false
-			TRB.Data.settings.druid.feral.displayBar.notZeroShow = false
-			TRB.Data.settings.druid.feral.displayBar.neverShow = true
+			spec.displayBar.alwaysShow = false
+			spec.displayBar.notZeroShow = false
+			spec.displayBar.neverShow = true
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -4868,9 +4491,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
 		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
-		f:SetChecked(TRB.Data.settings.druid.feral.bar.showCasting)
+		f:SetChecked(spec.bar.showCasting)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.bar.showCasting = self:GetChecked()
+			spec.bar.showCasting = self:GetChecked()
 		end)]]
 
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
@@ -4878,9 +4501,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
-		f:SetChecked(TRB.Data.settings.druid.feral.bar.showPassive)
+		f:SetChecked(spec.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.bar.showPassive = self:GetChecked()
+			spec.bar.showPassive = self:GetChecked()
 		end)
 
         --[[
@@ -4889,9 +4512,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Beastial Wrath is usable")
 		f.tooltip = "This will flash the bar when Beastial Wrath can be cast."
-		f:SetChecked(TRB.Data.settings.druid.feral.colors.bar.flashEnabled)
+		f:SetChecked(spec.colors.bar.flashEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.colors.bar.flashEnabled = self:GetChecked()
+			spec.colors.bar.flashEnabled = self:GetChecked()
 		end)
 
 		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_CB1_6", parent, "ChatConfigCheckButtonTemplate")
@@ -4899,9 +4522,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
 		getglobal(f:GetName() .. 'Text'):SetText("Border color when Beastial Wrath is usable")
 		f.tooltip = "This will change the bar's border color (as configured below) when Beastial Wrath is usable."
-		f:SetChecked(TRB.Data.settings.druid.feral.colors.bar.beastialWrathEnabled)
+		f:SetChecked(spec.colors.bar.beastialWrathEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.colors.bar.beastialWrathEnabled = self:GetChecked()
+			spec.colors.bar.beastialWrathEnabled = self:GetChecked()
 		end)
         ]]
 
@@ -4910,11 +4533,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Energy", TRB.Data.settings.druid.feral.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Energy", spec.colors.bar.base, 300, 25, xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 			if button == "LeftButton" then
-                local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.base, true)
+                local r, g, b, a = TRB.Functions.GetRGBAFromString(spec.colors.bar.base, true)
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -4925,16 +4549,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                         a = OpacitySliderFrame:GetValue()
                     end
                     controls.colors.base.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    spec.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
 
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.druid.feral.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 2)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.border, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true)
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -4946,18 +4571,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                     end
         
                     controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    spec.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
                 end)
 			end
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.clearcasting = TRB.UiFunctions:BuildColorPicker(parent, "Energy when Clearcasting proc is up", TRB.Data.settings.druid.feral.colors.bar.clearcasting, 275, 25, xCoord, yCoord)
+		controls.colors.clearcasting = TRB.UiFunctions:BuildColorPicker(parent, "Energy when Clearcasting proc is up", spec.colors.bar.clearcasting, 275, 25, xCoord, yCoord)
 		f = controls.colors.clearcasting
 		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.clearcasting, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(spec.colors.bar.clearcasting, true)
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -4969,16 +4595,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 
 					controls.colors.clearcasting.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.feral.colors.bar.clearcasting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					spec.colors.bar.clearcasting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
 
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Energy gain from Passive Sources", TRB.Data.settings.druid.feral.colors.bar.passive, 275, 25, xCoord2, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Energy gain from Passive Sources", spec.colors.bar.passive, 275, 25, xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.passive, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(spec.colors.bar.passive, true)
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -4991,18 +4618,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                     
 					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
 					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    spec.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                 end)
 			end
 		end)
 
 
 		yCoord = yCoord - 30
-		controls.colors.maxBite = TRB.UiFunctions:BuildColorPicker(parent, "Energy when 5 Combo Points and Ferocious Bite will do max damage", TRB.Data.settings.druid.feral.colors.bar.maxBite, 275, 25, xCoord, yCoord)
+		controls.colors.maxBite = TRB.UiFunctions:BuildColorPicker(parent, "Energy when 5 Combo Points and Ferocious Bite will do max damage", spec.colors.bar.maxBite, 275, 25, xCoord, yCoord)
 		f = controls.colors.maxBite
 		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.maxBite, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(spec.colors.bar.maxBite, true)
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -5014,16 +4642,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 
 					controls.colors.maxBite.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.feral.colors.bar.maxBite = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					spec.colors.bar.maxBite = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
 
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.druid.feral.colors.bar.background, 275, 25, xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.background, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(spec.colors.bar.background, true)
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
                     local r, g, b, a
                     if color then
@@ -5035,7 +4664,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
                     end
         
                     controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+                    spec.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
                     barContainerFrame:SetBackdropColor(r, g, b, 1-a)
                 end)
 			end
@@ -5043,11 +4672,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 
 		yCoord = yCoord - 30
-		controls.colors.apexPredator = TRB.UiFunctions:BuildColorPicker(parent, "Energy when you have an Apex Predator's Craving proc", TRB.Data.settings.druid.feral.colors.bar.apexPredator, 275, 25, xCoord, yCoord)
+		controls.colors.apexPredator = TRB.UiFunctions:BuildColorPicker(parent, "Energy when you have an Apex Predator's Craving proc", spec.colors.bar.apexPredator, 275, 25, xCoord, yCoord)
 		f = controls.colors.apexPredator
 		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.apexPredator, true)
+				local r, g, b, a = TRB.Functions.GetRGBAFromString(spec.colors.bar.apexPredator, true)
 				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
 					local r, g, b, a
 					if color then
@@ -5059,144 +4689,42 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 
 					controls.colors.apexPredator.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.feral.colors.bar.apexPredator = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+					spec.colors.bar.apexPredator = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
 				end)
 			end
 		end)
 
 		yCoord = yCoord - 40
-
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Combo Point Colors", 0, yCoord)
 
+		controls.colors.comboPoints = {}
+
 		yCoord = yCoord - 30
-		controls.colors.comboPointBase = TRB.UiFunctions:BuildColorPicker(parent, "Combo Points", TRB.Data.settings.druid.feral.colors.comboPoints.base, 300, 25, xCoord, yCoord)
-		f = controls.colors.comboPointBase
+		controls.colors.comboPoints.base = TRB.UiFunctions:BuildColorPicker(parent, "Combo Points", spec.colors.comboPoints.base, 300, 25, xCoord, yCoord)
+		f = controls.colors.comboPoints.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-                local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.base, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    controls.colors.comboPointBase.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.comboPoints.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 		end)
 
-		controls.colors.comboPointBorder = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point's border", TRB.Data.settings.druid.feral.colors.comboPoints.border, 225, 25, xCoord2, yCoord)
-		f = controls.colors.comboPointBorder
+		controls.colors.comboPoints.border = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point's border", spec.colors.comboPoints.border, 225, 25, xCoord2, yCoord)
+		f = controls.colors.comboPoints.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.border, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.comboPointBorder.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.comboPoints.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 		end)
 
 		yCoord = yCoord - 30		
-		controls.colors.comboPointPenultimate = TRB.UiFunctions:BuildColorPicker(parent, "Penultimate Combo Point", TRB.Data.settings.druid.feral.colors.comboPoints.penultimate, 300, 25, xCoord, yCoord)
-		f = controls.colors.comboPointPenultimate
+		controls.colors.comboPoints.penultimate = TRB.UiFunctions:BuildColorPicker(parent, "Penultimate Combo Point", spec.colors.comboPoints.penultimate, 300, 25, xCoord, yCoord)
+		f = controls.colors.comboPoints.penultimate
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-                local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.penultimate, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    controls.colors.comboPointPenultimate.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.comboPoints.penultimate = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 		end)
-
-		--[[
-		controls.colors.comboPointEchoingReprimand = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point when Echoing Reprimand (|cFF68CCEFKyrian|r) buff is up", TRB.Data.settings.druid.feral.colors.comboPoints.echoingReprimand, 275, 25, xCoord2, yCoord)
-		f = controls.colors.comboPointEchoingReprimand
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.echoingReprimand, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.comboPointEchoingReprimand.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.comboPoints.echoingReprimand = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)
-		]]
 
 		yCoord = yCoord - 30		
-		controls.colors.comboPointFinal = TRB.UiFunctions:BuildColorPicker(parent, "Final Combo Point", TRB.Data.settings.druid.feral.colors.comboPoints.final, 300, 25, xCoord, yCoord)
-		f = controls.colors.comboPointFinal
+		controls.colors.comboPoints.final = TRB.UiFunctions:BuildColorPicker(parent, "Final Combo Point", spec.colors.comboPoints.final, 300, 25, xCoord, yCoord)
+		f = controls.colors.comboPoints.final
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-                local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.final, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    controls.colors.comboPointFinal.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.comboPoints.final = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 		end)
-
-		--[[
-		controls.colors.comboPointSerratedBoneSpike = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point that wil generate on next Serrated Bone Spike (|cFF40BF40Necrolord|r) use", TRB.Data.settings.druid.feral.colors.comboPoints.serratedBoneSpike, 275, 25, xCoord2, yCoord)
-		f = controls.colors.comboPointSerratedBoneSpike
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.serratedBoneSpike, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.comboPointSerratedBoneSpike.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.comboPoints.serratedBoneSpike = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
-		end)
-		]]
 
 		yCoord = yCoord - 30
 
@@ -5205,104 +4733,39 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use highest Combo Point color for all?")
 		f.tooltip = "When checked, the highest Combo Point's color will be used for all Combo Points. E.g., if you have maximum 5 combo points and currently have 4, the Penultimate color will be used for all Combo Points instead of just the second to last."
-		f:SetChecked(TRB.Data.settings.druid.feral.comboPoints.sameColor)
+		f:SetChecked(spec.comboPoints.sameColor)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.comboPoints.sameColor = self:GetChecked()
+			spec.comboPoints.sameColor = self:GetChecked()
 		end)
 
-		controls.colors.comboPointBackground = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled Combo Point background", TRB.Data.settings.druid.feral.colors.comboPoints.background, 275, 25, xCoord2, yCoord)
-		f = controls.colors.comboPointBackground
+		controls.colors.comboPoints.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled Combo Point background", spec.colors.comboPoints.background, 275, 25, xCoord2, yCoord)
+		f = controls.colors.comboPoints.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.background, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.comboPointBackground.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.comboPoints.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    
-					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
-					for x = 1, length do
-						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.background, true))
-					end
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
 		end)
 
 		yCoord = yCoord - 40
-
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		
+		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-
-		controls.colors.thresholdUnder = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Energy threshold line", TRB.Data.settings.druid.feral.colors.threshold.under, 275, 25, xCoord2, yCoord)
-		f = controls.colors.thresholdUnder
+		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Energy threshold line", spec.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.threshold.under, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.thresholdOver = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Energy threshold line", TRB.Data.settings.druid.feral.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
-		f = controls.colors.thresholdOver
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Energy threshold line", spec.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.threshold.over, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.thresholdUnusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", TRB.Data.settings.druid.feral.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
-		f = controls.colors.thresholdUnusable
+		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
+		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.threshold.unusable, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.thresholdUnusable.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.threshold.unusable = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
@@ -5310,9 +4773,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.overlapBorder)
+		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.overlapBorder = self:GetChecked()
+			spec.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.feral)
 		end)
 
@@ -5321,9 +4784,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-120)
 		getglobal(f:GetName() .. 'Text'):SetText("Use different colors for Bleed snapshots?")
 		f.tooltip = "When checked, threshold lines for Rake, Rip, Thrash, and Moonfire (if Lunar Inspiration is talented) will have their threshold lines colored based on if the current buffs are better, worse, or the same damage (or the bleed is not on the target) instead of based on available Energy or Combo Points. The colors used are set in the 'Bleed Snapshotting' section under the 'Font & Text' tab."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.bleedColors)
+		f:SetChecked(spec.thresholds.bleedColors)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.bleedColors = self:GetChecked()
+			spec.thresholds.bleedColors = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.feral)
 		end)
 		
@@ -5335,9 +4798,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Brutal Slash (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Brutal Slash. Only visible if talented in to Brutal Slash. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.brutalSlash.enabled)
+		f:SetChecked(spec.thresholds.brutalSlash.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.brutalSlash.enabled = self:GetChecked()
+			spec.thresholds.brutalSlash.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -5346,9 +4809,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Feral Frenzy (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feral Frenzy. Only visible if talented in to Feral Frenzy. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.feralFrenzy.enabled)
+		f:SetChecked(spec.thresholds.feralFrenzy.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.feralFrenzy.enabled = self:GetChecked()
+			spec.thresholds.feralFrenzy.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -5357,9 +4820,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Moonfire (if Lunar Inspiration talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Moonfire. Only visible if talented in to Lunar Inspiration."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.moonfire.enabled)
+		f:SetChecked(spec.thresholds.moonfire.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.moonfire.enabled = self:GetChecked()
+			spec.thresholds.moonfire.enabled = self:GetChecked()
 		end)
 		
 		yCoord = yCoord - 25
@@ -5368,9 +4831,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Rake")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Rake."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.rake.enabled)
+		f:SetChecked(spec.thresholds.rake.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.rake.enabled = self:GetChecked()
+			spec.thresholds.rake.enabled = self:GetChecked()
 		end)
 		
 		yCoord = yCoord - 25
@@ -5379,9 +4842,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Shred")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shred."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.shred.enabled)
+		f:SetChecked(spec.thresholds.shred.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.shred.enabled = self:GetChecked()
+			spec.thresholds.shred.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -5390,9 +4853,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Swipe (if Brutal Slash untalented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Swipe. Only visible if not talented in to Brutal Slash."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.swipe.enabled)
+		f:SetChecked(spec.thresholds.swipe.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.swipe.enabled = self:GetChecked()
+			spec.thresholds.swipe.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -5401,9 +4864,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Thrash")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Thrash."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.thrash.enabled)
+		f:SetChecked(spec.thresholds.thrash.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.thrash.enabled = self:GetChecked()
+			spec.thresholds.thrash.enabled = self:GetChecked()
 		end)
 
 
@@ -5416,9 +4879,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Ferocious Bite (moving/dynamic)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ferocious Bite. If you do not have any combo points, will be colored as 'unusable'. Will move along the bar between the current minimum and maximum Energy cost amounts."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.ferociousBite.enabled)
+		f:SetChecked(spec.thresholds.ferociousBite.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.ferociousBite.enabled = self:GetChecked()
+			spec.thresholds.ferociousBite.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -5427,9 +4890,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Ferocious Bite (minimum)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ferocious Bite at its minimum Energy cost. If you do not have any combo points, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.ferociousBiteMinimum.enabled)
+		f:SetChecked(spec.thresholds.ferociousBiteMinimum.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.ferociousBiteMinimum.enabled = self:GetChecked()
+			spec.thresholds.ferociousBiteMinimum.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -5438,9 +4901,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Ferocious Bite (maximum)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ferocious Bite at its maximum Energy cost. If you do not have any combo points, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.ferociousBiteMaximum.enabled)
+		f:SetChecked(spec.thresholds.ferociousBiteMaximum.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.ferociousBiteMaximum.enabled = self:GetChecked()
+			spec.thresholds.ferociousBiteMaximum.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -5449,9 +4912,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Maim")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Maim. If on cooldown or you do not have any combo points, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.maim.enabled)
+		f:SetChecked(spec.thresholds.maim.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.maim.enabled = self:GetChecked()
+			spec.thresholds.maim.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -5460,9 +4923,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Primal Wrath (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Primal Wrath. Only visible when talented in to Primal Wrath. If you do not have any combo points, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.primalWrath.enabled)
+		f:SetChecked(spec.thresholds.primalWrath.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.primalWrath.enabled = self:GetChecked()
+			spec.thresholds.primalWrath.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -5471,9 +4934,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Rip")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Rip. If you do not have any combo points, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.rip.enabled)
+		f:SetChecked(spec.thresholds.rip.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.rip.enabled = self:GetChecked()
+			spec.thresholds.rip.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -5482,9 +4945,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Savage Roar (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Savage Roar. Only visible when talented in to Savage Roar. If you do not have any combo points, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.savageRoar.enabled)
+		f:SetChecked(spec.thresholds.savageRoar.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.savageRoar.enabled = self:GetChecked()
+			spec.thresholds.savageRoar.enabled = self:GetChecked()
 		end)
 
 		--[[
@@ -5497,9 +4960,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Bloodtalons (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use complete a successful Bloodtalons ability combo. Only visible when talented in to Bloodtalons."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.bloodtalons.enabled)
+		f:SetChecked(spec.thresholds.bloodtalons.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.bloodtalons.enabled = self:GetChecked()
+			spec.thresholds.bloodtalons.enabled = self:GetChecked()
 		end)
 		]]
 
@@ -5511,7 +4974,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
         controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
         UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
-        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, TRB.Data.settings.druid.feral.thresholds.icons.relativeToName)
+        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
 
         -- Create and bind the initialization function to the dropdown menu
@@ -5531,7 +4994,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             for k, v in pairs(relativeToList) do
                 info.text = v
                 info.value = relativeTo[v]
-                info.checked = relativeTo[v] == TRB.Data.settings.druid.feral.thresholds.icons.relativeTo
+                info.checked = relativeTo[v] == spec.thresholds.icons.relativeTo
                 info.func = self.SetValue
                 info.arg1 = relativeTo[v]
                 info.arg2 = v
@@ -5540,8 +5003,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         end)
 
         function controls.dropDown.thresholdIconRelativeTo:SetValue(newValue, newName)
-            TRB.Data.settings.druid.feral.thresholds.icons.relativeTo = newValue
-            TRB.Data.settings.druid.feral.thresholds.icons.relativeToName = newName
+            spec.thresholds.icons.relativeTo = newValue
+            spec.thresholds.icons.relativeToName = newName
 			
 			if GetSpecialization() == 2 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.feral)
@@ -5557,22 +5020,22 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
 		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for any abilities currently on cooldown."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.icons.showCooldown)
+		f:SetChecked(spec.thresholds.icons.showCooldown)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.icons.showCooldown = self:GetChecked()
+			spec.thresholds.icons.showCooldown = self:GetChecked()
 		end)
 		
-		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.druid.feral.thresholds.icons.enabled)
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
-		f:SetChecked(TRB.Data.settings.druid.feral.thresholds.icons.enabled)
+		f:SetChecked(spec.thresholds.icons.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.thresholds.icons.enabled = self:GetChecked()
-			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.druid.feral.thresholds.icons.enabled)
+			spec.thresholds.icons.enabled = self:GetChecked()
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 	
 			
 			if GetSpecialization() == 2 then
@@ -5582,7 +5045,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		yCoord = yCoord - 80
 		title = "Threshold Icon Width"
-		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, TRB.Data.settings.druid.feral.thresholds.icons.width, 1, 2,
+		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5592,10 +5055,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.thresholds.icons.width = value
+			spec.thresholds.icons.width = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.feral.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.feral.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.druid.feral.thresholds.icons.border
+			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.thresholds.icons.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -5607,7 +5070,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Threshold Icon Height"
-		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, TRB.Data.settings.druid.feral.thresholds.icons.height, 1, 2,
+		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5617,10 +5080,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.thresholds.icons.height = value
+			spec.thresholds.icons.height = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.feral.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.feral.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.druid.feral.thresholds.icons.border
+			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.thresholds.icons.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -5634,7 +5097,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Threshold Icon Horizontal Position (Relative)"
 		yCoord = yCoord - 60
-		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.druid.feral.thresholds.icons.xPos, 1, 2,
+		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5644,7 +5107,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.thresholds.icons.xPos = value
+			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 2 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.druid.feral, TRB.Frames.barContainerFrame)
@@ -5652,7 +5115,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Threshold Icon Vertical Position (Relative)"
-		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.druid.feral.thresholds.icons.yPos, 1, 2,
+		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5662,14 +5125,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.thresholds.icons.yPos = value
+			spec.thresholds.icons.yPos = value
 		end)
 
-		local maxIconBorderHeight = math.min(math.floor(TRB.Data.settings.druid.feral.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.feral.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+		local maxIconBorderHeight = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
 
 		title = "Threshold Icon Border Width"
 		yCoord = yCoord - 60
-		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.druid.feral.thresholds.icons.border, 1, 2,
+		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5679,10 +5142,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.thresholds.icons.border = value
+			spec.thresholds.icons.border = value
 
-			local minsliderWidth = math.max(TRB.Data.settings.druid.feral.thresholds.icons.border*2, 1)
-			local minsliderHeight = math.max(TRB.Data.settings.druid.feral.thresholds.icons.border*2, 1)
+			local minsliderWidth = math.max(spec.thresholds.icons.border*2, 1)
+			local minsliderHeight = math.max(spec.thresholds.icons.border*2, 1)
 
 			controls.thresholdIconHeight:SetMinMaxValues(minsliderHeight, 128)
 			controls.thresholdIconHeight.MinLabel:SetText(minsliderHeight)
@@ -5705,15 +5168,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
 		f.tooltip = "This will change the bar's border color when your current energy is above the overcapping maximum Energy as configured below."
-		f:SetChecked(TRB.Data.settings.druid.feral.colors.bar.overcapEnabled)
+		f:SetChecked(spec.colors.bar.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.colors.bar.overcapEnabled = self:GetChecked()
+			spec.colors.bar.overcapEnabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
 
 		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 130, TRB.Data.settings.druid.feral.overcapThreshold, 1, 1,
+		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 130, spec.overcapThreshold, 1, 1,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5725,7 +5188,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			value = TRB.Functions.RoundTo(value, 1)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.overcapThreshold = value
+			spec.overcapThreshold = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.feral = controls
@@ -5735,6 +5198,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if parent == nil then
 			return
 		end
+
+		local spec = TRB.Data.settings.druid.feral
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.feral
@@ -5770,7 +5235,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontLeft, TRB.Data.settings.druid.feral.displayText.left.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -5795,7 +5260,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.druid.feral.displayText.left.fontFace
+						info.checked = fonts[v] == spec.displayText.left.fontFace
 						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -5808,23 +5273,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		function controls.dropDown.fontLeft:SetValue(newValue, newName)
-			TRB.Data.settings.druid.feral.displayText.left.fontFace = newValue
-			TRB.Data.settings.druid.feral.displayText.left.fontFaceName = newName
+			spec.displayText.left.fontFace = newValue
+			spec.displayText.left.fontFaceName = newName
 			UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-			if TRB.Data.settings.druid.feral.displayText.fontFaceLock then
-				TRB.Data.settings.druid.feral.displayText.middle.fontFace = newValue
-				TRB.Data.settings.druid.feral.displayText.middle.fontFaceName = newName
+			if spec.displayText.fontFaceLock then
+				spec.displayText.middle.fontFace = newValue
+				spec.displayText.middle.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-				TRB.Data.settings.druid.feral.displayText.right.fontFace = newValue
-				TRB.Data.settings.druid.feral.displayText.right.fontFaceName = newName
+				spec.displayText.right.fontFace = newValue
+				spec.displayText.right.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
 
 			if GetSpecialization() == 2 then
-				leftTextFrame.font:SetFont(TRB.Data.settings.druid.feral.displayText.left.fontFace, TRB.Data.settings.druid.feral.displayText.left.fontSize, "OUTLINE")
-				if TRB.Data.settings.druid.feral.displayText.fontFaceLock then
-					middleTextFrame.font:SetFont(TRB.Data.settings.druid.feral.displayText.middle.fontFace, TRB.Data.settings.druid.feral.displayText.middle.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(TRB.Data.settings.druid.feral.displayText.right.fontFace, TRB.Data.settings.druid.feral.displayText.right.fontSize, "OUTLINE")
+				leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
+				if spec.displayText.fontFaceLock then
+					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 				end
 			end
 
@@ -5837,7 +5302,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.druid.feral.displayText.middle.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -5862,7 +5327,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.druid.feral.displayText.middle.fontFace
+						info.checked = fonts[v] == spec.displayText.middle.fontFace
 						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -5875,23 +5340,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		function controls.dropDown.fontMiddle:SetValue(newValue, newName)
-			TRB.Data.settings.druid.feral.displayText.middle.fontFace = newValue
-			TRB.Data.settings.druid.feral.displayText.middle.fontFaceName = newName
+			spec.displayText.middle.fontFace = newValue
+			spec.displayText.middle.fontFaceName = newName
 			UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-			if TRB.Data.settings.druid.feral.displayText.fontFaceLock then
-				TRB.Data.settings.druid.feral.displayText.left.fontFace = newValue
-				TRB.Data.settings.druid.feral.displayText.left.fontFaceName = newName
+			if spec.displayText.fontFaceLock then
+				spec.displayText.left.fontFace = newValue
+				spec.displayText.left.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				TRB.Data.settings.druid.feral.displayText.right.fontFace = newValue
-				TRB.Data.settings.druid.feral.displayText.right.fontFaceName = newName
+				spec.displayText.right.fontFace = newValue
+				spec.displayText.right.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
 
 			if GetSpecialization() == 2 then
-				middleTextFrame.font:SetFont(TRB.Data.settings.druid.feral.displayText.middle.fontFace, TRB.Data.settings.druid.feral.displayText.middle.fontSize, "OUTLINE")
-				if TRB.Data.settings.druid.feral.displayText.fontFaceLock then
-					leftTextFrame.font:SetFont(TRB.Data.settings.druid.feral.displayText.left.fontFace, TRB.Data.settings.druid.feral.displayText.left.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(TRB.Data.settings.druid.feral.displayText.right.fontFace, TRB.Data.settings.druid.feral.displayText.right.fontSize, "OUTLINE")
+				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
+				if spec.displayText.fontFaceLock then
+					leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 				end
 			end
 
@@ -5906,7 +5371,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.druid.feral.displayText.right.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -5931,7 +5396,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.druid.feral.displayText.right.fontFace
+						info.checked = fonts[v] == spec.displayText.right.fontFace
 						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -5944,23 +5409,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		function controls.dropDown.fontRight:SetValue(newValue, newName)
-			TRB.Data.settings.druid.feral.displayText.right.fontFace = newValue
-			TRB.Data.settings.druid.feral.displayText.right.fontFaceName = newName
+			spec.displayText.right.fontFace = newValue
+			spec.displayText.right.fontFaceName = newName
 			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-			if TRB.Data.settings.druid.feral.displayText.fontFaceLock then
-				TRB.Data.settings.druid.feral.displayText.left.fontFace = newValue
-				TRB.Data.settings.druid.feral.displayText.left.fontFaceName = newName
+			if spec.displayText.fontFaceLock then
+				spec.displayText.left.fontFace = newValue
+				spec.displayText.left.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				TRB.Data.settings.druid.feral.displayText.middle.fontFace = newValue
-				TRB.Data.settings.druid.feral.displayText.middle.fontFaceName = newName
+				spec.displayText.middle.fontFace = newValue
+				spec.displayText.middle.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 			end
 
 			if GetSpecialization() == 2 then
-				rightTextFrame.font:SetFont(TRB.Data.settings.druid.feral.displayText.right.fontFace, TRB.Data.settings.druid.feral.displayText.right.fontSize, "OUTLINE")
-				if TRB.Data.settings.druid.feral.displayText.fontFaceLock then
-					leftTextFrame.font:SetFont(TRB.Data.settings.druid.feral.displayText.left.fontFace, TRB.Data.settings.druid.feral.displayText.left.fontSize, "OUTLINE")
-					middleTextFrame.font:SetFont(TRB.Data.settings.druid.feral.displayText.middle.fontFace, TRB.Data.settings.druid.feral.displayText.middle.fontSize, "OUTLINE")
+				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
+				if spec.displayText.fontFaceLock then
+					leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
+					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
 				end
 			end
 
@@ -5972,20 +5437,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
 		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
-		f:SetChecked(TRB.Data.settings.druid.feral.displayText.fontFaceLock)
+		f:SetChecked(spec.displayText.fontFaceLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.displayText.fontFaceLock = self:GetChecked()
-			if TRB.Data.settings.druid.feral.displayText.fontFaceLock then
-				TRB.Data.settings.druid.feral.displayText.middle.fontFace = TRB.Data.settings.druid.feral.displayText.left.fontFace
-				TRB.Data.settings.druid.feral.displayText.middle.fontFaceName = TRB.Data.settings.druid.feral.displayText.left.fontFaceName
-				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.druid.feral.displayText.middle.fontFaceName)
-				TRB.Data.settings.druid.feral.displayText.right.fontFace = TRB.Data.settings.druid.feral.displayText.left.fontFace
-				TRB.Data.settings.druid.feral.displayText.right.fontFaceName = TRB.Data.settings.druid.feral.displayText.left.fontFaceName
-				UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.druid.feral.displayText.right.fontFaceName)
+			spec.displayText.fontFaceLock = self:GetChecked()
+			if spec.displayText.fontFaceLock then
+				spec.displayText.middle.fontFace = spec.displayText.left.fontFace
+				spec.displayText.middle.fontFaceName = spec.displayText.left.fontFaceName
+				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
+				spec.displayText.right.fontFace = spec.displayText.left.fontFace
+				spec.displayText.right.fontFaceName = spec.displayText.left.fontFaceName
+				UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 
 				if GetSpecialization() == 2 then
-					middleTextFrame.font:SetFont(TRB.Data.settings.druid.feral.displayText.middle.fontFace, TRB.Data.settings.druid.feral.displayText.middle.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(TRB.Data.settings.druid.feral.displayText.right.fontFace, TRB.Data.settings.druid.feral.displayText.right.fontSize, "OUTLINE")
+					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 				end
 			end
 		end)
@@ -5996,7 +5461,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
-		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.druid.feral.displayText.left.fontSize, 1, 0,
+		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6006,13 +5471,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.displayText.left.fontSize = value
+			spec.displayText.left.fontSize = value
 
 			if GetSpecialization() == 2 then
-				leftTextFrame.font:SetFont(TRB.Data.settings.druid.feral.displayText.left.fontFace, TRB.Data.settings.druid.feral.displayText.left.fontSize, "OUTLINE")
+				leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
 			end
 
-			if TRB.Data.settings.druid.feral.displayText.fontSizeLock then
+			if spec.displayText.fontSizeLock then
 				controls.fontSizeMiddle:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
@@ -6023,90 +5488,41 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
-		f:SetChecked(TRB.Data.settings.druid.feral.displayText.fontSizeLock)
+		f:SetChecked(spec.displayText.fontSizeLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.displayText.fontSizeLock = self:GetChecked()
-			if TRB.Data.settings.druid.feral.displayText.fontSizeLock then
-				controls.fontSizeMiddle:SetValue(TRB.Data.settings.druid.feral.displayText.left.fontSize)
-				controls.fontSizeRight:SetValue(TRB.Data.settings.druid.feral.displayText.left.fontSize)
+			spec.displayText.fontSizeLock = self:GetChecked()
+			if spec.displayText.fontSizeLock then
+				controls.fontSizeMiddle:SetValue(spec.displayText.left.fontSize)
+				controls.fontSizeRight:SetValue(spec.displayText.left.fontSize)
 			end
 		end)
 
-		controls.colors.leftText = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", TRB.Data.settings.druid.feral.colors.text.left,
+		controls.colors.text = {}
+
+		controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
 														250, 25, xCoord2, yCoord-30)
-		f = controls.colors.leftText
+		f = controls.colors.text.left
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.text.left, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    --Text doesn't care about Alpha, but the color picker does!
-                    a = 0.0
-        
-                    controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
 		end)
 
-		controls.colors.middleText = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", TRB.Data.settings.druid.feral.colors.text.middle,
+		controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
 														225, 25, xCoord2, yCoord-70)
-		f = controls.colors.middleText
+		f = controls.colors.text.middle
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.text.middle, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    --Text doesn't care about Alpha, but the color picker does!
-                    a = 0.0
-        
-                    controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
 		end)
 
-		controls.colors.rightText = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", TRB.Data.settings.druid.feral.colors.text.right,
+		controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
 														225, 25, xCoord2, yCoord-110)
-		f = controls.colors.rightText
+		f = controls.colors.text.right
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.text.right, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    --Text doesn't care about Alpha, but the color picker does!
-                    a = 0.0
-        
-                    controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
 		end)
 
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.druid.feral.displayText.middle.fontSize, 1, 0,
+		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6116,13 +5532,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.displayText.middle.fontSize = value
+			spec.displayText.middle.fontSize = value
 
 			if GetSpecialization() == 2 then
-				middleTextFrame.font:SetFont(TRB.Data.settings.druid.feral.displayText.middle.fontFace, TRB.Data.settings.druid.feral.displayText.middle.fontSize, "OUTLINE")
+				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
 			end
 
-			if TRB.Data.settings.druid.feral.displayText.fontSizeLock then
+			if spec.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
@@ -6130,7 +5546,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.druid.feral.displayText.right.fontSize, 1, 0,
+		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6140,13 +5556,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.displayText.right.fontSize = value
+			spec.displayText.right.fontSize = value
 
 			if GetSpecialization() == 2 then
-				rightTextFrame.font:SetFont(TRB.Data.settings.druid.feral.displayText.right.fontFace, TRB.Data.settings.druid.feral.displayText.right.fontSize, "OUTLINE")
+				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 			end
 
-			if TRB.Data.settings.druid.feral.displayText.fontSizeLock then
+			if spec.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeMiddle:SetValue(value)
 			end
@@ -6156,97 +5572,29 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Energy Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentEnergyText = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy", TRB.Data.settings.druid.feral.colors.text.current, 300, 25, xCoord, yCoord)
-		f = controls.colors.currentEnergyText
+		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy", spec.colors.text.current, 300, 25, xCoord, yCoord)
+		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.text.current, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    --Text doesn't care about Alpha, but the color picker does!
-                    a = 0.0
-        
-                    controls.colors.currentEnergyText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.text.current = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 		
-		controls.colors.passiveEnergyText = TRB.UiFunctions:BuildColorPicker(parent, "Passive Energy", TRB.Data.settings.druid.feral.colors.text.passive, 275, 25, xCoord2, yCoord)
-		f = controls.colors.passiveEnergyText
+		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Energy", spec.colors.text.passive, 275, 25, xCoord2, yCoord)
+		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.text.passive, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.passiveEnergyText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.feral.colors.text.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdenergyText = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Energy to use any enabled threshold ability", TRB.Data.settings.druid.feral.colors.text.overThreshold, 300, 25, xCoord, yCoord)
-		f = controls.colors.thresholdenergyText
+		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Energy to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, xCoord, yCoord)
+		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.text.overThreshold, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.thresholdenergyText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.feral.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.overcapenergyText = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy is above overcap threshold", TRB.Data.settings.druid.feral.colors.text.overcap, 300, 25, xCoord2, yCoord)
-		f = controls.colors.overcapenergyText
+		controls.colors.text.overcap = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy is above overcap threshold", spec.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		f = controls.colors.text.overcap
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.text.overcap, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.overcapenergyText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.feral.colors.text.overcap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 		end)
 
 		yCoord = yCoord - 30
@@ -6256,9 +5604,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Energy text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
-		f:SetChecked(TRB.Data.settings.druid.feral.colors.text.overThresholdEnabled)
+		f:SetChecked(spec.colors.text.overThresholdEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.colors.text.overThresholdEnabled = self:GetChecked()
+			spec.colors.text.overThresholdEnabled = self:GetChecked()
 		end)
 
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -6266,9 +5614,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Energy text color when your current energy is above the overcapping maximum Energy value."
-		f:SetChecked(TRB.Data.settings.druid.feral.colors.text.overcapEnabled)
+		f:SetChecked(spec.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.colors.text.overcapEnabled = self:GetChecked()
+			spec.colors.text.overcapEnabled = self:GetChecked()
 		end)
 		
 
@@ -6276,99 +5624,40 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dotColorSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bleed Snapshotting", 0, yCoord)
 
 		yCoord = yCoord - 25
-
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change total Bleed counters and Bleed timers based on shapshotted damage?")
 		f.tooltip = "When checked, the color of total Bleeds (and Moonfire, if talented) up counters and Bleed timers will change based on whether or not the current snapshotted damage values are better, worse, or the same vs. your current damage buffs."
-		f:SetChecked(TRB.Data.settings.druid.feral.colors.text.dots.enabled)
+		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.colors.text.dots.enabled = self:GetChecked()
+			spec.colors.text.dots.enabled = self:GetChecked()
 		end)
 
-		controls.colors.dotSame = TRB.UiFunctions:BuildColorPicker(parent, "Bleed snapshot on current target is the same", TRB.Data.settings.druid.feral.colors.text.dots.same, 550, 25, xCoord, yCoord-30)
-		f = controls.colors.dotSame
+		controls.colors.dots = {}
+
+		controls.colors.dots.same = TRB.UiFunctions:BuildColorPicker(parent, "Bleed snapshot on current target is the same", spec.colors.text.dots.same, 550, 25, xCoord, yCoord-30)
+		f = controls.colors.dots.same
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.text.dots.same, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.dotSame.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.text.dots.same = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "same")
 		end)
 
-		controls.colors.dotWorse = TRB.UiFunctions:BuildColorPicker(parent, "Bleed snapshot on current target is worse and should be reapplied.", TRB.Data.settings.druid.feral.colors.text.dots.worse, 550, 25, xCoord, yCoord-60)
-		f = controls.colors.dotWorse
+		controls.colors.dots.worse = TRB.UiFunctions:BuildColorPicker(parent, "Bleed snapshot on current target is worse and should be reapplied.", spec.colors.text.dots.worse, 550, 25, xCoord, yCoord-60)
+		f = controls.colors.dots.worse
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.text.dots.worse, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.dotWorse.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.text.dots.worse = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "worse")
 		end)
 
-		controls.colors.dotBetter = TRB.UiFunctions:BuildColorPicker(parent, "Bleed snapshot on current target is better and should NOT be reapplied.", TRB.Data.settings.druid.feral.colors.text.dots.better, 550, 25, xCoord, yCoord-90)
-		f = controls.colors.dotBetter
+		controls.colors.dots.better = TRB.UiFunctions:BuildColorPicker(parent, "Bleed snapshot on current target is better and should NOT be reapplied.", spec.colors.text.dots.better, 550, 25, xCoord, yCoord-90)
+		f = controls.colors.dots.better
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.text.dots.better, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.dotBetter.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.text.dots.better = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "better")
 		end)
 
-		controls.colors.dotDown = TRB.UiFunctions:BuildColorPicker(parent, "Bleed is not active on current target", TRB.Data.settings.druid.feral.colors.text.dots.down, 550, 25, xCoord, yCoord-120)
-		f = controls.colors.dotDown
+		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "Bleed is not active on current target", spec.colors.text.dots.down, 550, 25, xCoord, yCoord-120)
+		f = controls.colors.dots.down
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.text.dots.down, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.dotDown.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.feral.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
 		end)
 
 
@@ -6377,7 +5666,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
-		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, TRB.Data.settings.druid.feral.hastePrecision, 1, 0,
+		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6389,7 +5678,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			value = TRB.Functions.RoundTo(value, 0)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.hastePrecision = value
+			spec.hastePrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.feral = controls
@@ -6399,6 +5688,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if parent == nil then
 			return
 		end
+
+		local spec = TRB.Data.settings.druid.feral
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.feral
@@ -6433,13 +5724,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when an Apex Predator's Craving proc occurs")
 		f.tooltip = "Play an audio cue when an Apex Predator's Craving (legendary) proc occurs, allowing a max damage Ferocious Bite to be cast without spending any Energy or Combo Points."
-		f:SetChecked(TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.enabled)
+		f:SetChecked(spec.audio.apexPredatorsCraving.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.enabled = self:GetChecked()
+			spec.audio.apexPredatorsCraving.enabled = self:GetChecked()
 
-			if TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.enabled then
+			if spec.audio.apexPredatorsCraving.enabled then
 ---@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
+				PlaySoundFile(spec.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
@@ -6447,7 +5738,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.apcAudio = CreateFrame("FRAME", "TwintopResourceBar_Druid_Feral_apexPredatorsCraving_Audio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.apcAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.apcAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.apcAudio, TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.soundName)
+		UIDropDownMenu_SetText(controls.dropDown.apcAudio, spec.audio.apexPredatorsCraving.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.apcAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -6472,7 +5763,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.sound
+						info.checked = sounds[v] == spec.audio.apexPredatorsCraving.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -6484,12 +5775,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.apcAudio:SetValue(newValue, newName)
-			TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.sound = newValue
-			TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.soundName = newName
+			spec.audio.apexPredatorsCraving.sound = newValue
+			spec.audio.apexPredatorsCraving.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.apcAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(spec.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 		yCoord = yCoord - 60
@@ -6498,13 +5789,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Energy")
 		f.tooltip = "Play an audio cue when your hardcast spell will overcap Energy."
-		f:SetChecked(TRB.Data.settings.druid.feral.audio.overcap.enabled)
+		f:SetChecked(spec.audio.overcap.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.audio.overcap.enabled = self:GetChecked()
+			spec.audio.overcap.enabled = self:GetChecked()
 
-			if TRB.Data.settings.druid.feral.audio.overcap.enabled then
+			if spec.audio.overcap.enabled then
 ---@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.druid.feral.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+				PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
@@ -6512,7 +5803,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Druid_Feral_overcapAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.druid.feral.audio.overcap.soundName)
+		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -6537,7 +5828,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.druid.feral.audio.overcap.sound
+						info.checked = sounds[v] == spec.audio.overcap.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -6549,12 +5840,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-			TRB.Data.settings.druid.feral.audio.overcap.sound = newValue
-			TRB.Data.settings.druid.feral.audio.overcap.soundName = newName
+			spec.audio.overcap.sound = newValue
+			spec.audio.overcap.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.druid.feral.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 		yCoord = yCoord - 60
@@ -6566,9 +5857,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track energy regen")
 		f.tooltip = "Include energy regen in the passive bar and passive variables. Unchecking this will cause the following Passive Energy Generation options to have no effect."
-		f:SetChecked(TRB.Data.settings.druid.feral.generation.enabled)
+		f:SetChecked(spec.generation.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.feral.generation.enabled = self:GetChecked()
+			spec.generation.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
@@ -6578,17 +5869,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Energy generation over GCDs")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Energy generation over the next X GCDs, based on player's current GCD length."
-		if TRB.Data.settings.druid.feral.generation.mode == "gcd" then
+		if spec.generation.mode == "gcd" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.energyGenerationModeGCDs:SetChecked(true)
 			controls.checkBoxes.energyGenerationModeTime:SetChecked(false)
-			TRB.Data.settings.druid.feral.generation.mode = "gcd"
+			spec.generation.mode = "gcd"
 		end)
 
 		title = "Energy GCDs - 0.75sec Floor"
-		controls.energyGenerationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, TRB.Data.settings.druid.feral.generation.gcds, 0.25, 2,
+		controls.energyGenerationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.energyGenerationGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6599,7 +5890,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.generation.gcds = value
+			spec.generation.gcds = value
 		end)
 
 
@@ -6610,17 +5901,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Energy generation over time")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Energy generation over the next X seconds."
-		if TRB.Data.settings.druid.feral.generation.mode == "time" then
+		if spec.generation.mode == "time" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.energyGenerationModeGCDs:SetChecked(false)
 			controls.checkBoxes.energyGenerationModeTime:SetChecked(true)
-			TRB.Data.settings.druid.feral.generation.mode = "time"
+			spec.generation.mode = "time"
 		end)
 
 		title = "Energy Over Time (sec)"
-		controls.energyGenerationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, TRB.Data.settings.druid.feral.generation.time, 0.25, 2,
+		controls.energyGenerationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.energyGenerationTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6632,7 +5923,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.feral.generation.time = value
+			spec.generation.time = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.feral = controls
@@ -6642,6 +5933,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if parent == nil then
 			return
 		end
+
+		local spec = TRB.Data.settings.druid.feral
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.feral
@@ -6667,11 +5960,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 30
 		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", TRB.Data.settings.druid.feral.displayText.left.text,
+		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.druid.feral.displayText.left.text = self:GetText()
+			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.feral)
 		end)
@@ -6680,11 +5973,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", TRB.Data.settings.druid.feral.displayText.middle.text,
+		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.druid.feral.displayText.middle.text = self:GetText()
+			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.feral)
 		end)
@@ -6693,11 +5986,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", TRB.Data.settings.druid.feral.displayText.right.text,
+		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.druid.feral.displayText.right.text = self:GetText()
+			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.feral)
 		end)
@@ -6818,6 +6111,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			return
 		end
 
+		local spec = TRB.Data.settings.druid.restoration
+
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.restoration
 		local yCoord = 5
 		local f = nil
@@ -6842,7 +6137,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.druid.restoration = RestorationResetSettings()
+				spec = RestorationResetSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -6855,7 +6150,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.druid.restoration.displayText = RestorationLoadDefaultBarTextSimpleSettings()
+				spec.displayText = RestorationLoadDefaultBarTextSimpleSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -6868,7 +6163,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.druid.restoration.displayText = RestorationLoadDefaultBarTextAdvancedSettings()
+				spec.displayText = RestorationLoadDefaultBarTextAdvancedSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -6882,7 +6177,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.druid.restoration.displayText = RestorationLoadDefaultBarTextNarrowAdvancedSettings()
+				spec.displayText = RestorationLoadDefaultBarTextNarrowAdvancedSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -6930,6 +6225,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			return
 		end
 
+		local spec = TRB.Data.settings.druid.restoration
+
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.restoration
 		local yCoord = 5
@@ -6950,7 +6247,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.druid.restoration.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.restoration.bar.width / TRB.Data.constants.borderWidthFactor))
+		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.druid.restoration)
 
@@ -6963,7 +6260,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		yCoord = yCoord - 40
 		title = "Bar Width"
-		controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, TRB.Data.settings.druid.restoration.bar.width, 1, 2,
+		controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -6973,10 +6270,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.bar.width = value
+			spec.bar.width = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.restoration.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.restoration.bar.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.druid.restoration.bar.border
+			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.bar.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -6992,7 +6289,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Bar Height"
-		controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, TRB.Data.settings.druid.restoration.bar.height, 1, 2,
+		controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -7002,10 +6299,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.bar.height = value
+			spec.bar.height = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.restoration.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.restoration.bar.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.druid.restoration.bar.border
+			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.bar.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -7022,7 +6319,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Bar Horizontal Position"
 		yCoord = yCoord - 60
-		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.druid.restoration.bar.xPos, 1, 2,
+		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -7032,17 +6329,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.bar.xPos = value
+			spec.bar.xPos = value
 			
 			if GetSpecialization() == 4 then
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
-				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.druid.restoration.bar.xPos, TRB.Data.settings.druid.restoration.bar.yPos)
+				barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
 			end
 		end)
 
 		title = "Bar Vertical Position"
-		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.druid.restoration.bar.yPos, 1, 2,
+		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -7052,18 +6349,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.bar.yPos = value
+			spec.bar.yPos = value
 			
 			if GetSpecialization() == 4 then
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
-				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.druid.restoration.bar.xPos, TRB.Data.settings.druid.restoration.bar.yPos)
+				barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
 			end
 		end)
 
 		title = "Bar Border Width"
 		yCoord = yCoord - 60
-		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.druid.restoration.bar.border, 1, 2,
+		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.borderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -7073,16 +6370,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.bar.border = value
+			spec.bar.border = value
 			
 			if GetSpecialization() == 4 then
-				barContainerFrame:SetWidth(TRB.Data.settings.druid.restoration.bar.width-(TRB.Data.settings.druid.restoration.bar.border*2))
-				barContainerFrame:SetHeight(TRB.Data.settings.druid.restoration.bar.height-(TRB.Data.settings.druid.restoration.bar.border*2))
-				barBorderFrame:SetWidth(TRB.Data.settings.druid.restoration.bar.width)
-				barBorderFrame:SetHeight(TRB.Data.settings.druid.restoration.bar.height)
-				if TRB.Data.settings.druid.restoration.bar.border < 1 then
+				barContainerFrame:SetWidth(spec.bar.width-(spec.bar.border*2))
+				barContainerFrame:SetHeight(spec.bar.height-(spec.bar.border*2))
+				barBorderFrame:SetWidth(spec.bar.width)
+				barBorderFrame:SetHeight(spec.bar.height)
+				if spec.bar.border < 1 then
 					barBorderFrame:SetBackdrop({
-						edgeFile = TRB.Data.settings.druid.restoration.textures.border,
+						edgeFile = spec.textures.border,
 						tile = true,
 						tileSize = 4,
 						edgeSize = 1,
@@ -7091,22 +6388,22 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					barBorderFrame:Hide()
 				else
 					barBorderFrame:SetBackdrop({
-						edgeFile = TRB.Data.settings.druid.restoration.textures.border,
+						edgeFile = spec.textures.border,
 						tile = true,
 						tileSize=4,
-						edgeSize=TRB.Data.settings.druid.restoration.bar.border,
+						edgeSize=spec.bar.border,
 						insets = {0, 0, 0, 0}
 					})
 					barBorderFrame:Show()
 				end
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.bar.border, true))
+				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 
 				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.druid.restoration)
 			end
 
-			local minsliderWidth = math.max(TRB.Data.settings.druid.restoration.bar.border*2, 120)
-			local minsliderHeight = math.max(TRB.Data.settings.druid.restoration.bar.border*2, 1)
+			local minsliderWidth = math.max(spec.bar.border*2, 120)
+			local minsliderHeight = math.max(spec.bar.border*2, 1)
 			controls.height:SetMinMaxValues(minsliderHeight, sanityCheckValues.barMaxHeight)
 			controls.height.MinLabel:SetText(minsliderHeight)
 			controls.width:SetMinMaxValues(minsliderWidth, sanityCheckValues.barMaxWidth)
@@ -7114,7 +6411,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, TRB.Data.settings.druid.restoration.thresholds.width, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -7124,17 +6421,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.thresholds.width = value
+			spec.thresholds.width = value
 			
 			if GetSpecialization() == 4 then
-				resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.druid.restoration.thresholds.width)
-				resourceFrame.thresholds[2]:SetWidth(TRB.Data.settings.druid.restoration.thresholds.width)
-				resourceFrame.thresholds[3]:SetWidth(TRB.Data.settings.druid.restoration.thresholds.width)
-				resourceFrame.thresholds[4]:SetWidth(TRB.Data.settings.druid.restoration.thresholds.width)
-				passiveFrame.thresholds[1]:SetWidth(TRB.Data.settings.druid.restoration.thresholds.width)
-				passiveFrame.thresholds[2]:SetWidth(TRB.Data.settings.druid.restoration.thresholds.width)
-				passiveFrame.thresholds[3]:SetWidth(TRB.Data.settings.druid.restoration.thresholds.width)
-				passiveFrame.thresholds[4]:SetWidth(TRB.Data.settings.druid.restoration.thresholds.width)
+				resourceFrame.thresholds[1]:SetWidth(spec.thresholds.width)
+				resourceFrame.thresholds[2]:SetWidth(spec.thresholds.width)
+				resourceFrame.thresholds[3]:SetWidth(spec.thresholds.width)
+				resourceFrame.thresholds[4]:SetWidth(spec.thresholds.width)
+				passiveFrame.thresholds[1]:SetWidth(spec.thresholds.width)
+				passiveFrame.thresholds[2]:SetWidth(spec.thresholds.width)
+				passiveFrame.thresholds[3]:SetWidth(spec.thresholds.width)
+				passiveFrame.thresholds[4]:SetWidth(spec.thresholds.width)
 			end
 		end)
 
@@ -7147,28 +6444,28 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
 		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
-		f:SetChecked(TRB.Data.settings.druid.restoration.bar.dragAndDrop)
+		f:SetChecked(spec.bar.dragAndDrop)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.bar.dragAndDrop = self:GetChecked()
-			barContainerFrame:SetMovable((not TRB.Data.settings.druid.restoration.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.restoration.bar.dragAndDrop)
-			barContainerFrame:EnableMouse((not TRB.Data.settings.druid.restoration.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.restoration.bar.dragAndDrop)
+			spec.bar.dragAndDrop = self:GetChecked()
+			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 		end)
 
-		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.druid.restoration.bar.pinToPersonalResourceDisplay)
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
 
 		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.pinToPRD
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
 		f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
-		f:SetChecked(TRB.Data.settings.druid.restoration.bar.pinToPersonalResourceDisplay)
+		f:SetChecked(spec.bar.pinToPersonalResourceDisplay)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.bar.pinToPersonalResourceDisplay = self:GetChecked()
+			spec.bar.pinToPersonalResourceDisplay = self:GetChecked()
 
-			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.druid.restoration.bar.pinToPersonalResourceDisplay)
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
 
-			barContainerFrame:SetMovable((not TRB.Data.settings.druid.restoration.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.restoration.bar.dragAndDrop)
-			barContainerFrame:EnableMouse((not TRB.Data.settings.druid.restoration.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.druid.restoration.bar.dragAndDrop)
+			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 			TRB.Functions.RepositionBar(TRB.Data.settings.druid.restoration, TRB.Frames.barContainerFrame)
 		end)
 
@@ -7183,7 +6480,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, TRB.Data.settings.druid.restoration.textures.resourceBarName)
+		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, spec.textures.resourceBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.resourceBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -7208,7 +6505,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.restoration.textures.resourceBar
+						info.checked = textures[v] == spec.textures.resourceBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -7221,18 +6518,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.resourceBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.restoration.textures.resourceBar = newValue
-			TRB.Data.settings.druid.restoration.textures.resourceBarName = newName
-			resourceFrame:SetStatusBarTexture(TRB.Data.settings.druid.restoration.textures.resourceBar)
+			spec.textures.resourceBar = newValue
+			spec.textures.resourceBarName = newName
+			resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
 			UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-			if TRB.Data.settings.druid.restoration.textures.textureLock then
-				TRB.Data.settings.druid.restoration.textures.castingBar = newValue
-				TRB.Data.settings.druid.restoration.textures.castingBarName = newName
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.druid.restoration.textures.castingBar)
+			if spec.textures.textureLock then
+				spec.textures.castingBar = newValue
+				spec.textures.castingBarName = newName
+				castingFrame:SetStatusBarTexture(spec.textures.castingBar)
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
-				TRB.Data.settings.druid.restoration.textures.passiveBar = newValue
-				TRB.Data.settings.druid.restoration.textures.passiveBarName = newName
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.druid.restoration.textures.passiveBar)
+				spec.textures.passiveBar = newValue
+				spec.textures.passiveBarName = newName
+				passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
 			end
 			CloseDropDownMenus()
@@ -7244,7 +6541,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.druid.restoration.textures.castingBarName)
+		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -7269,7 +6566,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.restoration.textures.castingBar
+						info.checked = textures[v] == spec.textures.castingBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -7282,18 +6579,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.castingBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.restoration.textures.castingBar = newValue
-			TRB.Data.settings.druid.restoration.textures.castingBarName = newName
-			castingFrame:SetStatusBarTexture(TRB.Data.settings.druid.restoration.textures.castingBar)
+			spec.textures.castingBar = newValue
+			spec.textures.castingBarName = newName
+			castingFrame:SetStatusBarTexture(spec.textures.castingBar)
 			UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
-			if TRB.Data.settings.druid.restoration.textures.textureLock then
-				TRB.Data.settings.druid.restoration.textures.resourceBar = newValue
-				TRB.Data.settings.druid.restoration.textures.resourceBarName = newName
-				resourceFrame:SetStatusBarTexture(TRB.Data.settings.druid.restoration.textures.resourceBar)
+			if spec.textures.textureLock then
+				spec.textures.resourceBar = newValue
+				spec.textures.resourceBarName = newName
+				resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-				TRB.Data.settings.druid.restoration.textures.passiveBar = newValue
-				TRB.Data.settings.druid.restoration.textures.passiveBarName = newName
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.druid.restoration.textures.passiveBar)
+				spec.textures.passiveBar = newValue
+				spec.textures.passiveBarName = newName
+				passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
 			end
 			CloseDropDownMenus()
@@ -7307,7 +6604,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, TRB.Data.settings.druid.restoration.textures.passiveBarName)
+		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, spec.textures.passiveBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -7332,7 +6629,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.restoration.textures.passiveBar
+						info.checked = textures[v] == spec.textures.passiveBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -7345,18 +6642,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.passiveBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.restoration.textures.passiveBar = newValue
-			TRB.Data.settings.druid.restoration.textures.passiveBarName = newName
-			passiveFrame:SetStatusBarTexture(TRB.Data.settings.druid.restoration.textures.passiveBar)
+			spec.textures.passiveBar = newValue
+			spec.textures.passiveBarName = newName
+			passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
 			UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
-			if TRB.Data.settings.druid.restoration.textures.textureLock then
-				TRB.Data.settings.druid.restoration.textures.resourceBar = newValue
-				TRB.Data.settings.druid.restoration.textures.resourceBarName = newName
-				resourceFrame:SetStatusBarTexture(TRB.Data.settings.druid.restoration.textures.resourceBar)
+			if spec.textures.textureLock then
+				spec.textures.resourceBar = newValue
+				spec.textures.resourceBarName = newName
+				resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-				TRB.Data.settings.druid.restoration.textures.castingBar = newValue
-				TRB.Data.settings.druid.restoration.textures.castingBarName = newName
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.druid.restoration.textures.castingBar)
+				spec.textures.castingBar = newValue
+				spec.textures.castingBarName = newName
+				castingFrame:SetStatusBarTexture(spec.textures.castingBar)
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
 			end
 			CloseDropDownMenus()
@@ -7367,18 +6664,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
 		f.tooltip = "This will lock the texture for each part of the bar to be the same."
-		f:SetChecked(TRB.Data.settings.druid.restoration.textures.textureLock)
+		f:SetChecked(spec.textures.textureLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.textures.textureLock = self:GetChecked()
-			if TRB.Data.settings.druid.restoration.textures.textureLock then
-				TRB.Data.settings.druid.restoration.textures.passiveBar = TRB.Data.settings.druid.restoration.textures.resourceBar
-				TRB.Data.settings.druid.restoration.textures.passiveBarName = TRB.Data.settings.druid.restoration.textures.resourceBarName
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.druid.restoration.textures.passiveBar)
-				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, TRB.Data.settings.druid.restoration.textures.passiveBarName)
-				TRB.Data.settings.druid.restoration.textures.castingBar = TRB.Data.settings.druid.restoration.textures.resourceBar
-				TRB.Data.settings.druid.restoration.textures.castingBarName = TRB.Data.settings.druid.restoration.textures.resourceBarName
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.druid.restoration.textures.castingBar)
-				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.druid.restoration.textures.castingBarName)
+			spec.textures.textureLock = self:GetChecked()
+			if spec.textures.textureLock then
+				spec.textures.passiveBar = spec.textures.resourceBar
+				spec.textures.passiveBarName = spec.textures.resourceBarName
+				passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
+				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, spec.textures.passiveBarName)
+				spec.textures.castingBar = spec.textures.resourceBar
+				spec.textures.castingBarName = spec.textures.resourceBarName
+				castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
 			end
 		end)
 
@@ -7391,7 +6688,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.borderTexture, TRB.Data.settings.druid.restoration.textures.borderName)
+		UIDropDownMenu_SetText(controls.dropDown.borderTexture, spec.textures.borderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -7416,7 +6713,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.restoration.textures.border
+						info.checked = textures[v] == spec.textures.border
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -7429,20 +6726,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.borderTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.restoration.textures.border = newValue
-			TRB.Data.settings.druid.restoration.textures.borderName = newName
-			if TRB.Data.settings.druid.restoration.bar.border < 1 then
+			spec.textures.border = newValue
+			spec.textures.borderName = newName
+			if spec.bar.border < 1 then
 				barBorderFrame:SetBackdrop({ })
 			else
-				barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.druid.restoration.textures.border,
+				barBorderFrame:SetBackdrop({ edgeFile = spec.textures.border,
 											tile = true,
 											tileSize=4,
-											edgeSize=TRB.Data.settings.druid.restoration.bar.border,
+											edgeSize=spec.bar.border,
 											insets = {0, 0, 0, 0}
 											})
 			end
 			barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.bar.border, true))
+			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 			UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
 			CloseDropDownMenus()
 		end
@@ -7453,7 +6750,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, TRB.Data.settings.druid.restoration.textures.backgroundName)
+		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, spec.textures.backgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -7478,7 +6775,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.druid.restoration.textures.background
+						info.checked = textures[v] == spec.textures.background
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -7491,16 +6788,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
-			TRB.Data.settings.druid.restoration.textures.background = newValue
-			TRB.Data.settings.druid.restoration.textures.backgroundName = newName
+			spec.textures.background = newValue
+			spec.textures.backgroundName = newName
 			barContainerFrame:SetBackdrop({
-				bgFile = TRB.Data.settings.druid.restoration.textures.background,
+				bgFile = spec.textures.background,
 				tile = true,
-				tileSize = TRB.Data.settings.druid.restoration.bar.width,
+				tileSize = spec.bar.width,
 				edgeSize = 1,
 				insets = {0, 0, 0, 0}
 			})
-			barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.bar.background, true))
+			barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.background, true))
 			UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, newName)
 			CloseDropDownMenus()
 		end
@@ -7516,15 +6813,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Always show bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
-		f:SetChecked(TRB.Data.settings.druid.restoration.displayBar.alwaysShow)
+		f:SetChecked(spec.displayBar.alwaysShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(true)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.druid.restoration.displayBar.alwaysShow = true
-			TRB.Data.settings.druid.restoration.displayBar.notZeroShow = false
-			TRB.Data.settings.druid.restoration.displayBar.neverShow = false
+			spec.displayBar.alwaysShow = true
+			spec.displayBar.notZeroShow = false
+			spec.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -7534,15 +6831,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Show bar when Mana is not full")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar show out of combat only if Mana is not full, hidden otherwise when out of combat."
-		f:SetChecked(TRB.Data.settings.druid.restoration.displayBar.notZeroShow)
+		f:SetChecked(spec.displayBar.notZeroShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(true)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.druid.restoration.displayBar.alwaysShow = false
-			TRB.Data.settings.druid.restoration.displayBar.notZeroShow = true
-			TRB.Data.settings.druid.restoration.displayBar.neverShow = false
+			spec.displayBar.alwaysShow = false
+			spec.displayBar.notZeroShow = true
+			spec.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -7552,15 +6849,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Only show bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
-		f:SetChecked((not TRB.Data.settings.druid.restoration.displayBar.alwaysShow) and (not TRB.Data.settings.druid.restoration.displayBar.notZeroShow) and (not TRB.Data.settings.druid.restoration.displayBar.neverShow))
+		f:SetChecked((not spec.displayBar.alwaysShow) and (not spec.displayBar.notZeroShow) and (not spec.displayBar.neverShow))
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(true)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.druid.restoration.displayBar.alwaysShow = false
-			TRB.Data.settings.druid.restoration.displayBar.notZeroShow = false
-			TRB.Data.settings.druid.restoration.displayBar.neverShow = false
+			spec.displayBar.alwaysShow = false
+			spec.displayBar.notZeroShow = false
+			spec.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -7570,15 +6867,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Never show bar (run in background)")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
-		f:SetChecked(TRB.Data.settings.druid.restoration.displayBar.neverShow)
+		f:SetChecked(spec.displayBar.neverShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(true)
-			TRB.Data.settings.druid.restoration.displayBar.alwaysShow = false
-			TRB.Data.settings.druid.restoration.displayBar.notZeroShow = false
-			TRB.Data.settings.druid.restoration.displayBar.neverShow = true
+			spec.displayBar.alwaysShow = false
+			spec.displayBar.notZeroShow = false
+			spec.displayBar.neverShow = true
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -7587,9 +6884,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
 		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
-		f:SetChecked(TRB.Data.settings.druid.restoration.bar.showCasting)
+		f:SetChecked(spec.bar.showCasting)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.bar.showCasting = self:GetChecked()
+			spec.bar.showCasting = self:GetChecked()
 		end)
 
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
@@ -7597,123 +6894,45 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
-		f:SetChecked(TRB.Data.settings.druid.restoration.bar.showPassive)
+		f:SetChecked(spec.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.bar.showPassive = self:GetChecked()
+			spec.bar.showPassive = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 70
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Mana", TRB.Data.settings.druid.restoration.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Mana", spec.colors.bar.base, 300, 25, xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.bar.base, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.base.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.restoration.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.noEfflorescence = TRB.UiFunctions:BuildColorPicker(parent, "Mana when Efflorescence is not out", TRB.Data.settings.druid.restoration.colors.bar.noEfflorescence, 275, 25, xCoord2, yCoord)
+		controls.colors.noEfflorescence = TRB.UiFunctions:BuildColorPicker(parent, "Mana when Efflorescence is not out", spec.colors.bar.noEfflorescence, 275, 25, xCoord2, yCoord)
 		f = controls.colors.noEfflorescence
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.bar.noEfflorescence, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.restoration.colors.bar.noEfflorescence = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "noEfflorescence")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Mana cost of current hardcast spell", TRB.Data.settings.druid.restoration.colors.bar.spending, 300, 25, xCoord, yCoord)
+		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Mana cost of current hardcast spell", spec.colors.bar.spending, 300, 25, xCoord, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.bar.spending, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.spending.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.restoration.colors.bar.spending = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					castingFrame:SetStatusBarColor(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 4)
 		end)
 		
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.druid.restoration.colors.bar.background, 275, 25, xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.bar.background, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.restoration.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					barContainerFrame:SetBackdropColor(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 4)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", TRB.Data.settings.druid.restoration.colors.bar.passive, 550, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 550, 25, xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.bar.passive, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
-					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
-					TRB.Data.settings.druid.restoration.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 4)
 		end)
 
 
@@ -7721,47 +6940,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
 
 		yCoord = yCoord - 25
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Bar's normal/base border", TRB.Data.settings.druid.restoration.colors.bar.border, 275, 25, xCoord2, yCoord-0)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Bar's normal/base border", spec.colors.bar.border, 275, 25, xCoord2, yCoord-0)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.bar.border, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.restoration.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 4)
 		end)
 
-		controls.colors.innervate = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have Innervate", TRB.Data.settings.druid.restoration.colors.bar.innervate, 275, 25, xCoord2, yCoord-30)
+		controls.colors.innervate = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have Innervate", spec.colors.bar.innervate, 275, 25, xCoord2, yCoord-30)
 		f = controls.colors.innervate
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.bar.innervate, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.innervate.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.restoration.colors.bar.innervate = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "innervate")
 		end)
 
 		yCoord = yCoord - 30
@@ -7770,9 +6958,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Innervate")
 		f.tooltip = "This will change the bar border color when you have Innervate."
-		f:SetChecked(TRB.Data.settings.druid.restoration.colors.bar.innervateBorderChange)
+		f:SetChecked(spec.colors.bar.innervateBorderChange)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.colors.bar.innervateBorderChange = self:GetChecked()
+			spec.colors.bar.innervateBorderChange = self:GetChecked()
 		end)
 		
 		yCoord = yCoord - 30
@@ -7780,75 +6968,25 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 40
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Threshold Lines", 0, yCoord)
 
+		controls.colors.threshold = {}
+
 		yCoord = yCoord - 25
-		controls.colors.thresholdOver = TRB.UiFunctions:BuildColorPicker(parent, "Mana gain from potions (when usable)", TRB.Data.settings.druid.restoration.colors.threshold.over, 275, 25, xCoord2, yCoord-0)
-		f = controls.colors.thresholdOver
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Mana gain from potions (when usable)", spec.colors.threshold.over, 275, 25, xCoord2, yCoord-0)
+		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.threshold.over, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.restoration.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.thresholdUnusable = TRB.UiFunctions:BuildColorPicker(parent, "Mana potion on cooldown", TRB.Data.settings.druid.restoration.colors.threshold.unusable, 275, 25, xCoord2, yCoord-30)
-		f = controls.colors.thresholdUnusable
+		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Mana potion on cooldown", spec.colors.threshold.unusable, 275, 25, xCoord2, yCoord-30)
+		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.threshold.unusable, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.thresholdUnusable.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.restoration.colors.threshold.unusable = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
-		controls.colors.passiveThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Passive mana gain per source", TRB.Data.settings.druid.restoration.colors.threshold.mindbender, 275, 25, xCoord2, yCoord-60)
-		f = controls.colors.passiveThreshold
+		controls.colors.threshold.mindbender = TRB.UiFunctions:BuildColorPicker(parent, "Passive mana gain per source", spec.colors.threshold.mindbender, 275, 25, xCoord2, yCoord-60)
+		f = controls.colors.threshold.mindbender
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.threshold.mindbender, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.passiveThreshold.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.restoration.colors.threshold.mindbender = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					if GetSpecialization() == 4 then
-						passiveFrame.thresholds[1].texture:SetColorTexture(r, g, b, 1-a)
-						passiveFrame.thresholds[2].texture:SetColorTexture(r, g, b, 1-a)
-						passiveFrame.thresholds[3].texture:SetColorTexture(r, g, b, 1-a)
-						passiveFrame.thresholds[4].texture:SetColorTexture(r, g, b, 1-a)
-						passiveFrame.thresholds[5].texture:SetColorTexture(r, g, b, 1-a)
-					end
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
 		end)
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
@@ -7856,9 +6994,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.druid.restoration.thresholds.overlapBorder)
+		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.thresholds.overlapBorder = self:GetChecked()
+			spec.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.restoration)
 		end)
 
@@ -7867,9 +7005,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Potion of Spiritual Clarity (10,000 + regen)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Potion of Spirital Clarity (10,000 + 10 seconds of passive mana regen)"
-		f:SetChecked(TRB.Data.settings.druid.restoration.thresholds.potionOfSpiritualClarity.enabled)
+		f:SetChecked(spec.thresholds.potionOfSpiritualClarity.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.thresholds.potionOfSpiritualClarity.enabled = self:GetChecked()
+			spec.thresholds.potionOfSpiritualClarity.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -7878,9 +7016,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Soulful Mana Potion (4,000)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Soulful Mana Potion (4,000)"
-		f:SetChecked(TRB.Data.settings.druid.restoration.thresholds.soulfulManaPotion.enabled)
+		f:SetChecked(spec.thresholds.soulfulManaPotion.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.thresholds.soulfulManaPotion.enabled = self:GetChecked()
+			spec.thresholds.soulfulManaPotion.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -7889,9 +7027,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Spiritual Mana Potion (6,000)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Spiritual Mana Potion (6,000)"
-		f:SetChecked(TRB.Data.settings.druid.restoration.thresholds.spiritualManaPotion.enabled)
+		f:SetChecked(spec.thresholds.spiritualManaPotion.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.thresholds.spiritualManaPotion.enabled = self:GetChecked()
+			spec.thresholds.spiritualManaPotion.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -7900,9 +7038,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Spiritual Rejuvenation Potion (2,500)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Spiritual Rejuvenation Potion (2,500)"
-		f:SetChecked(TRB.Data.settings.druid.restoration.thresholds.spiritualRejuvenationPotion.enabled)
+		f:SetChecked(spec.thresholds.spiritualRejuvenationPotion.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.thresholds.spiritualRejuvenationPotion.enabled = self:GetChecked()
+			spec.thresholds.spiritualRejuvenationPotion.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -7914,7 +7052,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
         controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
         UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
-        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, TRB.Data.settings.druid.restoration.thresholds.icons.relativeToName)
+        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
 
         -- Create and bind the initialization function to the dropdown menu
@@ -7934,7 +7072,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             for k, v in pairs(relativeToList) do
                 info.text = v
                 info.value = relativeTo[v]
-                info.checked = relativeTo[v] == TRB.Data.settings.druid.restoration.thresholds.icons.relativeTo
+                info.checked = relativeTo[v] == spec.thresholds.icons.relativeTo
                 info.func = self.SetValue
                 info.arg1 = relativeTo[v]
                 info.arg2 = v
@@ -7943,8 +7081,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
         end)
 
         function controls.dropDown.thresholdIconRelativeTo:SetValue(newValue, newName)
-            TRB.Data.settings.druid.restoration.thresholds.icons.relativeTo = newValue
-            TRB.Data.settings.druid.restoration.thresholds.icons.relativeToName = newName
+            spec.thresholds.icons.relativeTo = newValue
+            spec.thresholds.icons.relativeToName = newName
 			
 			if GetSpecialization() == 4 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.restoration)
@@ -7960,27 +7098,27 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
 		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for potion icons that are on cooldown."
-		f:SetChecked(TRB.Data.settings.druid.restoration.thresholds.icons.showCooldown)
+		f:SetChecked(spec.thresholds.icons.showCooldown)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.thresholds.icons.showCooldown = self:GetChecked()
+			spec.thresholds.icons.showCooldown = self:GetChecked()
 		end)
 		
-		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.druid.restoration.thresholds.icons.enabled)
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
-		f:SetChecked(TRB.Data.settings.druid.restoration.thresholds.icons.enabled)
+		f:SetChecked(spec.thresholds.icons.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.thresholds.icons.enabled = self:GetChecked()
-			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.druid.restoration.thresholds.icons.enabled)
+			spec.thresholds.icons.enabled = self:GetChecked()
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 
 			if GetSpecialization() == 4 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.druid.restoration)
 
-				if TRB.Data.settings.druid.restoration.thresholds.icons.enabled then
+				if spec.thresholds.icons.enabled then
 					resourceFrame.thresholds[1].icon:Show()
 					resourceFrame.thresholds[2].icon:Show()
 					resourceFrame.thresholds[3].icon:Show()
@@ -7996,7 +7134,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		yCoord = yCoord - 80
 		title = "Threshold Icon Width"
-		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, TRB.Data.settings.druid.restoration.thresholds.icons.width, 1, 2,
+		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -8006,10 +7144,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.thresholds.icons.width = value
+			spec.thresholds.icons.width = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.restoration.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.restoration.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.druid.restoration.thresholds.icons.border
+			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.thresholds.icons.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -8028,7 +7166,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Threshold Icon Height"
-		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, TRB.Data.settings.druid.restoration.thresholds.icons.height, 1, 2,
+		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -8038,10 +7176,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.thresholds.icons.height = value
+			spec.thresholds.icons.height = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.druid.restoration.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.restoration.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.druid.restoration.thresholds.icons.border
+			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.thresholds.icons.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -8062,7 +7200,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Threshold Icon Horizontal Position (Relative)"
 		yCoord = yCoord - 60
-		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.druid.restoration.thresholds.icons.xPos, 1, 2,
+		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -8072,7 +7210,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.thresholds.icons.xPos = value
+			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 1 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.druid.restoration, TRB.Frames.barContainerFrame)
@@ -8080,7 +7218,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Threshold Icon Vertical Position (Relative)"
-		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.druid.restoration.thresholds.icons.yPos, 1, 2,
+		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -8090,14 +7228,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.thresholds.icons.yPos = value
+			spec.thresholds.icons.yPos = value
 		end)
 
-		local maxIconBorderHeight = math.min(math.floor(TRB.Data.settings.druid.restoration.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.druid.restoration.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+		local maxIconBorderHeight = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
 
 		title = "Threshold Icon Border Width"
 		yCoord = yCoord - 60
-		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.druid.restoration.thresholds.icons.border, 1, 2,
+		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -8107,10 +7245,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.thresholds.icons.border = value
+			spec.thresholds.icons.border = value
 
-			local minsliderWidth = math.max(TRB.Data.settings.druid.restoration.thresholds.icons.border*2, 1)
-			local minsliderHeight = math.max(TRB.Data.settings.druid.restoration.thresholds.icons.border*2, 1)
+			local minsliderWidth = math.max(spec.thresholds.icons.border*2, 1)
+			local minsliderHeight = math.max(spec.thresholds.icons.border*2, 1)
 
 			controls.thresholdIconHeight:SetMinMaxValues(minsliderHeight, 128)
 			controls.thresholdIconHeight.MinLabel:SetText(minsliderHeight)
@@ -8132,9 +7270,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show potion threshold lines when potion is on cooldown")
 		f.tooltip = "Shows the potion threshold lines while potion use is still on cooldown. Configure below how far in advance to have the lines be visible, between 0 - 300 seconds (300 being effectively 'always visible')."
-		f:SetChecked(TRB.Data.settings.druid.restoration.thresholds.potionCooldown.enabled)
+		f:SetChecked(spec.thresholds.potionCooldown.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.thresholds.potionCooldown.enabled = self:GetChecked()
+			spec.thresholds.potionCooldown.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
@@ -8144,17 +7282,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("GCDs left on Potion cooldown")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Show potion threshold lines based on how many GCDs remain on potion cooldown."
-		if TRB.Data.settings.druid.restoration.thresholds.potionCooldown.mode == "gcd" then
+		if spec.thresholds.potionCooldown.mode == "gcd" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.potionCooldownModeGCDs:SetChecked(true)
 			controls.checkBoxes.potionCooldownModeTime:SetChecked(false)
-			TRB.Data.settings.druid.restoration.thresholds.potionCooldown.mode = "gcd"
+			spec.thresholds.potionCooldown.mode = "gcd"
 		end)
 
 		title = "Potion Cooldown GCDs - 0.75sec Floor"
-		controls.potionCooldownGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 400, TRB.Data.settings.druid.restoration.thresholds.potionCooldown.gcdsMax, 0.25, 2,
+		controls.potionCooldownGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 400, spec.thresholds.potionCooldown.gcdsMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.potionCooldownGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -8165,7 +7303,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.thresholds.potionCooldown.gcdsMax = value
+			spec.thresholds.potionCooldown.gcdsMax = value
 		end)
 
 
@@ -8176,17 +7314,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		getglobal(f:GetName() .. 'Text'):SetText("Time left on Potion cooldown")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Change the bar color based on how many seconds remain until Apotheosis will end."
-		if TRB.Data.settings.druid.restoration.thresholds.potionCooldown.mode == "time" then
+		if spec.thresholds.potionCooldown.mode == "time" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.potionCooldownModeGCDs:SetChecked(false)
 			controls.checkBoxes.potionCooldownModeTime:SetChecked(true)
-			TRB.Data.settings.druid.restoration.thresholds.potionCooldown.mode = "time"
+			spec.thresholds.potionCooldown.mode = "time"
 		end)
 
 		title = "Potion Cooldown Time Remaining"
-		controls.potionCooldownTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 300, TRB.Data.settings.druid.restoration.thresholds.potionCooldown.timeMax, 0.25, 2,
+		controls.potionCooldownTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 300, spec.thresholds.potionCooldown.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.potionCooldownTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -8198,7 +7336,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.thresholds.potionCooldown.timeMax = value
+			spec.thresholds.potionCooldown.timeMax = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -8209,6 +7347,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if parent == nil then
 			return
 		end
+
+		local spec = TRB.Data.settings.druid.restoration
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.restoration
@@ -8245,7 +7385,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontLeft, TRB.Data.settings.druid.restoration.displayText.left.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -8270,7 +7410,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.druid.restoration.displayText.left.fontFace
+						info.checked = fonts[v] == spec.displayText.left.fontFace
 						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -8283,23 +7423,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		function controls.dropDown.fontLeft:SetValue(newValue, newName)
-			TRB.Data.settings.druid.restoration.displayText.left.fontFace = newValue
-			TRB.Data.settings.druid.restoration.displayText.left.fontFaceName = newName
+			spec.displayText.left.fontFace = newValue
+			spec.displayText.left.fontFaceName = newName
 			UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-			if TRB.Data.settings.druid.restoration.displayText.fontFaceLock then
-				TRB.Data.settings.druid.restoration.displayText.middle.fontFace = newValue
-				TRB.Data.settings.druid.restoration.displayText.middle.fontFaceName = newName
+			if spec.displayText.fontFaceLock then
+				spec.displayText.middle.fontFace = newValue
+				spec.displayText.middle.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-				TRB.Data.settings.druid.restoration.displayText.right.fontFace = newValue
-				TRB.Data.settings.druid.restoration.displayText.right.fontFaceName = newName
+				spec.displayText.right.fontFace = newValue
+				spec.displayText.right.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
 
 			if GetSpecialization() == 4 then
-				leftTextFrame.font:SetFont(TRB.Data.settings.druid.restoration.displayText.left.fontFace, TRB.Data.settings.druid.restoration.displayText.left.fontSize, "OUTLINE")
-				if TRB.Data.settings.druid.restoration.displayText.fontFaceLock then
-					middleTextFrame.font:SetFont(TRB.Data.settings.druid.restoration.displayText.middle.fontFace, TRB.Data.settings.druid.restoration.displayText.middle.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(TRB.Data.settings.druid.restoration.displayText.right.fontFace, TRB.Data.settings.druid.restoration.displayText.right.fontSize, "OUTLINE")
+				leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
+				if spec.displayText.fontFaceLock then
+					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 				end
 			end
 
@@ -8312,7 +7452,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.druid.restoration.displayText.middle.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -8337,7 +7477,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.druid.restoration.displayText.middle.fontFace
+						info.checked = fonts[v] == spec.displayText.middle.fontFace
 						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -8350,23 +7490,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		function controls.dropDown.fontMiddle:SetValue(newValue, newName)
-			TRB.Data.settings.druid.restoration.displayText.middle.fontFace = newValue
-			TRB.Data.settings.druid.restoration.displayText.middle.fontFaceName = newName
+			spec.displayText.middle.fontFace = newValue
+			spec.displayText.middle.fontFaceName = newName
 			UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-			if TRB.Data.settings.druid.restoration.displayText.fontFaceLock then
-				TRB.Data.settings.druid.restoration.displayText.left.fontFace = newValue
-				TRB.Data.settings.druid.restoration.displayText.left.fontFaceName = newName
+			if spec.displayText.fontFaceLock then
+				spec.displayText.left.fontFace = newValue
+				spec.displayText.left.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				TRB.Data.settings.druid.restoration.displayText.right.fontFace = newValue
-				TRB.Data.settings.druid.restoration.displayText.right.fontFaceName = newName
+				spec.displayText.right.fontFace = newValue
+				spec.displayText.right.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
 
 			if GetSpecialization() == 4 then
-				middleTextFrame.font:SetFont(TRB.Data.settings.druid.restoration.displayText.middle.fontFace, TRB.Data.settings.druid.restoration.displayText.middle.fontSize, "OUTLINE")
-				if TRB.Data.settings.druid.restoration.displayText.fontFaceLock then
-					leftTextFrame.font:SetFont(TRB.Data.settings.druid.restoration.displayText.left.fontFace, TRB.Data.settings.druid.restoration.displayText.left.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(TRB.Data.settings.druid.restoration.displayText.right.fontFace, TRB.Data.settings.druid.restoration.displayText.right.fontSize, "OUTLINE")
+				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
+				if spec.displayText.fontFaceLock then
+					leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 				end
 			end
 
@@ -8381,7 +7521,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.druid.restoration.displayText.right.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -8406,7 +7546,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.druid.restoration.displayText.right.fontFace
+						info.checked = fonts[v] == spec.displayText.right.fontFace
 						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -8419,23 +7559,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		function controls.dropDown.fontRight:SetValue(newValue, newName)
-			TRB.Data.settings.druid.restoration.displayText.right.fontFace = newValue
-			TRB.Data.settings.druid.restoration.displayText.right.fontFaceName = newName
+			spec.displayText.right.fontFace = newValue
+			spec.displayText.right.fontFaceName = newName
 			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-			if TRB.Data.settings.druid.restoration.displayText.fontFaceLock then
-				TRB.Data.settings.druid.restoration.displayText.left.fontFace = newValue
-				TRB.Data.settings.druid.restoration.displayText.left.fontFaceName = newName
+			if spec.displayText.fontFaceLock then
+				spec.displayText.left.fontFace = newValue
+				spec.displayText.left.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				TRB.Data.settings.druid.restoration.displayText.middle.fontFace = newValue
-				TRB.Data.settings.druid.restoration.displayText.middle.fontFaceName = newName
+				spec.displayText.middle.fontFace = newValue
+				spec.displayText.middle.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 			end
 
 			if GetSpecialization() == 4 then
-				rightTextFrame.font:SetFont(TRB.Data.settings.druid.restoration.displayText.right.fontFace, TRB.Data.settings.druid.restoration.displayText.right.fontSize, "OUTLINE")
-				if TRB.Data.settings.druid.restoration.displayText.fontFaceLock then
-					leftTextFrame.font:SetFont(TRB.Data.settings.druid.restoration.displayText.left.fontFace, TRB.Data.settings.druid.restoration.displayText.left.fontSize, "OUTLINE")
-					middleTextFrame.font:SetFont(TRB.Data.settings.druid.restoration.displayText.middle.fontFace, TRB.Data.settings.druid.restoration.displayText.middle.fontSize, "OUTLINE")
+				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
+				if spec.displayText.fontFaceLock then
+					leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
+					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
 				end
 			end
 
@@ -8447,20 +7587,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
 		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
-		f:SetChecked(TRB.Data.settings.druid.restoration.displayText.fontFaceLock)
+		f:SetChecked(spec.displayText.fontFaceLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.displayText.fontFaceLock = self:GetChecked()
-			if TRB.Data.settings.druid.restoration.displayText.fontFaceLock then
-				TRB.Data.settings.druid.restoration.displayText.middle.fontFace = TRB.Data.settings.druid.restoration.displayText.left.fontFace
-				TRB.Data.settings.druid.restoration.displayText.middle.fontFaceName = TRB.Data.settings.druid.restoration.displayText.left.fontFaceName
-				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.druid.restoration.displayText.middle.fontFaceName)
-				TRB.Data.settings.druid.restoration.displayText.right.fontFace = TRB.Data.settings.druid.restoration.displayText.left.fontFace
-				TRB.Data.settings.druid.restoration.displayText.right.fontFaceName = TRB.Data.settings.druid.restoration.displayText.left.fontFaceName
-				UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.druid.restoration.displayText.right.fontFaceName)
+			spec.displayText.fontFaceLock = self:GetChecked()
+			if spec.displayText.fontFaceLock then
+				spec.displayText.middle.fontFace = spec.displayText.left.fontFace
+				spec.displayText.middle.fontFaceName = spec.displayText.left.fontFaceName
+				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
+				spec.displayText.right.fontFace = spec.displayText.left.fontFace
+				spec.displayText.right.fontFaceName = spec.displayText.left.fontFaceName
+				UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 
 				if GetSpecialization() == 4 then
-					middleTextFrame.font:SetFont(TRB.Data.settings.druid.restoration.displayText.middle.fontFace, TRB.Data.settings.druid.restoration.displayText.middle.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(TRB.Data.settings.druid.restoration.displayText.right.fontFace, TRB.Data.settings.druid.restoration.displayText.right.fontSize, "OUTLINE")
+					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 				end
 			end
 		end)
@@ -8471,7 +7611,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
-		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.druid.restoration.displayText.left.fontSize, 1, 0,
+		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -8481,13 +7621,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.displayText.left.fontSize = value
+			spec.displayText.left.fontSize = value
 
 			if GetSpecialization() == 4 then
-				leftTextFrame.font:SetFont(TRB.Data.settings.druid.restoration.displayText.left.fontFace, TRB.Data.settings.druid.restoration.displayText.left.fontSize, "OUTLINE")
+				leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
 			end
 
-			if TRB.Data.settings.druid.restoration.displayText.fontSizeLock then
+			if spec.displayText.fontSizeLock then
 				controls.fontSizeMiddle:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
@@ -8498,90 +7638,41 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
-		f:SetChecked(TRB.Data.settings.druid.restoration.displayText.fontSizeLock)
+		f:SetChecked(spec.displayText.fontSizeLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.displayText.fontSizeLock = self:GetChecked()
-			if TRB.Data.settings.druid.restoration.displayText.fontSizeLock then
-				controls.fontSizeMiddle:SetValue(TRB.Data.settings.druid.restoration.displayText.left.fontSize)
-				controls.fontSizeRight:SetValue(TRB.Data.settings.druid.restoration.displayText.left.fontSize)
+			spec.displayText.fontSizeLock = self:GetChecked()
+			if spec.displayText.fontSizeLock then
+				controls.fontSizeMiddle:SetValue(spec.displayText.left.fontSize)
+				controls.fontSizeRight:SetValue(spec.displayText.left.fontSize)
 			end
 		end)
 
-		controls.colors.leftText = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", TRB.Data.settings.druid.restoration.colors.text.left,
+		controls.colors.text = {}
+
+		controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
 														250, 25, xCoord2, yCoord-30)
-		f = controls.colors.leftText
+		f = controls.colors.text.left
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.text.left, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.restoration.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
 		end)
 
-		controls.colors.middleText = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", TRB.Data.settings.druid.restoration.colors.text.middle,
+		controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
 														225, 25, xCoord2, yCoord-70)
-		f = controls.colors.middleText
+		f = controls.colors.text.middle
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.text.middle, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.restoration.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
 		end)
 
-		controls.colors.rightText = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", TRB.Data.settings.druid.restoration.colors.text.right,
+		controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
 														225, 25, xCoord2, yCoord-110)
-		f = controls.colors.rightText
+		f = controls.colors.text.right
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.text.right, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.restoration.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
 		end)
 
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.druid.restoration.displayText.middle.fontSize, 1, 0,
+		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -8591,13 +7682,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.displayText.middle.fontSize = value
+			spec.displayText.middle.fontSize = value
 
 			if GetSpecialization() == 4 then
-				middleTextFrame.font:SetFont(TRB.Data.settings.druid.restoration.displayText.middle.fontFace, TRB.Data.settings.druid.restoration.displayText.middle.fontSize, "OUTLINE")
+				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
 			end
 
-			if TRB.Data.settings.druid.restoration.displayText.fontSizeLock then
+			if spec.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
@@ -8605,7 +7696,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.druid.restoration.displayText.right.fontSize, 1, 0,
+		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -8615,13 +7706,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.displayText.right.fontSize = value
+			spec.displayText.right.fontSize = value
 
 			if GetSpecialization() == 4 then
-				rightTextFrame.font:SetFont(TRB.Data.settings.druid.restoration.displayText.right.fontFace, TRB.Data.settings.druid.restoration.displayText.right.fontSize, "OUTLINE")
+				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 			end
 
-			if TRB.Data.settings.druid.restoration.displayText.fontSizeLock then
+			if spec.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeMiddle:SetValue(value)
 			end
@@ -8631,74 +7722,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Mana Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentManaText = TRB.UiFunctions:BuildColorPicker(parent, "Current Mana", TRB.Data.settings.druid.restoration.colors.text.current, 300, 25, xCoord, yCoord)
-		f = controls.colors.currentManaText
+		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Mana", spec.colors.text.current, 300, 25, xCoord, yCoord)
+		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.text.current, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.currentManaText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.restoration.colors.text.current = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.castingManaText = TRB.UiFunctions:BuildColorPicker(parent, "Mana from hardcasting spells", TRB.Data.settings.druid.restoration.colors.text.casting, 275, 25, xCoord2, yCoord)
-		f = controls.colors.castingManaText
+		controls.colors.text.casting = TRB.UiFunctions:BuildColorPicker(parent, "Mana spent from hardcasting spells", spec.colors.text.casting, 275, 25, xCoord2, yCoord)
+		f = controls.colors.text.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.text.casting, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.castingManaText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.restoration.colors.text.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passiveManaText = TRB.UiFunctions:BuildColorPicker(parent, "Passive Mana", TRB.Data.settings.druid.restoration.colors.text.passive, 300, 25, xCoord, yCoord)
-		f = controls.colors.passiveManaText
+		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Mana", spec.colors.text.passive, 300, 25, xCoord, yCoord)
+		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.text.passive, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.passiveManaText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.druid.restoration.colors.text.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 	
 		yCoord = yCoord - 30
@@ -8711,72 +7751,29 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter and DoT timer color based on DoT status?")
 		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($fsCount) will change based on whether or not the DoT is on the current target."
-		f:SetChecked(TRB.Data.settings.druid.restoration.colors.text.dots.enabled)
+		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.colors.text.dots.enabled = self:GetChecked()
+			spec.colors.text.dots.enabled = self:GetChecked()
 		end)
 
-		controls.colors.dotUp = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", TRB.Data.settings.druid.restoration.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
-		f = controls.colors.dotUp
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.text.dots.up, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
+		controls.colors.dots = {}
 
-                    controls.colors.dotUp.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.restoration.colors.text.dots.up = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
+		f = controls.colors.dots.up
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
 		end)
 
-		controls.colors.dotPandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", TRB.Data.settings.druid.restoration.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
-		f = controls.colors.dotPandemic
+		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
+		f = controls.colors.dots.pandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.text.dots.pandemic, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.dotPandemic.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.restoration.colors.text.dots.pandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
 		end)
 
-		controls.colors.dotDown = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", TRB.Data.settings.druid.restoration.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
-		f = controls.colors.dotDown
+		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
+		f = controls.colors.dots.down
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.text.dots.down, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.dotDown.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.druid.restoration.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
 		end)
 
 		yCoord = yCoord - 130
@@ -8784,7 +7781,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
-		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, TRB.Data.settings.druid.restoration.hastePrecision, 1, 0,
+		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -8796,7 +7793,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			value = TRB.Functions.RoundTo(value, 0)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.druid.restoration.hastePrecision = value
+			spec.hastePrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -8807,6 +7804,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if parent == nil then
 			return
 		end
+
+		local spec = TRB.Data.settings.druid.restoration
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.restoration
@@ -8840,13 +7839,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio when you gain Innervate")
 		f.tooltip = "This sound will play when you gain Innervate from a helpful Druid."
-		f:SetChecked(TRB.Data.settings.druid.restoration.audio.innervate.enabled)
+		f:SetChecked(spec.audio.innervate.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.audio.innervate.enabled = self:GetChecked()
+			spec.audio.innervate.enabled = self:GetChecked()
 
-			if TRB.Data.settings.druid.restoration.audio.innervate.enabled then
+			if spec.audio.innervate.enabled then
 ---@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.druid.restoration.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
+				PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
@@ -8854,7 +7853,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.dropDown.innervateAudio = CreateFrame("FRAME", "TwintopResourceBar_Druid_Restoration_Innervate_Audio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.innervateAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.innervateAudio, sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.innervateAudio, TRB.Data.settings.druid.restoration.audio.innervate.soundName)
+		UIDropDownMenu_SetText(controls.dropDown.innervateAudio, spec.audio.innervate.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.innervateAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -8879,7 +7878,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.druid.restoration.audio.innervate.sound
+						info.checked = sounds[v] == spec.audio.innervate.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -8891,12 +7890,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.innervateAudio:SetValue(newValue, newName)
-			TRB.Data.settings.druid.restoration.audio.innervate.sound = newValue
-			TRB.Data.settings.druid.restoration.audio.innervate.soundName = newName
+			spec.audio.innervate.sound = newValue
+			spec.audio.innervate.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.innervateAudio, newName)
 			CloseDropDownMenus()
 			---@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.druid.restoration.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 		
 		yCoord = yCoord - 60
@@ -8908,9 +7907,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track passive mana regen while Innervate is active")
 		f.tooltip = "Show the passive regeneration of mana over the remaining duration of Innervate."
-		f:SetChecked(TRB.Data.settings.druid.restoration.passiveGeneration.innervate)
+		f:SetChecked(spec.passiveGeneration.innervate)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.passiveGeneration.innervate = self:GetChecked()
+			spec.passiveGeneration.innervate = self:GetChecked()
 		end)
 		
 		yCoord = yCoord - 30
@@ -8919,9 +7918,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track bonus passive mana regen while Mana Tide Totem is active")
 		f.tooltip = "Show the bonus passive regeneration of mana over the remaining duration of Mana Tide Totem."
-		f:SetChecked(TRB.Data.settings.druid.restoration.passiveGeneration.manaTideTotem)
+		f:SetChecked(spec.passiveGeneration.manaTideTotem)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.passiveGeneration.manaTideTotem = self:GetChecked()
+			spec.passiveGeneration.manaTideTotem = self:GetChecked()
 		end)
 		
 		yCoord = yCoord - 30
@@ -8930,9 +7929,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track mana regen from a Priest's Symbol of Hope")
 		f.tooltip = "Show the regeneration of mana from a Priest's Symbol of Hope channel. This does not hide the mana regeneration from your own channeling of Symbol of Hope."
-		f:SetChecked(TRB.Data.settings.druid.restoration.passiveGeneration.symbolOfHope)
+		f:SetChecked(spec.passiveGeneration.symbolOfHope)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.druid.restoration.passiveGeneration.symbolOfHope = self:GetChecked()
+			spec.passiveGeneration.symbolOfHope = self:GetChecked()
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -8943,6 +7942,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if parent == nil then
 			return
 		end
+
+		local spec = TRB.Data.settings.druid.restoration
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.restoration
@@ -8967,11 +7968,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 30
 		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", TRB.Data.settings.druid.restoration.displayText.left.text,
+		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.druid.restoration.displayText.left.text = self:GetText()
+			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 4 then
 				TRB.Functions.IsTtdActive(TRB.Data.settings.druid.restoration)
@@ -8981,11 +7982,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 70
 		controls.labels.middleText = TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", TRB.Data.settings.druid.restoration.displayText.middle.text,
+		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.druid.restoration.displayText.middle.text = self:GetText()
+			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 4 then
 				TRB.Functions.IsTtdActive(TRB.Data.settings.druid.restoration)
@@ -8995,11 +7996,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", TRB.Data.settings.druid.restoration.displayText.right.text,
+		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.druid.restoration.displayText.right.text = self:GetText()
+			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 4 then
 				TRB.Functions.IsTtdActive(TRB.Data.settings.druid.restoration)
