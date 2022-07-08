@@ -252,7 +252,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.demonhunter.havoc = HavocResetSettings()
+				spec = HavocResetSettings()
 				ReloadUI()
 			end,
 			timeout = 0,

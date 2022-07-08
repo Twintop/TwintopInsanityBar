@@ -779,7 +779,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.hunter.beastMastery = BeastMasteryResetSettings()
+				spec = BeastMasteryResetSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -3174,7 +3174,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.hunter.marksmanship = MarksmanshipResetSettings()
+				spec = MarksmanshipResetSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -5988,7 +5988,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.hunter.survival = SurvivalResetSettings()
+				spec = SurvivalResetSettings()
 				ReloadUI()
 			end,
 			timeout = 0,

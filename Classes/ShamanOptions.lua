@@ -3415,10 +3415,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
 						
 			if GetSpecialization() == 3 then
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "potionOfSpiritualClarity", TRB.Data.settings.shaman.restoration)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "spiritualRejuvenationPotion", TRB.Data.settings.shaman.restoration)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], "spiritualManaPotion", TRB.Data.settings.shaman.restoration)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], "soulfulManaPotion", TRB.Data.settings.shaman.restoration)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "potionOfSpiritualClarity", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "spiritualRejuvenationPotion", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], "spiritualManaPotion", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], "soulfulManaPotion", spec)
 			end
 		end)
 
@@ -3447,10 +3447,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
 						
 			if GetSpecialization() == 3 then
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "potionOfSpiritualClarity", TRB.Data.settings.shaman.restoration)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "spiritualRejuvenationPotion", TRB.Data.settings.shaman.restoration)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], "spiritualManaPotion", TRB.Data.settings.shaman.restoration)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], "soulfulManaPotion", TRB.Data.settings.shaman.restoration)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "potionOfSpiritualClarity", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "spiritualRejuvenationPotion", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], "spiritualManaPotion", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], "soulfulManaPotion", spec)
 			end
 		end)
 
