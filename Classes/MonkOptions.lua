@@ -463,6 +463,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			return
 		end
 
+		local spec = TRB.Data.settings.monk.mistweaver
+
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.mistweaver
 		local yCoord = 5
 		local f = nil
@@ -487,7 +489,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.monk.mistweaver = MistweaverResetSettings()
+				spec = MistweaverResetSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -500,7 +502,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.monk.mistweaver.displayText = MistweaverLoadDefaultBarTextSimpleSettings()
+				spec.displayText = MistweaverLoadDefaultBarTextSimpleSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -513,7 +515,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.monk.mistweaver.displayText = MistweaverLoadDefaultBarTextAdvancedSettings()
+				spec.displayText = MistweaverLoadDefaultBarTextAdvancedSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -527,7 +529,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.monk.mistweaver.displayText = MistweaverLoadDefaultBarTextNarrowAdvancedSettings()
+				spec.displayText = MistweaverLoadDefaultBarTextNarrowAdvancedSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -575,6 +577,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			return
 		end
 
+		local spec = TRB.Data.settings.monk.mistweaver
+
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.mistweaver
 		local yCoord = 5
@@ -595,7 +599,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.monk.mistweaver.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.monk.mistweaver.bar.width / TRB.Data.constants.borderWidthFactor))
+		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.monk.mistweaver)
 
@@ -608,7 +612,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		yCoord = yCoord - 40
 		title = "Bar Width"
-		controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, TRB.Data.settings.monk.mistweaver.bar.width, 1, 2,
+		controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -618,10 +622,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.bar.width = value
+			spec.bar.width = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.monk.mistweaver.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.monk.mistweaver.bar.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.monk.mistweaver.bar.border
+			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.bar.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -637,7 +641,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		title = "Bar Height"
-		controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, TRB.Data.settings.monk.mistweaver.bar.height, 1, 2,
+		controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -647,10 +651,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.bar.height = value
+			spec.bar.height = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.monk.mistweaver.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.monk.mistweaver.bar.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.monk.mistweaver.bar.border
+			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.bar.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -667,7 +671,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		title = "Bar Horizontal Position"
 		yCoord = yCoord - 60
-		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.monk.mistweaver.bar.xPos, 1, 2,
+		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -677,17 +681,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.bar.xPos = value
+			spec.bar.xPos = value
 			
 			if GetSpecialization() == 3 then
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
-				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.monk.mistweaver.bar.xPos, TRB.Data.settings.monk.mistweaver.bar.yPos)
+				barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
 			end
 		end)
 
 		title = "Bar Vertical Position"
-		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.monk.mistweaver.bar.yPos, 1, 2,
+		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -697,18 +701,18 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.bar.yPos = value
+			spec.bar.yPos = value
 			
 			if GetSpecialization() == 3 then
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
-				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.monk.mistweaver.bar.xPos, TRB.Data.settings.monk.mistweaver.bar.yPos)
+				barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
 			end
 		end)
 
 		title = "Bar Border Width"
 		yCoord = yCoord - 60
-		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.monk.mistweaver.bar.border, 1, 2,
+		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.borderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -718,16 +722,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.bar.border = value
+			spec.bar.border = value
 			
 			if GetSpecialization() == 3 then
-				barContainerFrame:SetWidth(TRB.Data.settings.monk.mistweaver.bar.width-(TRB.Data.settings.monk.mistweaver.bar.border*2))
-				barContainerFrame:SetHeight(TRB.Data.settings.monk.mistweaver.bar.height-(TRB.Data.settings.monk.mistweaver.bar.border*2))
-				barBorderFrame:SetWidth(TRB.Data.settings.monk.mistweaver.bar.width)
-				barBorderFrame:SetHeight(TRB.Data.settings.monk.mistweaver.bar.height)
-				if TRB.Data.settings.monk.mistweaver.bar.border < 1 then
+				barContainerFrame:SetWidth(spec.bar.width-(spec.bar.border*2))
+				barContainerFrame:SetHeight(spec.bar.height-(spec.bar.border*2))
+				barBorderFrame:SetWidth(spec.bar.width)
+				barBorderFrame:SetHeight(spec.bar.height)
+				if spec.bar.border < 1 then
 					barBorderFrame:SetBackdrop({
-						edgeFile = TRB.Data.settings.monk.mistweaver.textures.border,
+						edgeFile = spec.textures.border,
 						tile = true,
 						tileSize = 4,
 						edgeSize = 1,
@@ -736,22 +740,22 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					barBorderFrame:Hide()
 				else
 					barBorderFrame:SetBackdrop({
-						edgeFile = TRB.Data.settings.monk.mistweaver.textures.border,
+						edgeFile = spec.textures.border,
 						tile = true,
 						tileSize=4,
-						edgeSize=TRB.Data.settings.monk.mistweaver.bar.border,
+						edgeSize=spec.bar.border,
 						insets = {0, 0, 0, 0}
 					})
 					barBorderFrame:Show()
 				end
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.bar.border, true))
+				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 
 				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.monk.mistweaver)
 			end
 
-			local minsliderWidth = math.max(TRB.Data.settings.monk.mistweaver.bar.border*2, 120)
-			local minsliderHeight = math.max(TRB.Data.settings.monk.mistweaver.bar.border*2, 1)
+			local minsliderWidth = math.max(spec.bar.border*2, 120)
+			local minsliderHeight = math.max(spec.bar.border*2, 1)
 			controls.height:SetMinMaxValues(minsliderHeight, sanityCheckValues.barMaxHeight)
 			controls.height.MinLabel:SetText(minsliderHeight)
 			controls.width:SetMinMaxValues(minsliderWidth, sanityCheckValues.barMaxWidth)
@@ -759,7 +763,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, TRB.Data.settings.monk.mistweaver.thresholds.width, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -769,17 +773,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.thresholds.width = value
+			spec.thresholds.width = value
 			
 			if GetSpecialization() == 3 then
-				resourceFrame.thresholds[1]:SetWidth(TRB.Data.settings.monk.mistweaver.thresholds.width)
-				resourceFrame.thresholds[2]:SetWidth(TRB.Data.settings.monk.mistweaver.thresholds.width)
-				resourceFrame.thresholds[3]:SetWidth(TRB.Data.settings.monk.mistweaver.thresholds.width)
-				resourceFrame.thresholds[4]:SetWidth(TRB.Data.settings.monk.mistweaver.thresholds.width)
-				passiveFrame.thresholds[1]:SetWidth(TRB.Data.settings.monk.mistweaver.thresholds.width)
-				passiveFrame.thresholds[2]:SetWidth(TRB.Data.settings.monk.mistweaver.thresholds.width)
-				passiveFrame.thresholds[3]:SetWidth(TRB.Data.settings.monk.mistweaver.thresholds.width)
-				passiveFrame.thresholds[4]:SetWidth(TRB.Data.settings.monk.mistweaver.thresholds.width)
+				resourceFrame.thresholds[1]:SetWidth(spec.thresholds.width)
+				resourceFrame.thresholds[2]:SetWidth(spec.thresholds.width)
+				resourceFrame.thresholds[3]:SetWidth(spec.thresholds.width)
+				resourceFrame.thresholds[4]:SetWidth(spec.thresholds.width)
+				passiveFrame.thresholds[1]:SetWidth(spec.thresholds.width)
+				passiveFrame.thresholds[2]:SetWidth(spec.thresholds.width)
+				passiveFrame.thresholds[3]:SetWidth(spec.thresholds.width)
+				passiveFrame.thresholds[4]:SetWidth(spec.thresholds.width)
 			end
 		end)
 
@@ -792,28 +796,28 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
 		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.bar.dragAndDrop)
+		f:SetChecked(spec.bar.dragAndDrop)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.bar.dragAndDrop = self:GetChecked()
-			barContainerFrame:SetMovable((not TRB.Data.settings.monk.mistweaver.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.monk.mistweaver.bar.dragAndDrop)
-			barContainerFrame:EnableMouse((not TRB.Data.settings.monk.mistweaver.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.monk.mistweaver.bar.dragAndDrop)
+			spec.bar.dragAndDrop = self:GetChecked()
+			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 		end)
 
-		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.monk.mistweaver.bar.pinToPersonalResourceDisplay)
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
 
 		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.pinToPRD
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
 		f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.bar.pinToPersonalResourceDisplay)
+		f:SetChecked(spec.bar.pinToPersonalResourceDisplay)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.bar.pinToPersonalResourceDisplay = self:GetChecked()
+			spec.bar.pinToPersonalResourceDisplay = self:GetChecked()
 
-			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.monk.mistweaver.bar.pinToPersonalResourceDisplay)
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
 
-			barContainerFrame:SetMovable((not TRB.Data.settings.monk.mistweaver.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.monk.mistweaver.bar.dragAndDrop)
-			barContainerFrame:EnableMouse((not TRB.Data.settings.monk.mistweaver.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.monk.mistweaver.bar.dragAndDrop)
+			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 			TRB.Functions.RepositionBar(TRB.Data.settings.monk.mistweaver, TRB.Frames.barContainerFrame)
 		end)
 
@@ -828,7 +832,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, TRB.Data.settings.monk.mistweaver.textures.resourceBarName)
+		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, spec.textures.resourceBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.resourceBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -853,7 +857,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.monk.mistweaver.textures.resourceBar
+						info.checked = textures[v] == spec.textures.resourceBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -866,18 +870,18 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.resourceBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.monk.mistweaver.textures.resourceBar = newValue
-			TRB.Data.settings.monk.mistweaver.textures.resourceBarName = newName
-			resourceFrame:SetStatusBarTexture(TRB.Data.settings.monk.mistweaver.textures.resourceBar)
+			spec.textures.resourceBar = newValue
+			spec.textures.resourceBarName = newName
+			resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
 			UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-			if TRB.Data.settings.monk.mistweaver.textures.textureLock then
-				TRB.Data.settings.monk.mistweaver.textures.castingBar = newValue
-				TRB.Data.settings.monk.mistweaver.textures.castingBarName = newName
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.monk.mistweaver.textures.castingBar)
+			if spec.textures.textureLock then
+				spec.textures.castingBar = newValue
+				spec.textures.castingBarName = newName
+				castingFrame:SetStatusBarTexture(spec.textures.castingBar)
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
-				TRB.Data.settings.monk.mistweaver.textures.passiveBar = newValue
-				TRB.Data.settings.monk.mistweaver.textures.passiveBarName = newName
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.monk.mistweaver.textures.passiveBar)
+				spec.textures.passiveBar = newValue
+				spec.textures.passiveBarName = newName
+				passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
 			end
 			CloseDropDownMenus()
@@ -889,7 +893,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.monk.mistweaver.textures.castingBarName)
+		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -914,7 +918,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.monk.mistweaver.textures.castingBar
+						info.checked = textures[v] == spec.textures.castingBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -927,18 +931,18 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.castingBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.monk.mistweaver.textures.castingBar = newValue
-			TRB.Data.settings.monk.mistweaver.textures.castingBarName = newName
-			castingFrame:SetStatusBarTexture(TRB.Data.settings.monk.mistweaver.textures.castingBar)
+			spec.textures.castingBar = newValue
+			spec.textures.castingBarName = newName
+			castingFrame:SetStatusBarTexture(spec.textures.castingBar)
 			UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
-			if TRB.Data.settings.monk.mistweaver.textures.textureLock then
-				TRB.Data.settings.monk.mistweaver.textures.resourceBar = newValue
-				TRB.Data.settings.monk.mistweaver.textures.resourceBarName = newName
-				resourceFrame:SetStatusBarTexture(TRB.Data.settings.monk.mistweaver.textures.resourceBar)
+			if spec.textures.textureLock then
+				spec.textures.resourceBar = newValue
+				spec.textures.resourceBarName = newName
+				resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-				TRB.Data.settings.monk.mistweaver.textures.passiveBar = newValue
-				TRB.Data.settings.monk.mistweaver.textures.passiveBarName = newName
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.monk.mistweaver.textures.passiveBar)
+				spec.textures.passiveBar = newValue
+				spec.textures.passiveBarName = newName
+				passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
 			end
 			CloseDropDownMenus()
@@ -952,7 +956,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, TRB.Data.settings.monk.mistweaver.textures.passiveBarName)
+		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, spec.textures.passiveBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -977,7 +981,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.monk.mistweaver.textures.passiveBar
+						info.checked = textures[v] == spec.textures.passiveBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -990,18 +994,18 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.passiveBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.monk.mistweaver.textures.passiveBar = newValue
-			TRB.Data.settings.monk.mistweaver.textures.passiveBarName = newName
-			passiveFrame:SetStatusBarTexture(TRB.Data.settings.monk.mistweaver.textures.passiveBar)
+			spec.textures.passiveBar = newValue
+			spec.textures.passiveBarName = newName
+			passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
 			UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
-			if TRB.Data.settings.monk.mistweaver.textures.textureLock then
-				TRB.Data.settings.monk.mistweaver.textures.resourceBar = newValue
-				TRB.Data.settings.monk.mistweaver.textures.resourceBarName = newName
-				resourceFrame:SetStatusBarTexture(TRB.Data.settings.monk.mistweaver.textures.resourceBar)
+			if spec.textures.textureLock then
+				spec.textures.resourceBar = newValue
+				spec.textures.resourceBarName = newName
+				resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-				TRB.Data.settings.monk.mistweaver.textures.castingBar = newValue
-				TRB.Data.settings.monk.mistweaver.textures.castingBarName = newName
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.monk.mistweaver.textures.castingBar)
+				spec.textures.castingBar = newValue
+				spec.textures.castingBarName = newName
+				castingFrame:SetStatusBarTexture(spec.textures.castingBar)
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
 			end
 			CloseDropDownMenus()
@@ -1012,18 +1016,18 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
 		f.tooltip = "This will lock the texture for each part of the bar to be the same."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.textures.textureLock)
+		f:SetChecked(spec.textures.textureLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.textures.textureLock = self:GetChecked()
-			if TRB.Data.settings.monk.mistweaver.textures.textureLock then
-				TRB.Data.settings.monk.mistweaver.textures.passiveBar = TRB.Data.settings.monk.mistweaver.textures.resourceBar
-				TRB.Data.settings.monk.mistweaver.textures.passiveBarName = TRB.Data.settings.monk.mistweaver.textures.resourceBarName
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.monk.mistweaver.textures.passiveBar)
-				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, TRB.Data.settings.monk.mistweaver.textures.passiveBarName)
-				TRB.Data.settings.monk.mistweaver.textures.castingBar = TRB.Data.settings.monk.mistweaver.textures.resourceBar
-				TRB.Data.settings.monk.mistweaver.textures.castingBarName = TRB.Data.settings.monk.mistweaver.textures.resourceBarName
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.monk.mistweaver.textures.castingBar)
-				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.monk.mistweaver.textures.castingBarName)
+			spec.textures.textureLock = self:GetChecked()
+			if spec.textures.textureLock then
+				spec.textures.passiveBar = spec.textures.resourceBar
+				spec.textures.passiveBarName = spec.textures.resourceBarName
+				passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
+				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, spec.textures.passiveBarName)
+				spec.textures.castingBar = spec.textures.resourceBar
+				spec.textures.castingBarName = spec.textures.resourceBarName
+				castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
 			end
 		end)
 
@@ -1036,7 +1040,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.borderTexture, TRB.Data.settings.monk.mistweaver.textures.borderName)
+		UIDropDownMenu_SetText(controls.dropDown.borderTexture, spec.textures.borderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -1061,7 +1065,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.monk.mistweaver.textures.border
+						info.checked = textures[v] == spec.textures.border
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -1074,20 +1078,20 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.borderTexture:SetValue(newValue, newName)
-			TRB.Data.settings.monk.mistweaver.textures.border = newValue
-			TRB.Data.settings.monk.mistweaver.textures.borderName = newName
-			if TRB.Data.settings.monk.mistweaver.bar.border < 1 then
+			spec.textures.border = newValue
+			spec.textures.borderName = newName
+			if spec.bar.border < 1 then
 				barBorderFrame:SetBackdrop({ })
 			else
-				barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.monk.mistweaver.textures.border,
+				barBorderFrame:SetBackdrop({ edgeFile = spec.textures.border,
 											tile = true,
 											tileSize=4,
-											edgeSize=TRB.Data.settings.monk.mistweaver.bar.border,
+											edgeSize=spec.bar.border,
 											insets = {0, 0, 0, 0}
 											})
 			end
 			barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.bar.border, true))
+			barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 			UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
 			CloseDropDownMenus()
 		end
@@ -1098,7 +1102,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, TRB.Data.settings.monk.mistweaver.textures.backgroundName)
+		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, spec.textures.backgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -1123,7 +1127,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.monk.mistweaver.textures.background
+						info.checked = textures[v] == spec.textures.background
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -1136,16 +1140,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
-			TRB.Data.settings.monk.mistweaver.textures.background = newValue
-			TRB.Data.settings.monk.mistweaver.textures.backgroundName = newName
+			spec.textures.background = newValue
+			spec.textures.backgroundName = newName
 			barContainerFrame:SetBackdrop({
-				bgFile = TRB.Data.settings.monk.mistweaver.textures.background,
+				bgFile = spec.textures.background,
 				tile = true,
-				tileSize = TRB.Data.settings.monk.mistweaver.bar.width,
+				tileSize = spec.bar.width,
 				edgeSize = 1,
 				insets = {0, 0, 0, 0}
 			})
-			barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.bar.background, true))
+			barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.background, true))
 			UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, newName)
 			CloseDropDownMenus()
 		end
@@ -1161,15 +1165,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		getglobal(f:GetName() .. 'Text'):SetText("Always show bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.displayBar.alwaysShow)
+		f:SetChecked(spec.displayBar.alwaysShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(true)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.monk.mistweaver.displayBar.alwaysShow = true
-			TRB.Data.settings.monk.mistweaver.displayBar.notZeroShow = false
-			TRB.Data.settings.monk.mistweaver.displayBar.neverShow = false
+			spec.displayBar.alwaysShow = true
+			spec.displayBar.notZeroShow = false
+			spec.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -1179,15 +1183,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		getglobal(f:GetName() .. 'Text'):SetText("Show bar when Mana is not full")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar show out of combat only if Mana is not full, hidden otherwise when out of combat."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.displayBar.notZeroShow)
+		f:SetChecked(spec.displayBar.notZeroShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(true)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.monk.mistweaver.displayBar.alwaysShow = false
-			TRB.Data.settings.monk.mistweaver.displayBar.notZeroShow = true
-			TRB.Data.settings.monk.mistweaver.displayBar.neverShow = false
+			spec.displayBar.alwaysShow = false
+			spec.displayBar.notZeroShow = true
+			spec.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -1197,15 +1201,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		getglobal(f:GetName() .. 'Text'):SetText("Only show bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
-		f:SetChecked((not TRB.Data.settings.monk.mistweaver.displayBar.alwaysShow) and (not TRB.Data.settings.monk.mistweaver.displayBar.notZeroShow) and (not TRB.Data.settings.monk.mistweaver.displayBar.neverShow))
+		f:SetChecked((not spec.displayBar.alwaysShow) and (not spec.displayBar.notZeroShow) and (not spec.displayBar.neverShow))
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(true)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.monk.mistweaver.displayBar.alwaysShow = false
-			TRB.Data.settings.monk.mistweaver.displayBar.notZeroShow = false
-			TRB.Data.settings.monk.mistweaver.displayBar.neverShow = false
+			spec.displayBar.alwaysShow = false
+			spec.displayBar.notZeroShow = false
+			spec.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -1215,15 +1219,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		getglobal(f:GetName() .. 'Text'):SetText("Never show bar (run in background)")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.displayBar.neverShow)
+		f:SetChecked(spec.displayBar.neverShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(true)
-			TRB.Data.settings.monk.mistweaver.displayBar.alwaysShow = false
-			TRB.Data.settings.monk.mistweaver.displayBar.notZeroShow = false
-			TRB.Data.settings.monk.mistweaver.displayBar.neverShow = true
+			spec.displayBar.alwaysShow = false
+			spec.displayBar.notZeroShow = false
+			spec.displayBar.neverShow = true
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -1232,9 +1236,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
 		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.bar.showCasting)
+		f:SetChecked(spec.bar.showCasting)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.bar.showCasting = self:GetChecked()
+			spec.bar.showCasting = self:GetChecked()
 		end)
 
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
@@ -1242,102 +1246,39 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.bar.showPassive)
+		f:SetChecked(spec.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.bar.showPassive = self:GetChecked()
+			spec.bar.showPassive = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 60
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Mana", TRB.Data.settings.monk.mistweaver.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Mana", spec.colors.bar.base, 300, 25, xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.bar.base, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.base.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.mistweaver.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.monk.mistweaver.colors.bar.background, 275, 25, xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.bar.background, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.mistweaver.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					barContainerFrame:SetBackdropColor(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Mana cost of current hardcast spell", TRB.Data.settings.monk.mistweaver.colors.bar.spending, 300, 25, xCoord, yCoord)
+		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Mana cost of current hardcast spell", spec.colors.bar.spending, 300, 25, xCoord, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.bar.spending, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.spending.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.mistweaver.colors.bar.spending = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					castingFrame:SetStatusBarColor(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", TRB.Data.settings.monk.mistweaver.colors.bar.passive, 550, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 550, 25, xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.bar.passive, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
-					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
-					TRB.Data.settings.monk.mistweaver.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
 		end)
 
 
@@ -1345,47 +1286,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
 
 		yCoord = yCoord - 25
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Bar's normal/base border", TRB.Data.settings.monk.mistweaver.colors.bar.border, 275, 25, xCoord2, yCoord-0)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Bar's normal/base border", spec.colors.bar.border, 275, 25, xCoord2, yCoord-0)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.bar.border, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.mistweaver.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 2)
 		end)
 
-		controls.colors.innervate = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have Innervate", TRB.Data.settings.monk.mistweaver.colors.bar.innervate, 275, 25, xCoord2, yCoord-30)
+		controls.colors.innervate = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have Innervate", spec.colors.bar.innervate, 275, 25, xCoord2, yCoord-30)
 		f = controls.colors.innervate
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.bar.innervate, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.innervate.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.mistweaver.colors.bar.innervate = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "innervate")
 		end)
 
 		yCoord = yCoord - 30
@@ -1394,9 +1304,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Innervate")
 		f.tooltip = "This will change the bar border color when you have Innervate."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.colors.bar.innervateBorderChange)
+		f:SetChecked(spec.colors.bar.innervateBorderChange)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.colors.bar.innervateBorderChange = self:GetChecked()
+			spec.colors.bar.innervateBorderChange = self:GetChecked()
 		end)
 		
 		yCoord = yCoord - 30
@@ -1404,75 +1314,25 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = yCoord - 40
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Threshold Lines", 0, yCoord)
 
+		controls.colors.threshold = {}
+
 		yCoord = yCoord - 25
-		controls.colors.thresholdOver = TRB.UiFunctions:BuildColorPicker(parent, "Mana gain from potions (when usable)", TRB.Data.settings.monk.mistweaver.colors.threshold.over, 275, 25, xCoord2, yCoord-0)
-		f = controls.colors.thresholdOver
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Mana gain from potions (when usable)", spec.colors.threshold.over, 275, 25, xCoord2, yCoord-0)
+		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.threshold.over, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.mistweaver.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.thresholdUnusable = TRB.UiFunctions:BuildColorPicker(parent, "Mana potion on cooldown", TRB.Data.settings.monk.mistweaver.colors.threshold.unusable, 275, 25, xCoord2, yCoord-30)
-		f = controls.colors.thresholdUnusable
+		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Mana potion on cooldown", spec.colors.threshold.unusable, 275, 25, xCoord2, yCoord-30)
+		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.threshold.unusable, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.thresholdUnusable.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.mistweaver.colors.threshold.unusable = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
-		controls.colors.passiveThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Passive mana gain per source", TRB.Data.settings.monk.mistweaver.colors.threshold.mindbender, 275, 25, xCoord2, yCoord-60)
-		f = controls.colors.passiveThreshold
+		controls.colors.threshold.mindbender = TRB.UiFunctions:BuildColorPicker(parent, "Passive mana gain per source", spec.colors.threshold.mindbender, 275, 25, xCoord2, yCoord-60)
+		f = controls.colors.threshold.mindbender
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.threshold.mindbender, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.passiveThreshold.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.mistweaver.colors.threshold.mindbender = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					if GetSpecialization() == 3 then
-						passiveFrame.thresholds[1].texture:SetColorTexture(r, g, b, 1-a)
-						passiveFrame.thresholds[2].texture:SetColorTexture(r, g, b, 1-a)
-						passiveFrame.thresholds[3].texture:SetColorTexture(r, g, b, 1-a)
-						passiveFrame.thresholds[4].texture:SetColorTexture(r, g, b, 1-a)
-						passiveFrame.thresholds[5].texture:SetColorTexture(r, g, b, 1-a)
-					end
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
 		end)
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
@@ -1480,9 +1340,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.thresholds.overlapBorder)
+		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.thresholds.overlapBorder = self:GetChecked()
+			spec.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.monk.mistweaver)
 		end)
 
@@ -1491,9 +1351,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Potion of Spiritual Clarity (10,000 + regen)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Potion of Spirital Clarity (10,000 + 10 seconds of passive mana regen)"
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.thresholds.potionOfSpiritualClarity.enabled)
+		f:SetChecked(spec.thresholds.potionOfSpiritualClarity.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.thresholds.potionOfSpiritualClarity.enabled = self:GetChecked()
+			spec.thresholds.potionOfSpiritualClarity.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -1502,9 +1362,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Soulful Mana Potion (4,000)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Soulful Mana Potion (4,000)"
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.thresholds.soulfulManaPotion.enabled)
+		f:SetChecked(spec.thresholds.soulfulManaPotion.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.thresholds.soulfulManaPotion.enabled = self:GetChecked()
+			spec.thresholds.soulfulManaPotion.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -1513,9 +1373,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Spiritual Mana Potion (6,000)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Spiritual Mana Potion (6,000)"
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.thresholds.spiritualManaPotion.enabled)
+		f:SetChecked(spec.thresholds.spiritualManaPotion.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.thresholds.spiritualManaPotion.enabled = self:GetChecked()
+			spec.thresholds.spiritualManaPotion.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -1524,9 +1384,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Spiritual Rejuvenation Potion (2,500)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Spiritual Rejuvenation Potion (2,500)"
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.thresholds.spiritualRejuvenationPotion.enabled)
+		f:SetChecked(spec.thresholds.spiritualRejuvenationPotion.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.thresholds.spiritualRejuvenationPotion.enabled = self:GetChecked()
+			spec.thresholds.spiritualRejuvenationPotion.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -1538,7 +1398,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
         controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
         controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
         UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
-        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, TRB.Data.settings.monk.mistweaver.thresholds.icons.relativeToName)
+        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
 
         -- Create and bind the initialization function to the dropdown menu
@@ -1558,7 +1418,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
             for k, v in pairs(relativeToList) do
                 info.text = v
                 info.value = relativeTo[v]
-                info.checked = relativeTo[v] == TRB.Data.settings.monk.mistweaver.thresholds.icons.relativeTo
+                info.checked = relativeTo[v] == spec.thresholds.icons.relativeTo
                 info.func = self.SetValue
                 info.arg1 = relativeTo[v]
                 info.arg2 = v
@@ -1567,8 +1427,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
         end)
 
         function controls.dropDown.thresholdIconRelativeTo:SetValue(newValue, newName)
-            TRB.Data.settings.monk.mistweaver.thresholds.icons.relativeTo = newValue
-            TRB.Data.settings.monk.mistweaver.thresholds.icons.relativeToName = newName
+            spec.thresholds.icons.relativeTo = newValue
+            spec.thresholds.icons.relativeToName = newName
 			
 			if GetSpecialization() == 3 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.monk.mistweaver)
@@ -1584,27 +1444,27 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
 		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for potion icons that are on cooldown."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown)
+		f:SetChecked(spec.thresholds.icons.showCooldown)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown = self:GetChecked()
+			spec.thresholds.icons.showCooldown = self:GetChecked()
 		end)
 		
-		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.monk.mistweaver.thresholds.icons.enabled)
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.thresholds.icons.enabled)
+		f:SetChecked(spec.thresholds.icons.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.thresholds.icons.enabled = self:GetChecked()
-			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.monk.mistweaver.thresholds.icons.enabled)
+			spec.thresholds.icons.enabled = self:GetChecked()
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 			
 			if GetSpecialization() == 2 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.monk.mistweaver)
 
-				if TRB.Data.settings.monk.mistweaver.thresholds.icons.enabled then
+				if spec.thresholds.icons.enabled then
 					resourceFrame.thresholds[1].icon:Show()
 					resourceFrame.thresholds[2].icon:Show()
 					resourceFrame.thresholds[3].icon:Show()
@@ -1620,7 +1480,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		yCoord = yCoord - 80
 		title = "Threshold Icon Width"
-		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, TRB.Data.settings.monk.mistweaver.thresholds.icons.width, 1, 2,
+		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1630,10 +1490,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.thresholds.icons.width = value
+			spec.thresholds.icons.width = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.monk.mistweaver.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.monk.mistweaver.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.monk.mistweaver.thresholds.icons.border
+			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.thresholds.icons.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -1652,7 +1512,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		title = "Threshold Icon Height"
-		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, TRB.Data.settings.monk.mistweaver.thresholds.icons.height, 1, 2,
+		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1662,10 +1522,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.thresholds.icons.height = value
+			spec.thresholds.icons.height = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.monk.mistweaver.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.monk.mistweaver.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.monk.mistweaver.thresholds.icons.border
+			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.thresholds.icons.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -1686,7 +1546,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		title = "Threshold Icon Horizontal Position (Relative)"
 		yCoord = yCoord - 60
-		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.monk.mistweaver.thresholds.icons.xPos, 1, 2,
+		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1696,7 +1556,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.thresholds.icons.xPos = value
+			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 1 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.monk.mistweaver, TRB.Frames.barContainerFrame)
@@ -1704,7 +1564,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		title = "Threshold Icon Vertical Position (Relative)"
-		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.monk.mistweaver.thresholds.icons.yPos, 1, 2,
+		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1714,14 +1574,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.thresholds.icons.yPos = value
+			spec.thresholds.icons.yPos = value
 		end)
 
-		local maxIconBorderHeight = math.min(math.floor(TRB.Data.settings.monk.mistweaver.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.monk.mistweaver.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+		local maxIconBorderHeight = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
 
 		title = "Threshold Icon Border Width"
 		yCoord = yCoord - 60
-		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.monk.mistweaver.thresholds.icons.border, 1, 2,
+		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1731,10 +1591,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.thresholds.icons.border = value
+			spec.thresholds.icons.border = value
 
-			local minsliderWidth = math.max(TRB.Data.settings.monk.mistweaver.thresholds.icons.border*2, 1)
-			local minsliderHeight = math.max(TRB.Data.settings.monk.mistweaver.thresholds.icons.border*2, 1)
+			local minsliderWidth = math.max(spec.thresholds.icons.border*2, 1)
+			local minsliderHeight = math.max(spec.thresholds.icons.border*2, 1)
 
 			controls.thresholdIconHeight:SetMinMaxValues(minsliderHeight, 128)
 			controls.thresholdIconHeight.MinLabel:SetText(minsliderHeight)
@@ -1756,9 +1616,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show potion threshold lines when potion is on cooldown")
 		f.tooltip = "Shows the potion threshold lines while potion use is still on cooldown. Configure below how far in advance to have the lines be visible, between 0 - 300 seconds (300 being effectively 'always visible')."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.thresholds.potionCooldown.enabled)
+		f:SetChecked(spec.thresholds.potionCooldown.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.thresholds.potionCooldown.enabled = self:GetChecked()
+			spec.thresholds.potionCooldown.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
@@ -1768,17 +1628,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		getglobal(f:GetName() .. 'Text'):SetText("GCDs left on Potion cooldown")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Show potion threshold lines based on how many GCDs remain on potion cooldown."
-		if TRB.Data.settings.monk.mistweaver.thresholds.potionCooldown.mode == "gcd" then
+		if spec.thresholds.potionCooldown.mode == "gcd" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.potionCooldownModeGCDs:SetChecked(true)
 			controls.checkBoxes.potionCooldownModeTime:SetChecked(false)
-			TRB.Data.settings.monk.mistweaver.thresholds.potionCooldown.mode = "gcd"
+			spec.thresholds.potionCooldown.mode = "gcd"
 		end)
 
 		title = "Potion Cooldown GCDs - 0.75sec Floor"
-		controls.potionCooldownGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 400, TRB.Data.settings.monk.mistweaver.thresholds.potionCooldown.gcdsMax, 0.25, 2,
+		controls.potionCooldownGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 400, spec.thresholds.potionCooldown.gcdsMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.potionCooldownGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1789,7 +1649,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.thresholds.potionCooldown.gcdsMax = value
+			spec.thresholds.potionCooldown.gcdsMax = value
 		end)
 
 
@@ -1800,17 +1660,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		getglobal(f:GetName() .. 'Text'):SetText("Time left on Potion cooldown")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Change the bar color based on how many seconds remain until Apotheosis will end."
-		if TRB.Data.settings.monk.mistweaver.thresholds.potionCooldown.mode == "time" then
+		if spec.thresholds.potionCooldown.mode == "time" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.potionCooldownModeGCDs:SetChecked(false)
 			controls.checkBoxes.potionCooldownModeTime:SetChecked(true)
-			TRB.Data.settings.monk.mistweaver.thresholds.potionCooldown.mode = "time"
+			spec.thresholds.potionCooldown.mode = "time"
 		end)
 
 		title = "Potion Cooldown Time Remaining"
-		controls.potionCooldownTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 300, TRB.Data.settings.monk.mistweaver.thresholds.potionCooldown.timeMax, 0.25, 2,
+		controls.potionCooldownTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 300, spec.thresholds.potionCooldown.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.potionCooldownTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -1822,7 +1682,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.thresholds.potionCooldown.timeMax = value
+			spec.thresholds.potionCooldown.timeMax = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -1833,6 +1693,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		if parent == nil then
 			return
 		end
+
+		local spec = TRB.Data.settings.monk.mistweaver
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.mistweaver
@@ -1869,7 +1731,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontLeft, TRB.Data.settings.monk.mistweaver.displayText.left.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -1894,7 +1756,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.monk.mistweaver.displayText.left.fontFace
+						info.checked = fonts[v] == spec.displayText.left.fontFace
 						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -1907,23 +1769,23 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		function controls.dropDown.fontLeft:SetValue(newValue, newName)
-			TRB.Data.settings.monk.mistweaver.displayText.left.fontFace = newValue
-			TRB.Data.settings.monk.mistweaver.displayText.left.fontFaceName = newName
+			spec.displayText.left.fontFace = newValue
+			spec.displayText.left.fontFaceName = newName
 			UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-			if TRB.Data.settings.monk.mistweaver.displayText.fontFaceLock then
-				TRB.Data.settings.monk.mistweaver.displayText.middle.fontFace = newValue
-				TRB.Data.settings.monk.mistweaver.displayText.middle.fontFaceName = newName
+			if spec.displayText.fontFaceLock then
+				spec.displayText.middle.fontFace = newValue
+				spec.displayText.middle.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-				TRB.Data.settings.monk.mistweaver.displayText.right.fontFace = newValue
-				TRB.Data.settings.monk.mistweaver.displayText.right.fontFaceName = newName
+				spec.displayText.right.fontFace = newValue
+				spec.displayText.right.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
 
 			if GetSpecialization() == 3 then
-				leftTextFrame.font:SetFont(TRB.Data.settings.monk.mistweaver.displayText.left.fontFace, TRB.Data.settings.monk.mistweaver.displayText.left.fontSize, "OUTLINE")
-				if TRB.Data.settings.monk.mistweaver.displayText.fontFaceLock then
-					middleTextFrame.font:SetFont(TRB.Data.settings.monk.mistweaver.displayText.middle.fontFace, TRB.Data.settings.monk.mistweaver.displayText.middle.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(TRB.Data.settings.monk.mistweaver.displayText.right.fontFace, TRB.Data.settings.monk.mistweaver.displayText.right.fontSize, "OUTLINE")
+				leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
+				if spec.displayText.fontFaceLock then
+					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 				end
 			end
 
@@ -1936,7 +1798,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.monk.mistweaver.displayText.middle.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -1961,7 +1823,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.monk.mistweaver.displayText.middle.fontFace
+						info.checked = fonts[v] == spec.displayText.middle.fontFace
 						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -1974,23 +1836,23 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		function controls.dropDown.fontMiddle:SetValue(newValue, newName)
-			TRB.Data.settings.monk.mistweaver.displayText.middle.fontFace = newValue
-			TRB.Data.settings.monk.mistweaver.displayText.middle.fontFaceName = newName
+			spec.displayText.middle.fontFace = newValue
+			spec.displayText.middle.fontFaceName = newName
 			UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-			if TRB.Data.settings.monk.mistweaver.displayText.fontFaceLock then
-				TRB.Data.settings.monk.mistweaver.displayText.left.fontFace = newValue
-				TRB.Data.settings.monk.mistweaver.displayText.left.fontFaceName = newName
+			if spec.displayText.fontFaceLock then
+				spec.displayText.left.fontFace = newValue
+				spec.displayText.left.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				TRB.Data.settings.monk.mistweaver.displayText.right.fontFace = newValue
-				TRB.Data.settings.monk.mistweaver.displayText.right.fontFaceName = newName
+				spec.displayText.right.fontFace = newValue
+				spec.displayText.right.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
 
 			if GetSpecialization() == 3 then
-				middleTextFrame.font:SetFont(TRB.Data.settings.monk.mistweaver.displayText.middle.fontFace, TRB.Data.settings.monk.mistweaver.displayText.middle.fontSize, "OUTLINE")
-				if TRB.Data.settings.monk.mistweaver.displayText.fontFaceLock then
-					leftTextFrame.font:SetFont(TRB.Data.settings.monk.mistweaver.displayText.left.fontFace, TRB.Data.settings.monk.mistweaver.displayText.left.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(TRB.Data.settings.monk.mistweaver.displayText.right.fontFace, TRB.Data.settings.monk.mistweaver.displayText.right.fontSize, "OUTLINE")
+				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
+				if spec.displayText.fontFaceLock then
+					leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 				end
 			end
 
@@ -2005,7 +1867,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.monk.mistweaver.displayText.right.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -2030,7 +1892,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.monk.mistweaver.displayText.right.fontFace
+						info.checked = fonts[v] == spec.displayText.right.fontFace
 						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -2043,23 +1905,23 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		function controls.dropDown.fontRight:SetValue(newValue, newName)
-			TRB.Data.settings.monk.mistweaver.displayText.right.fontFace = newValue
-			TRB.Data.settings.monk.mistweaver.displayText.right.fontFaceName = newName
+			spec.displayText.right.fontFace = newValue
+			spec.displayText.right.fontFaceName = newName
 			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-			if TRB.Data.settings.monk.mistweaver.displayText.fontFaceLock then
-				TRB.Data.settings.monk.mistweaver.displayText.left.fontFace = newValue
-				TRB.Data.settings.monk.mistweaver.displayText.left.fontFaceName = newName
+			if spec.displayText.fontFaceLock then
+				spec.displayText.left.fontFace = newValue
+				spec.displayText.left.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				TRB.Data.settings.monk.mistweaver.displayText.middle.fontFace = newValue
-				TRB.Data.settings.monk.mistweaver.displayText.middle.fontFaceName = newName
+				spec.displayText.middle.fontFace = newValue
+				spec.displayText.middle.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 			end
 
 			if GetSpecialization() == 3 then
-				rightTextFrame.font:SetFont(TRB.Data.settings.monk.mistweaver.displayText.right.fontFace, TRB.Data.settings.monk.mistweaver.displayText.right.fontSize, "OUTLINE")
-				if TRB.Data.settings.monk.mistweaver.displayText.fontFaceLock then
-					leftTextFrame.font:SetFont(TRB.Data.settings.monk.mistweaver.displayText.left.fontFace, TRB.Data.settings.monk.mistweaver.displayText.left.fontSize, "OUTLINE")
-					middleTextFrame.font:SetFont(TRB.Data.settings.monk.mistweaver.displayText.middle.fontFace, TRB.Data.settings.monk.mistweaver.displayText.middle.fontSize, "OUTLINE")
+				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
+				if spec.displayText.fontFaceLock then
+					leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
+					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
 				end
 			end
 
@@ -2071,20 +1933,20 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
 		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.displayText.fontFaceLock)
+		f:SetChecked(spec.displayText.fontFaceLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.displayText.fontFaceLock = self:GetChecked()
-			if TRB.Data.settings.monk.mistweaver.displayText.fontFaceLock then
-				TRB.Data.settings.monk.mistweaver.displayText.middle.fontFace = TRB.Data.settings.monk.mistweaver.displayText.left.fontFace
-				TRB.Data.settings.monk.mistweaver.displayText.middle.fontFaceName = TRB.Data.settings.monk.mistweaver.displayText.left.fontFaceName
-				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.monk.mistweaver.displayText.middle.fontFaceName)
-				TRB.Data.settings.monk.mistweaver.displayText.right.fontFace = TRB.Data.settings.monk.mistweaver.displayText.left.fontFace
-				TRB.Data.settings.monk.mistweaver.displayText.right.fontFaceName = TRB.Data.settings.monk.mistweaver.displayText.left.fontFaceName
-				UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.monk.mistweaver.displayText.right.fontFaceName)
+			spec.displayText.fontFaceLock = self:GetChecked()
+			if spec.displayText.fontFaceLock then
+				spec.displayText.middle.fontFace = spec.displayText.left.fontFace
+				spec.displayText.middle.fontFaceName = spec.displayText.left.fontFaceName
+				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
+				spec.displayText.right.fontFace = spec.displayText.left.fontFace
+				spec.displayText.right.fontFaceName = spec.displayText.left.fontFaceName
+				UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 
 				if GetSpecialization() == 3 then
-					middleTextFrame.font:SetFont(TRB.Data.settings.monk.mistweaver.displayText.middle.fontFace, TRB.Data.settings.monk.mistweaver.displayText.middle.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(TRB.Data.settings.monk.mistweaver.displayText.right.fontFace, TRB.Data.settings.monk.mistweaver.displayText.right.fontSize, "OUTLINE")
+					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 				end
 			end
 		end)
@@ -2095,7 +1957,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
-		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.monk.mistweaver.displayText.left.fontSize, 1, 0,
+		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2105,13 +1967,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.displayText.left.fontSize = value
+			spec.displayText.left.fontSize = value
 
 			if GetSpecialization() == 3 then
-				leftTextFrame.font:SetFont(TRB.Data.settings.monk.mistweaver.displayText.left.fontFace, TRB.Data.settings.monk.mistweaver.displayText.left.fontSize, "OUTLINE")
+				leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
 			end
 
-			if TRB.Data.settings.monk.mistweaver.displayText.fontSizeLock then
+			if spec.displayText.fontSizeLock then
 				controls.fontSizeMiddle:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
@@ -2122,90 +1984,41 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.displayText.fontSizeLock)
+		f:SetChecked(spec.displayText.fontSizeLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.displayText.fontSizeLock = self:GetChecked()
-			if TRB.Data.settings.monk.mistweaver.displayText.fontSizeLock then
-				controls.fontSizeMiddle:SetValue(TRB.Data.settings.monk.mistweaver.displayText.left.fontSize)
-				controls.fontSizeRight:SetValue(TRB.Data.settings.monk.mistweaver.displayText.left.fontSize)
+			spec.displayText.fontSizeLock = self:GetChecked()
+			if spec.displayText.fontSizeLock then
+				controls.fontSizeMiddle:SetValue(spec.displayText.left.fontSize)
+				controls.fontSizeRight:SetValue(spec.displayText.left.fontSize)
 			end
 		end)
 
-		controls.colors.leftText = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", TRB.Data.settings.monk.mistweaver.colors.text.left,
+		controls.colors.text = {}
+
+		controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
 														250, 25, xCoord2, yCoord-30)
-		f = controls.colors.leftText
+		f = controls.colors.text.left
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.text.left, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.mistweaver.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
 		end)
 
-		controls.colors.middleText = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", TRB.Data.settings.monk.mistweaver.colors.text.middle,
+		controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
 														225, 25, xCoord2, yCoord-70)
-		f = controls.colors.middleText
+		f = controls.colors.text.middle
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.text.middle, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.mistweaver.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
 		end)
 
-		controls.colors.rightText = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", TRB.Data.settings.monk.mistweaver.colors.text.right,
+		controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
 														225, 25, xCoord2, yCoord-110)
-		f = controls.colors.rightText
+		f = controls.colors.text.right
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.text.right, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.mistweaver.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
 		end)
 
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.monk.mistweaver.displayText.middle.fontSize, 1, 0,
+		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2215,13 +2028,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.displayText.middle.fontSize = value
+			spec.displayText.middle.fontSize = value
 
 			if GetSpecialization() == 3 then
-				middleTextFrame.font:SetFont(TRB.Data.settings.monk.mistweaver.displayText.middle.fontFace, TRB.Data.settings.monk.mistweaver.displayText.middle.fontSize, "OUTLINE")
+				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
 			end
 
-			if TRB.Data.settings.monk.mistweaver.displayText.fontSizeLock then
+			if spec.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
@@ -2229,7 +2042,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.monk.mistweaver.displayText.right.fontSize, 1, 0,
+		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2239,13 +2052,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.displayText.right.fontSize = value
+			spec.displayText.right.fontSize = value
 
 			if GetSpecialization() == 3 then
-				rightTextFrame.font:SetFont(TRB.Data.settings.monk.mistweaver.displayText.right.fontFace, TRB.Data.settings.monk.mistweaver.displayText.right.fontSize, "OUTLINE")
+				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 			end
 
-			if TRB.Data.settings.monk.mistweaver.displayText.fontSizeLock then
+			if spec.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeMiddle:SetValue(value)
 			end
@@ -2255,76 +2068,26 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Mana Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentManaText = TRB.UiFunctions:BuildColorPicker(parent, "Current Mana", TRB.Data.settings.monk.mistweaver.colors.text.current, 300, 25, xCoord, yCoord)
-		f = controls.colors.currentManaText
+		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Mana", spec.colors.text.current, 300, 25, xCoord, yCoord)
+		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.text.current, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.currentManaText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.mistweaver.colors.text.current = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.castingManaText = TRB.UiFunctions:BuildColorPicker(parent, "Mana from hardcasting spells", TRB.Data.settings.monk.mistweaver.colors.text.casting, 275, 25, xCoord2, yCoord)
-		f = controls.colors.castingManaText
+		controls.colors.text.casting = TRB.UiFunctions:BuildColorPicker(parent, "Mana spent from hardcasting spells", spec.colors.text.casting, 275, 25, xCoord2, yCoord)
+		f = controls.colors.text.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.text.casting, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.castingManaText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.mistweaver.colors.text.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passiveManaText = TRB.UiFunctions:BuildColorPicker(parent, "Passive Mana", TRB.Data.settings.monk.mistweaver.colors.text.passive, 300, 25, xCoord, yCoord)
-		f = controls.colors.passiveManaText
+		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Mana", spec.colors.text.passive, 300, 25, xCoord, yCoord)
+		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.text.passive, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.passiveManaText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.mistweaver.colors.text.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 	
+		--[[
 		yCoord = yCoord - 30
 		controls.dotColorSection = TRB.UiFunctions:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
 
@@ -2334,81 +2097,39 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter and DoT timer color based on DoT status?")
-		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($fsCount) will change based on whether or not the DoT is on the current target."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.colors.text.dots.enabled)
+		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers will change based on whether or not the DoT is on the current target."
+		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.colors.text.dots.enabled = self:GetChecked()
+			spec.colors.text.dots.enabled = self:GetChecked()
 		end)
 
-		controls.colors.dotUp = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", TRB.Data.settings.monk.mistweaver.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
-		f = controls.colors.dotUp
+		controls.colors.dots = {}
+
+		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
+		f = controls.colors.dots.up
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.text.dots.up, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.dotUp.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.mistweaver.colors.text.dots.up = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
 		end)
 
-		controls.colors.dotPandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", TRB.Data.settings.monk.mistweaver.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
-		f = controls.colors.dotPandemic
+		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
+		f = controls.colors.dots.pandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.text.dots.pandemic, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.dotPandemic.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.mistweaver.colors.text.dots.pandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
 		end)
 
-		controls.colors.dotDown = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", TRB.Data.settings.monk.mistweaver.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
-		f = controls.colors.dotDown
+		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
+		f = controls.colors.dots.down
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.text.dots.down, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.dotDown.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.mistweaver.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
 		end)
+		]]
 
 		yCoord = yCoord - 130
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
-		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, TRB.Data.settings.monk.mistweaver.hastePrecision, 1, 0,
+		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2420,7 +2141,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 			value = TRB.Functions.RoundTo(value, 0)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.mistweaver.hastePrecision = value
+			spec.hastePrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -2431,6 +2152,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		if parent == nil then
 			return
 		end
+
+		local spec = TRB.Data.settings.monk.mistweaver
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.mistweaver
@@ -2464,13 +2187,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio when you gain Innervate")
 		f.tooltip = "This sound will play when you gain Innervate from a helpful Druid."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.audio.innervate.enabled)
+		f:SetChecked(spec.audio.innervate.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.audio.innervate.enabled = self:GetChecked()
+			spec.audio.innervate.enabled = self:GetChecked()
 
-			if TRB.Data.settings.monk.mistweaver.audio.innervate.enabled then
+			if spec.audio.innervate.enabled then
 ---@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.monk.mistweaver.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
+				PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
@@ -2478,7 +2201,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.innervateAudio = CreateFrame("FRAME", "TwintopResourceBar_Monk_Mistweaver_Innervate_Audio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.innervateAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.innervateAudio, sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.innervateAudio, TRB.Data.settings.monk.mistweaver.audio.innervate.soundName)
+		UIDropDownMenu_SetText(controls.dropDown.innervateAudio, spec.audio.innervate.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.innervateAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -2503,7 +2226,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.monk.mistweaver.audio.innervate.sound
+						info.checked = sounds[v] == spec.audio.innervate.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -2515,12 +2238,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.innervateAudio:SetValue(newValue, newName)
-			TRB.Data.settings.monk.mistweaver.audio.innervate.sound = newValue
-			TRB.Data.settings.monk.mistweaver.audio.innervate.soundName = newName
+			spec.audio.innervate.sound = newValue
+			spec.audio.innervate.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.innervateAudio, newName)
 			CloseDropDownMenus()
 			---@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.monk.mistweaver.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 		
 		yCoord = yCoord - 60
@@ -2532,9 +2255,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track passive mana regen while Innervate is active")
 		f.tooltip = "Show the passive regeneration of mana over the remaining duration of Innervate."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.passiveGeneration.innervate)
+		f:SetChecked(spec.passiveGeneration.innervate)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.passiveGeneration.innervate = self:GetChecked()
+			spec.passiveGeneration.innervate = self:GetChecked()
 		end)
 		
 		yCoord = yCoord - 30
@@ -2543,9 +2266,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track bonus passive mana regen while Mana Tide Totem is active")
 		f.tooltip = "Show the bonus passive regeneration of mana over the remaining duration of Mana Tide Totem."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.passiveGeneration.manaTideTotem)
+		f:SetChecked(spec.passiveGeneration.manaTideTotem)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.passiveGeneration.manaTideTotem = self:GetChecked()
+			spec.passiveGeneration.manaTideTotem = self:GetChecked()
 		end)
 		
 		yCoord = yCoord - 30
@@ -2554,9 +2277,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track mana regen from a Priest's Symbol of Hope")
 		f.tooltip = "Show the regeneration of mana from a Priest's Symbol of Hope channel. This does not hide the mana regeneration from your own channeling of Symbol of Hope."
-		f:SetChecked(TRB.Data.settings.monk.mistweaver.passiveGeneration.symbolOfHope)
+		f:SetChecked(spec.passiveGeneration.symbolOfHope)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.mistweaver.passiveGeneration.symbolOfHope = self:GetChecked()
+			spec.passiveGeneration.symbolOfHope = self:GetChecked()
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -2567,6 +2290,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		if parent == nil then
 			return
 		end
+
+		local spec = TRB.Data.settings.monk.mistweaver
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.mistweaver
@@ -2591,11 +2316,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = yCoord - 30
 		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", TRB.Data.settings.monk.mistweaver.displayText.left.text,
+		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.monk.mistweaver.displayText.left.text = self:GetText()
+			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
 				TRB.Functions.IsTtdActive(TRB.Data.settings.monk.mistweaver)
@@ -2605,11 +2330,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = yCoord - 70
 		controls.labels.middleText = TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", TRB.Data.settings.monk.mistweaver.displayText.middle.text,
+		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.monk.mistweaver.displayText.middle.text = self:GetText()
+			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
 				TRB.Functions.IsTtdActive(TRB.Data.settings.monk.mistweaver)
@@ -2619,11 +2344,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", TRB.Data.settings.monk.mistweaver.displayText.right.text,
+		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.monk.mistweaver.displayText.right.text = self:GetText()
+			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
 				TRB.Functions.IsTtdActive(TRB.Data.settings.monk.mistweaver)
@@ -2747,6 +2472,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			return
 		end
 
+		local spec = TRB.Data.settings.monk.windwalker
+
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker
 		local yCoord = 5
 		local f = nil
@@ -2771,7 +2498,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.monk.windwalker = WindwalkerResetSettings()
+				spec = WindwalkerResetSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -2784,7 +2511,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.monk.windwalker.displayText = WindwalkerLoadDefaultBarTextSimpleSettings()
+				spec.displayText = WindwalkerLoadDefaultBarTextSimpleSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -2797,7 +2524,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.monk.windwalker.displayText = WindwalkerLoadDefaultBarTextAdvancedSettings()
+				spec.displayText = WindwalkerLoadDefaultBarTextAdvancedSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -2837,6 +2564,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			return
 		end
 
+		local spec = TRB.Data.settings.monk.windwalker
+
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.windwalker
 		local yCoord = 5
@@ -2857,7 +2586,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local maxBorderHeight = math.min(math.floor(TRB.Data.settings.monk.windwalker.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.monk.windwalker.bar.width / TRB.Data.constants.borderWidthFactor))
+		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.monk.windwalker)
 
@@ -2870,7 +2599,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		yCoord = yCoord - 40
 		title = "Bar Width"
-		controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, TRB.Data.settings.monk.windwalker.bar.width, 1, 2,
+		controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2880,10 +2609,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.bar.width = value
+			spec.bar.width = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.monk.windwalker.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.monk.windwalker.bar.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.monk.windwalker.bar.border
+			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.bar.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -2899,7 +2628,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["energy"] ~= nil and TRB.Data.spells[k]["energy"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.windwalker, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.monk.windwalker.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.windwalker, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -2907,7 +2636,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		title = "Bar Height"
-		controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, TRB.Data.settings.monk.windwalker.bar.height, 1, 2,
+		controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2917,10 +2646,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.bar.height = value
+			spec.bar.height = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.monk.windwalker.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.monk.windwalker.bar.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.monk.windwalker.bar.border
+			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.bar.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -2938,7 +2667,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		title = "Bar Horizontal Position"
 		yCoord = yCoord - 60
-		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.monk.windwalker.bar.xPos, 1, 2,
+		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2948,18 +2677,18 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.bar.xPos = value
+			spec.bar.xPos = value
 
 			if GetSpecialization() == 3 then
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
-				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.monk.windwalker.bar.xPos, TRB.Data.settings.monk.windwalker.bar.yPos)
+				barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
 				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
 			end
 		end)
 
 		title = "Bar Vertical Position"
-		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.monk.windwalker.bar.yPos, 1, 2,
+		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2969,19 +2698,19 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.bar.yPos = value
+			spec.bar.yPos = value
 
 			if GetSpecialization() == 3 then
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
-				barContainerFrame:SetPoint("CENTER", TRB.Data.settings.monk.windwalker.bar.xPos, TRB.Data.settings.monk.windwalker.bar.yPos)
+				barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
 				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
 			end
 		end)
 
 		title = "Bar Border Width"
 		yCoord = yCoord - 60
-		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.monk.windwalker.bar.border, 1, 2,
+		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.borderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -2991,16 +2720,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.bar.border = value
+			spec.bar.border = value
 
 			if GetSpecialization() == 3 then
-				barContainerFrame:SetWidth(TRB.Data.settings.monk.windwalker.bar.width-(TRB.Data.settings.monk.windwalker.bar.border*2))
-				barContainerFrame:SetHeight(TRB.Data.settings.monk.windwalker.bar.height-(TRB.Data.settings.monk.windwalker.bar.border*2))
-				barBorderFrame:SetWidth(TRB.Data.settings.monk.windwalker.bar.width)
-				barBorderFrame:SetHeight(TRB.Data.settings.monk.windwalker.bar.height)
-				if TRB.Data.settings.monk.windwalker.bar.border < 1 then
+				barContainerFrame:SetWidth(spec.bar.width-(spec.bar.border*2))
+				barContainerFrame:SetHeight(spec.bar.height-(spec.bar.border*2))
+				barBorderFrame:SetWidth(spec.bar.width)
+				barBorderFrame:SetHeight(spec.bar.height)
+				if spec.bar.border < 1 then
 					barBorderFrame:SetBackdrop({
-						edgeFile = TRB.Data.settings.monk.windwalker.textures.border,
+						edgeFile = spec.textures.border,
 						tile = true,
 						tileSize = 4,
 						edgeSize = 1,
@@ -3009,16 +2738,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					barBorderFrame:Hide()
 				else
 					barBorderFrame:SetBackdrop({ 
-						edgeFile = TRB.Data.settings.monk.windwalker.textures.border,
+						edgeFile = spec.textures.border,
 						tile = true,
 						tileSize=4,
-						edgeSize=TRB.Data.settings.monk.windwalker.bar.border,
+						edgeSize=spec.bar.border,
 						insets = {0, 0, 0, 0}
 					})
 					barBorderFrame:Show()
 				end
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.border, true))
+				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 
 				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.monk.windwalker)                
 				TRB.Functions.UpdateBarHeight(TRB.Data.settings.monk.windwalker)
@@ -3026,14 +2755,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["energy"] ~= nil and TRB.Data.spells[k]["energy"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.windwalker, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, TRB.Data.settings.monk.windwalker.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.windwalker, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
 			end
 
-			local minsliderWidth = math.max(TRB.Data.settings.monk.windwalker.bar.border*2, 120)
-			local minsliderHeight = math.max(TRB.Data.settings.monk.windwalker.bar.border*2, 1)
+			local minsliderWidth = math.max(spec.bar.border*2, 120)
+			local minsliderHeight = math.max(spec.bar.border*2, 1)
 
 			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.monk.windwalker)
 			controls.height:SetMinMaxValues(minsliderHeight, scValues.barMaxHeight)
@@ -3043,7 +2772,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		title = "Threshold Line Width"
-		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, TRB.Data.settings.monk.windwalker.thresholds.width, 1, 2,
+		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3053,11 +2782,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.thresholds.width = value
+			spec.thresholds.width = value
 
 			if GetSpecialization() == 3 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
-					resourceFrame.thresholds[x]:SetWidth(TRB.Data.settings.monk.windwalker.thresholds.width)
+					resourceFrame.thresholds[x]:SetWidth(spec.thresholds.width)
 				end
 			end
 		end)
@@ -3071,28 +2800,28 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
 		f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.bar.dragAndDrop)
+		f:SetChecked(spec.bar.dragAndDrop)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.bar.dragAndDrop = self:GetChecked()
-			barContainerFrame:SetMovable((not TRB.Data.settings.monk.windwalker.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.monk.windwalker.bar.dragAndDrop)
-			barContainerFrame:EnableMouse((not TRB.Data.settings.monk.windwalker.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.monk.windwalker.bar.dragAndDrop)
+			spec.bar.dragAndDrop = self:GetChecked()
+			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 		end)
 			
-		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.monk.windwalker.bar.pinToPersonalResourceDisplay)
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
 
 		controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.pinToPRD
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
 		f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.bar.pinToPersonalResourceDisplay)
+		f:SetChecked(spec.bar.pinToPersonalResourceDisplay)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.bar.pinToPersonalResourceDisplay = self:GetChecked()
+			spec.bar.pinToPersonalResourceDisplay = self:GetChecked()
 			
-			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not TRB.Data.settings.monk.windwalker.bar.pinToPersonalResourceDisplay)
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
 
-			barContainerFrame:SetMovable((not TRB.Data.settings.monk.windwalker.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.monk.windwalker.bar.dragAndDrop)
-			barContainerFrame:EnableMouse((not TRB.Data.settings.monk.windwalker.bar.pinToPersonalResourceDisplay) and TRB.Data.settings.monk.windwalker.bar.dragAndDrop)
+			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
+			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 			TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
 		end)
 
@@ -3102,7 +2831,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		yCoord = yCoord - 40
 		title = "Chi Width"
-		controls.comboPointWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), TRB.Data.settings.monk.windwalker.comboPoints.width, 1, 2,
+		controls.comboPointWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.comboPointWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3112,10 +2841,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.comboPoints.width = value
+			spec.comboPoints.width = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.monk.windwalker.comboPoints.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.monk.windwalker.comboPoints.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.monk.windwalker.comboPoints.border
+			local maxBorderSize = math.min(math.floor(spec.comboPoints.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.comboPoints.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.comboPoints.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -3131,7 +2860,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		title = "Chi Height"
-		controls.comboPointHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, sanityCheckValues.barMaxHeight, TRB.Data.settings.monk.windwalker.comboPoints.height, 1, 2,
+		controls.comboPointHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, sanityCheckValues.barMaxHeight, spec.comboPoints.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.comboPointHeight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3141,10 +2870,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.comboPoints.height = value
+			spec.comboPoints.height = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.monk.windwalker.comboPoints.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.monk.windwalker.bar.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.monk.windwalker.comboPoints.border
+			local maxBorderSize = math.min(math.floor(spec.comboPoints.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.comboPoints.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -3163,7 +2892,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		title = "Chi Horizontal Position (Relative)"
 		yCoord = yCoord - 60
-		controls.comboPointHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.monk.windwalker.comboPoints.xPos, 1, 2,
+		controls.comboPointHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.comboPoints.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.comboPointHorizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3173,7 +2902,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.comboPoints.xPos = value
+			spec.comboPoints.xPos = value
 
 			if GetSpecialization() == 3 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
@@ -3181,7 +2910,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		title = "Chi Vertical Position (Relative)"
-		controls.comboPointVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.monk.windwalker.comboPoints.yPos, 1, 2,
+		controls.comboPointVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.comboPoints.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.comboPointVertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3191,7 +2920,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.comboPoints.yPos = value
+			spec.comboPoints.yPos = value
 
 			if GetSpecialization() == 3 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
@@ -3202,7 +2931,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		title = "Chi Border Width"
 		yCoord = yCoord - 60
-		controls.comboPointBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, TRB.Data.settings.monk.windwalker.comboPoints.border, 1, 2,
+		controls.comboPointBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.comboPoints.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.comboPointBorderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3212,7 +2941,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.comboPoints.border = value
+			spec.comboPoints.border = value
 
 			if GetSpecialization() == 3 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
@@ -3220,8 +2949,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				--TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.monk.windwalker)
 			end
 
-			local minsliderWidth = math.max(TRB.Data.settings.monk.windwalker.comboPoints.border*2, 1)
-			local minsliderHeight = math.max(TRB.Data.settings.monk.windwalker.comboPoints.border*2, 1)
+			local minsliderWidth = math.max(spec.comboPoints.border*2, 1)
+			local minsliderHeight = math.max(spec.comboPoints.border*2, 1)
 
 			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.monk.windwalker)
 			controls.comboPointHeight:SetMinMaxValues(minsliderHeight, scValues.comboPointsMaxHeight)
@@ -3231,7 +2960,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		title = "Chi Spacing"
-		controls.comboPointSpacing = TRB.UiFunctions:BuildSlider(parent, title, 0, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), TRB.Data.settings.monk.windwalker.comboPoints.spacing, 1, 2,
+		controls.comboPointSpacing = TRB.UiFunctions:BuildSlider(parent, title, 0, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.spacing, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.comboPointSpacing:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -3241,7 +2970,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.comboPoints.spacing = value
+			spec.comboPoints.spacing = value
 
 			if GetSpecialization() == 3 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
@@ -3255,7 +2984,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
         controls.dropDown.comboPointsRelativeTo.label.font:SetFontObject(GameFontNormal)
         controls.dropDown.comboPointsRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
         UIDropDownMenu_SetWidth(controls.dropDown.comboPointsRelativeTo, dropdownWidth)
-        UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, TRB.Data.settings.monk.windwalker.comboPoints.relativeToName)
+        UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, spec.comboPoints.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.comboPointsRelativeTo, "LEFT")
 
         -- Create and bind the initialization function to the dropdown menu
@@ -3281,7 +3010,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
             for k, v in pairs(relativeToList) do
                 info.text = v
                 info.value = relativeTo[v]
-                info.checked = relativeTo[v] == TRB.Data.settings.monk.windwalker.comboPoints.relativeTo
+                info.checked = relativeTo[v] == spec.comboPoints.relativeTo
                 info.func = self.SetValue
                 info.arg1 = relativeTo[v]
                 info.arg2 = v
@@ -3290,8 +3019,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
         end)
 
         function controls.dropDown.comboPointsRelativeTo:SetValue(newValue, newName)
-            TRB.Data.settings.monk.windwalker.comboPoints.relativeTo = newValue
-            TRB.Data.settings.monk.windwalker.comboPoints.relativeToName = newName
+            spec.comboPoints.relativeTo = newValue
+            spec.comboPoints.relativeToName = newName
             UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, newName)
             CloseDropDownMenus()
 
@@ -3306,9 +3035,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Chi are full bar width?")
 		f.tooltip = "Makes the Chi bars take up the same total width of the bar, spaced according to Chi Spacing (above). The horizontal position adjustment will be ignored and the width of Chi bars will be automatically calculated and will ignore the value set above."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.comboPoints.fullWidth)
+		f:SetChecked(spec.comboPoints.fullWidth)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.comboPoints.fullWidth = self:GetChecked()
+			spec.comboPoints.fullWidth = self:GetChecked()
             
 			if GetSpecialization() == 3 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
@@ -3325,7 +3054,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, TRB.Data.settings.monk.windwalker.textures.resourceBarName)
+		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, spec.textures.resourceBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.resourceBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -3350,7 +3079,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.monk.windwalker.textures.resourceBar
+						info.checked = textures[v] == spec.textures.resourceBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -3363,30 +3092,30 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.resourceBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.monk.windwalker.textures.resourceBar = newValue
-			TRB.Data.settings.monk.windwalker.textures.resourceBarName = newName
+			spec.textures.resourceBar = newValue
+			spec.textures.resourceBarName = newName
 			UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-			if TRB.Data.settings.monk.windwalker.textures.textureLock then
-				TRB.Data.settings.monk.windwalker.textures.castingBar = newValue
-				TRB.Data.settings.monk.windwalker.textures.castingBarName = newName
+			if spec.textures.textureLock then
+				spec.textures.castingBar = newValue
+				spec.textures.castingBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
-				TRB.Data.settings.monk.windwalker.textures.passiveBar = newValue
-				TRB.Data.settings.monk.windwalker.textures.passiveBarName = newName
+				spec.textures.passiveBar = newValue
+				spec.textures.passiveBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
-				TRB.Data.settings.monk.windwalker.textures.comboPointsBar = newValue
-				TRB.Data.settings.monk.windwalker.textures.comboPointsBarName = newName
+				spec.textures.comboPointsBar = newValue
+				spec.textures.comboPointsBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, newName)
 			end
 
 			if GetSpecialization() == 3 then
-				resourceFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.resourceBar)
-				if TRB.Data.settings.monk.windwalker.textures.textureLock then
-					castingFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.castingBar)
-					passiveFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.passiveBar)
+				resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+				if spec.textures.textureLock then
+					castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+					passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
 					
 					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 					for x = 1, length do
-						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.comboPointsBar)
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(spec.textures.comboPointsBar)
 					end
 				end
 			end
@@ -3400,7 +3129,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.monk.windwalker.textures.castingBarName)
+		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -3425,7 +3154,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.monk.windwalker.textures.castingBar
+						info.checked = textures[v] == spec.textures.castingBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -3438,30 +3167,30 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.castingBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.monk.windwalker.textures.castingBar = newValue
-			TRB.Data.settings.monk.windwalker.textures.castingBarName = newName
+			spec.textures.castingBar = newValue
+			spec.textures.castingBarName = newName
 			UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
-			if TRB.Data.settings.monk.windwalker.textures.textureLock then
-				TRB.Data.settings.monk.windwalker.textures.resourceBar = newValue
-				TRB.Data.settings.monk.windwalker.textures.resourceBarName = newName
+			if spec.textures.textureLock then
+				spec.textures.resourceBar = newValue
+				spec.textures.resourceBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-				TRB.Data.settings.monk.windwalker.textures.passiveBar = newValue
-				TRB.Data.settings.monk.windwalker.textures.passiveBarName = newName
+				spec.textures.passiveBar = newValue
+				spec.textures.passiveBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
-				TRB.Data.settings.monk.windwalker.textures.comboPointsBar = newValue
-				TRB.Data.settings.monk.windwalker.textures.comboPointsBarName = newName
+				spec.textures.comboPointsBar = newValue
+				spec.textures.comboPointsBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, newName)
 			end
 
 			if GetSpecialization() == 3 then
-				castingFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.castingBar)
-				if TRB.Data.settings.monk.windwalker.textures.textureLock then
-					resourceFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.resourceBar)
-					passiveFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.passiveBar)
+				castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+				if spec.textures.textureLock then
+					resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+					passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
 					
 					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 					for x = 1, length do
-						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.comboPointsBar)
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(spec.textures.comboPointsBar)
 					end
 				end
 			end
@@ -3478,7 +3207,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, TRB.Data.settings.monk.windwalker.textures.passiveBarName)
+		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, spec.textures.passiveBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -3503,7 +3232,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.monk.windwalker.textures.passiveBar
+						info.checked = textures[v] == spec.textures.passiveBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -3516,30 +3245,30 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.passiveBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.monk.windwalker.textures.passiveBar = newValue
-			TRB.Data.settings.monk.windwalker.textures.passiveBarName = newName
+			spec.textures.passiveBar = newValue
+			spec.textures.passiveBarName = newName
 			UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
-			if TRB.Data.settings.monk.windwalker.textures.textureLock then
-				TRB.Data.settings.monk.windwalker.textures.resourceBar = newValue
-				TRB.Data.settings.monk.windwalker.textures.resourceBarName = newName
+			if spec.textures.textureLock then
+				spec.textures.resourceBar = newValue
+				spec.textures.resourceBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-				TRB.Data.settings.monk.windwalker.textures.castingBar = newValue
-				TRB.Data.settings.monk.windwalker.textures.castingBarName = newName
+				spec.textures.castingBar = newValue
+				spec.textures.castingBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
-				TRB.Data.settings.monk.windwalker.textures.comboPointsBar = newValue
-				TRB.Data.settings.monk.windwalker.textures.comboPointsBarName = newName
+				spec.textures.comboPointsBar = newValue
+				spec.textures.comboPointsBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, newName)
 			end
 
 			if GetSpecialization() == 3 then
-				passiveFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.passiveBar)
-				if TRB.Data.settings.monk.windwalker.textures.textureLock then
-					resourceFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.resourceBar)
-					castingFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.castingBar)
+				passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
+				if spec.textures.textureLock then
+					resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+					castingFrame:SetStatusBarTexture(spec.textures.castingBar)
 					
 					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 					for x = 1, length do
-						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.comboPointsBar)
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(spec.textures.comboPointsBar)
 					end
 				end
 			end
@@ -3553,7 +3282,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.comboPointsBarTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.comboPointsBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBarTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, TRB.Data.settings.monk.windwalker.textures.comboPointsBarName)
+		UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, spec.textures.comboPointsBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.comboPointsBarTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -3578,7 +3307,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.monk.windwalker.textures.comboPointsBar
+						info.checked = textures[v] == spec.textures.comboPointsBar
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -3591,31 +3320,31 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.comboPointsBarTexture:SetValue(newValue, newName)
-			TRB.Data.settings.monk.windwalker.textures.comboPointsBar = newValue
-			TRB.Data.settings.monk.windwalker.textures.comboPointsBarName = newName
+			spec.textures.comboPointsBar = newValue
+			spec.textures.comboPointsBarName = newName
 			UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, newName)
-			if TRB.Data.settings.monk.windwalker.textures.textureLock then
-				TRB.Data.settings.monk.windwalker.textures.resourceBar = newValue
-				TRB.Data.settings.monk.windwalker.textures.resourceBarName = newName
+			if spec.textures.textureLock then
+				spec.textures.resourceBar = newValue
+				spec.textures.resourceBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, newName)
-				TRB.Data.settings.monk.windwalker.textures.passiveBar = newValue
-				TRB.Data.settings.monk.windwalker.textures.passiveBarName = newName
+				spec.textures.passiveBar = newValue
+				spec.textures.passiveBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, newName)
-				TRB.Data.settings.monk.windwalker.textures.castingBar = newValue
-				TRB.Data.settings.monk.windwalker.textures.castingBarName = newName
+				spec.textures.castingBar = newValue
+				spec.textures.castingBarName = newName
 				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, newName)
 			end
 
 			if GetSpecialization() == 3 then					
 				local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 				for x = 1, length do
-					TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.comboPointsBar)
+					TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(spec.textures.comboPointsBar)
 				end
 
-				if TRB.Data.settings.monk.windwalker.textures.textureLock then
-				    castingFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.castingBar)
-					resourceFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.resourceBar)
-					passiveFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.passiveBar)
+				if spec.textures.textureLock then
+				    castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+					resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+					passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
 				end
 			end
 
@@ -3631,7 +3360,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.borderTexture, TRB.Data.settings.monk.windwalker.textures.borderName)
+		UIDropDownMenu_SetText(controls.dropDown.borderTexture, spec.textures.borderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -3656,7 +3385,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.monk.windwalker.textures.border
+						info.checked = textures[v] == spec.textures.border
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -3669,45 +3398,45 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.borderTexture:SetValue(newValue, newName)
-			TRB.Data.settings.monk.windwalker.textures.border = newValue
-			TRB.Data.settings.monk.windwalker.textures.borderName = newName
+			spec.textures.border = newValue
+			spec.textures.borderName = newName
 
 			if GetSpecialization() == 3 then
-				if TRB.Data.settings.monk.windwalker.bar.border < 1 then
+				if spec.bar.border < 1 then
 					barBorderFrame:SetBackdrop({ })
 				else
-					barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.monk.windwalker.textures.border,
+					barBorderFrame:SetBackdrop({ edgeFile = spec.textures.border,
 												tile = true,
 												tileSize=4,
-												edgeSize=TRB.Data.settings.monk.windwalker.bar.border,
+												edgeSize=spec.bar.border,
 												insets = {0, 0, 0, 0}
 												})
 				end
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.border, true))
+				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 			end
 
 			UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
 
-			if TRB.Data.settings.monk.windwalker.textures.textureLock then
-				TRB.Data.settings.monk.windwalker.textures.comboPointsBorder = newValue
-				TRB.Data.settings.monk.windwalker.textures.comboPointsBorderName = newName
+			if spec.textures.textureLock then
+				spec.textures.comboPointsBorder = newValue
+				spec.textures.comboPointsBorderName = newName
 	
 				if GetSpecialization() == 3 then
 					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 					for x = 1, length do
-						if TRB.Data.settings.monk.windwalker.comboPoints.border < 1 then
+						if spec.comboPoints.border < 1 then
 							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
 						else
-							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.monk.windwalker.textures.comboPointsBorder,
+							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = spec.textures.comboPointsBorder,
 														tile = true,
 														tileSize=4,
-														edgeSize=TRB.Data.settings.monk.windwalker.comboPoints.border,
+														edgeSize=spec.comboPoints.border,
 														insets = {0, 0, 0, 0}
 														})
 						end
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropColor(0, 0, 0, 0)
-						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.border, true))
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.comboPoints.border, true))
 					end
 				end
 				UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, newName)
@@ -3722,7 +3451,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, TRB.Data.settings.monk.windwalker.textures.backgroundName)
+		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, spec.textures.backgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -3747,7 +3476,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.monk.windwalker.textures.background
+						info.checked = textures[v] == spec.textures.background
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -3760,37 +3489,37 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.backgroundTexture:SetValue(newValue, newName)
-			TRB.Data.settings.monk.windwalker.textures.background = newValue
-			TRB.Data.settings.monk.windwalker.textures.backgroundName = newName
+			spec.textures.background = newValue
+			spec.textures.backgroundName = newName
 
 			if GetSpecialization() == 3 then
 				barContainerFrame:SetBackdrop({ 
-					bgFile = TRB.Data.settings.monk.windwalker.textures.background,
+					bgFile = spec.textures.background,
 					tile = true,
-					tileSize = TRB.Data.settings.monk.windwalker.bar.width,
+					tileSize = spec.bar.width,
 					edgeSize = 1,
 					insets = {0, 0, 0, 0}
 				})
-				barContainerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.background, true))
+				barContainerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.background, true))
 			end
 
 			UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, newName)
 			
-			if TRB.Data.settings.monk.windwalker.textures.textureLock then
-				TRB.Data.settings.monk.windwalker.textures.comboPointsBackground = newValue
-				TRB.Data.settings.monk.windwalker.textures.comboPointsBackgroundName = newName
+			if spec.textures.textureLock then
+				spec.textures.comboPointsBackground = newValue
+				spec.textures.comboPointsBackgroundName = newName
 	
 				if GetSpecialization() == 3 then
 					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 					for x = 1, length do
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
-							bgFile = TRB.Data.settings.monk.windwalker.textures.comboPointsBackground,
+							bgFile = spec.textures.comboPointsBackground,
 							tile = true,
-							tileSize = TRB.Data.settings.monk.windwalker.comboPoints.width,
+							tileSize = spec.comboPoints.width,
 							edgeSize = 1,
 							insets = {0, 0, 0, 0}
 						})
-						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.background, true))
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(spec.colors.comboPoints.background, true))
 					end
 				end
 
@@ -3809,7 +3538,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.comboPointsBorderTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.comboPointsBorderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBorderTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, TRB.Data.settings.monk.windwalker.textures.comboPointsBorderName)
+		UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, spec.textures.comboPointsBorderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.comboPointsBorderTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -3834,7 +3563,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.monk.windwalker.textures.comboPointsBorder
+						info.checked = textures[v] == spec.textures.comboPointsBorder
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -3847,45 +3576,45 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.comboPointsBorderTexture:SetValue(newValue, newName)
-			TRB.Data.settings.monk.windwalker.textures.comboPointsBorder = newValue
-			TRB.Data.settings.monk.windwalker.textures.comboPointsBorderName = newName
+			spec.textures.comboPointsBorder = newValue
+			spec.textures.comboPointsBorderName = newName
 
 			if GetSpecialization() == 3 then
 				local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 				for x = 1, length do
-					if TRB.Data.settings.monk.windwalker.comboPoints.border < 1 then
+					if spec.comboPoints.border < 1 then
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
 					else
-						TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.monk.windwalker.textures.comboPointsBorder,
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = spec.textures.comboPointsBorder,
 													tile = true,
 													tileSize=4,
-													edgeSize=TRB.Data.settings.monk.windwalker.comboPoints.border,
+													edgeSize=spec.comboPoints.border,
 													insets = {0, 0, 0, 0}
 													})
 					end
 					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropColor(0, 0, 0, 0)
-					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.border, true))
+					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.comboPoints.border, true))
 				end
 			end
 
 			UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, newName)
 
-			if TRB.Data.settings.monk.windwalker.textures.textureLock then
-				TRB.Data.settings.monk.windwalker.textures.border = newValue
-				TRB.Data.settings.monk.windwalker.textures.borderName = newName
+			if spec.textures.textureLock then
+				spec.textures.border = newValue
+				spec.textures.borderName = newName
 
-				if TRB.Data.settings.monk.windwalker.bar.border < 1 then
+				if spec.bar.border < 1 then
 					barBorderFrame:SetBackdrop({ })
 				else
-					barBorderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.monk.windwalker.textures.border,
+					barBorderFrame:SetBackdrop({ edgeFile = spec.textures.border,
 												tile = true,
 												tileSize=4,
-												edgeSize=TRB.Data.settings.monk.windwalker.bar.border,
+												edgeSize=spec.bar.border,
 												insets = {0, 0, 0, 0}
 												})
 				end
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.border, true))
+				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 				UIDropDownMenu_SetText(controls.dropDown.borderTexture, newName)
 			end
 
@@ -3898,7 +3627,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.comboPointsBackgroundTexture.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.comboPointsBackgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBackgroundTexture, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, TRB.Data.settings.monk.windwalker.textures.comboPointsBackgroundName)
+		UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, spec.textures.comboPointsBackgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.comboPointsBackgroundTexture, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -3923,7 +3652,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = textures[v]
-						info.checked = textures[v] == TRB.Data.settings.monk.windwalker.textures.comboPointsBackground
+						info.checked = textures[v] == spec.textures.comboPointsBackground
 						info.func = self.SetValue
 						info.arg1 = textures[v]
 						info.arg2 = v
@@ -3936,38 +3665,38 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		-- Implement the function to change the texture
 		function controls.dropDown.comboPointsBackgroundTexture:SetValue(newValue, newName)
-			TRB.Data.settings.monk.windwalker.textures.comboPointsBackground = newValue
-			TRB.Data.settings.monk.windwalker.textures.comboPointsBackgroundName = newName
+			spec.textures.comboPointsBackground = newValue
+			spec.textures.comboPointsBackgroundName = newName
 
 			if GetSpecialization() == 3 then
 				local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 				for x = 1, length do
 					TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
-						bgFile = TRB.Data.settings.monk.windwalker.textures.comboPointsBackground,
+						bgFile = spec.textures.comboPointsBackground,
 						tile = true,
-						tileSize = TRB.Data.settings.monk.windwalker.comboPoints.width,
+						tileSize = spec.comboPoints.width,
 						edgeSize = 1,
 						insets = {0, 0, 0, 0}
 					})
-					TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.background, true))
+					TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(spec.colors.comboPoints.background, true))
 				end
 			end
 
 			UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, newName)
 			
-			if TRB.Data.settings.monk.windwalker.textures.textureLock then
-				TRB.Data.settings.monk.windwalker.textures.background = newValue
-				TRB.Data.settings.monk.windwalker.textures.backgroundName = newName
+			if spec.textures.textureLock then
+				spec.textures.background = newValue
+				spec.textures.backgroundName = newName
 
 				if GetSpecialization() == 3 then
 					barContainerFrame:SetBackdrop({ 
-						bgFile = TRB.Data.settings.monk.windwalker.textures.background,
+						bgFile = spec.textures.background,
 						tile = true,
-						tileSize = TRB.Data.settings.monk.windwalker.bar.width,
+						tileSize = spec.bar.width,
 						edgeSize = 1,
 						insets = {0, 0, 0, 0}
 					})
-					barContainerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.background, true))
+					barContainerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.background, true))
 				end
 
 				UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, newName)
@@ -3984,51 +3713,51 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars, borders, and backgrounds (respectively)")
 		f.tooltip = "This will lock the texture for each type of texture to be the same for all parts of the bar. E.g.: All bar textures will be the same, all border textures will be the same, and all background textures will be the same."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.textures.textureLock)
+		f:SetChecked(spec.textures.textureLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.textures.textureLock = self:GetChecked()
-			if TRB.Data.settings.monk.windwalker.textures.textureLock then
-				TRB.Data.settings.monk.windwalker.textures.passiveBar = TRB.Data.settings.monk.windwalker.textures.resourceBar
-				TRB.Data.settings.monk.windwalker.textures.passiveBarName = TRB.Data.settings.monk.windwalker.textures.resourceBarName
-				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, TRB.Data.settings.monk.windwalker.textures.passiveBarName)
-				TRB.Data.settings.monk.windwalker.textures.castingBar = TRB.Data.settings.monk.windwalker.textures.resourceBar
-				TRB.Data.settings.monk.windwalker.textures.castingBarName = TRB.Data.settings.monk.windwalker.textures.resourceBarName
-				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, TRB.Data.settings.monk.windwalker.textures.castingBarName)
-				TRB.Data.settings.monk.windwalker.textures.comboPointsBar = TRB.Data.settings.monk.windwalker.textures.resourceBar
-				TRB.Data.settings.monk.windwalker.textures.comboPointsBarName = TRB.Data.settings.monk.windwalker.textures.resourceBarName
-				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, TRB.Data.settings.monk.windwalker.textures.resourceBarName)
-				TRB.Data.settings.monk.windwalker.textures.comboPointsBorder = TRB.Data.settings.monk.windwalker.textures.border
-				TRB.Data.settings.monk.windwalker.textures.comboPointsBorderName = TRB.Data.settings.monk.windwalker.textures.borderName
-				UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, TRB.Data.settings.monk.windwalker.textures.comboPointsBorderName)
-				TRB.Data.settings.monk.windwalker.textures.comboPointsBackground = TRB.Data.settings.monk.windwalker.textures.background
-				TRB.Data.settings.monk.windwalker.textures.comboPointsBackgroundName = TRB.Data.settings.monk.windwalker.textures.backgroundName
-				UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, TRB.Data.settings.monk.windwalker.textures.comboPointsBackgroundName)
+			spec.textures.textureLock = self:GetChecked()
+			if spec.textures.textureLock then
+				spec.textures.passiveBar = spec.textures.resourceBar
+				spec.textures.passiveBarName = spec.textures.resourceBarName
+				UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, spec.textures.passiveBarName)
+				spec.textures.castingBar = spec.textures.resourceBar
+				spec.textures.castingBarName = spec.textures.resourceBarName
+				UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
+				spec.textures.comboPointsBar = spec.textures.resourceBar
+				spec.textures.comboPointsBarName = spec.textures.resourceBarName
+				UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, spec.textures.resourceBarName)
+				spec.textures.comboPointsBorder = spec.textures.border
+				spec.textures.comboPointsBorderName = spec.textures.borderName
+				UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, spec.textures.comboPointsBorderName)
+				spec.textures.comboPointsBackground = spec.textures.background
+				spec.textures.comboPointsBackgroundName = spec.textures.backgroundName
+				UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, spec.textures.comboPointsBackgroundName)
 
 				if GetSpecialization() == 3 then
-					resourceFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.resourceBar)
-					passiveFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.passiveBar)
-					castingFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.castingBar)
+					resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+					passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
+					castingFrame:SetStatusBarTexture(spec.textures.castingBar)
 
 					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 					for x = 1, length do
-						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(TRB.Data.settings.monk.windwalker.textures.comboPointsBar)
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(spec.textures.comboPointsBar)
 						
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
-							bgFile = TRB.Data.settings.monk.windwalker.textures.comboPointsBackground,
+							bgFile = spec.textures.comboPointsBackground,
 							tile = true,
-							tileSize = TRB.Data.settings.monk.windwalker.comboPoints.width,
+							tileSize = spec.comboPoints.width,
 							edgeSize = 1,
 							insets = {0, 0, 0, 0}
 						})
-						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.background, true))
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(spec.colors.comboPoints.background, true))
 						
-						if TRB.Data.settings.monk.windwalker.comboPoints.border < 1 then
+						if spec.comboPoints.border < 1 then
 							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
 						else
-							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = TRB.Data.settings.monk.windwalker.textures.comboPointsBorder,
+							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = spec.textures.comboPointsBorder,
 														tile = true,
 														tileSize=4,
-														edgeSize=TRB.Data.settings.monk.windwalker.comboPoints.border,
+														edgeSize=spec.comboPoints.border,
 														insets = {0, 0, 0, 0}
 														})
 						end
@@ -4047,15 +3776,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.displayBar.alwaysShow)
+		f:SetChecked(spec.displayBar.alwaysShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(true)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.monk.windwalker.displayBar.alwaysShow = true
-			TRB.Data.settings.monk.windwalker.displayBar.notZeroShow = false
-			TRB.Data.settings.monk.windwalker.displayBar.neverShow = false
+			spec.displayBar.alwaysShow = true
+			spec.displayBar.notZeroShow = false
+			spec.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -4065,15 +3794,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Energy is not capped")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar show out of combat only if Energy is not capped, hidden otherwise when out of combat."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.displayBar.notZeroShow)
+		f:SetChecked(spec.displayBar.notZeroShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(true)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.monk.windwalker.displayBar.alwaysShow = false
-			TRB.Data.settings.monk.windwalker.displayBar.notZeroShow = true
-			TRB.Data.settings.monk.windwalker.displayBar.neverShow = false
+			spec.displayBar.alwaysShow = false
+			spec.displayBar.notZeroShow = true
+			spec.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -4083,15 +3812,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
-		f:SetChecked((not TRB.Data.settings.monk.windwalker.displayBar.alwaysShow) and (not TRB.Data.settings.monk.windwalker.displayBar.notZeroShow))
+		f:SetChecked((not spec.displayBar.alwaysShow) and (not spec.displayBar.notZeroShow))
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(true)
 			controls.checkBoxes.neverShow:SetChecked(false)
-			TRB.Data.settings.monk.windwalker.displayBar.alwaysShow = false
-			TRB.Data.settings.monk.windwalker.displayBar.notZeroShow = false
-			TRB.Data.settings.monk.windwalker.displayBar.neverShow = false
+			spec.displayBar.alwaysShow = false
+			spec.displayBar.notZeroShow = false
+			spec.displayBar.neverShow = false
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -4101,15 +3830,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.displayBar.neverShow)
+		f:SetChecked(spec.displayBar.neverShow)
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.alwaysShow:SetChecked(false)
 			controls.checkBoxes.notZeroShow:SetChecked(false)
 			controls.checkBoxes.combatShow:SetChecked(false)
 			controls.checkBoxes.neverShow:SetChecked(true)
-			TRB.Data.settings.monk.windwalker.displayBar.alwaysShow = false
-			TRB.Data.settings.monk.windwalker.displayBar.notZeroShow = false
-			TRB.Data.settings.monk.windwalker.displayBar.neverShow = true
+			spec.displayBar.alwaysShow = false
+			spec.displayBar.notZeroShow = false
+			spec.displayBar.neverShow = true
 			TRB.Functions.HideResourceBar()
 		end)
 
@@ -4118,9 +3847,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
 		f.tooltip = "This will show the casting bar when hardcasting Cracking Jade Lightning. Uncheck to hide this bar."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.bar.showCasting)
+		f:SetChecked(spec.bar.showCasting)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.bar.showCasting = self:GetChecked()
+			spec.bar.showCasting = self:GetChecked()
 		end)
 
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
@@ -4128,9 +3857,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-15)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
-		f:SetChecked(TRB.Data.settings.monk.windwalker.bar.showPassive)
+		f:SetChecked(spec.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.bar.showPassive = self:GetChecked()
+			spec.bar.showPassive = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 60
@@ -4138,309 +3867,99 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Energy", TRB.Data.settings.monk.windwalker.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Energy", spec.colors.bar.base, 300, 25, xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-                local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.base, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    controls.colors.base.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.bar.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", TRB.Data.settings.monk.windwalker.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.border, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.border.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.bar.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Energy gain from Passive Sources", TRB.Data.settings.monk.windwalker.colors.bar.passive, 275, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Energy gain from Passive Sources", spec.colors.bar.passive, 275, 25, xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.passive, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    
-					controls.colors.passive.Texture:SetColorTexture(r, g, b, 1-a)
-					passiveFrame:SetStatusBarColor(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.bar.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
 		end)
 
-		controls.colors.borderChiJi = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border with Dance of Chi-Ji proc", TRB.Data.settings.monk.windwalker.colors.bar.borderChiJi, 225, 25, xCoord2, yCoord)
+		controls.colors.borderChiJi = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border with Dance of Chi-Ji proc", spec.colors.bar.borderChiJi, 225, 25, xCoord2, yCoord)
 		f = controls.colors.borderChiJi
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.borderChiJi, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.borderChiJi.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.bar.borderChiJi = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    barBorderFrame:SetBackdropBorderColor(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderChiJi")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.serenity = TRB.UiFunctions:BuildColorPicker(parent, "Energy while Serenity is active", TRB.Data.settings.monk.windwalker.colors.bar.serenity, 275, 25, xCoord, yCoord)
+		controls.colors.serenity = TRB.UiFunctions:BuildColorPicker(parent, "Energy while Serenity is active", spec.colors.bar.serenity, 275, 25, xCoord, yCoord)
 		f = controls.colors.serenity
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.serenity, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.serenity.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.windwalker.colors.bar.serenity = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "serenity")
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you are overcapping Energy", TRB.Data.settings.monk.windwalker.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you are overcapping Energy", spec.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.borderOvercap, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.borderOvercap.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.windwalker.colors.bar.borderOvercap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.serenityEnd = TRB.UiFunctions:BuildColorPicker(parent, "Energy while you have less than 1 GCD left in Serenity", TRB.Data.settings.monk.windwalker.colors.bar.serenityEnd, 275, 25, xCoord, yCoord)
+		controls.colors.serenityEnd = TRB.UiFunctions:BuildColorPicker(parent, "Energy while you have less than 1 GCD left in Serenity", spec.colors.bar.serenityEnd, 275, 25, xCoord, yCoord)
 		f = controls.colors.serenityEnd
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.serenityEnd, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.serenityEnd.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.windwalker.colors.bar.serenityEnd = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "serenityEnd")
 		end)
 
-		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Energy spent from hardcasting spells", TRB.Data.settings.monk.windwalker.colors.bar.casting, 275, 25, xCoord2, yCoord)
+		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Energy spent from hardcasting spells", spec.colors.bar.casting, 275, 25, xCoord2, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.casting, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-
-					controls.colors.casting.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.windwalker.colors.bar.casting = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-					castingFrame:SetStatusBarColor(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 3)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.t28 = TRB.UiFunctions:BuildColorPicker(parent, "Energy while you have the Primordial Power (T28) buff", TRB.Data.settings.monk.windwalker.colors.bar.t28, 275, 25, xCoord, yCoord)
+		controls.colors.t28 = TRB.UiFunctions:BuildColorPicker(parent, "Energy while you have the Primordial Power (T28) buff", spec.colors.bar.t28, 275, 25, xCoord, yCoord)
 		f = controls.colors.t28
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.t28, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "t28")
+		end)
 
-					controls.colors.t28.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.windwalker.colors.bar.t28 = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
-		end)	
-
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", TRB.Data.settings.monk.windwalker.colors.bar.background, 275, 25, xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.background, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.background.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.bar.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    barContainerFrame:SetBackdropColor(r, g, b, 1-a)
-                end)
-			end
-		end)	
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
+		end)
 
 		yCoord = yCoord - 40
-
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Chi Colors", 0, yCoord)
+		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
-		controls.colors.comboPointBase = TRB.UiFunctions:BuildColorPicker(parent, "Chi", TRB.Data.settings.monk.windwalker.colors.comboPoints.base, 300, 25, xCoord, yCoord)
-		f = controls.colors.comboPointBase
+		controls.colors.comboPoints.base = TRB.UiFunctions:BuildColorPicker(parent, "Chi", spec.colors.comboPoints.base, 300, 25, xCoord, yCoord)
+		f = controls.colors.comboPoints.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-                local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.base, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    controls.colors.comboPointBase.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.comboPoints.base = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 		end)
 
-		controls.colors.comboPointBorder = TRB.UiFunctions:BuildColorPicker(parent, "Chi's border", TRB.Data.settings.monk.windwalker.colors.comboPoints.border, 225, 25, xCoord2, yCoord)
-		f = controls.colors.comboPointBorder
+		controls.colors.comboPoints.border = TRB.UiFunctions:BuildColorPicker(parent, "Chi's border", spec.colors.comboPoints.border, 225, 25, xCoord2, yCoord)
+		f = controls.colors.comboPoints.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.border, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-
-                    controls.colors.comboPointBorder.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.comboPoints.border = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 		end)
 
-		yCoord = yCoord - 30
-		controls.colors.comboPointPenultimate = TRB.UiFunctions:BuildColorPicker(parent, "Penultimate Chi", TRB.Data.settings.monk.windwalker.colors.comboPoints.penultimate, 275, 25, xCoord, yCoord)
-		f = controls.colors.comboPointPenultimate
+		yCoord = yCoord - 30		
+		controls.colors.comboPoints.penultimate = TRB.UiFunctions:BuildColorPicker(parent, "Penultimate Chi", spec.colors.comboPoints.penultimate, 300, 25, xCoord, yCoord)
+		f = controls.colors.comboPoints.penultimate
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-                local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.penultimate, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    controls.colors.comboPointPenultimate.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.comboPoints.penultimate = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 		end)
 
-		controls.colors.comboPointFinal = TRB.UiFunctions:BuildColorPicker(parent, "Final Chi", TRB.Data.settings.monk.windwalker.colors.comboPoints.final, 275, 25, xCoord2, yCoord)
-		f = controls.colors.comboPointFinal
+		yCoord = yCoord - 30		
+		controls.colors.comboPoints.final = TRB.UiFunctions:BuildColorPicker(parent, "Final Chi", spec.colors.comboPoints.final, 300, 25, xCoord, yCoord)
+		f = controls.colors.comboPoints.final
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-                local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.final, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    controls.colors.comboPointFinal.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.comboPoints.final = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 		end)
 
 		yCoord = yCoord - 30
@@ -4449,105 +3968,40 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use highest Chi color for all?")
 		f.tooltip = "When checked, the highest Chi's color will be used for all Chi. E.g., if you have maximum 5 Chi and currently have 4, the Penultimate color will be used for all Chi instead of just the second to last."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.comboPoints.sameColor)
+		f:SetChecked(spec.comboPoints.sameColor)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.comboPoints.sameColor = self:GetChecked()
+			spec.comboPoints.sameColor = self:GetChecked()
 		end)
 
 
-		controls.colors.comboPointBackground = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled Chi background", TRB.Data.settings.monk.windwalker.colors.comboPoints.background, 275, 25, xCoord2, yCoord)
+		controls.colors.comboPointBackground = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled Chi background", spec.colors.comboPoints.background, 275, 25, xCoord2, yCoord)
 		f = controls.colors.comboPointBackground
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.background, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.comboPointBackground.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.comboPoints.background = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                    
-					local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
-					for x = 1, length do
-						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.background, true))
-					end
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
 		end)
 
 		yCoord = yCoord - 40
-
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		
+		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-
-		controls.colors.thresholdUnder = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Energy threshold line", TRB.Data.settings.monk.windwalker.colors.threshold.under, 275, 25, xCoord2, yCoord)
-		f = controls.colors.thresholdUnder
+		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Energy threshold line", spec.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.threshold.under, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.thresholdUnder.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.threshold.under = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.thresholdOver = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Energy threshold line", TRB.Data.settings.monk.windwalker.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
-		f = controls.colors.thresholdOver
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Energy threshold line", spec.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.threshold.over, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.thresholdOver.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.threshold.over = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.thresholdUnusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", TRB.Data.settings.monk.windwalker.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
-		f = controls.colors.thresholdUnusable
+		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
+		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.threshold.unusable, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.thresholdUnusable.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.threshold.unusable = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
@@ -4555,9 +4009,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.overlapBorder)
+		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.overlapBorder = self:GetChecked()
+			spec.thresholds.overlapBorder = self:GetChecked()
 			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.monk.windwalker)
 		end)
 		
@@ -4568,9 +4022,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Expel Harm")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Expel Harm. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.expelHarm.enabled)
+		f:SetChecked(spec.thresholds.expelHarm.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.expelHarm.enabled = self:GetChecked()
+			spec.thresholds.expelHarm.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -4579,9 +4033,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Tiger Palm")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Tiger Palm."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.tigerPalm.enabled)
+		f:SetChecked(spec.thresholds.tigerPalm.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.tigerPalm.enabled = self:GetChecked()
+			spec.thresholds.tigerPalm.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -4590,9 +4044,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Fist of the White Tiger (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Fist of the White Tiger. Only visible if talented in to Fist of the White Tiger. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.fistOfTheWhiteTiger.enabled)
+		f:SetChecked(spec.thresholds.fistOfTheWhiteTiger.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.fistOfTheWhiteTiger.enabled = self:GetChecked()
+			spec.thresholds.fistOfTheWhiteTiger.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25		
@@ -4604,9 +4058,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Crackling Jade Lightning")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crackling Jade Lightning."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.cracklingJadeLightning.enabled)
+		f:SetChecked(spec.thresholds.cracklingJadeLightning.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.cracklingJadeLightning.enabled = self:GetChecked()
+			spec.thresholds.cracklingJadeLightning.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -4615,9 +4069,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Detox")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Detox. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.detox.enabled)
+		f:SetChecked(spec.thresholds.detox.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.detox.enabled = self:GetChecked()
+			spec.thresholds.detox.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -4626,9 +4080,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Paralysis")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Paralysis. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.paralysis.enabled)
+		f:SetChecked(spec.thresholds.paralysis.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.paralysis.enabled = self:GetChecked()
+			spec.thresholds.paralysis.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -4637,9 +4091,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Vivify")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Vivify."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.vivify.enabled)
+		f:SetChecked(spec.thresholds.vivify.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.vivify.enabled = self:GetChecked()
+			spec.thresholds.vivify.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -4648,9 +4102,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Disable")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Disable."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.disable.enabled)
+		f:SetChecked(spec.thresholds.disable.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.disable.enabled = self:GetChecked()
+			spec.thresholds.disable.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 30
@@ -4661,7 +4115,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
         controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
         controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
         UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
-        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, TRB.Data.settings.monk.windwalker.thresholds.icons.relativeToName)
+        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
 
         -- Create and bind the initialization function to the dropdown menu
@@ -4681,7 +4135,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
             for k, v in pairs(relativeToList) do
                 info.text = v
                 info.value = relativeTo[v]
-                info.checked = relativeTo[v] == TRB.Data.settings.monk.windwalker.thresholds.icons.relativeTo
+                info.checked = relativeTo[v] == spec.thresholds.icons.relativeTo
                 info.func = self.SetValue
                 info.arg1 = relativeTo[v]
                 info.arg2 = v
@@ -4690,8 +4144,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
         end)
 
         function controls.dropDown.thresholdIconRelativeTo:SetValue(newValue, newName)
-            TRB.Data.settings.monk.windwalker.thresholds.icons.relativeTo = newValue
-            TRB.Data.settings.monk.windwalker.thresholds.icons.relativeToName = newName
+            spec.thresholds.icons.relativeTo = newValue
+            spec.thresholds.icons.relativeToName = newName
 			
 			if GetSpecialization() == 3 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.monk.windwalker)
@@ -4707,22 +4161,22 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
 		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for potion icons that are on cooldown."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.icons.showCooldown)
+		f:SetChecked(spec.thresholds.icons.showCooldown)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.icons.showCooldown = self:GetChecked()
+			spec.thresholds.icons.showCooldown = self:GetChecked()
 		end)
 		
-		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.monk.windwalker.thresholds.icons.enabled)
+		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.thresholds.icons.enabled)
+		f:SetChecked(spec.thresholds.icons.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.thresholds.icons.enabled = self:GetChecked()
-			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, TRB.Data.settings.monk.windwalker.thresholds.icons.enabled)
+			spec.thresholds.icons.enabled = self:GetChecked()
+			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 
 			if GetSpecialization() == 3 then
 				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.monk.windwalker)
@@ -4731,7 +4185,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		yCoord = yCoord - 80
 		title = "Threshold Icon Width"
-		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, TRB.Data.settings.monk.windwalker.thresholds.icons.width, 1, 2,
+		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4741,10 +4195,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.thresholds.icons.width = value
+			spec.thresholds.icons.width = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.monk.windwalker.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.monk.windwalker.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.monk.windwalker.thresholds.icons.border
+			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.thresholds.icons.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -4756,7 +4210,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		title = "Threshold Icon Height"
-		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, TRB.Data.settings.monk.windwalker.thresholds.icons.height, 1, 2,
+		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4766,10 +4220,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.thresholds.icons.height = value
+			spec.thresholds.icons.height = value
 
-			local maxBorderSize = math.min(math.floor(TRB.Data.settings.monk.windwalker.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.monk.windwalker.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
-			local borderSize = TRB.Data.settings.monk.windwalker.thresholds.icons.border
+			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+			local borderSize = spec.thresholds.icons.border
 		
 			if maxBorderSize < borderSize then
 				maxBorderSize = borderSize
@@ -4783,7 +4237,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		title = "Threshold Icon Horizontal Position (Relative)"
 		yCoord = yCoord - 60
-		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), TRB.Data.settings.monk.windwalker.thresholds.icons.xPos, 1, 2,
+		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4793,7 +4247,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.thresholds.icons.xPos = value
+			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 3 then
 				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
@@ -4801,7 +4255,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		title = "Threshold Icon Vertical Position (Relative)"
-		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), TRB.Data.settings.monk.windwalker.thresholds.icons.yPos, 1, 2,
+		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4811,14 +4265,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.thresholds.icons.yPos = value
+			spec.thresholds.icons.yPos = value
 		end)
 
-		local maxIconBorderHeight = math.min(math.floor(TRB.Data.settings.monk.windwalker.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(TRB.Data.settings.monk.windwalker.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+		local maxIconBorderHeight = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
 
 		title = "Threshold Icon Border Width"
 		yCoord = yCoord - 60
-		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, TRB.Data.settings.monk.windwalker.thresholds.icons.border, 1, 2,
+		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4828,10 +4282,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.thresholds.icons.border = value
+			spec.thresholds.icons.border = value
 
-			local minsliderWidth = math.max(TRB.Data.settings.monk.windwalker.thresholds.icons.border*2, 1)
-			local minsliderHeight = math.max(TRB.Data.settings.monk.windwalker.thresholds.icons.border*2, 1)
+			local minsliderWidth = math.max(spec.thresholds.icons.border*2, 1)
+			local minsliderHeight = math.max(spec.thresholds.icons.border*2, 1)
 
 			controls.thresholdIconHeight:SetMinMaxValues(minsliderHeight, 128)
 			controls.thresholdIconHeight.MinLabel:SetText(minsliderHeight)
@@ -4853,9 +4307,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Serenity")
 		f.tooltip = "Changes the bar color when Serenity is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.endOfSerenity.enabled)
+		f:SetChecked(spec.endOfSerenity.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.endOfSerenity.enabled = self:GetChecked()
+			spec.endOfSerenity.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
@@ -4865,17 +4319,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Serenity ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Change the bar color based on how many GCDs remain until Serenity ends."
-		if TRB.Data.settings.monk.windwalker.endOfSerenity.mode == "gcd" then
+		if spec.endOfSerenity.mode == "gcd" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.endOfSerenityModeGCDs:SetChecked(true)
 			controls.checkBoxes.endOfSerenityModeTime:SetChecked(false)
-			TRB.Data.settings.monk.windwalker.endOfSerenity.mode = "gcd"
+			spec.endOfSerenity.mode = "gcd"
 		end)
 
 		title = "Serenity GCDs - 0.75sec Floor"
-		controls.endOfSerenityGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 10, TRB.Data.settings.monk.windwalker.endOfSerenity.gcdsMax, 0.25, 2,
+		controls.endOfSerenityGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 10, spec.endOfSerenity.gcdsMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfSerenityGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4886,7 +4340,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.endOfSerenity.gcdsMax = value
+			spec.endOfSerenity.gcdsMax = value
 		end)
 
 		yCoord = yCoord - 60
@@ -4896,17 +4350,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		getglobal(f:GetName() .. 'Text'):SetText("Time until Serenity ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Change the bar color based on how many seconds remain until Serenity will end."
-		if TRB.Data.settings.monk.windwalker.endOfSerenity.mode == "time" then
+		if spec.endOfSerenity.mode == "time" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.endOfSerenityModeGCDs:SetChecked(false)
 			controls.checkBoxes.endOfSerenityModeTime:SetChecked(true)
-			TRB.Data.settings.monk.windwalker.endOfSerenity.mode = "time"
+			spec.endOfSerenity.mode = "time"
 		end)
 
 		title = "Serenity Time Remaining"
-		controls.endOfSerenityTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, TRB.Data.settings.monk.windwalker.endOfSerenity.timeMax, 0.25, 2,
+		controls.endOfSerenityTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.endOfSerenity.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfSerenityTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4918,7 +4372,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.endOfSerenity.timeMax = value
+			spec.endOfSerenity.timeMax = value
 		end)
 
 
@@ -4931,15 +4385,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
 		f.tooltip = "This will change the bar's border color when your current energy is above the overcapping maximum Energy as configured below."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.colors.bar.overcapEnabled)
+		f:SetChecked(spec.colors.bar.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.colors.bar.overcapEnabled = self:GetChecked()
+			spec.colors.bar.overcapEnabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
 
 		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 170, TRB.Data.settings.monk.windwalker.overcapThreshold, 1, 1,
+		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 170, spec.overcapThreshold, 1, 1,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -4951,7 +4405,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 			value = TRB.Functions.RoundTo(value, 1)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.overcapThreshold = value
+			spec.overcapThreshold = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = controls
@@ -4961,6 +4415,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		if parent == nil then
 			return
 		end
+
+		local spec = TRB.Data.settings.monk.windwalker
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.windwalker
@@ -4996,7 +4452,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontLeft, TRB.Data.settings.monk.windwalker.displayText.left.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -5021,7 +4477,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.monk.windwalker.displayText.left.fontFace
+						info.checked = fonts[v] == spec.displayText.left.fontFace
 						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -5034,23 +4490,23 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		function controls.dropDown.fontLeft:SetValue(newValue, newName)
-			TRB.Data.settings.monk.windwalker.displayText.left.fontFace = newValue
-			TRB.Data.settings.monk.windwalker.displayText.left.fontFaceName = newName
+			spec.displayText.left.fontFace = newValue
+			spec.displayText.left.fontFaceName = newName
 			UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-			if TRB.Data.settings.monk.windwalker.displayText.fontFaceLock then
-				TRB.Data.settings.monk.windwalker.displayText.middle.fontFace = newValue
-				TRB.Data.settings.monk.windwalker.displayText.middle.fontFaceName = newName
+			if spec.displayText.fontFaceLock then
+				spec.displayText.middle.fontFace = newValue
+				spec.displayText.middle.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-				TRB.Data.settings.monk.windwalker.displayText.right.fontFace = newValue
-				TRB.Data.settings.monk.windwalker.displayText.right.fontFaceName = newName
+				spec.displayText.right.fontFace = newValue
+				spec.displayText.right.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
 
 			if GetSpecialization() == 3 then
-				leftTextFrame.font:SetFont(TRB.Data.settings.monk.windwalker.displayText.left.fontFace, TRB.Data.settings.monk.windwalker.displayText.left.fontSize, "OUTLINE")
-				if TRB.Data.settings.monk.windwalker.displayText.fontFaceLock then
-					middleTextFrame.font:SetFont(TRB.Data.settings.monk.windwalker.displayText.middle.fontFace, TRB.Data.settings.monk.windwalker.displayText.middle.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(TRB.Data.settings.monk.windwalker.displayText.right.fontFace, TRB.Data.settings.monk.windwalker.displayText.right.fontSize, "OUTLINE")
+				leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
+				if spec.displayText.fontFaceLock then
+					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 				end
 			end
 
@@ -5063,7 +4519,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.monk.windwalker.displayText.middle.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -5088,7 +4544,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.monk.windwalker.displayText.middle.fontFace
+						info.checked = fonts[v] == spec.displayText.middle.fontFace
 						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -5101,23 +4557,23 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		function controls.dropDown.fontMiddle:SetValue(newValue, newName)
-			TRB.Data.settings.monk.windwalker.displayText.middle.fontFace = newValue
-			TRB.Data.settings.monk.windwalker.displayText.middle.fontFaceName = newName
+			spec.displayText.middle.fontFace = newValue
+			spec.displayText.middle.fontFaceName = newName
 			UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-			if TRB.Data.settings.monk.windwalker.displayText.fontFaceLock then
-				TRB.Data.settings.monk.windwalker.displayText.left.fontFace = newValue
-				TRB.Data.settings.monk.windwalker.displayText.left.fontFaceName = newName
+			if spec.displayText.fontFaceLock then
+				spec.displayText.left.fontFace = newValue
+				spec.displayText.left.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				TRB.Data.settings.monk.windwalker.displayText.right.fontFace = newValue
-				TRB.Data.settings.monk.windwalker.displayText.right.fontFaceName = newName
+				spec.displayText.right.fontFace = newValue
+				spec.displayText.right.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
 			end
 
 			if GetSpecialization() == 3 then
-				middleTextFrame.font:SetFont(TRB.Data.settings.monk.windwalker.displayText.middle.fontFace, TRB.Data.settings.monk.windwalker.displayText.middle.fontSize, "OUTLINE")
-				if TRB.Data.settings.monk.windwalker.displayText.fontFaceLock then
-					leftTextFrame.font:SetFont(TRB.Data.settings.monk.windwalker.displayText.left.fontFace, TRB.Data.settings.monk.windwalker.displayText.left.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(TRB.Data.settings.monk.windwalker.displayText.right.fontFace, TRB.Data.settings.monk.windwalker.displayText.right.fontSize, "OUTLINE")
+				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
+				if spec.displayText.fontFaceLock then
+					leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 				end
 			end
 
@@ -5132,7 +4588,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
 		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
 		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.monk.windwalker.displayText.right.fontFaceName)
+		UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -5157,7 +4613,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = fonts[v]
-						info.checked = fonts[v] == TRB.Data.settings.monk.windwalker.displayText.right.fontFace
+						info.checked = fonts[v] == spec.displayText.right.fontFace
 						info.func = self.SetValue
 						info.arg1 = fonts[v]
 						info.arg2 = v
@@ -5170,23 +4626,23 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		function controls.dropDown.fontRight:SetValue(newValue, newName)
-			TRB.Data.settings.monk.windwalker.displayText.right.fontFace = newValue
-			TRB.Data.settings.monk.windwalker.displayText.right.fontFaceName = newName
+			spec.displayText.right.fontFace = newValue
+			spec.displayText.right.fontFaceName = newName
 			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-			if TRB.Data.settings.monk.windwalker.displayText.fontFaceLock then
-				TRB.Data.settings.monk.windwalker.displayText.left.fontFace = newValue
-				TRB.Data.settings.monk.windwalker.displayText.left.fontFaceName = newName
+			if spec.displayText.fontFaceLock then
+				spec.displayText.left.fontFace = newValue
+				spec.displayText.left.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				TRB.Data.settings.monk.windwalker.displayText.middle.fontFace = newValue
-				TRB.Data.settings.monk.windwalker.displayText.middle.fontFaceName = newName
+				spec.displayText.middle.fontFace = newValue
+				spec.displayText.middle.fontFaceName = newName
 				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
 			end
 
 			if GetSpecialization() == 3 then
-				rightTextFrame.font:SetFont(TRB.Data.settings.monk.windwalker.displayText.right.fontFace, TRB.Data.settings.monk.windwalker.displayText.right.fontSize, "OUTLINE")
-				if TRB.Data.settings.monk.windwalker.displayText.fontFaceLock then
-					leftTextFrame.font:SetFont(TRB.Data.settings.monk.windwalker.displayText.left.fontFace, TRB.Data.settings.monk.windwalker.displayText.left.fontSize, "OUTLINE")
-					middleTextFrame.font:SetFont(TRB.Data.settings.monk.windwalker.displayText.middle.fontFace, TRB.Data.settings.monk.windwalker.displayText.middle.fontSize, "OUTLINE")
+				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
+				if spec.displayText.fontFaceLock then
+					leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
+					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
 				end
 			end
 
@@ -5198,20 +4654,20 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
 		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.displayText.fontFaceLock)
+		f:SetChecked(spec.displayText.fontFaceLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.displayText.fontFaceLock = self:GetChecked()
-			if TRB.Data.settings.monk.windwalker.displayText.fontFaceLock then
-				TRB.Data.settings.monk.windwalker.displayText.middle.fontFace = TRB.Data.settings.monk.windwalker.displayText.left.fontFace
-				TRB.Data.settings.monk.windwalker.displayText.middle.fontFaceName = TRB.Data.settings.monk.windwalker.displayText.left.fontFaceName
-				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, TRB.Data.settings.monk.windwalker.displayText.middle.fontFaceName)
-				TRB.Data.settings.monk.windwalker.displayText.right.fontFace = TRB.Data.settings.monk.windwalker.displayText.left.fontFace
-				TRB.Data.settings.monk.windwalker.displayText.right.fontFaceName = TRB.Data.settings.monk.windwalker.displayText.left.fontFaceName
-				UIDropDownMenu_SetText(controls.dropDown.fontRight, TRB.Data.settings.monk.windwalker.displayText.right.fontFaceName)
+			spec.displayText.fontFaceLock = self:GetChecked()
+			if spec.displayText.fontFaceLock then
+				spec.displayText.middle.fontFace = spec.displayText.left.fontFace
+				spec.displayText.middle.fontFaceName = spec.displayText.left.fontFaceName
+				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
+				spec.displayText.right.fontFace = spec.displayText.left.fontFace
+				spec.displayText.right.fontFaceName = spec.displayText.left.fontFaceName
+				UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 
 				if GetSpecialization() == 3 then
-					middleTextFrame.font:SetFont(TRB.Data.settings.monk.windwalker.displayText.middle.fontFace, TRB.Data.settings.monk.windwalker.displayText.middle.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(TRB.Data.settings.monk.windwalker.displayText.right.fontFace, TRB.Data.settings.monk.windwalker.displayText.right.fontSize, "OUTLINE")
+					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
+					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 				end
 			end
 		end)
@@ -5222,7 +4678,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
-		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.monk.windwalker.displayText.left.fontSize, 1, 0,
+		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5232,13 +4688,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.displayText.left.fontSize = value
+			spec.displayText.left.fontSize = value
 
 			if GetSpecialization() == 3 then
-				leftTextFrame.font:SetFont(TRB.Data.settings.monk.windwalker.displayText.left.fontFace, TRB.Data.settings.monk.windwalker.displayText.left.fontSize, "OUTLINE")
+				leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
 			end
 
-			if TRB.Data.settings.monk.windwalker.displayText.fontSizeLock then
+			if spec.displayText.fontSizeLock then
 				controls.fontSizeMiddle:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
@@ -5249,90 +4705,41 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.displayText.fontSizeLock)
+		f:SetChecked(spec.displayText.fontSizeLock)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.displayText.fontSizeLock = self:GetChecked()
-			if TRB.Data.settings.monk.windwalker.displayText.fontSizeLock then
-				controls.fontSizeMiddle:SetValue(TRB.Data.settings.monk.windwalker.displayText.left.fontSize)
-				controls.fontSizeRight:SetValue(TRB.Data.settings.monk.windwalker.displayText.left.fontSize)
+			spec.displayText.fontSizeLock = self:GetChecked()
+			if spec.displayText.fontSizeLock then
+				controls.fontSizeMiddle:SetValue(spec.displayText.left.fontSize)
+				controls.fontSizeRight:SetValue(spec.displayText.left.fontSize)
 			end
 		end)
 
-		controls.colors.leftText = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", TRB.Data.settings.monk.windwalker.colors.text.left,
+		controls.colors.text = {}
+
+		controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
 														250, 25, xCoord2, yCoord-30)
-		f = controls.colors.leftText
+		f = controls.colors.text.left
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.text.left, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    --Text doesn't care about Alpha, but the color picker does!
-                    a = 0.0
-        
-                    controls.colors.leftText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.text.left = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
 		end)
 
-		controls.colors.middleText = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", TRB.Data.settings.monk.windwalker.colors.text.middle,
+		controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
 														225, 25, xCoord2, yCoord-70)
-		f = controls.colors.middleText
+		f = controls.colors.text.middle
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.text.middle, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    --Text doesn't care about Alpha, but the color picker does!
-                    a = 0.0
-        
-                    controls.colors.middleText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.text.middle = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
 		end)
 
-		controls.colors.rightText = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", TRB.Data.settings.monk.windwalker.colors.text.right,
+		controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
 														225, 25, xCoord2, yCoord-110)
-		f = controls.colors.rightText
+		f = controls.colors.text.right
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.text.right, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    --Text doesn't care about Alpha, but the color picker does!
-                    a = 0.0
-        
-                    controls.colors.rightText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.text.right = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
 		end)
 
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.monk.windwalker.displayText.middle.fontSize, 1, 0,
+		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5342,13 +4749,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.displayText.middle.fontSize = value
+			spec.displayText.middle.fontSize = value
 
 			if GetSpecialization() == 3 then
-				middleTextFrame.font:SetFont(TRB.Data.settings.monk.windwalker.displayText.middle.fontFace, TRB.Data.settings.monk.windwalker.displayText.middle.fontSize, "OUTLINE")
+				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
 			end
 
-			if TRB.Data.settings.monk.windwalker.displayText.fontSizeLock then
+			if spec.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeRight:SetValue(value)
 			end
@@ -5356,7 +4763,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
-		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, TRB.Data.settings.monk.windwalker.displayText.right.fontSize, 1, 0,
+		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5366,13 +4773,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				value = min
 			end
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.displayText.right.fontSize = value
+			spec.displayText.right.fontSize = value
 
 			if GetSpecialization() == 3 then
-				rightTextFrame.font:SetFont(TRB.Data.settings.monk.windwalker.displayText.right.fontFace, TRB.Data.settings.monk.windwalker.displayText.right.fontSize, "OUTLINE")
+				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
 			end
 
-			if TRB.Data.settings.monk.windwalker.displayText.fontSizeLock then
+			if spec.displayText.fontSizeLock then
 				controls.fontSizeLeft:SetValue(value)
 				controls.fontSizeMiddle:SetValue(value)
 			end
@@ -5382,97 +4789,29 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Energy Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.currentEnergyText = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy", TRB.Data.settings.monk.windwalker.colors.text.current, 300, 25, xCoord, yCoord)
-		f = controls.colors.currentEnergyText
+		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy", spec.colors.text.current, 300, 25, xCoord, yCoord)
+		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.text.current, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-                    --Text doesn't care about Alpha, but the color picker does!
-                    a = 0.0
-        
-                    controls.colors.currentEnergyText.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.text.current = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 		
-		controls.colors.passiveEnergyText = TRB.UiFunctions:BuildColorPicker(parent, "Passive Energy", TRB.Data.settings.monk.windwalker.colors.text.passive, 275, 25, xCoord2, yCoord)
-		f = controls.colors.passiveEnergyText
+		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Energy", spec.colors.text.passive, 275, 25, xCoord2, yCoord)
+		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.text.passive, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.passiveEnergyText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.windwalker.colors.text.passive = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.thresholdenergyText = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Energy to use any enabled threshold ability", TRB.Data.settings.monk.windwalker.colors.text.overThreshold, 300, 25, xCoord, yCoord)
-		f = controls.colors.thresholdenergyText
+		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Energy to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, xCoord, yCoord)
+		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.text.overThreshold, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.thresholdenergyText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.windwalker.colors.text.overThreshold = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.overcapenergyText = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy is above overcap threshold", TRB.Data.settings.monk.windwalker.colors.text.overcap, 275, 25, xCoord2, yCoord)
-		f = controls.colors.overcapenergyText
+		controls.colors.text.overcap = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy is above overcap threshold", spec.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		f = controls.colors.text.overcap
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.text.overcap, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r, g, b, a
-					if color then
----@diagnostic disable-next-line: deprecated
-						r, g, b, a = unpack(color)
-					else
-						r, g, b = ColorPickerFrame:GetColorRGB()
-						a = OpacitySliderFrame:GetValue()
-					end
-					--Text doesn't care about Alpha, but the color picker does!
-					a = 0.0
-
-					controls.colors.overcapenergyText.Texture:SetColorTexture(r, g, b, 1-a)
-					TRB.Data.settings.monk.windwalker.colors.text.overcap = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-				end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 		end)
 
 		yCoord = yCoord - 30
@@ -5482,9 +4821,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Energy text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.colors.text.overThresholdEnabled)
+		f:SetChecked(spec.colors.text.overThresholdEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.colors.text.overThresholdEnabled = self:GetChecked()
+			spec.colors.text.overThresholdEnabled = self:GetChecked()
 		end)
 
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -5492,9 +4831,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Energy text color when your current energy is above the overcapping maximum Energy value."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.colors.text.overcapEnabled)
+		f:SetChecked(spec.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.colors.text.overcapEnabled = self:GetChecked()
+			spec.colors.text.overcapEnabled = self:GetChecked()
 		end)
 		
 
@@ -5508,81 +4847,37 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change total Mark of the Crane counter and Mark of the Crane timer color based on time remaining?")
 		f.tooltip = "When checked, the color of total Mark of the Crane debuffs up counters and timers will change based on whether or not Mark of the Crane is on the current target."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.colors.text.dots.enabled)
+		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.colors.text.dots.enabled = self:GetChecked()
+			spec.colors.text.dots.enabled = self:GetChecked()
 		end)
 
-		controls.colors.dotUp = TRB.UiFunctions:BuildColorPicker(parent, "Mark of the Crane is active on current target", TRB.Data.settings.monk.windwalker.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
-		f = controls.colors.dotUp
+		controls.colors.dots = {}
+
+		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
+		f = controls.colors.dots.up
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.text.dots.up, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.dotUp.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.text.dots.up = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
 		end)
 
-		controls.colors.dotPandemic = TRB.UiFunctions:BuildColorPicker(parent, "Mark of the Crane is active on current target but has the lowest remaining duration of alive targets", TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
-		f = controls.colors.dotPandemic
+		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
+		f = controls.colors.dots.pandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.dotPandemic.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.text.dots.pandemic = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
 		end)
 
-		controls.colors.dotDown = TRB.UiFunctions:BuildColorPicker(parent, "Mark of the Crane is not active on current target", TRB.Data.settings.monk.windwalker.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
-		f = controls.colors.dotDown
+		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
+		f = controls.colors.dots.down
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.text.dots.down, true)
-				TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-                    local r, g, b, a
-                    if color then
----@diagnostic disable-next-line: deprecated
-                        r, g, b, a = unpack(color)
-                    else
-                        r, g, b = ColorPickerFrame:GetColorRGB()
-                        a = OpacitySliderFrame:GetValue()
-                    end
-        
-                    controls.colors.dotDown.Texture:SetColorTexture(r, g, b, 1-a)
-                    TRB.Data.settings.monk.windwalker.colors.text.dots.down = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
-                end)
-			end
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
 		end)
-
 
 		yCoord = yCoord - 130
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
-		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, TRB.Data.settings.monk.windwalker.hastePrecision, 1, 0,
+		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5594,7 +4889,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 			value = TRB.Functions.RoundTo(value, 0)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.hastePrecision = value
+			spec.hastePrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = controls
@@ -5604,6 +4899,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		if parent == nil then
 			return
 		end
+
+		local spec = TRB.Data.settings.monk.windwalker
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.windwalker
@@ -5638,13 +4935,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Energy")
 		f.tooltip = "Play an audio cue when your hardcast spell will overcap Energy."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.audio.overcap.enabled)
+		f:SetChecked(spec.audio.overcap.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.audio.overcap.enabled = self:GetChecked()
+			spec.audio.overcap.enabled = self:GetChecked()
 
-			if TRB.Data.settings.monk.windwalker.audio.overcap.enabled then
+			if spec.audio.overcap.enabled then
 				---@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+				PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
@@ -5652,7 +4949,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Monk_Windwalker_overcapAudio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, TRB.Data.settings.monk.windwalker.audio.overcap.soundName)
+		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -5677,7 +4974,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.monk.windwalker.audio.overcap.sound
+						info.checked = sounds[v] == spec.audio.overcap.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -5689,12 +4986,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-			TRB.Data.settings.monk.windwalker.audio.overcap.sound = newValue
-			TRB.Data.settings.monk.windwalker.audio.overcap.soundName = newName
+			spec.audio.overcap.sound = newValue
+			spec.audio.overcap.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 			---@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
@@ -5706,13 +5003,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Dance of Chi-Ji proc")
 		f.tooltip = "Play an audio cue when you get a Dance of Chi-Ji proc that allows you to use Spinning Crane Kick for no Chi."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.enabled)
+		f:SetChecked(spec.audio.danceOfChiJi.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.enabled = self:GetChecked()
+			spec.audio.danceOfChiJi.enabled = self:GetChecked()
 
-			if TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.enabled then
+			if spec.audio.danceOfChiJi.enabled then
 ---@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.sound, TRB.Data.settings.core.audio.channel.channel)
+				PlaySoundFile(spec.audio.danceOfChiJi.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
@@ -5720,7 +5017,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.dropDown.danceOfChiJiAudio = CreateFrame("FRAME", "TwintopResourceBar_Monk_Windwalker_danceOfChiJi_Audio", parent, "UIDropDownMenuTemplate")
 		controls.dropDown.danceOfChiJiAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
 		UIDropDownMenu_SetWidth(controls.dropDown.danceOfChiJiAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.danceOfChiJiAudio, TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.soundName)
+		UIDropDownMenu_SetText(controls.dropDown.danceOfChiJiAudio, spec.audio.danceOfChiJi.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.danceOfChiJiAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
@@ -5745,7 +5042,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.sound
+						info.checked = sounds[v] == spec.audio.danceOfChiJi.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -5757,12 +5054,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		-- Implement the function to change the audio
 		function controls.dropDown.danceOfChiJiAudio:SetValue(newValue, newName)
-			TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.sound = newValue
-			TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.soundName = newName
+			spec.audio.danceOfChiJi.sound = newValue
+			spec.audio.danceOfChiJi.soundName = newName
 			UIDropDownMenu_SetText(controls.dropDown.danceOfChiJiAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(spec.audio.danceOfChiJi.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 
@@ -5775,9 +5072,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track energy regen")
 		f.tooltip = "Include energy regen in the passive bar and passive variables. Unchecking this will cause the following Passive Energy Generation options to have no effect."
-		f:SetChecked(TRB.Data.settings.monk.windwalker.generation.enabled)
+		f:SetChecked(spec.generation.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.monk.windwalker.generation.enabled = self:GetChecked()
+			spec.generation.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
@@ -5787,17 +5084,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		getglobal(f:GetName() .. 'Text'):SetText("Energy generation over GCDs")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Energy generation over the next X GCDs, based on player's current GCD length."
-		if TRB.Data.settings.monk.windwalker.generation.mode == "gcd" then
+		if spec.generation.mode == "gcd" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.energyGenerationModeGCDs:SetChecked(true)
 			controls.checkBoxes.energyGenerationModeTime:SetChecked(false)
-			TRB.Data.settings.monk.windwalker.generation.mode = "gcd"
+			spec.generation.mode = "gcd"
 		end)
 
 		title = "Energy GCDs - 0.75sec Floor"
-		controls.energyGenerationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, TRB.Data.settings.monk.windwalker.generation.gcds, 0.25, 2,
+		controls.energyGenerationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.energyGenerationGCDs:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5808,7 +5105,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.generation.gcds = value
+			spec.generation.gcds = value
 		end)
 
 
@@ -5819,17 +5116,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		getglobal(f:GetName() .. 'Text'):SetText("Energy generation over time")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Energy generation over the next X seconds."
-		if TRB.Data.settings.monk.windwalker.generation.mode == "time" then
+		if spec.generation.mode == "time" then
 			f:SetChecked(true)
 		end
 		f:SetScript("OnClick", function(self, ...)
 			controls.checkBoxes.energyGenerationModeGCDs:SetChecked(false)
 			controls.checkBoxes.energyGenerationModeTime:SetChecked(true)
-			TRB.Data.settings.monk.windwalker.generation.mode = "time"
+			spec.generation.mode = "time"
 		end)
 
 		title = "Energy Over Time (sec)"
-		controls.energyGenerationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, TRB.Data.settings.monk.windwalker.generation.time, 0.25, 2,
+		controls.energyGenerationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.energyGenerationTime:SetScript("OnValueChanged", function(self, value)
 			local min, max = self:GetMinMaxValues()
@@ -5841,7 +5138,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
-			TRB.Data.settings.monk.windwalker.generation.time = value
+			spec.generation.time = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = controls
@@ -5851,6 +5148,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		if parent == nil then
 			return
 		end
+
+		local spec = TRB.Data.settings.monk.windwalker
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.windwalker
@@ -5876,11 +5175,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = yCoord - 30
 		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", TRB.Data.settings.monk.windwalker.displayText.left.text,
+		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.monk.windwalker.displayText.left.text = self:GetText()
+			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.windwalker)
 		end)
@@ -5889,11 +5188,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", TRB.Data.settings.monk.windwalker.displayText.middle.text,
+		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.monk.windwalker.displayText.middle.text = self:GetText()
+			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.windwalker)
 		end)
@@ -5902,11 +5201,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = yCoord - 70
 		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", TRB.Data.settings.monk.windwalker.displayText.right.text,
+		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
 														430, 60, xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
-			TRB.Data.settings.monk.windwalker.displayText.right.text = self:GetText()
+			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.windwalker)
 		end)
