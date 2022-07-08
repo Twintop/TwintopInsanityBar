@@ -1867,10 +1867,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
 						
 			if GetSpecialization() == 1 then
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "starsurge", TRB.Data.settings.druid.balance)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "starsurge2", TRB.Data.settings.druid.balance)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], "starsurge3", TRB.Data.settings.druid.balance)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], "starfall", TRB.Data.settings.druid.balance)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "starsurge", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "starsurge2", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], "starsurge3", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], "starfall", spec)
 			end
 		end)
 
@@ -1899,10 +1899,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
 						
 			if GetSpecialization() == 1 then
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "starsurge", TRB.Data.settings.druid.balance)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "starsurge2", TRB.Data.settings.druid.balance)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], "starsurge3", TRB.Data.settings.druid.balance)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], "starfall", TRB.Data.settings.druid.balance)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "starsurge", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "starsurge2", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], "starsurge3", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], "starfall", spec)
 			end
 		end)
 
@@ -7044,10 +7044,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
 						
 			if GetSpecialization() == 4 then
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "potionOfSpiritualClarity", TRB.Data.settings.druid.restoration)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "spiritualRejuvenationPotion", TRB.Data.settings.druid.restoration)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], "spiritualManaPotion", TRB.Data.settings.druid.restoration)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], "soulfulManaPotion", TRB.Data.settings.druid.restoration)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "potionOfSpiritualClarity", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "spiritualRejuvenationPotion", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], "spiritualManaPotion", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], "soulfulManaPotion", spec)
 			end
 		end)
 
@@ -7076,10 +7076,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
 						
 			if GetSpecialization() == 4 then
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "potionOfSpiritualClarity", TRB.Data.settings.druid.restoration)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "spiritualRejuvenationPotion", TRB.Data.settings.druid.restoration)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], "spiritualManaPotion", TRB.Data.settings.druid.restoration)
-				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], "soulfulManaPotion", TRB.Data.settings.druid.restoration)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], "potionOfSpiritualClarity", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], "spiritualRejuvenationPotion", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], "spiritualManaPotion", spec)
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], "soulfulManaPotion", spec)
 			end
 		end)
 
