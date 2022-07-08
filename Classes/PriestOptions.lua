@@ -672,7 +672,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
-		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.priest.holy)
+		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
 		controls.buttons.exportButton_Priest_Holy_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Holy_BarDisplay:SetScript("OnClick", function(self, ...)
@@ -707,7 +707,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 2 then
-				TRB.Functions.UpdateBarWidth(TRB.Data.settings.priest.holy)
+				TRB.Functions.UpdateBarWidth(spec)
 			end
 		end)
 
@@ -736,7 +736,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 2 then
-				TRB.Functions.UpdateBarHeight(TRB.Data.settings.priest.holy)
+				TRB.Functions.UpdateBarHeight(spec)
 			end
 		end)
 
@@ -822,7 +822,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.priest.holy)
+				TRB.Functions.SetBarMinMaxValues(spec)
 			end
 
 			local minsliderWidth = math.max(spec.bar.border*2, 120)
@@ -890,7 +890,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.priest.holy, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -1568,7 +1568,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
-			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.holy)
+			TRB.Functions.RedrawThresholdLines(spec)
 		end)
 
 		controls.checkBoxes.potionOfSpiritualClarityThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_potionOfSpiritualClarity", parent, "ChatConfigCheckButtonTemplate")
@@ -1656,7 +1656,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
             spec.thresholds.icons.relativeToName = newName
 			
 			if GetSpecialization() == 2 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.holy)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
@@ -1687,7 +1687,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 			
 			if GetSpecialization() == 2 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.holy)
+				TRB.Functions.RedrawThresholdLines(spec)
 
 				if spec.thresholds.icons.enabled then
 					resourceFrame.thresholds[1].icon:Show()
@@ -1784,7 +1784,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.priest.holy, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -1827,7 +1827,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
 
 			if GetSpecialization() == 2 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.holy)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -3076,7 +3076,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 2 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.priest.holy)
+				TRB.Functions.IsTtdActive(spec)
 			end
 		end)
 
@@ -3090,7 +3090,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 2 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.priest.holy)
+				TRB.Functions.IsTtdActive(spec)
 			end
 		end)
 
@@ -3104,7 +3104,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 2 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.priest.holy)
+				TRB.Functions.IsTtdActive(spec)
 			end
 		end)
 
@@ -3361,7 +3361,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
-		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.priest.shadow)
+		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
 		controls.buttons.exportButton_Priest_Shadow_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Shadow_BarDisplay:SetScript("OnClick", function(self, ...)
@@ -3396,10 +3396,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.UpdateBarWidth(TRB.Data.settings.priest.shadow)
+				TRB.Functions.UpdateBarWidth(spec)
 
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, spec.thresholds.width, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, spec.thresholds.width, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[1], resourceFrame, spec.thresholds.width, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[2], resourceFrame, spec.thresholds.width, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 			end
 		end)
 
@@ -3428,7 +3428,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.UpdateBarHeight(TRB.Data.settings.priest.shadow)
+				TRB.Functions.UpdateBarHeight(spec)
 			end
 		end)
 
@@ -3514,9 +3514,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.priest.shadow)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, spec.thresholds.width, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, spec.thresholds.width, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.SetBarMinMaxValues(spec)
+				TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[1], resourceFrame, spec.thresholds.width, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[2], resourceFrame, spec.thresholds.width, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 			end
 
 			local minsliderWidth = math.max(spec.bar.border*2, 120)
@@ -3579,7 +3579,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.priest.shadow, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -4191,7 +4191,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
-			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.shadow)
+			TRB.Functions.RedrawThresholdLines(spec)
 		end)
 
 		controls.checkBoxes.dpThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague", parent, "ChatConfigCheckButtonTemplate")
@@ -4259,10 +4259,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
             spec.thresholds.icons.relativeToName = newName
 			
 			if GetSpecialization() == 3 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.shadow)
+				TRB.Functions.RedrawThresholdLines(spec)
 
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, spec.thresholds.width, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, spec.thresholds.width, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[1], resourceFrame, spec.thresholds.width, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[2], resourceFrame, spec.thresholds.width, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 			end
 
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
@@ -4279,9 +4279,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.thresholds.icons.enabled = self:GetChecked()
 			
 			if GetSpecialization() == 3 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.shadow)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, spec.thresholds.width, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, spec.thresholds.width, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RedrawThresholdLines(spec)
+				TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[1], resourceFrame, spec.thresholds.width, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[2], resourceFrame, spec.thresholds.width, TRB.Data.character.searingNightmareThreshold, TRB.Data.character.maxResource)
 
 				if spec.thresholds.icons.enabled then
 					resourceFrame.thresholds[1].icon:Show()
@@ -4370,7 +4370,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.priest.shadow, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -4413,7 +4413,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.priest.shadow)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -5486,7 +5486,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnClick", function(self, ...)
 			spec.auspiciousSpiritsTracker = self:GetChecked()
 
-			if ((spec.auspiciousSpiritsTracker and TRB.Data.character.talents.as.isSelected) or TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)) and GetSpecialization() == 3 then
+			if ((spec.auspiciousSpiritsTracker and TRB.Data.character.talents.as.isSelected) or TRB.Functions.IsTtdActive(spec)) and GetSpecialization() == 3 then
 				targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			else
 				targetsTimerFrame:SetScript("OnUpdate", nil)
@@ -5797,7 +5797,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
+				TRB.Functions.IsTtdActive(spec)
 			end
 		end)
 		f:SetCursorPosition(0)
@@ -5812,7 +5812,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
+				TRB.Functions.IsTtdActive(spec)
 			end
 		end)
 		f:SetCursorPosition(0)
@@ -5827,7 +5827,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
+				TRB.Functions.IsTtdActive(spec)
 			end
 		end)
 		f:SetCursorPosition(0)

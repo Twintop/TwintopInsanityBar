@@ -889,7 +889,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
-		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.beastMastery)
+		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
 		controls.buttons.exportButton_Hunter_BeastMastery_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_BeastMastery_BarDisplay:SetScript("OnClick", function(self, ...)
@@ -924,11 +924,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.beastMastery)
+				TRB.Functions.UpdateBarWidth(spec)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.beastMastery, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -960,7 +960,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.UpdateBarHeight(TRB.Data.settings.hunter.beastMastery)
+				TRB.Functions.UpdateBarHeight(spec)
 			end
 		end)
 
@@ -1046,11 +1046,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.beastMastery)
+				TRB.Functions.SetBarMinMaxValues(spec)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.beastMastery, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -1059,7 +1059,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			local minsliderWidth = math.max(spec.bar.border*2, 120)
 			local minsliderHeight = math.max(spec.bar.border*2, 1)
 
-			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.beastMastery)
+			local scValues = TRB.Functions.GetSanityCheckValues(spec)
 			controls.height:SetMinMaxValues(minsliderHeight, scValues.barMaxHeight)
 			controls.height.MinLabel:SetText(minsliderHeight)
 			controls.width:SetMinMaxValues(minsliderWidth, scValues.barMaxWidth)
@@ -1117,7 +1117,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.hunter.beastMastery, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -1730,7 +1730,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
-			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.beastMastery)
+			TRB.Functions.RedrawThresholdLines(spec)
 		end)
 
 		controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
@@ -1883,7 +1883,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             spec.thresholds.icons.relativeToName = newName
 			
 			if GetSpecialization() == 1 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.beastMastery)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
@@ -1914,7 +1914,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 			
 			if GetSpecialization() == 1 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.beastMastery)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -1985,7 +1985,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.hunter.beastMastery, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -2028,7 +2028,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.beastMastery)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -3003,7 +3003,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.beastMastery)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 
@@ -3016,7 +3016,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.beastMastery)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 
@@ -3029,7 +3029,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.beastMastery)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 		yCoord = yCoord - 30
@@ -3284,7 +3284,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
-		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.marksmanship)
+		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
 		controls.buttons.exportButton_Hunter_Marksmanship_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_Marksmanship_BarDisplay:SetScript("OnClick", function(self, ...)
@@ -3319,11 +3319,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 2 then
-				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.marksmanship)
+				TRB.Functions.UpdateBarWidth(spec)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -3355,7 +3355,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 2 then				
-				TRB.Functions.UpdateBarHeight(TRB.Data.settings.hunter.marksmanship)
+				TRB.Functions.UpdateBarHeight(spec)
 			end
 		end)
 
@@ -3441,11 +3441,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.marksmanship)
+				TRB.Functions.SetBarMinMaxValues(spec)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.marksmanship, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -3454,7 +3454,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			local minsliderWidth = math.max(spec.bar.border*2, 120)
 			local minsliderHeight = math.max(spec.bar.border*2, 1)
 
-			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.marksmanship)
+			local scValues = TRB.Functions.GetSanityCheckValues(spec)
 			controls.height:SetMinMaxValues(minsliderHeight, scValues.barMaxHeight)
 			controls.height.MinLabel:SetText(minsliderHeight)
 			controls.width:SetMinMaxValues(minsliderWidth, scValues.barMaxWidth)
@@ -3512,7 +3512,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.hunter.marksmanship, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -4118,7 +4118,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
-			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.marksmanship)
+			TRB.Functions.RedrawThresholdLines(spec)
 		end)
 
 		controls.checkBoxes.aimedShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_aimedShot", parent, "ChatConfigCheckButtonTemplate")
@@ -4295,7 +4295,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             spec.thresholds.icons.relativeToName = newName
 			
 			if GetSpecialization() == 2 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.marksmanship)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
@@ -4326,7 +4326,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 			
 			if GetSpecialization() == 2 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.marksmanship)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -4397,7 +4397,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 2 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.hunter.marksmanship, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -4440,7 +4440,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
 
 			if GetSpecialization() == 2 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.marksmanship)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -5816,7 +5816,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.marksmanship)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 
@@ -5829,7 +5829,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.marksmanship)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 
@@ -5842,7 +5842,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.marksmanship)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 		yCoord = yCoord - 30
@@ -6098,7 +6098,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
-		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.survival)
+		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
 		controls.buttons.exportButton_Hunter_Survival_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_Survival_BarDisplay:SetScript("OnClick", function(self, ...)
@@ -6133,11 +6133,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.UpdateBarWidth(TRB.Data.settings.hunter.survival)
+				TRB.Functions.UpdateBarWidth(spec)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -6169,7 +6169,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.UpdateBarHeight(TRB.Data.settings.hunter.survival)
+				TRB.Functions.UpdateBarHeight(spec)
 			end
 		end)
 
@@ -6255,11 +6255,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.hunter.survival)
+				TRB.Functions.SetBarMinMaxValues(spec)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["focus"] ~= nil and TRB.Data.spells[k]["focus"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.survival, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["focus"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -6268,7 +6268,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			local minsliderWidth = math.max(spec.bar.border*2, 120)
 			local minsliderHeight = math.max(spec.bar.border*2, 1)
 
-			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.hunter.survival)
+			local scValues = TRB.Functions.GetSanityCheckValues(spec)
 			controls.height:SetMinMaxValues(minsliderHeight, scValues.barMaxHeight)
 			controls.height.MinLabel:SetText(minsliderHeight)
 			controls.width:SetMinMaxValues(minsliderWidth, scValues.barMaxWidth)
@@ -6325,7 +6325,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.hunter.survival, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -6904,7 +6904,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
-			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.survival)
+			TRB.Functions.RedrawThresholdLines(spec)
 		end)
 
 
@@ -7061,7 +7061,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             spec.thresholds.icons.relativeToName = newName
 			
 			if GetSpecialization() == 3 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.survival)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
@@ -7092,7 +7092,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 			
 			if GetSpecialization() == 3 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.survival)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -7163,7 +7163,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.hunter.survival, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -7206,7 +7206,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.hunter.survival)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -8232,7 +8232,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.survival)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 		yCoord = yCoord - 70
@@ -8244,7 +8244,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.survival)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 		yCoord = yCoord - 70
@@ -8256,7 +8256,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.survival)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 		yCoord = yCoord - 30

@@ -391,7 +391,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	]]
 
 
-	local function ElementalConstructResetDefaultsPanel(parent)		if parent == nil then
+	local function ElementalConstructResetDefaultsPanel(parent)
+		if parent == nil then
 			return
 		end
 
@@ -502,7 +503,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
 
-	local function ElementalConstructBarColorsAndBehaviorPanel(parent)		if parent == nil then
+	local function ElementalConstructBarColorsAndBehaviorPanel(parent)
+		if parent == nil then
 			return
 		end
 
@@ -528,7 +530,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local sliderWidth = 260
 		local sliderHeight = 20
 
-		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.shaman.elemental)
+		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		controls.buttons.exportButton_Shaman_Elemental_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
@@ -565,8 +567,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.UpdateBarWidth(TRB.Data.settings.shaman.elemental)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, spec.thresholds.width, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.UpdateBarWidth(spec)
+				TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[1], resourceFrame, spec.thresholds.width, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 			end
 		end)
 
@@ -595,7 +597,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.UpdateBarHeight(TRB.Data.settings.shaman.elemental)
+				TRB.Functions.UpdateBarHeight(spec)
 			end
 		end)
 
@@ -681,8 +683,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.shaman.elemental)
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, spec.thresholds.width, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+				TRB.Functions.SetBarMinMaxValues(spec)
+				TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[1], resourceFrame, spec.thresholds.width, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
 			end
 	
 			local minsliderWidth = math.max(spec.bar.border*2, 120)
@@ -742,7 +744,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.shaman.elemental, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -1305,7 +1307,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
-			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.shaman.elemental)
+			TRB.Functions.RedrawThresholdLines(spec)
 		end)
 
 		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Threshold_Option_earthShock", parent, "ChatConfigCheckButtonTemplate")
@@ -1364,7 +1366,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
             spec.thresholds.icons.relativeToName = newName
 			
 			if GetSpecialization() == 1 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.shaman.elemental)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
@@ -1381,7 +1383,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.thresholds.icons.enabled = self:GetChecked()
 			
 			if GetSpecialization() == 1 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.shaman.elemental)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -1452,7 +1454,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.shaman.elemental, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -1495,7 +1497,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.shaman.elemental)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -1537,7 +1539,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
 
-	local function ElementalConstructFontAndTextPanel(parent)		if parent == nil then
+	local function ElementalConstructFontAndTextPanel(parent)
+		if parent == nil then
 			return
 		end
 
@@ -2007,7 +2010,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
 
-	local function ElementalConstructAudioAndTrackingPanel(parent)		if parent == nil then
+	local function ElementalConstructAudioAndTrackingPanel(parent)
+		if parent == nil then
 			return
 		end
 
@@ -2192,7 +2196,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
 	end
 
-	local function ElementalConstructBarTextDisplayPanel(parent, cache)		if parent == nil then
+	local function ElementalConstructBarTextDisplayPanel(parent, cache)
+		if parent == nil then
 			return
 		end
 
@@ -2230,7 +2235,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 1 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.elemental)
+				TRB.Functions.IsTtdActive(spec)
 			end
 		end)
 
@@ -2244,7 +2249,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 1 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.elemental)
+				TRB.Functions.IsTtdActive(spec)
 			end
 		end)
 
@@ -2258,7 +2263,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 1 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.elemental)
+				TRB.Functions.IsTtdActive(spec)
 			end
 		end)
 
@@ -2364,7 +2369,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	--	Restoration Option Menus
 
-	local function RestorationConstructResetDefaultsPanel(parent)		if parent == nil then
+	local function RestorationConstructResetDefaultsPanel(parent)
+		if parent == nil then
 			return
 		end
 
@@ -2477,7 +2483,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = controls
 	end
 
-	local function RestorationConstructBarColorsAndBehaviorPanel(parent)		if parent == nil then
+	local function RestorationConstructBarColorsAndBehaviorPanel(parent)
+		if parent == nil then
 			return
 		end
 
@@ -2505,7 +2512,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
-		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.shaman.restoration)
+		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
 		controls.buttons.exportButton_Shaman_Restoration_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Restoration_BarDisplay:SetScript("OnClick", function(self, ...)
@@ -2540,7 +2547,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.UpdateBarWidth(TRB.Data.settings.shaman.restoration)
+				TRB.Functions.UpdateBarWidth(spec)
 			end
 		end)
 
@@ -2569,7 +2576,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.UpdateBarHeight(TRB.Data.settings.shaman.restoration)
+				TRB.Functions.UpdateBarHeight(spec)
 			end
 		end)
 
@@ -2655,7 +2662,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.shaman.restoration)
+				TRB.Functions.SetBarMinMaxValues(spec)
 			end
 
 			local minsliderWidth = math.max(spec.bar.border*2, 120)
@@ -2722,7 +2729,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.shaman.restoration, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -3247,7 +3254,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
-			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.shaman.restoration)
+			TRB.Functions.RedrawThresholdLines(spec)
 		end)
 
 		controls.checkBoxes.potionOfSpiritualClarityThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Threshold_Option_potionOfSpiritualClarity", parent, "ChatConfigCheckButtonTemplate")
@@ -3335,7 +3342,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
             spec.thresholds.icons.relativeToName = newName
 			
 			if GetSpecialization() == 3 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.shaman.restoration)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
@@ -3366,7 +3373,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.shaman.restoration)
+				TRB.Functions.RedrawThresholdLines(spec)
 
 				if spec.thresholds.icons.enabled then
 					resourceFrame.thresholds[1].icon:Show()
@@ -3463,7 +3470,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.shaman.restoration, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -3506,7 +3513,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.shaman.restoration)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -3593,7 +3600,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = controls
 	end
 
-	local function RestorationConstructFontAndTextPanel(parent)		if parent == nil then
+	local function RestorationConstructFontAndTextPanel(parent)
+		if parent == nil then
 			return
 		end
 
@@ -4049,7 +4057,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = controls
 	end
 
-	local function RestorationConstructAudioAndTrackingPanel(parent)		if parent == nil then
+	local function RestorationConstructAudioAndTrackingPanel(parent)
+		if parent == nil then
 			return
 		end
 
@@ -4186,7 +4195,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = controls
 	end
 
-	local function RestorationConstructBarTextDisplayPanel(parent, cache)		if parent == nil then
+	local function RestorationConstructBarTextDisplayPanel(parent, cache)
+		if parent == nil then
 			return
 		end
 
@@ -4222,7 +4232,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.restoration)
+				TRB.Functions.IsTtdActive(spec)
 			end
 		end)
 
@@ -4236,7 +4246,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.restoration)
+				TRB.Functions.IsTtdActive(spec)
 			end
 		end)
 
@@ -4250,7 +4260,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.restoration)
+				TRB.Functions.IsTtdActive(spec)
 			end
 		end)
 

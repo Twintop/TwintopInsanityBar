@@ -600,7 +600,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 	]]
 
-	local function AssassinationConstructResetDefaultsPanel(parent)		if parent == nil then
+	local function AssassinationConstructResetDefaultsPanel(parent)
+		if parent == nil then
 			return
 		end
 
@@ -711,7 +712,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = controls
 	end
 
-	local function AssassinationConstructBarColorsAndBehaviorPanel(parent)		if parent == nil then
+	local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
+		if parent == nil then
 			return
 		end
 
@@ -739,7 +741,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
-		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.rogue.assassination)
+		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
 		controls.buttons.exportButton_Rogue_Assassination_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Assassination_BarDisplay:SetScript("OnClick", function(self, ...)
@@ -774,12 +776,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.UpdateBarWidth(TRB.Data.settings.rogue.assassination)
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+				TRB.Functions.UpdateBarWidth(spec)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["energy"] ~= nil and TRB.Data.spells[k]["energy"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.assassination, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -811,8 +813,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.UpdateBarHeight(TRB.Data.settings.rogue.assassination)
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+				TRB.Functions.UpdateBarHeight(spec)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -834,7 +836,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
 				barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -855,7 +857,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
 				barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -900,13 +902,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.rogue.assassination)                
-				TRB.Functions.UpdateBarHeight(TRB.Data.settings.rogue.assassination)
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+				TRB.Functions.SetBarMinMaxValues(spec)                
+				TRB.Functions.UpdateBarHeight(spec)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["energy"] ~= nil and TRB.Data.spells[k]["energy"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.assassination, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -915,7 +917,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			local minsliderWidth = math.max(spec.bar.border*2, 120)
 			local minsliderHeight = math.max(spec.bar.border*2, 1)
 
-			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.rogue.assassination)
+			local scValues = TRB.Functions.GetSanityCheckValues(spec)
 			controls.height:SetMinMaxValues(minsliderHeight, scValues.barMaxHeight)
 			controls.height.MinLabel:SetText(minsliderHeight)
 			controls.width:SetMinMaxValues(minsliderWidth, scValues.barMaxWidth)
@@ -973,7 +975,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -1006,7 +1008,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			controls.comboPointBorderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -1035,7 +1037,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			controls.comboPointBorderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -1056,7 +1058,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.comboPoints.xPos = value
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -1074,7 +1076,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.comboPoints.yPos = value
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -1095,15 +1097,15 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.comboPoints.border = value
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 
-				--TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.rogue.assassination)
+				--TRB.Functions.SetBarMinMaxValues(spec)
 			end
 
 			local minsliderWidth = math.max(spec.comboPoints.border*2, 1)
 			local minsliderHeight = math.max(spec.comboPoints.border*2, 1)
 
-			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.rogue.assassination)
+			local scValues = TRB.Functions.GetSanityCheckValues(spec)
 			controls.comboPointHeight:SetMinMaxValues(minsliderHeight, scValues.comboPointsMaxHeight)
 			controls.comboPointHeight.MinLabel:SetText(minsliderHeight)
 			controls.comboPointWidth:SetMinMaxValues(minsliderWidth, scValues.comboPointsMaxWidth)
@@ -1124,7 +1126,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.comboPoints.spacing = value
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -1176,7 +1178,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
             CloseDropDownMenus()
 
             if GetSpecialization() == 1 then
-                TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+                TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
             end
         end
 
@@ -1191,7 +1193,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.comboPoints.fullWidth = self:GetChecked()
             
 			if GetSpecialization() == 1 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -2218,7 +2220,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
-			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.rogue.assassination)
+			TRB.Functions.RedrawThresholdLines(spec)
 		end)
 		
 		controls.labels.builders = TRB.UiFunctions:BuildLabel(parent, "Builders", 5, yCoord, 110, 20)
@@ -2519,7 +2521,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
             spec.thresholds.icons.relativeToName = newName
 			
 			if GetSpecialization() == 1 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.rogue.assassination)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
@@ -2550,7 +2552,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.rogue.assassination)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -2621,7 +2623,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -2664,7 +2666,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.rogue.assassination)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -2705,7 +2707,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = controls
 	end
 
-	local function AssassinationConstructFontAndTextPanel(parent)		if parent == nil then
+	local function AssassinationConstructFontAndTextPanel(parent)
+		if parent == nil then
 			return
 		end
 
@@ -3189,7 +3192,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = controls
 	end
 
-	local function AssassinationConstructAudioAndTrackingPanel(parent)		if parent == nil then
+	local function AssassinationConstructAudioAndTrackingPanel(parent)
+		if parent == nil then
 			return
 		end
 
@@ -3499,7 +3503,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = controls
 	end
     
-	local function AssassinationConstructBarTextDisplayPanel(parent, cache)		if parent == nil then
+	local function AssassinationConstructBarTextDisplayPanel(parent, cache)
+		if parent == nil then
 			return
 		end
 
@@ -3535,7 +3540,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.rogue.assassination)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 
@@ -3548,7 +3553,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.rogue.assassination)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 
@@ -3561,7 +3566,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.rogue.assassination)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 		yCoord = yCoord - 30
@@ -3676,7 +3681,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 	]]
 
-	local function OutlawConstructResetDefaultsPanel(parent)		if parent == nil then
+	local function OutlawConstructResetDefaultsPanel(parent)
+		if parent == nil then
 			return
 		end
 
@@ -3767,7 +3773,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = controls
 	end
 
-	local function OutlawConstructBarColorsAndBehaviorPanel(parent)		if parent == nil then
+	local function OutlawConstructBarColorsAndBehaviorPanel(parent)
+		if parent == nil then
 			return
 		end
 
@@ -3795,7 +3802,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
-		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.rogue.outlaw)
+		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
 		controls.buttons.exportButton_Rogue_Outlaw_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Outlaw_BarDisplay:SetScript("OnClick", function(self, ...)
@@ -3830,12 +3837,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 2 then
-				TRB.Functions.UpdateBarWidth(TRB.Data.settings.rogue.outlaw)
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+				TRB.Functions.UpdateBarWidth(spec)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["energy"] ~= nil and TRB.Data.spells[k]["energy"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.outlaw, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -3867,8 +3874,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 2 then
-				TRB.Functions.UpdateBarHeight(TRB.Data.settings.rogue.outlaw)
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+				TRB.Functions.UpdateBarHeight(spec)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -3890,7 +3897,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
 				barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -3911,7 +3918,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
 				barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -3956,13 +3963,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.rogue.outlaw)                
-				TRB.Functions.UpdateBarHeight(TRB.Data.settings.rogue.outlaw)
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+				TRB.Functions.SetBarMinMaxValues(spec)                
+				TRB.Functions.UpdateBarHeight(spec)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["energy"] ~= nil and TRB.Data.spells[k]["energy"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.outlaw, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -3971,7 +3978,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			local minsliderWidth = math.max(spec.bar.border*2, 120)
 			local minsliderHeight = math.max(spec.bar.border*2, 1)
 
-			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.rogue.outlaw)
+			local scValues = TRB.Functions.GetSanityCheckValues(spec)
 			controls.height:SetMinMaxValues(minsliderHeight, scValues.barMaxHeight)
 			controls.height.MinLabel:SetText(minsliderHeight)
 			controls.width:SetMinMaxValues(minsliderWidth, scValues.barMaxWidth)
@@ -4029,7 +4036,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -4062,7 +4069,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			controls.comboPointBorderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 2 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -4091,7 +4098,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			controls.comboPointBorderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 2 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -4112,7 +4119,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.comboPoints.xPos = value
 
 			if GetSpecialization() == 2 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -4130,7 +4137,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.comboPoints.yPos = value
 
 			if GetSpecialization() == 2 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -4151,15 +4158,15 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.comboPoints.border = value
 
 			if GetSpecialization() == 2 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 
-				--TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.rogue.outlaw)
+				--TRB.Functions.SetBarMinMaxValues(spec)
 			end
 
 			local minsliderWidth = math.max(spec.comboPoints.border*2, 1)
 			local minsliderHeight = math.max(spec.comboPoints.border*2, 1)
 
-			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.rogue.outlaw)
+			local scValues = TRB.Functions.GetSanityCheckValues(spec)
 			controls.comboPointHeight:SetMinMaxValues(minsliderHeight, scValues.comboPointsMaxHeight)
 			controls.comboPointHeight.MinLabel:SetText(minsliderHeight)
 			controls.comboPointWidth:SetMinMaxValues(minsliderWidth, scValues.comboPointsMaxWidth)
@@ -4180,7 +4187,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.comboPoints.spacing = value
 
 			if GetSpecialization() == 2 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -4232,7 +4239,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
             CloseDropDownMenus()
 
             if GetSpecialization() == 2 then
-                TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+                TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
             end
         end
 
@@ -4247,7 +4254,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.comboPoints.fullWidth = self:GetChecked()
             
 			if GetSpecialization() == 2 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -5297,7 +5304,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
-			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.rogue.outlaw)
+			TRB.Functions.RedrawThresholdLines(spec)
 		end)
 		
 		controls.labels.builders = TRB.UiFunctions:BuildLabel(parent, "Builders", 5, yCoord, 110, 20)
@@ -5609,7 +5616,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
             spec.thresholds.icons.relativeToName = newName
 			
 			if GetSpecialization() == 2 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.rogue.outlaw)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
@@ -5642,7 +5649,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 			
 			if GetSpecialization() == 2 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.rogue.outlaw)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -5713,7 +5720,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 2 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -5756,7 +5763,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
 
 			if GetSpecialization() == 2 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.rogue.outlaw)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -5797,7 +5804,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = controls
 	end
 
-	local function OutlawConstructFontAndTextPanel(parent)		if parent == nil then
+	local function OutlawConstructFontAndTextPanel(parent)
+		if parent == nil then
 			return
 		end
 
@@ -6281,7 +6289,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = controls
 	end
 
-	local function OutlawConstructAudioAndTrackingPanel(parent)		if parent == nil then
+	local function OutlawConstructAudioAndTrackingPanel(parent)
+		if parent == nil then
 			return
 		end
 
@@ -6590,7 +6599,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = controls
 	end
     
-	local function OutlawConstructBarTextDisplayPanel(parent, cache)		if parent == nil then
+	local function OutlawConstructBarTextDisplayPanel(parent, cache)
+		if parent == nil then
 			return
 		end
 
@@ -6626,7 +6636,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.rogue.outlaw)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 
@@ -6639,7 +6649,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.rogue.outlaw)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 
@@ -6652,7 +6662,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.rogue.outlaw)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 		yCoord = yCoord - 30

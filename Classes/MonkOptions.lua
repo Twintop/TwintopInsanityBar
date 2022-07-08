@@ -601,7 +601,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
-		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.monk.mistweaver)
+		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
 		controls.buttons.exportButton_Monk_Mistweaver_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Mistweaver_BarDisplay:SetScript("OnClick", function(self, ...)
@@ -636,7 +636,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.UpdateBarWidth(TRB.Data.settings.monk.mistweaver)
+				TRB.Functions.UpdateBarWidth(spec)
 			end
 		end)
 
@@ -665,7 +665,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.UpdateBarHeight(TRB.Data.settings.monk.mistweaver)
+				TRB.Functions.UpdateBarHeight(spec)
 			end
 		end)
 
@@ -751,7 +751,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 				barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.monk.mistweaver)
+				TRB.Functions.SetBarMinMaxValues(spec)
 			end
 
 			local minsliderWidth = math.max(spec.bar.border*2, 120)
@@ -818,7 +818,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.monk.mistweaver, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -1343,7 +1343,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
-			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.monk.mistweaver)
+			TRB.Functions.RedrawThresholdLines(spec)
 		end)
 
 		controls.checkBoxes.potionOfSpiritualClarityThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Threshold_Option_potionOfSpiritualClarity", parent, "ChatConfigCheckButtonTemplate")
@@ -1431,7 +1431,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
             spec.thresholds.icons.relativeToName = newName
 			
 			if GetSpecialization() == 3 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.monk.mistweaver)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
@@ -1462,7 +1462,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 			
 			if GetSpecialization() == 2 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.monk.mistweaver)
+				TRB.Functions.RedrawThresholdLines(spec)
 
 				if spec.thresholds.icons.enabled then
 					resourceFrame.thresholds[1].icon:Show()
@@ -1559,7 +1559,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 1 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.monk.mistweaver, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -1602,7 +1602,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.monk.mistweaver)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -2323,7 +2323,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.monk.mistweaver)
+				TRB.Functions.IsTtdActive(spec)
 			end
 		end)
 
@@ -2337,7 +2337,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.monk.mistweaver)
+				TRB.Functions.IsTtdActive(spec)
 			end
 		end)
 
@@ -2351,7 +2351,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(TRB.Data.settings.monk.mistweaver)
+				TRB.Functions.IsTtdActive(spec)
 			end
 		end)
 
@@ -2588,7 +2588,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
-		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.monk.windwalker)
+		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
 		controls.buttons.exportButton_Monk_Windwalker_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Windwalker_BarDisplay:SetScript("OnClick", function(self, ...)
@@ -2623,12 +2623,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.UpdateBarWidth(TRB.Data.settings.monk.windwalker)
-				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
+				TRB.Functions.UpdateBarWidth(spec)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["energy"] ~= nil and TRB.Data.spells[k]["energy"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.windwalker, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -2660,8 +2660,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			controls.borderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.UpdateBarHeight(TRB.Data.settings.monk.windwalker)
-				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
+				TRB.Functions.UpdateBarHeight(spec)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -2683,7 +2683,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
 				barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
-				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -2704,7 +2704,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				barContainerFrame:ClearAllPoints()
 				barContainerFrame:SetPoint("CENTER", UIParent)
 				barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
-				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -2749,13 +2749,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				barBorderFrame:SetBackdropColor(0, 0, 0, 0)
 				barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
 
-				TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.monk.windwalker)                
-				TRB.Functions.UpdateBarHeight(TRB.Data.settings.monk.windwalker)
-				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
+				TRB.Functions.SetBarMinMaxValues(spec)                
+				TRB.Functions.UpdateBarHeight(spec)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 
 				for k, v in pairs(TRB.Data.spells) do
 					if TRB.Data.spells[k] ~= nil and TRB.Data.spells[k]["id"] ~= nil and TRB.Data.spells[k]["energy"] ~= nil and TRB.Data.spells[k]["energy"] < 0 and TRB.Data.spells[k]["thresholdId"] ~= nil then
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.windwalker, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
+						TRB.Functions.RepositionThreshold(spec, resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]], resourceFrame, spec.thresholds.width, -TRB.Data.spells[k]["energy"], TRB.Data.character.maxResource)                
 						TRB.Frames.resourceFrame.thresholds[TRB.Data.spells[k]["thresholdId"]]:Show()
 					end
 				end
@@ -2764,7 +2764,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			local minsliderWidth = math.max(spec.bar.border*2, 120)
 			local minsliderHeight = math.max(spec.bar.border*2, 1)
 
-			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.monk.windwalker)
+			local scValues = TRB.Functions.GetSanityCheckValues(spec)
 			controls.height:SetMinMaxValues(minsliderHeight, scValues.barMaxHeight)
 			controls.height.MinLabel:SetText(minsliderHeight)
 			controls.width:SetMinMaxValues(minsliderWidth, scValues.barMaxWidth)
@@ -2822,7 +2822,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 			barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
 			barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
-			TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 		end)
 
 
@@ -2855,7 +2855,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			controls.comboPointBorderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -2884,7 +2884,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			controls.comboPointBorderWidth.EditBox:SetText(borderSize)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -2905,7 +2905,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.comboPoints.xPos = value
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -2923,7 +2923,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.comboPoints.yPos = value
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -2944,15 +2944,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.comboPoints.border = value
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 
-				--TRB.Functions.SetBarMinMaxValues(TRB.Data.settings.monk.windwalker)
+				--TRB.Functions.SetBarMinMaxValues(spec)
 			end
 
 			local minsliderWidth = math.max(spec.comboPoints.border*2, 1)
 			local minsliderHeight = math.max(spec.comboPoints.border*2, 1)
 
-			local scValues = TRB.Functions.GetSanityCheckValues(TRB.Data.settings.monk.windwalker)
+			local scValues = TRB.Functions.GetSanityCheckValues(spec)
 			controls.comboPointHeight:SetMinMaxValues(minsliderHeight, scValues.comboPointsMaxHeight)
 			controls.comboPointHeight.MinLabel:SetText(minsliderHeight)
 			controls.comboPointWidth:SetMinMaxValues(minsliderWidth, scValues.comboPointsMaxWidth)
@@ -2973,7 +2973,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.comboPoints.spacing = value
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -3025,7 +3025,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
             CloseDropDownMenus()
 
             if GetSpecialization() == 3 then
-                TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
+                TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
             end
         end
 
@@ -3040,7 +3040,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.comboPoints.fullWidth = self:GetChecked()
             
 			if GetSpecialization() == 3 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -4012,7 +4012,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
-			TRB.Functions.RedrawThresholdLines(TRB.Data.settings.monk.windwalker)
+			TRB.Functions.RedrawThresholdLines(spec)
 		end)
 		
 		controls.labels.builders = TRB.UiFunctions:BuildLabel(parent, "Builders", 5, yCoord, 110, 20)
@@ -4148,7 +4148,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
             spec.thresholds.icons.relativeToName = newName
 			
 			if GetSpecialization() == 3 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.monk.windwalker)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 
             UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
@@ -4179,7 +4179,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconCooldown, spec.thresholds.icons.enabled)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.monk.windwalker)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -4250,7 +4250,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.RepositionBar(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
+				TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
 			end
 		end)
 
@@ -4293,7 +4293,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
 
 			if GetSpecialization() == 3 then
-				TRB.Functions.RedrawThresholdLines(TRB.Data.settings.monk.windwalker)
+				TRB.Functions.RedrawThresholdLines(spec)
 			end
 		end)
 
@@ -5181,7 +5181,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.windwalker)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 
@@ -5194,7 +5194,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.windwalker)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 
@@ -5207,7 +5207,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.windwalker)
+			TRB.Functions.IsTtdActive(spec)
 		end)
 
 		yCoord = yCoord - 30
