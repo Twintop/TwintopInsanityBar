@@ -505,6 +505,53 @@ function TRB.UiFunctions:CreateBarTextInputPanel(parent, name, text, width, heig
     return e
 end
 
+function TRB.UiFunctions:CreateLsmDropdown(parent, dropDowns, section, classId, specId, xCoord, yCoord, lsmType, varName, sectionHeaderText, dropdownInfoText)
+    local oUi = TRB.Data.constants.optionsUi
+    local _, className, _ = GetClassInfo(classId)
+    
+    -- Create the dropdown, and configure its appearance
+    dropDowns[varName] = CreateFrame("FRAME", "TwintopResourceBar_"..className.."_"..specId.."_"..varName.."Texture", parent, "UIDropDownMenuTemplate")
+    dropDowns[varName].label = TRB.UiFunctions:BuildSectionHeader(parent, sectionHeaderText, xCoord, yCoord)
+    dropDowns[varName].label.font:SetFontObject(GameFontNormal)
+    dropDowns[varName]:SetPoint("TOPLEFT", xCoord, yCoord-30)
+    UIDropDownMenu_SetWidth(dropDowns[varName], oUi.dropdownWidth)
+    UIDropDownMenu_SetText(dropDowns[varName], section[varName.."Name"])
+    UIDropDownMenu_JustifyText(dropDowns[varName], "LEFT")
+
+    -- Create and bind the initialization function to the dropdown menu
+    UIDropDownMenu_Initialize(dropDowns[varName], function(self, level, menuList)
+        local entries = 25
+        local info = UIDropDownMenu_CreateInfo()
+        local items = TRB.Details.addonData.libs.SharedMedia:HashTable(lsmType)
+        local itemsList = TRB.Details.addonData.libs.SharedMedia:List(lsmType)
+        if (level or 1) == 1 or menuList == nil then
+            local menus = math.ceil(TRB.Functions.TableLength(items) / entries)
+            for i=0, menus-1 do
+                info.hasArrow = true
+                info.notCheckable = true
+                info.text = dropdownInfoText .. " " .. i+1
+                info.menuList = i
+                UIDropDownMenu_AddButton(info)
+            end
+        else
+            local start = entries * menuList
+
+            for k, v in pairs(itemsList) do
+                if k > start and k <= start + entries then
+                    info.text = v
+                    info.value = items[v]
+                    info.checked = items[v] == section[varName]
+                    info.func = self.SetValue
+                    info.arg1 = items[v]
+                    info.arg2 = v
+                    info.icon = items[v]
+                    UIDropDownMenu_AddButton(info, level)
+                end
+            end
+        end
+    end)
+end
+
 function TRB.UiFunctions:ToggleCheckboxEnabled(checkbox, enable)
     if enable then
 ---@diagnostic disable-next-line: undefined-field
@@ -745,6 +792,7 @@ function TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, s
     end
 
     local oUi = TRB.Data.constants.optionsUi
+    local _, className, _ = GetClassInfo(classId)
     local f = nil
     
     local title = ""
@@ -752,8 +800,6 @@ function TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, s
     local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
     local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
-
-    local _, className, _ = GetClassInfo(classId)
 
     controls.comboPointPositionSection = TRB.UiFunctions:BuildSectionHeader(parent, secondaryResourceString .. " Position and Size", 0, yCoord)
 
@@ -932,6 +978,173 @@ function TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, s
             TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
         end
     end)
+
+    return yCoord
+end
+
+function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord)
+    local oUi = TRB.Data.constants.optionsUi
+    local _, className, _ = GetClassInfo(classId)
+    local f = nil
+    
+    controls.textBarTexturesSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Textures", 0, yCoord)
+		
+    controls.dropDown.textures = {}
+
+    yCoord = yCoord - 30
+    TRB.UiFunctions:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "resourceBar", "Main Bar Texture", "Status Bar Textures")
+    -- Implement the function to change the texture
+    function controls.dropDown.textures.resourceBar:SetValue(newValue, newName)
+        spec.textures.resourceBar = newValue
+        spec.textures.resourceBarName = newName
+        UIDropDownMenu_SetText(controls.dropDown.textures.resourceBar, newName)
+        if spec.textures.textureLock then
+            spec.textures.castingBar = newValue
+            spec.textures.castingBarName = newName
+            UIDropDownMenu_SetText(controls.dropDown.textures.castingBar, newName)
+            spec.textures.passiveBar = newValue
+            spec.textures.passiveBarName = newName
+            UIDropDownMenu_SetText(controls.dropDown.textures.passiveBar, newName)
+        end
+
+        if GetSpecialization() == 3 then
+            resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+            if spec.textures.textureLock then
+                castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+                passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
+            end
+        end
+        CloseDropDownMenus()
+    end
+
+    TRB.UiFunctions:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "castingBar", "Casting Bar Texture", "Status Bar Textures")
+    -- Implement the function to change the texture
+    function controls.dropDown.textures.castingBar:SetValue(newValue, newName)
+        spec.textures.castingBar = newValue
+        spec.textures.castingBarName = newName
+        castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+        UIDropDownMenu_SetText(controls.dropDown.textures.castingBar, newName)
+        if spec.textures.textureLock then
+            spec.textures.resourceBar = newValue
+            spec.textures.resourceBarName = newName
+            resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+            UIDropDownMenu_SetText(controls.dropDown.textures.resourceBar, newName)
+            spec.textures.passiveBar = newValue
+            spec.textures.passiveBarName = newName
+            passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
+            UIDropDownMenu_SetText(controls.dropDown.textures.passiveBar, newName)
+        end
+
+        if GetSpecialization() == 3 then
+            castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+            if spec.textures.textureLock then
+                resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+                passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
+            end
+        end
+
+        CloseDropDownMenus()
+    end
+
+    yCoord = yCoord - 60
+    TRB.UiFunctions:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "passiveBar", "Passive Bar Texture", "Status Bar Textures")
+    -- Implement the function to change the texture
+    function controls.dropDown.textures.passiveBar:SetValue(newValue, newName)
+        spec.textures.passiveBar = newValue
+        spec.textures.passiveBarName = newName
+        passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
+        UIDropDownMenu_SetText(controls.dropDown.textures.passiveBar, newName)
+        if spec.textures.textureLock then
+            spec.textures.resourceBar = newValue
+            spec.textures.resourceBarName = newName
+            resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+            UIDropDownMenu_SetText(controls.dropDown.textures.resourceBar, newName)
+            spec.textures.castingBar = newValue
+            spec.textures.castingBarName = newName
+            castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+            UIDropDownMenu_SetText(controls.dropDown.textures.castingBar, newName)
+        end
+
+        if GetSpecialization() == 3 then
+            passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
+            if spec.textures.textureLock then
+                resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
+                castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+            end
+        end
+
+        CloseDropDownMenus()
+    end
+
+    controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_TextureLock", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.textureLock
+    f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+    getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
+    f.tooltip = "This will lock the texture for each part of the bar to be the same."
+    f:SetChecked(spec.textures.textureLock)
+    f:SetScript("OnClick", function(self, ...)
+        spec.textures.textureLock = self:GetChecked()
+        if spec.textures.textureLock then
+            spec.textures.passiveBar = spec.textures.resourceBar
+            spec.textures.passiveBarName = spec.textures.resourceBarName
+            UIDropDownMenu_SetText(controls.dropDown.textures.resourceBar, spec.textures.passiveBarName)
+            spec.textures.castingBar = spec.textures.resourceBar
+            spec.textures.castingBarName = spec.textures.resourceBarName
+            UIDropDownMenu_SetText(controls.dropDown.textures.castingBar, spec.textures.castingBarName)
+
+            if GetSpecialization() == 3 then
+                passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
+                castingFrame:SetStatusBarTexture(spec.textures.castingBar)
+            end
+        end
+    end)
+
+    yCoord = yCoord - 60
+    TRB.UiFunctions:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "border", "Border Texture", "Border Textures")
+    -- Implement the function to change the texture
+    function controls.dropDown.textures.border:SetValue(newValue, newName)
+        spec.textures.border = newValue
+        spec.textures.borderName = newName
+
+        if GetSpecialization() == 3 then
+            if spec.bar.border < 1 then
+                barBorderFrame:SetBackdrop({ })
+            else
+                barBorderFrame:SetBackdrop({ edgeFile = spec.textures.border,
+                                            tile = true,
+                                            tileSize=4,
+                                            edgeSize=spec.bar.border,
+                                            insets = {0, 0, 0, 0}
+                                            })
+            end
+            barBorderFrame:SetBackdropColor(0, 0, 0, 0)
+            barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
+        end
+
+        UIDropDownMenu_SetText(controls.dropDown.textures.border, newName)
+        CloseDropDownMenus()
+    end
+    
+    TRB.UiFunctions:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "background", "Background (Empty Bar) Texture", "Background Textures")
+    -- Implement the function to change the texture
+    function controls.dropDown.textures.background:SetValue(newValue, newName)
+        spec.textures.background = newValue
+        spec.textures.backgroundName = newName
+
+        if GetSpecialization() == 3 then
+            barContainerFrame:SetBackdrop({ 
+                bgFile = spec.textures.background,
+                tile = true,
+                tileSize = spec.bar.width,
+                edgeSize = 1,
+                insets = {0, 0, 0, 0}
+            })
+            barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.background, true))
+        end
+
+        UIDropDownMenu_SetText(controls.dropDown.textures.background, newName)
+        CloseDropDownMenus()
+    end
 
     return yCoord
 end
