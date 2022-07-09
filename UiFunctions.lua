@@ -459,16 +459,6 @@ function TRB.UiFunctions:CreateVariablesSidePanel(parent, name)
 end
 
 function TRB.UiFunctions:CreateBarTextInputPanel(parent, name, text, width, height, xPos, yPos)
-    --[[
-    --local ebParent = ebFrame.scrollFrame
-    local eb = TRB.UiFunctions:BuildTextBox(nil, text, 500, width, height, 0, 0)
-    local ebFrame = TRB.UiFunctions:CreateScrollFrameContainer("TRB_" .. name .. "_BarText_Frame", parent, width, height, eb)
-    eb:SetSize(ebFrame:GetSize())
-    eb:SetMultiLine(true)
-	ebFrame:SetPoint("TOPLEFT", parent, "TOPLEFT", xPos, yPos)
-    --ebFrame:SetScrollChild(eb)
-    return eb]]
-
     local s = CreateFrame("ScrollFrame", "TRB_" .. name .. "_BarTextBox", parent, "UIPanelScrollFrameTemplate, BackdropTemplate") -- or your actual parent instead
     s:SetSize(width, height)
     s:SetPoint("TOPLEFT", parent, "TOPLEFT", xPos, yPos)
@@ -544,6 +534,8 @@ function TRB.UiFunctions:ToggleCheckboxOnOff(checkbox, enable, changeText)
 end
 
 function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord)
+    local oUi = TRB.Data.constants.optionsUi
+
     local barContainerFrame = TRB.Frames.barContainerFrame
     local resourceFrame = TRB.Frames.resourceFrame
     local castingFrame = TRB.Frames.castingFrame
@@ -563,16 +555,6 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
     local f = nil
     
     local title = ""
-    
-	local xPadding = 10
-    local xPadding2 = 30
-    local xCoord = 5
-    local xCoord2 = 290
-    local xOffset1 = 50
-    local xOffset2 = xCoord2 + xOffset1
-    local dropdownWidth = 225
-    local sliderWidth = 260
-    local sliderHeight = 20
 
     local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
@@ -585,7 +567,7 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
     yCoord = yCoord - 40
     title = "Bar Width"
     controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
-                                sliderWidth, sliderHeight, xCoord, yCoord)
+                                oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.width:SetScript("OnValueChanged", function(self, value)
         value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
         spec.bar.width = value
@@ -601,7 +583,7 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
 
     title = "Bar Height"
     controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
-                                    sliderWidth, sliderHeight, xCoord2, yCoord)
+                                    oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
     controls.height:SetScript("OnValueChanged", function(self, value)
         value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
         spec.bar.height = value
@@ -626,7 +608,7 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
     title = "Bar Horizontal Position"
     yCoord = yCoord - 60
     controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
-                                sliderWidth, sliderHeight, xCoord, yCoord)
+                                oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.horizontal:SetScript("OnValueChanged", function(self, value)
         value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
         spec.bar.xPos = value
@@ -641,7 +623,7 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
 
     title = "Bar Vertical Position"
     controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
-                                sliderWidth, sliderHeight, xCoord2, yCoord)
+                                oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
     controls.vertical:SetScript("OnValueChanged", function(self, value)
         value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
         spec.bar.yPos = value
@@ -657,7 +639,7 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
     title = "Bar Border Width"
     yCoord = yCoord - 60
     controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
-                                sliderWidth, sliderHeight, xCoord, yCoord)
+                                oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.borderWidth:SetScript("OnValueChanged", function(self, value)
         value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
         spec.bar.border = value
@@ -706,7 +688,7 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
 
     title = "Threshold Line Width"
     controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
-                                sliderWidth, sliderHeight, xCoord2, yCoord)
+                                oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
     controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
         value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
         spec.thresholds.width = value
@@ -722,7 +704,7 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
 
     controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
     f = controls.checkBoxes.lockPosition
-    f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
+    f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
     getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
     f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
     f:SetChecked(spec.bar.dragAndDrop)
@@ -736,7 +718,7 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
 
     controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
     f = controls.checkBoxes.pinToPRD
-    f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+    f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
     getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
     f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
     f:SetChecked(spec.bar.pinToPersonalResourceDisplay)
@@ -748,6 +730,207 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
         barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
         barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
         TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+    end)
+
+    return yCoord
+end
+
+function TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, secondaryResourceString)
+    if primaryResourceString == nil then
+        primaryResourceString = "Energy"
+    end
+    
+    if secondaryResourceString == nil then
+        secondaryResourceString = "Combo Point"
+    end
+
+    local oUi = TRB.Data.constants.optionsUi
+    local f = nil
+    
+    local title = ""
+
+    local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+
+    local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
+
+    local _, className, _ = GetClassInfo(classId)
+
+    controls.comboPointPositionSection = TRB.UiFunctions:BuildSectionHeader(parent, secondaryResourceString .. " Position and Size", 0, yCoord)
+
+    yCoord = yCoord - 40
+    title = secondaryResourceString .. " Width"
+    controls.comboPointWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.width, 1, 2,
+                                oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+    controls.comboPointWidth:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.comboPoints.width = value
+
+        local maxBorderSize = math.min(math.floor(spec.comboPoints.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.comboPoints.width / TRB.Data.constants.borderWidthFactor))
+        local borderSize = spec.comboPoints.border
+    
+        if maxBorderSize < borderSize then
+            maxBorderSize = borderSize
+        end
+
+        controls.comboPointBorderWidth:SetMinMaxValues(0, maxBorderSize)
+        controls.comboPointBorderWidth.MaxLabel:SetText(maxBorderSize)
+        controls.comboPointBorderWidth.EditBox:SetText(borderSize)
+
+        if GetSpecialization() == specId then
+            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+        end
+    end)
+
+    title = secondaryResourceString .. " Height"
+    controls.comboPointHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, sanityCheckValues.barMaxHeight, spec.comboPoints.height, 1, 2,
+                                    oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+    controls.comboPointHeight:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.comboPoints.height = value
+
+        local maxBorderSize = math.min(math.floor(spec.comboPoints.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+        local borderSize = spec.comboPoints.border
+    
+        if maxBorderSize < borderSize then
+            maxBorderSize = borderSize
+        end
+
+        controls.comboPointBorderWidth:SetMinMaxValues(0, maxBorderSize)
+        controls.comboPointBorderWidth.MaxLabel:SetText(maxBorderSize)
+        controls.comboPointBorderWidth.EditBox:SetText(borderSize)
+
+        if GetSpecialization() == specId then
+            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+        end
+    end)
+
+
+
+    title = secondaryResourceString .. " Horizontal Position (Relative)"
+    yCoord = yCoord - 60
+    controls.comboPointHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.comboPoints.xPos, 1, 2,
+                                oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+    controls.comboPointHorizontal:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.comboPoints.xPos = value
+
+        if GetSpecialization() == specId then
+            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+        end
+    end)
+
+    title = secondaryResourceString .. " Vertical Position (Relative)"
+    controls.comboPointVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.comboPoints.yPos, 1, 2,
+                                oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+    controls.comboPointVertical:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.comboPoints.yPos = value
+
+        if GetSpecialization() == specId then
+            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+        end
+    end)
+
+    title = secondaryResourceString .. " Border Width"
+    yCoord = yCoord - 60
+    controls.comboPointBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.comboPoints.border, 1, 2,
+                                oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+    controls.comboPointBorderWidth:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.comboPoints.border = value
+
+        if GetSpecialization() == specId then
+            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+
+            --TRB.Functions.SetBarMinMaxValues(spec)
+        end
+
+        local minsliderWidth = math.max(spec.comboPoints.border*2, 1)
+        local minsliderHeight = math.max(spec.comboPoints.border*2, 1)
+
+        local scValues = TRB.Functions.GetSanityCheckValues(spec)
+        controls.comboPointHeight:SetMinMaxValues(minsliderHeight, scValues.comboPointsMaxHeight)
+        controls.comboPointHeight.MinLabel:SetText(minsliderHeight)
+        controls.comboPointWidth:SetMinMaxValues(minsliderWidth, scValues.comboPointsMaxWidth)
+        controls.comboPointWidth.MinLabel:SetText(minsliderWidth)
+    end)
+
+    title = secondaryResourceString .. " Spacing"
+    controls.comboPointSpacing = TRB.UiFunctions:BuildSlider(parent, title, 0, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.spacing, 1, 2,
+                                oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+    controls.comboPointSpacing:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.comboPoints.spacing = value
+
+        if GetSpecialization() == specId then
+            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+        end
+    end)
+
+    yCoord = yCoord - 40
+    -- Create the dropdown, and configure its appearance
+    controls.dropDown.comboPointsRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_"..className.."_"..specId.."_comboPointsRelativeTo", parent, "UIDropDownMenuTemplate")
+    controls.dropDown.comboPointsRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of "..secondaryResourceString.." to "..primaryResourceString.." Bar", oUi.xCoord, yCoord)
+    controls.dropDown.comboPointsRelativeTo.label.font:SetFontObject(GameFontNormal)
+    controls.dropDown.comboPointsRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+    UIDropDownMenu_SetWidth(controls.dropDown.comboPointsRelativeTo, oUi.dropdownWidth)
+    UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, spec.comboPoints.relativeToName)
+    UIDropDownMenu_JustifyText(controls.dropDown.comboPointsRelativeTo, "LEFT")
+
+    -- Create and bind the initialization function to the dropdown menu
+    UIDropDownMenu_Initialize(controls.dropDown.comboPointsRelativeTo, function(self, level, menuList)
+        local entries = 25
+        local info = UIDropDownMenu_CreateInfo()
+        local relativeTo = {}
+        relativeTo["Above - Left"] = "TOPLEFT"
+        relativeTo["Above - Middle"] = "TOP"
+        relativeTo["Above - Right"] = "TOPRIGHT"
+        relativeTo["Below - Left"] = "BOTTOMLEFT"
+        relativeTo["Below - Middle"] = "BOTTOM"
+        relativeTo["Below - Right"] = "BOTTOMRIGHT"
+        local relativeToList = {
+            "Above - Left",
+            "Above - Middle",
+            "Above - Right",
+            "Below - Left",
+            "Below - Middle",
+            "Below - Right"
+        }
+
+        for k, v in pairs(relativeToList) do
+            info.text = v
+            info.value = relativeTo[v]
+            info.checked = relativeTo[v] == spec.comboPoints.relativeTo
+            info.func = self.SetValue
+            info.arg1 = relativeTo[v]
+            info.arg2 = v
+            UIDropDownMenu_AddButton(info, level)
+        end
+    end)
+
+    function controls.dropDown.comboPointsRelativeTo:SetValue(newValue, newName)
+        spec.comboPoints.relativeTo = newValue
+        spec.comboPoints.relativeToName = newName
+        UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, newName)
+        CloseDropDownMenus()
+
+        if GetSpecialization() == specId then
+            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+        end
+    end
+
+    controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_comboPointsFullWidth", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.comboPointsFullWidth
+    f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
+    getglobal(f:GetName() .. 'Text'):SetText(secondaryResourceString .. " are full bar width?")
+    f.tooltip = "Makes the "..secondaryResourceString.." bars take up the same total width of the bar, spaced according to "..secondaryResourceString.." Spacing (above). The horizontal position adjustment will be ignored and the width of "..secondaryResourceString.." bars will be automatically calculated and will ignore the value set above."
+    f:SetChecked(spec.comboPoints.fullWidth)
+    f:SetScript("OnClick", function(self, ...)
+        spec.comboPoints.fullWidth = self:GetChecked()
+        
+        if GetSpecialization() == specId then
+            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+        end
     end)
 
     return yCoord
