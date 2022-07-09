@@ -2,7 +2,6 @@
 local _, TRB = ...
 TRB.UiFunctions = {}
 
-
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
 function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
 	local f = CreateFrame("Slider", nil, parent, "BackdropTemplate")
@@ -29,13 +28,6 @@ function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultV
 	f:SetScript("OnLeave", function(self)
         self:SetBackdropBorderColor(0.7, 0.7, 0.7, 1.0)
     end)
-    --[[if:SetScript("OnMouseWheel", function(self, delta)
-        if delta > 0 then
-            self:SetValue(self:GetValue() + self:GetValueStep())
-        else
-            self:SetValue(self:GetValue() - self:GetValueStep())
-        end
-    end)]]
     f:SetScript("OnValueChanged", function(self, value)
 		self.EditBox:SetText(value)
 	end)
@@ -549,4 +541,214 @@ function TRB.UiFunctions:ToggleCheckboxOnOff(checkbox, enable, changeText)
             getglobal(checkbox:GetName().."Text"):SetText("Disabled")
         end
     end
+end
+
+function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord)
+    local barContainerFrame = TRB.Frames.barContainerFrame
+    local resourceFrame = TRB.Frames.resourceFrame
+    local castingFrame = TRB.Frames.castingFrame
+    local passiveFrame = TRB.Frames.passiveFrame
+    local barBorderFrame = TRB.Frames.barBorderFrame
+
+    local leftTextFrame = TRB.Frames.leftTextFrame
+    local middleTextFrame = TRB.Frames.middleTextFrame
+    local rightTextFrame = TRB.Frames.rightTextFrame
+
+    local resourceFrame = TRB.Frames.resourceFrame
+    local passiveFrame = TRB.Frames.passiveFrame
+    local targetsTimerFrame = TRB.Frames.targetsTimerFrame
+    local timerFrame = TRB.Frames.timerFrame
+    local combatFrame = TRB.Frames.combatFrame
+
+    local f = nil
+    
+    local title = ""
+    
+	local xPadding = 10
+    local xPadding2 = 30
+    local xCoord = 5
+    local xCoord2 = 290
+    local xOffset1 = 50
+    local xOffset2 = xCoord2 + xOffset1
+    local dropdownWidth = 225
+    local sliderWidth = 260
+    local sliderHeight = 20
+
+    local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+
+    local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
+
+    local _, className, _ = GetClassInfo(classId)
+
+    controls.barPositionSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
+
+    yCoord = yCoord - 40
+    title = "Bar Width"
+    controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
+                                sliderWidth, sliderHeight, xCoord, yCoord)
+    controls.width:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.bar.width = value
+
+        if GetSpecialization() == specId then
+            TRB.Functions.UpdateBarWidth(spec)
+        end
+
+        local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+        controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
+        controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+    end)
+
+    title = "Bar Height"
+    controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
+                                    sliderWidth, sliderHeight, xCoord2, yCoord)
+    controls.height:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.bar.height = value
+
+        local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+        local borderSize = spec.bar.border
+    
+        if maxBorderSize < borderSize then
+            maxBorderSize = borderSize
+        end
+
+        controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
+        controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+        controls.borderWidth.EditBox:SetText(borderSize)
+
+        if GetSpecialization() == specId then
+            TRB.Functions.UpdateBarHeight(spec)
+            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+        end
+    end)
+
+    title = "Bar Horizontal Position"
+    yCoord = yCoord - 60
+    controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
+                                sliderWidth, sliderHeight, xCoord, yCoord)
+    controls.horizontal:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.bar.xPos = value
+
+        if GetSpecialization() == specId then
+            barContainerFrame:ClearAllPoints()
+            barContainerFrame:SetPoint("CENTER", UIParent)
+            barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
+            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+        end
+    end)
+
+    title = "Bar Vertical Position"
+    controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
+                                sliderWidth, sliderHeight, xCoord2, yCoord)
+    controls.vertical:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.bar.yPos = value
+
+        if GetSpecialization() == specId then
+            barContainerFrame:ClearAllPoints()
+            barContainerFrame:SetPoint("CENTER", UIParent)
+            barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
+            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+        end
+    end)
+
+    title = "Bar Border Width"
+    yCoord = yCoord - 60
+    controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
+                                sliderWidth, sliderHeight, xCoord, yCoord)
+    controls.borderWidth:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.bar.border = value
+
+        if GetSpecialization() == specId then
+            barContainerFrame:SetWidth(spec.bar.width-(spec.bar.border*2))
+            barContainerFrame:SetHeight(spec.bar.height-(spec.bar.border*2))
+            barBorderFrame:SetWidth(spec.bar.width)
+            barBorderFrame:SetHeight(spec.bar.height)
+            if spec.bar.border < 1 then
+                barBorderFrame:SetBackdrop({
+                    edgeFile = spec.textures.border,
+                    tile = true,
+                    tileSize = 4,
+                    edgeSize = 1,
+                    insets = {0, 0, 0, 0}
+                })
+                barBorderFrame:Hide()
+            else
+                barBorderFrame:SetBackdrop({
+                    edgeFile = spec.textures.border,
+                    tile = true,
+                    tileSize=4,
+                    edgeSize=spec.bar.border,
+                    insets = {0, 0, 0, 0}
+                })
+                barBorderFrame:Show()
+            end
+            barBorderFrame:SetBackdropColor(0, 0, 0, 0)
+            barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
+
+            TRB.Functions.SetBarMinMaxValues(spec)
+            TRB.Functions.UpdateBarHeight(spec)
+            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+        end
+
+        local minsliderWidth = math.max(spec.bar.border*2, 120)
+        local minsliderHeight = math.max(spec.bar.border*2, 1)
+
+        local scValues = TRB.Functions.GetSanityCheckValues(spec)
+        controls.height:SetMinMaxValues(minsliderHeight, scValues.barMaxHeight)
+        controls.height.MinLabel:SetText(minsliderHeight)
+        controls.width:SetMinMaxValues(minsliderWidth, scValues.barMaxWidth)
+        controls.width.MinLabel:SetText(minsliderWidth)
+    end)
+
+    title = "Threshold Line Width"
+    controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
+                                sliderWidth, sliderHeight, xCoord2, yCoord)
+    controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.thresholds.width = value
+
+        if GetSpecialization() == specId then
+            TRB.Functions.RedrawThresholdLines(spec)
+        end
+    end)
+
+    yCoord = yCoord - 40
+
+    --NOTE: the order of these checkboxes is reversed!
+
+    controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.lockPosition
+    f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
+    getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
+    f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
+    f:SetChecked(spec.bar.dragAndDrop)
+    f:SetScript("OnClick", function(self, ...)
+        spec.bar.dragAndDrop = self:GetChecked()
+        barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
+        barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
+    end)
+
+    TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
+
+    controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.pinToPRD
+    f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+    getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
+    f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
+    f:SetChecked(spec.bar.pinToPersonalResourceDisplay)
+    f:SetScript("OnClick", function(self, ...)
+        spec.bar.pinToPersonalResourceDisplay = self:GetChecked()
+
+        TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
+
+        barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
+        barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
+        TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+    end)
+
+    return yCoord
 end
