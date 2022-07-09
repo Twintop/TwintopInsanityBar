@@ -2,6 +2,8 @@ local _, TRB = ...
 
 TRB.Options = {}
 
+local oUi = TRB.Data.constants.optionsUi
+
 local f1 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Highlight_Small_Color")
 f1:SetFontObject(GameFontHighlightSmall)
 local f2 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Green_Small_Color")
@@ -144,16 +146,6 @@ local function ConstructAddonOptionsPanel()
 
     local maxOptionsWidth = 580
 
-    local xPadding = 10
-    local xPadding2 = 30
-    local xCoord = 5
-    local xCoord2 = 290
-    local xOffset1 = 50
-    local xOffset2 = xCoord2 + xOffset1
-
-    local dropdownWidth = 225
-    local sliderWidth = 260
-    local sliderHeight = 20
     local title = ""
 
     interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_General", UIParent)
@@ -163,7 +155,7 @@ local function ConstructAddonOptionsPanel()
     InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
 
     parent = interfaceSettingsFrame.optionsPanel
-    controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Global Options", xCoord+xPadding, yCoord)
+    controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Global Options", oUi.xCoord+oUi.xPadding, yCoord)
 
     yCoord = yCoord - 30
     parent.panel = TRB.UiFunctions:CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 580, 523)
@@ -180,7 +172,7 @@ local function ConstructAddonOptionsPanel()
 
     title = "Sampling Rate (seconds)"
     controls.ttdSamplingRate = TRB.UiFunctions:BuildSlider(parent, title, 0.05, 2, TRB.Data.settings.core.ttd.sampleRate, 0.05, 2,
-                                    sliderWidth, sliderHeight, xCoord, yCoord)
+                                    oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.ttdSamplingRate:SetScript("OnValueChanged", function(self, value)
         local min, max = self:GetMinMaxValues()
         if value > max then
@@ -197,7 +189,7 @@ local function ConstructAddonOptionsPanel()
 
     title = "Sample Size"
     controls.ttdSampleSize = TRB.UiFunctions:BuildSlider(parent, title, 1, 1000, TRB.Data.settings.core.ttd.numEntries, 1, 0,
-                                    sliderWidth, sliderHeight, xCoord2, yCoord)
+                                    oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
     controls.ttdSampleSize:SetScript("OnValueChanged", function(self, value)
         local min, max = self:GetMinMaxValues()
         if value > max then
@@ -213,7 +205,7 @@ local function ConstructAddonOptionsPanel()
     yCoord = yCoord - 60
     title = "Time To Die Precision"
     controls.ttdPrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.ttd.precision, 1, 0,
-                                    sliderWidth, sliderHeight, xCoord, yCoord)
+                                    oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.ttdPrecision:SetScript("OnValueChanged", function(self, value)
         local min, max = self:GetMinMaxValues()
         if value > max then
@@ -234,7 +226,7 @@ local function ConstructAddonOptionsPanel()
 
     title = "Character Data Refresh Rate (seconds)"
     controls.characterRefreshRate = TRB.UiFunctions:BuildSlider(parent, title, 0.05, 60, TRB.Data.settings.core.dataRefreshRate, 0.05, 2,
-                                    sliderWidth, sliderHeight, xCoord, yCoord)
+                                    oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.characterRefreshRate:SetScript("OnValueChanged", function(self, value)
         local min, max = self:GetMinMaxValues()
         if value > max then
@@ -251,7 +243,7 @@ local function ConstructAddonOptionsPanel()
 
     title = "Player Reaction Time Latency (seconds)"
     controls.reactionTime = TRB.UiFunctions:BuildSlider(parent, title, 0.00, 1, TRB.Data.settings.core.reactionTime, 0.05, 2,
-                                    sliderWidth, sliderHeight, xCoord2, yCoord)
+                                    oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
     controls.reactionTime:SetScript("OnValueChanged", function(self, value)
         local min, max = self:GetMinMaxValues()
         if value > max then
@@ -273,10 +265,10 @@ local function ConstructAddonOptionsPanel()
 
     -- Create the dropdown, and configure its appearance
     controls.dropDown.strata = CreateFrame("FRAME", "TwintopResourceBar_FrameStrata", parent, "UIDropDownMenuTemplate")
-    controls.dropDown.strata.label = TRB.UiFunctions:BuildSectionHeader(parent, "Frame Strata Level To Draw Bar On", xCoord, yCoord)
+    controls.dropDown.strata.label = TRB.UiFunctions:BuildSectionHeader(parent, "Frame Strata Level To Draw Bar On", oUi.xCoord, yCoord)
     controls.dropDown.strata.label.font:SetFontObject(GameFontNormal)
-    controls.dropDown.strata:SetPoint("TOPLEFT", xCoord, yCoord-30)
-    UIDropDownMenu_SetWidth(controls.dropDown.strata, dropdownWidth)
+    controls.dropDown.strata:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+    UIDropDownMenu_SetWidth(controls.dropDown.strata, oUi.dropdownWidth)
     UIDropDownMenu_SetText(controls.dropDown.strata, TRB.Data.settings.core.strata.name)
     UIDropDownMenu_JustifyText(controls.dropDown.strata, "LEFT")
 
@@ -341,10 +333,10 @@ local function ConstructAddonOptionsPanel()
 
     -- Create the dropdown, and configure its appearance
     controls.dropDown.audioChannel = CreateFrame("FRAME", "TwintopResourceBar_FrameAudioChannel", parent, "UIDropDownMenuTemplate")
-    controls.dropDown.audioChannel.label = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Channel To Use", xCoord, yCoord)
+    controls.dropDown.audioChannel.label = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Channel To Use", oUi.xCoord, yCoord)
     controls.dropDown.audioChannel.label.font:SetFontObject(GameFontNormal)
-    controls.dropDown.audioChannel:SetPoint("TOPLEFT", xCoord, yCoord-30)
-    UIDropDownMenu_SetWidth(controls.dropDown.audioChannel, dropdownWidth)
+    controls.dropDown.audioChannel:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+    UIDropDownMenu_SetWidth(controls.dropDown.audioChannel, oUi.dropdownWidth)
     UIDropDownMenu_SetText(controls.dropDown.audioChannel, TRB.Data.settings.core.audio.channel.name)
     UIDropDownMenu_JustifyText(controls.dropDown.audioChannel, "LEFT")
 
@@ -384,7 +376,7 @@ local function ConstructAddonOptionsPanel()
     yCoord = yCoord - 30
     controls.checkBoxes.experimentalMonkMistweaver = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Shaman_Mistweaver", parent, "ChatConfigCheckButtonTemplate")
     f = controls.checkBoxes.experimentalMonkMistweaver
-    f:SetPoint("TOPLEFT", xCoord, yCoord)
+    f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
     getglobal(f:GetName() .. 'Text'):SetText("Mistweaver Monk support")
     f.tooltip = "This will enable experimental Mistweaver Monk support within the bar. If you change this setting and are currently logged in on a Monk, you'll need to reload your UI before Mistweaver Monk configuration options become available."
     f:SetChecked(TRB.Data.settings.core.experimental.specs.monk.mistweaver)
@@ -395,7 +387,7 @@ local function ConstructAddonOptionsPanel()
     yCoord = yCoord - 30
     controls.checkBoxes.experimentalShamanRestoration = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Shaman_Restoration", parent, "ChatConfigCheckButtonTemplate")
     f = controls.checkBoxes.experimentalShamanRestoration
-    f:SetPoint("TOPLEFT", xCoord, yCoord)
+    f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
     getglobal(f:GetName() .. 'Text'):SetText("Restoration Shaman support")
     f.tooltip = "This will enable experimental Restoration Shaman support within the bar. If you change this setting and are currently logged in on a Shaman, you'll need to reload your UI before Restoration Shaman configuration options become available."
     f:SetChecked(TRB.Data.settings.core.experimental.specs.shaman.restoration)
@@ -406,7 +398,7 @@ local function ConstructAddonOptionsPanel()
     yCoord = yCoord - 30
     controls.checkBoxes.experimentalDruidRestoration = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Druid_Restoration", parent, "ChatConfigCheckButtonTemplate")
     f = controls.checkBoxes.experimentalDruidRestoration
-    f:SetPoint("TOPLEFT", xCoord, yCoord)
+    f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
     getglobal(f:GetName() .. 'Text'):SetText("Restoration Druid support")
     f.tooltip = "This will enable experimental Restoration Druid support within the bar. If you change this setting and are currently logged in on a Druid, you'll need to reload your UI before Restoration Druid configuration options become available."
     f:SetChecked(TRB.Data.settings.core.experimental.specs.druid.restoration)
@@ -427,23 +419,11 @@ local function ConstructImportExportPanel()
     local yCoord = -5
     local f = nil
 
-    local maxOptionsWidth = 580
-
-    local xPadding = 10
-    local xPadding2 = 30
-    local xCoord = 5
-    local xCoord2 = 290
-    local xOffset1 = 50
-    local xOffset2 = xCoord2 + xOffset1
-
     local title = ""
     local specName = ""
     local buttonOffset = 0
     local buttonSpacing = 5
 
-    local dropdownWidth = 225
-    local sliderWidth = 260
-    local sliderHeight = 20
 
     interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_ImportExport", UIParent)
     interfaceSettingsFrame.optionsPanel.name = "Import/Export"
@@ -452,7 +432,7 @@ local function ConstructImportExportPanel()
     InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
 
     parent = interfaceSettingsFrame.optionsPanel
-    controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Import/Export", xCoord+xPadding, yCoord)
+    controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Import/Export", oUi.xCoord+oUi.xPadding, yCoord)
     controls.labels = controls.labels or {}
     controls.buttons = controls.buttons or {}
 
@@ -464,7 +444,7 @@ local function ConstructImportExportPanel()
     parent = parent.panel.scrollFrame.scrollChild
 
     yCoord = 5
-    controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Import Settings Configuration", xCoord, yCoord)
+    controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Import Settings Configuration", oUi.xCoord, yCoord)
 
 
     StaticPopupDialogs["TwintopResourceBar_ImportError"] = {
@@ -512,7 +492,7 @@ local function ConstructImportExportPanel()
     }
 
     yCoord = yCoord - 40
-    controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import existing Settings Configuration string", xCoord, yCoord, 300, 30)
+    controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import existing Settings Configuration string", oUi.xCoord, yCoord, 300, 30)
     controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 	    StaticPopup_Show("TwintopResourceBar_Import")
     end)
@@ -543,13 +523,13 @@ local function ConstructImportExportPanel()
 
 
     yCoord = yCoord - 40
-    controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Export Settings Configuration", xCoord, yCoord)
+    controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Export Settings Configuration", oUi.xCoord, yCoord)
 
     local exportPopupBoilerplate = "Copy the string below to share your Twintop's Resource Bar configuration for "
 
     yCoord = yCoord - 35
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Everything = TRB.UiFunctions:BuildButton(parent, "All Classes/Specs + Global Options", buttonOffset, yCoord, 230, 20)
     controls.buttons.exportButton_Everything:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "All Classes/Specs + Global Options.", nil, nil, true, true, true, true, true)
@@ -562,9 +542,9 @@ local function ConstructImportExportPanel()
     end)
 
     yCoord = yCoord - 35
-    controls.labels.druid = TRB.UiFunctions:BuildLabel(parent, "All Classes/Specs", xCoord, yCoord, 110, 20)
+    controls.labels.druid = TRB.UiFunctions:BuildLabel(parent, "All Classes/Specs", oUi.xCoord, yCoord, 110, 20)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_All_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_All_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "All Classes/Specs (All).", nil, nil, true, true, true, true, false)
@@ -595,13 +575,13 @@ local function ConstructImportExportPanel()
     end)
 
     yCoord = yCoord - 35
-    controls.labels.demonhunter = TRB.UiFunctions:BuildLabel(parent, "Demon Hunter", xCoord, yCoord, 110, 20)
+    controls.labels.demonhunter = TRB.UiFunctions:BuildLabel(parent, "Demon Hunter", oUi.xCoord, yCoord, 110, 20)
 
     yCoord = yCoord - 25
     specName = "Havoc"
-    controls.labels.demonhunterHavoc = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    controls.labels.demonhunterHavoc = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_DemonHunter_Havoc_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_DemonHunter_Havoc_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Havoc Demon Hunter (All).", 12, 1, true, true, true, true, false)
@@ -632,9 +612,9 @@ local function ConstructImportExportPanel()
     end)
 
     yCoord = yCoord - 35
-    controls.labels.druid = TRB.UiFunctions:BuildLabel(parent, "Druid", xCoord, yCoord, 110, 20)
+    controls.labels.druid = TRB.UiFunctions:BuildLabel(parent, "Druid", oUi.xCoord, yCoord, 110, 20)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Druid_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Druid_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Druid specializations (All).", 11, nil, true, true, true, true, false)
@@ -666,9 +646,9 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 25
     specName = "Balance"
-    controls.labels.druidBalance = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    controls.labels.druidBalance = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Druid_Balance_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Druid_Balance_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Balance Druid (All).", 11, 1, true, true, true, true, false)
@@ -700,9 +680,9 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 25
     specName = "Feral"
-    controls.labels.druidFeral = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    controls.labels.druidFeral = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Druid_Feral_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Druid_Feral_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Feral Druid (All).", 11, 2, true, true, true, true, false)
@@ -736,9 +716,9 @@ local function ConstructImportExportPanel()
     if TRB.Data.settings.core.experimental.specs.druid.restoration then
         yCoord = yCoord - 25
         specName = "Restoration"
-        controls.labels.druidRestoration = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+        controls.labels.druidRestoration = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
     
-        buttonOffset = xCoord + xPadding + 100
+        buttonOffset = oUi.xCoord + oUi.xPadding + 100
         controls.buttons.exportButton_Druid_Restoration_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
         controls.buttons.exportButton_Druid_Restoration_All:SetScript("OnClick", function(self, ...)
             TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (All).", 11, 4, true, true, true, true, false)
@@ -770,9 +750,9 @@ local function ConstructImportExportPanel()
     end
 
     yCoord = yCoord - 35
-    controls.labels.hunter = TRB.UiFunctions:BuildLabel(parent, "Hunter", xCoord, yCoord, 110, 20)
+    controls.labels.hunter = TRB.UiFunctions:BuildLabel(parent, "Hunter", oUi.xCoord, yCoord, 110, 20)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Hunter_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Hunter_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Hunter specializations (All).", 3, nil, true, true, true, true, false)
@@ -805,9 +785,9 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 25
     specName = "Beast Mastery"
-    controls.labels.hunterBeastMastery = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    controls.labels.hunterBeastMastery = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Hunter_BeastMastery_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Hunter_BeastMastery_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Beast Mastery Hunter (All).", 3, 1, true, true, true, true, false)
@@ -839,9 +819,9 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 25
     specName = "Marksmanship"
-    controls.labels.hunterMarksmanship = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    controls.labels.hunterMarksmanship = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Hunter_Marksmanship_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Hunter_Marksmanship_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Marksmanship Hunter (All).", 3, 2, true, true, true, true, false)
@@ -873,9 +853,9 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 25
     specName = "Survival"
-    controls.labels.hunterSurvival = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    controls.labels.hunterSurvival = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Hunter_Survival_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Hunter_Survival_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Survival Hunter (All).", 3, 3, true, true, true, true, false)
@@ -907,10 +887,10 @@ local function ConstructImportExportPanel()
     
 
     yCoord = yCoord - 35
-    controls.labels.monk = TRB.UiFunctions:BuildLabel(parent, "Monk", xCoord, yCoord, 110, 20)
+    controls.labels.monk = TRB.UiFunctions:BuildLabel(parent, "Monk", oUi.xCoord, yCoord, 110, 20)
 
     if TRB.Data.settings.core.experimental.specs.monk.mistweaver then
-        buttonOffset = xCoord + xPadding + 100
+        buttonOffset = oUi.xCoord + oUi.xPadding + 100
         controls.buttons.exportButton_Monk_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
         controls.buttons.exportButton_Monk_All:SetScript("OnClick", function(self, ...)
             TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Monk specializations (All).", 10, nil, true, true, true, true, false)
@@ -944,9 +924,9 @@ local function ConstructImportExportPanel()
     if TRB.Data.settings.core.experimental.specs.monk.mistweaver then
         yCoord = yCoord - 25
         specName = "Mistweaver"
-        controls.labels.monkMistweaver = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+        controls.labels.monkMistweaver = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
     
-        buttonOffset = xCoord + xPadding + 100
+        buttonOffset = oUi.xCoord + oUi.xPadding + 100
         controls.buttons.exportButton_Monk_Mistweaver_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
         controls.buttons.exportButton_Monk_Mistweaver_All:SetScript("OnClick", function(self, ...)
             TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (All).", 10, 2, true, true, true, true, false)
@@ -979,9 +959,9 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 25
     specName = "Windwalker"
-    controls.labels.monkWindwalker = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    controls.labels.monkWindwalker = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Monk_Windwalker_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Monk_Windwalker_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Windwalker Monk (All).", 10, 3, true, true, true, true, false)
@@ -1013,9 +993,9 @@ local function ConstructImportExportPanel()
     
 
     yCoord = yCoord - 35
-    controls.labels.priest = TRB.UiFunctions:BuildLabel(parent, "Priest", xCoord, yCoord, 110, 20)
+    controls.labels.priest = TRB.UiFunctions:BuildLabel(parent, "Priest", oUi.xCoord, yCoord, 110, 20)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Priest_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Priest_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Priest specializations (All).", 5, nil, true, true, true, true, false)
@@ -1047,9 +1027,9 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 25
     specName = "Holy"
-    controls.labels.priestHoly = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    controls.labels.priestHoly = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Priest_Holy_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Priest_Holy_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Holy Priest (All).", 5, 2, true, true, true, true, false)
@@ -1081,9 +1061,9 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 25
     specName = "Shadow"
-    controls.labels.priestShadow = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    controls.labels.priestShadow = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Priest_Shadow_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Priest_Shadow_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Shadow Priest (All).", 5, 3, true, true, true, true, false)
@@ -1114,9 +1094,9 @@ local function ConstructImportExportPanel()
     end)
 
     yCoord = yCoord - 35
-    controls.labels.rogue = TRB.UiFunctions:BuildLabel(parent, "Rogue", xCoord, yCoord, 110, 20)
+    controls.labels.rogue = TRB.UiFunctions:BuildLabel(parent, "Rogue", oUi.xCoord, yCoord, 110, 20)
     
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Rogue_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Rogue_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Rogue specializations (All).", 4, nil, true, true, true, true, false)
@@ -1148,9 +1128,9 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 25
     specName = "Assassination"
-    controls.labels.rogueAssassination = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    controls.labels.rogueAssassination = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Rogue_Assassination_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Rogue_Assassination_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Assassination Rogue (All).", 4, 1, true, true, true, true, false)
@@ -1183,9 +1163,9 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 25
     specName = "Outlaw"
-    controls.labels.rogueOutlaw = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    controls.labels.rogueOutlaw = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Rogue_Outlaw_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Rogue_Outlaw_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Outlaw Rogue (All).", 4, 2, true, true, true, true, false)
@@ -1216,10 +1196,10 @@ local function ConstructImportExportPanel()
     end)
 
     yCoord = yCoord - 35
-    controls.labels.shaman = TRB.UiFunctions:BuildLabel(parent, "Shaman", xCoord, yCoord, 110, 20)
+    controls.labels.shaman = TRB.UiFunctions:BuildLabel(parent, "Shaman", oUi.xCoord, yCoord, 110, 20)
 
     if TRB.Data.settings.core.experimental.specs.shaman.restoration then
-        buttonOffset = xCoord + xPadding + 100
+        buttonOffset = oUi.xCoord + oUi.xPadding + 100
         controls.buttons.exportButton_Shaman_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
         controls.buttons.exportButton_Shaman_All:SetScript("OnClick", function(self, ...)
             TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Shaman specializations (All).", 7, nil, true, true, true, true, false)
@@ -1252,9 +1232,9 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 25
     specName = "Elemental"
-    controls.labels.shamanElemental = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    controls.labels.shamanElemental = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Shaman_Elemental_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Shaman_Elemental_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Elemental Shaman (All).", 7, 1, true, true, true, true, false)
@@ -1287,9 +1267,9 @@ local function ConstructImportExportPanel()
     if TRB.Data.settings.core.experimental.specs.shaman.restoration then
         yCoord = yCoord - 25
         specName = "Restoration"
-        controls.labels.shamanRestoration = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+        controls.labels.shamanRestoration = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
     
-        buttonOffset = xCoord + xPadding + 100
+        buttonOffset = oUi.xCoord + oUi.xPadding + 100
         controls.buttons.exportButton_Shaman_Restoration_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
         controls.buttons.exportButton_Shaman_Restoration_All:SetScript("OnClick", function(self, ...)
             TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (All).", 7, 3, true, true, true, true, false)
@@ -1322,9 +1302,9 @@ local function ConstructImportExportPanel()
 
 
     yCoord = yCoord - 35
-    controls.labels.warrior = TRB.UiFunctions:BuildLabel(parent, "Warrior", xCoord, yCoord, 110, 20)
+    controls.labels.warrior = TRB.UiFunctions:BuildLabel(parent, "Warrior", oUi.xCoord, yCoord, 110, 20)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Warrior_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Warrior_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Warrior specializations (All).", 1, nil, true, true, true, true, false)
@@ -1356,9 +1336,9 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 25
     specName = "Arms"
-    controls.labels.warriorArms = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    controls.labels.warriorArms = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Warrior_Arms_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Warrior_Arms_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Arms Warrior (All).", 1, 1, true, true, true, true, false)
@@ -1391,9 +1371,9 @@ local function ConstructImportExportPanel()
 
     yCoord = yCoord - 25
     specName = "Fury"
-    controls.labels.warriorFury = TRB.UiFunctions:BuildLabel(parent, specName, xCoord+xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+    controls.labels.warriorFury = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-    buttonOffset = xCoord + xPadding + 100
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
     controls.buttons.exportButton_Warrior_Fury_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
     controls.buttons.exportButton_Warrior_Fury_All:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Fury Warrior (All).", 1, 2, true, true, true, true, false)
@@ -1441,24 +1421,16 @@ function TRB.Options:ConstructOptionsPanel()
     interfaceSettingsFrame.panel.name = "Twintop's Resource Bar"
     local parent = interfaceSettingsFrame.panel
     local yCoord = -5
-    local xPadding = 10
-    local xPadding2 = 30
-    local xMax = 550
-    local xCoord = 0
-    local xCoord2 = 325
-    local yCoord = -5
-    local xOffset1 = 50
-    local xOffset2 = 275
 
-    interfaceSettingsFrame.controls.barPositionSection = TRB.UiFunctions:BuildSectionHeader(parent, TRB.Details.addonTitle, xCoord+xPadding, yCoord)
+    interfaceSettingsFrame.controls.barPositionSection = TRB.UiFunctions:BuildSectionHeader(parent, TRB.Details.addonTitle, oUi.xCoord+oUi.xPadding, yCoord)
     yCoord = yCoord - 40
-    interfaceSettingsFrame.controls.labels.infoAuthor = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Author:", TRB.Details.addonAuthor .. " - " .. TRB.Details.addonAuthorServer, xCoord+(xPadding*2), yCoord, 0, 450, 15, 15)
+    interfaceSettingsFrame.controls.labels.infoAuthor = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Author:", TRB.Details.addonAuthor .. " - " .. TRB.Details.addonAuthorServer, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 450, 15, 15)
     yCoord = yCoord - 40
-    interfaceSettingsFrame.controls.labels.infoVersion = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Version:", TRB.Details.addonVersion, xCoord+(xPadding*2), yCoord, 0, 450, 15, 15)
+    interfaceSettingsFrame.controls.labels.infoVersion = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Version:", TRB.Details.addonVersion, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 450, 15, 15)
     yCoord = yCoord - 40
-    interfaceSettingsFrame.controls.labels.infoReleased = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Released:", TRB.Details.addonReleaseDate, xCoord+(xPadding*2), yCoord, 0, 450, 15, 15)
+    interfaceSettingsFrame.controls.labels.infoReleased = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Released:", TRB.Details.addonReleaseDate, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 450, 15, 15)
     yCoord = yCoord - 40
-    interfaceSettingsFrame.controls.labels.infoSupport = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Supported Specs:", TRB.Details.supportedSpecs, xCoord+(xPadding*2), yCoord, 0, 450, 15, 300)
+    interfaceSettingsFrame.controls.labels.infoSupport = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Supported Specs:", TRB.Details.supportedSpecs, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 450, 15, 300)
 
 
     interfaceSettingsFrame.panel.yCoord = yCoord

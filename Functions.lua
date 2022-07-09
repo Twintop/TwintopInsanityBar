@@ -74,7 +74,7 @@ TRB.Functions.IsNumeric = IsNumeric
 
 local function RoundTo(num, numDecimalPlaces, mode)
 	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
-	local newNum = tonumber(num)
+	local newNum = tonumber(num) or 0
 	if mode == "floor" then
 		local whole, decimal = strsplit(".", newNum, 2)
 

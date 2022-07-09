@@ -1,6 +1,8 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 1 then --Only do this if we're on a Warrior!
+	local oUi = TRB.Data.constants.optionsUi
+	
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
@@ -439,26 +441,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return
 		end
 
-		local spec = TRB.Data.settings.warrior.arms
+				local spec = TRB.Data.settings.warrior.arms
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.arms
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_Reset"] = {
 			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Arms Warrior settings will be changed. This will cause your UI to be reloaded!",
@@ -516,7 +505,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
 		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Arms_Reset")
 		end)
@@ -525,20 +514,20 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Arms_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 
 		--[[
-		controls.resetButton2 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton2 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton2:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Arms_ResetBarTextNarrowAdvanced")
 		end)
 		]]
 
-		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton3:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Arms_ResetBarTextAdvanced")
 		end)
@@ -551,28 +540,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return
 		end
 
-		local spec = TRB.Data.settings.warrior.arms
+				local spec = TRB.Data.settings.warrior.arms
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.arms
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
-
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
@@ -590,10 +565,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_RageBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
+		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", oUi.xCoord, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
+		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, spec.textures.resourceBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.resourceBarTexture, "LEFT")
 
@@ -657,10 +632,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_CastBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
+		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
+		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
 
@@ -730,10 +705,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
+		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", oUi.xCoord, yCoord)
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
+		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, spec.textures.passiveBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
 
@@ -800,7 +775,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_CB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
 		f.tooltip = "This will lock the texture for each part of the bar to be the same."
 		f:SetChecked(spec.textures.textureLock)
@@ -826,10 +801,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_BorderTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
+		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", oUi.xCoord, yCoord)
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
+		controls.dropDown.borderTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.borderTexture, spec.textures.borderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
 
@@ -892,10 +867,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_BackgroundTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
+		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
+		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, spec.textures.backgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
 
@@ -959,7 +934,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 30
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_RB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
@@ -977,7 +952,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_RB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-15)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-15)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Rage > 0")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar show out of combat only if Rage > 0, hidden otherwise when out of combat."
@@ -995,7 +970,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_RB1_4", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.combatShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
@@ -1013,7 +988,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_RB1_5", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.neverShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-45)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
 		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
@@ -1031,7 +1006,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
 		f.tooltip = "This will show the casting bar when Bladestorm is being channeled. Uncheck to hide this bar."
 		f:SetChecked(spec.bar.showCasting)
@@ -1042,7 +1017,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
 		f:SetChecked(spec.bar.showPassive)
@@ -1054,33 +1029,33 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Rage", spec.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Rage", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 1)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Rage gain from Passive Sources", spec.colors.bar.passive, 275, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Rage gain from Passive Sources", spec.colors.bar.passive, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you are overcapping Rage", spec.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you are overcapping Rage", spec.colors.bar.borderOvercap, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
@@ -1093,19 +1068,19 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Rage threshold line", spec.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Rage threshold line", spec.colors.threshold.under, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Rage threshold line", spec.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Rage threshold line", spec.colors.threshold.over, 275, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
+		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
@@ -1113,7 +1088,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(spec.thresholds.overlapBorder)
@@ -1124,7 +1099,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.cleaveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_cleave", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cleaveThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Cleave (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Cleave. Only visible if talented."
 		f:SetChecked(spec.thresholds.cleave.enabled)
@@ -1135,7 +1110,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 25
 		controls.checkBoxes.executeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_execute", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.executeThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Execute/Condemn (if |cFFFF4040Venthyr|r)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute or Condemn (if |cFFFF4040Venthyr|r). Only visible when the current target is in Execute health range or available from a Sudden Death proc. Will move along the bar between the current minimum and maximum Rage cost amounts."
 		f:SetChecked(spec.thresholds.execute.enabled or spec.thresholds.condemn.enabled)
@@ -1147,7 +1122,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 25
 		controls.checkBoxes.executeMinimumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_executeMinimum", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.executeMinimumThresholdShow
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Execute/Condemn (if |cFFFF4040Venthyr|r) (minimum)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute or Condemn (if |cFFFF4040Venthyr|r) at its minimum Rage cost. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
 		f:SetChecked(spec.thresholds.executeMinimum.enabled or spec.thresholds.condemnMinimum.enabled)
@@ -1159,7 +1134,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 25
 		controls.checkBoxes.executeMaximumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_executeMaximum", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.executeMaximumThresholdShow
-		f:SetPoint("TOPLEFT", xCoord+xPadding*2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Execute/Condemn (if |cFFFF4040Venthyr|r) (maximum)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute or Condemn (if |cFFFF4040Venthyr|r) at its maximum Rage cost. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
 		f:SetChecked(spec.thresholds.executeMaximum.enabled or spec.thresholds.condemnMaximum.enabled)
@@ -1171,7 +1146,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 25
 		controls.checkBoxes.ignorePainThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_ignorePain", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ignorePainThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Ignore Pain")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Ignore Pain."
 		f:SetChecked(spec.thresholds.ignorePain.enabled)
@@ -1182,7 +1157,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 25
 		controls.checkBoxes.impendingVictoryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_impendingVictory", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.impendingVictoryThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Impending Victory (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Impending Victory. Only visible if talented."
 		f:SetChecked(spec.thresholds.impendingVictory.enabled)
@@ -1193,7 +1168,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 25
 		controls.checkBoxes.mortalStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_mortalStrike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mortalStrikeThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Mortal Strike")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Mortal Strike."
 		f:SetChecked(spec.thresholds.mortalStrike.enabled)
@@ -1204,7 +1179,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 25
 		controls.checkBoxes.rendThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_rend", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.rendThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Rend (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Rend. Only visible if talented."
 		f:SetChecked(spec.thresholds.rend.enabled)
@@ -1215,7 +1190,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 25
 		controls.checkBoxes.shieldBlockThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_shieldBlock", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shieldBlockThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Shield Block")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Shield Block. This does not check to see if you have a shield equipped!"
 		f:SetChecked(spec.thresholds.shieldBlock.enabled)
@@ -1226,7 +1201,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 25
 		controls.checkBoxes.slamThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_slam", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.slamThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Slam")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Slam."
 		f:SetChecked(spec.thresholds.slam.enabled)
@@ -1237,7 +1212,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 25
 		controls.checkBoxes.whirlwindThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_whirlwind", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.whirlwindThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Whirlwind")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Whirlwind."
 		f:SetChecked(spec.thresholds.whirlwind.enabled)
@@ -1249,10 +1224,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
         -- Create the dropdown, and configure its appearance
         controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
-        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", oUi.xCoord, yCoord)
         controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
-        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
-        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
+        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, oUi.dropdownWidth)
         UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
 
@@ -1296,7 +1271,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		--NOTE: the order of these checkboxes is reversed!
 		controls.checkBoxes.thresholdIconCooldown = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_thresholdIconThresholdEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconCooldown
-		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+(oUi.xPadding*2), yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
 		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for potion icons that are on cooldown."
 		f:SetChecked(spec.thresholds.icons.showCooldown)
@@ -1308,7 +1283,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 		f:SetChecked(spec.thresholds.icons.enabled)
@@ -1324,7 +1299,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 80
 		title = "Threshold Icon Width"
 		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.width = value
@@ -1343,7 +1318,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		title = "Threshold Icon Height"
 		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.height = value
@@ -1364,7 +1339,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		title = "Threshold Icon Horizontal Position (Relative)"
 		yCoord = yCoord - 60
 		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.xPos = value
@@ -1376,7 +1351,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		title = "Threshold Icon Vertical Position (Relative)"
 		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord2, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.yPos = value
@@ -1387,7 +1362,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		title = "Threshold Icon Border Width"
 		yCoord = yCoord - 60
 		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.border = value
@@ -1413,7 +1388,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_CB1_8", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
 		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Rage. Setting accepts values up to 130 to accomidate the Deadly Calm talent."
 		f:SetChecked(spec.colors.bar.overcapEnabled)
@@ -1425,7 +1400,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		title = "Show Overcap Notification Above"
 		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 130, spec.overcapThreshold, 1, 1,
-										sliderWidth, sliderHeight, xCoord, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 1)
@@ -1441,27 +1416,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return
 		end
 
-		local spec = TRB.Data.settings.warrior.arms
+				local spec = TRB.Data.settings.warrior.arms
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.arms
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		controls.buttons.exportButton_Warrior_Arms_FontAndText = TRB.UiFunctions:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Arms_FontAndText:SetScript("OnClick", function(self, ...)
@@ -1473,10 +1435,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 30
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_FontLeft", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", oUi.xCoord, yCoord)
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
+		controls.dropDown.fontLeft:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
@@ -1540,10 +1502,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_FontMiddle", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
+		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", oUi.xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
+		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
@@ -1609,10 +1571,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_FontRight", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", oUi.xCoord, yCoord)
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
+		controls.dropDown.fontRight:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
@@ -1676,7 +1638,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
 		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
 		f:SetChecked(spec.displayText.fontFaceLock)
@@ -1704,7 +1666,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
 		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.left.fontSize = value
@@ -1721,7 +1683,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontSizeLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
 		f:SetChecked(spec.displayText.fontSizeLock)
@@ -1736,21 +1698,21 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.colors.text = {}
 
 		controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
-														250, 25, xCoord2, yCoord-30)
+														250, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.text.left
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
 		end)
 
 		controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
-														225, 25, xCoord2, yCoord-70)
+														225, 25, oUi.xCoord2, yCoord-70)
 		f = controls.colors.text.middle
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
 		end)
 
 		controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
-														225, 25, xCoord2, yCoord-110)
+														225, 25, oUi.xCoord2, yCoord-110)
 		f = controls.colors.text.right
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
@@ -1759,7 +1721,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.middle.fontSize = value
@@ -1777,7 +1739,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.right.fontSize = value
@@ -1796,26 +1758,26 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Rage Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Rage", spec.colors.text.current, 300, 25, xCoord, yCoord)
+		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Rage", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Rage", spec.colors.text.passive, 275, 25, xCoord2, yCoord)
+		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Rage", spec.colors.text.passive, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Rage to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Rage to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.overcaprageText = TRB.UiFunctions:BuildColorPicker(parent, "Overcapping Rage", spec.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		controls.colors.overcaprageText = TRB.UiFunctions:BuildColorPicker(parent, "Overcapping Rage", spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.overcaprageText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -1825,7 +1787,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Rage text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -1835,7 +1797,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
-		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Rage text color when your current hardcast spell will result in overcapping maximum Rage."
 		f:SetChecked(spec.colors.text.overcapEnabled)
@@ -1850,7 +1812,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 25
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter and DoT timer color based on DoT status?")
 		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($deepWoundsCount, $rendCount) will change based on whether or not the DoT is on the current target."
 		f:SetChecked(spec.colors.text.dots.enabled)
@@ -1860,19 +1822,19 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.colors.dots = {}
 
-		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
+		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
 		f = controls.colors.dots.up
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
 		end)
 
-		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
+		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
 		f = controls.colors.dots.pandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
 		end)
 
-		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
+		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
 		f = controls.colors.dots.down
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
@@ -1885,7 +1847,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
 		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
-										sliderWidth, sliderHeight, xCoord, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 0)
@@ -1895,7 +1857,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		title = "Rage Decimal Precision"
 		controls.astralPowerPrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.ragePrecision, 1, 0,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.astralPowerPrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 0)
@@ -1911,27 +1873,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return
 		end
 
-		local spec = TRB.Data.settings.warrior.arms
+				local spec = TRB.Data.settings.warrior.arms
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.arms
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		controls.buttons.exportButton_Warrior_Arms_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Arms_AudioAndTracking:SetScript("OnClick", function(self, ...)
@@ -1943,7 +1892,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Rage")
 		f.tooltip = "Play an audio cue when your hardcast spell will overcap Rage."
 		f:SetChecked(spec.audio.overcap.enabled)
@@ -1958,8 +1907,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_overcapAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
+		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
@@ -2009,7 +1958,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 60
 		controls.checkBoxes.suddenDeathAudio = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_suddenDeath_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.suddenDeathAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Sudden Death proc (if talented)")
 		f.tooltip = "Play an audio cue when you get a Sudden Death proc that allows you to use Execute/Condemn for 0 Rage and above normal execute range enemy health."
 		f:SetChecked(spec.audio.suddenDeath.enabled)
@@ -2024,8 +1973,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.suddenDeathAudio = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_suddenDeath_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.suddenDeathAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.suddenDeathAudio, dropdownWidth)
+		controls.dropDown.suddenDeathAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.suddenDeathAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.suddenDeathAudio, spec.audio.suddenDeath.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.suddenDeathAudio, "LEFT")
 
@@ -2079,21 +2028,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return
 		end
 
-		local spec = TRB.Data.settings.warrior.arms
+				local spec = TRB.Data.settings.warrior.arms
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.arms
 		local yCoord = 5
 		local f = nil
-
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
 		local namePrefix = "Warrior_Arms"
 
 		controls.buttons.exportButton_Warrior_Arms_BarText = TRB.UiFunctions:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
@@ -2104,10 +2044,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.labels.leftText = TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		controls.labels.leftText = TRB.UiFunctions:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
@@ -2116,10 +2056,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		yCoord = yCoord - 70
-		controls.labels.middleText = TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		controls.labels.middleText = TRB.UiFunctions:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
@@ -2128,10 +2068,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		yCoord = yCoord - 70
-		controls.labels.rightText = TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		controls.labels.rightText = TRB.UiFunctions:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
@@ -2141,7 +2081,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		yCoord = yCoord - 30
 		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 
@@ -2151,13 +2091,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local controls = interfaceSettingsFrame.controls.arms or {}
 		local yCoord = 0
 		local f = nil
-		local xPadding = 10
-		local xPadding2 = 30
-		local xMax = 550
-		local xCoord = 0
-		local xCoord2 = 325
-		local xOffset1 = 50
-		local xOffset2 = 275
 
 		controls.colors = {}
 		controls.labels = {}
@@ -2175,7 +2108,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.buttons = controls.buttons or {}
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Arms Warrior", xCoord+xPadding, yCoord-5)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Arms Warrior", oUi.xCoord+oUi.xPadding, yCoord-5)
 	
 		controls.checkBoxes.armsWarriorEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_armsWarriorEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.armsWarriorEnabled
@@ -2257,26 +2190,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return
 		end
 
-		local spec = TRB.Data.settings.warrior.fury
+				local spec = TRB.Data.settings.warrior.fury
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.fury
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		StaticPopupDialogs["TwintopResourceBar_Warrior_Fury_Reset"] = {
 			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Fury Warrior settings will be changed. This will cause your UI to be reloaded!",
@@ -2334,7 +2254,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
 		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Fury_Reset")
 		end)
@@ -2343,20 +2263,20 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Fury_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 
 		--[[
-		controls.resetButton2 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton2 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton2:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Fury_ResetBarTextNarrowAdvanced")
 		end)
 		]]
 
-		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton3:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Fury_ResetBarTextAdvanced")
 		end)
@@ -2369,27 +2289,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return
 		end
 
-		local spec = TRB.Data.settings.warrior.fury
+				local spec = TRB.Data.settings.warrior.fury
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.fury
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
@@ -2408,10 +2315,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Fury_RageBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
+		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", oUi.xCoord, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
+		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, spec.textures.resourceBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.resourceBarTexture, "LEFT")
 
@@ -2475,10 +2382,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Fury_CastBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
+		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
+		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
 
@@ -2548,10 +2455,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Fury_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
+		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", oUi.xCoord, yCoord)
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
+		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, spec.textures.passiveBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
 
@@ -2618,7 +2525,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_CB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
 		f.tooltip = "This will lock the texture for each part of the bar to be the same."
 		f:SetChecked(spec.textures.textureLock)
@@ -2644,10 +2551,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Fury_BorderTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
+		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", oUi.xCoord, yCoord)
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
+		controls.dropDown.borderTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.borderTexture, spec.textures.borderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
 
@@ -2710,10 +2617,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Fury_BackgroundTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
+		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
+		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, spec.textures.backgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
 
@@ -2777,7 +2684,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 30
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_RB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
@@ -2795,7 +2702,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_RB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-15)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-15)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Rage > 0")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar show out of combat only if Rage > 0, hidden otherwise when out of combat."
@@ -2813,7 +2720,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_RB1_4", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.combatShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
@@ -2831,7 +2738,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_RB1_5", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.neverShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-45)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
 		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
@@ -2849,7 +2756,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
 		f:SetChecked(spec.bar.showPassive)
@@ -2861,39 +2768,39 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Rage", spec.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Rage", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 2)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Rage gain from Passive Sources", spec.colors.bar.passive, 275, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Rage gain from Passive Sources", spec.colors.bar.passive, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you are overcapping Rage", spec.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you are overcapping Rage", spec.colors.bar.borderOvercap, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, xCoord, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
 		end)
 
-		controls.colors.enrage = TRB.UiFunctions:BuildColorPicker(parent, "Fury while Enrage is active", spec.colors.bar.enrage, 250, 25, xCoord2, yCoord)
+		controls.colors.enrage = TRB.UiFunctions:BuildColorPicker(parent, "Fury while Enrage is active", spec.colors.bar.enrage, 250, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.enrage
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "enrage")
@@ -2906,19 +2813,19 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Rage threshold line", spec.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Rage threshold line", spec.colors.threshold.under, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Rage threshold line", spec.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Rage threshold line", spec.colors.threshold.over, 275, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
+		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
@@ -2926,7 +2833,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(spec.thresholds.overlapBorder)
@@ -2937,7 +2844,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.ignorePainThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_ignorePain", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ignorePainThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Ignore Pain")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Ignore Pain."
 		f:SetChecked(spec.thresholds.ignorePain.enabled)
@@ -2948,7 +2855,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 25
 		controls.checkBoxes.impendingVictoryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_impendingVictory", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.impendingVictoryThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Impending Victory (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Impending Victory. Only visible if talented."
 		f:SetChecked(spec.thresholds.impendingVictory.enabled)
@@ -2959,7 +2866,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 25
 		controls.checkBoxes.rampageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_rampage", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.rampageThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Rampage (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Rampage."
 		f:SetChecked(spec.thresholds.rampage.enabled)
@@ -2970,7 +2877,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 25
 		controls.checkBoxes.shieldBlockThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_shieldBlock", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shieldBlockThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Shield Block")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Shield Block. This does not check to see if you have a shield equipped!"
 		f:SetChecked(spec.thresholds.shieldBlock.enabled)
@@ -2981,7 +2888,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 25
 		controls.checkBoxes.slamThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_slam", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.slamThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Slam")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Slam."
 		f:SetChecked(spec.thresholds.slam.enabled)
@@ -2993,10 +2900,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
         -- Create the dropdown, and configure its appearance
         controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Fury_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
-        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", oUi.xCoord, yCoord)
         controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
-        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
-        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
+        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, oUi.dropdownWidth)
         UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
 
@@ -3040,7 +2947,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		--NOTE: the order of these checkboxes is reversed!
 		controls.checkBoxes.thresholdIconCooldown = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_thresholdIconThresholdEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconCooldown
-		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+(oUi.xPadding*2), yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
 		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for potion icons that are on cooldown."
 		f:SetChecked(spec.thresholds.icons.showCooldown)
@@ -3052,7 +2959,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 		f:SetChecked(spec.thresholds.icons.enabled)
@@ -3068,7 +2975,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 80
 		title = "Threshold Icon Width"
 		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.width = value
@@ -3087,7 +2994,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		title = "Threshold Icon Height"
 		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.height = value
@@ -3108,7 +3015,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		title = "Threshold Icon Horizontal Position (Relative)"
 		yCoord = yCoord - 60
 		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.xPos = value
@@ -3120,7 +3027,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		title = "Threshold Icon Vertical Position (Relative)"
 		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord2, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.yPos = value
@@ -3131,7 +3038,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		title = "Threshold Icon Border Width"
 		yCoord = yCoord - 60
 		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.border = value
@@ -3157,7 +3064,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_CB1_8", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
 		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Rage. Setting accepts values up to 130 to accomidate the Deadly Calm talent."
 		f:SetChecked(spec.colors.bar.overcapEnabled)
@@ -3170,7 +3077,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		title = "Show Overcap Notification Above"
 		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 100, spec.overcapThreshold, 1, 1,
-										sliderWidth, sliderHeight, xCoord, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 1)
@@ -3186,27 +3093,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return
 		end
 
-		local spec = TRB.Data.settings.warrior.fury
+				local spec = TRB.Data.settings.warrior.fury
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.fury
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		controls.buttons.exportButton_Warrior_Fury_FontAndText = TRB.UiFunctions:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Fury_FontAndText:SetScript("OnClick", function(self, ...)
@@ -3218,10 +3112,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 30
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Fury_FontLeft", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", oUi.xCoord, yCoord)
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
+		controls.dropDown.fontLeft:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
@@ -3285,10 +3179,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Fury_FontMiddle", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
+		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", oUi.xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
+		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
@@ -3354,10 +3248,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Fury_FontRight", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", oUi.xCoord, yCoord)
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
+		controls.dropDown.fontRight:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
@@ -3421,7 +3315,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
 		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
 		f:SetChecked(spec.displayText.fontFaceLock)
@@ -3449,7 +3343,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
 		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.left.fontSize = value
@@ -3466,7 +3360,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontSizeLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
 		f:SetChecked(spec.displayText.fontSizeLock)
@@ -3481,21 +3375,21 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.colors.text = {}
 
 		controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
-														250, 25, xCoord2, yCoord-30)
+														250, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.text.left
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
 		end)
 
 		controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
-														225, 25, xCoord2, yCoord-70)
+														225, 25, oUi.xCoord2, yCoord-70)
 		f = controls.colors.text.middle
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
 		end)
 
 		controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
-														225, 25, xCoord2, yCoord-110)
+														225, 25, oUi.xCoord2, yCoord-110)
 		f = controls.colors.text.right
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
@@ -3504,7 +3398,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.middle.fontSize = value
@@ -3522,7 +3416,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.right.fontSize = value
@@ -3541,26 +3435,26 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Rage Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Rage", spec.colors.text.current, 300, 25, xCoord, yCoord)
+		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Rage", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Rage", spec.colors.text.passive, 275, 25, xCoord2, yCoord)
+		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Rage", spec.colors.text.passive, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Rage to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Rage to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.overcaprageText = TRB.UiFunctions:BuildColorPicker(parent, "Overcapping Rage", spec.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		controls.colors.overcaprageText = TRB.UiFunctions:BuildColorPicker(parent, "Overcapping Rage", spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.overcaprageText
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -3570,7 +3464,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Rage text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -3580,7 +3474,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
-		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Rage text color when your current hardcast spell will result in overcapping maximum Rage."
 		f:SetChecked(spec.colors.text.overcapEnabled)
@@ -3595,7 +3489,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
 		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
-										sliderWidth, sliderHeight, xCoord, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 0)
@@ -3605,7 +3499,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		title = "Rage Decimal Precision"
 		controls.astralPowerPrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.ragePrecision, 1, 0,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.astralPowerPrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 0)
@@ -3621,27 +3515,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return
 		end
 
-		local spec = TRB.Data.settings.warrior.fury
+				local spec = TRB.Data.settings.warrior.fury
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.fury
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		controls.buttons.exportButton_Warrior_Fury_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Fury_AudioAndTracking:SetScript("OnClick", function(self, ...)
@@ -3653,7 +3534,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Rage")
 		f.tooltip = "Play an audio cue when your hardcast spell will overcap Rage."
 		f:SetChecked(spec.audio.overcap.enabled)
@@ -3668,8 +3549,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Fury_overcapAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
+		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
@@ -3715,73 +3596,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
-		--[[
-		yCoord = yCoord - 60
-		controls.checkBoxes.suddenDeathAudio = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_suddenDeath_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.suddenDeathAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Sudden Death proc (if talented)")
-		f.tooltip = "Play an audio cue when you get a Sudden Death proc that allows you to use Execute/Condemn for 0 Rage and above normal execute range enemy health."
-		f:SetChecked(spec.audio.suddenDeath.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.audio.suddenDeath.enabled = self:GetChecked()
-
-			if spec.audio.suddenDeath.enabled then
----@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(spec.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.suddenDeathAudio = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Fury_suddenDeath_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.suddenDeathAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.suddenDeathAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.suddenDeathAudio, spec.audio.suddenDeath.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.suddenDeathAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.suddenDeathAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == spec.audio.suddenDeath.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-			spec.audio.suddenDeath.sound = newValue
-			spec.audio.suddenDeath.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
-			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(spec.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-		]]
-
 		TRB.Frames.interfaceSettingsFrameContainer.controls.fury = controls
 	end
 
@@ -3790,21 +3604,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return
 		end
 
-		local spec = TRB.Data.settings.warrior.fury
+				local spec = TRB.Data.settings.warrior.fury
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.fury
 		local yCoord = 5
 		local f = nil
-
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
 		local namePrefix = "Warrior_Fury"
 
 		controls.buttons.exportButton_Warrior_Fury_BarText = TRB.UiFunctions:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
@@ -3815,10 +3620,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.labels.leftText = TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		controls.labels.leftText = TRB.UiFunctions:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
@@ -3827,10 +3632,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		yCoord = yCoord - 70
-		controls.labels.middleText = TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		controls.labels.middleText = TRB.UiFunctions:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
@@ -3839,10 +3644,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		yCoord = yCoord - 70
-		controls.labels.rightText = TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		controls.labels.rightText = TRB.UiFunctions:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
@@ -3852,7 +3657,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		yCoord = yCoord - 30
 		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 
@@ -3862,13 +3667,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local controls = interfaceSettingsFrame.controls.fury or {}
 		local yCoord = 0
 		local f = nil
-		local xPadding = 10
-		local xPadding2 = 30
-		local xMax = 550
-		local xCoord = 0
-		local xCoord2 = 325
-		local xOffset1 = 50
-		local xOffset2 = 275
 
 		controls.colors = {}
 		controls.labels = {}
@@ -3886,7 +3684,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.buttons = controls.buttons or {}
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Fury Warrior", xCoord+xPadding, yCoord-5)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Fury Warrior", oUi.xCoord+oUi.xPadding, yCoord-5)
 	
 		controls.checkBoxes.furyWarriorEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_furyWarriorEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.furyWarriorEnabled

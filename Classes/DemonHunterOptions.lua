@@ -1,6 +1,8 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 12 then --Only do this if we're on a DemonHunter!
+	local oUi = TRB.Data.constants.optionsUi
+	
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
@@ -226,26 +228,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.demonhunter.havoc
+				local spec = TRB.Data.settings.demonhunter.havoc
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.havoc
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		StaticPopupDialogs["TwintopResourceBar_DemonHunter_Havoc_Reset"] = {
 			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Havoc Demon Hunter settings will be changed. This will cause your UI to be reloaded!",
@@ -286,24 +275,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		--[[StaticPopupDialogs["TwintopResourceBar_DemonHunter_Havoc_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Havoc Demon Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
-			OnAccept = function()
-				spec.displayText = HavocLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()
-			end,
-			timeout = 0,
-			whileDead = true,
-			hideOnEscape = true,
-			preferredIndex = 3
-		}]]
 
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
 		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_DemonHunter_Havoc_Reset")
 		end)
@@ -312,20 +288,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_DemonHunter_Havoc_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 
-		--[[
-		controls.resetButton2 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
-		controls.resetButton2:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_DemonHunter_Havoc_ResetBarTextNarrowAdvanced")
-		end)
-		]]
-
-		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton3:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_DemonHunter_Havoc_ResetBarTextAdvanced")
 		end)
@@ -338,27 +307,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.demonhunter.havoc
+				local spec = TRB.Data.settings.demonhunter.havoc
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.havoc
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
@@ -377,10 +333,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_DemonHunter_Havoc_FuryBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
+		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", oUi.xCoord, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
+		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, spec.textures.resourceBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.resourceBarTexture, "LEFT")
 
@@ -444,10 +400,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_DemonHunter_Havoc_CastBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
+		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
+		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
 
@@ -517,10 +473,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_DemonHunter_Havoc_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
+		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", oUi.xCoord, yCoord)
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
+		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, spec.textures.passiveBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
 
@@ -587,7 +543,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_CB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
 		f.tooltip = "This will lock the texture for each part of the bar to be the same."
 		f:SetChecked(spec.textures.textureLock)
@@ -613,10 +569,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_DemonHunter_Havoc_BorderTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
+		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", oUi.xCoord, yCoord)
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
+		controls.dropDown.borderTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.borderTexture, spec.textures.borderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
 
@@ -679,10 +635,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_DemonHunter_Havoc_BackgroundTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
+		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
+		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, spec.textures.backgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
 
@@ -746,7 +702,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 30
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_RB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
@@ -764,7 +720,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_RB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-15)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-15)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Fury > 0")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar show out of combat only if Fury > 0, hidden otherwise when out of combat."
@@ -782,7 +738,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_RB1_4", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.combatShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
@@ -800,7 +756,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_RB1_5", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.neverShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-45)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
 		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
@@ -818,7 +774,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
 		f.tooltip = "This will show the casting bar when Eye Beam (with Blind Fury) is being channeled. Uncheck to hide this bar."
 		f:SetChecked(spec.bar.showCasting)
@@ -828,7 +784,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-20)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
 		f:SetChecked(spec.bar.showPassive)
@@ -840,39 +796,39 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Fury", spec.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Fury", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.metamorphosis = TRB.UiFunctions:BuildColorPicker(parent, "Fury while Metamorphosis is active", spec.colors.bar.metamorphosis, 225, 25, xCoord2, yCoord)
+		controls.colors.metamorphosis = TRB.UiFunctions:BuildColorPicker(parent, "Fury while Metamorphosis is active", spec.colors.bar.metamorphosis, 225, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.metamorphosis
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "metamorphosis")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Fury gain from Passive Sources", spec.colors.bar.passive, 275, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Fury gain from Passive Sources", spec.colors.bar.passive, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
 		end)
 
-		controls.colors.metamorphosisEnding = TRB.UiFunctions:BuildColorPicker(parent, "Fury when Metamorphosis is ending", spec.colors.bar.metamorphosisEnding, 250, 25, xCoord2, yCoord)
+		controls.colors.metamorphosisEnding = TRB.UiFunctions:BuildColorPicker(parent, "Fury when Metamorphosis is ending", spec.colors.bar.metamorphosisEnding, 250, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.metamorphosisEnding
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "metamorphosisEnding")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Fury gain from Eye Beam with Blind Fury", spec.colors.bar.casting, 275, 25, xCoord, yCoord)
+		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Fury gain from Eye Beam with Blind Fury", spec.colors.bar.casting, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 1)
 		end)
 
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 250, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 250, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 1)
@@ -880,13 +836,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, xCoord, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your next builder will overcap Fury", spec.colors.bar.borderOvercap, 250, 25, xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your next builder will overcap Fury", spec.colors.bar.borderOvercap, 250, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
@@ -898,19 +854,19 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Fury threshold line", spec.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Fury threshold line", spec.colors.threshold.under, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Fury threshold line", spec.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Fury threshold line", spec.colors.threshold.over, 275, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
+		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
@@ -918,7 +874,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(spec.thresholds.overlapBorder)
@@ -929,7 +885,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.checkBoxes.bladeDanceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_bladeDance", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.bladeDanceThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Blade Dance / Death Sweep")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Blade Dance. Shows for Death Sweep while in Demon Form."
 		f:SetChecked(spec.thresholds.bladeDance.enabled)
@@ -941,7 +897,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.chaosNovaThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_chaosNova", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.chaosNovaThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Chaos Nova (no Unleashed Power)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Chaos Nova. Only shown if Unleashed Power is not talented."
 		f:SetChecked(spec.thresholds.chaosNova.enabled)
@@ -952,7 +908,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.chaosStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_chaosStrike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.chaosStrikeThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Chaos Strike / Annihilation")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Chaos Strike. Shows for Annihilation while in Demon Form."
 		f:SetChecked(spec.thresholds.chaosStrike.enabled)
@@ -964,7 +920,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.eyeBeamThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_eyeBeam", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.eyeBeamThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Eye Beam")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Eye Beam."
 		f:SetChecked(spec.thresholds.eyeBeam.enabled)
@@ -975,7 +931,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.felEruptionVictoryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_felEruption", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.felEruptionVictoryThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Fel Eruption (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Fel Eruption. Only visible if talented."
 		f:SetChecked(spec.thresholds.felEruption.enabled)
@@ -986,7 +942,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.glaiveTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_glaiveTempest", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.glaiveTempestThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Glaive Tempest (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Glaive Tempest. Only visible if talented."
 		f:SetChecked(spec.thresholds.glaiveTempest.enabled)
@@ -1000,10 +956,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
         -- Create the dropdown, and configure its appearance
         controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_DemonHunter_Havoc_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
-        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", oUi.xCoord, yCoord)
         controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
-        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
-        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
+        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, oUi.dropdownWidth)
         UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
 
@@ -1047,7 +1003,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		--NOTE: the order of these checkboxes is reversed!
 		controls.checkBoxes.thresholdIconCooldown = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_thresholdIconThresholdEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconCooldown
-		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+(oUi.xPadding*2), yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
 		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for potion icons that are on cooldown."
 		f:SetChecked(spec.thresholds.icons.showCooldown)
@@ -1059,7 +1015,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 		f:SetChecked(spec.thresholds.icons.enabled)
@@ -1074,7 +1030,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 80
 		title = "Threshold Icon Width"
 		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.width = value
@@ -1093,7 +1049,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		title = "Threshold Icon Height"
 		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.height = value
@@ -1114,7 +1070,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		title = "Threshold Icon Horizontal Position (Relative)"
 		yCoord = yCoord - 60
 		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.xPos = value
@@ -1126,7 +1082,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		title = "Threshold Icon Vertical Position (Relative)"
 		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord2, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.yPos = value
@@ -1137,7 +1093,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		title = "Threshold Icon Border Width"
 		yCoord = yCoord - 60
 		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.border = value
@@ -1163,7 +1119,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 30
 		controls.checkBoxes.endOfMetamorphosis = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfMetamorphosis
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Metamorphosis")
 		f.tooltip = "Changes the bar color when Metamorphosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
 		f:SetChecked(spec.endOfMetamorphosis.enabled)
@@ -1174,7 +1130,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfMetamorphosisModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfMetamorphosisModeGCDs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Metamorphosis ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Change the bar color based on how many GCDs remain until Metamorphosis ends."
@@ -1189,7 +1145,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		title = "Metamorphosis GCDs - 0.75sec Floor"
 		controls.endOfMetamorphosisGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 20, spec.endOfMetamorphosis.gcdsMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfMetamorphosisGCDs:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.endOfMetamorphosis.gcdsMax = value
@@ -1199,7 +1155,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.endOfMetamorphosisModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfMetamorphosisModeTime
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Time until Metamorphosis ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Change the bar color based on how many seconds remain until Metamorphosis ends."
@@ -1214,7 +1170,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		title = "Metamorphosis Time Remaining (sec)"
 		controls.endOfMetamorphosisTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.endOfMetamorphosis.timeMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfMetamorphosisTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -1229,7 +1185,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_CB1_8", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when your next builder ability will overcap Fury")
 		f.tooltip = "This will change the bar's border color when your next builder ability will result in overcapping maximum Fury. Setting accepts values up to 130 to accomidate the Deadly Calm talent."
 		f:SetChecked(spec.colors.bar.overcapEnabled)
@@ -1241,7 +1197,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		title = "Show Overcap Notification Above"
 		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 120, spec.overcapThreshold, 1, 1,
-										sliderWidth, sliderHeight, xCoord, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 1)
@@ -1257,27 +1213,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.demonhunter.havoc
+				local spec = TRB.Data.settings.demonhunter.havoc
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.havoc
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		controls.buttons.exportButton_DemonHunter_Havoc_FontAndText = TRB.UiFunctions:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_DemonHunter_Havoc_FontAndText:SetScript("OnClick", function(self, ...)
@@ -1289,10 +1232,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 30
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_DemonHunter_Havoc_FontLeft", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", oUi.xCoord, yCoord)
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
+		controls.dropDown.fontLeft:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
@@ -1356,10 +1299,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_DemonHunter_Havoc_FontMiddle", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
+		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", oUi.xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
+		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
@@ -1425,10 +1368,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_DemonHunter_Havoc_FontRight", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", oUi.xCoord, yCoord)
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
+		controls.dropDown.fontRight:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
@@ -1492,7 +1435,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
 		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
 		f:SetChecked(spec.displayText.fontFaceLock)
@@ -1520,7 +1463,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
 		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.left.fontSize = value
@@ -1537,7 +1480,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontSizeLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
 		f:SetChecked(spec.displayText.fontSizeLock)
@@ -1552,21 +1495,21 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.colors.text = {}
 
 		controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
-														250, 25, xCoord2, yCoord-30)
+														250, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.text.left
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
 		end)
 
 		controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
-														225, 25, xCoord2, yCoord-70)
+														225, 25, oUi.xCoord2, yCoord-70)
 		f = controls.colors.text.middle
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
 		end)
 
 		controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
-														225, 25, xCoord2, yCoord-110)
+														225, 25, oUi.xCoord2, yCoord-110)
 		f = controls.colors.text.right
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
@@ -1575,7 +1518,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.middle.fontSize = value
@@ -1593,7 +1536,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.right.fontSize = value
@@ -1612,26 +1555,26 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Fury Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Fury", spec.colors.text.current, 300, 25, xCoord, yCoord)
+		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Fury", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Fury", spec.colors.text.passive, 275, 25, xCoord2, yCoord)
+		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Fury", spec.colors.text.passive, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Fury to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Fury to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.text.overcap = TRB.UiFunctions:BuildColorPicker(parent, "Overcapping Fury", spec.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		controls.colors.text.overcap = TRB.UiFunctions:BuildColorPicker(parent, "Overcapping Fury", spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.overcap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -1641,7 +1584,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Fury text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -1651,7 +1594,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
-		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Fury text color when your next builder ability will result in overcapping maximum Fury."
 		f:SetChecked(spec.colors.text.overcapEnabled)
@@ -1665,7 +1608,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
 		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
-										sliderWidth, sliderHeight, xCoord, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 0)
@@ -1681,27 +1624,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.demonhunter.havoc
+				local spec = TRB.Data.settings.demonhunter.havoc
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.havoc
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		controls.buttons.exportButton_DemonHunter_Havoc_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_DemonHunter_Havoc_AudioAndTracking:SetScript("OnClick", function(self, ...)
@@ -1713,7 +1643,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Fury")
 		f.tooltip = "Play an audio cue when your hardcast spell will overcap Fury."
 ---@diagnostic disable-next-line: undefined-field
@@ -1729,8 +1659,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_DemonHunter_Havoc_overcapAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
+		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
@@ -1784,21 +1714,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.demonhunter.havoc
+				local spec = TRB.Data.settings.demonhunter.havoc
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.havoc
 		local yCoord = 5
 		local f = nil
-
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
 		local namePrefix = "DemonHunter_Havoc"
 
 		controls.buttons.exportButton_DemonHunter_Havoc_BarText = TRB.UiFunctions:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
@@ -1809,10 +1730,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.labels.leftText = TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		controls.labels.leftText = TRB.UiFunctions:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
@@ -1821,10 +1742,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end)
 
 		yCoord = yCoord - 70
-		controls.labels.middleText = TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		controls.labels.middleText = TRB.UiFunctions:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
@@ -1833,10 +1754,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end)
 
 		yCoord = yCoord - 70
-		controls.labels.rightText = TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		controls.labels.rightText = TRB.UiFunctions:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
@@ -1846,23 +1767,17 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		yCoord = yCoord - 30
 		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 
 	local function HavocConstructOptionsPanel(cache)
+				
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local parent = interfaceSettingsFrame.panel
 		local controls = interfaceSettingsFrame.controls.havoc or {}
 		local yCoord = 0
 		local f = nil
-		local xPadding = 10
-		local xPadding2 = 30
-		local xMax = 550
-		local xCoord = 0
-		local xCoord2 = 325
-		local xOffset1 = 50
-		local xOffset2 = 275
 
 		controls.colors = {}
 		controls.labels = {}
@@ -1880,7 +1795,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.buttons = controls.buttons or {}
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Havoc Demon Hunter", xCoord+xPadding, yCoord-5)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Havoc Demon Hunter", oUi.xCoord+oUi.xPadding, yCoord-5)
 	
 		controls.checkBoxes.havocDemonHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_havocDemonHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.havocDemonHunterEnabled

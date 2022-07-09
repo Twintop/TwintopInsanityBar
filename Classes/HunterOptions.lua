@@ -1,6 +1,8 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 3 then --Only do this if we're on a Hunter!
+	local oUi = TRB.Data.constants.optionsUi
+	
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
@@ -753,26 +755,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.hunter.beastMastery
+				local spec = TRB.Data.settings.hunter.beastMastery
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_Reset"] = {
 			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Beast Mastery Hunter settings will be changed. This will cause your UI to be reloaded!",
@@ -830,7 +819,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
 		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_Reset")
 		end)
@@ -839,20 +828,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 
 		--[[
-		controls.resetButton2 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton2 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton2:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_ResetBarTextNarrowAdvanced")
 		end)
 		]]
 
-		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton3:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_ResetBarTextAdvanced")
 		end)
@@ -865,27 +854,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.hunter.beastMastery
+				local spec = TRB.Data.settings.hunter.beastMastery
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.beastMastery
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
@@ -904,10 +880,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_FocusBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
+		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", oUi.xCoord, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
+		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, spec.textures.resourceBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.resourceBarTexture, "LEFT")
 
@@ -971,10 +947,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_CastBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
+		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
+		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
 
@@ -1044,10 +1020,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
+		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", oUi.xCoord, yCoord)
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
+		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, spec.textures.passiveBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
 
@@ -1114,7 +1090,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
 		f.tooltip = "This will lock the texture for each part of the bar to be the same."
 		f:SetChecked(spec.textures.textureLock)
@@ -1140,10 +1116,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_BorderTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
+		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", oUi.xCoord, yCoord)
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
+		controls.dropDown.borderTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.borderTexture, spec.textures.borderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
 
@@ -1206,10 +1182,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_BackgroundTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
+		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
+		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, spec.textures.backgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
 
@@ -1274,7 +1250,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Beastial Wrath Flash Alpha"
 		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -1284,7 +1260,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Beastial Wrath Flash Period (sec)"
 		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0.05, 2, spec.colors.bar.flashPeriod, 0.05, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -1295,7 +1271,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 40
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_RB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
@@ -1313,7 +1289,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_RB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-15)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-15)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Focus < 120")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar show out of combat only if Focus < 120, hidden otherwise when out of combat."
@@ -1331,7 +1307,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_RB1_4", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.combatShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
@@ -1349,7 +1325,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_RB1_5", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.neverShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-45)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
 		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
@@ -1367,7 +1343,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
 		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
 		f:SetChecked(spec.bar.showCasting)
@@ -1377,7 +1353,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-20)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
 		f:SetChecked(spec.bar.showPassive)
@@ -1387,7 +1363,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_5", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-40)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Beastial Wrath is usable")
 		f.tooltip = "This will flash the bar when Beastial Wrath can be cast."
 		f:SetChecked(spec.colors.bar.flashEnabled)
@@ -1397,7 +1373,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_6", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.esThresholdShow
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-60)
 		getglobal(f:GetName() .. 'Text'):SetText("Border color when Beastial Wrath is usable")
 		f.tooltip = "This will change the bar's border color (as configured below) when Beastial Wrath is usable."
 		f:SetChecked(spec.colors.bar.beastialWrathEnabled)
@@ -1410,46 +1386,46 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Focus", spec.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Focus", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 1)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 275, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
 		end)
 
-		controls.colors.borderBeastialWrath = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you can use Beastial Wrath", spec.colors.bar.borderBeastialWrath, 275, 25, xCoord2, yCoord)
+		controls.colors.borderBeastialWrath = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you can use Beastial Wrath", spec.colors.bar.borderBeastialWrath, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderBeastialWrath
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderBeastialWrath")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.frenzyUse = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Barbed Shot should be used", spec.colors.bar.frenzyUse, 275, 25, xCoord, yCoord)
+		controls.colors.frenzyUse = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Barbed Shot should be used", spec.colors.bar.frenzyUse, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.frenzyUse
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "frenzyUse")
 		end)
 
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.frenzyHold = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Barbed Shot charges should be held", spec.colors.bar.frenzyHold, 275, 25, xCoord, yCoord)
+		controls.colors.frenzyHold = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Barbed Shot charges should be held", spec.colors.bar.frenzyHold, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.frenzyHold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "frenzyHold")
@@ -1461,25 +1437,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Focus threshold line", spec.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Focus threshold line", spec.colors.threshold.under, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Focus threshold line", spec.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Focus threshold line", spec.colors.threshold.over, 275, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
+		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
-		controls.colors.threshold.special = TRB.UiFunctions:BuildColorPicker(parent, "(T28) Cobra Shot's damage is buffed", spec.colors.threshold.special, 275, 25, xCoord2, yCoord-90)
+		controls.colors.threshold.special = TRB.UiFunctions:BuildColorPicker(parent, "(T28) Cobra Shot's damage is buffed", spec.colors.threshold.special, 275, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.threshold.special
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "special")
@@ -1487,7 +1463,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-120)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(spec.thresholds.overlapBorder)
@@ -1498,7 +1474,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.arcaneShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Arcane Shot")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Arcane Shot."
 		f:SetChecked(spec.thresholds.arcaneShot.enabled)
@@ -1509,7 +1485,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.aMurderOfCrowsThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_aMurderOfCrows", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.aMurderOfCrowsThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("A Murder of Crows (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use A Murder of Crows. Only visible if talented in to A Murder of Crows. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.aMurderOfCrows.enabled)
@@ -1520,7 +1496,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.barrageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_barrage", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.barrageThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Barrage (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Barrage. Only visible if talented in to Barrage. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.barrage.enabled)
@@ -1531,7 +1507,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.cobraShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_cobraShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cobraShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Cobra Shot")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Cobra Shot."
 		f:SetChecked(spec.thresholds.cobraShot.enabled)
@@ -1542,7 +1518,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.killCommandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_killCommand", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killCommandThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Kill Command")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Kill Command."
 		f:SetChecked(spec.thresholds.killCommand.enabled)
@@ -1553,7 +1529,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.killShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_killShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Kill Shot (if usable)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Kill Shot. Only visible when the current target is in Kill Shot health range or Flayer's Mark (Venthyr) buff is active. If on cooldown or has 0 charges available, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.killShot.enabled)
@@ -1564,7 +1540,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.multiShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_multiShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.multiShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Multi-Shot")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Multi-Shot."
 		f:SetChecked(spec.thresholds.multiShot.enabled)
@@ -1575,7 +1551,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.revivePetThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_revivePet", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.revivePetThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Revive Pet")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Revive Pet."
 		f:SetChecked(spec.thresholds.revivePet.enabled)
@@ -1586,7 +1562,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.scareBeastThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_scareBeast", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.scareBeastThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Scare Beast")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Scare Beast."
 		f:SetChecked(spec.thresholds.scareBeast.enabled)
@@ -1597,7 +1573,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.wailingArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_wailingArrow", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.wailingArrowThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Wailing Arrow (if Rae'shalare, Death's Whisper equipped")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Wailing Arrow. Only visible when Rae'shalare, Death's Whisper is equipped. If on cooldown will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.wailingArrow.enabled)
@@ -1609,10 +1585,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
         -- Create the dropdown, and configure its appearance
         controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
-        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", oUi.xCoord, yCoord)
         controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
-        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
-        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
+        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, oUi.dropdownWidth)
         UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
 
@@ -1656,7 +1632,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		--NOTE: the order of these checkboxes is reversed!
 		controls.checkBoxes.thresholdIconCooldown = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_thresholdIconThresholdEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconCooldown
-		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+(oUi.xPadding*2), yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
 		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for any abilities currently on cooldown."
 		f:SetChecked(spec.thresholds.icons.showCooldown)
@@ -1668,7 +1644,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 		f:SetChecked(spec.thresholds.icons.enabled)
@@ -1684,7 +1660,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 80
 		title = "Threshold Icon Width"
 		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.width = value
@@ -1703,7 +1679,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Threshold Icon Height"
 		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.height = value
@@ -1724,7 +1700,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		title = "Threshold Icon Horizontal Position (Relative)"
 		yCoord = yCoord - 60
 		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.xPos = value
@@ -1736,7 +1712,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Threshold Icon Vertical Position (Relative)"
 		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord2, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.yPos = value
@@ -1747,7 +1723,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		title = "Threshold Icon Border Width"
 		yCoord = yCoord - 60
 		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.border = value
@@ -1773,7 +1749,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_8", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
 		f.tooltip = "This will change the bar's border color when your current focus is above the overcapping maximum Focus as configured below."
 		f:SetChecked(spec.colors.bar.overcapEnabled)
@@ -1785,7 +1761,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Show Overcap Notification Above"
 		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 120, spec.overcapThreshold, 1, 1,
-										sliderWidth, sliderHeight, xCoord, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 1)
@@ -1801,27 +1777,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.hunter.beastMastery
+				local spec = TRB.Data.settings.hunter.beastMastery
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.beastMastery
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		controls.buttons.exportButton_Hunter_BeastMastery_FontAndText = TRB.UiFunctions:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_BeastMastery_FontAndText:SetScript("OnClick", function(self, ...)
@@ -1833,10 +1796,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_FontLeft", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", oUi.xCoord, yCoord)
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
+		controls.dropDown.fontLeft:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
@@ -1900,10 +1863,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_FontMiddle", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
+		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", oUi.xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
+		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
@@ -1969,10 +1932,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_FontRight", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", oUi.xCoord, yCoord)
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
+		controls.dropDown.fontRight:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
@@ -2036,7 +1999,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
 		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
 		f:SetChecked(spec.displayText.fontFaceLock)
@@ -2064,7 +2027,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
 		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.left.fontSize = value
@@ -2081,7 +2044,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontSizeLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
 		f:SetChecked(spec.displayText.fontSizeLock)
@@ -2096,21 +2059,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.colors.text = {}
 
 		controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
-														250, 25, xCoord2, yCoord-30)
+														250, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.text.left
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
 		end)
 
 		controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
-														225, 25, xCoord2, yCoord-70)
+														225, 25, oUi.xCoord2, yCoord-70)
 		f = controls.colors.text.middle
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
 		end)
 
 		controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
-														225, 25, xCoord2, yCoord-110)
+														225, 25, oUi.xCoord2, yCoord-110)
 		f = controls.colors.text.right
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
@@ -2119,7 +2082,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.middle.fontSize = value
@@ -2137,7 +2100,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.right.fontSize = value
@@ -2156,26 +2119,26 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Focus Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus", spec.colors.text.current, 300, 25, xCoord, yCoord)
+		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 		
-		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Focus", spec.colors.text.passive, 275, 25, xCoord2, yCoord)
+		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Focus", spec.colors.text.passive, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.text.overcap = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus is above overcap threshold", spec.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		controls.colors.text.overcap = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus is above overcap threshold", spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.overcap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -2185,7 +2148,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Focus text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -2195,7 +2158,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
-		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Focus text color when your current focus is above the overcapping maximum Focus value."
 		f:SetChecked(spec.colors.text.overcapEnabled)
@@ -2210,7 +2173,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
 		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
-										sliderWidth, sliderHeight, xCoord, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 0)
@@ -2226,27 +2189,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.hunter.beastMastery
+				local spec = TRB.Data.settings.hunter.beastMastery
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.beastMastery
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		controls.buttons.exportButton_Hunter_BeastMastery_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_BeastMastery_AudioAndTracking:SetScript("OnClick", function(self, ...)
@@ -2258,7 +2208,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killShotAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Kill Shot is usable")
 		f.tooltip = "Play an audio cue when Kill Shot is usable and off of cooldown. If you also have Flayer's Mark proc audio enabled, that sound takes priority when a proc occurs."
 		f:SetChecked(spec.audio.killShot.enabled)
@@ -2273,8 +2223,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.killShotAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_killShot_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.killShotAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, dropdownWidth)
+		controls.dropDown.killShotAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.killShotAudio, spec.audio.killShot.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
 
@@ -2324,7 +2274,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Focus")
 		f.tooltip = "Play an audio cue when your hardcast spell will overcap Focus."
 		f:SetChecked(spec.audio.overcap.enabled)
@@ -2339,8 +2289,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_overcapAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
+		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
@@ -2390,7 +2340,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flayersMarkAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if |cFFFF4040Venthyr|r)")
 		f.tooltip = "Play an audio cue when you get a Flayer's Mark proc that allows you to cast Kill Shot for 0 Focus and above normal execute range enemy health."
 		f:SetChecked(spec.audio.flayersMark.enabled)
@@ -2405,8 +2355,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.flayersMarkAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_flayersMark_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, dropdownWidth)
+		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, spec.audio.flayersMark.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
 
@@ -2457,7 +2407,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.nesingwarysTrappingApparatusAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_nesingwarysTrappingApparatus_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.nesingwarysTrappingApparatusAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Nesingwary's Trapping Apparatus proc")
 		f.tooltip = "Play an audio cue when you get a Nesingwary's Trapping Apparatus proc that allows your next Aimed Shot to cost 0 Focus."
 		f:SetChecked(spec.audio.nesingwarysTrappingApparatus.enabled)
@@ -2472,8 +2422,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.nesingwarysTrappingApparatusAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_nesingwarysTrappingApparatusAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, dropdownWidth)
+		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, spec.audio.nesingwarysTrappingApparatus.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.nesingwarysTrappingApparatusAudio, "LEFT")
 
@@ -2525,7 +2475,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.trackFocusRegen
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track focus regen")
 		f.tooltip = "Include focus regen in the passive bar and passive variables. Unchecking this will cause the following Passive Focus Generation options to have no effect."
 		f:SetChecked(spec.generation.enabled)
@@ -2536,7 +2486,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 40
 		controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_PFG_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeGCDs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Focus generation over GCDs")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Focus generation over the next X GCDs, based on player's current GCD length."
@@ -2551,7 +2501,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Focus GCDs - 0.75sec Floor"
 		controls.focusGenerationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.generation.gcds = value
@@ -2561,7 +2511,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.focusGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_PFG_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeTime
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Focus generation over time")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Focus generation over the next X seconds."
@@ -2576,7 +2526,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Focus Over Time (sec)"
 		controls.focusGenerationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -2592,21 +2542,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.hunter.beastMastery
+				local spec = TRB.Data.settings.hunter.beastMastery
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.beastMastery
 		local yCoord = 5
 		local f = nil
-
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
 		local namePrefix = "Hunter_BeastMastery"
 
 		TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
@@ -2616,10 +2557,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
@@ -2629,10 +2570,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 70
-		TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
@@ -2642,10 +2583,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 70
-		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
@@ -2655,23 +2596,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 30
 		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 
 	local function BeastMasteryConstructOptionsPanel(cache)
+		
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local parent = interfaceSettingsFrame.panel
 		local controls = interfaceSettingsFrame.controls.beastMastery or {}
 		local yCoord = 0
 		local f = nil
-		local xPadding = 10
-		local xPadding2 = 30
-		local xMax = 550
-		local xCoord = 0
-		local xCoord2 = 325
-		local xOffset1 = 50
-		local xOffset2 = 275
 
 		controls.colors = {}
 		controls.labels = {}
@@ -2688,7 +2623,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		parent = interfaceSettingsFrame.beastMasteryDisplayPanel
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Beast Mastery Hunter", xCoord+xPadding, yCoord-5)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Beast Mastery Hunter", oUi.xCoord+oUi.xPadding, yCoord-5)
 	
 		controls.checkBoxes.beastMasteryHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_beastMasteryHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.beastMasteryHunterEnabled
@@ -2769,26 +2704,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.hunter.marksmanship
+				local spec = TRB.Data.settings.hunter.marksmanship
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_Reset"] = {
 			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
@@ -2846,7 +2768,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
 		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_Reset")
 		end)
@@ -2855,20 +2777,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 
 		--[[
-		controls.resetButton2 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton2 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton2:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_ResetBarTextNarrowAdvanced")
 		end)
 		]]
 
-		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton3:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_ResetBarTextAdvanced")
 		end)
@@ -2881,27 +2803,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.hunter.marksmanship
+				local spec = TRB.Data.settings.hunter.marksmanship
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.marksmanship
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
@@ -2920,10 +2829,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_FocusBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
+		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", oUi.xCoord, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
+		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, spec.textures.resourceBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.resourceBarTexture, "LEFT")
 
@@ -2987,10 +2896,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_CastBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
+		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
+		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
 
@@ -3060,10 +2969,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
+		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", oUi.xCoord, yCoord)
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
+		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, spec.textures.passiveBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
 
@@ -3130,7 +3039,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
 		f.tooltip = "This will lock the texture for each part of the bar to be the same."
 		f:SetChecked(spec.textures.textureLock)
@@ -3156,10 +3065,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_BorderTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
+		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", oUi.xCoord, yCoord)
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
+		controls.dropDown.borderTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.borderTexture, spec.textures.borderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
 
@@ -3222,10 +3131,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_BackgroundTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
+		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
+		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, spec.textures.backgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
 
@@ -3290,7 +3199,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Earth Shock/EQ Flash Alpha"
 		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -3300,7 +3209,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Earth Shock/EQ Flash Period (sec)"
 		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0, 2, spec.colors.bar.flashPeriod, 0.05, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -3311,7 +3220,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 40
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_RB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
@@ -3329,7 +3238,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_RB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-15)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-15)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Focus < 100")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar show out of combat only if Focus < 100, hidden otherwise when out of combat."
@@ -3347,7 +3256,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_RB1_4", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.combatShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
@@ -3365,7 +3274,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_RB1_5", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.neverShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-45)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
 		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
@@ -3383,7 +3292,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
 		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
 		f:SetChecked(spec.bar.showCasting)
@@ -3393,7 +3302,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-20)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
 		f:SetChecked(spec.bar.showPassive)
@@ -3406,52 +3315,52 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Focus", spec.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Focus", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 2)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", spec.colors.bar.casting, 275, 25, xCoord, yCoord)
+		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", spec.colors.bar.casting, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 2)
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast builder will overcap Focus", spec.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast builder will overcap Focus", spec.colors.bar.borderOvercap, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.bar.spending, 275, 25, xCoord, yCoord)
+		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.bar.spending, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending")
 		end)
 
-		controls.colors.borderSteadyFocus = TRB.UiFunctions:BuildColorPicker(parent, "Border when Steady Focus is expiring or not up (per settings)", spec.colors.bar.borderSteadyFocus, 275, 25, xCoord2, yCoord)
+		controls.colors.borderSteadyFocus = TRB.UiFunctions:BuildColorPicker(parent, "Border when Steady Focus is expiring or not up (per settings)", spec.colors.bar.borderSteadyFocus, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderSteadyFocus
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderSteadyFocus")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 275, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
 		end)
 
-		controls.colors.trueshot = TRB.UiFunctions:BuildColorPicker(parent, "Focus while Trueshot is active", spec.colors.bar.trueshot, 275, 25, xCoord2, yCoord)
+		controls.colors.trueshot = TRB.UiFunctions:BuildColorPicker(parent, "Focus while Trueshot is active", spec.colors.bar.trueshot, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.trueshot
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "trueshot")
@@ -3459,13 +3368,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 30
 
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, xCoord, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
 		end)
 
-		controls.colors.trueshotEnding = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Trueshot is ending", spec.colors.bar.trueshotEnding, 275, 25, xCoord2, yCoord)
+		controls.colors.trueshotEnding = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Trueshot is ending", spec.colors.bar.trueshotEnding, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.trueshotEnding
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "trueshotEnding")
@@ -3477,19 +3386,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Focus threshold line", spec.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Focus threshold line", spec.colors.threshold.under, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Focus threshold line", spec.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Focus threshold line", spec.colors.threshold.over, 275, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
+		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
@@ -3497,7 +3406,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(spec.thresholds.overlapBorder)
@@ -3508,7 +3417,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.aimedShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_aimedShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.aimedShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Aimed Shot")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Aimed Shot. If there are 0 charges available, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.aimedShot.enabled)
@@ -3519,7 +3428,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.arcaneShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Arcane Shot/Chimera Shot")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Arcane Shot or Chimera Shot."
 		f:SetChecked(spec.thresholds.arcaneShot.enabled)
@@ -3531,7 +3440,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.aMurderOfCrowsThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_aMurderOfCrows", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.aMurderOfCrowsThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("A Murder of Crows (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use A Murder of Crows. Only visible if talented in to A Murder of Crows. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.aMurderOfCrows.enabled)
@@ -3542,7 +3451,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.barrageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_barrage", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.barrageThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Barrage (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Barrage. Only visible if talented in to Barrage. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.barrage.enabled)
@@ -3553,7 +3462,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.burstingShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_burstingShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.burstingShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Bursting Shot")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Bursting Shot. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.burstingShot.enabled)
@@ -3564,7 +3473,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.explosiveShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_explosiveShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.explosiveShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Explosive Shot (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot. Only visible if talented in to Explosive Shot. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.explosiveShot.enabled)
@@ -3575,7 +3484,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.killShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_killShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Kill Shot (if usable)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Kill Shot. Only visible when the current target is in Kill Shot health range or Flayer's Mark (Venthyr) buff is active. If on cooldown or has 0 charges available, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.killShot.enabled)
@@ -3586,7 +3495,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.multiShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_multiShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.multiShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Multi-Shot")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Multi-Shot."
 		f:SetChecked(spec.thresholds.multiShot.enabled)
@@ -3597,7 +3506,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.revivePetThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_revivePet", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.revivePetThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Revive Pet")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Revive Pet."
 		f:SetChecked(spec.thresholds.revivePet.enabled)
@@ -3608,7 +3517,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.scareBeastThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_scareBeast", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.scareBeastThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Scare Beast")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Scare Beast."
 		f:SetChecked(spec.thresholds.scareBeast.enabled)
@@ -3619,7 +3528,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.serpentStingThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_serpentSting", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.serpentStingThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Serpent Sting (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Serpent Sting. Only visible if talented in to Serpent Sting."
 		f:SetChecked(spec.thresholds.serpentSting.enabled)
@@ -3630,7 +3539,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.wailingArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_wailingArrow", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.wailingArrowThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Wailing Arrow (if Rae'shalare, Death's Whisper equipped")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Wailing Arrow. Only visible when Rae'shalare, Death's Whisper is equipped. If on cooldown will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.wailingArrow.enabled)
@@ -3643,10 +3552,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
         -- Create the dropdown, and configure its appearance
         controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
-        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", oUi.xCoord, yCoord)
         controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
-        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
-        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
+        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, oUi.dropdownWidth)
         UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
 
@@ -3690,7 +3599,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		--NOTE: the order of these checkboxes is reversed!
 		controls.checkBoxes.thresholdIconCooldown = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_thresholdIconThresholdEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconCooldown
-		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+(oUi.xPadding*2), yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
 		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for any abilities currently on cooldown."
 		f:SetChecked(spec.thresholds.icons.showCooldown)
@@ -3702,7 +3611,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 		f:SetChecked(spec.thresholds.icons.enabled)
@@ -3718,7 +3627,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 80
 		title = "Threshold Icon Width"
 		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.width = value
@@ -3737,7 +3646,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Threshold Icon Height"
 		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.height = value
@@ -3758,7 +3667,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		title = "Threshold Icon Horizontal Position (Relative)"
 		yCoord = yCoord - 60
 		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.xPos = value
@@ -3770,7 +3679,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Threshold Icon Vertical Position (Relative)"
 		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord2, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.yPos = value
@@ -3781,7 +3690,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		title = "Threshold Icon Border Width"
 		yCoord = yCoord - 60
 		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.border = value
@@ -3807,7 +3716,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		controls.checkBoxes.endOfTrueshot = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfTrueshot
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Trueshot")
 		f.tooltip = "Changes the bar color when Trueshot is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
 		f:SetChecked(spec.endOfTrueshot.enabled)
@@ -3818,7 +3727,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfTrueshotModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfTrueshotModeGCDs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Trueshot ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Change the bar color based on how many GCDs remain until Trueshot ends."
@@ -3833,7 +3742,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Trueshot GCDs - 0.75sec Floor"
 		controls.endOfTrueshotGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 20, spec.endOfTrueshot.gcdsMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfTrueshotGCDs:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.endOfTrueshot.gcdsMax = value
@@ -3843,7 +3752,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.endOfTrueshotModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfTrueshotModeTime
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Time until Trueshot ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Change the bar color based on how many seconds remain until Trueshot ends."
@@ -3858,7 +3767,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Trueshot Time Remaining (sec)"
 		controls.endOfTrueshotTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.endOfTrueshot.timeMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfTrueshotTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -3872,7 +3781,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		controls.checkBoxes.steadyFocus = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.steadyFocus
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change bar border when your Steady Focus buff is close to expiring or not up (if talented)")
 		f.tooltip = "Changes the bar border color when your Steady Focus buff is not up or is expiring in the next X GCDs or fixed length of time. Select which to use from the options below."
 		f:SetChecked(spec.steadyFocus.enabled)
@@ -3884,7 +3793,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 40
 		controls.checkBoxes.steadyFocusModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.steadyFocusModeGCDs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("GCDs left on Steady Focus buff")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Change the bar border color based on how many GCDs remain until Steady Focus will end."
@@ -3899,7 +3808,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Steady Focus GCDs - 0.75sec Floor"
 		controls.steadyFocusGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 30, spec.steadyFocus.gcdsMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.steadyFocusGCDs:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.steadyFocus.gcdsMax = value
@@ -3909,7 +3818,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.steadyFocusModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.steadyFocusModeTime
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Time left on Steady Focus buff")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Change the bar border color based on how many seconds remain until Steady Focus will end."
@@ -3924,7 +3833,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Steady Focus Time Remaining (sec)"
 		controls.steadyFocusTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.steadyFocus.timeMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.steadyFocusTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -3938,7 +3847,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB1_8", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
 		f.tooltip = "This will change the bar's border color when your current focus is above or a hardcast spell will result in overcapping maximum Focus as configured below."
 		f:SetChecked(spec.colors.bar.overcapEnabled)
@@ -3950,7 +3859,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Show Overcap Notification Above"
 		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 100, spec.overcapThreshold, 1, 1,
-										sliderWidth, sliderHeight, xCoord, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 1)
@@ -3966,27 +3875,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.hunter.marksmanship
+				local spec = TRB.Data.settings.hunter.marksmanship
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.marksmanship
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		controls.buttons.exportButton_Hunter_Marksmanship_FontAndText = TRB.UiFunctions:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_Marksmanship_FontAndText:SetScript("OnClick", function(self, ...)
@@ -3998,10 +3894,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_FontLeft", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", oUi.xCoord, yCoord)
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
+		controls.dropDown.fontLeft:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
@@ -4065,10 +3961,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_FontMiddle", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
+		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", oUi.xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
+		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
@@ -4134,10 +4030,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_FontRight", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", oUi.xCoord, yCoord)
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
+		controls.dropDown.fontRight:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
@@ -4201,7 +4097,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
 		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
 		f:SetChecked(spec.displayText.fontFaceLock)
@@ -4229,7 +4125,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
 		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.left.fontSize = value
@@ -4246,7 +4142,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontSizeLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
 		f:SetChecked(spec.displayText.fontSizeLock)
@@ -4261,21 +4157,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.colors.text = {}
 
 		controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
-														250, 25, xCoord2, yCoord-30)
+														250, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.text.left
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
 		end)
 
 		controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
-														225, 25, xCoord2, yCoord-70)
+														225, 25, oUi.xCoord2, yCoord-70)
 		f = controls.colors.text.middle
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
 		end)
 
 		controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
-														225, 25, xCoord2, yCoord-110)
+														225, 25, oUi.xCoord2, yCoord-110)
 		f = controls.colors.text.right
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
@@ -4284,7 +4180,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.middle.fontSize = value
@@ -4302,7 +4198,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.right.fontSize = value
@@ -4321,39 +4217,39 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Focus Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus", spec.colors.text.current, 300, 25, xCoord, yCoord)
+		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.text.casting = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", spec.colors.text.casting, 275, 25, xCoord2, yCoord)
+		controls.colors.text.casting = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", spec.colors.text.casting, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Focus", spec.colors.text.passive, 300, 25, xCoord, yCoord)
+		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Focus", spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
-		controls.colors.text.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.text.spending, 275, 25, xCoord2, yCoord)
+		controls.colors.text.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.text.spending, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "spending")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.text.overcap = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus is above overcap threshold", spec.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		controls.colors.text.overcap = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus is above overcap threshold", spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.overcap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -4363,7 +4259,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Focus text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -4373,7 +4269,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
-		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Focus text color when your current hardcast spell will result in overcapping maximum Focus."
 		f:SetChecked(spec.colors.text.overcapEnabled)
@@ -4388,7 +4284,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter and DoT timer color based on DoT status?")
 		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($ssCount) will change based on whether or not the DoT is on the current target."
 		f:SetChecked(spec.colors.text.dots.enabled)
@@ -4398,19 +4294,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.colors.dots = {}
 
-		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
+		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
 		f = controls.colors.dots.up
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
 		end)
 
-		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
+		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
 		f = controls.colors.dots.pandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
 		end)
 
-		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
+		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
 		f = controls.colors.dots.down
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
@@ -4423,7 +4319,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
 		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
-										sliderWidth, sliderHeight, xCoord, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 0)
@@ -4439,27 +4335,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.hunter.marksmanship
+				local spec = TRB.Data.settings.hunter.marksmanship
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.marksmanship
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		controls.buttons.exportButton_Hunter_Marksmanship_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_Marksmanship_AudioAndTracking:SetScript("OnClick", function(self, ...)
@@ -4471,7 +4354,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		controls.checkBoxes.aimedShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_aimedShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.aimedShotAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Aimed Shot will cap charges")
 		f.tooltip = "Play an audio cue when Aimed Shot will cap charges. The timeframe is the current cast time of Aimed shot plus either GCDs or Time as configured below."
 		f:SetChecked(spec.audio.aimedShot.enabled)
@@ -4486,8 +4369,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.aimedShotAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_aimedShot_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.aimedShotAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.aimedShotAudio, dropdownWidth)
+		controls.dropDown.aimedShotAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.aimedShotAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.aimedShotAudio, spec.audio.aimedShot.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.aimedShotAudio, "LEFT")
 
@@ -4537,7 +4420,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.aimedShotModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_AS_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.aimedShotModeGCDs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Number of GCDs before capping")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		if spec.audio.aimedShot.mode == "gcd" then
@@ -4551,7 +4434,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "GCDs - 0.75sec Floor"
 		controls.aimedShotGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 6, spec.audio.aimedShot.gcds, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.aimedShotGCDs:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.audio.aimedShot.gcds = value
@@ -4561,7 +4444,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.aimedShotModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_AS_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.aimedShotModeTime
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Number of seconds before capping")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		if spec.audio.aimedShot.mode == "time" then
@@ -4575,7 +4458,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Time (sec)"
 		controls.aimedShotTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 12, spec.audio.aimedShot.time, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.aimedShotTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -4588,7 +4471,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 50
 		controls.checkBoxes.lockAndLoadAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_lockAndLoad_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.lockAndLoadAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Lock and Load proc (if talented)")
 		f.tooltip = "Play an audio cue when a Lock and Load proc occurs."
 		f:SetChecked(spec.audio.lockAndLoad.enabled)
@@ -4603,8 +4486,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.lockAndLoadAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_lockAndLoad_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.lockAndLoadAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.lockAndLoadAudio, dropdownWidth)
+		controls.dropDown.lockAndLoadAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.lockAndLoadAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.lockAndLoadAudio, spec.audio.lockAndLoad.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.lockAndLoadAudio, "LEFT")
 
@@ -4654,7 +4537,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killShotAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Kill Shot is usable")
 		f.tooltip = "Play an audio cue when Kill Shot is usable and off of cooldown. If you also have Flayer's Mark proc audio enabled, that sound takes priority when a proc occurs."
 		f:SetChecked(spec.audio.killShot.enabled)
@@ -4669,8 +4552,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.killShotAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_killShot_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.killShotAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, dropdownWidth)
+		controls.dropDown.killShotAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.killShotAudio, spec.audio.killShot.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
 
@@ -4720,7 +4603,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Focus")
 		f.tooltip = "Play an audio cue when your hardcast spell will overcap Focus."
 		f:SetChecked(spec.audio.overcap.enabled)
@@ -4735,8 +4618,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_overcapAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
+		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
@@ -4786,7 +4669,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flayersMarkAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if |cFFFF4040Venthyr|r)")
 		f.tooltip = "Play an audio cue when you get a Flayer's Mark proc that allows you to cast Kill Shot for 0 Focus and above normal execute range enemy health."
 		f:SetChecked(spec.audio.flayersMark.enabled)
@@ -4801,8 +4684,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.flayersMarkAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_flayersMark_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, dropdownWidth)
+		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, spec.audio.flayersMark.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
 
@@ -4853,7 +4736,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.nesingwarysTrappingApparatusAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_nesingwarysTrappingApparatus_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.nesingwarysTrappingApparatusAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Nesingwary's Trapping Apparatus proc")
 		f.tooltip = "Play an audio cue when you get a Nesingwary's Trapping Apparatus proc that allows your next Aimed Shot to cost 0 Focus."
 		f:SetChecked(spec.audio.nesingwarysTrappingApparatus.enabled)
@@ -4868,8 +4751,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.nesingwarysTrappingApparatusAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_nesingwarysTrappingApparatusAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, dropdownWidth)
+		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, spec.audio.nesingwarysTrappingApparatus.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.nesingwarysTrappingApparatusAudio, "LEFT")
 
@@ -4920,7 +4803,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.secretsOfTheUnblinkingVigilAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_secretsOfTheUnblinkingVigil_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.secretsOfTheUnblinkingVigilAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Secrets of the Unblinking Vigil proc")
 		f.tooltip = "Play an audio cue when you get a Secrets of the Unblinking Vigil proc that allows your next Aimed Shot to cost 0 Focus."
 		f:SetChecked(spec.audio.secretsOfTheUnblinkingVigil.enabled)
@@ -4935,8 +4818,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.secretsOfTheUnblinkingVigilAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_secretsOfTheUnblinkingVigilAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.secretsOfTheUnblinkingVigilAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.secretsOfTheUnblinkingVigilAudio, dropdownWidth)
+		controls.dropDown.secretsOfTheUnblinkingVigilAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.secretsOfTheUnblinkingVigilAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, spec.audio.secretsOfTheUnblinkingVigil.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, "LEFT")
 
@@ -4989,7 +4872,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.trackFocusRegen
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track focus regen")
 		f.tooltip = "Include focus regen in the passive bar and passive variables. Unchecking this will cause the following Passive Focus Generation options to have no effect."
 		f:SetChecked(spec.generation.enabled)
@@ -5001,7 +4884,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 40
 		controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_PFG_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeGCDs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Focus generation over GCDs")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Focus generation over the next X GCDs, based on player's current GCD."
@@ -5016,7 +4899,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Focus GCDs - 0.75sec Floor"
 		controls.focusGenerationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.generation.gcds = value
@@ -5026,7 +4909,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.focusGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_PFG_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeTime
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Focus generation over time")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Focus generation over the next X seconds."
@@ -5041,7 +4924,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Focus Over Time (sec)"
 		controls.focusGenerationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -5057,21 +4940,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.hunter.marksmanship
+				local spec = TRB.Data.settings.hunter.marksmanship
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.marksmanship
 		local yCoord = 5
 		local f = nil
-
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
 		local namePrefix = "Hunter_Marksmanship"
 
 		TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
@@ -5081,10 +4955,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
@@ -5094,10 +4968,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 70
-		TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
@@ -5107,10 +4981,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 70
-		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
@@ -5120,7 +4994,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 30
 		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 
@@ -5130,13 +5004,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local controls = interfaceSettingsFrame.controls.marksmanship or {}
 		local yCoord = 0
 		local f = nil
-		local xPadding = 10
-		local xPadding2 = 30
-		local xMax = 550
-		local xCoord = 0
-		local xCoord2 = 325
-		local xOffset1 = 50
-		local xOffset2 = 275
 
 		controls.colors = {}
 		controls.labels = {}
@@ -5153,7 +5020,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		parent = interfaceSettingsFrame.marksmanshipDisplayPanel
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Marksmanship Hunter", xCoord+xPadding, yCoord-5)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Marksmanship Hunter", oUi.xCoord+oUi.xPadding, yCoord-5)
 	
 		controls.checkBoxes.marksmanshipHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_marksmanshipHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.marksmanshipHunterEnabled
@@ -5235,26 +5102,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.hunter.survival
+				local spec = TRB.Data.settings.hunter.survival
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.survival
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_Reset"] = {
 			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Survival Hunter settings will be changed. This will cause your UI to be reloaded!",
@@ -5295,24 +5149,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		--[[StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Survival Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
-			OnAccept = function()
-				spec.displayText = SurvivalLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()
-			end,
-			timeout = 0,
-			whileDead = true,
-			hideOnEscape = true,
-			preferredIndex = 3
-		}]]
 
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
 		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Survival_Reset")
 		end)
@@ -5321,20 +5162,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Survival_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 
-		--[[
-		controls.resetButton2 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
-		controls.resetButton2:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_Hunter_Survival_ResetBarTextNarrowAdvanced")
-		end)
-		]]
-
-		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton3:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Survival_ResetBarTextAdvanced")
 		end)
@@ -5347,27 +5181,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.hunter.survival
+				local spec = TRB.Data.settings.hunter.survival
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.survival
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
@@ -5386,10 +5207,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_FocusBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
+		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", oUi.xCoord, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
+		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, spec.textures.resourceBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.resourceBarTexture, "LEFT")
 
@@ -5453,10 +5274,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_CastBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
+		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
+		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
 
@@ -5522,10 +5343,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
+		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", oUi.xCoord, yCoord)
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
+		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, spec.textures.passiveBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
 
@@ -5588,7 +5409,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
 		f.tooltip = "This will lock the texture for each part of the bar to be the same."
 		f:SetChecked(spec.textures.textureLock)
@@ -5614,10 +5435,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_BorderTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
+		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", oUi.xCoord, yCoord)
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
+		controls.dropDown.borderTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.borderTexture, spec.textures.borderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
 
@@ -5680,10 +5501,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_BackgroundTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
+		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
+		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, spec.textures.backgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
 
@@ -5748,7 +5569,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Earth Shock/EQ Flash Alpha"
 		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -5758,7 +5579,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Earth Shock/EQ Flash Period (sec)"
 		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0, 2, spec.colors.bar.flashPeriod, 0.05, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -5769,7 +5590,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 40
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_RB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
@@ -5787,7 +5608,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_RB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-15)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-15)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Focus < 100")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar show out of combat only if Focus < 100, hidden otherwise when out of combat."
@@ -5805,7 +5626,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_RB1_4", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.combatShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
@@ -5823,7 +5644,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_RB1_5", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.neverShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-45)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
 		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
@@ -5841,7 +5662,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
 		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
 		f:SetChecked(spec.bar.showCasting)
@@ -5851,7 +5672,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-20)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-20)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
 		f:SetChecked(spec.bar.showPassive)
@@ -5864,26 +5685,26 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Focus", spec.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Focus", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 525, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 525, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
 		end)
 
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
@@ -5891,20 +5712,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 30
 
-		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.bar.spending, 275, 25, xCoord, yCoord)
+		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.bar.spending, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending")
 		end)
 
-		controls.colors.coordinatedAssault = TRB.UiFunctions:BuildColorPicker(parent, "Focus while Coordinated Assault is active", spec.colors.bar.coordinatedAssault, 275, 25, xCoord2, yCoord)
+		controls.colors.coordinatedAssault = TRB.UiFunctions:BuildColorPicker(parent, "Focus while Coordinated Assault is active", spec.colors.bar.coordinatedAssault, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.coordinatedAssault
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "coordinatedAssault")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.coordinatedAssaultEnding = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Coordinated Assault is ending", spec.colors.bar.coordinatedAssaultEnding, 275, 25, xCoord2, yCoord)
+		controls.colors.coordinatedAssaultEnding = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Coordinated Assault is ending", spec.colors.bar.coordinatedAssaultEnding, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.coordinatedAssaultEnding
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "coordinatedAssaultEnding")
@@ -5916,19 +5737,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Focus threshold line", spec.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Focus threshold line", spec.colors.threshold.under, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Focus threshold line", spec.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Focus threshold line", spec.colors.threshold.over, 275, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
+		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
@@ -5936,7 +5757,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(spec.thresholds.overlapBorder)
@@ -5949,7 +5770,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.arcaneShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Arcane Shot")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Arcane Shot."
 		f:SetChecked(spec.thresholds.arcaneShot.enabled)
@@ -5960,7 +5781,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.aMurderOfCrowsThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_aMurderOfCrows", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.aMurderOfCrowsThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("A Murder of Crows (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use A Murder of Crows. Only visible if talented in to A Murder of Crows. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.aMurderOfCrows.enabled)
@@ -5971,7 +5792,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.carveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_carve", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.carveThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Carve / Butchery (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Carve or Butchery (if talented). If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.carve.enabled)
@@ -5983,7 +5804,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.chakramsThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_chakrams", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.chakramsThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Chakrams (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Chakrams. Only visible if talented in to Chakrams. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.chakrams.enabled)
@@ -5994,7 +5815,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.killShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_killShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Kill Shot (if usable)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Kill Shot. Only visible when the current target is in Kill Shot health range or Flayer's Mark (Venthyr) buff is active. If on cooldown or has 0 charges available, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.killShot.enabled)
@@ -6005,7 +5826,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.raptorStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_raptorStrike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.raptorStrikeThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Raptor Strike / Mongoose Bite (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Raptor Strike or Mongoose Bite."
 		f:SetChecked(spec.thresholds.raptorStrike.enabled)
@@ -6017,7 +5838,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.revivePetThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_revivePet", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.revivePetThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Revive Pet")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Revive Pet."
 		f:SetChecked(spec.thresholds.revivePet.enabled)
@@ -6028,7 +5849,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.scareBeastThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_scareBeast", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.scareBeastThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Scare Beast")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Scare Beast."
 		f:SetChecked(spec.thresholds.scareBeast.enabled)
@@ -6039,7 +5860,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.serpentStingThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_serpentSting", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.serpentStingThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Serpent Sting")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Serpent Sting."
 		f:SetChecked(spec.thresholds.serpentSting.enabled)
@@ -6050,7 +5871,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 25
 		controls.checkBoxes.wingClipThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_wingClip", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.wingClipThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Wing Clip")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Wing Clip."
 		f:SetChecked(spec.thresholds.wingClip.enabled)
@@ -6062,10 +5883,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
         -- Create the dropdown, and configure its appearance
         controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
-        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", oUi.xCoord, yCoord)
         controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
-        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
-        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
+        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, oUi.dropdownWidth)
         UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
 
@@ -6109,7 +5930,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		--NOTE: the order of these checkboxes is reversed!
 		controls.checkBoxes.thresholdIconCooldown = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_thresholdIconThresholdEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconCooldown
-		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+(oUi.xPadding*2), yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
 		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for any abilities currently on cooldown."
 		f:SetChecked(spec.thresholds.icons.showCooldown)
@@ -6121,7 +5942,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 		f:SetChecked(spec.thresholds.icons.enabled)
@@ -6137,7 +5958,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 80
 		title = "Threshold Icon Width"
 		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.width = value
@@ -6156,7 +5977,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Threshold Icon Height"
 		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.height = value
@@ -6177,7 +5998,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		title = "Threshold Icon Horizontal Position (Relative)"
 		yCoord = yCoord - 60
 		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.xPos = value
@@ -6189,7 +6010,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Threshold Icon Vertical Position (Relative)"
 		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord2, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.yPos = value
@@ -6200,7 +6021,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		title = "Threshold Icon Border Width"
 		yCoord = yCoord - 60
 		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.border = value
@@ -6226,7 +6047,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		controls.checkBoxes.endOfCoordinatedAssault = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfCoordinatedAssault
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Coordinated Assault")
 		f.tooltip = "Changes the bar color when Coordinated Assault is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
 		f:SetChecked(spec.endOfCoordinatedAssault.enabled)
@@ -6237,7 +6058,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfCoordinatedAssaultModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfCoordinatedAssaultModeGCDs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Coordinated Assault ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Change the bar color based on how many GCDs remain until Coordinated Assault ends."
@@ -6252,7 +6073,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Coordinated Assault GCDs - 0.75sec Floor"
 		controls.endOfCoordinatedAssaultGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 20, spec.endOfCoordinatedAssault.gcdsMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfCoordinatedAssaultGCDs:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.endOfCoordinatedAssault.gcdsMax = value
@@ -6262,7 +6083,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.endOfCoordinatedAssaultModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfCoordinatedAssaultModeTime
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Time until Coordinated Assault ends")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Change the bar color based on how many seconds remain until Coordinated Assault ends."
@@ -6277,7 +6098,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Coordinated Assault Time Remaining (sec)"
 		controls.endOfCoordinatedAssaultTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.endOfCoordinatedAssault.timeMax, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfCoordinatedAssaultTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -6291,7 +6112,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB1_8", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
 		f.tooltip = "This will change the bar's border color when your current focus is above the overcapping maximum Focus as configured below."
 		f:SetChecked(spec.colors.bar.overcapEnabled)
@@ -6303,7 +6124,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Show Overcap Notification Above"
 		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 100, spec.overcapThreshold, 1, 1,
-										sliderWidth, sliderHeight, xCoord, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 1)
@@ -6319,27 +6140,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.hunter.survival
+				local spec = TRB.Data.settings.hunter.survival
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.survival
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		controls.buttons.exportButton_Hunter_Survival_FontAndText = TRB.UiFunctions:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_Survival_FontAndText:SetScript("OnClick", function(self, ...)
@@ -6351,10 +6159,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_FontLeft", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", oUi.xCoord, yCoord)
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
+		controls.dropDown.fontLeft:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
@@ -6418,10 +6226,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_FontMiddle", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
+		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", oUi.xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
+		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
@@ -6487,10 +6295,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_FontRight", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", oUi.xCoord, yCoord)
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
+		controls.dropDown.fontRight:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
@@ -6554,7 +6362,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
 		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
 		f:SetChecked(spec.displayText.fontFaceLock)
@@ -6582,7 +6390,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
 		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.left.fontSize = value
@@ -6595,7 +6403,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontSizeLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
 		f:SetChecked(spec.displayText.fontSizeLock)
@@ -6610,21 +6418,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.colors.text = {}
 
 		controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
-														250, 25, xCoord2, yCoord-30)
+														250, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.text.left
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
 		end)
 
 		controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
-														225, 25, xCoord2, yCoord-70)
+														225, 25, oUi.xCoord2, yCoord-70)
 		f = controls.colors.text.middle
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
 		end)
 
 		controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
-														225, 25, xCoord2, yCoord-110)
+														225, 25, oUi.xCoord2, yCoord-110)
 		f = controls.colors.text.right
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
@@ -6633,7 +6441,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.middle.fontSize = value
@@ -6651,7 +6459,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.right.fontSize = value
@@ -6670,33 +6478,33 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Focus Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus", spec.colors.text.current, 300, 25, xCoord, yCoord)
+		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.text.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.text.spending, 275, 25, xCoord2, yCoord)
+		controls.colors.text.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.text.spending, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "spending")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Focus", spec.colors.text.passive, 300, 25, xCoord, yCoord)
+		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Focus", spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.text.overcap = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus is above overcap threshold", spec.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		controls.colors.text.overcap = TRB.UiFunctions:BuildColorPicker(parent, "Current Focus is above overcap threshold", spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.overcap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -6706,7 +6514,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Focus text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -6716,7 +6524,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
-		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Focus text color when your current focus or a hardcast spell will result in overcapping maximum Focus."
 		f:SetChecked(spec.colors.text.overcapEnabled)
@@ -6731,7 +6539,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter and DoT timer color based on DoT status?")
 		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($ssCount) will change based on whether or not the DoT is on the current target."
 		f:SetChecked(spec.colors.text.dots.enabled)
@@ -6741,19 +6549,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.colors.dots = {}
 
-		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
+		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
 		f = controls.colors.dots.up
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
 		end)
 
-		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
+		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
 		f = controls.colors.dots.pandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
 		end)
 
-		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
+		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
 		f = controls.colors.dots.down
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
@@ -6766,7 +6574,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
 		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
-										sliderWidth, sliderHeight, xCoord, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 0)
@@ -6782,27 +6590,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.hunter.survival
+				local spec = TRB.Data.settings.hunter.survival
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.survival
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		controls.buttons.exportButton_Hunter_Survival_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_Survival_AudioAndTracking:SetScript("OnClick", function(self, ...)
@@ -6814,7 +6609,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killShotAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Kill Shot is usable")
 		f.tooltip = "Play an audio cue when Kill Shot is usable and off of cooldown. If you also have Flayer's Mark proc audio enabled, that sound takes priority when a proc occurs."
 		f:SetChecked(spec.audio.killShot.enabled)
@@ -6829,8 +6624,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.killShotAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_killShot_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.killShotAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, dropdownWidth)
+		controls.dropDown.killShotAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.killShotAudio, spec.audio.killShot.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
 
@@ -6881,7 +6676,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Focus")
 		f.tooltip = "Play an audio cue when your hardcast spell will overcap Focus."
 		f:SetChecked(spec.audio.overcap.enabled)
@@ -6896,8 +6691,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_overcapAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
+		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
@@ -6948,7 +6743,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flayersMarkAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if |cFFFF4040Venthyr|r)")
 		f.tooltip = "Play an audio cue when you get a Flayer's Mark proc that allows you to cast Kill Shot for 0 Focus and above normal execute range enemy health."
 		f:SetChecked(spec.audio.flayersMark.enabled)
@@ -6963,8 +6758,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.flayersMarkAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_flayersMark_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, dropdownWidth)
+		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, spec.audio.flayersMark.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
 
@@ -7015,7 +6810,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.nesingwarysTrappingApparatusAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_nesingwarysTrappingApparatus_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.nesingwarysTrappingApparatusAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Nesingwary's Trapping Apparatus proc")
 		f.tooltip = "Play an audio cue when you get a Nesingwary's Trapping Apparatus proc that allows your next Aimed Shot to cost 0 Focus."
 		f:SetChecked(spec.audio.nesingwarysTrappingApparatus.enabled)
@@ -7030,8 +6825,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.nesingwarysTrappingApparatusAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_nesingwarysTrappingApparatusAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, dropdownWidth)
+		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, spec.audio.nesingwarysTrappingApparatus.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.nesingwarysTrappingApparatusAudio, "LEFT")
 
@@ -7084,7 +6879,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.trackFocusRegen
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track focus regen")
 		f.tooltip = "Include focus regen in the passive bar and passive variables. Unchecking this will cause the following Passive Focus Generation options to have no effect."
 		f:SetChecked(spec.generation.enabled)
@@ -7096,7 +6891,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 40
 		controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_PFG_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeGCDs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Focus generation from GCDs")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Focus generation over the next X GCDs, based on player's current GCD."
@@ -7111,7 +6906,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Focus GCDs - 0.75sec Floor"
 		controls.focusGenerationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.generation.gcds = value
@@ -7121,7 +6916,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 60
 		controls.checkBoxes.focusGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_PFG_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeTime
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Focus generation over time")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Focus generation over the next X seconds."
@@ -7136,7 +6931,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		title = "Focus Over Time (sec)"
 		controls.focusGenerationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -7152,21 +6947,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		local spec = TRB.Data.settings.hunter.survival
+				local spec = TRB.Data.settings.hunter.survival
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.survival
 		local yCoord = 5
 		local f = nil
-
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
 		local namePrefix = "Hunter_Survival"
 
 		TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
@@ -7176,10 +6962,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
@@ -7188,10 +6974,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 70
-		TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
@@ -7200,10 +6986,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 70
-		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
@@ -7213,7 +6999,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 30
 		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 
@@ -7223,13 +7009,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local controls = interfaceSettingsFrame.controls.survival or {}
 		local yCoord = 0
 		local f = nil
-		local xPadding = 10
-		local xPadding2 = 30
-		local xMax = 550
-		local xCoord = 0
-		local xCoord2 = 325
-		local xOffset1 = 50
-		local xOffset2 = 275
 
 		controls.colors = {}
 		controls.labels = {}
@@ -7246,7 +7025,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		parent = interfaceSettingsFrame.survivalDisplayPanel
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Survival Hunter", xCoord+xPadding, yCoord-5)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Survival Hunter", oUi.xCoord+oUi.xPadding, yCoord-5)
 	
 		controls.checkBoxes.survivalHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_survivalHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.survivalHunterEnabled

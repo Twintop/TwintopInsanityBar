@@ -1,6 +1,8 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 4 then --Only do this if we're on a Rogue!
+	local oUi = TRB.Data.constants.optionsUi
+	
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
@@ -605,26 +607,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			return
 		end
 
-		local spec = TRB.Data.settings.rogue.assassination
+				local spec = TRB.Data.settings.rogue.assassination
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.assassination
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		StaticPopupDialogs["TwintopResourceBar_Rogue_Assassination_Reset"] = {
 			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Assassination Rogue settings will be changed. This will cause your UI to be reloaded!",
@@ -665,24 +654,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			hideOnEscape = true,
 			preferredIndex = 3
 		}
-		--[[StaticPopupDialogs["TwintopResourceBar_Rogue_Assassination_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Assassination Rogue settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
-			OnAccept = function()
-				spec.displayText = AssassinationLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()
-			end,
-			timeout = 0,
-			whileDead = true,
-			hideOnEscape = true,
-			preferredIndex = 3
-		}]]
 
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
 		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Rogue_Assassination_Reset")
 		end)
@@ -691,20 +667,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Rogue_Assassination_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 
-		--[[
-		controls.resetButton2 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", xCoord, yCoord, 250, 30)
-		controls.resetButton2:SetScript("OnClick", function(self, ...)
-			StaticPopup_Show("TwintopResourceBar_Rogue_Assassination_ResetBarTextNarrowAdvanced")
-		end)
-		]]
-
-		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton3:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Rogue_Assassination_ResetBarTextAdvanced")
 		end)
@@ -717,27 +686,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			return
 		end
 
-		local spec = TRB.Data.settings.rogue.assassination
+				local spec = TRB.Data.settings.rogue.assassination
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.assassination
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
@@ -756,7 +712,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 40
 		title = "Combo Point Width"
 		controls.comboPointWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.width, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.comboPointWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.comboPoints.width = value
@@ -779,7 +735,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Combo Point Height"
 		controls.comboPointHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, sanityCheckValues.barMaxHeight, spec.comboPoints.height, 1, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.comboPointHeight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.comboPoints.height = value
@@ -805,7 +761,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		title = "Combo Points Horizontal Position (Relative)"
 		yCoord = yCoord - 60
 		controls.comboPointHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.comboPoints.xPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.comboPointHorizontal:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.comboPoints.xPos = value
@@ -817,7 +773,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Combo Points Vertical Position (Relative)"
 		controls.comboPointVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.comboPoints.yPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord2, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.comboPointVertical:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.comboPoints.yPos = value
@@ -832,7 +788,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		title = "Combo Point Border Width"
 		yCoord = yCoord - 60
 		controls.comboPointBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.comboPoints.border, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.comboPointBorderWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.comboPoints.border = value
@@ -855,7 +811,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Combo Points Spacing"
 		controls.comboPointSpacing = TRB.UiFunctions:BuildSlider(parent, title, 0, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.spacing, 1, 2,
-									sliderWidth, sliderHeight, xCoord2, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.comboPointSpacing:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.comboPoints.spacing = value
@@ -868,10 +824,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 40
         -- Create the dropdown, and configure its appearance
         controls.dropDown.comboPointsRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_comboPointsRelativeTo", parent, "UIDropDownMenuTemplate")
-        controls.dropDown.comboPointsRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Combo Points to Energy Bar", xCoord, yCoord)
+        controls.dropDown.comboPointsRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Combo Points to Energy Bar", oUi.xCoord, yCoord)
         controls.dropDown.comboPointsRelativeTo.label.font:SetFontObject(GameFontNormal)
-        controls.dropDown.comboPointsRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
-        UIDropDownMenu_SetWidth(controls.dropDown.comboPointsRelativeTo, dropdownWidth)
+        controls.dropDown.comboPointsRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.comboPointsRelativeTo, oUi.dropdownWidth)
         UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, spec.comboPoints.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.comboPointsRelativeTo, "LEFT")
 
@@ -920,7 +876,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
         controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_comboPointsFullWidth", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.comboPointsFullWidth
-		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Combo Points are full bar width?")
 		f.tooltip = "Makes the Combo Point bars take up the same total width of the bar, spaced according to Combo Point Spacing (above). The horizontal position adjustment will be ignored and the width of Combo Point bars will be automatically calculated and will ignore the value set above."
 		f:SetChecked(spec.comboPoints.fullWidth)
@@ -938,10 +894,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_EnergyBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
+		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", oUi.xCoord, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
+		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, spec.textures.resourceBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.resourceBarTexture, "LEFT")
 
@@ -1013,10 +969,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_CastBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
+		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
+		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
 
@@ -1091,10 +1047,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
+		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", oUi.xCoord, yCoord)
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
+		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, spec.textures.passiveBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
 
@@ -1166,10 +1122,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.comboPointsBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_ComboPointsBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.comboPointsBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Combo Points Texture", xCoord2, yCoord)
+		controls.dropDown.comboPointsBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Combo Points Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.comboPointsBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.comboPointsBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBarTexture, dropdownWidth)
+		controls.dropDown.comboPointsBarTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, spec.textures.comboPointsBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.comboPointsBarTexture, "LEFT")
 
@@ -1244,10 +1200,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_BorderTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
+		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", oUi.xCoord, yCoord)
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
+		controls.dropDown.borderTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.borderTexture, spec.textures.borderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
 
@@ -1335,10 +1291,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_BackgroundTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
+		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
+		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, spec.textures.backgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
 
@@ -1422,10 +1378,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.comboPointsBorderTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_CB1_ComboPointsBorderTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.comboPointsBorderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Combo Point Border Texture", xCoord, yCoord)
+		controls.dropDown.comboPointsBorderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Combo Point Border Texture", oUi.xCoord, yCoord)
 		controls.dropDown.comboPointsBorderTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.comboPointsBorderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBorderTexture, dropdownWidth)
+		controls.dropDown.comboPointsBorderTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBorderTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, spec.textures.comboPointsBorderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.comboPointsBorderTexture, "LEFT")
 
@@ -1511,10 +1467,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.comboPointsBackgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_ComboPointsBackgroundTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.comboPointsBackgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Combo Point) Texture", xCoord2, yCoord)
+		controls.dropDown.comboPointsBackgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Combo Point) Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.comboPointsBackgroundTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.comboPointsBackgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBackgroundTexture, dropdownWidth)
+		controls.dropDown.comboPointsBackgroundTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBackgroundTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, spec.textures.comboPointsBackgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.comboPointsBackgroundTexture, "LEFT")
 
@@ -1598,7 +1554,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 60
 		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_CB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars, borders, and backgrounds (respectively)")
 		f.tooltip = "This will lock the texture for each type of texture to be the same for all parts of the bar. E.g.: All bar textures will be the same, all border textures will be the same, and all background textures will be the same."
 		f:SetChecked(spec.textures.textureLock)
@@ -1662,7 +1618,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
         --[[
 		title = "Beastial Wrath Flash Alpha"
 		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -1672,7 +1628,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Beastial Wrath Flash Period (sec)"
 		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0.05, 2, spec.colors.bar.flashPeriod, 0.05, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -1684,7 +1640,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_RB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
@@ -1702,7 +1658,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_RB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-15)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-15)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Energy is not capped")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar show out of combat only if Energy is not capped, hidden otherwise when out of combat."
@@ -1720,7 +1676,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_RB1_4", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.combatShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
@@ -1738,7 +1694,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_RB1_5", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.neverShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-45)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
 		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
@@ -1757,7 +1713,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		--[[
 		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
 		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
 		f:SetChecked(spec.bar.showCasting)
@@ -1767,7 +1723,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
 		f:SetChecked(spec.bar.showPassive)
@@ -1778,7 +1734,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
         --[[
 		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_CB1_5", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-40)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Beastial Wrath is usable")
 		f.tooltip = "This will flash the bar when Beastial Wrath can be cast."
 		f:SetChecked(spec.colors.bar.flashEnabled)
@@ -1788,7 +1744,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_CB1_6", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.esThresholdShow
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-60)
 		getglobal(f:GetName() .. 'Text'):SetText("Border color when Beastial Wrath is usable")
 		f.tooltip = "This will change the bar's border color (as configured below) when Beastial Wrath is usable."
 		f:SetChecked(spec.colors.bar.beastialWrathEnabled)
@@ -1802,26 +1758,26 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Energy", spec.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Energy", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 2)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.sliceAndDicePandemic = TRB.UiFunctions:BuildColorPicker(parent, "Energy when Slice and Dice is within Pandemic refresh range (current CPs)", spec.colors.bar.sliceAndDicePandemic, 275, 25, xCoord, yCoord)
+		controls.colors.sliceAndDicePandemic = TRB.UiFunctions:BuildColorPicker(parent, "Energy when Slice and Dice is within Pandemic refresh range (current CPs)", spec.colors.bar.sliceAndDicePandemic, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.sliceAndDicePandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "sliceAndDicePandemic")
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you are overcapping Energy", spec.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you are overcapping Energy", spec.colors.bar.borderOvercap, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
@@ -1829,13 +1785,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 
 		yCoord = yCoord - 30
-		controls.colors.noSliceAndDice = TRB.UiFunctions:BuildColorPicker(parent, "Energy when Slice and Dice is not up", spec.colors.bar.noSliceAndDice, 275, 25, xCoord, yCoord)
+		controls.colors.noSliceAndDice = TRB.UiFunctions:BuildColorPicker(parent, "Energy when Slice and Dice is not up", spec.colors.bar.noSliceAndDice, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.noSliceAndDice
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "noSliceAndDice")
 		end)
 
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
@@ -1843,7 +1799,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Energy gain from Passive Sources", spec.colors.bar.passive, 275, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Energy gain from Passive Sources", spec.colors.bar.passive, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
@@ -1853,39 +1809,39 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Combo Point Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.comboPointBase = TRB.UiFunctions:BuildColorPicker(parent, "Combo Points", spec.colors.comboPoints.base, 300, 25, xCoord, yCoord)
+		controls.colors.comboPointBase = TRB.UiFunctions:BuildColorPicker(parent, "Combo Points", spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPointBase
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 		end)
 
-		controls.colors.comboPointBorder = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point's border", spec.colors.comboPoints.border, 225, 25, xCoord2, yCoord)
+		controls.colors.comboPointBorder = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point's border", spec.colors.comboPoints.border, 225, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPointBorder
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 		end)
 
 		yCoord = yCoord - 30		
-		controls.colors.comboPointPenultimate = TRB.UiFunctions:BuildColorPicker(parent, "Penultimate Combo Point", spec.colors.comboPoints.penultimate, 300, 25, xCoord, yCoord)
+		controls.colors.comboPointPenultimate = TRB.UiFunctions:BuildColorPicker(parent, "Penultimate Combo Point", spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPointPenultimate
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 		end)
 
-		controls.colors.comboPoints.echoingReprimand = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point when Echoing Reprimand (|cFF68CCEFKyrian|r) buff is up", spec.colors.comboPoints.echoingReprimand, 275, 25, xCoord2, yCoord)
+		controls.colors.comboPoints.echoingReprimand = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point when Echoing Reprimand (|cFF68CCEFKyrian|r) buff is up", spec.colors.comboPoints.echoingReprimand, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.echoingReprimand
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "echoingReprimand")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.comboPointFinal = TRB.UiFunctions:BuildColorPicker(parent, "Final Combo Point", spec.colors.comboPoints.final, 300, 25, xCoord, yCoord)
+		controls.colors.comboPointFinal = TRB.UiFunctions:BuildColorPicker(parent, "Final Combo Point", spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPointFinal
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 		end)
 
-		controls.colors.comboPoints.serratedBoneSpike = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point that wil generate on next Serrated Bone Spike (|cFF40BF40Necrolord|r) use", spec.colors.comboPoints.serratedBoneSpike, 275, 25, xCoord2, yCoord)
+		controls.colors.comboPoints.serratedBoneSpike = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point that wil generate on next Serrated Bone Spike (|cFF40BF40Necrolord|r) use", spec.colors.comboPoints.serratedBoneSpike, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.serratedBoneSpike
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "serratedBoneSpike")
@@ -1895,7 +1851,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sameColorComboPoint
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use highest Combo Point color for all?")
 		f.tooltip = "When checked, the highest Combo Point's color will be used for all Combo Points. E.g., if you have maximum 5 combo points and currently have 4, the Penultimate color will be used for all Combo Points instead of just the second to last."
 		f:SetChecked(spec.comboPoints.sameColor)
@@ -1904,7 +1860,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 
-		controls.colors.comboPoints.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled Combo Point background", spec.colors.comboPoints.background, 275, 25, xCoord2, yCoord)
+		controls.colors.comboPoints.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled Combo Point background", spec.colors.comboPoints.background, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
@@ -1917,19 +1873,19 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Energy threshold line", spec.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Energy threshold line", spec.colors.threshold.under, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Energy threshold line", spec.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Energy threshold line", spec.colors.threshold.over, 275, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
+		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
@@ -1937,7 +1893,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-90)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-90)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(spec.thresholds.overlapBorder)
@@ -1951,7 +1907,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.ambushThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_ambush", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ambushThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Ambush (if stealthed / Subterfuge active)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ambush. Only visible when in Stealth or usable via the Blindside or Subterfuge talent."
 		f:SetChecked(spec.thresholds.ambush.enabled)
@@ -1962,7 +1918,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.cheapShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_cheapShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cheapShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Cheap Shot (if stealthed / Subterfuge active)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Cheap Shot. Only visible when in Stealth or usable via the Subterfuge talent."
 		f:SetChecked(spec.thresholds.cheapShot.enabled)
@@ -1973,7 +1929,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.fanOfKnivesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_fanOfKnives", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fanOfKnivesThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Fan of Knives")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Fan of Knives."
 		f:SetChecked(spec.thresholds.fanOfKnives.enabled)
@@ -1984,7 +1940,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.garroteThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_garrote", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.garroteThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Garrote")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Garrote. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.garrote.enabled)
@@ -1995,7 +1951,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.mutilateThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_mutilate", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mutilateThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Mutilate")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Mutilate."
 		f:SetChecked(spec.thresholds.mutilate.enabled)
@@ -2006,7 +1962,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.poisonedKnifeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_poisonedKnife", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.poisonedKnifeThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Poisoned Knife")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Poisoned Knife."
 		f:SetChecked(spec.thresholds.poisonedKnife.enabled)
@@ -2017,7 +1973,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.shivThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_shiv", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shivThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Shiv")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If on cooldown, will be colored as 'unusable'. If using the Tiny Toxic Blade legendary, no threshold will be shown."
 		f:SetChecked(spec.thresholds.shiv.enabled)
@@ -2032,7 +1988,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.crimsonTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_crimsonTempest", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.crimsonTempestThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Crimson Tempest (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Tempest. Only visible if talented in to Crimson Tempest. If you do not have any combo points, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.crimsonTempest.enabled)
@@ -2043,7 +1999,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.envenomThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_envenom", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.envenomThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Envenom")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Envenom. If you do not have any combo points, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.envenom.enabled)
@@ -2054,7 +2010,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.kidneyShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_kidneyShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.kidneyShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Kidney Shot")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Kidney Shot. Only visible when in Stealth or usable via the Subterfuge talent. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.kidneyShot.enabled)
@@ -2065,7 +2021,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.sliceAndDiceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sliceAndDice", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sliceAndDiceThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Slice and Dice")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Slice and Dice. If you do not have any combo points, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.sliceAndDice.enabled)
@@ -2076,7 +2032,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.ruptureThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_rupture", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ruptureThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Rupture")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Rupture. If you do not have any combo points, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.rupture.enabled)
@@ -2090,7 +2046,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.crimsonVialThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_crimsonVial", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.crimsonVialThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Crimson Vial")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Vial. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.crimsonVial.enabled)
@@ -2101,7 +2057,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.distractThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_distract", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.distractThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Distract")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Distract. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.distract.enabled)
@@ -2112,7 +2068,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.exsanguinateThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_exsanguinate", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.exsanguinateThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Exsanguinate (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Exsanguinate. Only visible if talented in to Exsanguinate. If on cooldown or the current target has no bleeds, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.exsanguinate.enabled)
@@ -2123,7 +2079,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.feintThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_feint", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.feintThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Feint")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feint. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.feint.enabled)
@@ -2134,7 +2090,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.sapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sap", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sapThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Sap (if stealthed / Subterfuge active)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sap. Only visible when in Stealth or usable via the Subterfuge talent."
 		f:SetChecked(spec.thresholds.sap.enabled)
@@ -2148,7 +2104,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.echoingReprimandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_echoingReprimand", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.echoingReprimandThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand (if |cFF68CCEFKyrian|r)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand. Only visible if |cFF68CCEFKyrian|r. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.echoingReprimand.enabled)
@@ -2159,7 +2115,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.sepsisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sepsis", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sepsisThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Sepsis (if |cFFA330C9Night Fae|r)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis. Only visible if |cFFA330C9Night Fae|r. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.sepsis.enabled)
@@ -2170,7 +2126,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.serratedBoneSpikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_serratedBoneSpike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.serratedBoneSpikeThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Serrated Bone Spike (if |cFF40BF40Necrolord|r)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Serrated Bone Spike. Only visible if |cFF40BF40Necrolord|r. If no available charges, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.serratedBoneSpike.enabled)
@@ -2184,7 +2140,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.deathFromAboveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_deathFromAbove", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.deathFromAboveThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Death From Above")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Death From Above. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.deathFromAbove.enabled)
@@ -2195,7 +2151,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.dismantleThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_dismantle", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dismantleThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Dismantle")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dismantle. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.dismantle.enabled)
@@ -2207,10 +2163,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
         -- Create the dropdown, and configure its appearance
         controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
-        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", oUi.xCoord, yCoord)
         controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
-        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
-        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
+        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, oUi.dropdownWidth)
         UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
 
@@ -2254,7 +2210,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		--NOTE: the order of these checkboxes is reversed!
 		controls.checkBoxes.thresholdIconCooldown = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_thresholdIconThresholdEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconCooldown
-		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+(oUi.xPadding*2), yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
 		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for potion icons that are on cooldown."
 		f:SetChecked(spec.thresholds.icons.showCooldown)
@@ -2266,7 +2222,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 		f:SetChecked(spec.thresholds.icons.enabled)
@@ -2282,7 +2238,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 80
 		title = "Threshold Icon Width"
 		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.width = value
@@ -2301,7 +2257,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Threshold Icon Height"
 		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.height = value
@@ -2322,7 +2278,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		title = "Threshold Icon Horizontal Position (Relative)"
 		yCoord = yCoord - 60
 		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.xPos = value
@@ -2334,7 +2290,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Threshold Icon Vertical Position (Relative)"
 		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord2, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.yPos = value
@@ -2345,7 +2301,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		title = "Threshold Icon Border Width"
 		yCoord = yCoord - 60
 		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.border = value
@@ -2371,7 +2327,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_CB1_8", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
 		f.tooltip = "This will change the bar's border color when your current energy is above the overcapping maximum Energy as configured below."
 		f:SetChecked(spec.colors.bar.overcapEnabled)
@@ -2383,7 +2339,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Show Overcap Notification Above"
 		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 170, spec.overcapThreshold, 1, 1,
-										sliderWidth, sliderHeight, xCoord, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 1)
@@ -2399,27 +2355,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			return
 		end
 
-		local spec = TRB.Data.settings.rogue.assassination
+				local spec = TRB.Data.settings.rogue.assassination
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.assassination
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		controls.buttons.exportButton_Rogue_Assassination_FontAndText = TRB.UiFunctions:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Assassination_FontAndText:SetScript("OnClick", function(self, ...)
@@ -2431,10 +2374,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 30
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_FontLeft", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", oUi.xCoord, yCoord)
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
+		controls.dropDown.fontLeft:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
@@ -2498,10 +2441,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_FontMiddle", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
+		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", oUi.xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
+		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
@@ -2567,10 +2510,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_FontRight", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", oUi.xCoord, yCoord)
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
+		controls.dropDown.fontRight:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
@@ -2634,7 +2577,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
 		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
 		f:SetChecked(spec.displayText.fontFaceLock)
@@ -2662,7 +2605,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
 		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.left.fontSize = value
@@ -2679,7 +2622,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontSizeLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
 		f:SetChecked(spec.displayText.fontSizeLock)
@@ -2694,21 +2637,21 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.colors.text = {}
 
 		controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
-														250, 25, xCoord2, yCoord-30)
+														250, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.text.left
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
 		end)
 
 		controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
-														225, 25, xCoord2, yCoord-70)
+														225, 25, oUi.xCoord2, yCoord-70)
 		f = controls.colors.text.middle
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
 		end)
 
 		controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
-														225, 25, xCoord2, yCoord-110)
+														225, 25, oUi.xCoord2, yCoord-110)
 		f = controls.colors.text.right
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
@@ -2717,7 +2660,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.middle.fontSize = value
@@ -2735,7 +2678,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.right.fontSize = value
@@ -2754,26 +2697,26 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Energy Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy", spec.colors.text.current, 300, 25, xCoord, yCoord)
+		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 		
-		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Energy", spec.colors.text.passive, 275, 25, xCoord2, yCoord)
+		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Energy", spec.colors.text.passive, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Energy to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Energy to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.text.overcap = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy is above overcap threshold", spec.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		controls.colors.text.overcap = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy is above overcap threshold", spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.overcap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -2783,7 +2726,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Energy text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -2793,7 +2736,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
-		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Energy text color when your current energy is above the overcapping maximum Energy value."
 		f:SetChecked(spec.colors.text.overcapEnabled)
@@ -2809,7 +2752,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter, DoT timer, and Slice and Dice color based on time remaining?")
 		f.tooltip = "When checked, the color of total DoTs up counters, DoT timers, and Slice and Dice's timer will change based on whether or not the DoT is on the current target."
 		f:SetChecked(spec.colors.text.dots.enabled)
@@ -2819,19 +2762,19 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.colors.dots = {}
 
-		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
+		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
 		f = controls.colors.dots.up
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
 		end)
 
-		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
+		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
 		f = controls.colors.dots.pandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
 		end)
 
-		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
+		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
 		f = controls.colors.dots.down
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
@@ -2844,7 +2787,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
 		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
-										sliderWidth, sliderHeight, xCoord, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 0)
@@ -2860,27 +2803,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			return
 		end
 
-		local spec = TRB.Data.settings.rogue.assassination
+				local spec = TRB.Data.settings.rogue.assassination
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.assassination
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		controls.buttons.exportButton_Rogue_Assassination_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Assassination_AudioAndTracking:SetScript("OnClick", function(self, ...)
@@ -2892,7 +2822,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 30
 		controls.checkBoxes.blindsideAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_blindside_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.blindsideAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Blindside proc occurs")
 		f.tooltip = "Play an audio cue when a Blindside proc occurs, allowing Ambush to be used outside of stealth."
 		f:SetChecked(spec.audio.blindside.enabled)
@@ -2907,8 +2837,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.blindsideAudio = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_blindside_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.blindsideAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.blindsideAudio, dropdownWidth)
+		controls.dropDown.blindsideAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.blindsideAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.blindsideAudio, spec.audio.blindside.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.blindsideAudio, "LEFT")
 
@@ -2958,7 +2888,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 60
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Energy")
 		f.tooltip = "Play an audio cue when your hardcast spell will overcap Energy."
 		f:SetChecked(spec.audio.overcap.enabled)
@@ -2973,8 +2903,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_overcapAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
+		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
@@ -3024,7 +2954,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 60
 		controls.checkBoxes.sepsisAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_sepsis_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sepsisAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you gain Sepsis buff (if |cFF68CCEFKyrian|r)")
 		f.tooltip = "Play an audio cue when you gain Sepsis buff that allows you to use a stealth ability outside of steath."
 		f:SetChecked(spec.audio.sepsis.enabled)
@@ -3039,8 +2969,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.sepsisAudio = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Assassination_sepsis_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.sepsisAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.sepsisAudio, dropdownWidth)
+		controls.dropDown.sepsisAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.sepsisAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.sepsisAudio, spec.audio.sepsis.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.sepsisAudio, "LEFT")
 
@@ -3091,7 +3021,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 30
 		controls.checkBoxes.trackEnergyRegen = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_trackEnergyRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.trackEnergyRegen
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track energy regen")
 		f.tooltip = "Include energy regen in the passive bar and passive variables. Unchecking this will cause the following Passive Energy Generation options to have no effect."
 		f:SetChecked(spec.generation.enabled)
@@ -3102,7 +3032,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 40
 		controls.checkBoxes.energyGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_PFG_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.energyGenerationModeGCDs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Energy generation over GCDs")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Energy generation over the next X GCDs, based on player's current GCD length."
@@ -3117,7 +3047,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Energy GCDs - 0.75sec Floor"
 		controls.energyGenerationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.energyGenerationGCDs:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.generation.gcds = value
@@ -3127,7 +3057,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 60
 		controls.checkBoxes.energyGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_PFG_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.energyGenerationModeTime
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Energy generation over time")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Energy generation over the next X seconds."
@@ -3142,7 +3072,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Energy Over Time (sec)"
 		controls.energyGenerationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.energyGenerationTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -3158,21 +3088,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			return
 		end
 
-		local spec = TRB.Data.settings.rogue.assassination
+				local spec = TRB.Data.settings.rogue.assassination
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.assassination
 		local yCoord = 5
 		local f = nil
-
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
 		local namePrefix = "Rogue_Assassination"
 
 		TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
@@ -3182,10 +3103,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
@@ -3195,10 +3116,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 
 		yCoord = yCoord - 70
-		TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
@@ -3208,10 +3129,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 
 		yCoord = yCoord - 70
-		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
@@ -3221,7 +3142,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		yCoord = yCoord - 30
 		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 
@@ -3231,13 +3152,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local controls = interfaceSettingsFrame.controls.assassination or {}
 		local yCoord = 0
 		local f = nil
-		local xPadding = 10
-		local xPadding2 = 30
-		local xMax = 550
-		local xCoord = 0
-		local xCoord2 = 325
-		local xOffset1 = 50
-		local xOffset2 = 275
 
 		controls.colors = {}
 		controls.labels = {}
@@ -3254,7 +3168,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		parent = interfaceSettingsFrame.assassinationDisplayPanel
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Assassination Rogue", xCoord+xPadding, yCoord-5)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Assassination Rogue", oUi.xCoord+oUi.xPadding, yCoord-5)
 	
 		controls.checkBoxes.assassinationRogueEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_assassinationRogueEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.assassinationRogueEnabled
@@ -3336,26 +3250,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			return
 		end
 
-		local spec = TRB.Data.settings.rogue.outlaw
+				local spec = TRB.Data.settings.rogue.outlaw
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		StaticPopupDialogs["TwintopResourceBar_Rogue_Outlaw_Reset"] = {
 			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Outlaw Rogue settings will be changed. This will cause your UI to be reloaded!",
@@ -3400,7 +3301,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", xCoord, yCoord, 150, 30)
+		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
 		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Rogue_Outlaw_Reset")
 		end)
@@ -3409,13 +3310,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", xCoord, yCoord, 250, 30)
+		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Rogue_Outlaw_ResetBarTextSimple")
         end)
 
 		yCoord = yCoord - 40
-		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", xCoord, yCoord, 250, 30)
+		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton3:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Rogue_Outlaw_ResetBarTextAdvanced")
 		end)
@@ -3428,27 +3329,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			return
 		end
 
-		local spec = TRB.Data.settings.rogue.outlaw
+				local spec = TRB.Data.settings.rogue.outlaw
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.outlaw
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
@@ -3467,7 +3355,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 40
 		title = "Combo Point Width"
 		controls.comboPointWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.width, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.comboPointWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.comboPoints.width = value
@@ -3490,7 +3378,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Combo Point Height"
 		controls.comboPointHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, sanityCheckValues.barMaxHeight, spec.comboPoints.height, 1, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.comboPointHeight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.comboPoints.height = value
@@ -3516,7 +3404,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		title = "Combo Points Horizontal Position (Relative)"
 		yCoord = yCoord - 60
 		controls.comboPointHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.comboPoints.xPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.comboPointHorizontal:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.comboPoints.xPos = value
@@ -3528,7 +3416,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Combo Points Vertical Position (Relative)"
 		controls.comboPointVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.comboPoints.yPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord2, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.comboPointVertical:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.comboPoints.yPos = value
@@ -3543,7 +3431,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		title = "Combo Point Border Width"
 		yCoord = yCoord - 60
 		controls.comboPointBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.comboPoints.border, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.comboPointBorderWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.comboPoints.border = value
@@ -3566,7 +3454,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Combo Points Spacing"
 		controls.comboPointSpacing = TRB.UiFunctions:BuildSlider(parent, title, 0, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.spacing, 1, 2,
-									sliderWidth, sliderHeight, xCoord2, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.comboPointSpacing:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.comboPoints.spacing = value
@@ -3579,10 +3467,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 40
         -- Create the dropdown, and configure its appearance
         controls.dropDown.comboPointsRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_comboPointsRelativeTo", parent, "UIDropDownMenuTemplate")
-        controls.dropDown.comboPointsRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Combo Points to Energy Bar", xCoord, yCoord)
+        controls.dropDown.comboPointsRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Combo Points to Energy Bar", oUi.xCoord, yCoord)
         controls.dropDown.comboPointsRelativeTo.label.font:SetFontObject(GameFontNormal)
-        controls.dropDown.comboPointsRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
-        UIDropDownMenu_SetWidth(controls.dropDown.comboPointsRelativeTo, dropdownWidth)
+        controls.dropDown.comboPointsRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.comboPointsRelativeTo, oUi.dropdownWidth)
         UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, spec.comboPoints.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.comboPointsRelativeTo, "LEFT")
 
@@ -3631,7 +3519,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
         controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_comboPointsFullWidth", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.comboPointsFullWidth
-		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Combo Points are full bar width?")
 		f.tooltip = "Makes the Combo Point bars take up the same total width of the bar, spaced according to Combo Point Spacing (above). The horizontal position adjustment will be ignored and the width of Combo Point bars will be automatically calculated and will ignore the value set above."
 		f:SetChecked(spec.comboPoints.fullWidth)
@@ -3649,10 +3537,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.resourceBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_EnergyBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", xCoord, yCoord)
+		controls.dropDown.resourceBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Main Bar Texture", oUi.xCoord, yCoord)
 		controls.dropDown.resourceBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, dropdownWidth)
+		controls.dropDown.resourceBarTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.resourceBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.resourceBarTexture, spec.textures.resourceBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.resourceBarTexture, "LEFT")
 
@@ -3724,10 +3612,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.castingBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_CastBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", xCoord2, yCoord)
+		controls.dropDown.castingBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Casting Bar Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.castingBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, dropdownWidth)
+		controls.dropDown.castingBarTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.castingBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.castingBarTexture, spec.textures.castingBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.castingBarTexture, "LEFT")
 
@@ -3802,10 +3690,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.passiveBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_PassiveBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", xCoord, yCoord)
+		controls.dropDown.passiveBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Bar Texture", oUi.xCoord, yCoord)
 		controls.dropDown.passiveBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, dropdownWidth)
+		controls.dropDown.passiveBarTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.passiveBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.passiveBarTexture, spec.textures.passiveBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.passiveBarTexture, "LEFT")
 
@@ -3877,10 +3765,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.comboPointsBarTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_ComboPointsBarTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.comboPointsBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Combo Points Texture", xCoord2, yCoord)
+		controls.dropDown.comboPointsBarTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Combo Points Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.comboPointsBarTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.comboPointsBarTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBarTexture, dropdownWidth)
+		controls.dropDown.comboPointsBarTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBarTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.comboPointsBarTexture, spec.textures.comboPointsBarName)
 		UIDropDownMenu_JustifyText(controls.dropDown.comboPointsBarTexture, "LEFT")
 
@@ -3955,10 +3843,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.borderTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_BorderTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", xCoord, yCoord)
+		controls.dropDown.borderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Border Texture", oUi.xCoord, yCoord)
 		controls.dropDown.borderTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.borderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, dropdownWidth)
+		controls.dropDown.borderTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.borderTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.borderTexture, spec.textures.borderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.borderTexture, "LEFT")
 
@@ -4046,10 +3934,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.backgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_BackgroundTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", xCoord2, yCoord)
+		controls.dropDown.backgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Bar) Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.backgroundTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, dropdownWidth)
+		controls.dropDown.backgroundTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.backgroundTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.backgroundTexture, spec.textures.backgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.backgroundTexture, "LEFT")
 
@@ -4133,10 +4021,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.comboPointsBorderTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_CB1_ComboPointsBorderTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.comboPointsBorderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Combo Point Border Texture", xCoord, yCoord)
+		controls.dropDown.comboPointsBorderTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Combo Point Border Texture", oUi.xCoord, yCoord)
 		controls.dropDown.comboPointsBorderTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.comboPointsBorderTexture:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBorderTexture, dropdownWidth)
+		controls.dropDown.comboPointsBorderTexture:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBorderTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.comboPointsBorderTexture, spec.textures.comboPointsBorderName)
 		UIDropDownMenu_JustifyText(controls.dropDown.comboPointsBorderTexture, "LEFT")
 
@@ -4222,10 +4110,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.comboPointsBackgroundTexture = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_ComboPointsBackgroundTexture", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.comboPointsBackgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Combo Point) Texture", xCoord2, yCoord)
+		controls.dropDown.comboPointsBackgroundTexture.label = TRB.UiFunctions:BuildSectionHeader(parent, "Background (Empty Combo Point) Texture", oUi.xCoord2, yCoord)
 		controls.dropDown.comboPointsBackgroundTexture.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.comboPointsBackgroundTexture:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBackgroundTexture, dropdownWidth)
+		controls.dropDown.comboPointsBackgroundTexture:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.comboPointsBackgroundTexture, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.comboPointsBackgroundTexture, spec.textures.comboPointsBackgroundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.comboPointsBackgroundTexture, "LEFT")
 
@@ -4309,7 +4197,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 60
 		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_CB1_TEXTURE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.textureLock
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars, borders, and backgrounds (respectively)")
 		f.tooltip = "This will lock the texture for each type of texture to be the same for all parts of the bar. E.g.: All bar textures will be the same, all border textures will be the same, and all background textures will be the same."
 		f:SetChecked(spec.textures.textureLock)
@@ -4373,7 +4261,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
         --[[
 		title = "Beastial Wrath Flash Alpha"
 		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -4383,7 +4271,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Beastial Wrath Flash Period (sec)"
 		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0.05, 2, spec.colors.bar.flashPeriod, 0.05, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -4395,7 +4283,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_RB1_2", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.alwaysShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
@@ -4413,7 +4301,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_RB1_3", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.notZeroShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-15)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-15)
 		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Energy is not capped")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar show out of combat only if Energy is not capped, hidden otherwise when out of combat."
@@ -4431,7 +4319,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_RB1_4", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.combatShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
@@ -4449,7 +4337,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_RB1_5", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.neverShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord-45)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
 		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
@@ -4468,7 +4356,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		--[[
 		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
 		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
 		f:SetChecked(spec.bar.showCasting)
@@ -4478,7 +4366,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
 		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
 		f:SetChecked(spec.bar.showPassive)
@@ -4489,7 +4377,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
         --[[
 		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_CB1_5", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-40)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-40)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Beastial Wrath is usable")
 		f.tooltip = "This will flash the bar when Beastial Wrath can be cast."
 		f:SetChecked(spec.colors.bar.flashEnabled)
@@ -4499,7 +4387,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_CB1_6", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.esThresholdShow
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-60)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-60)
 		getglobal(f:GetName() .. 'Text'):SetText("Border color when Beastial Wrath is usable")
 		f.tooltip = "This will change the bar's border color (as configured below) when Beastial Wrath is usable."
 		f:SetChecked(spec.colors.bar.beastialWrathEnabled)
@@ -4513,59 +4401,59 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Energy", spec.colors.bar.base, 300, 25, xCoord, yCoord)
+		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Energy", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 2)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.sliceAndDicePandemic = TRB.UiFunctions:BuildColorPicker(parent, "Energy when Slice and Dice is within Pandemic refresh range (current CPs)", spec.colors.bar.sliceAndDicePandemic, 275, 25, xCoord, yCoord)
+		controls.colors.sliceAndDicePandemic = TRB.UiFunctions:BuildColorPicker(parent, "Energy when Slice and Dice is within Pandemic refresh range (current CPs)", spec.colors.bar.sliceAndDicePandemic, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.sliceAndDicePandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "sliceAndDicePandemic")
 		end)
 
-		controls.colors.borderRtbGood = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you should not use Roll the Bones (keep current rolls)", spec.colors.bar.borderRtbGood, 275, 25, xCoord2, yCoord)
+		controls.colors.borderRtbGood = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you should not use Roll the Bones (keep current rolls)", spec.colors.bar.borderRtbGood, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderRtbGood
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderRtbGood")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.noSliceAndDice = TRB.UiFunctions:BuildColorPicker(parent, "Energy when Slice and Dice is not up", spec.colors.bar.noSliceAndDice, 275, 25, xCoord, yCoord)
+		controls.colors.noSliceAndDice = TRB.UiFunctions:BuildColorPicker(parent, "Energy when Slice and Dice is not up", spec.colors.bar.noSliceAndDice, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.noSliceAndDice
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "noSliceAndDice")
 		end)
 
-		controls.colors.borderRtbBad = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you should use Roll the Bones (not up or should reroll)", spec.colors.bar.borderRtbBad, 275, 25, xCoord2, yCoord)
+		controls.colors.borderRtbBad = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you should use Roll the Bones (not up or should reroll)", spec.colors.bar.borderRtbBad, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderRtbBad
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderRtbBad")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Energy gain from Passive Sources", spec.colors.bar.passive, 275, 25, xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Energy gain from Passive Sources", spec.colors.bar.passive, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you are overcapping Energy", spec.colors.bar.borderOvercap, 275, 25, xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you are overcapping Energy", spec.colors.bar.borderOvercap, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, xCoord, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, oUi.xCoord, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
@@ -4575,39 +4463,39 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Combo Point Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.comboPointBase = TRB.UiFunctions:BuildColorPicker(parent, "Combo Points", spec.colors.comboPoints.base, 300, 25, xCoord, yCoord)
+		controls.colors.comboPointBase = TRB.UiFunctions:BuildColorPicker(parent, "Combo Points", spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPointBase
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 		end)
 
-		controls.colors.comboPointBorder = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point's border", spec.colors.comboPoints.border, 225, 25, xCoord2, yCoord)
+		controls.colors.comboPointBorder = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point's border", spec.colors.comboPoints.border, 225, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPointBorder
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 		end)
 
 		yCoord = yCoord - 30		
-		controls.colors.comboPointPenultimate = TRB.UiFunctions:BuildColorPicker(parent, "Penultimate Combo Point", spec.colors.comboPoints.penultimate, 300, 25, xCoord, yCoord)
+		controls.colors.comboPointPenultimate = TRB.UiFunctions:BuildColorPicker(parent, "Penultimate Combo Point", spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPointPenultimate
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 		end)
 
-		controls.colors.comboPoints.echoingReprimand = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point when Echoing Reprimand (|cFF68CCEFKyrian|r) buff is up", spec.colors.comboPoints.echoingReprimand, 275, 25, xCoord2, yCoord)
+		controls.colors.comboPoints.echoingReprimand = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point when Echoing Reprimand (|cFF68CCEFKyrian|r) buff is up", spec.colors.comboPoints.echoingReprimand, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.echoingReprimand
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "echoingReprimand")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.comboPointFinal = TRB.UiFunctions:BuildColorPicker(parent, "Final Combo Point", spec.colors.comboPoints.final, 300, 25, xCoord, yCoord)
+		controls.colors.comboPointFinal = TRB.UiFunctions:BuildColorPicker(parent, "Final Combo Point", spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPointFinal
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 		end)
 
-		controls.colors.comboPoints.serratedBoneSpike = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point that wil generate on next Serrated Bone Spike (|cFF40BF40Necrolord|r) use", spec.colors.comboPoints.serratedBoneSpike, 275, 25, xCoord2, yCoord)
+		controls.colors.comboPoints.serratedBoneSpike = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point that wil generate on next Serrated Bone Spike (|cFF40BF40Necrolord|r) use", spec.colors.comboPoints.serratedBoneSpike, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.serratedBoneSpike
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "serratedBoneSpike")
@@ -4617,7 +4505,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sameColorComboPoint
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use highest Combo Point color for all?")
 		f.tooltip = "When checked, the highest Combo Point's color will be used for all Combo Points. E.g., if you have maximum 5 combo points and currently have 4, the Penultimate color will be used for all Combo Points instead of just the second to last."
 		f:SetChecked(spec.comboPoints.sameColor)
@@ -4626,7 +4514,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 
-		controls.colors.comboPoints.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled Combo Point background", spec.colors.comboPoints.background, 275, 25, xCoord2, yCoord)
+		controls.colors.comboPoints.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled Combo Point background", spec.colors.comboPoints.background, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
@@ -4639,31 +4527,31 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Energy threshold line", spec.colors.threshold.under, 275, 25, xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Energy threshold line", spec.colors.threshold.under, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Energy threshold line", spec.colors.threshold.over, 275, 25, xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Energy threshold line", spec.colors.threshold.over, 275, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, xCoord2, yCoord-60)
+		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
-		controls.colors.threshold.restlessBlades = TRB.UiFunctions:BuildColorPicker(parent, "Ability usable after next finisher (via Restless Blades+True Bearing)", spec.colors.threshold.restlessBlades, 275, 25, xCoord2, yCoord-90)
+		controls.colors.threshold.restlessBlades = TRB.UiFunctions:BuildColorPicker(parent, "Ability usable after next finisher (via Restless Blades+True Bearing)", spec.colors.threshold.restlessBlades, 275, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.threshold.restlessBlades
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "restlessBlades")
 		end)
 
-		controls.colors.threshold.special = TRB.UiFunctions:BuildColorPicker(parent, "Skull and Crossbones, Ruthless Precision, or Opportunity effect up", spec.colors.threshold.special, 275, 25, xCoord2, yCoord-120)
+		controls.colors.threshold.special = TRB.UiFunctions:BuildColorPicker(parent, "Skull and Crossbones, Ruthless Precision, or Opportunity effect up", spec.colors.threshold.special, 275, 25, oUi.xCoord2, yCoord-120)
 		f = controls.colors.threshold.special
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "special")
@@ -4671,7 +4559,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-150)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-150)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(spec.thresholds.overlapBorder)
@@ -4685,7 +4573,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.ambushThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_ambush", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ambushThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Ambush (if stealthed)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ambush. Only visible when in Stealth."
 		f:SetChecked(spec.thresholds.ambush.enabled)
@@ -4696,7 +4584,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.cheapShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_cheapShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cheapShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Cheap Shot (if stealthed)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Cheap Shot. Only visible when in Stealth or usable via the Subterfuge talent."
 		f:SetChecked(spec.thresholds.cheapShot.enabled)
@@ -4707,7 +4595,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.dreadbladesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_dreadblades", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dreadbladesThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Dreadblades (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dreadblades. Only visible if talented in to Dreadblades. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.dreadblades.enabled)
@@ -4718,7 +4606,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.ghostlyStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_ghostlyStrike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ghostlyStrikeThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Ghostly Strike (if talented)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ghostly Strike. Only visible if talented in to Ghostly Strike. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.ghostlyStrike.enabled)
@@ -4729,7 +4617,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.gougeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_gouge", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.gougeThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Gouge")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Gouge. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.gouge.enabled)
@@ -4740,7 +4628,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.pistolShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_pistolShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.pistolShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Pistol Shot")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Pistol Shot."
 		f:SetChecked(spec.thresholds.pistolShot.enabled)
@@ -4751,7 +4639,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.shivThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_shiv", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shivThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Shiv")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If on cooldown, will be colored as 'unusable'. If using the Tiny Toxic Blade legendary, no threshold will be shown."
 		f:SetChecked(spec.thresholds.shiv.enabled)
@@ -4762,7 +4650,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.sinisterStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_sinisterStrike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sinisterStrikeThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Sinister Strike")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sinister Strike."
 		f:SetChecked(spec.thresholds.sinisterStrike.enabled)
@@ -4777,7 +4665,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.betweenTheEyesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_betweenTheEyes", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.betweenTheEyesThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Between the Eyes")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Between the Eyes. If you do not have any combo points, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.betweenTheEyes.enabled)
@@ -4788,7 +4676,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.dispatchThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_dispatch", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dispatchThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Dispatch")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dispatch. If you do not have any combo points, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.dispatch.enabled)
@@ -4799,7 +4687,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.kidneyShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_kidneyShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.kidneyShotThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Kidney Shot")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Kidney Shot. Only visible when in Stealth or usable via the Subterfuge talent. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.kidneyShot.enabled)
@@ -4810,7 +4698,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.sliceAndDiceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_sliceAndDice", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sliceAndDiceThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Slice and Dice")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Slice and Dice. If you do not have any combo points, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.sliceAndDice.enabled)
@@ -4824,7 +4712,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.bladeFlurryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_bladeFlurry", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.bladeFlurryThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Blade Flurry")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Blade Flurry. Only visible when in Stealth."
 		f:SetChecked(spec.thresholds.bladeFlurry.enabled)
@@ -4835,7 +4723,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.crimsonVialThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_crimsonVial", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.crimsonVialThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Crimson Vial")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Vial. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.crimsonVial.enabled)
@@ -4846,7 +4734,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.distractThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_distract", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.distractThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Distract")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Distract. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.distract.enabled)
@@ -4857,7 +4745,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.feintThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_feint", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.feintThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Feint")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feint. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.feint.enabled)
@@ -4868,7 +4756,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.rollTheBonesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_rollTheBones", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.rollTheBonesThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Roll the Bones")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Roll the Bones. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.rollTheBones.enabled)
@@ -4879,7 +4767,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.sapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_sap", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sapThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Sap (if stealthed)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sap. Only visible when in Stealth or usable via the Subterfuge talent."
 		f:SetChecked(spec.thresholds.sap.enabled)
@@ -4893,7 +4781,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.echoingReprimandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_echoingReprimand", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.echoingReprimandThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand (if |cFF68CCEFKyrian|r)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand. Only visible if |cFF68CCEFKyrian|r. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.echoingReprimand.enabled)
@@ -4904,7 +4792,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.sepsisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_sepsis", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sepsisThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Sepsis (if |cFFA330C9Night Fae|r)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis. Only visible if |cFFA330C9Night Fae|r. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.sepsis.enabled)
@@ -4915,7 +4803,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.serratedBoneSpikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_serratedBoneSpike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.serratedBoneSpikeThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Serrated Bone Spike (if |cFF40BF40Necrolord|r)")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Serrated Bone Spike. Only visible if |cFF40BF40Necrolord|r. If no available charges, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.serratedBoneSpike.enabled)
@@ -4929,7 +4817,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.deathFromAboveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_deathFromAbove", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.deathFromAboveThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Death From Above")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Death From Above. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.deathFromAbove.enabled)
@@ -4940,7 +4828,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 25
 		controls.checkBoxes.dismantleThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_dismantle", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dismantleThresholdShow
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Dismantle")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dismantle. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.dismantle.enabled)
@@ -4952,10 +4840,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
         -- Create the dropdown, and configure its appearance
         controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_thresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
-        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", xCoord, yCoord)
+        controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", oUi.xCoord, yCoord)
         controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
-        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", xCoord, yCoord-30)
-        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, dropdownWidth)
+        controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+        UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, oUi.dropdownWidth)
         UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
         UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
 
@@ -4999,7 +4887,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		--NOTE: the order of these checkboxes is reversed!
 		controls.checkBoxes.thresholdIconCooldown = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_thresholdIconThresholdEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconCooldown
-		f:SetPoint("TOPLEFT", xCoord2+(xPadding*2), yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+(oUi.xPadding*2), yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Show cooldown overlay?")
 		f.tooltip = "When checked, the cooldown spinner animation (and cooldown remaining time text, if enabled in Interface -> Action Bars) will be visible for potion icons that are on cooldown."
 		f:SetChecked(spec.thresholds.icons.showCooldown)
@@ -5012,7 +4900,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_thresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdIconEnabled
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-10)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
 		f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 		f:SetChecked(spec.thresholds.icons.enabled)
@@ -5029,7 +4917,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 80
 		title = "Threshold Icon Width"
 		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.width = value
@@ -5048,7 +4936,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Threshold Icon Height"
 		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.height = value
@@ -5069,7 +4957,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		title = "Threshold Icon Horizontal Position (Relative)"
 		yCoord = yCoord - 60
 		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.xPos = value
@@ -5081,7 +4969,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Threshold Icon Vertical Position (Relative)"
 		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
-									sliderWidth, sliderHeight, xCoord2, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.yPos = value
@@ -5092,7 +4980,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		title = "Threshold Icon Border Width"
 		yCoord = yCoord - 60
 		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.border = value
@@ -5118,7 +5006,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_CB1_8", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
 		f.tooltip = "This will change the bar's border color when your current energy is above the overcapping maximum Energy as configured below."
 		f:SetChecked(spec.colors.bar.overcapEnabled)
@@ -5130,7 +5018,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Show Overcap Notification Above"
 		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 170, spec.overcapThreshold, 1, 1,
-										sliderWidth, sliderHeight, xCoord, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 1)
@@ -5146,27 +5034,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			return
 		end
 
-		local spec = TRB.Data.settings.rogue.outlaw
+				local spec = TRB.Data.settings.rogue.outlaw
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.outlaw
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		controls.buttons.exportButton_Rogue_Outlaw_FontAndText = TRB.UiFunctions:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Outlaw_FontAndText:SetScript("OnClick", function(self, ...)
@@ -5178,10 +5053,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 30
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_FontLeft", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", oUi.xCoord, yCoord)
 		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontLeft:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, dropdownWidth)
+		controls.dropDown.fontLeft:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
@@ -5245,10 +5120,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_FontMiddle", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", xCoord2, yCoord)
+		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", oUi.xCoord2, yCoord)
 		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, dropdownWidth)
+		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
@@ -5314,10 +5189,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_FontRight", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", xCoord, yCoord)
+		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", oUi.xCoord, yCoord)
 		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontRight:SetPoint("TOPLEFT", xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, dropdownWidth)
+		controls.dropDown.fontRight:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
@@ -5381,7 +5256,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontFaceLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord-30)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
 		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
 		f:SetChecked(spec.displayText.fontFaceLock)
@@ -5409,7 +5284,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		title = "Left Bar Text Font Size"
 		yCoord = yCoord - 50
 		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.left.fontSize = value
@@ -5426,7 +5301,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fontSizeLock
-		f:SetPoint("TOPLEFT", xCoord2, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
 		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
 		f:SetChecked(spec.displayText.fontSizeLock)
@@ -5441,21 +5316,21 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.colors.text = {}
 
 		controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
-														250, 25, xCoord2, yCoord-30)
+														250, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.text.left
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
 		end)
 
 		controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
-														225, 25, xCoord2, yCoord-70)
+														225, 25, oUi.xCoord2, yCoord-70)
 		f = controls.colors.text.middle
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
 		end)
 
 		controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
-														225, 25, xCoord2, yCoord-110)
+														225, 25, oUi.xCoord2, yCoord-110)
 		f = controls.colors.text.right
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
@@ -5464,7 +5339,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		title = "Middle Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.middle.fontSize = value
@@ -5482,7 +5357,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		title = "Right Bar Text Font Size"
 		yCoord = yCoord - 60
 		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
-									sliderWidth, sliderHeight, xCoord, yCoord)
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.right.fontSize = value
@@ -5501,26 +5376,26 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Energy Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy", spec.colors.text.current, 300, 25, xCoord, yCoord)
+		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 		
-		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Energy", spec.colors.text.passive, 275, 25, xCoord2, yCoord)
+		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Energy", spec.colors.text.passive, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Energy to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Energy to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.text.overcap = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy is above overcap threshold", spec.colors.text.overcap, 300, 25, xCoord2, yCoord)
+		controls.colors.text.overcap = TRB.UiFunctions:BuildColorPicker(parent, "Current Energy is above overcap threshold", spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.overcap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -5530,7 +5405,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", xCoord+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Energy text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -5540,7 +5415,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
-		f:SetPoint("TOPLEFT", xCoord2+xPadding, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Energy text color when your current energy is above the overcapping maximum Energy value."
 		f:SetChecked(spec.colors.text.overcapEnabled)
@@ -5556,7 +5431,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter, DoT timer, and Slice and Dice color based on time remaining?")
 		f.tooltip = "When checked, the color of total DoTs up counters, DoT timers, and Slice and Dice's timer will change based on whether or not the DoT is on the current target."
 		f:SetChecked(spec.colors.text.dots.enabled)
@@ -5566,19 +5441,19 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.colors.dots = {}
 
-		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, xCoord, yCoord-30)
+		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
 		f = controls.colors.dots.up
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
 		end)
 
-		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, xCoord, yCoord-60)
+		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
 		f = controls.colors.dots.pandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
 		end)
 
-		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, xCoord, yCoord-90)
+		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
 		f = controls.colors.dots.down
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
@@ -5591,7 +5466,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
 		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
-										sliderWidth, sliderHeight, xCoord, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 0)
@@ -5607,27 +5482,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			return
 		end
 
-		local spec = TRB.Data.settings.rogue.outlaw
+				local spec = TRB.Data.settings.rogue.outlaw
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.outlaw
 		local yCoord = 5
 		local f = nil
 
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
-
 		local title = ""
-
-		local dropdownWidth = 225
-		local sliderWidth = 260
-		local sliderHeight = 20
 
 		controls.buttons.exportButton_Rogue_Outlaw_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Outlaw_AudioAndTracking:SetScript("OnClick", function(self, ...)
@@ -5639,7 +5501,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 30
 		controls.checkBoxes.opportunityAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_opportunity_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.opportunityAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when an Opportunity proc occurs")
 		f.tooltip = "Play an audio cue when an Opportunity proc occurs."
 		f:SetChecked(spec.audio.opportunity.enabled)
@@ -5654,8 +5516,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.opportunityAudio = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_opportunity_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.opportunityAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.opportunityAudio, dropdownWidth)
+		controls.dropDown.opportunityAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.opportunityAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.opportunityAudio, spec.audio.opportunity.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.opportunityAudio, "LEFT")
 
@@ -5704,7 +5566,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 60
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Energy")
 		f.tooltip = "Play an audio cue when your hardcast spell will overcap Energy."
 		f:SetChecked(spec.audio.overcap.enabled)
@@ -5719,8 +5581,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_overcapAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, dropdownWidth)
+		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
@@ -5770,7 +5632,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 60
 		controls.checkBoxes.sepsisAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_sepsis_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sepsisAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you gain Sepsis buff (if |cFF68CCEFKyrian|r)")
 		f.tooltip = "Play an audio cue when you gain Sepsis buff that allows you to use a stealth ability outside of steath."
 		f:SetChecked(spec.audio.sepsis.enabled)
@@ -5785,8 +5647,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- Create the dropdown, and configure its appearance
 		controls.dropDown.sepsisAudio = CreateFrame("FRAME", "TwintopResourceBar_Rogue_Outlaw_sepsis_Audio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.sepsisAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.sepsisAudio, dropdownWidth)
+		controls.dropDown.sepsisAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		UIDropDownMenu_SetWidth(controls.dropDown.sepsisAudio, oUi.dropdownWidth)
 		UIDropDownMenu_SetText(controls.dropDown.sepsisAudio, spec.audio.sepsis.soundName)
 		UIDropDownMenu_JustifyText(controls.dropDown.sepsisAudio, "LEFT")
 
@@ -5837,7 +5699,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 30
 		controls.checkBoxes.trackEnergyRegen = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_trackEnergyRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.trackEnergyRegen
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track energy regen")
 		f.tooltip = "Include energy regen in the passive bar and passive variables. Unchecking this will cause the following Passive Energy Generation options to have no effect."
 		f:SetChecked(spec.generation.enabled)
@@ -5848,7 +5710,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 40
 		controls.checkBoxes.energyGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_PFG_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.energyGenerationModeGCDs
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Energy generation over GCDs")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Energy generation over the next X GCDs, based on player's current GCD length."
@@ -5863,7 +5725,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Energy GCDs - 0.75sec Floor"
 		controls.energyGenerationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.energyGenerationGCDs:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.generation.gcds = value
@@ -5873,7 +5735,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = yCoord - 60
 		controls.checkBoxes.energyGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_PFG_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.energyGenerationModeTime
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Energy generation over time")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Energy generation over the next X seconds."
@@ -5888,7 +5750,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		title = "Energy Over Time (sec)"
 		controls.energyGenerationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
-										sliderWidth, sliderHeight, xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.energyGenerationTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
@@ -5904,21 +5766,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			return
 		end
 
-		local spec = TRB.Data.settings.rogue.outlaw
+				local spec = TRB.Data.settings.rogue.outlaw
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.outlaw
 		local yCoord = 5
 		local f = nil
-
-		local maxOptionsWidth = 580
-
-		local xPadding = 10
-		local xPadding2 = 30
-		local xCoord = 5
-		local xCoord2 = 290
-		local xOffset1 = 50
-		local xOffset2 = xCoord2 + xOffset1
 		local namePrefix = "Rogue_Outlaw"
 
 		TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
@@ -5928,10 +5781,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions:BuildLabel(parent, "Left Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
@@ -5941,10 +5794,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 
 		yCoord = yCoord - 70
-		TRB.UiFunctions:BuildLabel(parent, "Middle Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
@@ -5954,10 +5807,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 
 		yCoord = yCoord - 70
-		TRB.UiFunctions:BuildLabel(parent, "Right Text", xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.UiFunctions:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
 		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, xCoord+95, yCoord)
+														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
@@ -5967,7 +5820,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		yCoord = yCoord - 30
 		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
+		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 
@@ -5977,13 +5830,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local controls = interfaceSettingsFrame.controls.outlaw or {}
 		local yCoord = 0
 		local f = nil
-		local xPadding = 10
-		local xPadding2 = 30
-		local xMax = 550
-		local xCoord = 0
-		local xCoord2 = 325
-		local xOffset1 = 50
-		local xOffset2 = 275
 
 		controls.colors = {}
 		controls.labels = {}
@@ -6000,7 +5846,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		parent = interfaceSettingsFrame.outlawDisplayPanel
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Outlaw Rogue", xCoord+xPadding, yCoord-5)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Outlaw Rogue", oUi.xCoord+oUi.xPadding, yCoord-5)
 	
 		controls.checkBoxes.outlawRogueEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_outlawRogueEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.outlawRogueEnabled
