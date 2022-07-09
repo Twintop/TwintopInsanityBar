@@ -903,13 +903,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.width = value
 
 			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
@@ -939,13 +933,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.height = value
 
 			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
@@ -969,13 +957,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.xPos = value
 
 			if GetSpecialization() == 1 then
@@ -989,13 +971,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.yPos = value
 
 			if GetSpecialization() == 1 then
@@ -1010,13 +986,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.borderWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.border = value
 
 			if GetSpecialization() == 1 then
@@ -1070,13 +1040,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.width = value
 
 			if GetSpecialization() == 1 then
@@ -1501,13 +1465,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.colors.bar.flashAlpha = value
@@ -1517,13 +1475,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0.05, 2, spec.colors.bar.flashPeriod, 0.05, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.colors.bar.flashPeriod = value
@@ -1923,13 +1875,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.width = value
 
 			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
@@ -1948,13 +1894,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.height = value
 
 			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
@@ -1975,13 +1915,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 1 then
@@ -1993,13 +1927,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.yPos = value
 		end)
 
@@ -2010,13 +1938,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.border = value
 
 			local minsliderWidth = math.max(spec.thresholds.icons.border*2, 1)
@@ -2054,13 +1976,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 120, spec.overcapThreshold, 1, 1,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 1)
 			self.EditBox:SetText(value)
 			spec.overcapThreshold = value
@@ -2339,13 +2255,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.left.fontSize = value
 
 			if GetSpecialization() == 1 then
@@ -2400,13 +2310,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.middle.fontSize = value
 
 			if GetSpecialization() == 1 then
@@ -2424,13 +2328,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.right.fontSize = value
 
 			if GetSpecialization() == 1 then
@@ -2503,13 +2401,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 0)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
@@ -2816,75 +2708,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			PlaySoundFile(spec.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
-
-		--[[
-		yCoord = yCoord - 60
-		controls.checkBoxes.secretsOfTheUnblinkingVigilAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_secretsOfTheUnblinkingVigil_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.secretsOfTheUnblinkingVigilAudio
-		f:SetPoint("TOPLEFT", xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Secrets of the Unblinking Vigil proc")
-		f.tooltip = "Play an audio cue when you get a Secrets of the Unblinking Vigil proc that allows your next Aimed Shot to cost 0 Focus."
-		f:SetChecked(spec.audio.secretsOfTheUnblinkingVigil.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.audio.secretsOfTheUnblinkingVigil.enabled = self:GetChecked()
-
-			if spec.audio.secretsOfTheUnblinkingVigil.enabled then
----@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(spec.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.secretsOfTheUnblinkingVigilAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_secretsOfTheUnblinkingVigilAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.secretsOfTheUnblinkingVigilAudio:SetPoint("TOPLEFT", xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.secretsOfTheUnblinkingVigilAudio, dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, spec.audio.secretsOfTheUnblinkingVigil.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.secretsOfTheUnblinkingVigilAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == spec.audio.secretsOfTheUnblinkingVigil.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-			spec.audio.secretsOfTheUnblinkingVigil.sound = newValue
-			spec.audio.secretsOfTheUnblinkingVigil.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
-			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(spec.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-		]]
-
-
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
 
@@ -2919,14 +2742,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.focusGenerationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.generation.gcds = value
 		end)
 
@@ -2951,13 +2767,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.focusGenerationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.generation.time = value
@@ -3298,13 +3108,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.width = value
 
 			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
@@ -3334,13 +3138,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.height = value
 
 			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
@@ -3364,13 +3162,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.xPos = value
 
 			if GetSpecialization() == 2 then
@@ -3384,13 +3176,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.yPos = value
 
 			if GetSpecialization() == 2 then
@@ -3405,13 +3191,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.borderWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.border = value
 
 			if GetSpecialization() == 2 then
@@ -3465,13 +3245,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.width = value
 
 			if GetSpecialization() == 2 then
@@ -3895,13 +3669,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.colors.bar.flashAlpha = value
@@ -3911,13 +3679,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0, 2, spec.colors.bar.flashPeriod, 0.05, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.colors.bar.flashPeriod = value
@@ -4335,13 +4097,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.width = value
 
 			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
@@ -4360,13 +4116,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.height = value
 
 			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
@@ -4387,13 +4137,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 2 then
@@ -4405,13 +4149,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.yPos = value
 		end)
 
@@ -4422,13 +4160,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.border = value
 
 			local minsliderWidth = math.max(spec.thresholds.icons.border*2, 1)
@@ -4480,14 +4212,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.endOfTrueshotGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 20, spec.endOfTrueshot.gcdsMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfTrueshotGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.endOfTrueshot.gcdsMax = value
 		end)
 
@@ -4512,13 +4237,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.endOfTrueshotTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.endOfTrueshot.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfTrueshotTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.endOfTrueshot.timeMax = value
@@ -4559,14 +4278,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.steadyFocusGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 30, spec.steadyFocus.gcdsMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.steadyFocusGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.steadyFocus.gcdsMax = value
 		end)
 
@@ -4591,13 +4303,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.steadyFocusTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.steadyFocus.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.steadyFocusTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.steadyFocus.timeMax = value
@@ -4623,13 +4329,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 100, spec.overcapThreshold, 1, 1,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 1)
 			self.EditBox:SetText(value)
 			spec.overcapThreshold = value
@@ -4908,13 +4608,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.left.fontSize = value
 
 			if GetSpecialization() == 2 then
@@ -4969,13 +4663,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.middle.fontSize = value
 
 			if GetSpecialization() == 2 then
@@ -4993,13 +4681,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.right.fontSize = value
 
 			if GetSpecialization() == 2 then
@@ -5120,13 +4802,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 0)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
@@ -5254,14 +4930,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.aimedShotGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 6, spec.audio.aimedShot.gcds, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.aimedShotGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.audio.aimedShot.gcds = value
 		end)
 
@@ -5285,13 +4954,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.aimedShotTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 12, spec.audio.aimedShot.time, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.aimedShotTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.audio.aimedShot.time = value
@@ -5732,14 +5395,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.focusGenerationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.generation.gcds = value
 		end)
 
@@ -5764,13 +5420,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.focusGenerationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.generation.time = value
@@ -6112,13 +5762,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.width = value
 
 			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
@@ -6148,13 +5792,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.height = value
 
 			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
@@ -6178,13 +5816,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.xPos = value
 
 			if GetSpecialization() == 3 then
@@ -6198,13 +5830,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.yPos = value
 
 			if GetSpecialization() == 3 then
@@ -6219,13 +5845,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.borderWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.border = value
 
 			if GetSpecialization() == 3 then
@@ -6279,13 +5899,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.width = value
 			if GetSpecialization() == 3 then
 				for x = 1, TRB.Functions.TableLength(resourceFrame.thresholds) do
@@ -6700,13 +6314,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.colors.bar.flashAlpha = value
@@ -6716,13 +6324,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0, 2, spec.colors.bar.flashPeriod, 0.05, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.colors.bar.flashPeriod = value
@@ -7101,13 +6703,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.width = value
 
 			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
@@ -7126,13 +6722,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.height = value
 
 			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
@@ -7153,13 +6743,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 3 then
@@ -7171,13 +6755,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.yPos = value
 		end)
 
@@ -7188,13 +6766,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.border = value
 
 			local minsliderWidth = math.max(spec.thresholds.icons.border*2, 1)
@@ -7246,14 +6818,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.endOfCoordinatedAssaultGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 20, spec.endOfCoordinatedAssault.gcdsMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfCoordinatedAssaultGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.endOfCoordinatedAssault.gcdsMax = value
 		end)
 
@@ -7278,13 +6843,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.endOfCoordinatedAssaultTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.endOfCoordinatedAssault.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfCoordinatedAssaultTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.endOfCoordinatedAssault.timeMax = value
@@ -7310,13 +6869,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 100, spec.overcapThreshold, 1, 1,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 1)
 			self.EditBox:SetText(value)
 			spec.overcapThreshold = value
@@ -7595,13 +7148,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.left.fontSize = value
 			leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
 			if spec.displayText.fontSizeLock then
@@ -7652,13 +7199,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.middle.fontSize = value
 
 			if GetSpecialization() == 3 then
@@ -7676,13 +7217,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.right.fontSize = value
 
 			if GetSpecialization() == 3 then
@@ -7797,13 +7332,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 0)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
@@ -8148,14 +7677,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.focusGenerationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.generation.gcds = value
 		end)
 
@@ -8180,13 +7702,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.focusGenerationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.generation.time = value

@@ -187,6 +187,17 @@ function TRB.UiFunctions:BuildTextBox(parent, text, maxLetters, width, height, x
 	return f
 end
 
+function TRB.UiFunctions:EditBoxSetTextMinMax(box, value)
+    local min, max = box:GetMinMaxValues()
+    if value > max then
+        value = max
+    elseif value < min then
+        value = min
+    end
+    box.EditBox:SetText(value)
+    return value
+end
+
 function TRB.UiFunctions:ShowColorPicker(r, g, b, a, callback)
 	ColorPickerFrame.func, ColorPickerFrame.opacityFunc, ColorPickerFrame.cancelFunc = 
 		callback, callback, callback

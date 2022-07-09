@@ -686,13 +686,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.width = value
 
 			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
@@ -715,13 +709,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.height = value
 
 			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
@@ -745,13 +733,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.xPos = value
 			
 			if GetSpecialization() == 2 then
@@ -765,13 +747,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.yPos = value
 			
 			if GetSpecialization() == 2 then
@@ -786,13 +762,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.borderWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.border = value
 			
 			if GetSpecialization() == 2 then
@@ -837,13 +807,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.width = value
 			
 			if GetSpecialization() == 2 then
@@ -1236,13 +1200,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.colors.bar.flashAlpha = value
@@ -1252,13 +1210,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0, 2, spec.colors.bar.flashPeriod, 0.05, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.colors.bar.flashPeriod = value
@@ -1708,13 +1660,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.width = value
 
 			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
@@ -1740,13 +1686,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.height = value
 
 			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
@@ -1774,13 +1714,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 1 then
@@ -1792,13 +1726,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.yPos = value
 		end)
 
@@ -1809,13 +1737,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.border = value
 
 			local minsliderWidth = math.max(spec.thresholds.icons.border*2, 1)
@@ -1866,14 +1788,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.potionCooldownGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 400, spec.thresholds.potionCooldown.gcdsMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.potionCooldownGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.potionCooldown.gcdsMax = value
 		end)
 
@@ -1898,13 +1813,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.potionCooldownTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 300, spec.thresholds.potionCooldown.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.potionCooldownTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.thresholds.potionCooldown.timeMax = value
@@ -1945,14 +1854,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.endOfApotheosisGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 10, spec.endOfApotheosis.gcdsMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfApotheosisGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.endOfApotheosis.gcdsMax = value
 		end)
 
@@ -1977,13 +1879,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.endOfApotheosisTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.endOfApotheosis.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfApotheosisTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.endOfApotheosis.timeMax = value
@@ -2067,14 +1963,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.flashConcentrationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 30, spec.flashConcentration.gcdsMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.flashConcentrationGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.flashConcentration.gcdsMax = value
 		end)
 
@@ -2099,13 +1988,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.flashConcentrationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 20, spec.flashConcentration.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.flashConcentrationTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.flashConcentration.timeMax = value
@@ -2386,13 +2269,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.left.fontSize = value
 
 			if GetSpecialization() == 2 then
@@ -2447,13 +2324,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.middle.fontSize = value
 
 			if GetSpecialization() == 2 then
@@ -2471,13 +2342,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.right.fontSize = value
 
 			if GetSpecialization() == 2 then
@@ -2556,13 +2421,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 0)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
@@ -2924,13 +2783,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.wrathfulFaerieGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 0.75, spec.wrathfulFaerie.procDelay, 0.05, 2,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.wrathfulFaerieGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.wrathfulFaerie.procDelay = value
@@ -2957,14 +2810,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.wrathfulFaerieGCDs = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.wrathfulFaerie.gcdsMax, 1, 0,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.wrathfulFaerieGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.wrathfulFaerie.gcdsMax = value
 		end)
 
@@ -2990,14 +2836,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.wrathfulFaerieProcs = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.wrathfulFaerie.procsMax, 1, 0,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.wrathfulFaerieProcs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.wrathfulFaerie.procsMax = value
 		end)
 
@@ -3022,13 +2861,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.wrathfulFaerieTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 90, spec.wrathfulFaerie.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.wrathfulFaerieTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.wrathfulFaerie.timeMax = value
@@ -3375,13 +3208,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.width:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.width = value
 
 			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
@@ -3407,13 +3234,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.height:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.height = value
 
 			local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
@@ -3437,13 +3258,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.horizontal:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.xPos = value
 			
 			if GetSpecialization() == 3 then
@@ -3457,13 +3272,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.vertical:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.yPos = value
 			
 			if GetSpecialization() == 3 then
@@ -3478,13 +3287,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.borderWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.bar.border = value
 			
 			if GetSpecialization() == 3 then
@@ -3531,13 +3334,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.width = value
 			
 			if GetSpecialization() == 3 then
@@ -3959,13 +3756,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.colors.bar.flashAlpha = value
@@ -3975,13 +3766,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0, 2, spec.colors.bar.flashPeriod, 0.05, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.colors.bar.flashPeriod = value
@@ -4298,13 +4083,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.width = value
 
 			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
@@ -4328,13 +4107,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.height = value
 
 			local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
@@ -4360,13 +4133,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.xPos = value
 
 			if GetSpecialization() == 1 then
@@ -4378,13 +4145,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
 									sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.yPos = value
 		end)
 
@@ -4395,13 +4156,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.icons.border = value
 
 			local minsliderWidth = math.max(spec.thresholds.icons.border*2, 1)
@@ -4462,14 +4217,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.endOfVoidformGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 10, spec.endOfVoidform.gcdsMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfVoidformGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.endOfVoidform.gcdsMax = value
 		end)
 
@@ -4494,13 +4242,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.endOfVoidformTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.endOfVoidform.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.endOfVoidformTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.endOfVoidform.timeMax = value
@@ -4526,13 +4268,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 100, spec.overcapThreshold, 0.5, 1,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 1)
 			self.EditBox:SetText(value)
 			spec.overcapThreshold = value
@@ -4814,13 +4550,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.left.fontSize = value
 
 			if GetSpecialization() == 3 then
@@ -4875,13 +4605,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.middle.fontSize = value
 
 			if GetSpecialization() == 3 then
@@ -4899,13 +4623,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
 									sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.displayText.right.fontSize = value
 
 			if GetSpecialization() == 3 then
@@ -5143,13 +4861,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 0)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
@@ -5159,13 +4871,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.insanityPrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 2, spec.insanityPrecision, 1, 0,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.insanityPrecision:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 0)
 			self.EditBox:SetText(value)
 			spec.insanityPrecision = value
@@ -5548,14 +5254,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.mindbenderGCDs = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.mindbender.gcdsMax, 1, 0,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.mindbenderGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.mindbender.gcdsMax = value
 		end)
 
@@ -5581,14 +5280,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.mindbenderSwings = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.mindbender.swingsMax, 1, 0,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.mindbenderSwings:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.mindbender.swingsMax = value
 		end)
 
@@ -5613,13 +5305,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.mindbenderTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.mindbender.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.mindbenderTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.mindbender.timeMax = value
@@ -5645,13 +5331,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.wrathfulFaerieGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 0.75, spec.wrathfulFaerie.procDelay, 0.05, 2,
 										sliderWidth, sliderHeight, xCoord, yCoord)
 		controls.wrathfulFaerieGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.wrathfulFaerie.procDelay = value
@@ -5678,14 +5358,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.wrathfulFaerieGCDs = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.wrathfulFaerie.gcdsMax, 1, 0,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.wrathfulFaerieGCDs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.wrathfulFaerie.gcdsMax = value
 		end)
 
@@ -5711,14 +5384,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.wrathfulFaerieProcs = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.wrathfulFaerie.procsMax, 1, 0,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.wrathfulFaerieProcs:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
-			self.EditBox:SetText(value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			spec.wrathfulFaerie.procsMax = value
 		end)
 
@@ -5743,13 +5409,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.wrathfulFaerieTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 20, spec.wrathfulFaerie.timeMax, 0.25, 2,
 										sliderWidth, sliderHeight, xCoord2, yCoord)
 		controls.wrathfulFaerieTime:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			end
-
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.wrathfulFaerie.timeMax = value
