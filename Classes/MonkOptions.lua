@@ -1905,7 +1905,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, spec, 10, 3, yCoord, "Energy", "Chi")
 
 		yCoord = yCoord - 60
-		yCoord = TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, 3, 1, yCoord, true, "Chi")
+		yCoord = TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, 10, 3, yCoord, true, "Chi")
 
 		yCoord = yCoord - 30
 		controls.barDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display", 0, yCoord)
@@ -2115,8 +2115,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 
-		controls.colors.comboPointBackground = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled Chi background", spec.colors.comboPoints.background, 275, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.comboPointBackground
+		controls.colors.comboPoints.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled Chi background", spec.colors.comboPoints.background, 275, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
 		end)
