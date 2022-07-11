@@ -710,153 +710,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, spec, 4, 1, yCoord, "Energy", "Combo Point")
 
 		yCoord = yCoord - 60
-		yCoord = TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, 11, 2, yCoord, true, "Combo Point")
+		yCoord = TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, 4, 1, yCoord, true, "Combo Point")
 
 		yCoord = yCoord - 30
-		controls.barDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display", 0, yCoord)
+		local yCoord2 = yCoord
+		yCoord, yCoord2 = TRB.UiFunctions:GenerateBarDisplayOptions(parent, controls, spec, 4, 1, yCoord, "Energy", "notFull", false, true, false)
 
-		yCoord = yCoord - 40
-
-        --[[
-		title = "Beastial Wrath Flash Alpha"
-		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			spec.colors.bar.flashAlpha = value
-		end)
-
-		title = "Beastial Wrath Flash Period (sec)"
-		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0.05, 2, spec.colors.bar.flashPeriod, 0.05, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			spec.colors.bar.flashPeriod = value
-		end)
-
-		yCoord = yCoord - 40]]
-
-		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_RB1_2", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.alwaysShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
-		f:SetChecked(spec.displayBar.alwaysShow)
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.alwaysShow:SetChecked(true)
-			controls.checkBoxes.notZeroShow:SetChecked(false)
-			controls.checkBoxes.combatShow:SetChecked(false)
-			controls.checkBoxes.neverShow:SetChecked(false)
-			spec.displayBar.alwaysShow = true
-			spec.displayBar.notZeroShow = false
-			spec.displayBar.neverShow = false
-			TRB.Functions.HideResourceBar()
-		end)
-
-		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_RB1_3", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.notZeroShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-15)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Energy is not capped")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar show out of combat only if Energy is not capped, hidden otherwise when out of combat."
-		f:SetChecked(spec.displayBar.notZeroShow)
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.alwaysShow:SetChecked(false)
-			controls.checkBoxes.notZeroShow:SetChecked(true)
-			controls.checkBoxes.combatShow:SetChecked(false)
-			controls.checkBoxes.neverShow:SetChecked(false)
-			spec.displayBar.alwaysShow = false
-			spec.displayBar.notZeroShow = true
-			spec.displayBar.neverShow = false
-			TRB.Functions.HideResourceBar()
-		end)
-
-		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_RB1_4", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.combatShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
-		f:SetChecked((not spec.displayBar.alwaysShow) and (not spec.displayBar.notZeroShow))
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.alwaysShow:SetChecked(false)
-			controls.checkBoxes.notZeroShow:SetChecked(false)
-			controls.checkBoxes.combatShow:SetChecked(true)
-			controls.checkBoxes.neverShow:SetChecked(false)
-			spec.displayBar.alwaysShow = false
-			spec.displayBar.notZeroShow = false
-			spec.displayBar.neverShow = false
-			TRB.Functions.HideResourceBar()
-		end)
-
-		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_RB1_5", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.neverShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
-		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
-		f:SetChecked(spec.displayBar.neverShow)
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.alwaysShow:SetChecked(false)
-			controls.checkBoxes.notZeroShow:SetChecked(false)
-			controls.checkBoxes.combatShow:SetChecked(false)
-			controls.checkBoxes.neverShow:SetChecked(true)
-			spec.displayBar.alwaysShow = false
-			spec.displayBar.notZeroShow = false
-			spec.displayBar.neverShow = true
-			TRB.Functions.HideResourceBar()
-		end)
-
-		--[[
-		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.showCastingBar
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
-		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
-		f:SetChecked(spec.bar.showCasting)
-		f:SetScript("OnClick", function(self, ...)
-			spec.bar.showCasting = self:GetChecked()
-		end)]]
-
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
-		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
-		f:SetChecked(spec.bar.showPassive)
-		f:SetScript("OnClick", function(self, ...)
-			spec.bar.showPassive = self:GetChecked()
-		end)
-
-        --[[
-		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_CB1_5", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-40)
-		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Beastial Wrath is usable")
-		f.tooltip = "This will flash the bar when Beastial Wrath can be cast."
-		f:SetChecked(spec.colors.bar.flashEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.flashEnabled = self:GetChecked()
-		end)
-
-		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_CB1_6", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.esThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-60)
-		getglobal(f:GetName() .. 'Text'):SetText("Border color when Beastial Wrath is usable")
-		f.tooltip = "This will change the bar's border color (as configured below) when Beastial Wrath is usable."
-		f:SetChecked(spec.colors.bar.beastialWrathEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.beastialWrathEnabled = self:GetChecked()
-		end)
-        ]]
-
-		yCoord = yCoord - 60
-
+		yCoord = yCoord - 70
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -884,7 +744,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
 		end)
-
 
 		yCoord = yCoord - 30
 		controls.colors.noSliceAndDice = TRB.UiFunctions:BuildColorPicker(parent, "Energy when Slice and Dice is not up", spec.colors.bar.noSliceAndDice, 275, 25, oUi.xCoord, yCoord)
@@ -2455,153 +2314,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, spec, 4, 2, yCoord, "Energy", "Combo Point")
 
 		yCoord = yCoord - 60
-		yCoord = TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, 11, 2, yCoord, true, "Combo Point")
+		yCoord = TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, 4, 2, yCoord, true, "Combo Point")
 
 		yCoord = yCoord - 30
-		controls.barDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display", 0, yCoord)
+		local yCoord2 = yCoord
+		yCoord, yCoord2 = TRB.UiFunctions:GenerateBarDisplayOptions(parent, controls, spec, 4, 2, yCoord, "Energy", "notFull", false, true, false)
 
-		yCoord = yCoord - 40
-
-        --[[
-		title = "Beastial Wrath Flash Alpha"
-		controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			spec.colors.bar.flashAlpha = value
-		end)
-
-		title = "Beastial Wrath Flash Period (sec)"
-		controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0.05, 2, spec.colors.bar.flashPeriod, 0.05, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			spec.colors.bar.flashPeriod = value
-		end)
-
-		yCoord = yCoord - 40]]
-
-		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_RB1_2", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.alwaysShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
-		f:SetChecked(spec.displayBar.alwaysShow)
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.alwaysShow:SetChecked(true)
-			controls.checkBoxes.notZeroShow:SetChecked(false)
-			controls.checkBoxes.combatShow:SetChecked(false)
-			controls.checkBoxes.neverShow:SetChecked(false)
-			spec.displayBar.alwaysShow = true
-			spec.displayBar.notZeroShow = false
-			spec.displayBar.neverShow = false
-			TRB.Functions.HideResourceBar()
-		end)
-
-		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_RB1_3", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.notZeroShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-15)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Energy is not capped")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar show out of combat only if Energy is not capped, hidden otherwise when out of combat."
-		f:SetChecked(spec.displayBar.notZeroShow)
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.alwaysShow:SetChecked(false)
-			controls.checkBoxes.notZeroShow:SetChecked(true)
-			controls.checkBoxes.combatShow:SetChecked(false)
-			controls.checkBoxes.neverShow:SetChecked(false)
-			spec.displayBar.alwaysShow = false
-			spec.displayBar.notZeroShow = true
-			spec.displayBar.neverShow = false
-			TRB.Functions.HideResourceBar()
-		end)
-
-		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_RB1_4", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.combatShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
-		f:SetChecked((not spec.displayBar.alwaysShow) and (not spec.displayBar.notZeroShow))
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.alwaysShow:SetChecked(false)
-			controls.checkBoxes.notZeroShow:SetChecked(false)
-			controls.checkBoxes.combatShow:SetChecked(true)
-			controls.checkBoxes.neverShow:SetChecked(false)
-			spec.displayBar.alwaysShow = false
-			spec.displayBar.notZeroShow = false
-			spec.displayBar.neverShow = false
-			TRB.Functions.HideResourceBar()
-		end)
-
-		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_RB1_5", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.neverShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
-		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
-		f:SetChecked(spec.displayBar.neverShow)
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.alwaysShow:SetChecked(false)
-			controls.checkBoxes.notZeroShow:SetChecked(false)
-			controls.checkBoxes.combatShow:SetChecked(false)
-			controls.checkBoxes.neverShow:SetChecked(true)
-			spec.displayBar.alwaysShow = false
-			spec.displayBar.notZeroShow = false
-			spec.displayBar.neverShow = true
-			TRB.Functions.HideResourceBar()
-		end)
-
-		--[[
-		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.showCastingBar
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
-		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
-		f:SetChecked(spec.bar.showCasting)
-		f:SetScript("OnClick", function(self, ...)
-			spec.bar.showCasting = self:GetChecked()
-		end)]]
-
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
-		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
-		f:SetChecked(spec.bar.showPassive)
-		f:SetScript("OnClick", function(self, ...)
-			spec.bar.showPassive = self:GetChecked()
-		end)
-
-        --[[
-		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_CB1_5", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-40)
-		getglobal(f:GetName() .. 'Text'):SetText("Flash Bar when Beastial Wrath is usable")
-		f.tooltip = "This will flash the bar when Beastial Wrath can be cast."
-		f:SetChecked(spec.colors.bar.flashEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.flashEnabled = self:GetChecked()
-		end)
-
-		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_CB1_6", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.esThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-60)
-		getglobal(f:GetName() .. 'Text'):SetText("Border color when Beastial Wrath is usable")
-		f.tooltip = "This will change the bar's border color (as configured below) when Beastial Wrath is usable."
-		f:SetChecked(spec.colors.bar.beastialWrathEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.beastialWrathEnabled = self:GetChecked()
-		end)
-        ]]
-
-		yCoord = yCoord - 60
-
+		yCoord = yCoord - 70
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30

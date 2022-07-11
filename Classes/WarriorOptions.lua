@@ -563,103 +563,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, 1, 1, yCoord, false)
 
 		yCoord = yCoord - 30
-		controls.barDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display", 0, yCoord)
+		local yCoord2 = yCoord
+		yCoord, yCoord2 = TRB.UiFunctions:GenerateBarDisplayOptions(parent, controls, spec, 1, 1, yCoord, "Rage", "notEmpty", true, true, false)
 
-		yCoord = yCoord - 30
-		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_RB1_2", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.alwaysShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
-		f:SetChecked(spec.displayBar.alwaysShow)
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.alwaysShow:SetChecked(true)
-			controls.checkBoxes.notZeroShow:SetChecked(false)
-			controls.checkBoxes.combatShow:SetChecked(false)
-			controls.checkBoxes.neverShow:SetChecked(false)
-			spec.displayBar.alwaysShow = true
-			spec.displayBar.notZeroShow = false
-			spec.displayBar.neverShow = false
-			TRB.Functions.HideResourceBar()
-		end)
-
-		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_RB1_3", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.notZeroShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-15)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Rage > 0")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar show out of combat only if Rage > 0, hidden otherwise when out of combat."
-		f:SetChecked(spec.displayBar.notZeroShow)
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.alwaysShow:SetChecked(false)
-			controls.checkBoxes.notZeroShow:SetChecked(true)
-			controls.checkBoxes.combatShow:SetChecked(false)
-			controls.checkBoxes.neverShow:SetChecked(false)
-			spec.displayBar.alwaysShow = false
-			spec.displayBar.notZeroShow = true
-			spec.displayBar.neverShow = false
-			TRB.Functions.HideResourceBar()
-		end)
-
-		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_RB1_4", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.combatShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
-		f:SetChecked((not spec.displayBar.alwaysShow) and (not spec.displayBar.notZeroShow))
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.alwaysShow:SetChecked(false)
-			controls.checkBoxes.notZeroShow:SetChecked(false)
-			controls.checkBoxes.combatShow:SetChecked(true)
-			controls.checkBoxes.neverShow:SetChecked(false)
-			spec.displayBar.alwaysShow = false
-			spec.displayBar.notZeroShow = false
-			spec.displayBar.neverShow = false
-			TRB.Functions.HideResourceBar()
-		end)
-
-		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_RB1_5", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.neverShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
-		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
-		f:SetChecked(spec.displayBar.neverShow)
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.alwaysShow:SetChecked(false)
-			controls.checkBoxes.notZeroShow:SetChecked(false)
-			controls.checkBoxes.combatShow:SetChecked(false)
-			controls.checkBoxes.neverShow:SetChecked(true)
-			spec.displayBar.alwaysShow = false
-			spec.displayBar.notZeroShow = false
-			spec.displayBar.neverShow = true
-			TRB.Functions.HideResourceBar()
-		end)
-
-		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_showCastingBar", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.showCastingBar
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
-		f.tooltip = "This will show the casting bar when Bladestorm is being channeled. Uncheck to hide this bar."
-		f:SetChecked(spec.bar.showCasting)
-		f:SetScript("OnClick", function(self, ...)
-			spec.bar.showCasting = self:GetChecked()
-		end)
-
-
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
-		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
-		f:SetChecked(spec.bar.showPassive)
-		f:SetScript("OnClick", function(self, ...)
-			spec.bar.showPassive = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 60
+		yCoord = yCoord - 70
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -1947,92 +1854,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, 1, 2, yCoord, false)
 
 		yCoord = yCoord - 30
-		controls.barDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display", 0, yCoord)
+		local yCoord2 = yCoord
+		yCoord, yCoord2 = TRB.UiFunctions:GenerateBarDisplayOptions(parent, controls, spec, 1, 2, yCoord, "Rage", "notEmpty", false, true, false)
 
-		yCoord = yCoord - 30
-		controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_RB1_2", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.alwaysShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Always show Resource Bar")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
-		f:SetChecked(spec.displayBar.alwaysShow)
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.alwaysShow:SetChecked(true)
-			controls.checkBoxes.notZeroShow:SetChecked(false)
-			controls.checkBoxes.combatShow:SetChecked(false)
-			controls.checkBoxes.neverShow:SetChecked(false)
-			spec.displayBar.alwaysShow = true
-			spec.displayBar.notZeroShow = false
-			spec.displayBar.neverShow = false
-			TRB.Functions.HideResourceBar()
-		end)
-
-		controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_RB1_3", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.notZeroShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-15)
-		getglobal(f:GetName() .. 'Text'):SetText("Show Resource Bar when Rage > 0")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar show out of combat only if Rage > 0, hidden otherwise when out of combat."
-		f:SetChecked(spec.displayBar.notZeroShow)
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.alwaysShow:SetChecked(false)
-			controls.checkBoxes.notZeroShow:SetChecked(true)
-			controls.checkBoxes.combatShow:SetChecked(false)
-			controls.checkBoxes.neverShow:SetChecked(false)
-			spec.displayBar.alwaysShow = false
-			spec.displayBar.notZeroShow = true
-			spec.displayBar.neverShow = false
-			TRB.Functions.HideResourceBar()
-		end)
-
-		controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_RB1_4", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.combatShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-		getglobal(f:GetName() .. 'Text'):SetText("Only show Resource Bar in combat")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
-		f:SetChecked((not spec.displayBar.alwaysShow) and (not spec.displayBar.notZeroShow))
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.alwaysShow:SetChecked(false)
-			controls.checkBoxes.notZeroShow:SetChecked(false)
-			controls.checkBoxes.combatShow:SetChecked(true)
-			controls.checkBoxes.neverShow:SetChecked(false)
-			spec.displayBar.alwaysShow = false
-			spec.displayBar.notZeroShow = false
-			spec.displayBar.neverShow = false
-			TRB.Functions.HideResourceBar()
-		end)
-
-		controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_RB1_5", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.neverShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
-		getglobal(f:GetName() .. 'Text'):SetText("Never show Resource Bar (run in background)")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
-		f:SetChecked(spec.displayBar.neverShow)
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.alwaysShow:SetChecked(false)
-			controls.checkBoxes.notZeroShow:SetChecked(false)
-			controls.checkBoxes.combatShow:SetChecked(false)
-			controls.checkBoxes.neverShow:SetChecked(true)
-			spec.displayBar.alwaysShow = false
-			spec.displayBar.notZeroShow = false
-			spec.displayBar.neverShow = true
-			TRB.Functions.HideResourceBar()
-		end)
-
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_showPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
-		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
-		f:SetChecked(spec.bar.showPassive)
-		f:SetScript("OnClick", function(self, ...)
-			spec.bar.showPassive = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 60
+		yCoord = yCoord - 70
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30

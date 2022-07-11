@@ -1346,3 +1346,162 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
 
     return yCoord
 end
+
+function TRB.UiFunctions:GenerateBarDisplayOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeCastingBar, includePassiveBar, includeFlashAlpha, flashAlphaName, flashAlphaNameShort)
+    local oUi = TRB.Data.constants.optionsUi
+    local _, className, _ = GetClassInfo(classId)
+    local f = nil
+    local title = ""
+
+    controls.barDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display", 0, yCoord)
+
+    if includeFlashAlpha then
+        yCoord = yCoord - 50
+        title = flashAlphaName.." Flash Alpha"
+        controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
+                                    oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+        controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
+            value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+            value = TRB.Functions.RoundTo(value, 2)
+            self.EditBox:SetText(value)
+            spec.colors.bar.flashAlpha = value
+        end)
+
+        title = flashAlphaName.." Flash Period (sec)"
+        controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0, 2, spec.colors.bar.flashPeriod, 0.05, 2,
+                                        oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+        controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
+            value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+            value = TRB.Functions.RoundTo(value, 2)
+            self.EditBox:SetText(value)
+            spec.colors.bar.flashPeriod = value
+        end)
+    end
+    
+    yCoord = yCoord - 40
+
+    controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_AlwaysShow", parent, "UIRadioButtonTemplate")
+    f = controls.checkBoxes.alwaysShow
+    f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+    getglobal(f:GetName() .. 'Text'):SetText("Always show bar")
+    getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+    f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
+    f:SetChecked(spec.displayBar.alwaysShow)
+    f:SetScript("OnClick", function(self, ...)
+        controls.checkBoxes.alwaysShow:SetChecked(true)
+        controls.checkBoxes.notZeroShow:SetChecked(false)
+        controls.checkBoxes.combatShow:SetChecked(false)
+        controls.checkBoxes.neverShow:SetChecked(false)
+        spec.displayBar.alwaysShow = true
+        spec.displayBar.notZeroShow = false
+        spec.displayBar.neverShow = false
+        TRB.Functions.HideResourceBar()
+    end)
+
+    controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_NotZeroShow", parent, "UIRadioButtonTemplate")
+    f = controls.checkBoxes.notZeroShow
+    f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-15)
+    getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+
+    if showWhenCategory == "notFull" then
+		getglobal(f:GetName() .. 'Text'):SetText("Show bar when "..primaryResourceString.." is not full")
+		f.tooltip = "This will make the Resource Bar show out of combat only if "..primaryResourceString.." is not full, hidden otherwise when out of combat."
+    elseif showWhenCategory == "balance" then
+		getglobal(f:GetName() .. 'Text'):SetText("Show bar when AP > 0 (or < 50 w/NB)")
+        f.tooltip = "This will make the Resource Bar show out of combat only if Astral Power > 0 (or < 50 with Nature's Balance), hidden otherwise when out of combat."
+    else
+        getglobal(f:GetName() .. 'Text'):SetText("Show bar when "..primaryResourceString.." > 0")
+        f.tooltip = "This will make the Resource Bar show out of combat only if "..primaryResourceString.." > 0, hidden otherwise when out of combat."
+    end
+
+    f:SetChecked(spec.displayBar.notZeroShow)
+    f:SetScript("OnClick", function(self, ...)
+        controls.checkBoxes.alwaysShow:SetChecked(false)
+        controls.checkBoxes.notZeroShow:SetChecked(true)
+        controls.checkBoxes.combatShow:SetChecked(false)
+        controls.checkBoxes.neverShow:SetChecked(false)
+        spec.displayBar.alwaysShow = false
+        spec.displayBar.notZeroShow = true
+        spec.displayBar.neverShow = false
+        TRB.Functions.HideResourceBar()
+    end)
+
+    controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_CombatShow", parent, "UIRadioButtonTemplate")
+    f = controls.checkBoxes.combatShow
+    f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+    getglobal(f:GetName() .. 'Text'):SetText("Only show bar in combat")
+    getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+    f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
+    f:SetChecked((not spec.displayBar.alwaysShow) and (not spec.displayBar.notZeroShow) and (not spec.displayBar.neverShow))
+    f:SetScript("OnClick", function(self, ...)
+        controls.checkBoxes.alwaysShow:SetChecked(false)
+        controls.checkBoxes.notZeroShow:SetChecked(false)
+        controls.checkBoxes.combatShow:SetChecked(true)
+        controls.checkBoxes.neverShow:SetChecked(false)
+        spec.displayBar.alwaysShow = false
+        spec.displayBar.notZeroShow = false
+        spec.displayBar.neverShow = false
+        TRB.Functions.HideResourceBar()
+    end)
+
+    controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_NeverShow", parent, "UIRadioButtonTemplate")
+    f = controls.checkBoxes.neverShow
+    f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
+    getglobal(f:GetName() .. 'Text'):SetText("Never show bar (run in background)")
+    getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+    f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
+    f:SetChecked(spec.displayBar.neverShow)
+    f:SetScript("OnClick", function(self, ...)
+        controls.checkBoxes.alwaysShow:SetChecked(false)
+        controls.checkBoxes.notZeroShow:SetChecked(false)
+        controls.checkBoxes.combatShow:SetChecked(false)
+        controls.checkBoxes.neverShow:SetChecked(true)
+        spec.displayBar.alwaysShow = false
+        spec.displayBar.notZeroShow = false
+        spec.displayBar.neverShow = true
+        TRB.Functions.HideResourceBar()
+    end)
+    
+    local yCoord2 = yCoord
+
+    if includeCastingBar then
+        controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+        f = controls.checkBoxes.showCastingBar
+        f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+        getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+        f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+        f:SetChecked(spec.bar.showCasting)
+        f:SetScript("OnClick", function(self, ...)
+            spec.bar.showCasting = self:GetChecked()
+        end)
+        yCoord2 = yCoord2-20
+    end
+
+    if includePassiveBar then
+        controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+        f = controls.checkBoxes.showPassiveBar
+        f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+        getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+        f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+        f:SetChecked(spec.bar.showPassive)
+        f:SetScript("OnClick", function(self, ...)
+            spec.bar.showPassive = self:GetChecked()
+        end)
+        yCoord2 = yCoord2-20
+    end
+    
+    if includeFlashAlpha then
+        controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_FlashEnabled", parent, "ChatConfigCheckButtonTemplate")
+        f = controls.checkBoxes.flashEnabled
+        f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+        getglobal(f:GetName() .. 'Text'):SetText("Flash bar when "..flashAlphaNameShort.." is usable")
+        f.tooltip = "This will flash the bar when "..flashAlphaName.." can be cast."
+        f:SetChecked(spec.colors.bar.flashEnabled)
+        f:SetScript("OnClick", function(self, ...)
+            spec.colors.bar.flashEnabled = self:GetChecked()
+        end)
+        yCoord2 = yCoord2-20
+    end    
+
+    return yCoord, yCoord2+20
+end
