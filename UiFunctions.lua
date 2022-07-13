@@ -1377,7 +1377,7 @@ function TRB.UiFunctions:GenerateBarDisplayOptions(parent, controls, spec, class
             spec.colors.bar.flashPeriod = value
         end)
     end
-    
+
     yCoord = yCoord - 40
 
     controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_AlwaysShow", parent, "UIRadioButtonTemplate")
@@ -1504,4 +1504,171 @@ function TRB.UiFunctions:GenerateBarDisplayOptions(parent, controls, spec, class
     end    
 
     return yCoord, yCoord2+20
+end
+
+function TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spec, classId, specId, yCoord)
+    local oUi = TRB.Data.constants.optionsUi
+    local _, className, _ = GetClassInfo(classId)
+    local f = nil
+    local title = ""
+    local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
+    
+    -- Create the dropdown, and configure its appearance
+    controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_"..className.."_"..specId.."_ThresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
+    controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", oUi.xCoord, yCoord)
+    controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
+    controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+    UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, oUi.dropdownWidth)
+    UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
+    UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
+
+    -- Create and bind the initialization function to the dropdown menu
+    UIDropDownMenu_Initialize(controls.dropDown.thresholdIconRelativeTo, function(self, level, menuList)
+        local entries = 25
+        local info = UIDropDownMenu_CreateInfo()
+        local relativeTo = {}
+        relativeTo["Above"] = "TOP"
+        relativeTo["Middle"] = "CENTER"
+        relativeTo["Below"] = "BOTTOM"
+        local relativeToList = {
+            "Above",
+            "Middle",
+            "Below"
+        }
+
+        for k, v in pairs(relativeToList) do
+            info.text = v
+            info.value = relativeTo[v]
+            info.checked = relativeTo[v] == spec.thresholds.icons.relativeTo
+            info.func = self.SetValue
+            info.arg1 = relativeTo[v]
+            info.arg2 = v
+            UIDropDownMenu_AddButton(info, level)
+        end
+    end)
+
+    function controls.dropDown.thresholdIconRelativeTo:SetValue(newValue, newName)
+        spec.thresholds.icons.relativeTo = newValue
+        spec.thresholds.icons.relativeToName = newName
+        
+        if GetSpecialization() == specId then
+            TRB.Functions.RedrawThresholdLines(spec)
+        end
+
+        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
+        CloseDropDownMenus()
+    end
+
+    controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_ThresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.thresholdIconEnabled
+    f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+    getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
+    f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
+    f:SetChecked(spec.thresholds.icons.enabled)
+    f:SetScript("OnClick", function(self, ...)
+        spec.thresholds.icons.enabled = self:GetChecked()
+        
+        if GetSpecialization() == specId then
+            TRB.Functions.RedrawThresholdLines(spec)
+        end
+    end)
+
+    yCoord = yCoord - 80
+    title = "Threshold Icon Width"
+    controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
+                                oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+    controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.thresholds.icons.width = value
+
+        local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+        local borderSize = spec.thresholds.icons.border
+    
+        if maxBorderSize < borderSize then
+            maxBorderSize = borderSize
+        end
+
+        controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+        controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+        controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
+        
+        if GetSpecialization() == specId then
+            TRB.Functions.RedrawThresholdLines(spec)
+        end
+    end)
+
+    title = "Threshold Icon Height"
+    controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
+                                    oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+    controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.thresholds.icons.height = value
+
+        local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+        local borderSize = spec.thresholds.icons.border
+    
+        if maxBorderSize < borderSize then
+            maxBorderSize = borderSize
+        end
+
+        controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+        controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+        controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
+        
+        if GetSpecialization() == specId then
+            TRB.Functions.RedrawThresholdLines(spec)
+        end
+    end)
+
+
+    title = "Threshold Icon Horizontal Position (Relative)"
+    yCoord = yCoord - 60
+    controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
+                                oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+    controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.thresholds.icons.xPos = value
+        
+        if GetSpecialization() == specId then
+            TRB.Functions.RedrawThresholdLines(spec)
+            --TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+        end
+    end)
+
+    title = "Threshold Icon Vertical Position (Relative)"
+    controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
+                                oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+    controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.thresholds.icons.yPos = value
+        
+        if GetSpecialization() == specId then
+            TRB.Functions.RedrawThresholdLines(spec)
+        end
+    end)
+
+    local maxIconBorderHeight = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
+
+    title = "Threshold Icon Border Width"
+    yCoord = yCoord - 60
+    controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
+                                oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+    controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.thresholds.icons.border = value
+
+        local minsliderWidth = math.max(spec.thresholds.icons.border*2, 1)
+        local minsliderHeight = math.max(spec.thresholds.icons.border*2, 1)
+
+        controls.thresholdIconHeight:SetMinMaxValues(minsliderHeight, 128)
+        controls.thresholdIconHeight.MinLabel:SetText(minsliderHeight)
+        controls.thresholdIconWidth:SetMinMaxValues(minsliderWidth, 128)
+        controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
+
+        if GetSpecialization() == specId then
+            TRB.Functions.RedrawThresholdLines(spec)
+        end
+    end)
+
+    return yCoord
 end
