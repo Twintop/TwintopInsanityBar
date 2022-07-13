@@ -1095,7 +1095,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 1, yCoord)
 
-		yCoord = yCoord - 60
+		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -2422,7 +2422,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 2, yCoord)
 
-		yCoord = yCoord - 60
+		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "End of Trueshot Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -4122,7 +4122,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 3, yCoord)
 
-		yCoord = yCoord - 60
+		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "End of Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30

@@ -765,7 +765,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		yCoord = TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spec, 1, 1, yCoord)
 
-		yCoord = yCoord - 60
+		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -1835,7 +1835,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		yCoord = TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spec, 1, 2, yCoord)
 
-		yCoord = yCoord - 60
+		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30

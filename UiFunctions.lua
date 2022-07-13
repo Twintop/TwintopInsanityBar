@@ -1512,7 +1512,7 @@ function TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spe
     local f = nil
     local title = ""
     local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
-    
+
     -- Create the dropdown, and configure its appearance
     controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_"..className.."_"..specId.."_ThresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
     controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", oUi.xCoord, yCoord)
@@ -1668,6 +1668,80 @@ function TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spe
         if GetSpecialization() == specId then
             TRB.Functions.RedrawThresholdLines(spec)
         end
+    end)
+
+    return yCoord
+end
+
+function TRB.UiFunctions:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, classId, specId, yCoord)
+    local oUi = TRB.Data.constants.optionsUi
+    local _, className, _ = GetClassInfo(classId)
+    local f = nil
+    local title = ""
+
+    yCoord = yCoord - 40
+    controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Potion on Cooldown Configuration", 0, yCoord)
+
+    yCoord = yCoord - 30
+    controls.checkBoxes.potionCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_PotionCooldown_CB", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.potionCooldown
+    f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+    getglobal(f:GetName() .. 'Text'):SetText("Show potion threshold lines when potion is on cooldown")
+    f.tooltip = "Shows the potion threshold lines while potion use is still on cooldown. Configure below how far in advance to have the lines be visible, between 0 - 300 seconds (300 being effectively 'always visible')."
+    f:SetChecked(spec.thresholds.potionCooldown.enabled)
+    f:SetScript("OnClick", function(self, ...)
+        spec.thresholds.potionCooldown.enabled = self:GetChecked()
+    end)
+
+    yCoord = yCoord - 40
+    controls.checkBoxes.potionCooldownModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_PotionCooldown_M_GCD", parent, "UIRadioButtonTemplate")
+    f = controls.checkBoxes.potionCooldownModeGCDs
+    f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+    getglobal(f:GetName() .. 'Text'):SetText("GCDs left on Potion cooldown")
+    getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+    f.tooltip = "Show potion threshold lines based on how many GCDs remain on potion cooldown."
+    if spec.thresholds.potionCooldown.mode == "gcd" then
+        f:SetChecked(true)
+    end
+    f:SetScript("OnClick", function(self, ...)
+        controls.checkBoxes.potionCooldownModeGCDs:SetChecked(true)
+        controls.checkBoxes.potionCooldownModeTime:SetChecked(false)
+        spec.thresholds.potionCooldown.mode = "gcd"
+    end)
+
+    title = "Potion Cooldown GCDs - 0.75sec Floor"
+    controls.potionCooldownGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 400, spec.thresholds.potionCooldown.gcdsMax, 0.25, 2,
+                                    oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+    controls.potionCooldownGCDs:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        spec.thresholds.potionCooldown.gcdsMax = value
+    end)
+
+
+    yCoord = yCoord - 60
+    controls.checkBoxes.potionCooldownModeTime = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_PotionCooldown_M_TIME", parent, "UIRadioButtonTemplate")
+    f = controls.checkBoxes.potionCooldownModeTime
+    f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+    getglobal(f:GetName() .. 'Text'):SetText("Time left on Potion cooldown")
+    getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+    f.tooltip = "Change the bar color based on how many seconds remain until potions will come off cooldown."
+    if spec.thresholds.potionCooldown.mode == "time" then
+        f:SetChecked(true)
+    end
+    f:SetScript("OnClick", function(self, ...)
+        controls.checkBoxes.potionCooldownModeGCDs:SetChecked(false)
+        controls.checkBoxes.potionCooldownModeTime:SetChecked(true)
+        spec.thresholds.potionCooldown.mode = "time"
+    end)
+
+    title = "Potion Cooldown Time Remaining"
+    controls.potionCooldownTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 300, spec.thresholds.potionCooldown.timeMax, 0.25, 2,
+                                    oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+    controls.potionCooldownTime:SetScript("OnValueChanged", function(self, value)
+        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.RoundTo(value, 2)
+        self.EditBox:SetText(value)
+        spec.thresholds.potionCooldown.timeMax = value
     end)
 
     return yCoord

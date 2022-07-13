@@ -496,7 +496,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		yCoord = TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spec, 12, 1, yCoord)
 
-		yCoord = yCoord - 60
+		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "End of Metamorphosis Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
