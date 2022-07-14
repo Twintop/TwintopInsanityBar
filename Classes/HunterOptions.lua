@@ -755,7 +755,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-				local spec = TRB.Data.settings.hunter.beastMastery
+		local spec = TRB.Data.settings.hunter.beastMastery
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery
 		local yCoord = 5
@@ -854,7 +854,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-				local spec = TRB.Data.settings.hunter.beastMastery
+		local spec = TRB.Data.settings.hunter.beastMastery
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.beastMastery
@@ -1129,7 +1129,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-				local spec = TRB.Data.settings.hunter.beastMastery
+		local spec = TRB.Data.settings.hunter.beastMastery
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.beastMastery
@@ -1143,329 +1143,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (Font & Text).", 3, 1, false, true, false, false, false)
 		end)
 
-		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Face", 0, yCoord)
-
-		yCoord = yCoord - 30
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_FontLeft", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", oUi.xCoord, yCoord)
-		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontLeft:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
-		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.fontLeft, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
-			local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(fonts) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Fonts " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(fontsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = fonts[v]
-						info.checked = fonts[v] == spec.displayText.left.fontFace
-						info.func = self.SetValue
-						info.arg1 = fonts[v]
-						info.arg2 = v
-						info.fontObject = CreateFont(v)
-						info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		function controls.dropDown.fontLeft:SetValue(newValue, newName)
-			spec.displayText.left.fontFace = newValue
-			spec.displayText.left.fontFaceName = newName
-			UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-			if spec.displayText.fontFaceLock then
-				spec.displayText.middle.fontFace = newValue
-				spec.displayText.middle.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-				spec.displayText.right.fontFace = newValue
-				spec.displayText.right.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-			end
-
-			if GetSpecialization() == 1 then
-				leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
-				if spec.displayText.fontFaceLock then
-					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-				end
-			end
-
-			CloseDropDownMenus()
-		end
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_FontMiddle", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", oUi.xCoord2, yCoord)
-		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
-		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.fontMiddle, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
-			local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(fonts) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Fonts " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(fontsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = fonts[v]
-						info.checked = fonts[v] == spec.displayText.middle.fontFace
-						info.func = self.SetValue
-						info.arg1 = fonts[v]
-						info.arg2 = v
-						info.fontObject = CreateFont(v)
-						info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		function controls.dropDown.fontMiddle:SetValue(newValue, newName)
-			spec.displayText.middle.fontFace = newValue
-			spec.displayText.middle.fontFaceName = newName
-			UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-			if spec.displayText.fontFaceLock then
-				spec.displayText.left.fontFace = newValue
-				spec.displayText.left.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				spec.displayText.right.fontFace = newValue
-				spec.displayText.right.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-			end
-
-			if GetSpecialization() == 1 then
-				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-				if spec.displayText.fontFaceLock then
-					leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-				end
-			end
-
-			CloseDropDownMenus()
-		end
-
-		yCoord = yCoord - 40 - 20
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_FontRight", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", oUi.xCoord, yCoord)
-		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontRight:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
-		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.fontRight, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
-			local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(fonts) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Fonts " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(fontsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = fonts[v]
-						info.checked = fonts[v] == spec.displayText.right.fontFace
-						info.func = self.SetValue
-						info.arg1 = fonts[v]
-						info.arg2 = v
-						info.fontObject = CreateFont(v)
-						info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		function controls.dropDown.fontRight:SetValue(newValue, newName)
-			spec.displayText.right.fontFace = newValue
-			spec.displayText.right.fontFaceName = newName
-			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-			if spec.displayText.fontFaceLock then
-				spec.displayText.left.fontFace = newValue
-				spec.displayText.left.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				spec.displayText.middle.fontFace = newValue
-				spec.displayText.middle.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-			end
-
-			if GetSpecialization() == 1 then
-				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-				if spec.displayText.fontFaceLock then
-					leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
-					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-				end
-			end
-
-			CloseDropDownMenus()
-		end
-
-		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.fontFaceLock
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
-		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
-		f:SetChecked(spec.displayText.fontFaceLock)
-		f:SetScript("OnClick", function(self, ...)
-			spec.displayText.fontFaceLock = self:GetChecked()
-			if spec.displayText.fontFaceLock then
-				spec.displayText.middle.fontFace = spec.displayText.left.fontFace
-				spec.displayText.middle.fontFaceName = spec.displayText.left.fontFaceName
-				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
-				spec.displayText.right.fontFace = spec.displayText.left.fontFace
-				spec.displayText.right.fontFaceName = spec.displayText.left.fontFaceName
-				UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
-
-				if GetSpecialization() == 1 then
-					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-				end
-			end
-		end)
-
-
-		yCoord = yCoord - 70
-		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Size and Colors", 0, yCoord)
-
-		title = "Left Bar Text Font Size"
-		yCoord = yCoord - 50
-		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			spec.displayText.left.fontSize = value
-
-			if GetSpecialization() == 1 then
-				leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
-			end
-
-			if spec.displayText.fontSizeLock then
-				controls.fontSizeMiddle:SetValue(value)
-				controls.fontSizeRight:SetValue(value)
-			end
-		end)
-
-		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.fontSizeLock
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
-		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
-		f:SetChecked(spec.displayText.fontSizeLock)
-		f:SetScript("OnClick", function(self, ...)
-			spec.displayText.fontSizeLock = self:GetChecked()
-			if spec.displayText.fontSizeLock then
-				controls.fontSizeMiddle:SetValue(spec.displayText.left.fontSize)
-				controls.fontSizeRight:SetValue(spec.displayText.left.fontSize)
-			end
-		end)
-
-		controls.colors.text = {}
-
-		controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
-														250, 25, oUi.xCoord2, yCoord-30)
-		f = controls.colors.text.left
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
-		end)
-
-		controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
-														225, 25, oUi.xCoord2, yCoord-70)
-		f = controls.colors.text.middle
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
-		end)
-
-		controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
-														225, 25, oUi.xCoord2, yCoord-110)
-		f = controls.colors.text.right
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
-		end)
-
-		title = "Middle Bar Text Font Size"
-		yCoord = yCoord - 60
-		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			spec.displayText.middle.fontSize = value
-
-			if GetSpecialization() == 1 then
-				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-			end
-
-			if spec.displayText.fontSizeLock then
-				controls.fontSizeLeft:SetValue(value)
-				controls.fontSizeRight:SetValue(value)
-			end
-		end)
-
-		title = "Right Bar Text Font Size"
-		yCoord = yCoord - 60
-		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			spec.displayText.right.fontSize = value
-
-			if GetSpecialization() == 1 then
-				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-			end
-
-			if spec.displayText.fontSizeLock then
-				controls.fontSizeLeft:SetValue(value)
-				controls.fontSizeMiddle:SetValue(value)
-			end
-		end)
+		yCoord = TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, 3, 1, yCoord)
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Focus Text Colors", 0, yCoord)
@@ -1541,7 +1219,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-				local spec = TRB.Data.settings.hunter.beastMastery
+		local spec = TRB.Data.settings.hunter.beastMastery
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.beastMastery
@@ -1894,7 +1572,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-				local spec = TRB.Data.settings.hunter.beastMastery
+		local spec = TRB.Data.settings.hunter.beastMastery
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.beastMastery
@@ -2056,7 +1734,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-				local spec = TRB.Data.settings.hunter.marksmanship
+		local spec = TRB.Data.settings.hunter.marksmanship
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship
 		local yCoord = 5
@@ -2155,7 +1833,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-				local spec = TRB.Data.settings.hunter.marksmanship
+		local spec = TRB.Data.settings.hunter.marksmanship
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.marksmanship
@@ -2587,7 +2265,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-				local spec = TRB.Data.settings.hunter.marksmanship
+		local spec = TRB.Data.settings.hunter.marksmanship
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.marksmanship
@@ -2601,329 +2279,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (Font & Text).", 3, 2, false, true, false, false, false)
 		end)
 
-		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Face", 0, yCoord)
-
-		yCoord = yCoord - 30
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_FontLeft", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", oUi.xCoord, yCoord)
-		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontLeft:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
-		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.fontLeft, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
-			local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(fonts) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Fonts " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(fontsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = fonts[v]
-						info.checked = fonts[v] == spec.displayText.left.fontFace
-						info.func = self.SetValue
-						info.arg1 = fonts[v]
-						info.arg2 = v
-						info.fontObject = CreateFont(v)
-						info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		function controls.dropDown.fontLeft:SetValue(newValue, newName)
-			spec.displayText.left.fontFace = newValue
-			spec.displayText.left.fontFaceName = newName
-			UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-			if spec.displayText.fontFaceLock then
-				spec.displayText.middle.fontFace = newValue
-				spec.displayText.middle.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-				spec.displayText.right.fontFace = newValue
-				spec.displayText.right.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-			end
-
-			if GetSpecialization() == 2 then
-				leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
-				if spec.displayText.fontFaceLock then
-					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-				end
-			end
-
-			CloseDropDownMenus()
-		end
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_FontMiddle", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", oUi.xCoord2, yCoord)
-		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
-		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.fontMiddle, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
-			local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(fonts) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Fonts " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(fontsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = fonts[v]
-						info.checked = fonts[v] == spec.displayText.middle.fontFace
-						info.func = self.SetValue
-						info.arg1 = fonts[v]
-						info.arg2 = v
-						info.fontObject = CreateFont(v)
-						info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		function controls.dropDown.fontMiddle:SetValue(newValue, newName)
-			spec.displayText.middle.fontFace = newValue
-			spec.displayText.middle.fontFaceName = newName
-			UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-			if spec.displayText.fontFaceLock then
-				spec.displayText.left.fontFace = newValue
-				spec.displayText.left.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				spec.displayText.right.fontFace = newValue
-				spec.displayText.right.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-			end
-
-			if GetSpecialization() == 2 then
-				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-				if spec.displayText.fontFaceLock then
-					leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-				end
-			end
-
-			CloseDropDownMenus()
-		end
-
-		yCoord = yCoord - 40 - 20
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_FontRight", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", oUi.xCoord, yCoord)
-		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontRight:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
-		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.fontRight, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
-			local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(fonts) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Fonts " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(fontsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = fonts[v]
-						info.checked = fonts[v] == spec.displayText.right.fontFace
-						info.func = self.SetValue
-						info.arg1 = fonts[v]
-						info.arg2 = v
-						info.fontObject = CreateFont(v)
-						info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		function controls.dropDown.fontRight:SetValue(newValue, newName)
-			spec.displayText.right.fontFace = newValue
-			spec.displayText.right.fontFaceName = newName
-			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-			if spec.displayText.fontFaceLock then
-				spec.displayText.left.fontFace = newValue
-				spec.displayText.left.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				spec.displayText.middle.fontFace = newValue
-				spec.displayText.middle.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-			end
-
-			if GetSpecialization() == 2 then
-				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-				if spec.displayText.fontFaceLock then
-					leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
-					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-				end
-			end
-
-			CloseDropDownMenus()
-		end
-
-		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.fontFaceLock
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
-		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
-		f:SetChecked(spec.displayText.fontFaceLock)
-		f:SetScript("OnClick", function(self, ...)
-			spec.displayText.fontFaceLock = self:GetChecked()
-			if spec.displayText.fontFaceLock then
-				spec.displayText.middle.fontFace = spec.displayText.left.fontFace
-				spec.displayText.middle.fontFaceName = spec.displayText.left.fontFaceName
-				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
-				spec.displayText.right.fontFace = spec.displayText.left.fontFace
-				spec.displayText.right.fontFaceName = spec.displayText.left.fontFaceName
-				UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
-
-				if GetSpecialization() == 2 then
-					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-				end
-			end
-		end)
-
-
-		yCoord = yCoord - 70
-		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Size and Colors", 0, yCoord)
-
-		title = "Left Bar Text Font Size"
-		yCoord = yCoord - 50
-		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			spec.displayText.left.fontSize = value
-
-			if GetSpecialization() == 2 then
-				leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
-			end
-
-			if spec.displayText.fontSizeLock then
-				controls.fontSizeMiddle:SetValue(value)
-				controls.fontSizeRight:SetValue(value)
-			end
-		end)
-
-		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.fontSizeLock
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
-		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
-		f:SetChecked(spec.displayText.fontSizeLock)
-		f:SetScript("OnClick", function(self, ...)
-			spec.displayText.fontSizeLock = self:GetChecked()
-			if spec.displayText.fontSizeLock then
-				controls.fontSizeMiddle:SetValue(spec.displayText.left.fontSize)
-				controls.fontSizeRight:SetValue(spec.displayText.left.fontSize)
-			end
-		end)
-
-		controls.colors.text = {}
-
-		controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
-														250, 25, oUi.xCoord2, yCoord-30)
-		f = controls.colors.text.left
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
-		end)
-
-		controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
-														225, 25, oUi.xCoord2, yCoord-70)
-		f = controls.colors.text.middle
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
-		end)
-
-		controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
-														225, 25, oUi.xCoord2, yCoord-110)
-		f = controls.colors.text.right
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
-		end)
-
-		title = "Middle Bar Text Font Size"
-		yCoord = yCoord - 60
-		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			spec.displayText.middle.fontSize = value
-
-			if GetSpecialization() == 2 then
-				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-			end
-
-			if spec.displayText.fontSizeLock then
-				controls.fontSizeLeft:SetValue(value)
-				controls.fontSizeRight:SetValue(value)
-			end
-		end)
-
-		title = "Right Bar Text Font Size"
-		yCoord = yCoord - 60
-		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			spec.displayText.right.fontSize = value
-
-			if GetSpecialization() == 2 then
-				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-			end
-
-			if spec.displayText.fontSizeLock then
-				controls.fontSizeLeft:SetValue(value)
-				controls.fontSizeMiddle:SetValue(value)
-			end
-		end)
+		yCoord = TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, 3, 2, yCoord)
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Focus Text Colors", 0, yCoord)
@@ -3047,7 +2403,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-				local spec = TRB.Data.settings.hunter.marksmanship
+		local spec = TRB.Data.settings.hunter.marksmanship
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.marksmanship
@@ -3652,7 +3008,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-				local spec = TRB.Data.settings.hunter.marksmanship
+		local spec = TRB.Data.settings.hunter.marksmanship
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.marksmanship
@@ -3814,7 +3170,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-				local spec = TRB.Data.settings.hunter.survival
+		local spec = TRB.Data.settings.hunter.survival
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.survival
 		local yCoord = 5
@@ -3893,7 +3249,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-				local spec = TRB.Data.settings.hunter.survival
+		local spec = TRB.Data.settings.hunter.survival
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.survival
@@ -4221,7 +3577,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-				local spec = TRB.Data.settings.hunter.survival
+		local spec = TRB.Data.settings.hunter.survival
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.survival
@@ -4235,325 +3591,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (Font & Text).", 3, 3, false, true, false, false, false)
 		end)
 
-		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Face", 0, yCoord)
-
-		yCoord = yCoord - 30
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_FontLeft", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", oUi.xCoord, yCoord)
-		controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontLeft:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
-		UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.fontLeft, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
-			local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(fonts) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Fonts " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(fontsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = fonts[v]
-						info.checked = fonts[v] == spec.displayText.left.fontFace
-						info.func = self.SetValue
-						info.arg1 = fonts[v]
-						info.arg2 = v
-						info.fontObject = CreateFont(v)
-						info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		function controls.dropDown.fontLeft:SetValue(newValue, newName)
-			spec.displayText.left.fontFace = newValue
-			spec.displayText.left.fontFaceName = newName
-			UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-			if spec.displayText.fontFaceLock then
-				spec.displayText.middle.fontFace = newValue
-				spec.displayText.middle.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-				spec.displayText.right.fontFace = newValue
-				spec.displayText.right.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-			end
-
-			if GetSpecialization() == 3 then
-				leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
-				if spec.displayText.fontFaceLock then
-					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-				end
-			end
-
-			CloseDropDownMenus()
-		end
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_FontMiddle", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", oUi.xCoord2, yCoord)
-		controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontMiddle:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
-		UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.fontMiddle, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
-			local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(fonts) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Fonts " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(fontsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = fonts[v]
-						info.checked = fonts[v] == spec.displayText.middle.fontFace
-						info.func = self.SetValue
-						info.arg1 = fonts[v]
-						info.arg2 = v
-						info.fontObject = CreateFont(v)
-						info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		function controls.dropDown.fontMiddle:SetValue(newValue, newName)
-			spec.displayText.middle.fontFace = newValue
-			spec.displayText.middle.fontFaceName = newName
-			UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-			if spec.displayText.fontFaceLock then
-				spec.displayText.left.fontFace = newValue
-				spec.displayText.left.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				spec.displayText.right.fontFace = newValue
-				spec.displayText.right.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-			end
-
-			if GetSpecialization() == 3 then
-				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-				if spec.displayText.fontFaceLock then
-					leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-				end
-			end
-
-			CloseDropDownMenus()
-		end
-
-		yCoord = yCoord - 40 - 20
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_FontRight", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", oUi.xCoord, yCoord)
-		controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
-		controls.dropDown.fontRight:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-		UIDropDownMenu_SetWidth(controls.dropDown.fontRight, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
-		UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.fontRight, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
-			local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(fonts) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Fonts " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(fontsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = fonts[v]
-						info.checked = fonts[v] == spec.displayText.right.fontFace
-						info.func = self.SetValue
-						info.arg1 = fonts[v]
-						info.arg2 = v
-						info.fontObject = CreateFont(v)
-						info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		function controls.dropDown.fontRight:SetValue(newValue, newName)
-			spec.displayText.right.fontFace = newValue
-			spec.displayText.right.fontFaceName = newName
-			UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-			if spec.displayText.fontFaceLock then
-				spec.displayText.left.fontFace = newValue
-				spec.displayText.left.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-				spec.displayText.middle.fontFace = newValue
-				spec.displayText.middle.fontFaceName = newName
-				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-			end
-
-			if GetSpecialization() == 3 then
-				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-				if spec.displayText.fontFaceLock then
-					leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
-					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-				end
-			end
-
-			CloseDropDownMenus()
-		end
-
-		controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.fontFaceLock
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-		getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
-		f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
-		f:SetChecked(spec.displayText.fontFaceLock)
-		f:SetScript("OnClick", function(self, ...)
-			spec.displayText.fontFaceLock = self:GetChecked()
-			if spec.displayText.fontFaceLock then
-				spec.displayText.middle.fontFace = spec.displayText.left.fontFace
-				spec.displayText.middle.fontFaceName = spec.displayText.left.fontFaceName
-				UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
-				spec.displayText.right.fontFace = spec.displayText.left.fontFace
-				spec.displayText.right.fontFaceName = spec.displayText.left.fontFaceName
-				UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
-
-				if GetSpecialization() == 3 then
-					middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-					rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-				end
-			end
-		end)
-
-
-		yCoord = yCoord - 70
-		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Size and Colors", 0, yCoord)
-
-		title = "Left Bar Text Font Size"
-		yCoord = yCoord - 50
-		controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			spec.displayText.left.fontSize = value
-			leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
-			if spec.displayText.fontSizeLock then
-				controls.fontSizeMiddle:SetValue(value)
-				controls.fontSizeRight:SetValue(value)
-			end
-		end)
-
-		controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.fontSizeLock
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
-		f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
-		f:SetChecked(spec.displayText.fontSizeLock)
-		f:SetScript("OnClick", function(self, ...)
-			spec.displayText.fontSizeLock = self:GetChecked()
-			if spec.displayText.fontSizeLock then
-				controls.fontSizeMiddle:SetValue(spec.displayText.left.fontSize)
-				controls.fontSizeRight:SetValue(spec.displayText.left.fontSize)
-			end
-		end)
-
-		controls.colors.text = {}
-
-		controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
-														250, 25, oUi.xCoord2, yCoord-30)
-		f = controls.colors.text.left
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
-		end)
-
-		controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
-														225, 25, oUi.xCoord2, yCoord-70)
-		f = controls.colors.text.middle
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
-		end)
-
-		controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
-														225, 25, oUi.xCoord2, yCoord-110)
-		f = controls.colors.text.right
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
-		end)
-
-		title = "Middle Bar Text Font Size"
-		yCoord = yCoord - 60
-		controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			spec.displayText.middle.fontSize = value
-
-			if GetSpecialization() == 3 then
-				middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-			end
-
-			if spec.displayText.fontSizeLock then
-				controls.fontSizeLeft:SetValue(value)
-				controls.fontSizeRight:SetValue(value)
-			end
-		end)
-
-		title = "Right Bar Text Font Size"
-		yCoord = yCoord - 60
-		controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			spec.displayText.right.fontSize = value
-
-			if GetSpecialization() == 3 then
-				rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-			end
-
-			if spec.displayText.fontSizeLock then
-				controls.fontSizeLeft:SetValue(value)
-				controls.fontSizeMiddle:SetValue(value)
-			end
-		end)
+		yCoord = TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, 3, 3, yCoord)
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Focus Text Colors", 0, yCoord)
@@ -4671,7 +3709,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-				local spec = TRB.Data.settings.hunter.survival
+		local spec = TRB.Data.settings.hunter.survival
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.survival
@@ -5028,7 +4066,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-				local spec = TRB.Data.settings.hunter.survival
+		local spec = TRB.Data.settings.hunter.survival
 
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.survival
