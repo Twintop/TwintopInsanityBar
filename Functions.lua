@@ -74,7 +74,7 @@ TRB.Functions.IsNumeric = IsNumeric
 
 local function RoundTo(num, numDecimalPlaces, mode)
 	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
-	local newNum = tonumber(num)
+	local newNum = tonumber(num) or 0
 	if mode == "floor" then
 		local whole, decimal = strsplit(".", newNum, 2)
 
@@ -217,6 +217,36 @@ local function PulseFrame(frame, alphaOffset, flashPeriod)
 end
 TRB.Functions.PulseFrame = PulseFrame
 
+local function SetBackdropColor(frame, rgbaString, normalize, specId)
+	if specId ~= nil and specId == GetSpecialization() then
+		frame:SetBackdropColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
+	end
+end
+TRB.Functions.SetBackdropColor = SetBackdropColor
+
+local function SetBackdropBorderColor(frame, rgbaString, normalize, specId)
+	if specId ~= nil and specId == GetSpecialization() then
+		frame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
+	end
+end
+TRB.Functions.SetBackdropBorderColor = SetBackdropBorderColor
+
+local function SetStatusBarColor(frame, rgbaString, normalize, specId)
+	if specId ~= nil and specId == GetSpecialization() then
+		frame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
+	end
+end
+TRB.Functions.SetStatusBarColor = SetStatusBarColor
+
+local function SetThresholdColor(frame, rgbaString, normalize, specId)
+	if specId ~= nil and specId == GetSpecialization() then
+		frame.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
+		if frame.icon ~= nil then
+			frame.icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
+		end
+	end
+end
+TRB.Functions.SetThresholdColor = SetThresholdColor
 
 -- Casting, Time, and GCD Functions
 
@@ -543,6 +573,29 @@ TRB.Functions.GetUnitHealthPercent = GetUnitHealthPercent
 
 -- Bar Manipulation Functions
 
+local function SetThresholdIconSizeAndPosition(settings, thresholdLine)
+	if thresholdLine.icon ~= nil then
+		local setPoint = "TOP"
+		local setPointRelativeTo = "BOTTOM"
+		
+		if settings.thresholds.icons.relativeTo == "TOP" then
+			setPoint = "BOTTOM"
+			setPointRelativeTo = "TOP"
+		elseif settings.thresholds.icons.relativeTo == "CENTER" then
+			setPoint = "CENTER"
+			setPointRelativeTo = "CENTER"
+		elseif settings.thresholds.icons.relativeTo == "BOTTOM" then
+			setPoint = "TOP"
+			setPointRelativeTo = "BOTTOM"
+		end
+	
+		thresholdLine.icon:ClearAllPoints()
+		thresholdLine.icon:SetPoint(setPoint, thresholdLine, setPointRelativeTo, settings.thresholds.icons.xPos, settings.thresholds.icons.yPos)
+		thresholdLine.icon:SetSize(settings.thresholds.icons.width, settings.thresholds.icons.height)
+	end
+end
+TRB.Functions.SetThresholdIconSizeAndPosition = SetThresholdIconSizeAndPosition
+
 local function RepositionThreshold(settings, thresholdLine, parentFrame, thresholdWidth, resourceThreshold, resourceMax)
 	if thresholdLine == nil then
 		print("|cFFFFFF00TRB Warning: |r RepositionThreshold() called without a valid thresholdLine!")
@@ -775,6 +828,7 @@ local function ResetThresholdLine(threshold, settings, hasIcon)
 
 		if settings.thresholds.icons.enabled then
 			threshold.icon:Show()
+			TRB.Functions.SetThresholdIconSizeAndPosition(settings, threshold)
 		else
 			threshold.icon:Hide()
 		end
@@ -1168,6 +1222,8 @@ local function RepositionBar(settings, containerFrame)
 			end
 		end
 	end
+
+	TRB.Functions.RedrawThresholdLines(settings)
 end
 TRB.Functions.RepositionBar = RepositionBar
 

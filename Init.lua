@@ -214,8 +214,22 @@ TRB.Data.constants = {
 		thresholdOffsetCooldown = 0,
 		thresholdOffsetNoCooldown = 100,
 		barText = 5000
+	},
+	optionsUi = {
+		xPadding = 10,
+		xPadding2 = 30,
+		xCoord = 5,
+		xCoord2 = 290,
+		xOffset1 = 50,
+		xOffset2 = 340, --Calculated below
+		dropdownWidth = 225,
+		sliderWidth = 260,
+		sliderHeight = 20,
+		maxOptionsWidth = 580
 	}
 }
+
+TRB.Data.constants.optionsUi.xOffset2 = TRB.Data.constants.optionsUi.xCoord2 + TRB.Data.constants.optionsUi.xOffset1
 
 TRB.Data.settings = {}
 
