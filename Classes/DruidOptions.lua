@@ -2885,10 +2885,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.innervateBorderChange = self:GetChecked()
 		end)
-		
-		yCoord = yCoord - 30
-
-		yCoord = yCoord - 40
 
 		yCoord = yCoord - 40
 		yCoord = TRB.UiFunctions:GenerateThresholdLinesForHealers(parent, controls, spec, 11, 4, yCoord)

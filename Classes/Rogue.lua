@@ -2730,7 +2730,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookupLogic["$sadTime"] = _sadTime
 		lookupLogic["$sliceAndDiceTime"] = _sadTime
 		lookupLogic["$blindsideTime"] = _blindsideTime
-		lookupLogic["$isBleeding"] = _""
+		lookupLogic["$isBleeding"] = ""
 
 		if TRB.Data.character.maxResource == TRB.Data.snapshotData.resource then
 			lookupLogic["$passive"] = _passiveEnergyMinusRegen
