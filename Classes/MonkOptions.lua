@@ -628,7 +628,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
 
 		yCoord = yCoord - 25
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Bar's normal/base border", spec.colors.bar.border, 275, 25, oUi.xCoord2, yCoord-0)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Border's normal/base border", spec.colors.bar.border, 275, 25, oUi.xCoord2, yCoord-0)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 2)

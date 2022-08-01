@@ -627,6 +627,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					background="66000000",
 					base="FF0000FF",
 					noEfflorescence="FFFF0000",
+					clearcasting="FF4A95CE",
 					innervate="FF00FF00",
 					spending="FFFFFFFF",
 					passive="FF8080FF",
@@ -2852,6 +2853,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
+		controls.colors.clearcasting = TRB.UiFunctions:BuildColorPicker(parent, "Mana when Clearcasting proc is up", spec.colors.bar.clearcasting, 275, 25, oUi.xCoord, yCoord)
+		f = controls.colors.clearcasting
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "clearcasting")
+		end)
+
+		yCoord = yCoord - 30
 		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2863,7 +2871,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
 
 		yCoord = yCoord - 25
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Bar's normal/base border", spec.colors.bar.border, 275, 25, oUi.xCoord2, yCoord-0)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Border's normal/base border", spec.colors.bar.border, 275, 25, oUi.xCoord2, yCoord-0)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 4)

@@ -966,6 +966,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				pandemic = true,
 				pandemicTime = 16 * 0.3
 			},
+			clearcasting = {
+				id = 16870,
+				name = "",
+				icon = ""
+			},
 
 			-- External mana
 			symbolOfHope = {
@@ -1066,6 +1071,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		}
 		specCache.restoration.snapshotData.efflorescence = {
 			endTime = nil
+		}
+		specCache.restoration.snapshotData.clearcasting = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0,
+			stacks = 0
 		}
 		specCache.restoration.snapshotData.innervate = {
 			spellId = nil,
@@ -1464,6 +1476,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#efflorescence", icon = spells.efflorescence.icon, description = spells.efflorescence.name, printInSettings = true },
+            { variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
             
             { variable = "#moonfire", icon = spells.moonfire.icon, description = "Moonfire", printInSettings = true },
 			{ variable = "#sunfire", icon = spells.sunfire.icon, description = "Sunfire", printInSettings = true },
@@ -1559,8 +1572,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			{ variable = "$efflorescenceTime", description = "Time remaining on Efflorescence", printInSettings = true, color = false },
 
-			--{ variable = "$fsCount", description = "Number of Flame Shocks active on targets", printInSettings = true, color = false },
-			--{ variable = "$fsTime", description = "Time remaining on Flame Shock on your current target", printInSettings = true, color = false },
+			{ variable = "$clearcastingTime", description = "Time remaining on your Clearcasting proc", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -2579,7 +2591,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				if TRB.Data.snapshotData.clearcasting.stacks > 0 then
 					valid = true
 				end
-			elseif var == "$clearcastingTimeTime" then
+			elseif var == "$clearcastingTime" then
 				if TRB.Data.snapshotData.clearcastingTime.remainingTime > 0 then
 					valid = true
 				end
@@ -2620,6 +2632,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			elseif var == "$sunfireCount" then
 				if TRB.Data.snapshotData.targetData.sunfire > 0 then
+					valid = true
+				end
+			elseif var == "$clearcastingTime" then
+				if TRB.Data.snapshotData.clearcasting.remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$sunfireTime" then
@@ -3373,7 +3389,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 		--$suddenAmbushTime
 		local _suddenAmbushTime = GetSuddenAmbushRemainingTime()
-		local suddenAmbushTime = 0
+		local suddenAmbushTime = "0"
 		if _suddenAmbushTime ~= nil then
 			suddenAmbushTime = string.format("%.1f", _suddenAmbushTime)
 		end
@@ -3391,7 +3407,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		--$apexPredatorsCravingTime
 		local _apexPredatorsCravingTime = GetApexPredatorsCravingRemainingTime()
-		local apexPredatorsCravingTime = 0
+		local apexPredatorsCravingTime = "0"
 		if _apexPredatorsCravingTime ~= nil then
 			apexPredatorsCravingTime = string.format("%.1f", _apexPredatorsCravingTime)
 		end
@@ -3642,7 +3658,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		--$efflorescenceTime
 		local _efflorescenceTime = GetEfflorescenceRemainingTime()
 		local efflorescenceTime = string.format("%.1f", _efflorescenceTime)
-
+	
+		--$clearcastingTime
+		local _clearcastingTime = TRB.Data.snapshotData.clearcasting.remainingTime or 0
+		local clearcastingTime = string.format("%.1f", _clearcastingTime)
 
 		----------
 		--$sunfireCount and $sunfireTime
@@ -3723,6 +3742,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#efflorescence"] = TRB.Data.spells.efflorescence.icon
+		lookup["#clearcasting"] = TRB.Data.spells.clearcasting.icon
 		lookup["#sunfire"] = TRB.Data.spells.sunfire.icon
 		lookup["#moonfire"] = TRB.Data.spells.moonfire.icon
 		lookup["#innervate"] = TRB.Data.spells.innervate.icon
@@ -3751,6 +3771,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$casting"] = castingMana
 		lookup["$passive"] = passiveMana
 		lookup["$efflorescenceTime"] = efflorescenceTime
+		lookup["$clearcastingTime"] = clearcastingTime
 		lookup["$sohMana"] = sohMana
 		lookup["$sohTime"] = sohTime
 		lookup["$sohTicks"] = sohTicks
@@ -3797,6 +3818,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookupLogic["$potionCooldown"] = potionCooldown
 		lookupLogic["$potionCooldownSeconds"] = potionCooldown
 		lookupLogic["$efflorescenceTime"] = _efflorescenceTime
+		lookupLogic["$clearcastingTime"] = _clearcastingTime
 		lookupLogic["$sunfireCount"] = _sunfireCount
 		lookupLogic["$sunfireTime"] = _sunfireTime
 		lookupLogic["$moonfireCount"] = _moonfireCount
@@ -4216,6 +4238,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			end
 		end
+
+		TRB.Data.snapshotData.clearcasting.remainingTime = GetClearcastingRemainingTime()
 	end
 
 	local function HideResourceBar(force)
@@ -5062,6 +5086,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 					if affectingCombat and GetEfflorescenceRemainingTime() == 0 then
 						resourceBarColor = TRB.Data.settings.druid.restoration.colors.bar.noEfflorescence
+					elseif GetClearcastingRemainingTime() > 0 then
+						resourceBarColor = TRB.Data.settings.druid.restoration.colors.bar.clearcasting
 					end
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(resourceBarColor, true))
@@ -5572,6 +5598,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
+						end
+					elseif spellId == TRB.Data.spells.clearcasting.id then
+						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
+							_, _, TRB.Data.snapshotData.clearcasting.stacks, _, TRB.Data.snapshotData.clearcasting.duration, TRB.Data.snapshotData.clearcasting.endTime, _, _, _, TRB.Data.snapshotData.clearcasting.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.clearcasting.id)
+							TRB.Data.spells.clearcasting.isActive = true
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.clearcasting.endTime = nil
+							TRB.Data.snapshotData.clearcasting.duration = 0
+							TRB.Data.snapshotData.clearcasting.stacks = 0
+							TRB.Data.spells.clearcasting.isActive = false
 						end
 					end
 				end
