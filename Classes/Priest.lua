@@ -376,11 +376,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 342409,
 				name = "",
 				icon = ""
-			},
-			elethiumMuzzle = {
-				id = 319276,
-				name = "",
-				icon = ""
 			}
 		}
 
@@ -904,6 +899,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				modifier = 1.05
+			},
+			fatedInfusionCreationSpark = {
+				id = 370404,
+				name = "",
+				icon = "",
+				modifier = 0.3
 			}
 
 		}
@@ -1019,6 +1020,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			isActive = false,
 			endTime = nil,
 			duration = 0
+		}
+		specCache.shadow.snapshotData.fatedInfusionCreationSpark = {
+			spellId = nil,
+			isActive = false,
+			endTime = nil,
+			duration = 0,
+			stacks = 0
 		}
 
 		specCache.shadow.barTextVariables = {
@@ -1834,6 +1842,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.character.talents.hungeringVoid.isSelected == true then
 				local decryptedUrhCypherMod = 1
 				local architectsIngenuityMod = 1
+				local fatedInfusionCreationSparkMod = 1
 
 				if TRB.Data.snapshotData.decryptedUrhCypher.isActive and TRB.Data.snapshotData.decryptedUrhCypher.endTime > currentTime then
 					decryptedUrhCypherMod = TRB.Data.spells.decryptedUrhCypher.modifier
@@ -1843,12 +1852,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					architectsIngenuityMod = TRB.Data.spells.architectsIngenuity.modifier
 				end
 
+				if TRB.Data.snapshotData.fatedInfusionCreationSpark.isActive and TRB.Data.snapshotData.fatedInfusionCreationSpark.endTime > currentTime and TRB.Data.snapshotData.fatedInfusionCreationSpark.stacks > 0 then
+					fatedInfusionCreationSparkMod = 1 + (TRB.Data.spells.fatedInfusionCreationSpark.modifier * TRB.Data.snapshotData.fatedInfusionCreationSpark.stacks)
+				end
+
 				local reaction = TRB.Data.settings.core.reactionTime
 				local latency = TRB.Functions.GetLatency()
 ---@diagnostic disable-next-line: redundant-parameter
 				local vbStart, vbDuration, _, _ = GetSpellCooldown(TRB.Data.spells.voidBolt.id)
 				local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(TRB.Data.spells.voidBolt.id)
-				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier * TRB.Data.character.torghast.phantasmicInfuserModifier * TRB.Data.character.torghast.rampaging.coolDownReduction * decryptedUrhCypherMod * architectsIngenuityMod), 0.75) + latency + reaction
+				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier * TRB.Data.character.torghast.phantasmicInfuserModifier * TRB.Data.character.torghast.rampaging.coolDownReduction * decryptedUrhCypherMod * architectsIngenuityMod * fatedInfusionCreationSparkMod), 0.75) + latency + reaction
 				local gcdLockRemaining = TRB.Functions.GetCurrentGCDLockRemaining()
 
 				local castGrantsExtension = true
@@ -4568,7 +4581,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.innervate.spellId = nil
 							TRB.Data.snapshotData.innervate.duration = 0
 							TRB.Data.snapshotData.innervate.endTime = nil
-							TRB.Data.snapshotData.innervate.modifier = 1							
+							TRB.Data.snapshotData.innervate.modifier = 1					
 							TRB.Data.snapshotData.audio.innervateCue = false
 						end
 					elseif spellId == TRB.Data.spells.manaTideTotem.id then
@@ -4594,6 +4607,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif (type == "SPELL_INSTAKILL" or type == "UNIT_DIED" or type == "UNIT_DESTROYED") then
 						if TRB.Data.snapshotData.voidform.s2m.active then -- Surrender to Madness ended
 							s2mDeath = true
+						end
+					elseif spellId == TRB.Data.spells.fatedInfusionCreationSpark.id then
+						if type == "SPELL_AURA_APPLIED" or  type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then -- Gained buff				
+							TRB.Data.snapshotData.fatedInfusionCreationSpark.isActive = true
+							_, _, _, TRB.Data.snapshotData.fatedInfusionCreationSpark.stacks, TRB.Data.snapshotData.fatedInfusionCreationSpark.duration, TRB.Data.snapshotData.fatedInfusionCreationSpark.endTime, _, _, _, TRB.Data.snapshotData.fatedInfusionCreationSpark.spellId = TRB.Functions.FindDebuffById(TRB.Data.spells.fatedInfusionCreationSpark.id)
+							TRB.Data.snapshotData.fatedInfusionCreationSpark.stacks = TRB.Data.snapshotData.fatedInfusionCreationSpark.stacks or 1
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.fatedInfusionCreationSpark.spellId = nil
+							TRB.Data.snapshotData.fatedInfusionCreationSpark.isActive = false
+							TRB.Data.snapshotData.fatedInfusionCreationSpark.duration = 0
+							TRB.Data.snapshotData.fatedInfusionCreationSpark.stacks = 0
+							TRB.Data.snapshotData.fatedInfusionCreationSpark.endTime = nil
 						end
 					end
 				end

@@ -409,14 +409,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					175942,
 					175943
 				}
-			},
+			}
 
 			-- Torghast
-			elethiumMuzzle = {
-				id = 319276,
-				name = "",
-				icon = ""
-			}
 		}
 
 		specCache.restoration.snapshotData.manaRegen = 0

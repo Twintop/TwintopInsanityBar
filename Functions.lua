@@ -821,7 +821,7 @@ local function ResetThresholdLine(threshold, settings, hasIcon)
 				tileSize = 4,
 				edgeSize = settings.thresholds.icons.border,
 				insets = {0, 0, 0, 0}
-			})			
+			})
 		end
 		threshold.icon:SetBackdropColor(0, 0, 0, 0)
 		threshold.icon:SetBackdropBorderColor(0, 0, 0, 1)

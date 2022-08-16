@@ -162,14 +162,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					175942,
 					175943
 				}
-			},
+			}
 
 			-- Torghast
-			elethiumMuzzle = {
-				id = 319276,
-				name = "",
-				icon = ""
-			}
 		}
 
 		specCache.mistweaver.snapshotData.manaRegen = 0

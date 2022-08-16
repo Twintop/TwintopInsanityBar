@@ -5,12 +5,16 @@ TRB.Options = {}
 local oUi = TRB.Data.constants.optionsUi
 
 local f1 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Highlight_Small_Color")
+---@diagnostic disable-next-line: need-check-nil
 f1:SetFontObject(GameFontHighlightSmall)
 local f2 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Green_Small_Color")
+---@diagnostic disable-next-line: need-check-nil
 f2:SetFontObject(GameFontGreenSmall)
 local f3 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Normal_Small_Color")
+---@diagnostic disable-next-line: need-check-nil
 f3:SetFontObject(GameFontNormalSmall)
 local f4 = CreateFont("TwintopResourceBar_OptionsMenu_Export_Spec_Color")
+---@diagnostic disable-next-line: need-check-nil
 f4:SetFontObject(GameFontWhite)
 
 TRB.Options.fonts = {}

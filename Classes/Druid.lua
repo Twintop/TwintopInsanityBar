@@ -1048,13 +1048,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					175942,
 					175943
 				}
-			},
-
-			-- Torghast
-			elethiumMuzzle = {
-				id = 319276,
-				name = "",
-				icon = ""
 			}
 		}
 
