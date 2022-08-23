@@ -54,6 +54,257 @@ local function LoadDefaultSettings()
             strata={
                 level="BACKGROUND",
                 name="Background"
+            },            
+			thresholds = {
+				width = 2,
+				overlapBorder=true,
+				icons = {
+					border=2,
+					relativeTo = "TOP",
+					relativeToName = "Above",
+					enabled=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				}
+			},
+			displayBar = {
+				alwaysShow=false,
+				notZeroShow=true,
+				neverShow=false
+			},
+			bar = {
+				width=1555,
+				height=34,
+				xPos=0,
+				yPos=200,
+				border=4,
+				dragAndDrop=false,
+				pinToPersonalResourceDisplay=false,
+				showPassive=true,
+				showCasting=true
+			},
+            comboPoints = {
+                width=25,
+                height=13,
+				xPos=0,
+				yPos=4,
+				border=1,
+                spacing=14,
+                relativeTo="TOP",
+                relativeToName="Above - Middle",
+                fullWidth=false,
+            },
+			textures={
+				background="Interface\\Tooltips\\UI-Tooltip-Background",
+				backgroundName="Blizzard Tooltip",
+				border="Interface\\Buttons\\WHITE8X8",
+				borderName="1 Pixel",
+				resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
+				resourceBarName="Blizzard",
+				passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
+				passiveBarName="Blizzard",
+				castingBar="Interface\\TargetingFrame\\UI-StatusBar",
+				castingBarName="Blizzard",
+				textureLock=true,
+				comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+				comboPointsBackgroundName="Blizzard Tooltip",
+				comboPointsBorder="Interface\\Buttons\\WHITE8X8",
+				comboPointsBorderName="1 Pixel",
+				comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
+				comboPointsBarName="Blizzard",
+			},
+            font={
+                fontSizeLock = true,
+                fontFaceLock = true,
+                left = {
+                    fontFace = "Fonts\\FRIZQT__.TTF",
+                    fontFaceName = "Friz Quadrata TT",
+                    fontSize = 18
+                },
+                middle = {
+                    fontFace = "Fonts\\FRIZQT__.TTF",
+                    fontFaceName = "Friz Quadrata TT",
+                    fontSize = 18
+                },
+                right = {
+                    fontFace = "Fonts\\FRIZQT__.TTF",
+                    fontFaceName = "Friz Quadrata TT",
+                    fontSize = 18
+                }
+            },
+            globalSettings = {
+                globalEnable = true,
+                demonhunter = {
+                    havoc = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    }
+                },
+                druid = {
+                    balance = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    },
+                    feral = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    },
+                    restoration = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    }
+                },
+                hunter = {
+                    beastMastery = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    },
+                    marksmanship = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    },
+                    survival = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    }
+                },
+                monk = {
+                    mistweaver = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    },
+                    windwalker = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    }
+                },
+                priest = {
+                    holy = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    },
+                    shadow = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = false,
+                        displayBar = false,
+                        font = false,
+                        textures = false,
+                        thresholds = false
+                    }
+                },
+                rogue = {
+                    assassination = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    },
+                    outlaw = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    }
+                },
+                shaman = {
+                    elemental = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    },
+                    restoration = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    }
+                },
+                warrior = {
+                    arms = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    },
+                    fury = {
+                        specEnable = true,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    }
+                }
             },
             enabled = {
                 demonhunter = {

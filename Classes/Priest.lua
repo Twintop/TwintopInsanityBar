@@ -31,7 +31,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		},
 		shadow = {
 			snapshotData = {},
-			barTextVariables = {}
+			barTextVariables = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
+			}
 		}
 	}
 
@@ -1033,6 +1041,54 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			icons = {},
 			values = {}
 		}
+	end
+
+	local function MapSettings()
+		local class = TRB.Data.settings.priest
+		local core = TRB.Data.settings.core
+		local c = core.globalSettings.priest
+		local enabled = core.globalSettings.globalEnable or c.shadow.specEnable
+		local s = c.shadow
+
+		if enabled and s.bar then
+			specCache.shadow.settings.bar = core.bar
+			print("bar!")
+		else
+			print("no bar :(")
+			specCache.shadow.settings.bar = class.shadow.bar
+		end
+
+		if enabled and s.comboPoints then
+			specCache.shadow.settings.comboPoints = core.comboPoints
+		else
+			specCache.shadow.settings.comboPoints = class.shadow.comboPoints
+		end
+
+		if enabled and s.displayBar then
+			specCache.shadow.settings.displayBar = core.displayBar
+		else
+			specCache.shadow.settings.displayBar = class.shadow.displayBar
+		end
+
+		if enabled and s.font then
+			specCache.shadow.settings.displayText = core.font
+		else
+			specCache.shadow.settings.displayText = class.shadow.displayText
+		end
+
+		if enabled and s.textures then
+			specCache.shadow.settings.textures = core.textures
+		else
+			specCache.shadow.settings.textures = class.shadow.textures
+		end
+
+		if enabled and s.thresholds then
+			specCache.shadow.settings.thresholds = core.thresholds
+		else
+			specCache.shadow.settings.thresholds = class.shadow.thresholds
+		end
+
+		specCache.shadow.settings.colors = class.shadow.colors
 	end
 
 	local function Setup_Holy()
@@ -4979,6 +5035,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function SwitchSpec()
 		local specId = GetSpecialization()
+		MapSettings()
 		if specId == 1 then
 		elseif specId == 2 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.priest.holy)
@@ -5000,7 +5057,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			if TRB.Data.barConstructedForSpec ~= "shadow" then
 				TRB.Data.barConstructedForSpec = "shadow"
-				ConstructResourceBar(TRB.Data.settings.priest.shadow)
+				ConstructResourceBar(specCache.shadow.settings)
 			end
 		end
 		EventRegistration()
@@ -5059,8 +5116,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.barConstructedForSpec = nil
 							SwitchSpec()
 							TRB.Options.Priest.ConstructOptionsPanel(specCache)
+							-- Map settings for global vs spec
+							MapSettings()
 							-- Reconstruct just in case
-							ConstructResourceBar(TRB.Data.settings.priest[TRB.Data.barConstructedForSpec])
+							if specId == 3 then
+								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+							else
+								ConstructResourceBar(TRB.Data.settings.priest[TRB.Data.barConstructedForSpec])
+							end
 							EventRegistration()
 						end)
 					end)
