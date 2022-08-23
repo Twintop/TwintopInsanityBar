@@ -27,7 +27,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local specCache = {
 		holy = {
 			snapshotData = {},
-			barTextVariables = {}
+			barTextVariables = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
+			}
 		},
 		shadow = {
 			snapshotData = {},
@@ -1044,51 +1052,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function MapSettings()
-		local class = TRB.Data.settings.priest
-		local core = TRB.Data.settings.core
-		local c = core.globalSettings.priest
-		local enabled = core.globalSettings.globalEnable or c.shadow.specEnable
-		local s = c.shadow
-
-		if enabled and s.bar then
-			specCache.shadow.settings.bar = core.bar
-			print("bar!")
-		else
-			print("no bar :(")
-			specCache.shadow.settings.bar = class.shadow.bar
-		end
-
-		if enabled and s.comboPoints then
-			specCache.shadow.settings.comboPoints = core.comboPoints
-		else
-			specCache.shadow.settings.comboPoints = class.shadow.comboPoints
-		end
-
-		if enabled and s.displayBar then
-			specCache.shadow.settings.displayBar = core.displayBar
-		else
-			specCache.shadow.settings.displayBar = class.shadow.displayBar
-		end
-
-		if enabled and s.font then
-			specCache.shadow.settings.displayText = core.font
-		else
-			specCache.shadow.settings.displayText = class.shadow.displayText
-		end
-
-		if enabled and s.textures then
-			specCache.shadow.settings.textures = core.textures
-		else
-			specCache.shadow.settings.textures = class.shadow.textures
-		end
-
-		if enabled and s.thresholds then
-			specCache.shadow.settings.thresholds = core.thresholds
-		else
-			specCache.shadow.settings.thresholds = class.shadow.thresholds
-		end
-
-		specCache.shadow.settings.colors = class.shadow.colors
 	end
 
 	local function Setup_Holy()
@@ -1096,6 +1059,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			return
 		end
 
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "priest", "holy")
 		TRB.Functions.LoadFromSpecCache(specCache.holy)
 	end
 
@@ -1305,6 +1269,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			return
 		end
 
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "priest", "shadow")
 		TRB.Functions.LoadFromSpecCache(specCache.shadow)
 	end
 

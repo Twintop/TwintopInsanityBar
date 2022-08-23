@@ -431,7 +431,6 @@ local function FillSpellDataManaCost(spells)
 end
 TRB.Functions.FillSpellDataManaCost = FillSpellDataManaCost
 
-
 local function ResetSnapshotData()
 	TRB.Data.snapshotData = {
 		resource = 0,
@@ -482,6 +481,56 @@ local function LoadFromSpecCache(cache)
 	TRB.Data.character.specGroup = GetActiveSpecGroup()
 end
 TRB.Functions.LoadFromSpecCache = LoadFromSpecCache
+
+local function FillSpecCacheSettings(settings, cache, className, specName)
+	local specCache = cache[specName]
+	--local class = TRB.Data.settings[className]
+	local core = settings.core
+	local s = core.globalSettings[className][specName]
+	local enabled = (core.globalSettings.globalEnable or s.specEnable) and specCache.settings ~= nil
+	local spec = settings[className][specName]
+
+	if enabled and s.bar then
+		specCache.settings.bar = core.bar
+		--print("bar!")
+	else
+		--print("no bar :(")
+		specCache.settings.bar = spec.bar
+	end
+
+	if enabled and s.comboPoints then
+		specCache.settings.comboPoints = core.comboPoints
+	else
+		specCache.settings.comboPoints = spec.comboPoints
+	end
+
+	if enabled and s.displayBar then
+		specCache.settings.displayBar = core.displayBar
+	else
+		specCache.settings.displayBar = spec.displayBar
+	end
+
+	if enabled and s.font then
+		specCache.settings.displayText = core.font
+	else
+		specCache.settings.displayText = spec.displayText
+	end
+
+	if enabled and s.textures then
+		specCache.settings.textures = core.textures
+	else
+		specCache.settings.textures = spec.textures
+	end
+
+	if enabled and s.thresholds then
+		specCache.settings.thresholds = core.thresholds
+	else
+		specCache.settings.thresholds = spec.thresholds
+	end
+
+	specCache.settings.colors = spec.colors
+end
+TRB.Functions.FillSpecCacheSettings = FillSpecCacheSettings
 
 local function GetSpellRemainingTime(snapshotSpell, leeway)
 	-- For snapshotData objects that contain .isActive or .endTime
@@ -2158,7 +2207,6 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 	return RemoveInvalidVariablesFromBarText_Inner(inputString)
 end
 TRB.Functions.RemoveInvalidVariablesFromBarText = RemoveInvalidVariablesFromBarText
-
 
 -- Character Functions
 
