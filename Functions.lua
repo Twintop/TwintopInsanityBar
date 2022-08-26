@@ -74,7 +74,7 @@ TRB.Functions.IsNumeric = IsNumeric
 
 local function RoundTo(num, numDecimalPlaces, mode)
 	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
-	local newNum = tonumber(num) or 0
+	local newNum = tostring(tonumber(num) or 0)
 	if mode == "floor" then
 		local whole, decimal = strsplit(".", newNum, 2)
 
@@ -99,13 +99,13 @@ local function RoundTo(num, numDecimalPlaces, mode)
 				whole = (tonumber(whole) or 0) + 1
 			end
 
-			newNum = whole
+			newNum = tostring(whole)
 		elseif decimal == nil or strlen(decimal) == 0 then
 			newNum = string.format("%s.%0" .. numDecimalPlaces .. "d", whole, 0)
 		else
 			local chopped = string.sub(decimal, 1, numDecimalPlaces)
 			if tonumber(string.format("0.%s", chopped)) < tonumber(string.format("0.%s", decimal)) then
-				chopped = chopped + 1
+				chopped = tostring(tonumber(chopped) + 1)
 			end
 
 			if strlen(chopped) < numDecimalPlaces then
@@ -849,12 +849,14 @@ local function ResetThresholdLine(threshold, settings, hasIcon)
 	
 	if hasIcon == true then
 		threshold.icon = threshold.icon or CreateFrame("Frame", nil, threshold, "BackdropTemplate")
-
 		threshold.icon:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
 		threshold.icon:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		threshold.icon.texture = threshold.icon.texture or threshold.icon:CreateTexture(nil, TRB.Data.settings.core.strata.level)
+		threshold.icon.texture = threshold.icon.texture or threshold.icon:CreateTexture(nil, "BACKGROUND")--TRB.Data.settings.core.strata.level)
+---@diagnostic disable-next-line: param-type-mismatch
 		threshold.icon.texture:SetAllPoints(threshold.icon)
+---@diagnostic disable-next-line: param-type-mismatch
 		threshold.icon.cooldown = threshold.icon.cooldown or CreateFrame("Cooldown", nil, threshold.icon, "CooldownFrameTemplate")
+---@diagnostic disable-next-line: param-type-mismatch
 		threshold.icon.cooldown:SetAllPoints(threshold.icon)
 		threshold.icon.cooldown:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
 		threshold.icon.cooldown:SetFrameStrata(TRB.Data.settings.core.strata.level)
@@ -1575,8 +1577,8 @@ local function RefreshLookupDataBase(settings)
 
 	--$ttd
 	local _ttd = 0
-	local ttd = ""
-	local ttdTotalSeconds = ""
+	local ttd = "--"
+	local ttdTotalSeconds = "0"
 
 	if TRB.Data.snapshotData.targetData.ttdIsActive and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd ~= 0 then
 		local target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
@@ -1585,9 +1587,6 @@ local function RefreshLookupDataBase(settings)
 		_ttd = target.ttd
 		ttdTotalSeconds = string.format("%s", TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor"))
 		ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
-	else
-		ttd = "--"
-		ttdTotalSeconds = TRB.Functions.RoundTo(0, TRB.Data.settings.core.ttd.precision or 1, "floor")
 	end
 
 	--#castingIcon
@@ -2344,10 +2343,14 @@ local function UpdateSnapshot()
 	TRB.Data.snapshotData.masteryRating = GetCombatRating(26)
 	TRB.Data.snapshotData.versatilityRating = GetCombatRating(29)
 	
-	_, TRB.Data.snapshotData.strength, _, _ = UnitStat("player", 1)
-	_, TRB.Data.snapshotData.agility, _, _ = UnitStat("player", 2)
-	_, TRB.Data.snapshotData.stamina, _, _ = UnitStat("player", 3)
-	_, TRB.Data.snapshotData.intellect, _, _ = UnitStat("player", 4)
+---@diagnostic disable-next-line: assign-type-mismatch
+	TRB.Data.snapshotData.strength, _, _, _ = UnitStat("player", 1)
+	---@diagnostic disable-next-line: assign-type-mismatch
+	TRB.Data.snapshotData.agility, _, _, _ = UnitStat("player", 2)
+	---@diagnostic disable-next-line: assign-type-mismatch
+	TRB.Data.snapshotData.stamina, _, _, _ = UnitStat("player", 3)
+	---@diagnostic disable-next-line: assign-type-mismatch
+	TRB.Data.snapshotData.intellect, _, _, _ = UnitStat("player", 4)
 
 	if IsInJailersTower() then
 		TRB.Data.character.torghast.rampaging.spellCostModifier, TRB.Data.character.torghast.rampaging.coolDownReduction = TRB.Functions.GetRampagingBuff()

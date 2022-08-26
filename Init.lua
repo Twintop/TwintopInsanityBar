@@ -35,16 +35,23 @@ TRB.Details.addonData = addonData
 TRB.Frames = {}
 
 TRB.Frames.barContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame", UIParent, "BackdropTemplate")
+---@diagnostic disable-next-line: param-type-mismatch
 TRB.Frames.resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
+---@diagnostic disable-next-line: param-type-mismatch
 TRB.Frames.castingFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
+---@diagnostic disable-next-line: param-type-mismatch
 TRB.Frames.passiveFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
+---@diagnostic disable-next-line: param-type-mismatch
 TRB.Frames.barBorderFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
 
 TRB.Frames.passiveFrame.thresholds = {}
 TRB.Frames.resourceFrame.thresholds = {}
 
+---@diagnostic disable-next-line: param-type-mismatch
 TRB.Frames.leftTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
+---@diagnostic disable-next-line: param-type-mismatch
 TRB.Frames.middleTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
+---@diagnostic disable-next-line: param-type-mismatch
 TRB.Frames.rightTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
 
 TRB.Frames.leftTextFrame.font = TRB.Frames.leftTextFrame:CreateFontString(nil, "BACKGROUND")
@@ -63,10 +70,12 @@ TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 -- We're going to make these as StatusBars so we can use them for Death Knight runes and Warlock soulshards in the future
 if classIndexId == 4 or classIndexId == 10 or classIndexId == 11 then
 	TRB.Frames.resource2Frames = {}
+	---@diagnostic disable-next-line: param-type-mismatch
 	TRB.Frames.resource2ContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame2", TRB.Frames.barContainerFrame, "BackdropTemplate")
 	
 	for x = 1, 6 do
 		TRB.Frames.resource2Frames[x] = {}
+		---@diagnostic disable-next-line: param-type-mismatch
 		TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", nil, TRB.Frames.resource2ContainerFrame, "BackdropTemplate")
 		TRB.Frames.resource2Frames[x].borderFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
 		TRB.Frames.resource2Frames[x].resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")

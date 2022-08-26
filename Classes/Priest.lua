@@ -2453,6 +2453,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local normalizedMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
 		-- This probably needs to be pulled every refresh
+---@diagnostic disable-next-line: cast-local-type
 		TRB.Data.snapshotData.manaRegen, _ = GetPowerRegen()
 
 		local currentManaColor = TRB.Data.settings.priest.holy.colors.text.current
@@ -2580,7 +2581,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		-----------
 		--$swpCount and $swpTime
 		local _shadowWordPainCount = TRB.Data.snapshotData.targetData.shadowWordPain or 0
-		local shadowWordPainCount = _shadowWordPainCount
+		local shadowWordPainCount = string.format("%s", _shadowWordPainCount)
 		local _shadowWordPainTime = 0
 		
 		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
@@ -2909,7 +2910,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		----------
 		--$swpCount and $swpTime
 		local _shadowWordPainCount = TRB.Data.snapshotData.targetData.shadowWordPain or 0
-		local shadowWordPainCount = _shadowWordPainCount
+		local shadowWordPainCount = string.format("%s", _shadowWordPainCount)
 		local _shadowWordPainTime = 0
 		
 		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
@@ -2920,7 +2921,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		--$vtCount and $vtTime
 		local _vampiricTouchCount = TRB.Data.snapshotData.targetData.vampiricTouch or 0
-		local vampiricTouchCount = _vampiricTouchCount
+		local vampiricTouchCount = string.format("%s", _vampiricTouchCount)
 		local _vampiricTouchTime = 0
 		
 		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
@@ -3000,7 +3001,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local __ttd = 0
 		local ttd = ""
 		local _ttdTotalSeconds = 0
-		local ttdTotalSeconds = 0
+		local ttdTotalSeconds = "0"
 
 		if TRB.Data.snapshotData.targetData.ttdIsActive and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd ~= 0 then
 			local target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
@@ -4689,17 +4690,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					elseif spellId == TRB.Data.spells.holyWordSerenity.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Serenity
----@diagnostic disable-next-line: redundant-parameter
+---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.holyWordSerenity.startTime, TRB.Data.snapshotData.holyWordSerenity.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordSerenity.id)
 						end
 					elseif spellId == TRB.Data.spells.holyWordSanctify.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Sanctify
----@diagnostic disable-next-line: redundant-parameter
+---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.holyWordSanctify.startTime, TRB.Data.snapshotData.holyWordSanctify.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordSanctify.id)
 						end
 					elseif spellId == TRB.Data.spells.holyWordChastise.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Chastise
----@diagnostic disable-next-line: redundant-parameter
+---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.holyWordChastise.startTime, TRB.Data.snapshotData.holyWordChastise.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordChastise.id)
 						end
 					elseif spellId == TRB.Data.spells.divineConversation.id then

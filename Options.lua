@@ -243,7 +243,7 @@ local function LoadDefaultSettings()
                         font = false,
                         textures = false,
                         thresholds = false
-                    }
+                    }                    
                 },
                 rogue = {
                     assassination = {

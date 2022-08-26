@@ -5,6 +5,7 @@ TRB.UiFunctions = {}
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
 function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
 	local f = CreateFrame("Slider", nil, parent, "BackdropTemplate")
+    ---@diagnostic disable-next-line: param-type-mismatch
 	f.EditBox = CreateFrame("EditBox", nil, f, "BackdropTemplate")
 	f:SetPoint("TOPLEFT", posX+18, posY)
 	f:SetMinMaxValues(minValue, maxValue)
@@ -36,6 +37,7 @@ function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultV
     f.MinLabel:SetSize(0, 14)
     ---@diagnostic disable-next-line: redundant-parameter
     f.MinLabel:SetWordWrap(false)
+---@diagnostic disable-next-line: param-type-mismatch
     f.MinLabel:SetPoint("TopLeft", f, "BottomLeft", 0, -1)
     f.MinLabel:SetText(minValue)
     f.MaxLabel = f:CreateFontString(nil, "Overlay")
@@ -43,6 +45,7 @@ function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultV
     f.MaxLabel:SetSize(0, 14)
     ---@diagnostic disable-next-line: redundant-parameter
     f.MaxLabel:SetWordWrap(false)
+---@diagnostic disable-next-line: param-type-mismatch
     f.MaxLabel:SetPoint("TopRight", f, "BottomRight", 0, -1)
     f.MaxLabel:SetText(maxValue)
     f.Title = f:CreateFontString(nil, "Overlay")
@@ -50,6 +53,7 @@ function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultV
     f.Title:SetSize(0, 14)
     ---@diagnostic disable-next-line: redundant-parameter
     f.Title:SetWordWrap(false)
+---@diagnostic disable-next-line: param-type-mismatch
     f.Title:SetPoint("Bottom", f, "Top")
     f.Title:SetText(title)
     f.Thumb = f:CreateTexture(nil, "Artwork")
@@ -64,6 +68,7 @@ function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultV
     eb:SetJustifyH("Center")
     eb:SetFontObject(GameFontHighlightSmall)
     eb:SetSize(50, 14)
+---@diagnostic disable-next-line: param-type-mismatch
     eb:SetPoint("Top", f, "Bottom", 0, -1)
     eb:SetTextInsets(4, 4, 0, 0)
     eb:SetBackdrop({
@@ -115,9 +120,11 @@ function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultV
     eb:SetScript("OnEditFocusGained", function(self)
         self:HighlightText(0, -1)
     end)
+---@diagnostic disable-next-line: param-type-mismatch
     f.Plus = CreateFrame("Button", nil, f)
     f.Plus:SetSize(18, 18)
     f.Plus:RegisterForClicks("AnyUp")
+---@diagnostic disable-next-line: param-type-mismatch
     f.Plus:SetPoint("Left", f, "Right", 0, 0)
     f.Plus:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
     f.Plus:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
@@ -125,9 +132,11 @@ function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultV
     f.Plus:SetScript("OnClick", function(self)
         f:SetValue(f:GetValue() + f:GetValueStep())
     end)
+---@diagnostic disable-next-line: param-type-mismatch
     f.Minus = CreateFrame("Button", nil, f)
     f.Minus:SetSize(18, 18)
     f.Minus:RegisterForClicks("AnyUp")
+---@diagnostic disable-next-line: param-type-mismatch
     f.Minus:SetPoint("Right", f, "Left", 0, 0)
     f.Minus:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
     f.Minus:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down")
@@ -251,7 +260,8 @@ function TRB.UiFunctions:BuildColorPicker(parent, description, settingsEntry, si
 	f.Texture:SetColorTexture(TRB.Functions.GetRGBAFromString(settingsEntry, true))
     f:EnableMouse(true)
 	f.Font = f:CreateFontString(nil, settings.core.strata.level)
-	f.Font:SetPoint("LEFT", f, "RIGHT", 10, 0)
+---@diagnostic disable-next-line: param-type-mismatch
+    f.Font:SetPoint("LEFT", f, "RIGHT", 10, 0)
 	f.Font:SetFontObject(GameFontHighlight)
 	f.Font:SetText(description)
     ---@diagnostic disable-next-line: redundant-parameter
@@ -410,6 +420,7 @@ function TRB.UiFunctions:CreateTabFrameContainer(name, parent, width, height, is
 
     if not isManualScrollFrame then
         cf.scrollFrame = TRB.UiFunctions:CreateScrollFrameContainer(name .. "ScrollFrame", cf, width - 30, height - 8)
+---@diagnostic disable-next-line: param-type-mismatch
         cf.scrollFrame:SetPoint("TOPLEFT", cf, "TOPLEFT", 5, -5)
     end
     return cf
@@ -463,6 +474,7 @@ function TRB.UiFunctions:CreateBarTextInputPanel(parent, name, text, width, heig
     s:SetSize(width, height)
     s:SetPoint("TOPLEFT", parent, "TOPLEFT", xPos, yPos)
     
+---@diagnostic disable-next-line: param-type-mismatch
     s.ScrollFrame = CreateFrame("EditBox", nil, s, "BackdropTemplate")
     local e = s.ScrollFrame
     e:SetTextInsets(4, 4, 0, 0)
@@ -500,7 +512,7 @@ function TRB.UiFunctions:CreateBarTextInputPanel(parent, name, text, width, heig
     e:SetText(text)
     e:SetAutoFocus(false)
 
-
+---@diagnostic disable-next-line: param-type-mismatch
     s:SetScrollChild(e)
     return e
 end
