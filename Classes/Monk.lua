@@ -1322,6 +1322,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local normalizedMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
 		-- This probably needs to be pulled every refresh
+---@diagnostic disable-next-line: cast-local-type
 		TRB.Data.snapshotData.manaRegen, _ = GetPowerRegen()
 
 		local currentManaColor = TRB.Data.settings.priest.holy.colors.text.current
@@ -1532,7 +1533,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		--$casting
 		local castingEnergy = string.format("|c%s%.0f|r", castingEnergyColor, TRB.Data.snapshotData.casting.resourceFinal)
 		--$passive
-		local _regenEnergy = TRB.Data.snapshotData.energyRegen
+		local _regenEnergy = 0
 		local _passiveEnergy
 		local _passiveEnergyMinusRegen
 
@@ -1540,12 +1541,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		if TRB.Data.settings.monk.windwalker.generation.enabled then
 			if TRB.Data.settings.monk.windwalker.generation.mode == "time" then
-				_regenEnergy = _regenEnergy * (TRB.Data.settings.monk.windwalker.generation.time or 3.0)
+				_regenEnergy = TRB.Data.snapshotData.energyRegen * (TRB.Data.settings.monk.windwalker.generation.time or 3.0)
 			else
-				_regenEnergy = _regenEnergy * ((TRB.Data.settings.monk.windwalker.generation.gcds or 2) * _gcd)
+				_regenEnergy = TRB.Data.snapshotData.energyRegen * ((TRB.Data.settings.monk.windwalker.generation.gcds or 2) * _gcd)
 			end
-		else
-			_regenEnergy = 0
 		end
 
 		--$regenEnergy
@@ -1568,28 +1567,28 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		
 		--$serenityTime
 		local _serenityTime = GetSerenityRemainingTime()
-		local serenityTime = 0
+		local serenityTime = "0.0"
 		if _serenityTime ~= nil then
 			serenityTime = string.format("%.1f", _serenityTime)
 		end
 		
 		--$danceOfChiJiTime
 		local _danceOfChiJiTime = GetDanceOfChiJiRemainingTime()
-		local danceOfChiJiTime = 0
+		local danceOfChiJiTime = "0.0"
 		if _danceOfChiJiTime ~= nil then
 			danceOfChiJiTime = string.format("%.1f", _danceOfChiJiTime)
 		end
 		
 		--$motcMinTime
 		local _motcMinTime = (TRB.Data.snapshotData.markOfTheCrane.minEndTime or 0) - currentTime
-		local motcMinTime = 0
+		local motcMinTime = "0.0"
 		if _motcMinTime > 0 then
 			motcMinTime = string.format("%.1f", _motcMinTime)
 		end
 		
 		--$motcMaxTime
 		local _motcMaxTime = (TRB.Data.snapshotData.markOfTheCrane.maxEndTime or 0) - currentTime
-		local motcMaxTime = 0
+		local motcMaxTime = "0.0"
 		if _motcMaxTime > 0 then
 			motcMaxTime = string.format("%.1f", _motcMaxTime)
 		end
@@ -1604,9 +1603,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end
 
 		local _motcCount = TRB.Data.snapshotData.markOfTheCrane.count or 0
-		local motcCount = _motcCount
+		local motcCount = tostring(_motcCount)
 		local _motcActiveCount = TRB.Data.snapshotData.markOfTheCrane.activeCount or 0
-		local motcActiveCount = _motcActiveCount
+		local motcActiveCount = tostring(_motcActiveCount)
 
 		local motcTime
 
@@ -1635,7 +1634,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		--$t28BuildingTime
 		local _t28BuildingTime = GetPrimordialPotentialRemainingTime()
-		local t28BuildingTime = 0
+		local t28BuildingTime = "0.0"
 		if _t28BuildingTime ~= nil then
 			t28BuildingTime = string.format("%.1f", _t28BuildingTime)
 		end
@@ -1644,7 +1643,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	
 		--$t28Time
 		local _t28Time = GetPrimordialPowerRemainingTime()
-		local t28Time = 0
+		local t28Time = "0.0"
 		if _t28Time ~= nil then
 			t28Time = string.format("%.1f", _t28Time)
 		end

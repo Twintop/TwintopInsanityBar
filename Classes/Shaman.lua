@@ -1203,7 +1203,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		----------
 		--$fsCount and $fsTime
 		local _flameShockCount = TRB.Data.snapshotData.targetData.flameShock or 0
-		local flameShockCount = _flameShockCount
+		local flameShockCount = tostring(_flameShockCount)
 		local _flameShockTime = 0
 		
 		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
@@ -1237,7 +1237,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local icefuryStacks = TRB.Data.snapshotData.icefury.stacks or 0
 		--$ifStacks
 		local _icefuryTime = GetIcefuryRemainingTime()
-		local icefuryTime = 0
+		local icefuryTime = "0.0"
 		if _icefuryTime > 0 then
 			icefuryTime = string.format("%.1f", _icefuryTime)
 		end
@@ -1246,14 +1246,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local stormkeeperStacks = TRB.Data.snapshotData.stormkeeper.stacks or 0
 		--$skStacks
 		local _stormkeeperTime = GetStormkeeperRemainingTime()
-		local stormkeeperTime = 0
+		local stormkeeperTime = "0.0"
 		if stormkeeperStacks > 0 then
 			stormkeeperTime = string.format("%.1f", _stormkeeperTime)
 		end
 
 		--$eogsTime
 		local _eogsTime = GetEchoesOfGreatSunderingRemainingTime()
-		local eogsTime = 0
+		local eogsTime = "0.0"
 		if _eogsTime > 0 then
 			eogsTime = string.format("%.1f", _eogsTime)
 		end
@@ -1344,6 +1344,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local normalizedMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
 		-- This probably needs to be pulled every refresh
+---@diagnostic disable-next-line: cast-local-type
 		TRB.Data.snapshotData.manaRegen, _ = GetPowerRegen()
 
 		local currentManaColor = TRB.Data.settings.priest.holy.colors.text.current
@@ -1428,7 +1429,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		----------
 		--$fsCount and $fsTime
 		local _flameShockCount = TRB.Data.snapshotData.targetData.flameShock or 0
-		local flameShockCount = _flameShockCount
+		local flameShockCount = tostring(_flameShockCount)
 		local _flameShockTime = 0
 		
 		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then

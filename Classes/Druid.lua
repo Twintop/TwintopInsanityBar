@@ -2761,7 +2761,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		----------
 		--$sunfireCount and $sunfireTime
         local _sunfireCount = TRB.Data.snapshotData.targetData.sunfire or 0
-		local sunfireCount = _sunfireCount
+		local sunfireCount = tostring(_sunfireCount)
 		local _sunfireTime = 0
 		
 		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
@@ -2772,7 +2772,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
         --$moonfireCount and $moonfireTime
         local _moonfireCount = TRB.Data.snapshotData.targetData.moonfire or 0
-		local moonfireCount = _moonfireCount
+		local moonfireCount = tostring(_moonfireCount)
 		local _moonfireTime = 0
 		
 		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
@@ -2783,7 +2783,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
         --$stellarFlareCount and $stellarFlareTime
 		local _stellarFlareCount = TRB.Data.snapshotData.targetData.stellarFlare or 0
-		local stellarFlareCount = _stellarFlareCount
+		local stellarFlareCount = tostring(_stellarFlareCount)
 		local _stellarFlareTime = 0
 		
 		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
@@ -2895,7 +2895,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		--$eclipseTime
 		local _eclispeTime, eclipseIcon = GetEclipseRemainingTime()
-		local eclipseTime = 0
+		local eclipseTime = "0.0"
 		if _eclispeTime ~= nil then
 			eclipseTime = string.format("%.1f", _eclispeTime)
 		end
@@ -3140,7 +3140,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		--$casting
 		local castingEnergy = string.format("|c%s%.0f|r", castingEnergyColor, TRB.Data.snapshotData.casting.resourceFinal)
 		--$passive
-		local _regenEnergy = TRB.Data.snapshotData.energyRegen
+		local _regenEnergy = 0
 		local _passiveEnergy
 		local _passiveEnergyMinusRegen
 
@@ -3148,12 +3148,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		if TRB.Data.settings.druid.feral.generation.enabled then
 			if TRB.Data.settings.druid.feral.generation.mode == "time" then
-				_regenEnergy = _regenEnergy * (TRB.Data.settings.druid.feral.generation.time or 3.0)
+				_regenEnergy = TRB.Data.snapshotData.energyRegen * (TRB.Data.settings.druid.feral.generation.time or 3.0)
 			else
-				_regenEnergy = _regenEnergy * ((TRB.Data.settings.druid.feral.generation.gcds or 2) * _gcd)
+				_regenEnergy = TRB.Data.snapshotData.energyRegen * ((TRB.Data.settings.druid.feral.generation.gcds or 2) * _gcd)
 			end
-		else
-			_regenEnergy = 0
 		end
 
 		--$regenEnergy
@@ -3178,7 +3176,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		----------
 		--$ripCount and $ripTime
         local _ripCount = TRB.Data.snapshotData.targetData.rip or 0
-		local ripCount = _ripCount
+		local ripCount = tostring(_ripCount)
 		local _ripTime = 0
 		local ripTime
 		local _ripSnapshot = 0
@@ -3189,7 +3187,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		--$rakeCount and $rakeTime
         local _rakeCount = TRB.Data.snapshotData.targetData.rake or 0
-		local rakeCount = _rakeCount
+		local rakeCount = tostring(_rakeCount)
 		local _rakeTime = 0
 		local rakeTime
 		local _rakeSnapshot = 0
@@ -3200,7 +3198,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		--$thrashCount and $thrashTime
         local _thrashCount = TRB.Data.snapshotData.targetData.thrash or 0
-		local thrashCount = _thrashCount
+		local thrashCount = tostring(_thrashCount)
 		local _thrashTime = 0
 		local thrashTime
 		local _thrashSnapshot = 0
@@ -3211,7 +3209,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
         --$moonfireCount and $moonfireTime
         local _moonfireCount = TRB.Data.snapshotData.targetData.moonfire or 0
-		local moonfireCount = _moonfireCount
+		local moonfireCount = tostring(_moonfireCount)
 		local _moonfireTime = 0
 		local moonfireTime
 		local _moonfireSnapshot = 0
@@ -3567,6 +3565,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local normalizedMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
 		-- This probably needs to be pulled every refresh
+---@diagnostic disable-next-line: cast-local-type
 		TRB.Data.snapshotData.manaRegen, _ = GetPowerRegen()
 
 		local currentManaColor = TRB.Data.settings.priest.holy.colors.text.current
@@ -3659,7 +3658,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		----------
 		--$sunfireCount and $sunfireTime
         local _sunfireCount = TRB.Data.snapshotData.targetData.sunfire or 0
-		local sunfireCount = _sunfireCount
+		local sunfireCount = tostring(_sunfireCount)
 		local _sunfireTime = 0
 		
 		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
@@ -3670,7 +3669,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
         --$moonfireCount and $moonfireTime
         local _moonfireCount = TRB.Data.snapshotData.targetData.moonfire or 0
-		local moonfireCount = _moonfireCount
+		local moonfireCount = tostring(_moonfireCount)
 		local _moonfireTime = 0
 		
 		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
@@ -4082,7 +4081,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		end
 
----@diagnostic disable-next-line: redundant-parameter
+---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 		TRB.Data.snapshotData.newMoon.charges, TRB.Data.snapshotData.newMoon.maxCharges, TRB.Data.snapshotData.newMoon.startTime, TRB.Data.snapshotData.newMoon.duration, _ = GetSpellCharges(TRB.Data.spells.newMoon.id)
 
 		if TRB.Data.character.items.primordialArcanicPulsar then
@@ -4134,7 +4133,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		if TRB.Data.character.talents.brutalSlash.isSelected then
----@diagnostic disable-next-line: redundant-parameter
+---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 			TRB.Data.snapshotData.brutalSlash.charges, TRB.Data.snapshotData.brutalSlash.maxCharges, TRB.Data.snapshotData.brutalSlash.startTime, TRB.Data.snapshotData.brutalSlash.duration, _ = GetSpellCharges(TRB.Data.spells.brutalSlash.id)
 		end
 		

@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field, param-type-mismatch
 --[[
 
  base64 -- v1.5.3 public domain Lua base64 encoder/decoder

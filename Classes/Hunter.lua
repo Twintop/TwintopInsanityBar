@@ -1937,7 +1937,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		--$casting
 		local castingFocus = string.format("|c%s%.0f|r", castingFocusColor, TRB.Data.snapshotData.casting.resourceFinal)
 		--$passive
-		local _regenFocus = TRB.Data.snapshotData.focusRegen
+		local _regenFocus = 0
 		local _passiveFocus
 		local _passiveFocusMinusRegen
 
@@ -1945,12 +1945,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		if TRB.Data.settings.hunter.beastMastery.generation.enabled then
 			if TRB.Data.settings.hunter.beastMastery.generation.mode == "time" then
-				_regenFocus = _regenFocus * (TRB.Data.settings.hunter.beastMastery.generation.time or 3.0)
+				_regenFocus = TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.beastMastery.generation.time or 3.0)
 			else
-				_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.beastMastery.generation.gcds or 2) * _gcd)
+				_regenFocus = TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.beastMastery.generation.gcds or 2) * _gcd)
 			end
-		else
-			_regenFocus = 0
 		end
 
 		--$regenFocus
@@ -1964,7 +1962,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local barbedShotTicks = string.format("%.0f", TRB.Data.snapshotData.barbedShot.ticksRemaining)
 
 		--$barbedShotTime
-		local barbedShotTime = 0
+		local barbedShotTime = "0.0"
 		local _barbedShotTime = (TRB.Data.snapshotData.barbedShot.endTime or 0) - currentTime
 		if _barbedShotTime > 0 then
 			barbedShotTime = string.format("%.1f", _barbedShotTime)
@@ -1987,7 +1985,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		--$frenzyTime
 		local _frenzyTime = GetFrenzyRemainingTime()
-		local frenzyTime = 0
+		local frenzyTime = "0.0"
 		if _frenzyTime ~= nil then
 			frenzyTime = string.format("%.1f", _frenzyTime)
 		end
@@ -1997,21 +1995,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		--$flayersMarkTime
 		local _flayersMarkTime = GetFlayersMarkRemainingTime()
-		local flayersMarkTime = 0
+		local flayersMarkTime = "0.0"
 		if _flayersMarkTime ~= nil then
 			flayersMarkTime = string.format("%.1f", _flayersMarkTime)
 		end
 
 		--$nesingwarysTime
 		local _nesingwarysTime = GetNesingwarysRemainingTime()
-		local nesingwarysTime = 0
+		local nesingwarysTime = "0.0"
 		if _nesingwarysTime ~= nil then
 			nesingwarysTime = string.format("%.1f", _nesingwarysTime)
 		end
 
 		--$killingFrenzyTime
 		local _killingFrenzyTime = GetKillingFrenzyRemainingTime()
-		local killingFrenzyTime = 0
+		local killingFrenzyTime = "0.0"
 		if _killingFrenzyTime ~= nil then
 			killingFrenzyTime = string.format("%.1f", _killingFrenzyTime)
 		end
@@ -2159,19 +2157,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		--$casting
 		local castingFocus = string.format("|c%s%.0f|r", castingFocusColor, TRB.Data.snapshotData.casting.resourceFinal)
 		--$passive
-		local _regenFocus = TRB.Data.snapshotData.focusRegen
+		local _regenFocus = 0
 		local _passiveFocus
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
 		if TRB.Data.settings.hunter.marksmanship.generation.enabled then
 			if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
-				_regenFocus = _regenFocus * (TRB.Data.settings.hunter.marksmanship.generation.time or 3.0)
+				_regenFocus = TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.marksmanship.generation.time or 3.0)
 			else
-				_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.marksmanship.generation.gcds or 2) * _gcd)
+				_regenFocus = TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.marksmanship.generation.gcds or 2) * _gcd)
 			end
-		else
-			_regenFocus = 0
 		end
 
 		--$regenFocus
@@ -2191,49 +2187,49 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		--$trueshotTime
 		local _trueshotTime = GetTrueshotRemainingTime()
-		local trueshotTime = 0
+		local trueshotTime = "0.0"
 		if _trueshotTime ~= nil then
 			trueshotTime = string.format("%.1f", _trueshotTime)
 		end
 
 		--$steadyFocusTime
 		local _steadyFocusTime = GetSteadyFocusRemainingTime()
-		local steadyFocusTime = 0
+		local steadyFocusTime = "0.0"
 		if _steadyFocusTime ~= nil then
 			steadyFocusTime = string.format("%.1f", _steadyFocusTime)
 		end
 
 		--$lockAndLoadTime
 		local _lockAndLoadTime = GetLockAndLoadRemainingTime()
-		local lockAndLoadTime = 0
+		local lockAndLoadTime = "0.0"
 		if _lockAndLoadTime ~= nil then
 			lockAndLoadTime = string.format("%.1f", _lockAndLoadTime)
 		end
 
 		--$flayersMarkTime
 		local _flayersMarkTime = GetFlayersMarkRemainingTime()
-		local flayersMarkTime = 0
+		local flayersMarkTime = "0.0"
 		if _flayersMarkTime ~= nil then
 			flayersMarkTime = string.format("%.1f", _flayersMarkTime)
 		end
 
 		--$nesingwarysTime
 		local _nesingwarysTime = GetNesingwarysRemainingTime()
-		local nesingwarysTime = 0
+		local nesingwarysTime = "0.0"
 		if _nesingwarysTime ~= nil then
 			nesingwarysTime = string.format("%.1f", _nesingwarysTime)
 		end
 
 		--$vigilTime
 		local _vigilTime = GetVigilRemainingTime()
-		local vigilTime = 0
+		local vigilTime = "0.0"
 		if _vigilTime ~= nil then
 			vigilTime = string.format("%.1f", _vigilTime)
 		end
 
 		--$ssCount and $ssTime
 		local _serpentStingCount = TRB.Data.snapshotData.targetData.serpentSting or 0
-		local serpentStingCount = _serpentStingCount
+		local serpentStingCount = tostring(_serpentStingCount)
 		local _serpentStingTime = 0
 		
 		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
@@ -2394,19 +2390,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		--$toeTicks
 		local toeTicks = string.format("%.0f", TRB.Data.snapshotData.termsOfEngagement.ticksRemaining)
 
-		local _regenFocus = TRB.Data.snapshotData.focusRegen
+		local _regenFocus = 0
 		local _passiveFocus
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
 		if TRB.Data.settings.hunter.survival.generation.enabled then
 			if TRB.Data.settings.hunter.survival.generation.mode == "time" then
-				_regenFocus = _regenFocus * (TRB.Data.settings.hunter.survival.generation.time or 3.0)
+				_regenFocus = TRB.Data.snapshotData.focusRegen * (TRB.Data.settings.hunter.survival.generation.time or 3.0)
 			else
-				_regenFocus = _regenFocus * ((TRB.Data.settings.hunter.survival.generation.gcds or 2) * _gcd)
+				_regenFocus = TRB.Data.snapshotData.focusRegen * ((TRB.Data.settings.hunter.survival.generation.gcds or 2) * _gcd)
 			end
-		else
-			_regenFocus = 0
 		end
 
 		--$regenFocus
@@ -2427,21 +2421,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		--$coordinatedAssaultTime
 		local _coordinatedAssaultTime = GetCoordinatedAssaultRemainingTime()
-		local coordinatedAssaultTime = 0
+		local coordinatedAssaultTime = "0.0"
 		if _coordinatedAssaultTime ~= nil then
 			coordinatedAssaultTime = string.format("%.1f", _coordinatedAssaultTime)
 		end
 
 		--$flayersMarkTime
 		local _flayersMarkTime = GetFlayersMarkRemainingTime()
-		local flayersMarkTime = 0
+		local flayersMarkTime = "0.0"
 		if _flayersMarkTime ~= nil then
 			flayersMarkTime = string.format("%.1f", _flayersMarkTime)
 		end
 
 		--$nesingwarysTime
 		local _nesingwarysTime = GetNesingwarysRemainingTime()
-		local nesingwarysTime = 0
+		local nesingwarysTime = "0.0"
 		if _nesingwarysTime ~= nil then
 			nesingwarysTime = string.format("%.1f", _nesingwarysTime)
 		end
@@ -2451,14 +2445,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		
 		--$madBombardierTime
 		local _madBombardierTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.madBombardier)
-		local madBombardierTime = 0
+		local madBombardierTime = "0.0"
 		if _madBombardierTime ~= nil then
 			madBombardierTime = string.format("%.1f", _madBombardierTime)
 		end
 
 		--$ssCount and $ssTime
 		local _serpentStingCount = TRB.Data.snapshotData.targetData.serpentSting or 0
-		local serpentStingCount = _serpentStingCount
+		local serpentStingCount = tostring(_serpentStingCount)
 		local _serpentStingTime = 0
 		
 		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
@@ -2745,7 +2739,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Data.snapshotData.barbedShot.endTime = maxEndTime
 
 		-- Recharge info
----@diagnostic disable-next-line: redundant-parameter
+---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 		TRB.Data.snapshotData.barbedShot.charges, TRB.Data.snapshotData.barbedShot.maxCharges, TRB.Data.snapshotData.barbedShot.startTime, TRB.Data.snapshotData.barbedShot.duration, _ = GetSpellCharges(TRB.Data.spells.barbedShot.id)
 	end
 
@@ -3748,7 +3742,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						end
 					elseif spellId == TRB.Data.spells.barbedShot.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Barbed Shot
-							---@diagnostic disable-next-line: redundant-parameter
+							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.barbedShot.charges, TRB.Data.snapshotData.barbedShot.maxCharges, TRB.Data.snapshotData.barbedShot.startTime, TRB.Data.snapshotData.barbedShot.duration, _ = GetSpellCharges(TRB.Data.spells.barbedShot.id)
 						end
 					elseif spellId == TRB.Data.spells.barbedShot.buffId[1] or spellId == TRB.Data.spells.barbedShot.buffId[2] or spellId == TRB.Data.spells.barbedShot.buffId[3] or spellId == TRB.Data.spells.barbedShot.buffId[4] or spellId == TRB.Data.spells.barbedShot.buffId[5] then
@@ -3772,11 +3766,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						end
 					elseif spellId == TRB.Data.spells.killCommand.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							---@diagnostic disable-next-line: redundant-parameter
+							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.killCommand.startTime, TRB.Data.snapshotData.killCommand.duration, _, _ = GetSpellCooldown(TRB.Data.spells.killCommand.id)
 						end
 					elseif spellId == TRB.Data.spells.beastialWrath.id then
-						---@diagnostic disable-next-line: redundant-parameter
+						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 						TRB.Data.snapshotData.beastialWrath.startTime, TRB.Data.snapshotData.beastialWrath.duration, _, _ = GetSpellCooldown(TRB.Data.spells.beastialWrath.id)
 					elseif spellId == TRB.Data.spells.flamewakersCobraSting.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
@@ -3802,11 +3796,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 				elseif specId == 2 then --Marksmanship
 					if spellId == TRB.Data.spells.burstingShot.id then
-						---@diagnostic disable-next-line: redundant-parameter
+						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 						TRB.Data.snapshotData.burstingShot.startTime, TRB.Data.snapshotData.burstingShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.burstingShot.id)
 					elseif spellId == TRB.Data.spells.aimedShot.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							---@diagnostic disable-next-line: redundant-parameter
+							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.aimedShot.charges, TRB.Data.snapshotData.aimedShot.maxCharges, TRB.Data.snapshotData.aimedShot.startTime, TRB.Data.snapshotData.aimedShot.duration, _ = GetSpellCharges(TRB.Data.spells.aimedShot.id)
 							TRB.Data.snapshotData.audio.playedAimedShotCue = false
 						end
@@ -3816,7 +3810,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.barrage.duration = TRB.Data.spells.barrage.cooldown
 						end
 					elseif spellId == TRB.Data.spells.explosiveShot.id then
-						---@diagnostic disable-next-line: redundant-parameter
+						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 						TRB.Data.snapshotData.explosiveShot.startTime, TRB.Data.snapshotData.explosiveShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.explosiveShot.id)
 					elseif spellId == TRB.Data.spells.trueshot.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
@@ -3873,7 +3867,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						end
 					elseif spellId == TRB.Data.spells.secretsOfTheUnblinkingVigil.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							---@diagnostic disable-next-line: redundant-parameter
+							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.startTime, TRB.Data.snapshotData.secretsOfTheUnblinkingVigil.duration, _, _ = GetSpellCooldown(TRB.Data.spells.secretsOfTheUnblinkingVigil.id)
 
 							if TRB.Data.settings.hunter.marksmanship.audio.secretsOfTheUnblinkingVigil.enabled then
@@ -3910,13 +3904,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 				elseif specId == 3 then --Survival
 					if spellId == TRB.Data.spells.carve.id then
-						---@diagnostic disable-next-line: redundant-parameter
+						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 						TRB.Data.snapshotData.carve.startTime, TRB.Data.snapshotData.carve.duration, _, _ = GetSpellCooldown(TRB.Data.spells.carve.id)
 					elseif spellId == TRB.Data.spells.chakrams.id then
 						TRB.Data.snapshotData.chakrams.startTime = currentTime
 						TRB.Data.snapshotData.chakrams.duration = TRB.Data.spells.chakrams.cooldown
 					elseif spellId == TRB.Data.spells.flankingStrike.id then
-						---@diagnostic disable-next-line: redundant-parameter
+						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 						TRB.Data.snapshotData.flankingStrike.startTime, TRB.Data.snapshotData.flankingStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.flankingStrike.id)
 					elseif spellId == TRB.Data.spells.termsOfEngagement.id then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Terms of Engagement
@@ -3968,7 +3962,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							end
 						end
 					elseif spellId == TRB.Data.spells.wildfireBomb.id then
-						---@diagnostic disable-next-line: redundant-parameter
+						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.wildfireBomb.charges, TRB.Data.snapshotData.wildfireBomb.maxCharges, TRB.Data.snapshotData.wildfireBomb.startTime, TRB.Data.snapshotData.wildfireBomb.duration, _ = GetSpellCharges(TRB.Data.spells.wildfireBomb.id)
 					elseif spellId == TRB.Data.spells.madBombardier.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
@@ -3985,7 +3979,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 				-- Spec agnostic
 				if spellId == TRB.Data.spells.flayedShot.id then
-					---@diagnostic disable-next-line: redundant-parameter
+					---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 					TRB.Data.snapshotData.flayedShot.startTime, TRB.Data.snapshotData.flayedShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.flayedShot.id)
 				elseif spellId == TRB.Data.spells.killShot.id then
 					TRB.Data.snapshotData.audio.playedKillShotCue = false

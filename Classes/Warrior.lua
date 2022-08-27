@@ -1615,7 +1615,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		
 		--$rendCount and $rendTime
 		local _rendCount = TRB.Data.snapshotData.targetData.rend or 0
-		local rendCount = _rendCount
+		local rendCount = tostring(_rendCount)
 		local _rendTime = 0
 		
 		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
@@ -1625,7 +1625,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local rendTime
 
 		local _deepWoundsCount = TRB.Data.snapshotData.targetData.deepWounds or 0
-		local deepWoundsCount = _deepWoundsCount
+		local deepWoundsCount = tostring(_deepWoundsCount)
 		local _deepWoundsTime = 0
 		
 		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
@@ -1667,8 +1667,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		--#covenantAbility
 		local covenantAbilityIcon = ""
-		local covenantAbilityTicks = 0
-		local covenantAbilityRage = 0
+		local covenantAbilityTicks = "0.0"
+		local covenantAbilityRage = "0.0"
 
 		if TRB.Data.character.covenantId == 1 then
 			covenantAbilityIcon = TRB.Data.spells.spearOfBastion.icon
@@ -1878,8 +1878,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		--#covenantAbility
 		local covenantAbilityIcon = ""
-		local covenantAbilityTicks = 0
-		local covenantAbilityRage = 0
+		local covenantAbilityTicks = "0.0"
+		local covenantAbilityRage = "0.0"
 
 		if TRB.Data.character.covenantId == 1 then
 			covenantAbilityIcon = TRB.Data.spells.spearOfBastion.icon
@@ -2121,7 +2121,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.snapshotData.impendingVictory.startTime = nil
             TRB.Data.snapshotData.impendingVictory.duration = 0
 		elseif TRB.Data.snapshotData.impendingVictory.startTime ~= nil then
-			---@diagnostic disable-next-line: redundant-parameter
+			---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 			TRB.Data.snapshotData.impendingVictory.startTime, TRB.Data.snapshotData.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
         end
 
@@ -2129,11 +2129,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
             TRB.Data.snapshotData.ignorePain.startTime = nil
             TRB.Data.snapshotData.ignorePain.duration = 0
 		elseif TRB.Data.snapshotData.ignorePain.startTime ~= nil then
-			---@diagnostic disable-next-line: redundant-parameter
+			---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 			TRB.Data.snapshotData.ignorePain.startTime, TRB.Data.snapshotData.ignorePain.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ignorePain.id)
         end
 
----@diagnostic disable-next-line: redundant-parameter
+---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 		TRB.Data.snapshotData.shieldBlock.charges, TRB.Data.snapshotData.shieldBlock.maxCharges, TRB.Data.snapshotData.shieldBlock.startTime, TRB.Data.snapshotData.shieldBlock.duration, _ = GetSpellCharges(TRB.Data.spells.shieldBlock.id)
 	end
 
@@ -2684,12 +2684,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				if specId == 1 then --Arms
 					if spellId == TRB.Data.spells.mortalStrike.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							---@diagnostic disable-next-line: redundant-parameter
+							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.mortalStrike.startTime, TRB.Data.snapshotData.mortalStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.mortalStrike.id)
 						end
 					elseif spellId == TRB.Data.spells.cleave.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							---@diagnostic disable-next-line: redundant-parameter
+							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.cleave.startTime, TRB.Data.snapshotData.cleave.duration, _, _ = GetSpellCooldown(TRB.Data.spells.cleave.id)
 						end
 					elseif spellId == TRB.Data.spells.deadlyCalm.id then
@@ -2815,7 +2815,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				-- Spec Agnostic
 				if spellId == TRB.Data.spells.impendingVictory.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						---@diagnostic disable-next-line: redundant-parameter
+						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 						TRB.Data.snapshotData.impendingVictory.startTime, TRB.Data.snapshotData.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
 					end
 				elseif spellId == TRB.Data.spells.victoryRush.id then
@@ -2834,7 +2834,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					end
 				elseif spellId == TRB.Data.spells.shieldBlock.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						---@diagnostic disable-next-line: redundant-parameter
+						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 						TRB.Data.snapshotData.shieldBlock.charges, TRB.Data.snapshotData.shieldBlock.maxCharges, TRB.Data.snapshotData.shieldBlock.startTime, TRB.Data.snapshotData.shieldBlock.duration, _ = GetSpellCharges(TRB.Data.spells.shieldBlock.id)
 					end
 				elseif spellId == TRB.Data.spells.ancientAftershock.id then

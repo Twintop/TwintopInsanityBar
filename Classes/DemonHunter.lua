@@ -750,14 +750,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		--$metamorphosisTime
 		local _metamorphosisTime = GetMetamorphosisRemainingTime()
-		local metamorphosisTime = 0
+		local metamorphosisTime = "0.0"
 		if _metamorphosisTime ~= nil then
 			metamorphosisTime = string.format("%.1f", _metamorphosisTime)
 		end
 
 		--$metamorphosisTime
 		local _unboundChaosTime = GetUnboundChaosRemainingTime()
-		local unboundChaosTime = 0
+		local unboundChaosTime = "0.0"
 		if _unboundChaosTime ~= nil then
 			unboundChaosTime = string.format("%.1f", _unboundChaosTime)
 		end
@@ -770,7 +770,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		--$bhTime and $iaTime
 		local _bhTime = GetImmolationAuraRemainingTime()
-		local bhTime = 0
+		local bhTime = "0.0"
 		if _bhTime ~= nil then
 			bhTime = string.format("%.1f", _bhTime)
 		end
@@ -783,7 +783,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		--$preparedTime
 		local _preparedTime = GetPreparedRemainingTime()
-		local preparedTime = 0
+		local preparedTime = "0.0"
 		if _preparedTime ~= nil then
 			preparedTime = string.format("%.1f", _preparedTime)
 		end
@@ -1327,32 +1327,32 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				if specId == 1 then --Havoc
                     if spellId == TRB.Data.spells.bladeDance.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							---@diagnostic disable-next-line: redundant-parameter
+							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.bladeDance.id)
 						end
 					elseif spellId == TRB.Data.spells.deathSweep.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							---@diagnostic disable-next-line: redundant-parameter
+							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.deathSweep.id)
 						end
 					elseif spellId == TRB.Data.spells.chaosNova.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							---@diagnostic disable-next-line: redundant-parameter
+							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.chaosNova.startTime, TRB.Data.snapshotData.chaosNova.duration, _, _ = GetSpellCooldown(TRB.Data.spells.chaosNova.id)
 						end
 					elseif spellId == TRB.Data.spells.eyeBeam.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							---@diagnostic disable-next-line: redundant-parameter
+							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.eyeBeam.startTime, TRB.Data.snapshotData.eyeBeam.duration, _, _ = GetSpellCooldown(TRB.Data.spells.eyeBeam.id)
 						end
 					elseif spellId == TRB.Data.spells.glaiveTempest.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							---@diagnostic disable-next-line: redundant-parameter
+							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.glaiveTempest.startTime, TRB.Data.snapshotData.glaiveTempest.duration, _, _ = GetSpellCooldown(TRB.Data.spells.glaiveTempest.id)
 						end
 					elseif spellId == TRB.Data.spells.felEruption.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							---@diagnostic disable-next-line: redundant-parameter
+							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.felEruption.startTime, TRB.Data.snapshotData.felEruption.duration, _, _ = GetSpellCooldown(TRB.Data.spells.felEruption.id)
 						end
 					elseif spellId == TRB.Data.spells.metamorphosis.id then

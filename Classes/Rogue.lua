@@ -2345,7 +2345,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		--$casting
 		local castingEnergy = string.format("|c%s%.0f|r", castingEnergyColor, TRB.Data.snapshotData.casting.resourceFinal)
 		--$passive
-		local _regenEnergy = TRB.Data.snapshotData.energyRegen
+		local _regenEnergy = 0
 		local _passiveEnergy
 		local _passiveEnergyMinusRegen
 
@@ -2353,12 +2353,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		if TRB.Data.settings.rogue.assassination.generation.enabled then
 			if TRB.Data.settings.rogue.assassination.generation.mode == "time" then
-				_regenEnergy = _regenEnergy * (TRB.Data.settings.rogue.assassination.generation.time or 3.0)
+				_regenEnergy = TRB.Data.snapshotData.energyRegen * (TRB.Data.settings.rogue.assassination.generation.time or 3.0)
 			else
-				_regenEnergy = _regenEnergy * ((TRB.Data.settings.rogue.assassination.generation.gcds or 2) * _gcd)
+				_regenEnergy = TRB.Data.snapshotData.energyRegen * ((TRB.Data.settings.rogue.assassination.generation.gcds or 2) * _gcd)
 			end
-		else
-			_regenEnergy = 0
 		end
 
 		--$regenEnergy
@@ -2384,56 +2382,56 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		-- TODO: Somehow account for pandemic being variable
 		--$ctCount and $ctTime
 		local _ctCount = TRB.Data.snapshotData.targetData.crimsonTempest or 0
-		local ctCount = _ctCount
+		local ctCount = tostring(_ctCount)
 		local _ctTime = 0
 		local ctTime
 		
 		--$garroteCount and $garroteTime
 		local _garroteCount = TRB.Data.snapshotData.targetData.garrote or 0
-		local garroteCount = _garroteCount
+		local garroteCount = tostring(_garroteCount)
 		local _garroteTime = 0
 		local garroteTime
 		
 		--$ibCount and $ibTime
 		local _ibCount = TRB.Data.snapshotData.targetData.internalBleeding or 0
-		local ibCount = _ibCount
+		local ibCount = tostring(_ibCount)
 		local _ibTime = 0
 		local ibTime
 		
 		--$ruptureCount and $ruptureTime
 		local _ruptureCount = TRB.Data.snapshotData.targetData.rupture or 0
-		local ruptureCount = _ruptureCount
+		local ruptureCount = tostring(_ruptureCount)
 		local _ruptureTime = 0
 		local ruptureTime
 		
 		-- Poisons
 		--$cpCount and $cpTime
 		local _cpCount = TRB.Data.snapshotData.targetData.cripplingPoison or 0
-		local cpCount = _cpCount
+		local cpCount = tostring(_cpCount)
 		local _cpTime = 0
 		local cpTime
 				
 		--$dpCount and $cpTime
 		local _dpCount = TRB.Data.snapshotData.targetData.deadlyPoison or 0
-		local dpCount = _dpCount
+		local dpCount = tostring(_dpCount)
 		local _dpTime = 0
 		local dpTime
 				
 		--$npCount and $npTime
 		local _npCount = TRB.Data.snapshotData.targetData.numbingPoison or 0
-		local npCount = _npCount
+		local npCount = tostring(_npCount)
 		local _npTime = 0
 		local npTime
 				
 		--$wpCount and $wpTime
 		local _wpCount = TRB.Data.snapshotData.targetData.woundPoison or 0
-		local wpCount = _wpCount
+		local wpCount = tostring(_wpCount)
 		local _wpTime = 0
 		local wpTime
 		
 		--$sbsCount
 		local _sbsCount = TRB.Data.snapshotData.targetData.serratedBoneSpike or 0
-		local sbsCount = _sbsCount
+		local sbsCount = tostring(_sbsCount)
 		local _sbsOnTarget = false
 
 
@@ -2564,7 +2562,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		
 		--$blindsideTime
 		local _blindsideTime = GetBlindsideRemainingTime()
-		local blindsideTime = 0
+		local blindsideTime = "0.0"
 		if _blindsideTime ~= nil then
 			blindsideTime = string.format("%.1f", _blindsideTime)
 		end
@@ -2789,7 +2787,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		--$casting
 		local castingEnergy = string.format("|c%s%.0f|r", castingEnergyColor, TRB.Data.snapshotData.casting.resourceFinal)
 		--$passive
-		local _regenEnergy = TRB.Data.snapshotData.energyRegen
+		local _regenEnergy = 0
 		local _passiveEnergy
 		local _passiveEnergyMinusRegen
 
@@ -2797,12 +2795,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		if TRB.Data.settings.rogue.outlaw.generation.enabled then
 			if TRB.Data.settings.rogue.outlaw.generation.mode == "time" then
-				_regenEnergy = _regenEnergy * (TRB.Data.settings.rogue.outlaw.generation.time or 3.0)
+				_regenEnergy = TRB.Data.snapshotData.energyRegen * (TRB.Data.settings.rogue.outlaw.generation.time or 3.0)
 			else
-				_regenEnergy = _regenEnergy * ((TRB.Data.settings.rogue.outlaw.generation.gcds or 2) * _gcd)
+				_regenEnergy = TRB.Data.snapshotData.energyRegen * ((TRB.Data.settings.rogue.outlaw.generation.gcds or 2) * _gcd)
 			end
-		else
-			_regenEnergy = 0
 		end
 
 		--$regenEnergy
@@ -2826,25 +2822,25 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		-- Poisons
 		--$cpCount and $cpTime
 		local _cpCount = TRB.Data.snapshotData.targetData.cripplingPoison or 0
-		local cpCount = _cpCount
+		local cpCount = tostring(_cpCount)
 		local _cpTime = 0
 		local cpTime
 			
 		--$npCount and $npTime
 		local _npCount = TRB.Data.snapshotData.targetData.numbingPoison or 0
-		local npCount = _npCount
+		local npCount = tostring(_npCount)
 		local _npTime = 0
 		local npTime
 				
 		--$wpCount and $wpTime
 		local _wpCount = TRB.Data.snapshotData.targetData.woundPoison or 0
-		local wpCount = _wpCount
+		local wpCount = tostring(_wpCount)
 		local _wpTime = 0
 		local wpTime
 		
 		--$sbsCount
 		local _sbsCount = TRB.Data.snapshotData.targetData.serratedBoneSpike or 0
-		local sbsCount = _sbsCount
+		local sbsCount = tostring(_sbsCount)
 		local _sbsOnTarget = false
 
 
@@ -3165,7 +3161,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		_, _, _, _, _, TRB.Data.snapshotData.sliceAndDice.endTime, _, _, _, TRB.Data.snapshotData.sliceAndDice.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.sliceAndDice.id)
 
 		if TRB.Data.character.covenantId == 4 then
----@diagnostic disable-next-line: redundant-parameter
+---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 			TRB.Data.snapshotData.serratedBoneSpike.charges, TRB.Data.snapshotData.serratedBoneSpike.maxCharges, TRB.Data.snapshotData.serratedBoneSpike.startTime, TRB.Data.snapshotData.serratedBoneSpike.duration, _ = GetSpellCharges(TRB.Data.spells.serratedBoneSpike.id)
 		else
 			TRB.Data.snapshotData.serratedBoneSpike.charges = 0
@@ -4480,7 +4476,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					end
 				elseif spellId == TRB.Data.spells.serratedBoneSpike.id then
 					if type == "SPELL_CAST_SUCCESS" then -- Serrated Bone Spike
-						---@diagnostic disable-next-line: redundant-parameter
+						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 						TRB.Data.snapshotData.serratedBoneSpike.charges, TRB.Data.snapshotData.serratedBoneSpike.maxCharges, TRB.Data.snapshotData.serratedBoneSpike.startTime, TRB.Data.snapshotData.serratedBoneSpike.duration, _ = GetSpellCharges(TRB.Data.spells.serratedBoneSpike.id)
 					end
 				elseif spellId == TRB.Data.spells.serratedBoneSpike.debuffId then
