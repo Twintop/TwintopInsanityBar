@@ -18,11 +18,27 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	local specCache = {
 		windwalker = {
 			snapshotData = {},
-			barTextVariables = {}
+			barTextVariables = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
+			}
 		},
 		mistweaver = {
 			snapshotData = {},
-			barTextVariables = {}
+			barTextVariables = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
+			}
 		}
 	}
 
@@ -531,7 +547,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			return
 		end
 
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "monk", "mistweaver")
 		TRB.Functions.LoadFromSpecCache(specCache.mistweaver)
+	end
+
+	local function Setup_Windwalker()
+		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
+			return
+		end
+
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "monk", "windwalker")
+		TRB.Functions.LoadFromSpecCache(specCache.windwalker)
 	end
 
 	local function FillSpellData_Mistweaver()
@@ -633,14 +659,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		}
 
 		specCache.mistweaver.spells = spells
-	end
-
-	local function Setup_Windwalker()
-		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-			return
-		end
-
-		TRB.Functions.LoadFromSpecCache(specCache.windwalker)
 	end
 
 	local function FillSpellData_Windwalker()
@@ -2787,7 +2805,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 			if TRB.Data.barConstructedForSpec ~= "mistweaver" then
 				TRB.Data.barConstructedForSpec = "mistweaver"
-				ConstructResourceBar(TRB.Data.settings.monk.mistweaver)
+				ConstructResourceBar(specCache.mistweaver.settings)
 			end
 		elseif specId == 3 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.monk.windwalker)
@@ -2798,7 +2816,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 			if TRB.Data.barConstructedForSpec ~= "windwalker" then
 				TRB.Data.barConstructedForSpec = "windwalker"
-				ConstructResourceBar(TRB.Data.settings.monk.windwalker)
+				ConstructResourceBar(specCache.windwalker.settings)
 			end
 		end
 		EventRegistration()

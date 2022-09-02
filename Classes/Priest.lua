@@ -5012,7 +5012,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			if TRB.Data.barConstructedForSpec ~= "holy" then
 				TRB.Data.barConstructedForSpec = "holy"
-				ConstructResourceBar(TRB.Data.settings.priest.holy)
+				ConstructResourceBar(specCache.holy.settings)
 			end
 		elseif specId == 3 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.priest.shadow)

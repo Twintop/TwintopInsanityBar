@@ -20,14 +20,30 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			snapshotData = {},
 			barTextVariables = {
 				icons = {},
-				values = {}
+				values = {},
+				settings = {
+					bar = nil,
+					comboPoints = nil,
+					displayBar = nil,
+					font = nil,
+					textures = nil,
+					thresholds = nil
+				}
 			}
 		},
 		restoration = {
 			snapshotData = {},
 			barTextVariables = {
 				icons = {},
-				values = {}
+				values = {},
+				settings = {
+					bar = nil,
+					comboPoints = nil,
+					displayBar = nil,
+					font = nil,
+					textures = nil,
+					thresholds = nil
+				}
 			}
 		}
 	}
@@ -474,7 +490,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			return
 		end
 
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "shaman", "elemental")
 		TRB.Functions.LoadFromSpecCache(specCache.elemental)
+	end
+
+	local function Setup_Restoration()
+		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
+			return
+		end
+
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "shaman", "restoration")
+		TRB.Functions.LoadFromSpecCache(specCache.restoration)
 	end
 
 	local function FillSpellData_Elemental()
@@ -566,14 +592,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		}
 		
 		specCache.elemental.spells = spells
-	end
-
-	local function Setup_Restoration()
-		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-			return
-		end
-
-		TRB.Functions.LoadFromSpecCache(specCache.restoration)
 	end
 
 	local function FillSpellData_Restoration()
@@ -2455,7 +2473,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			if TRB.Data.barConstructedForSpec ~= "elemental" then
 				TRB.Data.barConstructedForSpec = "elemental"
-				ConstructResourceBar(TRB.Data.settings.shaman.elemental)
+				ConstructResourceBar(specCache.elemental.settings)
 			end
 		elseif specId == 2 then
 		elseif specId == 3 and TRB.Data.settings.core.experimental.specs.shaman.restoration then
@@ -2467,7 +2485,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			if TRB.Data.barConstructedForSpec ~= "restoration" then
 				TRB.Data.barConstructedForSpec = "restoration"
-				ConstructResourceBar(TRB.Data.settings.shaman.restoration)
+				ConstructResourceBar(specCache.restoration.settings)
 			end
 		end
 		EventRegistration()

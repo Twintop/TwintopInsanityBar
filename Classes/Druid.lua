@@ -20,21 +20,45 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			snapshotData = {},
 			barTextVariables = {
 				icons = {},
-				values = {}
+				values = {},
+				settings = {
+					bar = nil,
+					comboPoints = nil,
+					displayBar = nil,
+					font = nil,
+					textures = nil,
+					thresholds = nil
+				}
 			}
 		},
 		feral = {
 			snapshotData = {},
 			barTextVariables = {
 				icons = {},
-				values = {}
+				values = {},
+				settings = {
+					bar = nil,
+					comboPoints = nil,
+					displayBar = nil,
+					font = nil,
+					textures = nil,
+					thresholds = nil
+				}
 			}
 		},
 		restoration = {
 			snapshotData = {},
 			barTextVariables = {
 				icons = {},
-				values = {}
+				values = {},
+				settings = {
+					bar = nil,
+					comboPoints = nil,
+					displayBar = nil,
+					font = nil,
+					textures = nil,
+					thresholds = nil
+				}
 			}
 		}
 	}
@@ -1122,6 +1146,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			return
 		end
 
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "druid", "balance")
 		TRB.Functions.LoadFromSpecCache(specCache.balance)
 	end
 
@@ -1130,7 +1155,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			return
 		end
 
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "druid", "feral")
 		TRB.Functions.LoadFromSpecCache(specCache.feral)
+	end
+
+	local function Setup_Restoration()
+		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
+			return
+		end
+
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "druid", "restoration")
+		TRB.Functions.LoadFromSpecCache(specCache.restoration)
 	end
 
 	local function FillSpellData_Balance()
@@ -1448,14 +1483,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		}
 
 		specCache.feral.spells = spells
-	end
-
-	local function Setup_Restoration()
-		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-			return
-		end
-
-		TRB.Functions.LoadFromSpecCache(specCache.restoration)
 	end
 
 	local function FillSpellData_Restoration()
@@ -5652,7 +5679,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			if TRB.Data.barConstructedForSpec ~= "balance" then
 				TRB.Data.barConstructedForSpec = "balance"
-				ConstructResourceBar(TRB.Data.settings.druid.balance)
+				ConstructResourceBar(specCache.balance.settings)
 			end
 		elseif specId == 2 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.druid.feral)
@@ -5663,7 +5690,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			if TRB.Data.barConstructedForSpec ~= "feral" then
 				TRB.Data.barConstructedForSpec = "feral"
-				ConstructResourceBar(TRB.Data.settings.druid.feral)
+				ConstructResourceBar(specCache.feral.settings)
 			end
 		elseif specId == 4 and TRB.Data.settings.core.experimental.specs.druid.restoration then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.druid.restoration)
@@ -5674,7 +5701,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			if TRB.Data.barConstructedForSpec ~= "restoration" then
 				TRB.Data.barConstructedForSpec = "restoration"
-				ConstructResourceBar(TRB.Data.settings.druid.restoration)
+				ConstructResourceBar(specCache.restoration.settings)
 			end
 		end
 		EventRegistration()

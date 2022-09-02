@@ -20,7 +20,15 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			snapshotData = {},
 			barTextVariables = {
 				icons = {},
-				values = {}
+				values = {},
+				settings = {
+					bar = nil,
+					comboPoints = nil,
+					displayBar = nil,
+					font = nil,
+					textures = nil,
+					thresholds = nil
+				}
 			}
 		}
 	}
@@ -371,6 +379,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			return
 		end
 
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "demonhunter", "havoc")
 		TRB.Functions.LoadFromSpecCache(specCache.havoc)
 	end
 
@@ -1484,7 +1493,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 			if TRB.Data.barConstructedForSpec ~= "havoc" then
 				TRB.Data.barConstructedForSpec = "havoc"
-				ConstructResourceBar(TRB.Data.settings.demonhunter.havoc)
+				ConstructResourceBar(specCache.havoc.settings)
 			end
 		end
 		EventRegistration()

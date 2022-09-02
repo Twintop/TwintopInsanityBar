@@ -17,15 +17,39 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local specCache = {
 		beastMastery = {
 			snapshotData = {},
-			barTextVariables = {}
+			barTextVariables = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
+			}
 		},
 		marksmanship = {
 			snapshotData = {},
-			barTextVariables = {}
+			barTextVariables = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
+			}
 		},
 		survival = {
 			snapshotData = {},
-			barTextVariables = {}
+			barTextVariables = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
+			}
 		}
 	}
 
@@ -1141,6 +1165,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "hunter", "beastMastery")
 		TRB.Functions.LoadFromSpecCache(specCache.beastMastery)
 	end
 
@@ -1149,6 +1174,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "hunter", "marksmanship")
 		TRB.Functions.LoadFromSpecCache(specCache.marksmanship)
 	end
 
@@ -1157,6 +1183,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "hunter", "survival")
 		TRB.Functions.LoadFromSpecCache(specCache.survival)
 	end
 
@@ -4153,7 +4180,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 						if TRB.Data.barConstructedForSpec ~= "beastMastery" then
 							TRB.Data.barConstructedForSpec = "beastMastery"
-							ConstructResourceBar(TRB.Data.settings.hunter.beastMastery)
+							ConstructResourceBar(specCache.beastMastery.settings)
 						end
 					elseif specId == 2 then
 						TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.hunter.marksmanship)
@@ -4164,7 +4191,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 						if TRB.Data.barConstructedForSpec ~= "marksmanship" then
 							TRB.Data.barConstructedForSpec = "marksmanship"
-							ConstructResourceBar(TRB.Data.settings.hunter.marksmanship)
+							ConstructResourceBar(specCache.marksmanship.settings)
 						end
 					elseif specId == 3 then
 						TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.hunter.survival)
@@ -4175,7 +4202,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 						if TRB.Data.barConstructedForSpec ~= "survival" then
 							TRB.Data.barConstructedForSpec = "survival"
-							ConstructResourceBar(TRB.Data.settings.hunter.survival)
+							ConstructResourceBar(specCache.survival.settings)
 						end
 					end
 					EventRegistration()

@@ -135,10 +135,10 @@ local function LoadDefaultSettings()
                 }
             },
             globalSettings = {
-                globalEnable = true,
+                globalEnable = false,
                 demonhunter = {
                     havoc = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = true,
                         displayBar = true,
@@ -149,7 +149,7 @@ local function LoadDefaultSettings()
                 },
                 druid = {
                     balance = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = true,
                         displayBar = true,
@@ -158,7 +158,7 @@ local function LoadDefaultSettings()
                         thresholds = true
                     },
                     feral = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = true,
                         displayBar = true,
@@ -167,7 +167,7 @@ local function LoadDefaultSettings()
                         thresholds = true
                     },
                     restoration = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = true,
                         displayBar = true,
@@ -178,7 +178,7 @@ local function LoadDefaultSettings()
                 },
                 hunter = {
                     beastMastery = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = true,
                         displayBar = true,
@@ -187,7 +187,7 @@ local function LoadDefaultSettings()
                         thresholds = true
                     },
                     marksmanship = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = true,
                         displayBar = true,
@@ -196,7 +196,7 @@ local function LoadDefaultSettings()
                         thresholds = true
                     },
                     survival = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = true,
                         displayBar = true,
@@ -207,7 +207,7 @@ local function LoadDefaultSettings()
                 },
                 monk = {
                     mistweaver = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = true,
                         displayBar = true,
@@ -216,7 +216,7 @@ local function LoadDefaultSettings()
                         thresholds = true
                     },
                     windwalker = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = true,
                         displayBar = true,
@@ -227,7 +227,7 @@ local function LoadDefaultSettings()
                 },
                 priest = {
                     holy = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = true,
                         displayBar = true,
@@ -236,7 +236,7 @@ local function LoadDefaultSettings()
                         thresholds = true
                     },
                     shadow = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = false,
                         displayBar = false,
@@ -247,7 +247,7 @@ local function LoadDefaultSettings()
                 },
                 rogue = {
                     assassination = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = true,
                         displayBar = true,
@@ -256,7 +256,7 @@ local function LoadDefaultSettings()
                         thresholds = true
                     },
                     outlaw = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = true,
                         displayBar = true,
@@ -267,7 +267,7 @@ local function LoadDefaultSettings()
                 },
                 shaman = {
                     elemental = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = true,
                         displayBar = true,
@@ -276,7 +276,7 @@ local function LoadDefaultSettings()
                         thresholds = true
                     },
                     restoration = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = true,
                         displayBar = true,
@@ -287,7 +287,7 @@ local function LoadDefaultSettings()
                 },
                 warrior = {
                     arms = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = true,
                         displayBar = true,
@@ -296,7 +296,7 @@ local function LoadDefaultSettings()
                         thresholds = true
                     },
                     fury = {
-                        specEnable = true,
+                        specEnable = false,
                         bar = true,
                         comboPoints = true,
                         displayBar = true,

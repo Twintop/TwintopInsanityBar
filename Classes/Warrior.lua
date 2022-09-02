@@ -20,14 +20,30 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			snapshotData = {},
 			barTextVariables = {
 				icons = {},
-				values = {}
+				values = {},
+				settings = {
+					bar = nil,
+					comboPoints = nil,
+					displayBar = nil,
+					font = nil,
+					textures = nil,
+					thresholds = nil
+				}
 			}
 		},
 		fury = {
 			snapshotData = {},
 			barTextVariables = {
 				icons = {},
-				values = {}
+				values = {},
+				settings = {
+					bar = nil,
+					comboPoints = nil,
+					displayBar = nil,
+					font = nil,
+					textures = nil,
+					thresholds = nil
+				}
 			}
 		}
 	}
@@ -781,6 +797,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return
 		end
 
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "warrior", "arms")
 		TRB.Functions.LoadFromSpecCache(specCache.arms)
 	end
 
@@ -789,6 +806,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return
 		end
 
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "warrior", "fury")
 		TRB.Functions.LoadFromSpecCache(specCache.fury)
 	end
 
@@ -3000,7 +3018,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						
 						if TRB.Data.barConstructedForSpec ~= "arms" then
 							TRB.Data.barConstructedForSpec = "arms"
-							ConstructResourceBar(TRB.Data.settings.warrior.arms)
+							ConstructResourceBar(specCache.arms.settings)
 						end
 					elseif specId == 2 then
 						TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.warrior.fury)
@@ -3011,7 +3029,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						
 						if TRB.Data.barConstructedForSpec ~= "fury" then
 							TRB.Data.barConstructedForSpec = "fury"
-							ConstructResourceBar(TRB.Data.settings.warrior.fury)
+							ConstructResourceBar(specCache.fury.settings)
 						end
 					end
 					EventRegistration()

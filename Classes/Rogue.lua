@@ -18,15 +18,39 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	local specCache = {
 		assassination = {
 			snapshotData = {},
-			barTextVariables = {}
+			barTextVariables = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
+			}
 		},
 		outlaw = {
 			snapshotData = {},
-			barTextVariables = {}
+			barTextVariables = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
+			}
 		},
 		subtlety = {
 			snapshotData = {},
-			barTextVariables = {}
+			barTextVariables = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
+			}
 		}
 	}
 
@@ -1305,7 +1329,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			return
 		end
 
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "rogue", "assassination")
 		TRB.Functions.LoadFromSpecCache(specCache.assassination)
+	end
+
+	local function Setup_Outlaw()
+		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
+			return
+		end
+
+		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "rogue", "outlaw")
+		TRB.Functions.LoadFromSpecCache(specCache.outlaw)
 	end
 
 	local function FillSpellData_Assassination()
@@ -1477,14 +1511,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		}
 
 		specCache.assassination.spells = spells
-	end
-
-	local function Setup_Outlaw()
-		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-			return
-		end
-
-		TRB.Functions.LoadFromSpecCache(specCache.outlaw)
 	end
 
 	local function FillSpellData_Outlaw()
@@ -4599,7 +4625,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 			if TRB.Data.barConstructedForSpec ~= "assassination" then
 				TRB.Data.barConstructedForSpec = "assassination"
-				ConstructResourceBar(TRB.Data.settings.rogue.assassination)
+				ConstructResourceBar(specCache.assassination.settings)
 			else
 				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
 			end
@@ -4612,7 +4638,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 			if TRB.Data.barConstructedForSpec ~= "outlaw" then
 				TRB.Data.barConstructedForSpec = "outlaw"
-				ConstructResourceBar(TRB.Data.settings.rogue.outlaw)
+				ConstructResourceBar(specCache.outlaw.settings)
 			else
 				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
 			end
