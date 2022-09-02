@@ -407,8 +407,7 @@ local function ConstructAddonOptionsPanel()
     interfaceSettingsFrame.optionsPanel.name = "Global Options"
 ---@diagnostic disable-next-line: undefined-field
     interfaceSettingsFrame.optionsPanel.parent = parent.name
-    local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.optionsPanel)
-    Settings.RegisterAddOnCategory(category)
+    local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.optionsPanel, "Global Options")
 
     parent = interfaceSettingsFrame.optionsPanel
     controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Global Options", oUi.xCoord+oUi.xPadding, yCoord)
@@ -685,8 +684,7 @@ local function ConstructImportExportPanel()
     interfaceSettingsFrame.optionsPanel.name = "Import/Export"
 ---@diagnostic disable-next-line: undefined-field
     interfaceSettingsFrame.optionsPanel.parent = parent.name
-    local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.optionsPanel)
-    Settings.RegisterAddOnCategory(category)
+    local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.optionsPanel, "Import/Export")
 
     parent = interfaceSettingsFrame.optionsPanel
     controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Import/Export", oUi.xCoord+oUi.xPadding, yCoord)
@@ -1691,8 +1689,9 @@ function TRB.Options:ConstructOptionsPanel()
 
 
     interfaceSettingsFrame.panel.yCoord = yCoord
-    local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.panel)
-    Settings.RegisterAddOnCategory(category)
+    local layout
+    TRB.Details.addonCategory, layout = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.panel, "Twintop's Resource Bar")
+    Settings.RegisterAddOnCategory(TRB.Details.addonCategory)
 
     ConstructAddonOptionsPanel()
     ConstructImportExportPanel()

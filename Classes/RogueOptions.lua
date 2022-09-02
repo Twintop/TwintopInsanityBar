@@ -1647,8 +1647,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		interfaceSettingsFrame.assassinationDisplayPanel.name = "Assassination Rogue"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.assassinationDisplayPanel.parent = parent.name
-		local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.assassinationDisplayPanel)
-    	Settings.RegisterAddOnCategory(category)
+		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.assassinationDisplayPanel, "Assassination Rogue")
 
 		parent = interfaceSettingsFrame.assassinationDisplayPanel
 
@@ -2808,8 +2807,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		interfaceSettingsFrame.outlawDisplayPanel.name = "Outlaw Rogue"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.outlawDisplayPanel.parent = parent.name
-		local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.outlawDisplayPanel)
-    	Settings.RegisterAddOnCategory(category)
+		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.outlawDisplayPanel, "Outlaw Rogue")
 
 		parent = interfaceSettingsFrame.outlawDisplayPanel
 

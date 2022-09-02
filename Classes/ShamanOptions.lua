@@ -1001,8 +1001,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		interfaceSettingsFrame.elementalDisplayPanel.name = "Elemental Shaman"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.elementalDisplayPanel.parent = parent.name
-		local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.elementalDisplayPanel)
-    	Settings.RegisterAddOnCategory(category)
+		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.elementalDisplayPanel, "Elemental Shaman")
 
 		parent = interfaceSettingsFrame.elementalDisplayPanel
 
@@ -1591,8 +1590,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		interfaceSettingsFrame.restorationDisplayPanel.name = "Restoration Shaman"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.restorationDisplayPanel.parent = parent.name
-		local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.restorationDisplayPanel)
-    	Settings.RegisterAddOnCategory(category)
+		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.restorationDisplayPanel, "Restoration Shaman")
 
 		parent = interfaceSettingsFrame.restorationDisplayPanel
 
