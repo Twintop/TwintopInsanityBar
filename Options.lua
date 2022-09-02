@@ -407,7 +407,8 @@ local function ConstructAddonOptionsPanel()
     interfaceSettingsFrame.optionsPanel.name = "Global Options"
 ---@diagnostic disable-next-line: undefined-field
     interfaceSettingsFrame.optionsPanel.parent = parent.name
-    InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
+    local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.optionsPanel)
+    Settings.RegisterAddOnCategory(category)
 
     parent = interfaceSettingsFrame.optionsPanel
     controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Global Options", oUi.xCoord+oUi.xPadding, yCoord)
@@ -684,7 +685,8 @@ local function ConstructImportExportPanel()
     interfaceSettingsFrame.optionsPanel.name = "Import/Export"
 ---@diagnostic disable-next-line: undefined-field
     interfaceSettingsFrame.optionsPanel.parent = parent.name
-    InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
+    local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.optionsPanel)
+    Settings.RegisterAddOnCategory(category)
 
     parent = interfaceSettingsFrame.optionsPanel
     controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Import/Export", oUi.xCoord+oUi.xPadding, yCoord)
@@ -1689,7 +1691,8 @@ function TRB.Options:ConstructOptionsPanel()
 
 
     interfaceSettingsFrame.panel.yCoord = yCoord
-    InterfaceOptions_AddCategory(interfaceSettingsFrame.panel)
+    local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.panel)
+    Settings.RegisterAddOnCategory(category)
 
     ConstructAddonOptionsPanel()
     ConstructImportExportPanel()

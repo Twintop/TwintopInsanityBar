@@ -1,10 +1,10 @@
-## Interface: 90207
+## Interface: 100000
 ## Title: Twintop's Resource Bar
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 9.2.7.1
-## X-ReleaseType: release
-## X-ReleaseDate: August 16, 2022
+## Version: 10.0.0.0
+## X-ReleaseType: alpha
+## X-ReleaseDate: September 2, 2022
 ## SavedVariables: TwintopInsanityBarSettings
 ## DefaultState: enabled
 ## Notes: Multi-class Resource Bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
@@ -14,7 +14,7 @@
 ## X-WoWI-ID: 24628
 ## X-Wago-ID: Qb6mM46P
 
-Libs\TaintLess.xml
+#Libs\TaintLess.xml
 Libs\LibStub.lua
 Libs\CallbackHandler-1.0.lua
 Libs\LibSharedMedia-3.0.lua
@@ -27,19 +27,19 @@ Init.lua
 
 Options.lua
 
-Classes\DemonHunter.lua
-Classes\DemonHunterOptions.lua
-Classes\DruidOptions.lua
-Classes\Druid.lua
-Classes\HunterOptions.lua
-Classes\Hunter.lua
-Classes\Monk.lua
-Classes\MonkOptions.lua
+#Classes\DemonHunter.lua
+#Classes\DemonHunterOptions.lua
+#Classes\DruidOptions.lua
+#Classes\Druid.lua
+#Classes\HunterOptions.lua
+#Classes\Hunter.lua
+#Classes\Monk.lua
+#Classes\MonkOptions.lua
 Classes\PriestOptions.lua
 Classes\Priest.lua
-Classes\RogueOptions.lua
-Classes\Rogue.lua
-Classes\ShamanOptions.lua
-Classes\Shaman.lua
-Classes\Warrior.lua
-Classes\WarriorOptions.lua
+#Classes\RogueOptions.lua
+#Classes\Rogue.lua
+#Classes\ShamanOptions.lua
+#Classes\Shaman.lua
+#Classes\Warrior.lua
+#Classes\WarriorOptions.lua

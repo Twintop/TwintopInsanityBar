@@ -973,7 +973,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		interfaceSettingsFrame.mistweaverDisplayPanel.name = "Mistweaver Monk"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.mistweaverDisplayPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.mistweaverDisplayPanel)
+		local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.mistweaverDisplayPanel)
+    	Settings.RegisterAddOnCategory(category)
 
 		parent = interfaceSettingsFrame.mistweaverDisplayPanel
 
@@ -1940,7 +1941,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		interfaceSettingsFrame.windwalkerDisplayPanel.name = "Windwalker Monk"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.windwalkerDisplayPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.windwalkerDisplayPanel)
+		local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.windwalkerDisplayPanel)
+    	Settings.RegisterAddOnCategory(category)
 
 		parent = interfaceSettingsFrame.windwalkerDisplayPanel
 

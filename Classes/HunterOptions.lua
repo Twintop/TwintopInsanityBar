@@ -1649,7 +1649,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		interfaceSettingsFrame.beastMasteryDisplayPanel.name = "Beast Mastery Hunter"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.beastMasteryDisplayPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.beastMasteryDisplayPanel)
+		local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.beastMasteryDisplayPanel)
+    	Settings.RegisterAddOnCategory(category)
 
 		parent = interfaceSettingsFrame.beastMasteryDisplayPanel
 
@@ -3084,7 +3085,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		interfaceSettingsFrame.marksmanshipDisplayPanel.name = "Marksmanship Hunter"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.marksmanshipDisplayPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.marksmanshipDisplayPanel)
+		local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.marksmanshipDisplayPanel)
+    	Settings.RegisterAddOnCategory(category)
 
 		parent = interfaceSettingsFrame.marksmanshipDisplayPanel
 
@@ -4140,7 +4142,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		interfaceSettingsFrame.survivalDisplayPanel.name = "Survival Hunter"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.survivalDisplayPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.survivalDisplayPanel)
+		local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.survivalDisplayPanel)
+    	Settings.RegisterAddOnCategory(category)
 
 		parent = interfaceSettingsFrame.survivalDisplayPanel
 

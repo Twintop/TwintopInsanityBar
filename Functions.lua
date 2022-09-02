@@ -233,7 +233,7 @@ TRB.Functions.SetBackdropBorderColor = SetBackdropBorderColor
 
 local function SetStatusBarColor(frame, rgbaString, normalize, specId)
 	if specId ~= nil and specId == GetSpecialization() then
-		frame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
+		--frame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
 	end
 end
 TRB.Functions.SetStatusBarColor = SetStatusBarColor
@@ -989,7 +989,7 @@ local function ConstructResourceBar(settings)
         barBorderFrame:SetPoint("CENTER", barContainerFrame)
         barBorderFrame:SetPoint("CENTER", 0, 0)
         barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-        barBorderFrame:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
+        --barBorderFrame:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
         barBorderFrame:SetWidth(settings.bar.width)
         barBorderFrame:SetHeight(settings.bar.height)
         barBorderFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
@@ -1001,7 +1001,7 @@ local function ConstructResourceBar(settings)
         resourceFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         resourceFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         resourceFrame:SetStatusBarTexture(settings.textures.resourceBar)
-        resourceFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
+        --resourceFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base))
         resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		resourceFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barResource)
 
@@ -1011,7 +1011,7 @@ local function ConstructResourceBar(settings)
         castingFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         castingFrame:SetStatusBarTexture(settings.textures.castingBar)
-        castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting, true))
+        --castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting, true))
         castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         castingFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barCasting)
 
@@ -1021,7 +1021,7 @@ local function ConstructResourceBar(settings)
         passiveFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
-        passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive, true))
+        --passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive, true))
         passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		passiveFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barPassive)
 
@@ -1067,7 +1067,7 @@ local function ConstructResourceBar(settings)
 				resource:SetPoint("LEFT", container, "LEFT", 0, 0)
 				resource:SetPoint("RIGHT", container, "RIGHT", 0, 0)
 				resource:SetStatusBarTexture(settings.textures.comboPointsBar)
-				resource:SetStatusBarColor(GetRGBAFromString(settings.colors.comboPoints.base))
+				--resource:SetStatusBarColor(GetRGBAFromString(settings.colors.comboPoints.base))
 				resource:SetFrameStrata(TRB.Data.settings.core.strata.level)
 				resource:SetFrameLevel(TRB.Data.constants.frameLevels.cpContainer)
 			end

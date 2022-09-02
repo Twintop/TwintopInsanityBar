@@ -1609,7 +1609,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		interfaceSettingsFrame.holyDisplayPanel.name = "Holy Priest"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.holyDisplayPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.holyDisplayPanel)
+		local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.holyDisplayPanel)
+    	Settings.RegisterAddOnCategory(category)
 
 		parent = interfaceSettingsFrame.holyDisplayPanel
 
@@ -2938,7 +2939,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		interfaceSettingsFrame.shadowDisplayPanel.name = "Shadow Priest"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.shadowDisplayPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.shadowDisplayPanel)
+		local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.shadowDisplayPanel)
+    	Settings.RegisterAddOnCategory(category)
 
 		parent = interfaceSettingsFrame.shadowDisplayPanel
 

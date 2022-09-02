@@ -295,6 +295,7 @@ local function IsValidVariableForSpec(input)
 end
 TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
 
+--[[
 -- Taken from BlizzBugsSuck (which appears to be abandoned) -- https://www.curseforge.com/wow/addons/blizzbugssuck
 -- Fix InterfaceOptionsFrame_OpenToCategory not actually opening the category (and not even scrolling to it)
 -- Confirmed still broken in 6.2.2.20490 (6.2.2a)
@@ -365,7 +366,7 @@ do
 	end
 
 	hooksecurefunc("InterfaceOptionsFrame_OpenToCategory", InterfaceOptionsFrame_OpenToCategory_Fix)
-end
+end]]
 
 function SlashCmdList.TWINTOP(msg)
     local cmd, subcmd = TRB.Functions.ParseCmdString(msg);
@@ -377,6 +378,7 @@ function SlashCmdList.TWINTOP(msg)
         local x, y = TRB.Functions.ParseCmdString(subcmd)
         TRB.Functions.UpdateBarPosition(tonumber(x), tonumber(y))
     else
-        InterfaceOptionsFrame_OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)
+		Settings.OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)
+        --InterfaceOptionsFrame_OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)
     end
 end

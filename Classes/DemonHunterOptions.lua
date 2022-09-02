@@ -852,8 +852,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		interfaceSettingsFrame.havocDisplayPanel.name = "Havoc Demon Hunter"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.havocDisplayPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.havocDisplayPanel)
-
+		local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.havocDisplayPanel)
+    	Settings.RegisterAddOnCategory(category)
+		
 		parent = interfaceSettingsFrame.havocDisplayPanel
 
 		controls.buttons = controls.buttons or {}

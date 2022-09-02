@@ -4273,21 +4273,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, castingFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, passiveFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.spending, true))
+							--castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.passive, true))
+							--passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.spending, true))
 						else
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, passiveFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, castingFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.passive, true))
+							--castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.spending, true))
+							--passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.passive, true))
 						end
 					else
 						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, resourceFrame, TRB.Data.snapshotData.resource)
 						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, passiveFrame, passiveBarValue)
 						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.passive, true))
+						--castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.casting, true))
+						--passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.holy.colors.bar.passive, true))
 					end
 
 					local resourceBarColor = nil
@@ -4349,7 +4349,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						resourceBarColor = TRB.Data.settings.priest.holy.colors.bar.base
 					end
 
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(resourceBarColor, true))
+					--resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(resourceBarColor, true))
 				end
 
 				TRB.Functions.UpdateResourceBar(TRB.Data.settings.priest.holy, refreshText)
@@ -4479,9 +4479,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 
 					if currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsableCasting, true))
+						--castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsableCasting, true))
 					else
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.casting, true))
+						--castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.casting, true))
 					end
 
 					if TRB.Data.snapshotData.voidform.spellId then
@@ -4499,17 +4499,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 
 						if useEndOfVoidformColor and TRB.Data.snapshotData.voidform.remainingTime <= timeThreshold then
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, true))
+							--resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, true))
 						elseif currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsable, true))
+							--resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsable, true))
 						else
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform, true))
+							--resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform, true))
 						end
 					else
 						if currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsable, true))
+							--resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsable, true))
 						else
-							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.base, true))
+							--resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.base, true))
 						end
 					end
 				end

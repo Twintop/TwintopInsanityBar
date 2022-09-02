@@ -1163,7 +1163,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		interfaceSettingsFrame.armsDisplayPanel.name = "Arms Warrior"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.armsDisplayPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.armsDisplayPanel)
+		local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.armsDisplayPanel)
+    	Settings.RegisterAddOnCategory(category)
 
 		parent = interfaceSettingsFrame.armsDisplayPanel
 
@@ -1811,7 +1812,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		interfaceSettingsFrame.furyDisplayPanel.name = "Fury Warrior"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.furyDisplayPanel.parent = parent.name
-		InterfaceOptions_AddCategory(interfaceSettingsFrame.furyDisplayPanel)
+		local category = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.furyDisplayPanel)
+    	Settings.RegisterAddOnCategory(category)
 
 		parent = interfaceSettingsFrame.furyDisplayPanel
 
