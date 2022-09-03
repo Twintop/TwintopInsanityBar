@@ -352,6 +352,61 @@ local function MergeSettings(settings, user)
 end
 TRB.Functions.MergeSettings = MergeSettings
 
+local function GetTalents(baselineTalents)
+	local talents = {}
+	baselineTalents = baselineTalents or {}
+	local _, name, icon, iconString
+	local configId = C_ClassTalents.GetActiveConfigID()
+	if configId ~= nil then
+		local configInfo = C_Traits.GetConfigInfo(configId)
+		for _, treeId in pairs(configInfo.treeIDs) do
+			local nodes = C_Traits.GetTreeNodes(treeId)
+			for _, nodeId in pairs(nodes) do
+				local node = C_Traits.GetNodeInfo(configId, nodeId)
+				local entryId = nil
+				
+				if node.activeEntry ~= nil then
+					entryId = node.activeEntry.entryID
+				elseif node.nextEntry ~= nil then
+					entryId = node.nextEntry.entryID
+				elseif node.entryIDs ~= nil then
+					entryId = node.entryIDs[1]
+				end
+
+				if entryId ~= nil then
+					local entryInfo = C_Traits.GetEntryInfo(configId, entryId)
+					local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
+
+					name, _, icon = GetSpellInfo(definitionInfo.spellID)
+					iconString = string.format("|T%s:0|t", icon)
+
+					talents[definitionInfo.spellID] = {
+						id = definitionInfo.spellID,
+						name = name,
+						icon = iconString,
+						currentRank = node.ranksPurchased,
+						maxRank = node.maxRanks,
+					}
+
+					if baselineTalents[definitionInfo.spellID] ~= nil then
+						talents[definitionInfo.spellID].currentRank = talents[definitionInfo.spellID].maxRank
+					end
+				end
+			end
+		end
+	end
+
+	return talents
+end
+TRB.Functions.GetTalents = GetTalents
+
+local function IsTalentActive(spell)
+	return spell.baseline == true or
+		(TRB.Data.talents[spell.id] ~= nil and TRB.Data.talents[spell.id].currentRank > 0) or
+		(TRB.Data.talents[spell.talentId] ~= nil and TRB.Data.talents[spell.talentId].currentRank > 0)
+end
+TRB.Functions.IsTalentActive = IsTalentActive
+
 local function FillSpellData(spells)
 	if spells == nil then
 		spells = TRB.Data.spells
@@ -471,6 +526,7 @@ local function LoadFromSpecCache(cache)
 
 	TRB.Data.character = cache.character
 	TRB.Data.spells = cache.spells
+	TRB.Data.talents = cache.talents
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons
 	TRB.Data.barTextVariables.values = cache.barTextVariables.values
 
@@ -2417,12 +2473,14 @@ end
 TRB.Functions.GetSoulbindItemLevel = GetSoulbindItemLevel
 
 local function GetSoulbindEquippedConduitRank(id)
-    local soulbindId = C_Soulbinds.GetActiveSoulbindID()
+    return 0
+	--TODO: do a check for being in Shadowlands zones
+	--[[local soulbindId = C_Soulbinds.GetActiveSoulbindID()
     local soulbindData = C_Soulbinds.GetSoulbindData(soulbindId)
     local nodes = soulbindData.tree.nodes
     local length = TableLength(nodes)
     
-    for x = 1, length do        
+    for x = 1, length do
         if nodes[x].spellID ~= nil and nodes[x].spellID == 0 and nodes[x].conduitID ~= nil and nodes[x].conduitID == id then
 			local empowered = 0
 
@@ -2433,7 +2491,7 @@ local function GetSoulbindEquippedConduitRank(id)
 			return nodes[x].conduitRank + empowered
         end        
     end
-	return 0
+	return 0]]
 end
 TRB.Functions.GetSoulbindEquippedConduitRank = GetSoulbindEquippedConduitRank
 

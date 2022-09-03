@@ -364,7 +364,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				devouringPlague = { -- 1
 					enabled = true,
 				},
-				searingNightmare = { -- 2
+				mindSear = { -- 2
 					enabled = true,
 				}
 			},
@@ -444,6 +444,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					devouringPlagueUsableCasting="FFFFFFFF",
 					inVoidform="FF431863",
 					inVoidform1GCD="FFFF0000",
+					spending="FFFFFFFF",
 					casting="FFFFFFFF",
 					passive="FFDF00FF",
 					flashAlpha=0.70,
@@ -1853,17 +1854,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 3)
 		end)
 		
-		controls.colors.devouringPlagueUsableCasting = TRB.UiFunctions:BuildColorPicker(parent, "Insanity from hardcasting spells when can cast DP", spec.colors.bar.devouringPlagueUsableCasting, 275, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.devouringPlagueUsableCasting		
+		controls.colors.devouringPlagueUsableCasting = TRB.UiFunctions:BuildColorPicker(parent, "Insanity from hardcasting spells while DP can be cast", spec.colors.bar.devouringPlagueUsableCasting, 275, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.devouringPlagueUsableCasting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "devouringPlagueUsableCasting")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.border		
+		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Insanity cost of current spender (Mind Sear)", spec.colors.bar.spending, 300, 25, oUi.xCoord, yCoord)
+		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
 		end)
 
 		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Insanity", spec.colors.bar.borderOvercap, 275, 25, oUi.xCoord2, yCoord)
@@ -1879,8 +1880,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
 		end)
 
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 275, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.border		
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
+		end)
+
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Insanity from Auspicious Spirits, Shadowfiend swings, Death and Madness ticks, Lash of Insanity ticks, and Wrathful Faerie procs.", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Insanity from Auspicious Spirits, Mindbender swings, Death and Madness ticks, Lash of Insanity ticks, and Wrathful Faerie procs.", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
@@ -1904,7 +1911,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.mindbender = TRB.UiFunctions:BuildColorPicker(parent, "Shadowfiend / Wrathful Faerie Insanity Gain", spec.colors.threshold.mindbender, 275, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.threshold.mindbender = TRB.UiFunctions:BuildColorPicker(parent, "Mindbender / Wrathful Faerie Insanity Gain", spec.colors.threshold.mindbender, 275, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.mindbender
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
@@ -1932,14 +1939,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.snThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_searingNightmare", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.snThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_mindSear", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.snThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Searing Nightmare (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Searing Nightmare. Only visibile if talented in to Searing Nightmare and channeling Mind Sear."
-		f:SetChecked(spec.thresholds.searingNightmare.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Mind Sear")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Mind Sear. Only visibile if talented in to Mind Sear and channeling Mind Sear."
+		f:SetChecked(spec.thresholds.mindSear.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.searingNightmare.enabled = self:GetChecked()
+			spec.thresholds.mindSear.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -2100,7 +2107,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Insanity to cast Devouring Plague or Searing Nightmare", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Insanity to cast Devouring Plague or Mind Sear", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
@@ -2118,7 +2125,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
-		f.tooltip = "This will change the Insanity text color when you are able to cast Devouring Plague or Searing Nightmare"
+		f.tooltip = "This will change the Insanity text color when you are able to cast Devouring Plague or Mind Sear"
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overThresholdEnabled = self:GetChecked()
@@ -2640,21 +2647,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(spec.voidTendrilTracker)
 		f:SetScript("OnClick", function(self, ...)
 			spec.voidTendrilTracker = self:GetChecked()
-			TRB.Data.snapshotData.eternalCallToTheVoid.numberActive = 0
-			TRB.Data.snapshotData.eternalCallToTheVoid.resourceRaw = 0
-			TRB.Data.snapshotData.eternalCallToTheVoid.resourceFinal = 0
-			TRB.Data.snapshotData.eternalCallToTheVoid.maxTicksRemaining = 0
-			TRB.Data.snapshotData.eternalCallToTheVoid.voidTendrils = {}
+			TRB.Data.snapshotData.voidTendrils.numberActive = 0
+			TRB.Data.snapshotData.voidTendrils.resourceRaw = 0
+			TRB.Data.snapshotData.voidTendrils.resourceFinal = 0
+			TRB.Data.snapshotData.voidTendrils.maxTicksRemaining = 0
+			TRB.Data.snapshotData.voidTendrils.activeList = {}
 		end)
 
 		yCoord = yCoord - 30
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Shadowfiend/Mindbender Tracking", 0, yCoord)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Mindbender Tracking", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.mindbender = CreateFrame("CheckButton", "TwintopResourceBar_CB3_7", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mindbender
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Track Shadowfiend Insanity Gain")
+		getglobal(f:GetName() .. 'Text'):SetText("Track Mindbender Insanity Gain")
 		f.tooltip = "Show the gain of Insanity over the next serveral swings, GCDs, or fixed length of time. Select which to track from the options below."
 		f:SetChecked(spec.mindbender.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -2678,7 +2685,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.mindbender.mode = "gcd"
 		end)
 
-		title = "Shadowfiend GCDs - 0.75sec Floor"
+		title = "Mindbender GCDs - 0.75sec Floor"
 		controls.mindbenderGCDs = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.mindbender.gcdsMax, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.mindbenderGCDs:SetScript("OnValueChanged", function(self, value)
@@ -2693,7 +2700,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Insanity from Swings remaining")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Insanity incoming over the up to next X melee swings from Shadowfiend/Mindbender. This is only different from the GCD option if you are above 200% haste (GCD cap)."
+		f.tooltip = "Shows the amount of Insanity incoming over the up to next X melee swings from Mindbender. This is only different from the GCD option if you are above 200% haste (GCD cap)."
 		if spec.mindbender.mode == "swing" then
 			f:SetChecked(true)
 		end
@@ -2704,7 +2711,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.mindbender.mode = "swing"
 		end)
 
-		title = "Shadowfiend Swings - No Floor"
+		title = "Mindbender Swings - No Floor"
 		controls.mindbenderSwings = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.mindbender.swingsMax, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.mindbenderSwings:SetScript("OnValueChanged", function(self, value)
@@ -2729,7 +2736,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.mindbender.mode = "time"
 		end)
 
-		title = "Shadowfiend Remaining (sec)"
+		title = "Mindbender Remaining (sec)"
 		controls.mindbenderTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.mindbender.timeMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.mindbenderTime:SetScript("OnValueChanged", function(self, value)

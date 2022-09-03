@@ -8,7 +8,11 @@ TRB.Details.addonAuthor = GetAddOnMetadata(addonName, "Author")
 TRB.Details.addonAuthorServer = GetAddOnMetadata(addonName, "X-AuthorServer")
 TRB.Details.addonTitle = GetAddOnMetadata(addonName, "Title")
 TRB.Details.addonReleaseDate = GetAddOnMetadata(addonName, "X-ReleaseDate")
-TRB.Details.supportedSpecs = "|cFFA330C9Demon Hunter|r - Havoc\n|cFFFF7C0ADruid|r - Balance, Feral, Restoration (Experimental/Minimal)\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFF00FF98Monk|r - Mistweaver (Experimental/Minimal), Windwalker\n|cFFFFFFFFPriest|r - Holy, Shadow\n|cFFFFF468Rogue|r - Assassination, Outlaw\n|cFF0070DDShaman|r - Elemental, Restoration (Experimental/Minimal)\n|cFFC69B6DWarrior|r - Arms, Fury"
+TRB.Details.supportedSpecs = "|cFFFFFFFFPriest|r - Shadow"
+--TRB.Details.supportedSpecs = "|cFFA330C9Demon Hunter|r - Havoc\n|cFFFF7C0ADruid|r - Balance, Feral, Restoration (Experimental/Minimal)\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFF00FF98Monk|r - Mistweaver (Experimental/Minimal), Windwalker\n|cFFFFFFFFPriest|r - Holy, Shadow\n|cFFFFF468Rogue|r - Assassination, Outlaw\n|cFF0070DDShaman|r - Elemental, Restoration (Experimental/Minimal)\n|cFFC69B6DWarrior|r - Arms, Fury"
+TRB.Details.needUpdatingSpecs = "|cFFA330C9Demon Hunter|r - Havoc\n|cFFFF7C0ADruid|r - Balance, Feral, Restoration (Experimental/Minimal)\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFF00FF98Monk|r - Mistweaver (Experimental/Minimal), Windwalker\n|cFFFFFFFFPriest|r - Holy\n|cFFFFF468Rogue|r - Assassination, Outlaw\n|cFF0070DDShaman|r - Elemental, Restoration (Experimental/Minimal)\n|cFFC69B6DWarrior|r - Arms, Fury"
+--TRB.Details.supportedSpecs = "|cFFA330C9Demon Hunter|r - Havoc\n|cFFFF7C0ADruid|r - Balance, Feral, Restoration (Experimental/Minimal)\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFF00FF98Monk|r - Mistweaver (Experimental/Minimal), Windwalker\n|cFFFFFFFFPriest|r - Holy, Shadow\n|cFFFFF468Rogue|r - Assassination, Outlaw\n|cFF0070DDShaman|r - Elemental, Restoration (Experimental/Minimal)\n|cFFC69B6DWarrior|r - Arms, Fury"
+
 
 local addonData = {
 	loaded = false,

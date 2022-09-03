@@ -5181,7 +5181,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Data.spells.innervate.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.innervate.duration, TRB.Data.snapshotData.innervate.endTime, _, _, _, TRB.Data.snapshotData.innervate.spellId, _, _, _, _, _, modifier  = TRB.Functions.FindBuffById(TRB.Data.spells.innervate.id)
 							TRB.Data.snapshotData.innervate.modifier = (100 + modifier) / 100
-							print("Innervate modifiers:", modifier, TRB.Data.snapshotData.innervate.modifier)
 							TRB.Data.snapshotData.audio.innervateCue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.innervate.isActive = false
