@@ -1693,14 +1693,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			-- Threshold lines
-			if TRB.Data.settings.priest.shadow.thresholds.devouringPlague.enabled and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
+			if TRB.Data.settings.priest.shadow.thresholds.devouringPlague.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.devouringPlague) and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
 				TRB.Frames.resourceFrame.thresholds[1]:Show()
 				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholds.width, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
 			else
 				TRB.Frames.resourceFrame.thresholds[1]:Hide()
 			end
 
-			if TRB.Data.settings.priest.shadow.thresholds.mindSear.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.mindSear) then
+			if TRB.Data.settings.priest.shadow.thresholds.mindSear.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.mindSear) and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
 				TRB.Frames.resourceFrame.thresholds[2]:Show()
 				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholds.width, TRB.Data.character.mindSearThreshold, TRB.Data.character.maxResource)				
 			else

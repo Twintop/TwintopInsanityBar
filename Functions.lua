@@ -359,37 +359,39 @@ local function GetTalents(baselineTalents)
 	local configId = C_ClassTalents.GetActiveConfigID()
 	if configId ~= nil then
 		local configInfo = C_Traits.GetConfigInfo(configId)
-		for _, treeId in pairs(configInfo.treeIDs) do
-			local nodes = C_Traits.GetTreeNodes(treeId)
-			for _, nodeId in pairs(nodes) do
-				local node = C_Traits.GetNodeInfo(configId, nodeId)
-				local entryId = nil
-				
-				if node.activeEntry ~= nil then
-					entryId = node.activeEntry.entryID
-				elseif node.nextEntry ~= nil then
-					entryId = node.nextEntry.entryID
-				elseif node.entryIDs ~= nil then
-					entryId = node.entryIDs[1]
-				end
+		if configInfo ~= nil then
+			for _, treeId in pairs(configInfo.treeIDs) do
+				local nodes = C_Traits.GetTreeNodes(treeId)
+				for _, nodeId in pairs(nodes) do
+					local node = C_Traits.GetNodeInfo(configId, nodeId)
+					local entryId = nil
+					
+					if node.activeEntry ~= nil then
+						entryId = node.activeEntry.entryID
+					elseif node.nextEntry ~= nil then
+						entryId = node.nextEntry.entryID
+					elseif node.entryIDs ~= nil then
+						entryId = node.entryIDs[1]
+					end
 
-				if entryId ~= nil then
-					local entryInfo = C_Traits.GetEntryInfo(configId, entryId)
-					local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
+					if entryId ~= nil then
+						local entryInfo = C_Traits.GetEntryInfo(configId, entryId)
+						local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
 
-					name, _, icon = GetSpellInfo(definitionInfo.spellID)
-					iconString = string.format("|T%s:0|t", icon)
+						name, _, icon = GetSpellInfo(definitionInfo.spellID)
+						iconString = string.format("|T%s:0|t", icon)
 
-					talents[definitionInfo.spellID] = {
-						id = definitionInfo.spellID,
-						name = name,
-						icon = iconString,
-						currentRank = node.ranksPurchased,
-						maxRank = node.maxRanks,
-					}
+						talents[definitionInfo.spellID] = {
+							id = definitionInfo.spellID,
+							name = name,
+							icon = iconString,
+							currentRank = node.ranksPurchased,
+							maxRank = node.maxRanks,
+						}
 
-					if baselineTalents[definitionInfo.spellID] ~= nil then
-						talents[definitionInfo.spellID].currentRank = talents[definitionInfo.spellID].maxRank
+						if baselineTalents[definitionInfo.spellID] ~= nil then
+							talents[definitionInfo.spellID].currentRank = talents[definitionInfo.spellID].maxRank
+						end
 					end
 				end
 			end
