@@ -111,9 +111,33 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					soulfulManaPotion = {
 						id = 180318,
 						mana = 4000
-					}
+					},
+					aeratedManaPotion415 = {
+						id = 191386,
+						mana = 17662
+					},
+					aeratedManaPotion400 = {
+						id = 191385,
+						mana = 15358
+					},
+					aeratedManaPotion385 = {
+						id = 191384,
+						mana = 13355
+					},
+					potionOfFrozenFocus415 = {
+						id = 191365,
+						mana = 30910
+					},
+					potionOfFrozenFocus400 = {
+						id = 191364,
+						mana = 26880
+					},
+					potionOfFrozenFocus385 = {
+						id = 191363,
+						mana = 23370
+					},
 				},
-				harmoniousApparatus = false,
+				harmoniousApparatusLegendary = false,
 				flashConcentration = false,
 				alchemyStone = false
 			},
@@ -128,35 +152,85 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		}
 
 		specCache.holy.spells = {
-			holyWordSerenity = {
-				id = 2050,
-				name = "",
-				icon = "",
-				duration = 60
-			},
-			heal = {
-				id = 2060,
-				name = "",
-				icon = "",
-				holyWordKey = "holyWordSerenity",
-				holyWordReduction = 6
-			},
+			-- Priest Class Baseline Abilities
 			flashHeal = {
 				id = 2061,
 				name = "",
 				icon = "",
 				holyWordKey = "holyWordSerenity",
-				holyWordReduction = 6
+				holyWordReduction = 6,
+				isTalent = false,
+				baseline = true
 			},
+			shadowWordPain = {
+				id = 589,
+				icon = "",
+				name = "",
+				baseDuration = 16,
+				pandemic = true,
+				pandemicTime = 16 * 0.3,
+				isTalent = false,
+				baseline = true
+			},
+			smite = {
+				id = 585,
+				name = "",
+				icon = "",
+				holyWordKey = "holyWordChastise",
+				holyWordReduction = 4,
+				isTalent = false,
+				baseline = true
+			},
+
+			-- Holy Baseline Abilities
+			heal = {
+				id = 2060,
+				name = "",
+				icon = "",
+				holyWordKey = "holyWordSerenity",
+				holyWordReduction = 6,
+				isTalent = false,
+				baseline = true
+			},
+
+			-- Priest Talent Abilities
 			prayerOfMending = {
 				id = 33076,
 				name = "",
 				icon = "",
 				holyWordKey = "holyWordSerenity",
-				holyWordReduction = 4
+				holyWordReduction = 2, -- Per rank of Harmonious Apparatus
+				isTalent = true,
+				baseline = true
 			},
-			holyWordSanctify = {
-				id = 34861,
+			renew = {
+				id = 139,
+				name = "",
+				icon = "",
+				holyWordKey = "holyWordSanctify",
+				holyWordReduction = 2,
+				isTalent = true,
+				baseline = true
+			},
+			surgeOfLight = {
+				id = 114255,
+				name = "",
+				icon = "",
+				duration = 20,
+				isActive = false,
+				isTalent = true
+			},
+			holyWordLife = {
+				id = 88625,
+				name = "",
+				icon = "",
+				duration = 30,
+				isTalent = true
+			},
+
+			-- Holy Talent Abilities
+			holyWordSerenity = {
+				id = 2050,
 				name = "",
 				icon = "",
 				duration = 60
@@ -166,74 +240,62 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				holyWordKey = "holyWordSanctify",
-				holyWordReduction = 6
-			},
-			circleOfHealing = {
-				id = 204883,
-				name = "",
-				icon = "",
-				holyWordKey = "holyWordSanctify",
-				holyWordReduction = 4
-			},
-			renew = {
-				id = 139,
-				name = "",
-				icon = "",
-				holyWordKey = "holyWordSanctify",
-				holyWordReduction = 2
+				holyWordReduction = 6,
+				isTalent = true
 			},
 			holyWordChastise = {
 				id = 88625,
 				name = "",
 				icon = "",
-				duration = 60
+				duration = 60,
+				isTalent = true
 			},
-			smite = {
-				id = 585,
+			holyWordSanctify = {
+				id = 373481,
 				name = "",
 				icon = "",
-				holyWordKey = "holyWordChastise",
-				holyWordReduction = 4
+				duration = 60,
+				isTalent = true
 			},
 			holyFire = {
 				id = 14914,
 				name = "",
 				icon = "",
 				holyWordKey = "holyWordChastise",
-				holyWordReduction = 4
+				holyWordReduction = 2, -- Per rank of Harmonious Apparatus
+				isTalent = true
 			},
-			shadowWordPain = {
-				id = 589,
-				icon = "",
+			circleOfHealing = {
+				id = 204883,
 				name = "",
-				baseDuration = 16,
-				pandemic = true,
-				pandemicTime = 16 * 0.3
+				icon = "",
+				holyWordKey = "holyWordSanctify",
+				holyWordReduction = 2, -- Per rank of Harmonious Apparatus
+				isTalent = true
 			},
 			symbolOfHope = {
 				id = 64901,
 				name = "",
 				icon = "",
 				duration = 4.0, --Hasted
-				manaPercent = 0.03,
+				manaPercent = 0.05,
 				ticks = 3,
-				tickId = 265144
-			},
-
-			-- Talents
-
-			surgeOfLight = {
-				id = 114255,
-				name = "",
-				icon = "",
-				duration = 20,
-				isActive = false
+				tickId = 265144,
+				isTalent = true
 			},
 			lightOfTheNaaru = {
 				id = 196985,
 				name = "",
 				icon = "",
-				holyWordModifier = (4/3), -- 33% more
+				holyWordModifier = 0.1, -- Per rank
+				isTalent = true
+			},
+			harmoniousApparatus = {
+				id = 196985,
+				name = "",
+				icon = "",
+				holyWordModifier = 0.1, -- Per rank
+				isTalent = true
 			},
 			apotheosis = {
 				id = 200183,
@@ -241,8 +303,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				holyWordModifier = 4, -- 300% more
 				duration = 20,
-				isActive = false
+				isActive = false,
+				isTalent = true
 			},
+
+
+			-- TODO: Pontiflex
 
 			-- External mana
 			innervate = {
@@ -292,7 +358,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 
 			-- Legendary
-			harmoniousApparatus = {
+			harmoniousApparatusLegendary = {
 				id = 336314,
 				name = "",
 				icon = "",
@@ -492,7 +558,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			resourceRaw = 0,
 			resourceFinal = 0,
 		}
-		specCache.holy.snapshotData.potionOfSpiritualClarity = {
+		specCache.holy.snapshotData.channeledManaPotion = {
 			isActive = false,
 			ticksRemaining = 0,
 			mana = 0,
@@ -1199,6 +1265,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#flashHeal", icon = spells.flashHeal.icon, description = spells.flashHeal.name, printInSettings = true },
 			{ variable = "#ha", icon = spells.harmoniousApparatus.icon, description = spells.harmoniousApparatus.name, printInSettings = true },
 			{ variable = "#harmoniousApparatus", icon = spells.harmoniousApparatus.icon, description = spells.harmoniousApparatus.name, printInSettings = false },
+			{ variable = "#harmoniousApparatusLegendary", icon = spells.harmoniousApparatusLegendary.icon, description = spells.harmoniousApparatusLegendary.name, printInSettings = false },
 			{ variable = "#heal", icon = spells.heal.icon, description = spells.heal.name, printInSettings = true },
 			{ variable = "#hf", icon = spells.holyFire.icon, description = spells.holyFire.name, printInSettings = true },
 			{ variable = "#holyFire", icon = spells.holyFire.icon, description = spells.holyFire.name, printInSettings = false },
@@ -1592,7 +1659,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			local trinket1ItemLink = GetInventoryItemLink("player", 13)
 			local trinket2ItemLink = GetInventoryItemLink("player", 14)
 
-			local harmoniousApparatus = false
+			local harmoniousApparatusLegendary = false
 			local flashConcentration = false
 			local alchemyStone = false
 			if neckItemLink ~= nil then
@@ -1605,17 +1672,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.character.items.flashConcentration = flashConcentration
 
 			if shoulderItemLink ~= nil then
-				harmoniousApparatus = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(shoulderItemLink, 173247, TRB.Data.spells.harmoniousApparatus.idLegendaryBonus)
+				harmoniousApparatusLegendary = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(shoulderItemLink, 173247, TRB.Data.spells.harmoniousApparatusLegendary.idLegendaryBonus)
 			end
 
-			if harmoniousApparatus == false and ring1ItemLink ~= nil then
-				harmoniousApparatus = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(ring1ItemLink, 178926, TRB.Data.spells.harmoniousApparatus.idLegendaryBonus)
+			if harmoniousApparatusLegendary == false and ring1ItemLink ~= nil then
+				harmoniousApparatusLegendary = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(ring1ItemLink, 178926, TRB.Data.spells.harmoniousApparatusLegendary.idLegendaryBonus)
 			end
 
-			if harmoniousApparatus == false and ring2ItemLink ~= nil then
-				harmoniousApparatus = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(ring2ItemLink, 178926, TRB.Data.spells.harmoniousApparatus.idLegendaryBonus)
+			if harmoniousApparatusLegendary == false and ring2ItemLink ~= nil then
+				harmoniousApparatusLegendary = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(ring2ItemLink, 178926, TRB.Data.spells.harmoniousApparatusLegendary.idLegendaryBonus)
 			end
-			TRB.Data.character.items.harmoniousApparatus = harmoniousApparatus
+			TRB.Data.character.items.harmoniousApparatusLegendary = harmoniousApparatusLegendary
 			
 			if trinket1ItemLink ~= nil then
 				for x = 1, TRB.Functions.TableLength(TRB.Data.spells.alchemistStone.itemIds) do
@@ -1981,7 +2048,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				local remainingTimeTotalAverage = remainingTime
 				local moreCasts = 0
 				local moreCastsAverage = 0
-				local critValue = math.max(math.min((1.0 + (TRB.Data.snapshotData.crit / 100)), 2), 0)
+				local critValue = math.max(math.min((2 * (1.0 + (TRB.Data.snapshotData.crit / 100))), 4), 0)
 				local isInfinite = false
 				local isAverageInfinite = false
 
@@ -2136,7 +2203,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function GetPotionOfSpiritualClarityRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.potionOfSpiritualClarity)
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.channeledManaPotion)
 	end
 
 	local function GetHolyWordCooldownTimeRemaining(holyWord)
@@ -2183,7 +2250,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		if TRB.Functions.IsTalentActive(TRB.Data.spells.lightOfTheNaaru) then
-			mod = mod * TRB.Data.spells.lightOfTheNaaru.holyWordModifier
+			mod = mod * (1 + (TRB.Data.spells.lightOfTheNaaru.holyWordModifier * TRB.Data.talents.lightOfTheNaaru.currentRank))
 		end
 		mod = mod + holyOrationValue
 
@@ -2288,11 +2355,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$pscMana" then
-				if TRB.Data.snapshotData.potionOfSpiritualClarity.mana > 0 then
+				if TRB.Data.snapshotData.channeledManaPotion.mana > 0 then
 					valid = true
 				end
 			elseif var == "$pscTicks" then
-				if TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining > 0 then
+				if TRB.Data.snapshotData.channeledManaPotion.ticksRemaining > 0 then
 					valid = true
 				end
 			elseif var == "$pscTime" then
@@ -2592,10 +2659,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local potionCooldown = string.format("%d:%0.2d", _potionCooldownMinutes, _potionCooldownSeconds)
 
 		--$pscMana
-		local _pscMana = CalculateManaGain(TRB.Data.snapshotData.potionOfSpiritualClarity.mana, true)
+		local _pscMana = CalculateManaGain(TRB.Data.snapshotData.channeledManaPotion.mana, true)
 		local pscMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_pscMana, manaPrecision, "floor", true))
 		--$pscTicks
-		local _pscTicks = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining or 0
+		local _pscTicks = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining or 0
 		local pscTicks = string.format("%.0f", _pscTicks)
 		--$pscTime
 		local _pscTime = GetPotionOfSpiritualClarityRemainingTime()
@@ -2707,7 +2774,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		}
 		Global_TwintopResourceBar.potionOfSpiritualClarity = {
 			mana = _pscMana,
-			ticks = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining or 0
+			ticks = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining or 0
 		}
 		Global_TwintopResourceBar.symbolOfHope = {
 			mana = _sohMana,
@@ -2725,8 +2792,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#fc"] = TRB.Data.spells.flashConcentration.icon
 		lookup["#flashConcentration"] = TRB.Data.spells.flashConcentration.icon
 		lookup["#flashHeal"] = TRB.Data.spells.flashHeal.icon
-		lookup["#ha"] = TRB.Data.spells.harmoniousApparatus.icon
+		lookup["#ha"] = TRB.Data.spells.harmoniousApparatusLegendary.icon
 		lookup["#harmoniousApparatus"] = TRB.Data.spells.harmoniousApparatus.icon
+		lookup["#harmoniousApparatusLegendary"] = TRB.Data.spells.harmoniousApparatusLegendary.icon
 		lookup["#heal"] = TRB.Data.spells.heal.icon
 		lookup["#hf"] = TRB.Data.spells.holyFire.icon
 		lookup["#holyFire"] = TRB.Data.spells.holyFire.icon
@@ -3418,7 +3486,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.casting.spellKey = "renew"
 						elseif currentSpellId == TRB.Data.spells.smite.id then
 							TRB.Data.snapshotData.casting.spellKey = "smite"
-						elseif TRB.Data.character.items.harmoniousApparatus then
+						elseif TRB.Functions.IsTalentActive(TRB.Data.spells.harmoniousApparatus) or TRB.Data.character.items.harmoniousApparatusLegendary then
 							if currentSpellId == TRB.Data.spells.circleOfHealing.id then --Harmonious Apparatus / This shouldn't happen
 								TRB.Data.snapshotData.casting.spellKey = "circleOfHealing"
 							elseif currentSpellId == TRB.Data.spells.prayerOfMending.id then --Harmonious Apparatus / This shouldn't happen
@@ -3831,17 +3899,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function UpdatePotionOfSpiritualClarity(forceCleanup)
-		if TRB.Data.snapshotData.potionOfSpiritualClarity.isActive or forceCleanup then
+		if TRB.Data.snapshotData.channeledManaPotion.isActive or forceCleanup then
 			local currentTime = GetTime()
-			if forceCleanup or TRB.Data.snapshotData.potionOfSpiritualClarity.endTime == nil or currentTime > TRB.Data.snapshotData.potionOfSpiritualClarity.endTime then
-				TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining = 0
-				TRB.Data.snapshotData.potionOfSpiritualClarity.endTime = nil
-				TRB.Data.snapshotData.potionOfSpiritualClarity.mana = 0
-				TRB.Data.snapshotData.potionOfSpiritualClarity.isActive = false
+			if forceCleanup or TRB.Data.snapshotData.channeledManaPotion.endTime == nil or currentTime > TRB.Data.snapshotData.channeledManaPotion.endTime then
+				TRB.Data.snapshotData.channeledManaPotion.ticksRemaining = 0
+				TRB.Data.snapshotData.channeledManaPotion.endTime = nil
+				TRB.Data.snapshotData.channeledManaPotion.mana = 0
+				TRB.Data.snapshotData.channeledManaPotion.isActive = false
 			else
-				TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining = math.ceil((TRB.Data.snapshotData.potionOfSpiritualClarity.endTime - currentTime) / (TRB.Data.spells.potionOfSpiritualClarity.duration / TRB.Data.spells.potionOfSpiritualClarity.ticks))
-				local nextTickRemaining = TRB.Data.snapshotData.potionOfSpiritualClarity.endTime - currentTime - math.floor((TRB.Data.snapshotData.potionOfSpiritualClarity.endTime - currentTime) / (TRB.Data.spells.potionOfSpiritualClarity.duration / TRB.Data.spells.potionOfSpiritualClarity.ticks))
-				TRB.Data.snapshotData.potionOfSpiritualClarity.mana = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfSpiritualClarity.mana, true) + ((TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining - 1 + nextTickRemaining) * TRB.Data.snapshotData.manaRegen)
+				TRB.Data.snapshotData.channeledManaPotion.ticksRemaining = math.ceil((TRB.Data.snapshotData.channeledManaPotion.endTime - currentTime) / (TRB.Data.spells.potionOfSpiritualClarity.duration / TRB.Data.spells.potionOfSpiritualClarity.ticks))
+				local nextTickRemaining = TRB.Data.snapshotData.channeledManaPotion.endTime - currentTime - math.floor((TRB.Data.snapshotData.channeledManaPotion.endTime - currentTime) / (TRB.Data.spells.potionOfSpiritualClarity.duration / TRB.Data.spells.potionOfSpiritualClarity.ticks))
+				TRB.Data.snapshotData.channeledManaPotion.mana = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfSpiritualClarity.mana, true) + ((TRB.Data.snapshotData.channeledManaPotion.ticksRemaining - 1 + nextTickRemaining) * TRB.Data.snapshotData.manaRegen)
 			end
 		end
 	end
@@ -4274,8 +4342,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					local passiveValue = 0
 					if TRB.Data.settings.priest.holy.bar.showPassive then
-						if TRB.Data.snapshotData.potionOfSpiritualClarity.isActive then
-							passiveValue = passiveValue + TRB.Data.snapshotData.potionOfSpiritualClarity.mana
+						if TRB.Data.snapshotData.channeledManaPotion.isActive then
+							passiveValue = passiveValue + TRB.Data.snapshotData.channeledManaPotion.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.holy, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, TRB.Data.settings.priest.holy.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -4389,6 +4457,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 							local castTimeRemains = TRB.Data.snapshotData.casting.endTime - currentTime
 
+							--[[TODO: Check if this is still needed?
 							if TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey2 ~= nil and
 								TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction2 ~= nil and
 								TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction2 >= 0 then --We have an edge case, boiz
@@ -4405,13 +4474,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								elseif remaining1 <= 0 and remaining2 <= 0 and TRB.Data.settings.priest.holy.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey .. "Enabled"] then
 									resourceBarColor = TRB.Data.settings.priest.holy.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]
 								end
-							else
+							else]]
 								local holyWordCooldownRemaining = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey])
 
 								if (holyWordCooldownRemaining - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction) - castTimeRemains) <= 0 and TRB.Data.settings.priest.holy.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey .. "Enabled"] then
 									resourceBarColor = TRB.Data.settings.priest.holy.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]
 								end
-							end
+							--end
 						end
 					end
 
@@ -4768,10 +4837,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					elseif spellId == TRB.Data.spells.potionOfSpiritualClarity.spellId then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Potion of Spiritual Clarity
-							TRB.Data.snapshotData.potionOfSpiritualClarity.isActive = true
-							TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining = TRB.Data.spells.potionOfSpiritualClarity.ticks
-							TRB.Data.snapshotData.potionOfSpiritualClarity.mana = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfSpiritualClarity.mana, true)
-							TRB.Data.snapshotData.potionOfSpiritualClarity.endTime = currentTime + TRB.Data.spells.potionOfSpiritualClarity.duration
+							TRB.Data.snapshotData.channeledManaPotion.isActive = true
+							TRB.Data.snapshotData.channeledManaPotion.ticksRemaining = TRB.Data.spells.potionOfSpiritualClarity.ticks
+							TRB.Data.snapshotData.channeledManaPotion.mana = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfSpiritualClarity.mana, true)
+							TRB.Data.snapshotData.channeledManaPotion.endTime = currentTime + TRB.Data.spells.potionOfSpiritualClarity.duration
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Spiritual Clarity channel
 							-- Let UpdatePotionOfSpiritualClarity() clean this up
 							UpdatePotionOfSpiritualClarity(true)

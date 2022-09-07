@@ -466,7 +466,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			resourceRaw = 0,
 			resourceFinal = 0
 		}
-		specCache.restoration.snapshotData.potionOfSpiritualClarity = {
+		specCache.restoration.snapshotData.channeledManaPotion = {
 			isActive = false,
 			ticksRemaining = 0,
 			mana = 0,
@@ -978,7 +978,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function GetPotionOfSpiritualClarityRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.potionOfSpiritualClarity)
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.channeledManaPotion)
 	end
 
 	local function GetInnervateRemainingTime()
@@ -1132,11 +1132,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					valid = true
 				end
 			elseif var == "$pscMana" then
-				if TRB.Data.snapshotData.potionOfSpiritualClarity.mana > 0 then
+				if TRB.Data.snapshotData.channeledManaPotion.mana > 0 then
 					valid = true
 				end
 			elseif var == "$pscTicks" then
-				if TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining > 0 then
+				if TRB.Data.snapshotData.channeledManaPotion.ticksRemaining > 0 then
 					valid = true
 				end
 			elseif var == "$pscTime" then
@@ -1411,10 +1411,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local potionCooldown = string.format("%d:%0.2d", _potionCooldownMinutes, _potionCooldownSeconds)
 
 		--$pscMana
-		local _pscMana = CalculateManaGain(TRB.Data.snapshotData.potionOfSpiritualClarity.mana, true)
+		local _pscMana = CalculateManaGain(TRB.Data.snapshotData.channeledManaPotion.mana, true)
 		local pscMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_pscMana, manaPrecision, "floor", true))
 		--$pscTicks
-		local _pscTicks = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining or 0
+		local _pscTicks = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining or 0
 		local pscTicks = string.format("%.0f", _pscTicks)
 		--$pscTime
 		local _pscTime = GetPotionOfSpiritualClarityRemainingTime()
@@ -1480,7 +1480,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
 		Global_TwintopResourceBar.potionOfSpiritualClarity = {
 			mana = _pscMana,
-			ticks = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining or 0
+			ticks = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining or 0
 		}
 		Global_TwintopResourceBar.symbolOfHope = {
 			mana = _sohMana,
@@ -1684,17 +1684,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function UpdatePotionOfSpiritualClarity(forceCleanup)
-		if TRB.Data.snapshotData.potionOfSpiritualClarity.isActive or forceCleanup then
+		if TRB.Data.snapshotData.channeledManaPotion.isActive or forceCleanup then
 			local currentTime = GetTime()
-			if forceCleanup or TRB.Data.snapshotData.potionOfSpiritualClarity.endTime == nil or currentTime > TRB.Data.snapshotData.potionOfSpiritualClarity.endTime then
-				TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining = 0
-				TRB.Data.snapshotData.potionOfSpiritualClarity.endTime = nil
-				TRB.Data.snapshotData.potionOfSpiritualClarity.mana = 0
-				TRB.Data.snapshotData.potionOfSpiritualClarity.isActive = false
+			if forceCleanup or TRB.Data.snapshotData.channeledManaPotion.endTime == nil or currentTime > TRB.Data.snapshotData.channeledManaPotion.endTime then
+				TRB.Data.snapshotData.channeledManaPotion.ticksRemaining = 0
+				TRB.Data.snapshotData.channeledManaPotion.endTime = nil
+				TRB.Data.snapshotData.channeledManaPotion.mana = 0
+				TRB.Data.snapshotData.channeledManaPotion.isActive = false
 			else
-				TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining = math.ceil((TRB.Data.snapshotData.potionOfSpiritualClarity.endTime - currentTime) / (TRB.Data.spells.potionOfSpiritualClarity.duration / TRB.Data.spells.potionOfSpiritualClarity.ticks))
-				local nextTickRemaining = TRB.Data.snapshotData.potionOfSpiritualClarity.endTime - currentTime - math.floor((TRB.Data.snapshotData.potionOfSpiritualClarity.endTime - currentTime) / (TRB.Data.spells.potionOfSpiritualClarity.duration / TRB.Data.spells.potionOfSpiritualClarity.ticks))
-				TRB.Data.snapshotData.potionOfSpiritualClarity.mana = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfSpiritualClarity.mana, true) + ((TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining - 1 + nextTickRemaining) * TRB.Data.snapshotData.manaRegen)
+				TRB.Data.snapshotData.channeledManaPotion.ticksRemaining = math.ceil((TRB.Data.snapshotData.channeledManaPotion.endTime - currentTime) / (TRB.Data.spells.potionOfSpiritualClarity.duration / TRB.Data.spells.potionOfSpiritualClarity.ticks))
+				local nextTickRemaining = TRB.Data.snapshotData.channeledManaPotion.endTime - currentTime - math.floor((TRB.Data.snapshotData.channeledManaPotion.endTime - currentTime) / (TRB.Data.spells.potionOfSpiritualClarity.duration / TRB.Data.spells.potionOfSpiritualClarity.ticks))
+				TRB.Data.snapshotData.channeledManaPotion.mana = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfSpiritualClarity.mana, true) + ((TRB.Data.snapshotData.channeledManaPotion.ticksRemaining - 1 + nextTickRemaining) * TRB.Data.snapshotData.manaRegen)
 			end
 		end
 	end
@@ -2114,8 +2114,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 					local passiveValue = 0
 					if TRB.Data.settings.shaman.restoration.bar.showPassive then
-						if TRB.Data.snapshotData.potionOfSpiritualClarity.isActive then
-							passiveValue = passiveValue + TRB.Data.snapshotData.potionOfSpiritualClarity.mana
+						if TRB.Data.snapshotData.channeledManaPotion.isActive then
+							passiveValue = passiveValue + TRB.Data.snapshotData.channeledManaPotion.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.restoration, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, TRB.Data.settings.shaman.restoration.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -2395,10 +2395,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						end
 					elseif spellId == TRB.Data.spells.potionOfSpiritualClarity.spellId then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Potion of Spiritual Clarity
-							TRB.Data.snapshotData.potionOfSpiritualClarity.isActive = true
-							TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining = TRB.Data.spells.potionOfSpiritualClarity.ticks
-							TRB.Data.snapshotData.potionOfSpiritualClarity.mana = TRB.Data.snapshotData.potionOfSpiritualClarity.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfSpiritualClarity.mana, true)
-							TRB.Data.snapshotData.potionOfSpiritualClarity.endTime = currentTime + TRB.Data.spells.potionOfSpiritualClarity.duration
+							TRB.Data.snapshotData.channeledManaPotion.isActive = true
+							TRB.Data.snapshotData.channeledManaPotion.ticksRemaining = TRB.Data.spells.potionOfSpiritualClarity.ticks
+							TRB.Data.snapshotData.channeledManaPotion.mana = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfSpiritualClarity.mana, true)
+							TRB.Data.snapshotData.channeledManaPotion.endTime = currentTime + TRB.Data.spells.potionOfSpiritualClarity.duration
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Spiritual Clarity channel
 							-- Let UpdatePotionOfSpiritualClarity() clean this up
 							UpdatePotionOfSpiritualClarity(true)
