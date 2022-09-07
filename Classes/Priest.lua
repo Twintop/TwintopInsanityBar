@@ -2048,7 +2048,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				local remainingTimeTotalAverage = remainingTime
 				local moreCasts = 0
 				local moreCastsAverage = 0
-				local critValue = math.max(math.min((2 * (1.0 + (TRB.Data.snapshotData.crit / 100))), 4), 0)
+				local critValue = math.max(math.min((1.0 + (TRB.Data.snapshotData.crit / 100)), 2), 0)
 				local isInfinite = false
 				local isAverageInfinite = false
 
@@ -2065,12 +2065,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if remainingTimeTmp > castDelay then
 						if castGrantsExtension == true then
 							moreCasts = moreCasts + 1
-							remainingTimeTmp = remainingTimeTmp + 1.0 - castDelay
-							remainingTimeTotal = remainingTimeTotal + 1.0
+							remainingTimeTmp = remainingTimeTmp + 2.0 - castDelay
+							remainingTimeTotal = remainingTimeTotal + 2.0
 
 							moreCastsAverage = moreCastsAverage + 1
-							remainingTimeTmpAverage = remainingTimeTmpAverage + critValue - castDelay
-							remainingTimeTotalAverage = remainingTimeTotalAverage + critValue
+							remainingTimeTmpAverage = remainingTimeTmpAverage + (critValue * 2) - castDelay
+							remainingTimeTotalAverage = remainingTimeTotalAverage + (critValue * 2)
 						else
 							remainingTimeTmp = remainingTimeTmp - castDelay
 
@@ -2087,7 +2087,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 
 					if flightRemaining < remainingTimeTmpAverage then
-						remainingTimeTmpAverage = remainingTimeTmpAverage + critValue
+						remainingTimeTmpAverage = remainingTimeTmpAverage + (critValue * 2)
 					end
 				end
 
@@ -2099,11 +2099,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 
 				local infiniteAverageExtensions = false
-				if ((2 - (2 / (vbCooldown))) * 100) < TRB.Data.snapshotData.crit then
+				if ((2 - (2 / (vbCooldown))) * 100 * 2) < TRB.Data.snapshotData.crit then
 					infiniteAverageExtensions = true
 				end
-
-				local infinityHasteRequired = vbBaseCooldown - 1
 
 				local sanityCheckCounter = 0
 				local infinityCounter = 0
@@ -2125,8 +2123,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							additionalCasts = math.max(additionalCasts - 1, 0)
 						end
 						moreCasts = moreCasts + additionalCasts
-						remainingTimeTmp = remainingTimeTmp + additionalCasts - (castsRaw * vbCooldown)
-						remainingTimeTotal = remainingTimeTotal + additionalCasts
+						remainingTimeTmp = remainingTimeTmp + (additionalCasts * 2) - (castsRaw * vbCooldown)
+						remainingTimeTotal = remainingTimeTotal + (additionalCasts * 2)
 					end
 
 					if not infiniteAverageExtensions and remainingTimeTmpAverage >= vbCooldown then
@@ -2138,8 +2136,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							additionalCastsAverage = math.max(additionalCastsAverage - 1, 0)
 						end
 						moreCastsAverage = moreCastsAverage + additionalCastsAverage
-						remainingTimeTmpAverage = remainingTimeTmpAverage + (critValue * additionalCastsAverage) - (castsAverageRaw * vbCooldown)
-						remainingTimeTotalAverage = remainingTimeTotalAverage + (critValue * additionalCastsAverage)
+						remainingTimeTmpAverage = remainingTimeTmpAverage + ((critValue * 2) * additionalCastsAverage) - (castsAverageRaw * vbCooldown)
+						remainingTimeTotalAverage = remainingTimeTotalAverage + ((critValue * 2) * additionalCastsAverage)
 					end
 
 					castGrantsExtension = true
