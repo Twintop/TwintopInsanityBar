@@ -1887,7 +1887,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Insanity from Auspicious Spirits, Mindbender swings, Death and Madness ticks, Lash of Insanity ticks, and Wrathful Faerie procs.", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Insanity from Auspicious Spirits, Shadowfiend/Mindbender swings, Death and Madness ticks, Lash of Insanity ticks, and Wrathful Faerie procs.", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
@@ -1911,7 +1911,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.mindbender = TRB.UiFunctions:BuildColorPicker(parent, "Mindbender / Wrathful Faerie Insanity Gain", spec.colors.threshold.mindbender, 275, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.threshold.mindbender = TRB.UiFunctions:BuildColorPicker(parent, "Shadowfiend / Mindbender / Wrathful Faerie Insanity Gain", spec.colors.threshold.mindbender, 275, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.mindbender
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
@@ -2655,13 +2655,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Mindbender Tracking", 0, yCoord)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Shadowfiend/Mindbender Tracking", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.mindbender = CreateFrame("CheckButton", "TwintopResourceBar_CB3_7", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mindbender
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Track Mindbender Insanity Gain")
+		getglobal(f:GetName() .. 'Text'):SetText("Track Shadowfiend/Mindbender Insanity Gain")
 		f.tooltip = "Show the gain of Insanity over the next serveral swings, GCDs, or fixed length of time. Select which to track from the options below."
 		f:SetChecked(spec.mindbender.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -2685,7 +2685,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.mindbender.mode = "gcd"
 		end)
 
-		title = "Mindbender GCDs - 0.75sec Floor"
+		title = "Shadowfiend/Mindbender GCDs - 0.75sec Floor"
 		controls.mindbenderGCDs = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.mindbender.gcdsMax, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.mindbenderGCDs:SetScript("OnValueChanged", function(self, value)
@@ -2700,7 +2700,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Insanity from Swings remaining")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Insanity incoming over the up to next X melee swings from Mindbender. This is only different from the GCD option if you are above 200% haste (GCD cap)."
+		f.tooltip = "Shows the amount of Insanity incoming over the up to next X melee swings from Shadowfiend/Mindbender. This is only different from the GCD option if you are above 200% haste (GCD cap)."
 		if spec.mindbender.mode == "swing" then
 			f:SetChecked(true)
 		end
@@ -2711,7 +2711,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.mindbender.mode = "swing"
 		end)
 
-		title = "Mindbender Swings - No Floor"
+		title = "Shadowfiend/Mindbender Swings - No Floor"
 		controls.mindbenderSwings = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.mindbender.swingsMax, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.mindbenderSwings:SetScript("OnValueChanged", function(self, value)
@@ -2736,7 +2736,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.mindbender.mode = "time"
 		end)
 
-		title = "Mindbender Remaining (sec)"
+		title = "Shadowfiend/Mindbender Remaining (sec)"
 		controls.mindbenderTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.mindbender.timeMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.mindbenderTime:SetScript("OnValueChanged", function(self, value)
