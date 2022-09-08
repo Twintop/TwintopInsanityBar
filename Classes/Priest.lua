@@ -220,7 +220,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				isActive = false,
 				isTalent = true
 			},
-			holyWordLife = {
+			powerWordLife = {
 				id = 88625,
 				name = "",
 				icon = "",
@@ -888,13 +888,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				isActive = false,
 				isTalent = true
 			},
+			idolOfCthun = {
+				id = 377349,
+				name = "",
+				icon = "",
+			},
 			idolOfCthun_Tendril = {
 				id = 377355,
 				idTick = 193473,
 				idLegendaryBonus = 6983,
 				name = "",
 				icon = "",
-				tocMinVersion = 90001
 			},
 			--TODO: This is not working in beta. Check idTick again when fixed.
 			idolOfCthun_Lasher = {
@@ -903,7 +907,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				idLegendaryBonus = 6983,
 				name = "",
 				icon = "",
-				tocMinVersion = 90002
 			},
 			lunacy = {
 				id = 391338,
@@ -2251,7 +2254,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		if TRB.Functions.IsTalentActive(TRB.Data.spells.lightOfTheNaaru) then
-			mod = mod * (1 + (TRB.Data.spells.lightOfTheNaaru.holyWordModifier * TRB.Data.talents.lightOfTheNaaru.currentRank))
+			mod = mod * (1 + (TRB.Data.spells.lightOfTheNaaru.holyWordModifier * TRB.Data.talents[TRB.Data.spells.lightOfTheNaaru.id].currentRank))
 		end
 		mod = mod + holyOrationValue
 
@@ -2496,7 +2499,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$cttvEquipped" then
-				if TRB.Data.settings.priest.shadow.voidTendrilTracker and TRB.Data.character.items.callToTheVoid == true then
+				if TRB.Data.settings.priest.shadow.voidTendrilTracker and (TRB.Functions.IsTalentActive(TRB.Data.spells.idolOfCthun) or TRB.Data.character.items.callToTheVoid == true) then
 					valid = true
 				end
 			elseif var == "$ecttvCount" then
