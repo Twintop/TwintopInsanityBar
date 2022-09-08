@@ -720,6 +720,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 34433,
 				name = "",
 				icon = "",
+				insanity = 3,
 				isTalent = true,
 				baseline = true
 			},
@@ -1428,9 +1429,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function FillSpellData_Shadow()
 		Setup_Shadow()
 		local spells = TRB.Functions.FillSpellData(specCache.shadow.spells)
-
-		spells.mindbender.name = select(2, GetTalentInfo(6, 2, TRB.Data.character.specGroup))
-		spells.s2m.name = select(2, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 
 		-- Conduit Ranks
 		spells.wrathfulFaerieFermata.conduitRanks[0] = 0
@@ -3647,8 +3645,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 				if TRB.Functions.IsTalentActive(TRB.Data.spells.mindbender) then
 					TRB.Data.snapshotData.mindbender.resourceRaw = countValue * TRB.Data.spells.mindbender.insanity
-				--else
-				--	TRB.Data.snapshotData.mindbender.resourceRaw = countValue * TRB.Data.spells.shadowfiend.insanity
+				else
+					TRB.Data.snapshotData.mindbender.resourceRaw = countValue * TRB.Data.spells.shadowfiend.insanity
 				end
 				TRB.Data.snapshotData.mindbender.resourceFinal = CalculateInsanityGain(TRB.Data.snapshotData.mindbender.resourceRaw, false)
 			end
