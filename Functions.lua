@@ -638,7 +638,7 @@ end
 TRB.Functions.RemoveTarget = RemoveTarget
 
 local function InitializeTarget(guid)
-	if guid ~= nil then
+	if guid ~= nil and guid ~= "" then
 		if not TRB.Functions.CheckTargetExists(guid) then
 			TRB.Data.snapshotData.targetData.targets[guid] = {}
 			TRB.Data.snapshotData.targetData.targets[guid].snapshot = {}

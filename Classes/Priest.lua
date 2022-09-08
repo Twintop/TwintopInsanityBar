@@ -765,19 +765,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				isTalent = true
 			},
-			mindSear = {
-				id = 48045,
-				idTick = 49821,
-				name = "",
-				icon = "",
-				texture = "",
-				insanity = -25,
-				lunacyMod = 5,
-				thresholdId = 2,
-				settingKey = "mindSear",
-				thresholdUsable = false,
-				isTalent = true
-			},
 			darkVoid = {
 				id = 263346,
 				name = "",
@@ -792,6 +779,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				insanity = 2,
 				name = "",
 				icon = "",
+				isTalent = true
+			},
+			mindSear = {
+				id = 48045,
+				idTick = 49821,
+				name = "",
+				icon = "",
+				texture = "",
+				insanity = -25,
+				lunacyMod = 5,
+				thresholdId = 2,
+				settingKey = "mindSear",
+				thresholdUsable = false,
 				isTalent = true
 			},
 			hallucinations = {
@@ -837,9 +837,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				isTalent = true
 			},
 			darkAscension = {
-				id = 73510,
+				id = 391109,
 				name = "",
 				icon = "",
+				insanity = 30,
 				isTalent = true
 			},
 			maddeningTouch = {
@@ -1168,6 +1169,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				},
 				resourceRaw = 0,
 				resourceFinal = 0
+			},
+			hauntedMask = {
+				isActive = false
 			},
 			resourceRaw = 0,
 			resourceFinal = 0,
@@ -1857,7 +1861,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local specId = GetSpecialization()
 
-		if guid ~= nil then
+		if guid ~= nil and guid ~= "" then
 			if not TRB.Functions.CheckTargetExists(guid) then
 				TRB.Functions.InitializeTarget(guid)
 				if specId == 2 then
@@ -1947,7 +1951,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.snapshotData.targetData.shadowWordPain = swpTotal
 			TRB.Data.snapshotData.targetData.vampiricTouch = vtTotal
 			TRB.Data.snapshotData.targetData.devouringPlague = dpTotal
-			specCache.holy.snapshotData.wrathfulFaerie.hauntedMask.isActive = hauntedMask
+			specCache.shadow.snapshotData.wrathfulFaerie.hauntedMask.isActive = hauntedMask
 		end
 	end
 
@@ -1957,13 +1961,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			local specId = GetSpecialization()
 			if specId == 2 then
 				TRB.Data.snapshotData.targetData.shadowWordPain = 0
+				specCache.holy.snapshotData.wrathfulFaerie.hauntedMask.isActive = false
 			elseif specId == 3 then
 				TRB.Data.snapshotData.targetData.shadowWordPain = 0
 				TRB.Data.snapshotData.targetData.vampiricTouch = 0
 				TRB.Data.snapshotData.targetData.devouringPlague = 0
 				TRB.Data.snapshotData.targetData.auspiciousSpirits = 0
+				specCache.shadow.snapshotData.wrathfulFaerie.hauntedMask.isActive = false
 			end
-			specCache.holy.snapshotData.wrathfulFaerie.hauntedMask.isActive = false
 		end
 	end
 
@@ -3552,6 +3557,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.darkVoid.id
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.darkVoid.icon
 						UpdateCastingResourceFinal_Shadow(TRB.Data.spells.darkVoid.fotm)
+					elseif currentSpellId == TRB.Data.spells.darkAscension.id then
+						TRB.Data.snapshotData.casting.startTime = currentTime
+						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.darkAscension.insanity
+						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.darkAscension.id
+						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.darkAscension.icon
+						UpdateCastingResourceFinal_Shadow(TRB.Data.spells.darkAscension.fotm)
 					elseif currentSpellId == TRB.Data.spells.vampiricTouch.id then
 						TRB.Data.snapshotData.casting.startTime = currentTime
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.vampiricTouch.insanity
@@ -3736,20 +3747,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local currentTime = GetTime()
 		local specId = GetSpecialization()
 		local settings
+		local cache
 
 		local mainMod = 1
 
+		if specId == 2 then
+			settings = TRB.Data.settings.priest.holy
+			cache = specCache.holy
+		elseif specId == 3 then
+			settings = TRB.Data.settings.priest.shadow
+			cache = specCache.shadow
+		end
+		
 		-- We can't actually track procs from Haunted Mask as there's no SPELL_ENERGIZE event for them as of 9.1 RC.
 		-- We'll piggy back off the main Wrathful Faerie and double it's value instead.
 		-- Twintop 2021-06-19
-		if specCache.holy.snapshotData.wrathfulFaerie.hauntedMask.isActive == true then
+		if cache.snapshotData.wrathfulFaerie.hauntedMask.isActive == true then
 			mainMod = 2
-		end
-
-		if specId == 2 then
-			settings = TRB.Data.settings.priest.holy
-		elseif specId == 3 then
-			settings = TRB.Data.settings.priest.shadow
 		end
 
 		if settings.wrathfulFaerie.enabled and TRB.Data.snapshotData.wrathfulFaerie.main.endTime and TRB.Data.snapshotData.wrathfulFaerie.main.endTime > currentTime then
@@ -5213,7 +5227,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	resourceFrame:RegisterEvent("ADDON_LOADED")
 	resourceFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
-	resourceFrame:RegisterEvent("SPELLS_CHANGED")
+	resourceFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 	resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
@@ -5278,7 +5292,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end)
 				end
 
-				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "SPELLS_CHANGED" then
+				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
 					SwitchSpec()
 				end
 			end
