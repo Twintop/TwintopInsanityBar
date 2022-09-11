@@ -376,21 +376,33 @@ local function GetTalents(baselineTalents)
 
 					if entryId ~= nil then
 						local entryInfo = C_Traits.GetEntryInfo(configId, entryId)
+						--print(configId, entryId, entryInfo.definitionID)
 						local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
 
-						name, _, icon = GetSpellInfo(definitionInfo.spellID)
-						iconString = string.format("|T%s:0|t", icon)
+						if definitionInfo ~= nil then
+							local spellId = nil
+							if definitionInfo.spellID ~= nil then
+								spellId = definitionInfo.spellID
+							elseif definitionInfo.overriddenSpellID ~= nil then
+								spellId = definitionInfo.overriddenSpellID
+							end
+							
+							if spellId ~= nil then
+								name, _, icon = GetSpellInfo(spellId)
+								iconString = string.format("|T%s:0|t", icon)
 
-						talents[definitionInfo.spellID] = {
-							id = definitionInfo.spellID,
-							name = name,
-							icon = iconString,
-							currentRank = node.ranksPurchased,
-							maxRank = node.maxRanks,
-						}
+								talents[spellId] = {
+									id = spellId,
+									name = name,
+									icon = iconString,
+									currentRank = node.ranksPurchased,
+									maxRank = node.maxRanks,
+								}
 
-						if baselineTalents[definitionInfo.spellID] ~= nil then
-							talents[definitionInfo.spellID].currentRank = talents[definitionInfo.spellID].maxRank
+								if baselineTalents[spellId] ~= nil then
+									talents[spellId].currentRank = talents[spellId].maxRank
+								end
+							end
 						end
 					end
 				end
@@ -553,6 +565,7 @@ local function FillSpecCacheSettings(settings, cache, className, specName)
 		--print("bar!")
 	else
 		--print("no bar :(")
+		print(spec.bar)
 		specCache.settings.bar = spec.bar
 	end
 

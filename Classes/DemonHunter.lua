@@ -18,17 +18,16 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	local specCache = {
 		havoc = {
 			snapshotData = {},
-			barTextVariables = {
-				icons = {},
-				values = {},
-				settings = {
-					bar = nil,
-					comboPoints = nil,
-					displayBar = nil,
-					font = nil,
-					textures = nil,
-					thresholds = nil
-				}
+			barTextVariables = {},
+			spells = {},
+			talents = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
 			}
 		}
 	}
@@ -61,41 +60,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			effects = {
 				overgrowthSeedling = 1.0
 			},
-			talents = {
-				blindFury = {
-					isSelected = false
-				},
-				demonicAppetite = {
-					isSelected = false
-				},
-				felBlade = {
-					isSelected = false
-				},
-				burningHatred = {
-					isSelected = false
-				},
-				trailOfRuin = {
-					isSelected = false
-				},
-				unboundChaos = {
-					isSelected = false
-				},
-				glaiveTempest = {
-					isSelected = false
-				},
-				firstBlood = {
-					isSelected = false
-				},
-				unleashedPower = {
-					isSelected = false
-				},
-				felEruption = {
-					isSelected = false
-				},
-				momentum = {
-					isSelected = false
-				},
-			},
 			items = {
 			},
 			torghast = {
@@ -107,34 +71,25 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		}
 
 		specCache.havoc.spells = {
-			--Demon Hunter base abilities
+			--Demon Hunter Class Baseline Abilities
 			immolationAura = {
 				id = 258920,
 				name = "",
 				icon = "",
 				fury = 20,
-                cooldown = 30
+                cooldown = 30,
+				isTalent = false,
+				baseline = true
 			},
 			metamorphosis = {
 				id = 162264,
 				name = "",
 				icon = "",
+				isTalent = false,
+				baseline = true
 			},
 
-			--Havoc base abilities
-            annihilation = {
-				id = 201427,
-				name = "",
-				icon = "",
-				fury = -40,
-				texture = "",
-				thresholdId = 1,
-				settingKey = "annihilation",
-				isTalent = false,
-				hasCooldown = false,
-				thresholdUsable = false,
-				demonForm = true
-			},
+			--Havoc Baseline Abilities
 			bladeDance = {
 				id = 188499,
 				name = "",
@@ -144,23 +99,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				texture = "",
 				thresholdId = 2,
 				settingKey = "bladeDance",
-				isTalent = false,
 				hasCooldown = true,
 				thresholdUsable = false,
-				demonForm = false
+				demonForm = false,
+				isTalent = false,
+				baseline = true
 			},
-            chaosNova = {
-               id = 179057,
-               name = "",
-               icon = "",
-               fury = -30,
-			   texture = "",
-			   thresholdId = 3,
-			   settingKey = "chaosNova",
-			   isTalent = false,
-			   hasCooldown = true,
-			   thresholdUsable = false
-            },
             chaosStrike = {
                id = 162794,
                name = "",
@@ -169,11 +113,26 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			   texture = "",
 			   thresholdId = 4,
 			   settingKey = "chaosStrike",
-			   isTalent = false,
 			   hasCooldown = false,
 			   thresholdUsable = false,
-			   demonForm = false
-            },
+			   demonForm = false,
+			   isTalent = false,
+			   baseline = true
+            },			
+            annihilation = {
+				id = 201427,
+				name = "",
+				icon = "",
+				fury = -40,
+				texture = "",
+				thresholdId = 1,
+				settingKey = "annihilation",
+				hasCooldown = false,
+				thresholdUsable = false,
+				demonForm = true,
+				isTalent = false,
+				baseline = true
+			},
 			deathSweep = {
 				id = 210152,
 				name = "",
@@ -183,34 +142,81 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				texture = "",
 				thresholdId = 5,
 				settingKey = "deathSweep",
-				isTalent = false,
 				hasCooldown = true,
 				thresholdUsable = false,
 				demonForm = true,
-				isSnowflake = true
+				isSnowflake = true,
+				isTalent = false,
+				baseline = true
 			},
-            demonsBite = {
-               id = 162243,
-               name = "",
-               icon = "",
-               fury = 20,
-               furyMax = 30
-            },
-            eyeBeam = {
-               id = 198013,
+
+			-- Demon Hunter Talent Abilities
+            chaosNova = {
+               id = 179057,
                name = "",
                icon = "",
                fury = -30,
-               duration = 2,
 			   texture = "",
-			   thresholdId = 6,
-			   settingKey = "eyeBeam",
-			   isTalent = false,
+			   thresholdId = 3,
+			   settingKey = "chaosNova",
 			   hasCooldown = true,
-			   thresholdUsable = false
+			   isSnowflake = true,
+			   thresholdUsable = false,
+			   isTalent = true
             },
+			unleashedPower = {
+				id = 206477,
+				name = "",
+				icon = "",
+                furyModifier = 0.5,
+				isTalent = true
+			},
 
-			--Talents
+			-- Havoc Talent Abilities
+			eyeBeam = {
+				id = 198013,
+				name = "",
+				icon = "",
+				fury = -30,
+				duration = 2,
+				texture = "",
+				thresholdId = 6,
+				settingKey = "eyeBeam",
+				hasCooldown = true,
+				thresholdUsable = false,
+				isTalent = true
+			},
+			burningHatred = {
+				id = 258922,
+				talentId = 320374,
+				name = "",
+				icon = "",
+                fury = 5,
+                ticks = 12,
+                duration = 12,
+				isTalent = true
+			},
+			felfireHeart = { --TODO: figure out how this plays with Burning Hatred
+				id = 388109,
+				name = "",
+				icon = "",
+                duration = 2,
+				ticks = 2,
+				isTalent = true
+			},
+			felEruption = {
+				id = 211881,
+				name = "",
+				icon = "",
+				fury = -10,
+				cooldown = 30,
+				texture = "",
+				thresholdId = 8,
+				settingKey = "felEruption",
+				hasCooldown = true,
+				thresholdUsable = false,
+				isTalent = true
+			},
 			blindFury = {
 				id = 203550,
 				name = "",
@@ -218,7 +224,30 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
                 durationModifier = 1.5,
                 tickRate = 0.1,
                 fury = 4,
-                isHasted = true
+                isHasted = true,
+				isTalent = true
+			},
+			--TODO: Add Tactical Retreat
+			glaiveTempest = {
+				id = 342817,
+				name = "",
+				icon = "",
+                fury = -30,
+                cooldown = 20,
+				texture = "",
+				thresholdId = 7,
+				settingKey = "glaiveTempest",
+				hasCooldown = true,
+				thresholdUsable = false,
+				isTalent = true
+			},
+
+            demonsBite = {
+				id = 162243,
+				name = "",
+				icon = "",
+				fury = 20,
+				furyMax = 30
 			},
 			demonicAppetite = {
 				id = 206478,
@@ -232,64 +261,17 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				icon = "",
 				fury = 40
 			},
-			burningHatred = {
-				id = 258920,
-				name = "",
-				icon = "",
-                fury = 5,
-                ticks = 12,
-                duration = 12
-			},
-			trailOfRuin = {
-				id = 258881,
-				name = "",
-				icon = "",
-				fury = 5,
-				furyMax = 10
-			},
 			unboundChaos = {
 				id = 347462,
 				name = "",
 				icon = "",
                 duration = 20
 			},
-			glaiveTempest = {
-				id = 342817,
-				name = "",
-				icon = "",
-                fury = -30,
-                cooldown = 20,
-				texture = "",
-				thresholdId = 7,
-				settingKey = "glaiveTempest",
-				isTalent = true,
-				hasCooldown = true,
-				thresholdUsable = false
-			},
 			firstBlood = {
 				id = 206416,
 				name = "",
 				icon = "",
                 furyAdjustment = -20
-			},
-			unleashedPower = {
-				id = 206477,
-				name = "",
-				icon = "",
-                furyModifier = 0
-			},
-			felEruption = {
-				id = 211881,
-				name = "",
-				icon = "",
-				fury = -10,
-				cooldown = 30,
-				texture = "",
-				thresholdId = 8,
-				settingKey = "felEruption",
-				isTalent = true,
-				hasCooldown = true,
-				thresholdUsable = false
 			},
 			momentum = {
 				id = 206476,
@@ -393,6 +375,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
+			--[[
 			{ variable = "#annihilation", icon = spells.annihilation.icon, description = spells.annihilation.name, printInSettings = true },
 			{ variable = "#bladeDance", icon = spells.bladeDance.icon, description = spells.bladeDance.name, printInSettings = true },
 			{ variable = "#blindFury", icon = spells.blindFury.icon, description = spells.blindFury.name, printInSettings = true },
@@ -416,7 +399,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "#trailOfRuin", icon = spells.trailOfRuin.icon, description = spells.trailOfRuin.name, printInSettings = true },
 			{ variable = "#unboundChaos", icon = spells.unboundChaos.icon, description = spells.unboundChaos.name, printInSettings = true },
 			{ variable = "#unleashedPower", icon = spells.unleashedPower.icon, description = spells.unleashedPower.name, printInSettings = true },
-
+]]
         }
 		specCache.havoc.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -496,17 +479,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
         if GetSpecialization() == 1 then
 			TRB.Data.character.specName = "havoc"
-            TRB.Data.character.talents.blindFury.isSelected = select(4, GetTalentInfo(1, 1, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.demonicAppetite.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.felBlade.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.trailOfRuin.isSelected = select(4, GetTalentInfo(2, 1, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.burningHatred.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
-            TRB.Data.character.talents.unboundChaos.isSelected = select(4, GetTalentInfo(3, 2, TRB.Data.character.specGroup))
-            TRB.Data.character.talents.glaiveTempest.isSelected = select(4, GetTalentInfo(3, 3, TRB.Data.character.specGroup))
-            TRB.Data.character.talents.firstBlood.isSelected = select(4, GetTalentInfo(5, 2, TRB.Data.character.specGroup))
-            TRB.Data.character.talents.unleashedPower.isSelected = select(4, GetTalentInfo(6, 1, TRB.Data.character.specGroup))
-            TRB.Data.character.talents.felEruption.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
-            TRB.Data.character.talents.momentum.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
 		end
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
@@ -598,7 +570,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end
 	end
 
-	local function ConstructResourceBar(settings)		
+	local function ConstructResourceBar(settings)
 		local specId = GetSpecialization()
 		local entries = TRB.Functions.TableLength(TRB.Frames.resourceFrame.thresholds)
 		if entries > 0 then
@@ -699,10 +671,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			end
 		elseif var == "$overcap" or var == "$furyOvercap" or var == "$resourceOvercap" then
 			local lowerBoundFury = TRB.Data.spells.demonsBite.fury
-
-			if TRB.Data.character.talents.trailOfRuin.isSelected then
-				lowerBoundFury = lowerBoundFury + TRB.Data.spells.trailOfRuin.fury
-			end
 
 			if TRB.Data.snapshotData.casting.resourceFinal == 0 and (normalizedFury + lowerBoundFury) > settings.overcapThreshold then
 				valid = true
@@ -854,7 +822,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
         lookup["#metamorphosis"] = TRB.Data.spells.metamorphosis.icon
 		lookup["#momentum"] = TRB.Data.spells.momentum.icon
 		lookup["#prepared"] = TRB.Data.spells.prepared.icon
-		lookup["#trailOfRuin"] = TRB.Data.spells.trailOfRuin.icon
 		lookup["#unboundChaos"] = TRB.Data.spells.unboundChaos.icon
 		lookup["#unleashedPower"] = TRB.Data.spells.unleashedPower.icon
 		lookup["$metaTime"] = metamorphosisTime
@@ -934,7 +901,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		else
 			if specId == 1 then
 				if currentSpellName == nil then
-					if currentChannelId == TRB.Data.spells.eyeBeam.id and TRB.Data.character.talents.blindFury.isSelected then
+					if currentChannelId == TRB.Data.spells.eyeBeam.id and TRB.Functions.IsTalentActive(TRB.Data.spells.blindFury) then
 						local gcd = TRB.Functions.GetCurrentGCDTime(true)
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.eyeBeam.id
 						--TRB.Data.snapshotData.casting.startTime = currentChannelStartTime / 1000
@@ -973,7 +940,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				TRB.Data.snapshotData.immolationAura.isActive = false
 			else
 				TRB.Data.snapshotData.immolationAura.ticksRemaining = math.ceil((TRB.Data.snapshotData.immolationAura.endTime - currentTime) / (TRB.Data.spells.burningHatred.duration / TRB.Data.spells.burningHatred.ticks))
-				if TRB.Data.character.talents.burningHatred.isSelected then
+				if TRB.Functions.IsTalentActive(TRB.Data.spells.burningHatred) then
 					TRB.Data.snapshotData.immolationAura.fury = TRB.Data.snapshotData.immolationAura.ticksRemaining * TRB.Data.spells.burningHatred.fury
 				else
 					TRB.Data.snapshotData.immolationAura.fury = 0
@@ -1168,10 +1135,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 						if spell ~= nil and spell.id ~= nil and spell.fury ~= nil and spell.fury < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local furyAmount = CalculateAbilityResourceValue(spell.fury)
 							local normalizedFury = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
-							
-							if (spell.id == TRB.Data.spells.bladeDance.id or spell.id == TRB.Data.spells.deathSweep.id) and TRB.Data.character.talents.firstBlood.isSelected then
-								furyAmount = furyAmount - TRB.Data.spells.firstBlood.furyAdjustment
-							end
 
 							TRB.Functions.RepositionThreshold(TRB.Data.settings.demonhunter.havoc, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.demonhunter.havoc.thresholds.width, -furyAmount, TRB.Data.character.maxResource)
 
@@ -1185,15 +1148,29 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							elseif metaTime == 0 and (spell.demonForm ~= nil and spell.demonForm == true) then
 								showThreshold = false
 								isUsable = false
-							elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
-								showThreshold = false
-								isUsable = false
-							elseif spell.id == TRB.Data.spells.chaosNova.id and TRB.Data.character.talents.unleashedPower.isSelected then
+							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 								isUsable = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.deathSweep.id then
 									if TRB.Data.snapshotData.bladeDance.startTime ~= nil and currentTime < (TRB.Data.snapshotData.bladeDance.startTime + TRB.Data.snapshotData.bladeDance.duration) then
+										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+										isUsable = false
+									elseif currentFury >= -furyAmount then
+										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								elseif spell.id == TRB.Data.spells.chaosNova.id then
+									if TRB.Functions.IsTalentActive(TRB.Data.spells.unleashedPower) then
+										furyAmount = furyAmount * TRB.Data.spells.unleashedPower.furyModifier
+									end
+
+									TRB.Functions.RepositionThreshold(TRB.Data.settings.demonhunter.havoc, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.demonhunter.havoc.thresholds.width, -furyAmount, TRB.Data.character.maxResource)
+
+									if TRB.Data.snapshotData.chaosNova.startTime ~= nil and currentTime < (TRB.Data.snapshotData.chaosNova.startTime + TRB.Data.snapshotData.chaosNova.duration) then
 										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										isUsable = false
@@ -1374,29 +1351,26 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							TRB.Data.snapshotData.metamorphosis.duration = 0
 							TRB.Data.snapshotData.metamorphosis.endTime = nil
 						end
-					elseif spellId == TRB.Data.spells.burningHatred.id then
+					elseif spellId == TRB.Data.spells.immolationAura.id then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-							TRB.Data.snapshotData.immolationAura.isActive = true
-							TRB.Data.snapshotData.immolationAura.ticksRemaining = TRB.Data.spells.burningHatred.ticks
-								
-							if TRB.Data.character.talents.burningHatred.isSelected then
-								TRB.Data.snapshotData.immolationAura.fury = TRB.Data.snapshotData.immolationAura.ticksRemaining * TRB.Data.spells.burningHatred.fury
-							else
-								TRB.Data.snapshotData.immolationAura.fury = 0
-							end
-
-							TRB.Data.snapshotData.immolationAura.endTime = currentTime + TRB.Data.spells.burningHatred.duration
-							TRB.Data.snapshotData.immolationAura.lastTick = currentTime
-						elseif type == "SPELL_AURA_REFRESH" then -- It shouldn't refresh but let's check for it anyway
-							TRB.Data.snapshotData.immolationAura.ticksRemaining = TRB.Data.spells.burningHatred.ticks + 1
+							local felfireHeartDurationMod = 0
+							local felfireHeartTicksMod = 0
 							
-							if TRB.Data.character.talents.burningHatred.isSelected then
+							if TRB.Functions.IsTalentActive(TRB.Data.spells.felfireHeart) then
+								felfireHeartDurationMod = TRB.Data.spells.felfireHeart.duration * TRB.Data.talents[TRB.Data.spells.felfireHeart.id].currentRank
+								felfireHeartTicksMod = TRB.Data.spells.felfireHeart.ticks * TRB.Data.talents[TRB.Data.spells.felfireHeart.id].currentRank
+							end
+
+							TRB.Data.snapshotData.immolationAura.isActive = true
+							TRB.Data.snapshotData.immolationAura.ticksRemaining = TRB.Data.spells.burningHatred.ticks + felfireHeartTicksMod
+							
+							if TRB.Functions.IsTalentActive(TRB.Data.spells.burningHatred) then
 								TRB.Data.snapshotData.immolationAura.fury = TRB.Data.snapshotData.immolationAura.ticksRemaining * TRB.Data.spells.burningHatred.fury
 							else
 								TRB.Data.snapshotData.immolationAura.fury = 0
 							end
 
-							TRB.Data.snapshotData.immolationAura.endTime = currentTime + TRB.Data.spells.burningHatred.duration + ((TRB.Data.spells.burningHatred.duration / TRB.Data.spells.burningHatred.ticks) - (currentTime - TRB.Data.snapshotData.immolationAura.lastTick))
+							TRB.Data.snapshotData.immolationAura.endTime = currentTime + TRB.Data.spells.burningHatred.duration + felfireHeartDurationMod
 							TRB.Data.snapshotData.immolationAura.lastTick = currentTime
 						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshotData.immolationAura.isActive = false
@@ -1487,6 +1461,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		if specId == 1 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.demonhunter.havoc)
 			TRB.Functions.IsTtdActive(TRB.Data.settings.demonhunter.havoc)
+			specCache.havoc.talents = TRB.Functions.GetTalents()
 			FillSpellData_Havoc()
 			TRB.Functions.LoadFromSpecCache(specCache.havoc)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Havoc
@@ -1500,7 +1475,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	end
 
 	resourceFrame:RegisterEvent("ADDON_LOADED")
-	resourceFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
+	resourceFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 	resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
@@ -1551,13 +1526,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							SwitchSpec()
 							TRB.Options.DemonHunter.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case
-							ConstructResourceBar(TRB.Data.settings.demonhunter[TRB.Data.barConstructedForSpec])
+							ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 							EventRegistration()
 						end)
 					end)
 				end
 
-				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
+				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
 					SwitchSpec()
 				end
 			end

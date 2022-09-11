@@ -1206,9 +1206,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		}
 	end
 
-	local function MapSettings()
-	end
-
 	local function Setup_Holy()
 		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
 			return
@@ -5196,7 +5193,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function SwitchSpec()
 		local specId = GetSpecialization()
-		MapSettings()
 		if specId == 1 then
 		elseif specId == 2 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.priest.holy)
@@ -5280,14 +5276,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.barConstructedForSpec = nil
 							SwitchSpec()
 							TRB.Options.Priest.ConstructOptionsPanel(specCache)
-							-- Map settings for global vs spec
-							MapSettings()
 							-- Reconstruct just in case
-							if specId == 3 then
-								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
-							else
-								ConstructResourceBar(TRB.Data.settings.priest[TRB.Data.barConstructedForSpec])
-							end
+							ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 							EventRegistration()
 						end)
 					end)
