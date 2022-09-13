@@ -1770,7 +1770,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.resourceFactor = 1
 			TRB.Data.resource2 = Enum.PowerType.ComboPoints
 			TRB.Data.resource2Factor = 1
-		elseif specId == 4 and TRB.Data.settings.core.enabled.druid.restoration and TRB.Data.settings.core.experimental.specs.druid.restoration then
+		elseif specId == 4 and TRB.Data.settings.core.enabled.druid.restorationn then
 			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.restoration)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
@@ -2030,7 +2030,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			end
 			TRB.Frames.resource2ContainerFrame:Show()
-		elseif specId == 4 and TRB.Data.settings.core.experimental.specs.druid.restoration then
+		elseif specId == 4 then
 			for x = 1, 4 do
 				if TRB.Frames.resourceFrame.thresholds[x] == nil then
 					TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
@@ -2060,7 +2060,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		TRB.Functions.ConstructResourceBar(settings)
 
-		if specId == 1 or specId == 2 or (specId == 4 and TRB.Data.settings.core.experimental.specs.druid.restoration)then
+		if specId == 1 or specId == 2 or specId == 4 then
 			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
 		end
 	end
@@ -4305,8 +4305,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			end
 		elseif specId == 4 then
-			if not TRB.Data.settings.core.experimental.specs.druid.restoration or
-				not TRB.Data.specSupported or force or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.druid.restoration.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.druid.restoration.displayBar.notZeroShow) or
@@ -5691,7 +5690,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.Data.barConstructedForSpec = "feral"
 				ConstructResourceBar(specCache.feral.settings)
 			end
-		elseif specId == 4 and TRB.Data.settings.core.experimental.specs.druid.restoration then
+		elseif specId == 4 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.druid.restoration)
 			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.restoration)
 			FillSpellData_Restoration()
@@ -5753,14 +5752,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						C_Timer.After(1, function()
 							TRB.Data.settings.druid.balance = TRB.Functions.ValidateLsmValues("Balance Druid", TRB.Data.settings.druid.balance)
 							TRB.Data.settings.druid.feral = TRB.Functions.ValidateLsmValues("Feral Druid", TRB.Data.settings.druid.feral)
+							TRB.Data.settings.druid.restoration = TRB.Functions.ValidateLsmValues("Restoration Druid", TRB.Data.settings.druid.restoration)
 							
 							FillSpellData_Balance()
 							FillSpellData_Feral()
-														
-							if TRB.Data.settings.core.experimental.specs.druid.restoration then
-								TRB.Data.settings.druid.restoration = TRB.Functions.ValidateLsmValues("Restoration Druid", TRB.Data.settings.druid.restoration)
-								FillSpellData_Restoration()
-							end
+							FillSpellData_Restoration()
 
 							TRB.Data.barConstructedForSpec = nil
 							SwitchSpec()

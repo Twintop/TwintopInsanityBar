@@ -343,15 +343,6 @@ local function LoadDefaultSettings()
             },
             experimental = {
                 specs = {
-                    druid = {
-                        restoration = false
-                    },
-                    monk = {
-                        mistweaver = false
-                    },
-                    shaman = {
-                        restoration = false
-                    }
                 }
             }
         },
@@ -624,7 +615,7 @@ local function ConstructAddonOptionsPanel()
         CloseDropDownMenus()
     end
 
-
+    --[[
     yCoord = yCoord - 60
     controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Experimental Features", 0, yCoord)
 
@@ -660,7 +651,7 @@ local function ConstructAddonOptionsPanel()
     f:SetScript("OnClick", function(self, ...)
         TRB.Data.settings.core.experimental.specs.druid.restoration = self:GetChecked()
     end)
-
+    ]]
 
     TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
     TRB.Frames.interfaceSettingsFrameContainer.controls = controls
@@ -967,42 +958,39 @@ local function ConstructImportExportPanel()
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Feral Druid (Bar Text).", 11, 2, false, false, false, true, false)
     end)
 
-    
-    if TRB.Data.settings.core.experimental.specs.druid.restoration then
-        yCoord = yCoord - 25
-        specName = "Restoration"
-        controls.labels.druidRestoration = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
-    
-        buttonOffset = oUi.xCoord + oUi.xPadding + 100
-        controls.buttons.exportButton_Druid_Restoration_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
-        controls.buttons.exportButton_Druid_Restoration_All:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (All).", 11, 4, true, true, true, true, false)
-        end)
-    
-        buttonOffset = buttonOffset + buttonSpacing + 50
-        controls.exportButton_Druid_Restoration_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
-        controls.exportButton_Druid_Restoration_BarDisplay:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Bar Display).", 11, 4, true, false, false, false, false)
-        end)
-    
-        buttonOffset = buttonOffset + buttonSpacing + 80
-        controls.exportButton_Druid_Restoration_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
-        controls.exportButton_Druid_Restoration_FontAndText:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Font & Text).", 11, 4, false, true, false, false, false)
-        end)
-    
-        buttonOffset = buttonOffset + buttonSpacing + 90
-        controls.exportButton_Druid_Restoration_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
-        controls.exportButton_Druid_Restoration_AudioAndTracking:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Audio & Tracking).", 11, 4, false, false, true, false, false)
-        end)
-    
-        buttonOffset = buttonOffset + buttonSpacing + 120
-        controls.exportButton_Druid_Restoration_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
-        controls.exportButton_Druid_Restoration_BarText:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Bar Text).", 11, 4, false, false, false, true, false)
-        end)
-    end
+    yCoord = yCoord - 25
+    specName = "Restoration"
+    controls.labels.druidRestoration = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
+    controls.buttons.exportButton_Druid_Restoration_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.buttons.exportButton_Druid_Restoration_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (All).", 11, 4, true, true, true, true, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 50
+    controls.exportButton_Druid_Restoration_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Druid_Restoration_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Bar Display).", 11, 4, true, false, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 80
+    controls.exportButton_Druid_Restoration_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Druid_Restoration_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Font & Text).", 11, 4, false, true, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 90
+    controls.exportButton_Druid_Restoration_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Druid_Restoration_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Audio & Tracking).", 11, 4, false, false, true, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 120
+    controls.exportButton_Druid_Restoration_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Druid_Restoration_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Bar Text).", 11, 4, false, false, false, true, false)
+    end)
 
     yCoord = yCoord - 35
     controls.labels.hunter = TRB.UiFunctions:BuildLabel(parent, "Hunter", oUi.xCoord, yCoord, 110, 20)
@@ -1144,73 +1132,69 @@ local function ConstructImportExportPanel()
     yCoord = yCoord - 35
     controls.labels.monk = TRB.UiFunctions:BuildLabel(parent, "Monk", oUi.xCoord, yCoord, 110, 20)
 
-    if TRB.Data.settings.core.experimental.specs.monk.mistweaver then
-        buttonOffset = oUi.xCoord + oUi.xPadding + 100
-        controls.buttons.exportButton_Monk_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
-        controls.buttons.exportButton_Monk_All:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Monk specializations (All).", 10, nil, true, true, true, true, false)
-        end)
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
+    controls.buttons.exportButton_Monk_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.buttons.exportButton_Monk_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Monk specializations (All).", 10, nil, true, true, true, true, false)
+    end)
 
-        buttonOffset = buttonOffset + buttonSpacing + 50
-        controls.exportButton_Monk_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
-        controls.exportButton_Monk_BarDisplay:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Monk specializations (Bar Display).", 10, nil, true, false, false, false, false)
-        end)
+    buttonOffset = buttonOffset + buttonSpacing + 50
+    controls.exportButton_Monk_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Monk_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Monk specializations (Bar Display).", 10, nil, true, false, false, false, false)
+    end)
 
-        buttonOffset = buttonOffset + buttonSpacing + 80
-        controls.exportButton_Monk_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
-        controls.exportButton_Monk_FontAndText:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Monk specializations (Font & Text).", 10, nil, false, true, false, false, false)
-        end)
+    buttonOffset = buttonOffset + buttonSpacing + 80
+    controls.exportButton_Monk_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Monk_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Monk specializations (Font & Text).", 10, nil, false, true, false, false, false)
+    end)
 
-        buttonOffset = buttonOffset + buttonSpacing + 90
-        controls.exportButton_Monk_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
-        controls.exportButton_Monk_AudioAndTracking:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Monk specializations (Audio & Tracking).", 10, nil, false, false, true, false, false)
-        end)
+    buttonOffset = buttonOffset + buttonSpacing + 90
+    controls.exportButton_Monk_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Monk_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Monk specializations (Audio & Tracking).", 10, nil, false, false, true, false, false)
+    end)
 
-        buttonOffset = buttonOffset + buttonSpacing + 120
-        controls.exportButton_Monk_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
-        controls.exportButton_Monk_BarText:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Monk specializations (Bar Text).", 10, nil, false, false, false, true, false)
-        end)
-    end
- 
-    if TRB.Data.settings.core.experimental.specs.monk.mistweaver then
-        yCoord = yCoord - 25
-        specName = "Mistweaver"
-        controls.labels.monkMistweaver = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
-    
-        buttonOffset = oUi.xCoord + oUi.xPadding + 100
-        controls.buttons.exportButton_Monk_Mistweaver_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
-        controls.buttons.exportButton_Monk_Mistweaver_All:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (All).", 10, 2, true, true, true, true, false)
-        end)
-    
-        buttonOffset = buttonOffset + buttonSpacing + 50
-        controls.exportButton_Monk_Mistweaver_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
-        controls.exportButton_Monk_Mistweaver_BarDisplay:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (Bar Display).", 10, 2, true, false, false, false, false)
-        end)
-    
-        buttonOffset = buttonOffset + buttonSpacing + 80
-        controls.exportButton_Monk_Mistweaver_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
-        controls.exportButton_Monk_Mistweaver_FontAndText:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (Font & Text).", 10, 2, false, true, false, false, false)
-        end)
-    
-        buttonOffset = buttonOffset + buttonSpacing + 90
-        controls.exportButton_Monk_Mistweaver_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
-        controls.exportButton_Monk_Mistweaver_AudioAndTracking:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (Audio & Tracking).", 10, 2, false, false, true, false, false)
-        end)
-    
-        buttonOffset = buttonOffset + buttonSpacing + 120
-        controls.exportButton_Monk_Mistweaver_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
-        controls.exportButton_Monk_Mistweaver_BarText:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (Bar Text).", 10, 2, false, false, false, true, false)
-        end)
-    end
+    buttonOffset = buttonOffset + buttonSpacing + 120
+    controls.exportButton_Monk_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Monk_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Monk specializations (Bar Text).", 10, nil, false, false, false, true, false)
+    end)
+
+    yCoord = yCoord - 25
+    specName = "Mistweaver"
+    controls.labels.monkMistweaver = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
+    controls.buttons.exportButton_Monk_Mistweaver_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.buttons.exportButton_Monk_Mistweaver_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (All).", 10, 2, true, true, true, true, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 50
+    controls.exportButton_Monk_Mistweaver_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Monk_Mistweaver_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (Bar Display).", 10, 2, true, false, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 80
+    controls.exportButton_Monk_Mistweaver_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Monk_Mistweaver_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (Font & Text).", 10, 2, false, true, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 90
+    controls.exportButton_Monk_Mistweaver_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Monk_Mistweaver_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (Audio & Tracking).", 10, 2, false, false, true, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 120
+    controls.exportButton_Monk_Mistweaver_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Monk_Mistweaver_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (Bar Text).", 10, 2, false, false, false, true, false)
+    end)
 
     yCoord = yCoord - 25
     specName = "Windwalker"
@@ -1453,37 +1437,35 @@ local function ConstructImportExportPanel()
     yCoord = yCoord - 35
     controls.labels.shaman = TRB.UiFunctions:BuildLabel(parent, "Shaman", oUi.xCoord, yCoord, 110, 20)
 
-    if TRB.Data.settings.core.experimental.specs.shaman.restoration then
-        buttonOffset = oUi.xCoord + oUi.xPadding + 100
-        controls.buttons.exportButton_Shaman_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
-        controls.buttons.exportButton_Shaman_All:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Shaman specializations (All).", 7, nil, true, true, true, true, false)
-        end)
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
+    controls.buttons.exportButton_Shaman_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.buttons.exportButton_Shaman_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Shaman specializations (All).", 7, nil, true, true, true, true, false)
+    end)
 
-        buttonOffset = buttonOffset + buttonSpacing + 50
-        controls.exportButton_Shaman_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
-        controls.exportButton_Shaman_BarDisplay:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Shaman specializations (Bar Display).", 7, nil, true, false, false, false, false)
-        end)
+    buttonOffset = buttonOffset + buttonSpacing + 50
+    controls.exportButton_Shaman_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Shaman_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Shaman specializations (Bar Display).", 7, nil, true, false, false, false, false)
+    end)
 
-        buttonOffset = buttonOffset + buttonSpacing + 80
-        controls.exportButton_Shaman_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
-        controls.exportButton_Shaman_FontAndText:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Shaman specializations (Font & Text).", 7, nil, false, true, false, false, false)
-        end)
+    buttonOffset = buttonOffset + buttonSpacing + 80
+    controls.exportButton_Shaman_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Shaman_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Shaman specializations (Font & Text).", 7, nil, false, true, false, false, false)
+    end)
 
-        buttonOffset = buttonOffset + buttonSpacing + 90
-        controls.exportButton_Shaman_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
-        controls.exportButton_Shaman_AudioAndTracking:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Shaman specializations (Audio & Tracking).", 7, nil, false, false, true, false, false)
-        end)
+    buttonOffset = buttonOffset + buttonSpacing + 90
+    controls.exportButton_Shaman_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Shaman_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Shaman specializations (Audio & Tracking).", 7, nil, false, false, true, false, false)
+    end)
 
-        buttonOffset = buttonOffset + buttonSpacing + 120
-        controls.exportButton_Shaman_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
-        controls.exportButton_Shaman_BarText:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Shaman specializations (Bar Text).", 7, nil, false, false, false, true, false)
-        end)
-    end
+    buttonOffset = buttonOffset + buttonSpacing + 120
+    controls.exportButton_Shaman_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Shaman_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Shaman specializations (Bar Text).", 7, nil, false, false, false, true, false)
+    end)
 
     yCoord = yCoord - 25
     specName = "Elemental"
@@ -1519,41 +1501,39 @@ local function ConstructImportExportPanel()
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Elemental Shaman (Bar Text).", 7, 1, false, false, false, true, false)
     end)
 
-    if TRB.Data.settings.core.experimental.specs.shaman.restoration then
-        yCoord = yCoord - 25
-        specName = "Restoration"
-        controls.labels.shamanRestoration = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
-    
-        buttonOffset = oUi.xCoord + oUi.xPadding + 100
-        controls.buttons.exportButton_Shaman_Restoration_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
-        controls.buttons.exportButton_Shaman_Restoration_All:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (All).", 7, 3, true, true, true, true, false)
-        end)
-    
-        buttonOffset = buttonOffset + buttonSpacing + 50
-        controls.exportButton_Shaman_Restoration_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
-        controls.exportButton_Shaman_Restoration_BarDisplay:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (Bar Display).", 7, 3, true, false, false, false, false)
-        end)
-    
-        buttonOffset = buttonOffset + buttonSpacing + 80
-        controls.exportButton_Shaman_Restoration_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
-        controls.exportButton_Shaman_Restoration_FontAndText:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (Font & Text).", 7, 3, false, true, false, false, false)
-        end)
-    
-        buttonOffset = buttonOffset + buttonSpacing + 90
-        controls.exportButton_Shaman_Restoration_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
-        controls.exportButton_Shaman_Restoration_AudioAndTracking:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (Audio & Tracking).", 7, 3, false, false, true, false, false)
-        end)
-    
-        buttonOffset = buttonOffset + buttonSpacing + 120
-        controls.exportButton_Shaman_Restoration_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
-        controls.exportButton_Shaman_Restoration_BarText:SetScript("OnClick", function(self, ...)
-            TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (Bar Text).", 7, 3, false, false, false, true, false)
-        end)
-    end
+    yCoord = yCoord - 25
+    specName = "Restoration"
+    controls.labels.shamanRestoration = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+
+    buttonOffset = oUi.xCoord + oUi.xPadding + 100
+    controls.buttons.exportButton_Shaman_Restoration_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+    controls.buttons.exportButton_Shaman_Restoration_All:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (All).", 7, 3, true, true, true, true, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 50
+    controls.exportButton_Shaman_Restoration_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+    controls.exportButton_Shaman_Restoration_BarDisplay:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (Bar Display).", 7, 3, true, false, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 80
+    controls.exportButton_Shaman_Restoration_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+    controls.exportButton_Shaman_Restoration_FontAndText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (Font & Text).", 7, 3, false, true, false, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 90
+    controls.exportButton_Shaman_Restoration_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+    controls.exportButton_Shaman_Restoration_AudioAndTracking:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (Audio & Tracking).", 7, 3, false, false, true, false, false)
+    end)
+
+    buttonOffset = buttonOffset + buttonSpacing + 120
+    controls.exportButton_Shaman_Restoration_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+    controls.exportButton_Shaman_Restoration_BarText:SetScript("OnClick", function(self, ...)
+        TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (Bar Text).", 7, 3, false, false, false, true, false)
+    end)
 
 
     yCoord = yCoord - 35

@@ -22,12 +22,12 @@ A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insan
 
 Currently supported specs:
 - Demon Hunter - Havoc
-- Druid - Balance, Feral, Restoration (Experimental/Minimal)
+- Druid - Balance, Feral, Restoration (Minimal)
 - Hunter - Beast Mastery, Marksmanship, Survival
-- Monk - Mistweaver (Experimental/Minimal), Windwalker
+- Monk - Mistweaver (Minimal), Windwalker
 - Priest - Holy, Shadow
 - Rogue - Assassination, Outlaw
-- Shaman - Elemental, Restoration (Experimental/Minimal)
+- Shaman - Elemental, Restoration (Minimal)
 - Warrior - Arms, Fury
 
 This is a fully customizable resource bar for multiple classes and specs to use to track their primary resource while in combat. Features include:

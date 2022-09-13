@@ -2770,10 +2770,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
-			elseif TRB.Data.settings.core.experimental.specs.shaman.restoration and specId == 3 then -- Restoration
+			elseif specId == 3 then -- Restoration
 			end
 		elseif classId == 10 then -- Monk
-			if TRB.Data.settings.core.experimental.specs.monk.mistweaver and specId == 2 then -- Mistweaver
+			if specId == 2 then -- Mistweaver
 			elseif specId == 3 then -- Windwalker
 				configuration.endOfSerenity = settings.endOfSerenity
 			end
@@ -2783,7 +2783,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Feral
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints				
-			elseif TRB.Data.settings.core.experimental.specs.druid.restoration and specId == 4 then -- Restoration
+			elseif specId == 4 then -- Restoration
 			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 			configuration.endOfMetamorphosis = settings.endOfMetamorphosis
@@ -2837,17 +2837,17 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
-			elseif TRB.Data.settings.core.experimental.specs.shaman.restoration and specId == 3 then -- Restoration
+			elseif specId == 3 then -- Restoration
 			end
 		elseif classId == 10 then -- Monk
-			if TRB.Data.settings.core.experimental.specs.monk.mistweaver and specId == 2 then -- Mistweaver
+			if specId == 2 then -- Mistweaver
 			elseif specId == 3 then -- Windwalker
 			end
 		elseif classId == 11 then -- Druids
 			if specId == 1 then -- Balance
 				configuration.astralPowerPrecision = settings.astralPowerPrecision
 			elseif specId == 2 then -- Feral
-			elseif TRB.Data.settings.core.experimental.specs.druid.restoration and specId == 4 then -- Restoration
+			elseif specId == 4 then -- Restoration
 			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 		end
@@ -2886,16 +2886,16 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
-			elseif TRB.Data.settings.core.experimental.specs.shaman.restoration and specId == 3 then -- Restoration
+			elseif specId == 3 then -- Restoration
 			end
 		elseif classId == 10 then -- Monk
-			if TRB.Data.settings.core.experimental.specs.monk.mistweaver and specId == 2 then -- Mistweaver
+			if specId == 2 then -- Mistweaver
 			elseif specId == 3 then -- Windwalker
 			end
 		elseif classId == 11 then -- Druid
 			if specId == 1 then -- Balance
 			elseif specId == 2 then -- Feral
-			elseif TRB.Data.settings.core.experimental.specs.druid.restoration and specId == 4 then -- Restoration
+			elseif specId == 4 then -- Restoration
 			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 		end
@@ -2990,18 +2990,14 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 				configuration.shaman.elemental = TRB.Functions.ExportConfigurationSections(7, 1, settings.shaman.elemental, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
-			if TRB.Data.settings.core.experimental.specs.shaman.restoration then
-				if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.shaman.restoration) > 0 then -- Restoration
-					configuration.shaman.restoration = TRB.Functions.ExportConfigurationSections(7, 3, settings.shaman.restoration, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
-				end
+			if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.shaman.restoration) > 0 then -- Restoration
+				configuration.shaman.restoration = TRB.Functions.ExportConfigurationSections(7, 3, settings.shaman.restoration, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 10 and settings.monk ~= nil then -- Monk
 			configuration.monk = {}
 
-			if TRB.Data.settings.core.experimental.specs.monk.mistweaver then
-				if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.monk.mistweaver) > 0 then -- Mistweaver
-					configuration.monk.mistweaver = TRB.Functions.ExportConfigurationSections(10, 2, settings.monk.mistweaver, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
-				end
+			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.monk.mistweaver) > 0 then -- Mistweaver
+				configuration.monk.mistweaver = TRB.Functions.ExportConfigurationSections(10, 2, settings.monk.mistweaver, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
 			if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.monk.windwalker) > 0 then -- Windwalker
@@ -3018,10 +3014,8 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 				configuration.druid.feral = TRB.Functions.ExportConfigurationSections(11, 2, settings.druid.feral, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
-			if TRB.Data.settings.core.experimental.specs.druid.restoration then
-				if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.druid.restoration) > 0 then -- Restoration
-					configuration.druid.restoration = TRB.Functions.ExportConfigurationSections(11, 4, settings.druid.restoration, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
-				end
+			if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.druid.restoration) > 0 then -- Restoration
+				configuration.druid.restoration = TRB.Functions.ExportConfigurationSections(11, 4, settings.druid.restoration, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 12 and settings.demonhunter ~= nil then -- Demon Hunter
 			configuration.demonhunter = {}
@@ -3048,10 +3042,8 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Monks
-		if TRB.Data.settings.core.experimental.specs.monk.mistweaver then
-			-- Mistweaver
-			configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(10, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-		end
+		-- Mistweaver
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(10, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Windwalker
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(10, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
@@ -3070,22 +3062,16 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Shamans
 		-- Elemental
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-
-		if TRB.Data.settings.core.experimental.specs.shaman.restoration then
-			-- Restoration
-			configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(7, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-		end
+		-- Restoration
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(7, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Druids
 		-- Balance
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Feral
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-
-		if TRB.Data.settings.core.experimental.specs.druid.restoration then
-			-- Restoration
-			configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 4, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-		end
+		-- Restoration
+		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 4, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Demon Hunter
 		-- Havoc

@@ -27,7 +27,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local specCache = {
 		holy = {
 			snapshotData = {},
-			barTextVariables = {},
+			barTextVariables = {
+				icons = {},
+				values = {}
+			},
 			spells = {},
 			talents = {},
 			settings = {
@@ -41,7 +44,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		},
 		shadow = {
 			snapshotData = {},
-			barTextVariables = {},
+			barTextVariables = {
+				icons = {},
+				values = {}
+			},
 			spells = {},
 			talents = {},
 			settings = {

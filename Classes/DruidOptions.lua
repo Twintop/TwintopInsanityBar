@@ -679,13 +679,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		settings.druid.balance = BalanceLoadDefaultSettings()
 		settings.druid.feral = FeralLoadDefaultSettings()
-		if TwintopInsanityBarSettings.core ~= nil and
-			TwintopInsanityBarSettings.core.experimental ~= nil and
-			TwintopInsanityBarSettings.core.experimental.specs ~= nil and
-			TwintopInsanityBarSettings.core.experimental.specs.druid ~= nil and 
-			TwintopInsanityBarSettings.core.experimental.specs.druid.restoration then
-			settings.druid.restoration = RestorationLoadDefaultSettings()
-		end
+		settings.druid.restoration = RestorationLoadDefaultSettings()
 		return settings
 	end
     TRB.Options.Druid.LoadDefaultSettings = LoadDefaultSettings
@@ -3291,10 +3285,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Options:ConstructOptionsPanel()
 		BalanceConstructOptionsPanel(specCache.balance)
 		FeralConstructOptionsPanel(specCache.feral)
-		
-		if TRB.Data.settings.core.experimental.specs.druid.restoration then
-			RestorationConstructOptionsPanel(specCache.restoration)
-		end
+		RestorationConstructOptionsPanel(specCache.restoration)
 	end
 	TRB.Options.Druid.ConstructOptionsPanel = ConstructOptionsPanel
 end

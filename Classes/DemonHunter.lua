@@ -18,7 +18,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	local specCache = {
 		havoc = {
 			snapshotData = {},
-			barTextVariables = {},
+			barTextVariables = {
+				icons = {},
+				values = {}
+			},
 			spells = {},
 			talents = {},
 			settings = {
@@ -1519,10 +1522,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
 					C_Timer.After(0, function()
 						C_Timer.After(1, function()
-							TRB.Data.settings.demonhunter.havoc = TRB.Functions.ValidateLsmValues("Havoc Demon Hunter", TRB.Data.settings.demonhunter.havoc)
-							
-							FillSpellData_Havoc()
 							TRB.Data.barConstructedForSpec = nil
+							TRB.Data.settings.demonhunter.havoc = TRB.Functions.ValidateLsmValues("Havoc Demon Hunter", TRB.Data.settings.demonhunter.havoc)
+							FillSpellData_Havoc()
+
 							SwitchSpec()
 							TRB.Options.DemonHunter.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case

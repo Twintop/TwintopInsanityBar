@@ -849,12 +849,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 	local function EventRegistration()
 		local specId = GetSpecialization()
-		if specId == 2 and TRB.Data.settings.core.enabled.monk.mistweaver and TRB.Data.settings.core.experimental.specs.monk.mistweaver then
+		if specId == 2 and TRB.Data.settings.core.enabled.monk.mistweaver then
 			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.mistweaver)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
-		elseif specId == 3 and TRB.Data.settings.core.enabled.monk.windwalker == true then
+		elseif specId == 3 and TRB.Data.settings.core.enabled.monk.windwalker then
 			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.windwalker)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Energy
@@ -966,7 +966,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 		end
 
-		if specId == 2 and TRB.Data.settings.core.experimental.specs.monk.mistweaver then
+		if specId == 2 then
 			for x = 1, 4 do
 				if TRB.Frames.resourceFrame.thresholds[x] == nil then
 					TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
@@ -1012,7 +1012,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		TRB.Functions.ConstructResourceBar(settings)
 
-		if (specId == 2 and TRB.Data.settings.core.experimental.specs.monk.mistweaver) or specId == 3 then
+		if specId == 2  or specId == 3 then
 			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
 		end
 	end
@@ -2059,8 +2059,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local specId = GetSpecialization()
 
 		if specId == 2 then
-			if not TRB.Data.settings.core.experimental.specs.monk.mistweaver or
-				not TRB.Data.specSupported or force or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.monk.mistweaver.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.monk.mistweaver.displayBar.notZeroShow) or
@@ -2796,7 +2795,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	local function SwitchSpec()
 		local specId = GetSpecialization()
 		if specId == 1 then
-		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.monk.mistweaver then
+		elseif specId == 2 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.monk.mistweaver)
 			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.mistweaver)
 			FillSpellData_Mistweaver()
@@ -2869,12 +2868,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						C_Timer.After(1, function()
 							TRB.Data.barConstructedForSpec = nil
 							TRB.Data.settings.monk.windwalker = TRB.Functions.ValidateLsmValues("Windwalker Monk", TRB.Data.settings.monk.windwalker)
+							TRB.Data.settings.monk.mistweaver = TRB.Functions.ValidateLsmValues("Mistweaver Monk", TRB.Data.settings.monk.mistweaver)
 							FillSpellData_Windwalker()
-							
-							if TRB.Data.settings.core.experimental.specs.monk.mistweaver then
-								TRB.Data.settings.monk.mistweaver = TRB.Functions.ValidateLsmValues("Mistweaver Monk", TRB.Data.settings.monk.mistweaver)
-								FillSpellData_Mistweaver()
-							end
+							FillSpellData_Mistweaver()
 
 							SwitchSpec()
 							TRB.Options.Monk.ConstructOptionsPanel(specCache)

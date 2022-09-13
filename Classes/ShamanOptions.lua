@@ -373,14 +373,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 		settings.shaman.elemental = ElementalLoadDefaultSettings()
-
-		if TwintopInsanityBarSettings.core ~= nil and
-			TwintopInsanityBarSettings.core.experimental ~= nil and
-			TwintopInsanityBarSettings.core.experimental.specs ~= nil and
-			TwintopInsanityBarSettings.core.experimental.specs.shaman ~= nil and 
-			TwintopInsanityBarSettings.core.experimental.specs.shaman.restoration then
-			settings.shaman.restoration = RestorationLoadDefaultSettings()
-		end
+		settings.shaman.restoration = RestorationLoadDefaultSettings()
 
 		return settings
 	end
@@ -1667,10 +1660,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function ConstructOptionsPanel(specCache)
 		TRB.Options:ConstructOptionsPanel()
 		ElementalConstructOptionsPanel(specCache.elemental)
-		
-		if TRB.Data.settings.core.experimental.specs.shaman.restoration then
-			RestorationConstructOptionsPanel(specCache.restoration)
-		end
+		RestorationConstructOptionsPanel(specCache.restoration)
 	end
 	TRB.Options.Shaman.ConstructOptionsPanel = ConstructOptionsPanel
 end

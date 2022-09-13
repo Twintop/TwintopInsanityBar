@@ -20,30 +20,34 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			snapshotData = {},
 			barTextVariables = {
 				icons = {},
-				values = {},
-				settings = {
-					bar = nil,
-					comboPoints = nil,
-					displayBar = nil,
-					font = nil,
-					textures = nil,
-					thresholds = nil
-				}
+				values = {}
+			},
+			spells = {},
+			talents = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
 			}
 		},
 		restoration = {
 			snapshotData = {},
 			barTextVariables = {
 				icons = {},
-				values = {},
-				settings = {
-					bar = nil,
-					comboPoints = nil,
-					displayBar = nil,
-					font = nil,
-					textures = nil,
-					thresholds = nil
-				}
+				values = {}
+			},
+			spells = {},
+			talents = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
 			}
 		}
 	}
@@ -779,7 +783,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Maelstrom
 			TRB.Data.resourceFactor = 1
-		elseif specId == 3 and TRB.Data.settings.core.enabled.shaman.restoration and TRB.Data.settings.core.experimental.specs.shaman.restoration then
+		elseif specId == 3 and TRB.Data.settings.core.enabled.shaman.restoration then
 			TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.restoration)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
@@ -822,7 +826,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local specId = GetSpecialization()
 
-		if guid ~= nil then
+		if guid ~= nil and guid ~= "" then
 			if not TRB.Functions.CheckTargetExists(guid) then
 				TRB.Functions.InitializeTarget(guid)
 				if specId == 1 then -- Elemental
@@ -931,7 +935,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 			
 			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.earthShock.settingKey, settings)
-		elseif specId == 3 and TRB.Data.settings.core.experimental.specs.shaman.restoration then
+		elseif specId == 3 then
 			for x = 1, 4 do
 				if TRB.Frames.resourceFrame.thresholds[x] == nil then
 					TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
@@ -960,7 +964,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		TRB.Functions.ConstructResourceBar(settings)
 
-		if specId == 1 or (specId == 3 and TRB.Data.settings.core.experimental.specs.shaman.restoration) then
+		if specId == 1 or specId == 3 then
 			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
 		end
 	end
@@ -1865,8 +1869,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 			end
 		elseif specId == 3 then
-			if not TRB.Data.settings.core.experimental.specs.shaman.restoration or
-				not TRB.Data.specSupported or force or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.shaman.restoration.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.shaman.restoration.displayBar.notZeroShow) or
@@ -2376,7 +2379,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							spell = TRB.Data.spells.icefury
 						elseif spellId == TRB.Data.spells.chainLightning.id then
 							spell = TRB.Data.spells.chainLightning
-						elseif spellId == TRB.Data.spells.lavaBeam.id then 
+						elseif spellId == TRB.Data.spells.lavaBeam.id then
 							spell = TRB.Data.spells.lavaBeam
 						end
 
@@ -2467,6 +2470,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		if specId == 1 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.shaman.elemental)
 			TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.elemental)
+			specCache.elemental.talents = TRB.Functions.GetTalents()
 			FillSpellData_Elemental()
 			TRB.Functions.LoadFromSpecCache(specCache.elemental)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Elemental
@@ -2476,9 +2480,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				ConstructResourceBar(specCache.elemental.settings)
 			end
 		elseif specId == 2 then
-		elseif specId == 3 and TRB.Data.settings.core.experimental.specs.shaman.restoration then
+		elseif specId == 3 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.shaman.restoration)
 			TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.restoration)
+			specCache.restoration.talents = TRB.Functions.GetTalents()
 			FillSpellData_Restoration()
 			TRB.Functions.LoadFromSpecCache(specCache.restoration)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Restoration
@@ -2538,23 +2543,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						C_Timer.After(1, function()
 							TRB.Data.barConstructedForSpec = nil
 							TRB.Data.settings.shaman.elemental = TRB.Functions.ValidateLsmValues("Elemental Shaman", TRB.Data.settings.shaman.elemental)
+							TRB.Data.settings.shaman.restoration = TRB.Functions.ValidateLsmValues("Restoration Shaman", TRB.Data.settings.shaman.restoration)
 							FillSpellData_Elemental()
-							
-							if TRB.Data.settings.core.experimental.specs.shaman.restoration then
-								TRB.Data.settings.shaman.restoration = TRB.Functions.ValidateLsmValues("Restoration Shaman", TRB.Data.settings.shaman.restoration)
-								FillSpellData_Restoration()
-							end
+							FillSpellData_Restoration()
 
 							SwitchSpec()
 							TRB.Options.Shaman.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case
-							ConstructResourceBar(TRB.Data.settings.shaman[TRB.Data.barConstructedForSpec])
+							ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 							EventRegistration()
 						end)
 					end)
 				end
 
-				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
+				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
 					SwitchSpec()
 				end
 			end
