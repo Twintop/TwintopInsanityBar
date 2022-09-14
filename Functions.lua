@@ -565,7 +565,6 @@ local function FillSpecCacheSettings(settings, cache, className, specName)
 		--print("bar!")
 	else
 		--print("no bar :(")
-		print(spec.bar)
 		specCache.settings.bar = spec.bar
 	end
 

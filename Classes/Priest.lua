@@ -806,6 +806,24 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				insanity = 6,
 				isTalent = true
 			},
+			voidEruption = {
+				id = 228260,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			voidform = {
+				id = 194249,
+				name = "",
+				icon = ""
+			},
+			darkAscension = {
+				id = 391109,
+				name = "",
+				icon = "",
+				insanity = 30,
+				isTalent = true
+			},
 			mindSpike = {
 				id = 73510,
 				name = "",
@@ -841,13 +859,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				insanity = 15,
 				isTalent = true
 			},
-			darkAscension = {
-				id = 391109,
-				name = "",
-				icon = "",
-				insanity = 30,
-				isTalent = true
-			},
 			maddeningTouch = {
 				id = 73510,
 				name = "",
@@ -872,18 +883,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				insanity = 5,
 				isTalent = true
-			},
-			voidEruption = {
-				id = 228260,
-				name = "",
-				icon = "",
-				maxStacks = 5,
-				isTalent = true
-			},
-			voidform = {
-				id = 194249,
-				name = "",
-				icon = ""
 			},
 			mindDevourer = {
 				id = 338333,
@@ -1058,7 +1057,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		specCache.shadow.snapshotData.voidform = {
 			spellId = nil,
-			remainingTime = 0,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0
+		}
+		specCache.shadow.snapshotData.darkAscension = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0
 		}
 		specCache.shadow.snapshotData.audio = {
 			playedDpCue = false,
@@ -1942,6 +1949,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
 		end
 	end
+	
+	local function GetVoidformRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.voidform)
+	end
+	
+	local function GetDarkAscensionRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.darkAscension)
+	end
+	
 	local function GetApotheosisRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.apotheosis)
 	end
@@ -2680,6 +2696,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local normalizedInsanity = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 		--$vfTime
 		local _voidformTime = TRB.Data.snapshotData.voidform.remainingTime
+
+		--TODO: not use this hacky workaroud for timers
+		if TRB.Data.snapshotData.darkAscension.remainingTime > 0 then
+			_voidformTime = TRB.Data.snapshotData.darkAscension.remainingTime
+		end
+
 		local voidformTime = string.format("%.1f", _voidformTime)
 		----------
 
@@ -3679,6 +3701,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local currentTime = GetTime()
 		local _
 
+		
+		if TRB.Data.snapshotData.voidform.startTime ~= nil and currentTime > (TRB.Data.snapshotData.voidform.startTime + TRB.Data.snapshotData.voidform.duration) then
+            TRB.Data.snapshotData.voidform.startTime = nil
+            TRB.Data.snapshotData.voidform.duration = 0
+			TRB.Data.snapshotData.voidform.remainingTime = 0
+		else
+			TRB.Data.snapshotData.voidform.remainingTime = GetVoidformRemainingTime()
+        end
+
+		if TRB.Data.snapshotData.darkAscension.startTime ~= nil and currentTime > (TRB.Data.snapshotData.darkAscension.startTime + TRB.Data.snapshotData.darkAscension.duration) then
+            TRB.Data.snapshotData.darkAscension.startTime = nil
+            TRB.Data.snapshotData.darkAscension.duration = 0
+			TRB.Data.snapshotData.darkAscension.remainingTime = 0
+		else
+			TRB.Data.snapshotData.darkAscension.remainingTime = GetDarkAscensionRemainingTime()
+        end
+
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPain then
 				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.shadowWordPain.id, "target", "player"))
@@ -4263,7 +4302,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.casting, true))
 					end
 
-					if TRB.Data.snapshotData.voidform.spellId then
+					if TRB.Data.snapshotData.voidform.remainingTime > 0 or TRB.Data.snapshotData.darkAscension.remainingTime > 0 then
+						local timeLeft = TRB.Data.snapshotData.voidform.remainingTime
+						if TRB.Data.snapshotData.darkAscension.remainingTime > 0 then
+							timeLeft = TRB.Data.snapshotData.darkAscension.remainingTime
+						end
 						local timeThreshold = 0
 						local useEndOfVoidformColor = false
 
@@ -4277,7 +4320,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							end
 						end
 
-						if useEndOfVoidformColor and TRB.Data.snapshotData.voidform.remainingTime <= timeThreshold then
+						if useEndOfVoidformColor and timeLeft <= timeThreshold then
 							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, true))
 						elseif currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
 							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsable, true))
@@ -4484,7 +4527,27 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					end
 				elseif specId == 3 then
-					if spellId == TRB.Data.spells.deathAndMadness.id then
+					if spellId == TRB.Data.spells.voidform.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.voidform.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.voidform.duration, TRB.Data.snapshotData.voidform.endTime, _, _, _, TRB.Data.snapshotData.voidform.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.voidform.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.voidform.isActive = false
+							TRB.Data.snapshotData.voidform.spellId = nil
+							TRB.Data.snapshotData.voidform.duration = 0
+							TRB.Data.snapshotData.voidform.endTime = nil
+						end
+					elseif spellId == TRB.Data.spells.darkAscension.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.darkAscension.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.darkAscension.duration, TRB.Data.snapshotData.darkAscension.endTime, _, _, _, TRB.Data.snapshotData.darkAscension.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.darkAscension.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.darkAscension.isActive = false
+							TRB.Data.snapshotData.darkAscension.spellId = nil
+							TRB.Data.snapshotData.darkAscension.duration = 0
+							TRB.Data.snapshotData.darkAscension.endTime = nil
+						end
+					elseif spellId == TRB.Data.spells.deathAndMadness.id then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Death and Madness
 							TRB.Data.snapshotData.deathAndMadness.isActive = true
 							TRB.Data.snapshotData.deathAndMadness.ticksRemaining = TRB.Data.spells.deathAndMadness.ticks
