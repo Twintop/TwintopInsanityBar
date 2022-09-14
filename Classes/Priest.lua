@@ -920,13 +920,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				isTalent = true
 			},
-			hungeringVoid = {
-				id = 345218,
-				idDebuff = 345219,
-				name = "",
-				icon = "",
-				isTalent = true
-			},
 			s2m = {
 				id = 319952,
 				talentId = 319952,
@@ -1630,10 +1623,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$mdTime", description = "Time remaining on Mind Devourer buff", printInSettings = true, color = false },
 
 			{ variable = "$vfTime", description = "Duration remaining of Voidform", printInSettings = true, color = false },
-			{ variable = "$hvTime", description = "Duration remaining of VF w/max VB casts in Hungering Void", printInSettings = true, color = false },
-			{ variable = "$vbCasts", description = "Max Void Bolt casts remaining in Hungering Void", printInSettings = true, color = false },
-			{ variable = "$hvAvgTime", description = "Duration of VF w/max VB casts in Hungering Void, includes crits", printInSettings = true, color = false },
-			{ variable = "$vbAvgCasts", description = "Max Void Bolt casts remaining in Hungering Void, includes crits", printInSettings = true, color = false },
 
 			{ variable = "$s2m", description = "Is Surrender to Madness currently talented. Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$surrenderToMadness", description = "Is Surrender to Madness currently talented. Logic variable only!", printInSettings = true, color = false },
@@ -1994,197 +1983,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
 		end
 	end
-
-	local function CalculateRemainingHungeringVoidTime()
-		local currentTime = GetTime()
-		local _
-		local expirationTime
-		_, _, _, _, TRB.Data.snapshotData.voidform.duration, expirationTime, _, _, _, TRB.Data.snapshotData.voidform.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.voidform.id)
-
-		if TRB.Data.snapshotData.voidform.spellId == nil then
-			TRB.Data.snapshotData.voidform.remainingTime = 0
-			TRB.Data.snapshotData.voidform.remainingHvTime = 0
-			TRB.Data.snapshotData.voidform.additionalVbCasts = 0
-			TRB.Data.snapshotData.voidform.remainingHvAvgTime = 0
-			TRB.Data.snapshotData.voidform.additionalVbAvgCasts = 0
-			TRB.Data.snapshotData.voidform.isInfinite = false
-			TRB.Data.snapshotData.voidform.isAverageInfinite = false
-		else
-			local remainingTime = (expirationTime - currentTime) or 0
-
-			if TRB.Functions.IsTalentActive(TRB.Data.spells.hungeringVoid) then
-				local decryptedUrhCypherMod = 1
-				local architectsIngenuityMod = 1
-				local fatedInfusionCreationSparkMod = 1
-
-				if TRB.Data.snapshotData.decryptedUrhCypher.isActive and TRB.Data.snapshotData.decryptedUrhCypher.endTime > currentTime then
-					decryptedUrhCypherMod = TRB.Data.spells.decryptedUrhCypher.modifier
-				end
-
-				if TRB.Data.snapshotData.architectsIngenuity.isActive and TRB.Data.snapshotData.architectsIngenuity.endTime > currentTime then
-					architectsIngenuityMod = TRB.Data.spells.architectsIngenuity.modifier
-				end
-
-				if TRB.Data.snapshotData.fatedInfusionCreationSpark.isActive and TRB.Data.snapshotData.fatedInfusionCreationSpark.endTime > currentTime and TRB.Data.snapshotData.fatedInfusionCreationSpark.stacks > 0 then
-					fatedInfusionCreationSparkMod = 1 + (TRB.Data.spells.fatedInfusionCreationSpark.modifier * TRB.Data.snapshotData.fatedInfusionCreationSpark.stacks)
-				end
-
-				local reaction = TRB.Data.settings.core.reactionTime
-				local latency = TRB.Functions.GetLatency()
----@diagnostic disable-next-line: redundant-parameter
-				local vbStart, vbDuration, _, _ = GetSpellCooldown(TRB.Data.spells.voidBolt.id)
-				local vbBaseCooldown, vbBaseGcd = GetSpellBaseCooldown(TRB.Data.spells.voidBolt.id)
-				local vbCooldown = math.max(((vbBaseCooldown / (((TRB.Data.snapshotData.haste / 100) + 1) * 1000)) * TRB.Data.character.torghast.elethiumMuzzleModifier * TRB.Data.character.torghast.phantasmicInfuserModifier * TRB.Data.character.torghast.rampaging.coolDownReduction * decryptedUrhCypherMod * architectsIngenuityMod * fatedInfusionCreationSparkMod), 0.75) + latency + reaction
-				local gcdLockRemaining = TRB.Functions.GetCurrentGCDLockRemaining()
-
-				local castGrantsExtension = true
-				--[[
-				Issue #107 - Twintop 2021-01-03
-					Hungering Void doesn't require the target to actually be debuffed to grant extensions.
-					Change back to the code below once this is fixed by Blizz.
-				----
-				local targetDebuffId = select(10, TRB.Functions.FindDebuffById(TRB.Data.spells.hungeringVoid.idDebuff, "target", TRB.Data.character.guid))
-				local castGrantsExtension = false
-
-				if targetDebuffId ~= nil then
-					castGrantsExtension = true
-				end
-				]]
-
-				local remainingTimeTmp = remainingTime
-				local remainingTimeTotal = remainingTime
-				local remainingTimeTmpAverage = remainingTime
-				local remainingTimeTotalAverage = remainingTime
-				local moreCasts = 0
-				local moreCastsAverage = 0
-				local critValue = math.max(math.min((1.0 + (TRB.Data.snapshotData.crit / 100)), 2), 0)
-				local isInfinite = false
-				local isAverageInfinite = false
-
-				if vbDuration > 0 or gcdLockRemaining > 0 then
-					local vbRemaining = vbStart + vbDuration - currentTime
-					local castDelay = vbRemaining
-
-					if gcdLockRemaining > vbRemaining then
-						castDelay = gcdLockRemaining
-					end
-
-					castDelay = castDelay + latency + reaction
-
-					if remainingTimeTmp > castDelay then
-						if castGrantsExtension == true then
-							moreCasts = moreCasts + 1
-							remainingTimeTmp = remainingTimeTmp + 2.0 - castDelay
-							remainingTimeTotal = remainingTimeTotal + 2.0
-
-							moreCastsAverage = moreCastsAverage + 1
-							remainingTimeTmpAverage = remainingTimeTmpAverage + (critValue * 2) - castDelay
-							remainingTimeTotalAverage = remainingTimeTotalAverage + (critValue * 2)
-						else
-							remainingTimeTmp = remainingTimeTmp - castDelay
-
-							remainingTimeTmpAverage = remainingTimeTmpAverage - castDelay
-							castGrantsExtension = true
-						end
-					end
-				end
-
-				if TRB.Data.snapshotData.voidBolt.lastSuccess ~= nil and TRB.Data.snapshotData.voidBolt.flightTime ~= nil then
-					local flightRemaining = math.max(TRB.Data.snapshotData.voidBolt.flightTime - (currentTime - TRB.Data.snapshotData.voidBolt.lastSuccess), 0)
-					if flightRemaining < remainingTimeTmp then
-						remainingTimeTmp = remainingTimeTmp + 1
-					end
-
-					if flightRemaining < remainingTimeTmpAverage then
-						remainingTimeTmpAverage = remainingTimeTmpAverage + (critValue * 2)
-					end
-				end
-
-				-- With extremely high Haste and Crit it is possible to remain in Voidform for literally forever.
-
-				local infiniteExtensions = false
-				if vbCooldown <= 1 then
-					infiniteExtensions = true
-				end
-
-				local infiniteAverageExtensions = false
-				if ((2 - (2 / (vbCooldown))) * 100 * 2) < TRB.Data.snapshotData.crit then
-					infiniteAverageExtensions = true
-				end
-
-				local sanityCheckCounter = 0
-				local infinityCounter = 0
-				local infinityAverageCounter = 0
-				local maxCounter = 25
-				while (not (infiniteExtensions and infiniteAverageExtensions)) and
-					  (remainingTimeTmpAverage >= vbCooldown or remainingTimeTmp >= vbCooldown) and
-					  infinityCounter < maxCounter and
-					  infinityAverageCounter < maxCounter and
-					  sanityCheckCounter < maxCounter
-				do
-					sanityCheckCounter = sanityCheckCounter + 1
-					if not infiniteExtensions and remainingTimeTmp >= vbCooldown then
-						infinityCounter = infinityCounter + 1
-						local castsRaw = math.floor(remainingTimeTmp / vbCooldown)
-						local additionalCasts = castsRaw
-
-						if castGrantsExtension == false then
-							additionalCasts = math.max(additionalCasts - 1, 0)
-						end
-						moreCasts = moreCasts + additionalCasts
-						remainingTimeTmp = remainingTimeTmp + (additionalCasts * 2) - (castsRaw * vbCooldown)
-						remainingTimeTotal = remainingTimeTotal + (additionalCasts * 2)
-					end
-
-					if not infiniteAverageExtensions and remainingTimeTmpAverage >= vbCooldown then
-						infinityAverageCounter = infinityAverageCounter + 1
-						local castsAverageRaw =  math.floor(remainingTimeTmpAverage / vbCooldown)
-						local additionalCastsAverage = castsAverageRaw
-
-						if castGrantsExtension == false then
-							additionalCastsAverage = math.max(additionalCastsAverage - 1, 0)
-						end
-						moreCastsAverage = moreCastsAverage + additionalCastsAverage
-						remainingTimeTmpAverage = remainingTimeTmpAverage + ((critValue * 2) * additionalCastsAverage) - (castsAverageRaw * vbCooldown)
-						remainingTimeTotalAverage = remainingTimeTotalAverage + ((critValue * 2) * additionalCastsAverage)
-					end
-
-					castGrantsExtension = true
-				end
-
-				TRB.Data.snapshotData.voidform.remainingTime = remainingTime or 0
-				TRB.Data.snapshotData.voidform.remainingHvTime = remainingTimeTotal
-				TRB.Data.snapshotData.voidform.additionalVbCasts = moreCasts
-				TRB.Data.snapshotData.voidform.remainingHvAvgTime = remainingTimeTotalAverage
-				TRB.Data.snapshotData.voidform.additionalVbAvgCasts = moreCastsAverage
-
-				if sanityCheckCounter == maxCounter and sanityCheckCounter ~= infinityCounter and sanityCheckCounter ~= infinityAverageCounter then
-					isInfinite = true
-					isAverageInfinite = true
-				end
-
-				if infiniteExtensions or infinityCounter == maxCounter then
-					isInfinite = true
-				end
-
-				if infiniteAverageExtensions or infinityAverageCounter == maxCounter then
-					isAverageInfinite = true
-				end
-
-				TRB.Data.snapshotData.voidform.isInfinite = isInfinite
-				TRB.Data.snapshotData.voidform.isAverageInfinite = isAverageInfinite
-			else
-				TRB.Data.snapshotData.voidform.remainingTime = remainingTime or 0
-				TRB.Data.snapshotData.voidform.remainingHvTime = 0
-				TRB.Data.snapshotData.voidform.additionalVbCasts = 0
-				TRB.Data.snapshotData.voidform.remainingHvAvgTime = 0
-				TRB.Data.snapshotData.voidform.additionalVbAvgCasts = 0
-				TRB.Data.snapshotData.voidform.isInfinite = false
-				TRB.Data.snapshotData.voidform.isAverageInfinite = false
-			end
-		end
-	end
-
 	local function GetApotheosisRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.apotheosis)
 	end
@@ -2421,22 +2219,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		elseif specId == 3 then
 			if var == "$vfTime" then
 				if TRB.Data.snapshotData.voidform.remainingTime ~= nil and TRB.Data.snapshotData.voidform.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$hvAvgTime" then
-				if TRB.Functions.IsTalentActive(TRB.Data.spells.hungeringVoid) and TRB.Data.snapshotData.voidform.remainingHvAvgTime ~= nil and (TRB.Data.snapshotData.voidform.remainingHvAvgTime > 0 or TRB.Data.snapshotData.voidform.isAverageInfinite) then
-					valid = true
-				end
-			elseif var == "$vbAvgCasts" then
-				if TRB.Functions.IsTalentActive(TRB.Data.spells.hungeringVoid) and TRB.Data.snapshotData.voidform.remainingHvAvgTime ~= nil and (TRB.Data.snapshotData.voidform.remainingHvAvgTime > 0 or TRB.Data.snapshotData.voidform.isAverageInfinite) then
-					valid = true
-				end
-			elseif var == "$hvTime" then
-				if TRB.Functions.IsTalentActive(TRB.Data.spells.hungeringVoid) and TRB.Data.snapshotData.voidform.remainingHvTime ~= nil and (TRB.Data.snapshotData.voidform.remainingHvTime > 0 or TRB.Data.snapshotData.voidform.isInfinite) then
-					valid = true
-				end
-			elseif var == "$vbCasts" then
-				if TRB.Functions.IsTalentActive(TRB.Data.spells.hungeringVoid) and TRB.Data.snapshotData.voidform.remainingHvTime ~= nil and (TRB.Data.snapshotData.voidform.remainingHvTime > 0 or TRB.Data.snapshotData.voidform.isInfinite) then
 					valid = true
 				end
 			elseif var == "$resource" or var == "$insanity" then
@@ -2948,29 +2730,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$vfTime
 		local _voidformTime = TRB.Data.snapshotData.voidform.remainingTime
 		local voidformTime = string.format("%.1f", _voidformTime)
-		--$hvTime
-		local _hungeringVoidTime = TRB.Data.snapshotData.voidform.remainingHvTime
-		local hungeringVoidTime = string.format("%.1f", _hungeringVoidTime)
-		--$vbCasts
-		local _voidBoltCasts = TRB.Data.snapshotData.voidform.additionalVbCasts
-		local voidBoltCasts = string.format("%.0f", _voidBoltCasts)
-		--$hvAvgTime
-		local _hungeringVoidTimeAvg = TRB.Data.snapshotData.voidform.remainingHvAvgTime
-		local hungeringVoidTimeAvg = string.format("%.1f", _hungeringVoidTimeAvg)
-		--$vbAvgCasts
-		local _voidBoltCastsAvg = TRB.Data.snapshotData.voidform.additionalVbAvgCasts
-		local voidBoltCastsAvg = string.format("%.0f", _voidBoltCastsAvg)
-
-		if TRB.Data.snapshotData.voidform.isInfinite then
-			hungeringVoidTime = "∞"
-			voidBoltCasts = "∞"
-		end
-
-		if TRB.Data.snapshotData.voidform.isAverageInfinite then
-			hungeringVoidTimeAvg = "∞"
-			voidBoltCastsAvg = "∞"
-		end
-
 		----------
 
 		--$overcap
@@ -3193,14 +2952,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		Global_TwintopInsanityBar = {
 			ttd = _ttd or "--",
-			voidform = {
-				hungeringVoid = {
-					timeRemaining = TRB.Data.snapshotData.voidform.remainingHvTime,
-					voidBoltCasts = TRB.Data.snapshotData.voidform.additionalVbCasts,
-					TimeRemainingAverage = TRB.Data.snapshotData.voidform.remainingHvAvgTime,
-					voidBoltCastsAverage = TRB.Data.snapshotData.voidform.additionalVbAvgCasts
-				}
-			},
 			insanity = {
 				insanity = (TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) or 0,
 				casting = TRB.Data.snapshotData.casting.resourceFinal or 0,
@@ -3240,14 +2991,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		}
 
 		Global_TwintopResourceBar.voidform = {
-			hungeringVoid = {
-				timeRemaining = TRB.Data.snapshotData.voidform.remainingHvTime,
-				voidBoltCasts = TRB.Data.snapshotData.voidform.additionalVbCasts,
-				TimeRemainingAverage = TRB.Data.snapshotData.voidform.remainingHvAvgTime,
-				voidBoltCastsAverage = TRB.Data.snapshotData.voidform.additionalVbAvgCasts,
-				isInfinite = TRB.Data.snapshotData.voidform.isInfinite,
-				isAverageInfinite = TRB.Data.snapshotData.voidform.isAverageInfinite
-			}
 		}
 		Global_TwintopResourceBar.resource.passive = _passiveInsanity
 		Global_TwintopResourceBar.resource.auspiciousSpirits = _asInsanity
@@ -3345,10 +3088,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$mdTime"] = mdTime
 		lookup["$tofTime"] = tofTime
 		lookup["$vfTime"] = voidformTime
-		lookup["$hvTime"] = hungeringVoidTime
-		lookup["$vbCasts"] = voidBoltCasts
-		lookup["$hvAvgTime"] = hungeringVoidTimeAvg
-		lookup["$vbAvgCasts"] = voidBoltCastsAvg
 		lookup["$insanityPlusCasting"] = insanityPlusCasting
 		lookup["$insanityPlusPassive"] = insanityPlusPassive
 		lookup["$insanityTotal"] = insanityTotal
@@ -3396,10 +3135,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$mdTime"] = _mdTime
 		lookupLogic["$tofTime"] = _tofTime
 		lookupLogic["$vfTime"] = _voidformTime
-		lookupLogic["$hvTime"] = _hungeringVoidTime
-		lookupLogic["$vbCasts"] = _voidBoltCasts
-		lookupLogic["$hvAvgTime"] = _hungeringVoidTimeAvg
-		lookupLogic["$vbAvgCasts"] = _voidBoltCastsAvg
 		lookupLogic["$insanityPlusCasting"] = _insanityPlusCasting
 		lookupLogic["$insanityPlusPassive"] = _insanityPlusPassive
 		lookupLogic["$insanityTotal"] = _insanityTotal
@@ -3445,7 +3180,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function UpdateCastingResourceFinal_Shadow(fotm)
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateInsanityGain(TRB.Data.snapshotData.casting.resourceRaw, fotm)
-		CalculateRemainingHungeringVoidTime()
 	end
 
 	local function CastingSpell()
@@ -4535,8 +4269,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
-				CalculateRemainingHungeringVoidTime()
-
 				if TRB.Data.settings.priest.shadow.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
@@ -4686,7 +4418,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						local timeThreshold = 0
 						local useEndOfVoidformColor = false
 
-						if TRB.Data.settings.priest.shadow.endOfVoidform.enabled and (not TRB.Data.settings.priest.shadow.endOfVoidform.hungeringVoidOnly or TRB.Functions.IsTalentActive(TRB.Data.spells.hungeringVoid)) then
+						if TRB.Data.settings.priest.shadow.endOfVoidform.enabled then
 							useEndOfVoidformColor = true
 							if TRB.Data.settings.priest.shadow.endOfVoidform.mode == "gcd" then
 								local gcd = TRB.Functions.GetCurrentGCDTime()
@@ -4961,16 +4693,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.mindSear.targetsHit = TRB.Data.snapshotData.mindSear.targetsHit + 1
 							TRB.Data.snapshotData.mindSear.hitTime = currentTime
 							TRB.Data.snapshotData.mindSear.hasStruckTargets = true
-						end
-					elseif spellId == TRB.Data.spells.voidBolt.id and TRB.Functions.IsTalentActive(TRB.Data.spells.hungeringVoid) then
-						-- Rather than mess with projectile speeds and distance approximations, cache the flight time of the last Void Bolt cast and use it for determining how long the next has left in flight
-						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.voidBolt.lastSuccess = currentTime
-						elseif type == "SPELL_DAMAGE" then
-							if TRB.Data.snapshotData.voidBolt.lastSuccess ~= nil then
-								TRB.Data.snapshotData.voidBolt.flightTime = currentTime - TRB.Data.snapshotData.voidBolt.lastSuccess
-								TRB.Data.snapshotData.voidBolt.lastSuccess = nil
-							end
 						end
 					elseif spellId == TRB.Data.spells.vampiricTouch.id then
 						if InitializeTarget(destGUID) then

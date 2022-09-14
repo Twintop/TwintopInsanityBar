@@ -405,7 +405,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			endOfVoidform = {
 				enabled=true,
-				hungeringVoidOnly=false,
 				mode="gcd",
 				gcdsMax=2,
 				timeMax=3.0
@@ -1968,16 +1967,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(spec.endOfVoidform.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.endOfVoidform.enabled = self:GetChecked()
-		end)
-		yCoord = yCoord - 20
-		controls.checkBoxes.endOfVoidformHungeringVoidOnly = CreateFrame("CheckButton", "TRB_EOVF_CB_HVO", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfVoidformHungeringVoidOnly
-		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Only change the bar color when using Hungering Void")
-		f.tooltip = "Only changes the bar color when you are talented in to Hungering Void."
-		f:SetChecked(spec.endOfVoidform.hungeringVoidOnly)
-		f:SetScript("OnClick", function(self, ...)
-			spec.endOfVoidform.hungeringVoidOnly = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
