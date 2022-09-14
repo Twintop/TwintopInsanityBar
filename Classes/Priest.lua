@@ -760,7 +760,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				texture = "",
 				insanity = -50,
-				lunacyMod = 10,
 				thresholdId = 1,
 				settingKey = "devouringPlague",
 				thresholdUsable = false,
@@ -795,7 +794,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				texture = "",
 				insanity = -25,
-				lunacyMod = 5,
 				thresholdId = 2,
 				settingKey = "mindSear",
 				thresholdUsable = false,
@@ -913,12 +911,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				idLegendaryBonus = 6983,
 				name = "",
 				icon = "",
-			},
-			lunacy = {
-				id = 391338,
-				name = "",
-				icon = "",
-				isTalent = true
 			},
 			
 			-- Item Buffs
@@ -1722,11 +1714,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			-- Don't include Overgrowth Seedling until Blizzard fixes it to scale with Insanity.
 			TRB.Data.character.devouringPlagueThreshold = -TRB.Data.spells.devouringPlague.insanity
 			TRB.Data.character.mindSearThreshold = -TRB.Data.spells.mindSear.insanity
-
-			if TRB.Functions.IsTalentActive(TRB.Data.spells.lunacy) then
-				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold - TRB.Data.spells.devouringPlague.lunacyMod
-				TRB.Data.character.mindSearThreshold = TRB.Data.character.mindSearThreshold - TRB.Data.spells.mindSear.lunacyMod
-			end
 
 			-- Threshold lines
 			if TRB.Data.settings.priest.shadow.thresholds.devouringPlague.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.devouringPlague) and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
@@ -3195,11 +3182,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.mindSear.id
 						TRB.Data.snapshotData.casting.startTime = currentTime
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindSear.insanity
-						
-						if TRB.Functions.IsTalentActive(TRB.Data.spells.lunacy) then
-							TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.snapshotData.casting.resourceRaw + TRB.Data.spells.mindSear.lunacyMod
-						end
-
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.mindSear.icon
 						UpdateCastingResourceFinal_Shadow(TRB.Data.spells.mindSear.fotm)
 						
