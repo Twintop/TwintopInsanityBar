@@ -2851,76 +2851,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$cttvEquipped
 		local cttvEquipped = IsValidVariableForSpec("$cttvEquipped")
 
-		----------
-
-		--We have extra custom stuff we want to do with TTD for Priests
-		--$ttd
-		local _ttd = ""
-		local __ttd = 0
-		local ttd = ""
-		local _ttdTotalSeconds = 0
-		local ttdTotalSeconds = "0"
-
-		if TRB.Data.snapshotData.targetData.ttdIsActive and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd ~= 0 then
-			local target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
-			local ttdMinutes = math.floor(target.ttd / 60)
-			local ttdSeconds = target.ttd % 60
-			_ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
-
-			local _ttdColor = TRB.Data.settings.priest.shadow.colors.text.left
-
-			_ttdTotalSeconds = TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor")
-			__ttd = _ttdTotalSeconds
-			ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
-			ttdTotalSeconds = string.format("%s", TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor"))
-		else			
-			_ttdTotalSeconds = 0
-			__ttd = 0
-			ttd = "--"
-			ttdTotalSeconds = string.format("%s", TRB.Functions.RoundTo(0, TRB.Data.settings.core.ttd.precision or 1, "floor"))
-		end
-
 		----------------------------
-
-		Global_TwintopInsanityBar = {
-			ttd = _ttd or "--",
-			insanity = {
-				insanity = (TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) or 0,
-				casting = TRB.Data.snapshotData.casting.resourceFinal or 0,
-				passive = _passiveInsanity,
-				auspiciousSpirits = _asInsanity,
-				mindbender = TRB.Data.snapshotData.mindbender.resourceFinal or 0,
-				deathAndMadness = _damInsanity,
-				ecttv = TRB.Data.snapshotData.voidTendrils.resourceFinal or 0
-			},
-			auspiciousSpirits = {
-				count = TRB.Data.snapshotData.targetData.auspiciousSpirits or 0,
-				insanity = _asInsanity
-			},
-			dots = {
-				swpCount = _shadowWordPainCount or 0,
-				vtCount = _vampiricTouchCount or 0,
-				dpCount = devouringPlagueCount or 0
-			},
-			mindbender = {
-				insanity = TRB.Data.snapshotData.mindbender.resourceFinal or 0,
-				gcds = TRB.Data.snapshotData.mindbender.remaining.gcds or 0,
-				swings = TRB.Data.snapshotData.mindbender.remaining.swings or 0,
-				time = TRB.Data.snapshotData.mindbender.remaining.time or 0
-			},
-			mindSear = {
-				targetsHit = TRB.Data.snapshotData.mindSear.targetsHit or 0
-			},
-			deathAndMadness = {
-				insanity = _damInsanity,
-				ticks = TRB.Data.snapshotData.deathAndMadness.ticksRemaining or 0
-			},
-			eternalCallToTheVoid = {
-				insanity = TRB.Data.snapshotData.voidTendrils.resourceFinal or 0,
-				ticks = TRB.Data.snapshotData.voidTendrils.maxTicksRemaining or 0,
-				count = TRB.Data.snapshotData.voidTendrils.numberActive or 0
-			}
-		}
 
 		Global_TwintopResourceBar.voidform = {
 		}
@@ -3051,8 +2982,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$damTicks"] = damTicks
 		lookup["$asCount"] = asCount
 		lookup["$asInsanity"] = asInsanity
-		lookup["$ttd"] = ttd --Custom TTD for Shadow
-		lookup["$ttdSeconds"] = ttdTotalSeconds
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -3096,8 +3025,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$damTicks"] = _damTicks
 		lookupLogic["$asCount"] = _asCount
 		lookupLogic["$asInsanity"] = _asInsanity
-		lookupLogic["$ttd"] = __ttd --Custom TTD for Shadow
-		lookupLogic["$ttdSeconds"] = _ttdTotalSeconds
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
