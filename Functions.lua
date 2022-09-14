@@ -2831,8 +2831,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Shadow
 				configuration.hasteApproachingThreshold = settings.hasteApproachingThreshold
 				configuration.hasteThreshold = settings.hasteThreshold
-				configuration.s2mApproachingThreshold = settings.s2mApproachingThreshold
-				configuration.s2mThreshold = settings.s2mThreshold
 				configuration.insanityPrecision = settings.insanityPrecision
 			end
 		elseif classId == 7 then -- Shaman

@@ -920,18 +920,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				isTalent = true
 			},
-			s2m = {
-				id = 319952,
-				talentId = 319952,
-				name = "",
-				icon = "",
-				isActive = false,
-				modifier = 2.0,
-				isTalent = true
-			},
-
-
-
 			
 			-- Item Buffs
 			memoryOfLucidDreams = {
@@ -1079,16 +1067,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.shadow.snapshotData.voidform = {
 			spellId = nil,
 			remainingTime = 0,
-			remainingHvTime = 0,
-			additionalVbCasts = 0,
-			remainingHvAvgTime = 0,
-			additionalVbAvgCasts = 0,
-			isInfinite = false,
-			isAverageInfinite = false,
-			s2m = {
-				startTime = nil,
-				active = false
-			}
 		}
 		specCache.shadow.snapshotData.audio = {
 			playedDpCue = false,
@@ -1529,9 +1507,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#wf", icon = spells.wrathfulFaerie.icon, description = spells.wrathfulFaerie.name, printInSettings = true },
 			{ variable = "#wrathfulFaerie", icon = spells.wrathfulFaerie.icon, description = spells.wrathfulFaerie.name, printInSettings = false },
 																															  
-			{ variable = "#s2m", icon = spells.s2m.icon, description = "Surrender to Madness", printInSettings = true },
-			{ variable = "#surrenderToMadness", icon = spells.s2m.icon, description = "Surrender to Madness", printInSettings = false },
-																															  
 			{ variable = "#ecttv", icon = spells.eternalCallToTheVoid_Tendril.icon, description = spells.eternalCallToTheVoid_Tendril.name, printInSettings = true },
 			{ variable = "#tb", icon = spells.eternalCallToTheVoid_Tendril.icon, description = spells.eternalCallToTheVoid_Tendril.name, printInSettings = false },
 			{ variable = "#loi", icon = spells.lashOfInsanity_Tendril.icon, description = spells.lashOfInsanity_Tendril.name, printInSettings = true },
@@ -1623,9 +1598,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$mdTime", description = "Time remaining on Mind Devourer buff", printInSettings = true, color = false },
 
 			{ variable = "$vfTime", description = "Duration remaining of Voidform", printInSettings = true, color = false },
-
-			{ variable = "$s2m", description = "Is Surrender to Madness currently talented. Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$surrenderToMadness", description = "Is Surrender to Madness currently talented. Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -2090,10 +2062,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			modifier = modifier * TRB.Data.spells.memoryOfLucidDreams.modifier
 		end
 
-		if TRB.Data.spells.s2m.isActive then
-			modifier = modifier * TRB.Data.spells.s2m.modifier
-		end
-
 		return insanity * modifier
 	end
 
@@ -2339,10 +2307,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif var == "$tofTime" then
 				if TRB.Data.snapshotData.twistOfFate.spellId ~= nil then
-					valid = true
-				end
-			elseif var == "$s2m" or var == "$surrenderToMadness" then
-				if TRB.Functions.IsTalentActive(TRB.Data.spells.s2m) then
 					valid = true
 				end
 			else
@@ -2897,10 +2861,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 		local tofTime = string.format("%.1f", _tofTime)
 
-
-		--$s2m
-		local s2m = IsValidVariableForSpec("$s2m")
-
 		--$cttvEquipped
 		local cttvEquipped = IsValidVariableForSpec("$cttvEquipped")
 
@@ -2921,26 +2881,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			_ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
 
 			local _ttdColor = TRB.Data.settings.priest.shadow.colors.text.left
----@diagnostic disable-next-line: redundant-parameter
-			local s2mStart, s2mDuration, _, _ = GetSpellCooldown(TRB.Data.spells.s2m.id)
 
 			_ttdTotalSeconds = TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor")
 			__ttd = _ttdTotalSeconds
-			if TRB.Functions.IsTalentActive(TRB.Data.spells.s2m) and not TRB.Data.snapshotData.voidform.s2m.active then
-				if TRB.Data.settings.priest.shadow.s2mThreshold <= target.ttd then
-					_ttdColor = TRB.Data.settings.priest.shadow.colors.text.s2mAbove
-				elseif TRB.Data.settings.priest.shadow.s2mApproachingThreshold <= target.ttd then
-					_ttdColor = TRB.Data.settings.priest.shadow.colors.text.s2mApproaching
-				else
-					_ttdColor = TRB.Data.settings.priest.shadow.colors.text.s2mBelow
-				end
-
-				ttd = string.format("|c%s%d:%0.2d|c%s", _ttdColor, ttdMinutes, ttdSeconds, TRB.Data.settings.priest.shadow.colors.text.left)
-				ttdTotalSeconds = string.format("|c%s%s|c%s", _ttdColor, _ttdTotalSeconds, TRB.Data.settings.priest.shadow.colors.text.left)
-			else
-				ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
-				ttdTotalSeconds = string.format("%s", TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor"))
-			end
+			ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
+			ttdTotalSeconds = string.format("%s", TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor"))
 		else			
 			_ttdTotalSeconds = 0
 			__ttd = 0
@@ -3121,8 +3066,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$asInsanity"] = asInsanity
 		lookup["$ttd"] = ttd --Custom TTD for Shadow
 		lookup["$ttdSeconds"] = ttdTotalSeconds
-		lookup["$s2m"] = ""
-		lookup["$surrenderToMadness"] = ""
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -3168,8 +3111,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$asInsanity"] = _asInsanity
 		lookupLogic["$ttd"] = __ttd --Custom TTD for Shadow
 		lookupLogic["$ttdSeconds"] = _ttdTotalSeconds
-		lookupLogic["$s2m"] = s2m
-		lookupLogic["$surrenderToMadness"] = s2m
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -3821,7 +3762,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function UpdateSnapshot_Shadow()
 		UpdateSnapshot()
-		TRB.Data.spells.s2m.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.s2m.id))
 		UpdateMindbenderValues()
 		UpdateExternalCallToTheVoidValues()
 		UpdateDeathAndMadness()
@@ -4476,8 +4416,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName, _, auraType = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
-			local s2mDeath = false
-
 			local settings
 
 			if specId == 2 then
@@ -4556,10 +4494,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						--(not TRB.Data.character.talents.mindbender.isSelected and sourceName == TRB.Data.spells.shadowfiend.name)						
 						TRB.Data.snapshotData.mindbender.swingTime = currentTime
 						triggerUpdate = true
-					elseif (type == "SPELL_INSTAKILL" or type == "UNIT_DIED" or type == "UNIT_DESTROYED") then
-						if TRB.Data.snapshotData.voidform.s2m.active then -- Surrender to Madness ended
-							s2mDeath = true
-						end
 					elseif spellId == TRB.Data.spells.fatedInfusionCreationSpark.id then
 						if type == "SPELL_AURA_APPLIED" or  type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then -- Gained buff				
 							TRB.Data.snapshotData.fatedInfusionCreationSpark.isActive = true
@@ -4641,20 +4575,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					end
 				elseif specId == 3 then
-					if spellId == TRB.Data.spells.s2m.id then
-						if type == "SPELL_AURA_APPLIED" then -- Gain Surrender to Madness
-							TRB.Data.snapshotData.voidform.s2m.active = true
-							TRB.Data.snapshotData.voidform.s2m.startTime = currentTime
-							UpdateCastingResourceFinal_Shadow()
-							triggerUpdate = true
-						elseif type == "SPELL_AURA_REMOVED" and TRB.Data.snapshotData.voidform.s2m.active then -- Lose Surrender to Madness
-							if destGUID == TRB.Data.character.guid then -- You died
-								s2mDeath = true
-							end
-							TRB.Data.snapshotData.voidform.s2m.startTime = nil
-							TRB.Data.snapshotData.voidform.s2m.active = false
-						end
-					elseif spellId == TRB.Data.spells.deathAndMadness.id then
+					if spellId == TRB.Data.spells.deathAndMadness.id then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Death and Madness
 							TRB.Data.snapshotData.deathAndMadness.isActive = true
 							TRB.Data.snapshotData.deathAndMadness.ticksRemaining = TRB.Data.spells.deathAndMadness.ticks
@@ -4881,16 +4802,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if UnitIsDeadOrGhost("player") then -- We died/are dead go ahead and purge the list
 			--if UnitIsDeadOrGhost("player") or not UnitAffectingCombat("player") or event == "PLAYER_REGEN_ENABLED" then -- We died, or, exited combat, go ahead and purge the list
 				TargetsCleanup(true)
-				triggerUpdate = true
-			end
-
-			if s2mDeath then
-				if settings.audio.s2mDeath.enabled then
----@diagnostic disable-next-line: redundant-parameter
-					PlaySoundFile(settings.audio.s2mDeath.sound, TRB.Data.settings.core.audio.channel.channel)
-				end
-				TRB.Data.snapshotData.voidform.s2m.startTime = nil
-				TRB.Data.snapshotData.voidform.s2m.active = false
 				triggerUpdate = true
 			end
 		end

@@ -341,8 +341,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local settings = {
 			hasteApproachingThreshold=135,
 			hasteThreshold=140,
-			s2mApproachingThreshold=15,
-			s2mThreshold=20,
 			hastePrecision=2,
 			overcapThreshold=100,
 			insanityPrecision=0,
@@ -424,9 +422,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					hasteBelow="FFFFFFFF",
 					hasteApproaching="FFFFFF00",
 					hasteAbove="FF00FF00",
-					s2mBelow="FF00FF00",
-					s2mApproaching="FFFFFF00",
-					s2mAbove="FFFF0000",
 					dots={
 						enabled=true,
 						up="FFFFFFFF",
@@ -459,12 +454,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			displayText={},
 			audio={
-				s2mDeath={
-					name = "Surrender to Madness Death",
-					enabled=true,
-					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\wilhelm.ogg",
-					soundName="TRB: Wilhelm Scream"
-				},
 				overcap={
 					name = "Overcap",
 					enabled=false,
@@ -2226,69 +2215,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			self.EditBox:SetText(value)
 			spec.hasteThreshold = value
 		end)
-
-		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Surrender to Madness Target Time to Die Thresholds", 0, yCoord)
-
-		yCoord = yCoord - 50
-		title = "Low to Medium S2M TTD Threshold (sec)"
-		controls.s2mApproachingThreshold = TRB.UiFunctions:BuildSlider(parent, title, 0, 30, spec.s2mApproachingThreshold, 0.25, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.s2mApproachingThreshold:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			elseif value > spec.s2mThreshold then
-				value = spec.s2mThreshold
-			end
-
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			spec.s2mApproachingThreshold = value
-		end)
-
-		controls.colors.text.s2mBelow = TRB.UiFunctions:BuildColorPicker(parent, "Low S2M Time to Die", spec.colors.text.s2mBelow,
-													250, 25, oUi.xCoord2, yCoord+10)
-		f = controls.colors.text.s2mBelow
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "s2mBelow")
-		end)
-
-		controls.colors.text.s2mApproaching = TRB.UiFunctions:BuildColorPicker(parent, "Medium S2M Time to Die", spec.colors.text.s2mApproaching,
-													250, 25, oUi.xCoord2, yCoord-30)
-		f = controls.colors.text.s2mApproaching
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "s2mApproaching")
-		end)
-
-		controls.colors.text.s2mAbove = TRB.UiFunctions:BuildColorPicker(parent, "High S2M Time to Die", spec.colors.text.s2mAbove,
-													250, 25, oUi.xCoord2, yCoord-70)
-		f = controls.colors.text.s2mAbove
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "s2mAbove")
-		end)
-
-		yCoord = yCoord - 60
-		title = "Medium to High S2M TTD Threshold (sec)"
-		controls.s2mThreshold = TRB.UiFunctions:BuildSlider(parent, title, 0, 30, spec.s2mThreshold, 0.25, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.s2mThreshold:SetScript("OnValueChanged", function(self, value)
-			local min, max = self:GetMinMaxValues()
-			if value > max then
-				value = max
-			elseif value < min then
-				value = min
-			elseif value < spec.s2mApproachingThreshold then
-				value = spec.s2mApproachingThreshold
-			end
-
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			spec.s2mThreshold = value
-		end)
-
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 
@@ -2337,72 +2263,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.s2mDeath = CreateFrame("CheckButton", "TwintopResourceBar_CB3_2", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.s2mDeath
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio when you die, horribly, from Surrender to Madness")
-		f.tooltip = "When you die, horribly, after Surrender to Madness ends, play the infamous Wilhelm Scream (or another sound) to make you feel a bit better."
-		f:SetChecked(spec.audio.s2mDeath.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.audio.s2mDeath.enabled = self:GetChecked()
-
-			if spec.audio.s2mDeath.enabled then
----@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(spec.audio.s2mDeath.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.s2mAudio = CreateFrame("FRAME", "TwintopResourceBar_S2MDeathAudio", parent, "UIDropDownMenuTemplate")
-		controls.dropDown.s2mAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.s2mAudio, oUi.sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.s2mAudio, spec.audio.s2mDeath.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.s2mAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.s2mAudio, function(self, level, menuList)
-			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == spec.audio.s2mDeath.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.s2mAudio:SetValue(newValue, newName)
-			spec.audio.s2mDeath.sound = newValue
-			spec.audio.s2mDeath.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.s2mAudio, newName)
-			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(spec.audio.s2mDeath.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
 
 		yCoord = yCoord - 60
 		controls.checkBoxes.dpReady = CreateFrame("CheckButton", "TwintopResourceBar_CB3_3", parent, "ChatConfigCheckButtonTemplate")
