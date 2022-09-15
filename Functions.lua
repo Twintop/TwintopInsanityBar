@@ -554,7 +554,6 @@ TRB.Functions.LoadFromSpecCache = LoadFromSpecCache
 
 local function FillSpecCacheSettings(settings, cache, className, specName)
 	local specCache = cache[specName]
-	--local class = TRB.Data.settings[className]
 	local core = settings.core
 	local s = core.globalSettings[className][specName]
 	local enabled = (core.globalSettings.globalEnable or s.specEnable) and specCache.settings ~= nil

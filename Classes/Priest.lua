@@ -2189,7 +2189,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		elseif specId == 3 then
 			if var == "$vfTime" then
-				if TRB.Data.snapshotData.voidform.remainingTime ~= nil and TRB.Data.snapshotData.voidform.remainingTime > 0 then
+				if (TRB.Data.snapshotData.voidform.remainingTime ~= nil and TRB.Data.snapshotData.voidform.remainingTime > 0) or
+					(TRB.Data.snapshotData.darkAscension.remainingTime ~= nil and TRB.Data.snapshotData.darkAscension.remainingTime > 0) then
 					valid = true
 				end
 			elseif var == "$resource" or var == "$insanity" then
