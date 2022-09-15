@@ -1816,7 +1816,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.inVoidform = TRB.UiFunctions:BuildColorPicker(parent, "Insanity while in Voidform", spec.colors.bar.inVoidform, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.inVoidform = TRB.UiFunctions:BuildColorPicker(parent, "Insanity while in Voidform / Dark Ascension", spec.colors.bar.inVoidform, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inVoidform		
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inVoidform")
@@ -1829,7 +1829,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "devouringPlagueUsable")
 		end)
 
-		controls.colors.inVoidform1GCD = TRB.UiFunctions:BuildColorPicker(parent, "Insanity while you have less than 1 GCD left in Voidform (if enabled)", spec.colors.bar.inVoidform1GCD, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.inVoidform1GCD = TRB.UiFunctions:BuildColorPicker(parent, "Insanity while you have less than 1 GCD left in Voidform / Dark Ascension (if enabled)", spec.colors.bar.inVoidform1GCD, 275, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inVoidform1GCD		
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inVoidform1GCD")
@@ -1931,7 +1931,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.snThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Mind Sear")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Mind Sear. Only visibile if talented in to Mind Sear and channeling Mind Sear."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Mind Sear. Only visibile if talented in to Mind Sear."
 		f:SetChecked(spec.thresholds.mindSear.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.mindSear.enabled = self:GetChecked()
