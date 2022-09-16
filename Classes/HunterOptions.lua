@@ -909,33 +909,33 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 275, 25, oUi.xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
 		end)
 
-		controls.colors.borderBeastialWrath = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you can use Beastial Wrath", spec.colors.bar.borderBeastialWrath, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderBeastialWrath = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you can use Beastial Wrath", spec.colors.bar.borderBeastialWrath, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderBeastialWrath
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderBeastialWrath")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.frenzyUse = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Barbed Shot should be used", spec.colors.bar.frenzyUse, 275, 25, oUi.xCoord, yCoord)
+		controls.colors.frenzyUse = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Barbed Shot should be used", spec.colors.bar.frenzyUse, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.frenzyUse
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "frenzyUse")
 		end)
 
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.frenzyHold = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Barbed Shot charges should be held", spec.colors.bar.frenzyHold, 275, 25, oUi.xCoord, yCoord)
+		controls.colors.frenzyHold = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Barbed Shot charges should be held", spec.colors.bar.frenzyHold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.frenzyHold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "frenzyHold")
@@ -947,25 +947,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Focus threshold line", spec.colors.threshold.under, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Focus threshold line", spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Focus threshold line", spec.colors.threshold.over, 275, 25, oUi.xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Focus threshold line", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
-		controls.colors.threshold.special = TRB.UiFunctions:BuildColorPicker(parent, "(T28) Cobra Shot's damage is buffed", spec.colors.threshold.special, 275, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.threshold.special = TRB.UiFunctions:BuildColorPicker(parent, "(T28) Cobra Shot's damage is buffed", spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.threshold.special
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "special")
@@ -1155,7 +1155,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 		
-		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Focus", spec.colors.text.passive, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Focus", spec.colors.text.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
@@ -1178,7 +1178,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		f:SetPoint("TOPLEFT", 0, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Focus text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -1653,11 +1653,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		parent = interfaceSettingsFrame.beastMasteryDisplayPanel
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Beast Mastery Hunter", oUi.xCoord+oUi.xPadding, yCoord-5)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Beast Mastery Hunter", 0, yCoord-5)
 	
 		controls.checkBoxes.beastMasteryHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_beastMasteryHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.beastMasteryHunterEnabled
-		f:SetPoint("TOPLEFT", 250, yCoord-10)
+		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
 		f.tooltip = "Is Twintop's Resource Bar enabled for the Beast Mastery Hunter specialization? If unchecked, the bar will not function (including the population of global variables!)."
 		f:SetChecked(TRB.Data.settings.core.enabled.hunter.beastMastery)
@@ -1669,18 +1669,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		TRB.UiFunctions:ToggleCheckboxOnOff(controls.checkBoxes.beastMasteryHunterEnabled, TRB.Data.settings.core.enabled.hunter.beastMastery, true)
 
-		controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Hunter_BeastMastery_All = TRB.UiFunctions:BuildButton(parent, "Export Specialization", 440, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Hunter_BeastMastery_All = TRB.UiFunctions:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Hunter_BeastMastery_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (All).", 3, 1, true, true, true, true, false)
 		end)
 
-		yCoord = yCoord - 42
+		yCoord = yCoord - 52
 
 		local tabs = {}
 		local tabsheets = {}
@@ -1702,7 +1702,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		for i = 1, 5 do 
 			tabsheets[i] = TRB.UiFunctions:CreateTabFrameContainer("TwintopResourceBar_Hunter_BeastMastery_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
 		end
 
 		tabsheets[1]:Show()
@@ -1877,39 +1877,39 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", spec.colors.bar.casting, 275, 25, oUi.xCoord, yCoord)
+		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", spec.colors.bar.casting, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 2)
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast builder will overcap Focus", spec.colors.bar.borderOvercap, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast builder will overcap Focus", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.bar.spending, 275, 25, oUi.xCoord, yCoord)
+		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.bar.spending, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending")
 		end)
 
-		controls.colors.borderSteadyFocus = TRB.UiFunctions:BuildColorPicker(parent, "Border when Steady Focus is expiring or not up (per settings)", spec.colors.bar.borderSteadyFocus, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderSteadyFocus = TRB.UiFunctions:BuildColorPicker(parent, "Border when Steady Focus is expiring or not up (per settings)", spec.colors.bar.borderSteadyFocus, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderSteadyFocus
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderSteadyFocus")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 275, 25, oUi.xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
 		end)
 
-		controls.colors.trueshot = TRB.UiFunctions:BuildColorPicker(parent, "Focus while Trueshot is active", spec.colors.bar.trueshot, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.trueshot = TRB.UiFunctions:BuildColorPicker(parent, "Focus while Trueshot is active", spec.colors.bar.trueshot, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.trueshot
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "trueshot")
@@ -1917,13 +1917,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 30
 
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, oUi.xCoord, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
 		end)
 
-		controls.colors.trueshotEnding = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Trueshot is ending", spec.colors.bar.trueshotEnding, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.trueshotEnding = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Trueshot is ending", spec.colors.bar.trueshotEnding, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.trueshotEnding
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "trueshotEnding")
@@ -1935,19 +1935,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Focus threshold line", spec.colors.threshold.under, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Focus threshold line", spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Focus threshold line", spec.colors.threshold.over, 275, 25, oUi.xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Focus threshold line", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
@@ -2291,7 +2291,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.text.casting = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", spec.colors.text.casting, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.casting = TRB.UiFunctions:BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
@@ -2304,7 +2304,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
-		controls.colors.text.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.text.spending, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.text.spending, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "spending")
@@ -2327,7 +2327,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		f:SetPoint("TOPLEFT", 0, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Focus text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -3088,11 +3088,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		parent = interfaceSettingsFrame.marksmanshipDisplayPanel
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Marksmanship Hunter", oUi.xCoord+oUi.xPadding, yCoord-5)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Marksmanship Hunter", 0, yCoord-5)
 	
 		controls.checkBoxes.marksmanshipHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_marksmanshipHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.marksmanshipHunterEnabled
-		f:SetPoint("TOPLEFT", 250, yCoord-10)
+		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
 		f.tooltip = "Is Twintop's Resource Bar enabled for the Marksmanship Hunter specialization? If unchecked, the bar will not function (including the population of global variables!)."
 		f:SetChecked(TRB.Data.settings.core.enabled.hunter.marksmanship)
@@ -3104,18 +3104,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		TRB.UiFunctions:ToggleCheckboxOnOff(controls.checkBoxes.marksmanshipHunterEnabled, TRB.Data.settings.core.enabled.hunter.marksmanship, true)
 
-		controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Hunter_Marksmanship_All = TRB.UiFunctions:BuildButton(parent, "Export Specialization", 440, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Hunter_Marksmanship_All = TRB.UiFunctions:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Hunter_Marksmanship_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (All).", 3, 2, true, true, true, true, false)
 		end)
 
-		yCoord = yCoord - 42
+		yCoord = yCoord - 52
 
 		local tabs = {}
 		local tabsheets = {}
@@ -3137,7 +3137,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		for i = 1, 5 do 
 			tabsheets[i] = TRB.UiFunctions:CreateTabFrameContainer("TwintopResourceBar_Hunter_Marksmanship_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
 		end
 
 		tabsheets[1]:Show()
@@ -3299,7 +3299,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
 		end)
 
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
@@ -3307,20 +3307,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 30
 
-		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.bar.spending, 275, 25, oUi.xCoord, yCoord)
+		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.bar.spending, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending")
 		end)
 
-		controls.colors.coordinatedAssault = TRB.UiFunctions:BuildColorPicker(parent, "Focus while Coordinated Assault is active", spec.colors.bar.coordinatedAssault, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.coordinatedAssault = TRB.UiFunctions:BuildColorPicker(parent, "Focus while Coordinated Assault is active", spec.colors.bar.coordinatedAssault, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.coordinatedAssault
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "coordinatedAssault")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.coordinatedAssaultEnding = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Coordinated Assault is ending", spec.colors.bar.coordinatedAssaultEnding, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.coordinatedAssaultEnding = TRB.UiFunctions:BuildColorPicker(parent, "Focus when Coordinated Assault is ending", spec.colors.bar.coordinatedAssaultEnding, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.coordinatedAssaultEnding
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "coordinatedAssaultEnding")
@@ -3332,19 +3332,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Focus threshold line", spec.colors.threshold.under, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Focus threshold line", spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Focus threshold line", spec.colors.threshold.over, 275, 25, oUi.xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Focus threshold line", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 275, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
@@ -3603,7 +3603,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.text.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.text.spending, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.spending = TRB.UiFunctions:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.text.spending, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "spending")
@@ -3633,7 +3633,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		f:SetPoint("TOPLEFT", 0, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Focus text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -4144,11 +4144,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		parent = interfaceSettingsFrame.survivalDisplayPanel
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Survival Hunter", oUi.xCoord+oUi.xPadding, yCoord-5)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Survival Hunter", 0, yCoord-5)
 	
 		controls.checkBoxes.survivalHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_survivalHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.survivalHunterEnabled
-		f:SetPoint("TOPLEFT", 250, yCoord-10)
+		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
 		f.tooltip = "Is Twintop's Resource Bar enabled for the Survival Hunter specialization? If unchecked, the bar will not function (including the population of global variables!)."
 		f:SetChecked(TRB.Data.settings.core.enabled.hunter.survival)
@@ -4160,18 +4160,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		TRB.UiFunctions:ToggleCheckboxOnOff(controls.checkBoxes.survivalHunterEnabled, TRB.Data.settings.core.enabled.hunter.survival, true)
 
-		controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Hunter_Survival_All = TRB.UiFunctions:BuildButton(parent, "Export Specialization", 440, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Hunter_Survival_All = TRB.UiFunctions:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Hunter_Survival_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (All).", 3, 3, true, true, true, true, false)
 		end)
 
-		yCoord = yCoord - 42
+		yCoord = yCoord - 52
 
 		local tabs = {}
 		local tabsheets = {}
@@ -4196,7 +4196,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		for i = 1, 5 do 
 			tabsheets[i] = TRB.UiFunctions:CreateTabFrameContainer("TwintopResourceBar_Hunter_Survival_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
 		end
 
 		tabsheets[1]:Show()

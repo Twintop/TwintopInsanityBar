@@ -1,6 +1,9 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 7 then --Only do this if we're on a Shaman!
+	TRB.Frames.resourceFrame.thresholds[1] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+	TRB.Frames.resourceFrame.thresholds[2] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
@@ -75,30 +78,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
 			earthShockThreshold = 60,
+			earthquakeThreshold = 60,
 			effects = {
 				overgrowthSeedling = 1.0
-			},
-			talents = {
-				echoingShock = {
-					isSelected = false,
-					modifier = 2,
-					duration = 1.0
-				},
-				elementalBlast = {
-					isSelected = false
-				},
-				surgeOfPower = {
-					isSelected = false
-				},
-				icefury = {
-					isSelected = false
-				},
-				stormkeeper = {
-					isSelected = false
-				},
-				ascendance = {
-					isSelected = false
-				}
 			},
 			items = {
 			},
@@ -112,6 +94,59 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		}
 
 		specCache.elemental.spells = {
+			-- Shaman Class Baseline Abilities
+			lightningBolt = {
+				id = 188196,
+				name = "",
+				icon = "",
+				maelstrom = 8,
+				overload = 3,
+				echoingShock = true,
+				baseline = true
+			},
+			flameShock = {
+				id = 188389,
+				name = "",
+				icon = "",
+				baseDuration = 18,
+				pandemic = true,
+				pandemicTime = 18 * 0.3
+			},
+
+			-- Elemental Baseline Abilities
+
+
+			-- Shaman Class Talent Abilities
+			lavaBurst = {
+				id = 51505,
+				name = "",
+				icon = "",
+				maelstrom = 10,
+				echoingShock = true,
+				isTalent = true,
+				baseline = true
+			},
+			chainLightning = {
+				id = 188443,
+				name = "",
+				icon = "",
+				maelstrom = 4,
+				overload = 3,
+				echoingShock = true,
+				isTalent = true,
+				baseline = true
+			},
+			frostShock = {
+				id = 196840,
+				name = "",
+				icon = "",
+				maelstrom = 8,
+				echoingShock = false,
+				isTalent = true
+			},
+
+
+			-- Elemental Talent Abilities
 			earthShock = {
 				id = 8042,
 				name = "",
@@ -120,32 +155,114 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				texture = "",
 				thresholdId = 1,
 				settingKey = "earthShock",
-				thresholdUsable = false
+				thresholdUsable = false,
+				isTalent = true,
+				baseline = true
 			},
-
-			lightningBolt = {
-				id = 188196,
+			earthquake = {
+				id = 61882,
+				name = "",
+				icon = "",
+				maelstrom = -60,
+				texture = "",
+				thresholdId = 2,
+				settingKey = "earthquake",
+				thresholdUsable = false,
+				isTalent = true
+			},
+			inundate = {
+				id = 378776,
 				name = "",
 				icon = "",
 				maelstrom = 8,
-				overload = 3,
-				echoingShock = true
+				isTalent = true
 			},
-			lavaBurst = {
-				id = 51505,
+			flowOfPower = {
+				id = 385923,
 				name = "",
 				icon = "",
-				maelstrom = 10,
-				echoingShock = true
+				maelstromMod = {
+					base = {
+						lightningBolt = 2,
+						lavaBurst = 2
+					},
+					overload = {
+						lightningBolt = 1,
+						lavaBurst = 1
+					}
+				},
+				isTalent = true
 			},
-
-			chainLightning = {
-				id = 188443,
+			icefury = {
+				id = 210714,
 				name = "",
 				icon = "",
-				maelstrom = 4,
-				overload = 3,
-				echoingShock = true
+				maelstrom = 25,
+				overload = 12,
+				echoingShock = true,
+				stacks = 4,
+				duration = 15,
+				isTalent = true,
+			},
+			stormkeeper = {
+				id = 191634,
+				name = "",
+				icon = "",
+				stacks = 2,
+				duration = 15
+			},
+			surgeOfPower = {
+				id = 285514,
+				name = "",
+				icon = "",
+				isActive = false,
+				maelstrom = 5,
+				isTalent = true
+			},
+			eyeOfTheStorm = {
+				id = 381708,
+				name = "",
+				icon = "",
+				maelstromMod = {
+					[0] = {
+						earthShock = 0,
+						earthquake = 0,
+						elementalBlast = 0
+					},
+					[1] = {
+						earthShock = -5,
+						earthquake = -5,
+						elementalBlast = -7
+					},
+					[2] = {
+						earthShock = -10,
+						earthquake = -10,
+						elementalBlast = -15
+					}
+				},
+				isTalent = true
+			},
+			elementalBlast = {
+				id = 117014,
+				name = "",
+				icon = "",
+				maelstrom = -90,
+				thresholdId = 3,
+				settingKey = "elementalBlast",
+				thresholdUsable = false,
+				isTalent = true
+			},
+			echoesOfGreatSundering = {
+				id = 384088,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			ascendance = {
+				id = 114050,
+				name = "",
+				icon = "",
+				isTalent = true
 			},
 			lavaBeam = {
 				id = 114074,
@@ -156,21 +273,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				echoingShock = false
 			},
 
-			flameShock = {
-				id = 188389,
-				name = "",
-				icon = "",
-				baseDuration = 18,
-				pandemic = true,
-				pandemicTime = 18 * 0.3
-			},
-			frostShock = {
-				id = 196840,
-				name = "",
-				icon = "",
-				maelstrom = 8,
-				echoingShock = false
-			},
 			lightningShield = {
 				id = 192106,
 				name = "",
@@ -178,56 +280,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				maelstrom = 5,
 				echoingShock = false
 			},
-
-			elementalBlast = {
-				id = 117014,
-				name = "",
-				icon = "",
-				maelstrom = 30,
-				overload = 15,
-				echoingShock = false --Is this possible to do?
-			},
+			--TODO: Still needed?
 			echoingShock = {
 				id = 320125,
 				name = "", 
 				icon = ""
 			},
 
-
-			surgeOfPower = {
-				id = 285514,
-				name = "", 
-				icon = "",
-				isActive = false
-			},
-			icefury = {
-				id = 210714,
-				name = "",
-				icon = "",
-				maelstrom = 25,
-				overload = 12,
-				echoingShock = true,
-				stacks = 4,
-				duration = 15
-			},
-
-			stormkeeper = {
-				id = 191634,
-				name = "",
-				icon = "",
-				stacks = 2,
-				duration = 15
-			},
-			ascendance = {
-				id = 114050,
-				name = "", 
-				icon = ""
-			},
+			--TODO: Add Searing Flames passive maelstrom
 
 			-- Legendaries
-			echoesOfGreatSundering = {
+			echoesOfGreatSunderingLegendary = {
 				id = 336217,
-				name = "", 
+				name = "",
 				icon = ""
 			},
 
@@ -269,6 +334,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spell = nil
 		}
 		specCache.elemental.snapshotData.echoesOfGreatSundering = {
+			isActive = false,
+			duration = 0,
+			endTime = nil
+		}
+		specCache.elemental.snapshotData.echoesOfGreatSunderingLegendary = {
 			isActive = false,
 			duration = 0,
 			endTime = nil
@@ -521,7 +591,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "#chainLightning", icon = spells.chainLightning.icon, description = spells.chainLightning.name, printInSettings = true },
 			{ variable = "#echoingShock", icon = spells.echoingShock.icon, description = spells.echoingShock.name, printInSettings = true },
 			{ variable = "#elementalBlast", icon = spells.elementalBlast.icon, description = spells.elementalBlast.name, printInSettings = true },
-			{ variable = "#eogs", icon = spells.echoesOfGreatSundering.icon, description = spells.echoesOfGreatSundering.name, printInSettings = true },
+			{ variable = "#eogs", icon = spells.echoesOfGreatSunderingLegendary.icon, description = spells.echoesOfGreatSunderingLegendary.name, printInSettings = true },
 			{ variable = "#flameShock", icon = spells.flameShock.icon, description = spells.flameShock.name, printInSettings = true },
 			{ variable = "#frostShock", icon = spells.frostShock.icon, description = spells.frostShock.name, printInSettings = true },
 			{ variable = "#icefury", icon = spells.icefury.icon, description = spells.icefury.name, printInSettings = true },
@@ -713,20 +783,34 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.character.specName = "elemental"
 ---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom)
-			TRB.Data.character.talents.echoingShock.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.elementalBlast.isSelected = select(4, GetTalentInfo(2, 3, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.surgeOfPower.isSelected = select(4, GetTalentInfo(6, 1, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.icefury.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.stormkeeper.isSelected = select(4, GetTalentInfo(7, 2, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.ascendance.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 
-			if TRB.Data.settings.shaman ~= nil and TRB.Data.settings.shaman.elemental ~= nil and TRB.Data.settings.shaman.elemental.thresholds.earthShock.enabled and TRB.Data.character.earthShockThreshold < TRB.Data.character.maxResource then
-				resourceFrame.thresholds[1]:Show()
-				TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholds.width, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+			TRB.Data.spells.earthShock.icon = TRB.Data.talents[TRB.Data.spells.earthShock.id].icon
+			TRB.Data.spells.elementalBlast.icon = TRB.Data.talents[TRB.Data.spells.elementalBlast.id].icon
+			
+			if TRB.Data.settings.shaman ~= nil and TRB.Data.settings.shaman.elemental ~= nil and TRB.Data.settings.shaman.elemental.thresholds.earthShock.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.earthShock) then
+				if (not TRB.Functions.IsTalentActive(TRB.Data.spells.elementalBlast) and TRB.Data.spells.earthShock.maelstrom < TRB.Data.character.maxResource) then
+					TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.earthShock.settingKey, TRB.Data.settings.shaman.elemental)
+					resourceFrame.thresholds[1]:Show()
+					TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholds.width, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+				elseif (TRB.Functions.IsTalentActive(TRB.Data.spells.elementalBlast) and TRB.Data.spells.elementalBlast.maelstrom < TRB.Data.character.maxResource) then
+					TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.elementalBlast.settingKey, TRB.Data.settings.shaman.elemental)
+					resourceFrame.thresholds[1]:Show()
+					TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.elemental.thresholds.width, TRB.Data.character.earthShockThreshold, TRB.Data.character.maxResource)
+				else
+					resourceFrame.thresholds[1]:Hide()
+				end
 			else
 				resourceFrame.thresholds[1]:Hide()
 			end
 			
+			if TRB.Data.settings.shaman ~= nil and TRB.Data.settings.shaman.elemental ~= nil and TRB.Data.settings.shaman.elemental.thresholds.earthquake.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.earthquake) and TRB.Data.spells.earthquake.maelstrom < TRB.Data.character.maxResource then
+				TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.earthquake.settingKey, TRB.Data.settings.shaman.elemental)
+				resourceFrame.thresholds[2]:Show()
+				TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.elemental, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.shaman.elemental.thresholds.width, TRB.Data.character.earthquakeThreshold, TRB.Data.character.maxResource)
+			else
+				resourceFrame.thresholds[2]:Hide()
+			end
+
 			-- Torghast
 			if IsInJailersTower() then			
 				if TRB.Functions.FindAuraById(TRB.Data.spells.depletedTeslaCoil.id, "player", "MAW") then
@@ -924,7 +1008,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		if specId == 1 then
-			for x = 1, 1 do -- ES
+			for x = 1, 2 do -- ES/EB + EQ
 				if TRB.Frames.resourceFrame.thresholds[x] == nil then
 					TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
@@ -933,8 +1017,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Frames.resourceFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
-			
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.earthShock.settingKey, settings)
+
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.earthquake.settingKey, settings)
 		elseif specId == 3 then
 			for x = 1, 4 do
 				if TRB.Frames.resourceFrame.thresholds[x] == nil then
@@ -959,7 +1043,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.potionOfSpiritualClarity.settingKey, TRB.Data.settings.shaman.restoration)
 			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.spiritualRejuvenationPotion.settingKey, TRB.Data.settings.shaman.restoration)
 			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.spiritualManaPotion.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.soulfulManaPotion.settingKey, TRB.Data.settings.shaman.restoration)		
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.soulfulManaPotion.settingKey, TRB.Data.settings.shaman.restoration)
 		end
 
 		TRB.Functions.ConstructResourceBar(settings)
@@ -973,8 +1057,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.stormkeeper)
 	end
 	
-	local function GetEchoesOfGreatSunderingRemainingTime()
+	local function GetechoesOfGreatSunderingRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.echoesOfGreatSundering)
+	end
+	
+	local function GetechoesOfGreatSunderingLegendaryRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.echoesOfGreatSunderingLegendary)
 	end
 	
 	local function GetIcefuryRemainingTime()
@@ -1081,7 +1169,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					valid = true
 				end
 			elseif var == "$eogsTime" then
-				if GetEchoesOfGreatSunderingRemainingTime() > 0 then
+				if GetechoesOfGreatSunderingRemainingTime() > 0 or GetechoesOfGreatSunderingLegendaryRemainingTime() > 0 then
 					valid = true
 				end
 			end
@@ -1274,7 +1362,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		--$eogsTime
-		local _eogsTime = GetEchoesOfGreatSunderingRemainingTime()
+		local _eogsTime = GetechoesOfGreatSunderingRemainingTime()
+
+		if _eogsTime == 0 then
+			_eogsTime = GetechoesOfGreatSunderingLegendaryRemainingTime()
+		end
+
 		local eogsTime = "0.0"
 		if _eogsTime > 0 then
 			eogsTime = string.format("%.1f", _eogsTime)
@@ -1300,7 +1393,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["#chainLightning"] = TRB.Data.spells.chainLightning.icon
 		lookup["#echoingShock"] = TRB.Data.spells.echoingShock.icon
 		lookup["#elementalBlast"] = TRB.Data.spells.elementalBlast.icon
-		lookup["#eogs"] = TRB.Data.spells.echoesOfGreatSundering.icon
+		lookup["#eogs"] = TRB.Data.spells.echoesOfGreatSunderingLegendary.icon
 		lookup["#flameShock"] = TRB.Data.spells.flameShock.icon
 		lookup["#frostShock"] = TRB.Data.spells.frostShock.icon
 		lookup["#icefury"] = TRB.Data.spells.icefury.icon
@@ -1613,7 +1706,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						FillSnapshotDataCasting(TRB.Data.spells.elementalBlast)
 					elseif currentSpellId == TRB.Data.spells.icefury.id then
 						FillSnapshotDataCasting(TRB.Data.spells.icefury)
-					elseif currentSpellId == TRB.Data.spells.chainLightning.id or currentSpellId == TRB.Data.spells.lavaBeam.id then 
+					elseif currentSpellId == TRB.Data.spells.chainLightning.id or currentSpellId == TRB.Data.spells.lavaBeam.id then
 						local spell = nil
 						if currentSpellId == TRB.Data.spells.lavaBeam.id then
 							spell = TRB.Data.spells.lavaBeam
@@ -1790,10 +1883,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.character.torghast.rampaging.spellCostModifier = 1
 			TRB.Data.character.torghast.rampaging.coolDownReduction = 1
 		end
-		
+	
+		if (TRB.Functions.IsTalentActive(TRB.Data.spells.elementalBlast) and TRB.Data.spells.elementalBlast.maelstrom < TRB.Data.character.maxResource) then
+			TRB.Data.character.earthShockThreshold = -(TRB.Data.spells.elementalBlast.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].elementalBlast)
+		else
+			TRB.Data.character.earthShockThreshold = -(TRB.Data.spells.earthShock.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].earthShock)
+		end
 
-		TRB.Data.character.earthShockThreshold = 60 * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
-		
+		TRB.Data.character.earthShockThreshold = TRB.Data.character.earthShockThreshold * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
+		TRB.Data.character.earthquakeThreshold = -(TRB.Data.spells.earthquake.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].earthquake) * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
+
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShock then
 				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.flameShock.id, "target", "player"))
@@ -1945,15 +2044,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.elemental, passiveFrame, passiveBarValue)
 
-					if TRB.Data.settings.shaman.elemental.thresholds.earthShock.enabled then
-						resourceFrame.thresholds[1]:Show()
-					else
-						resourceFrame.thresholds[1]:Hide()
-					end
-
 					local thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.under
+					local frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 
 					if TRB.Data.snapshotData.resource >= TRB.Data.character.earthShockThreshold then
+						frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.earthShock, true))
 						thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.over
 						if TRB.Data.settings.shaman.elemental.colors.bar.flashEnabled then
@@ -1973,15 +2068,48 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.base, true))
 						TRB.Data.snapshotData.audio.playedEsCue = false
 					end
-
-					if TRB.Data.snapshotData.echoesOfGreatSundering.isActive then
-						thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.echoesOfGreatSundering
+										
+					if TRB.Data.settings.shaman.elemental.thresholds.earthShock.enabled and (TRB.Functions.IsTalentActive(TRB.Data.spells.earthShock) or TRB.Functions.IsTalentActive(TRB.Data.spells.elementalBlast)) then
+						resourceFrame.thresholds[1]:SetFrameLevel(frameLevel-TRB.Data.constants.frameLevels.thresholdOffsetLine)
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[1].icon:SetFrameLevel(frameLevel-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[1].icon.cooldown:SetFrameLevel(frameLevel-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+						resourceFrame.thresholds[1]:Show()
+					else
+						resourceFrame.thresholds[1]:Hide()
 					end
+					
+					if TRB.Data.settings.shaman.elemental.thresholds.earthquake.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.earthquake) then
+						if TRB.Data.snapshotData.echoesOfGreatSundering.isActive or TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.isActive then
+							thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.echoesOfGreatSundering
+							frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+						elseif TRB.Data.snapshotData.resource >= TRB.Data.character.earthquakeThreshold then
+							thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.over
+							frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+						else
+							thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.under
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+						end
 
+						resourceFrame.thresholds[2]:SetFrameLevel(frameLevel-3-TRB.Data.constants.frameLevels.thresholdOffsetLine)
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[2].icon:SetFrameLevel(frameLevel-3-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
+---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[2].icon.cooldown:SetFrameLevel(frameLevel-3-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
+---@diagnostic disable-next-line: undefined-field
 	---@diagnostic disable-next-line: undefined-field
-					resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))---@diagnostic disable-next-line: undefined-field
+						resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))---@diagnostic disable-next-line: undefined-field
 	---@diagnostic disable-next-line: undefined-field
-					resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+						resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+						resourceFrame.thresholds[2]:Show()
+					else
+						resourceFrame.thresholds[2]:Hide()
+					end
 				end
 			end
 			TRB.Functions.UpdateResourceBar(TRB.Data.settings.shaman.elemental, refreshText)
@@ -2364,6 +2492,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Data.snapshotData.echoesOfGreatSundering.duration = 0
 							TRB.Data.snapshotData.echoesOfGreatSundering.endTime = nil
 						end
+					elseif spellId == TRB.Data.spells.echoesOfGreatSunderingLegendary.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.duration, TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.endTime, _, _, _, TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.echoesOfGreatSunderingLegendary.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.isActive = false
+							TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.spellId = nil
+							TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.duration = 0
+							TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.endTime = nil
+						end
 					end
 
 					if type == "SPELL_CAST_SUCCESS" and TRB.Data.snapshotData.echoingShock.isActive and spellId ~= TRB.Data.spells.echoingShock.id then
@@ -2385,7 +2523,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 						if InitializeTarget(destGUID) then
 							TRB.Data.snapshotData.targetData.targets[destGUID].echoingShockSpell = spell
-							TRB.Data.snapshotData.targetData.targets[destGUID].echoingShockExpiration = currentTime + TRB.Data.character.talents.echoingShock.duration - TRB.Functions.GetLatency()
+							TRB.Data.snapshotData.targetData.targets[destGUID].echoingShockExpiration = currentTime + TRB.Data.spells.echoingShock.duration - TRB.Functions.GetLatency()
 							TRB.Data.snapshotData.echoingShock.isActive = false
 							TRB.Data.snapshotData.echoingShock.spell = spell
 						end
@@ -2497,7 +2635,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	resourceFrame:RegisterEvent("ADDON_LOADED")
-	resourceFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
+	resourceFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 	resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out

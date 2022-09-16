@@ -22,8 +22,8 @@ Libs\base64.lua
 Libs\json.lua
 
 Functions.lua
-UiFunctions.lua
 Init.lua
+UiFunctions.lua
 
 Options.lua
 

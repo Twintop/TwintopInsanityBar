@@ -98,7 +98,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				},
 				earthShock = { -- 1
 					enabled = true,
-					showIcon = true
+				},
+				earthquake = { -- 2
+					enabled = true,
 				},
 			},
 			displayBar = {
@@ -494,7 +496,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		yCoord = yCoord - 30
 		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.UiFunctions:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, "Maelstrom", "notEmpty", true, true, true, "Earth Shock/EQ", "ES/EQ")
+		yCoord, yCoord2 = TRB.UiFunctions:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, "Maelstrom", "notEmpty", true, true, true, "Earth Shock/Elemental Blast", "ES/EB")
 		
 		yCoord = yCoord - 70
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
@@ -513,13 +515,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.earthShock = TRB.UiFunctions:BuildColorPicker(parent, "Maelstrom when you can cast Earth Shock/Earthquake", spec.colors.bar.earthShock, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.earthShock = TRB.UiFunctions:BuildColorPicker(parent, "Maelstrom when you can cast Earth Shock/Elemental Blast", spec.colors.bar.earthShock, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.earthShock
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "earthShock")
 		end)
 
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
@@ -532,7 +534,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 1)
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Maelstrom", spec.colors.bar.borderOvercap, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Maelstrom", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
@@ -552,20 +554,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Maelstrom", spec.colors.threshold.under, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Maelstrom", spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Maelstrom", spec.colors.threshold.over, 275, 25, oUi.xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Maelstrom", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
 
-		controls.colors.threshold.echoesOfGreatSundering = TRB.UiFunctions:BuildColorPicker(parent, "Echoes of Great Sundering proc is up", spec.colors.threshold.echoesOfGreatSundering, 275, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.threshold.echoesOfGreatSundering = TRB.UiFunctions:BuildColorPicker(parent, "Echoes of Great Sundering proc is up", spec.colors.threshold.echoesOfGreatSundering, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.echoesOfGreatSundering
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "echoesOfGreatSundering")
@@ -582,18 +584,27 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.RedrawThresholdLines(spec)
 		end)
 
-		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Threshold_Option_earthShock", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.esThresholdShow
+		controls.checkBoxes.earthShockThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Threshold_Option_earthShock", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.earthShockThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Earth Shock/Earthquake")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Maelstrom is required to cast Earth Shock/Earthquake."
+		getglobal(f:GetName() .. 'Text'):SetText("Earth Shock/Elemental Blast")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Maelstrom is required to cast Earth Shock/Elemental Blast."
 		f:SetChecked(spec.thresholds.earthShock.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.earthShock.enabled = self:GetChecked()
 		end)
 
-
 		yCoord = yCoord - 25
+		controls.checkBoxes.earthquakeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Threshold_Option_earthquake", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.earthquakeThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Earthquake")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Maelstrom is required to cast Earthquake."
+		f:SetChecked(spec.thresholds.earthquake.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.earthquake.enabled = self:GetChecked()
+		end)
+
 		yCoord = yCoord - 25
 		yCoord = yCoord - 25
 
@@ -662,7 +673,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "currentMaelstrom")
 		end)
 
-		controls.colors.text.castingMaelstrom = TRB.UiFunctions:BuildColorPicker(parent, "Maelstrom from hardcasting spells", spec.colors.text.castingMaelstrom, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.castingMaelstrom = TRB.UiFunctions:BuildColorPicker(parent, "Maelstrom from hardcasting spells", spec.colors.text.castingMaelstrom, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.castingMaelstrom
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "castingMaelstrom")
@@ -692,7 +703,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TRB_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		f:SetPoint("TOPLEFT", 0, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Maelstrom text color when you are able to cast Earth Shock or Earthquake."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -1000,11 +1011,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		controls.buttons = controls.buttons or {}
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Elemental Shaman", oUi.xCoord+oUi.xPadding, yCoord-5)
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Elemental Shaman", 0, yCoord-5)
 	
 		controls.checkBoxes.elementalShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_elementalShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.elementalShamanEnabled
-		f:SetPoint("TOPLEFT", 250, yCoord-10)
+		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
 		f.tooltip = "Is Twintop's Resource Bar enabled for the Elemental Shaman specialization? If unchecked, the bar will not function (including the population of global variables!)."
 		f:SetChecked(TRB.Data.settings.core.enabled.shaman.elemental)
@@ -1016,18 +1027,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		TRB.UiFunctions:ToggleCheckboxOnOff(controls.checkBoxes.elementalShamanEnabled, TRB.Data.settings.core.enabled.shaman.elemental, true)
 
-		controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Shaman_Elemental_All = TRB.UiFunctions:BuildButton(parent, "Export Specialization", 440, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Shaman_Elemental_All = TRB.UiFunctions:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Shaman_Elemental_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (All).", 7, 1, true, true, true, true, false)
 		end)
 
-		yCoord = yCoord - 42
+		yCoord = yCoord - 52
 
 		local tabs = {}
 		local tabsheets = {}
@@ -1049,7 +1060,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		for i = 1, 5 do
 			tabsheets[i] = TRB.UiFunctions:CreateTabFrameContainer("TwintopResourceBar_Shaman_Elemental_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
 		end
 
 		tabsheets[1]:Show()
@@ -1216,7 +1227,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
@@ -1241,13 +1252,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
 
 		yCoord = yCoord - 25
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Border's normal/base border", spec.colors.bar.border, 275, 25, oUi.xCoord2, yCoord-0)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Border's normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord-0)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
 		end)
 
-		controls.colors.innervate = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have Innervate", spec.colors.bar.innervate, 275, 25, oUi.xCoord2, yCoord-30)
+		controls.colors.innervate = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have Innervate", spec.colors.bar.innervate, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.innervate
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "innervate")
@@ -1304,7 +1315,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.text.casting = TRB.UiFunctions:BuildColorPicker(parent, "Mana spent from hardcasting spells", spec.colors.text.casting, 275, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.casting = TRB.UiFunctions:BuildColorPicker(parent, "Mana spent from hardcasting spells", spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
@@ -1587,11 +1598,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		parent = interfaceSettingsFrame.restorationDisplayPanel
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Restoration Shaman", oUi.xCoord+oUi.xPadding, yCoord-5)	
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Restoration Shaman", 0, yCoord-5)
 		
 		controls.checkBoxes.restorationShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_restorationShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.restorationShamanEnabled
-		f:SetPoint("TOPLEFT", 250, yCoord-10)
+		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "Is Twintop's Resource Bar enabled for the Restoration Shaman specialization? If unchecked, the bar will not function (including the population of global variables!)."
 		f:SetChecked(TRB.Data.settings.core.enabled.shaman.restoration)
@@ -1603,18 +1614,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		
 		TRB.UiFunctions:ToggleCheckboxOnOff(controls.checkBoxes.restorationShamanEnabled, TRB.Data.settings.core.enabled.shaman.restoration, true)
 
-		controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import", 345, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Shaman_Restoration_All = TRB.UiFunctions:BuildButton(parent, "Export Specialization", 440, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Shaman_Restoration_All = TRB.UiFunctions:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Shaman_Restoration_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (All).", 7, 3, true, true, true, true, false)
 		end)
 
-		yCoord = yCoord - 42
+		yCoord = yCoord - 52
 
 		local tabs = {}
 		local tabsheets = {}
@@ -1636,7 +1647,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		for i = 1, 5 do
 			tabsheets[i] = TRB.UiFunctions:CreateTabFrameContainer("TwintopResourceBar_Shaman_Restoration_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 10, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
 		end
 
 		tabsheets[1]:Show()

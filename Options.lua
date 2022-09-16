@@ -54,7 +54,7 @@ local function LoadDefaultSettings()
             strata={
                 level="BACKGROUND",
                 name="Background"
-            },            
+            },
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
@@ -390,8 +390,6 @@ local function ConstructAddonOptionsPanel()
     local yCoord = -5
     local f = nil
 
-    local maxOptionsWidth = 580
-
     local title = ""
 
     interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_General", UIParent)
@@ -401,11 +399,11 @@ local function ConstructAddonOptionsPanel()
     local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.optionsPanel, "Global Options")
 
     parent = interfaceSettingsFrame.optionsPanel
-    controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Global Options", oUi.xCoord+oUi.xPadding, yCoord)
+    controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Global Options", 0, yCoord)
 
     yCoord = yCoord - 30
-    parent.panel = TRB.UiFunctions:CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 580, 523)
-    parent.panel:SetPoint("TOPLEFT", 10, yCoord)
+    parent.panel = TRB.UiFunctions:CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 652, 555)
+    parent.panel:SetPoint("TOPLEFT", 0, yCoord)
     parent.panel:Show()
 
     parent = parent.panel.scrollFrame.scrollChild
@@ -561,9 +559,6 @@ local function ConstructAddonOptionsPanel()
         TRB.Frames.resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         TRB.Frames.castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         TRB.Frames.passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        TRB.Frames.passiveFrame.thresholds[1]:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        TRB.Frames.resourceFrame.thresholds[1]:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        TRB.Frames.resourceFrame.thresholds[2]:SetFrameStrata(TRB.Data.settings.core.strata.level)
         TRB.Frames.leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         TRB.Frames.middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         TRB.Frames.rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
@@ -678,13 +673,13 @@ local function ConstructImportExportPanel()
     local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.optionsPanel, "Import/Export")
 
     parent = interfaceSettingsFrame.optionsPanel
-    controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Import/Export", oUi.xCoord+oUi.xPadding, yCoord)
+    controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Import/Export", 0, yCoord)
     controls.labels = controls.labels or {}
     controls.buttons = controls.buttons or {}
 
     yCoord = yCoord - 30
-    parent.panel = TRB.UiFunctions:CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 580, 523)
-    parent.panel:SetPoint("TOPLEFT", 10, yCoord)
+    parent.panel = TRB.UiFunctions:CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 652, 555)
+    parent.panel:SetPoint("TOPLEFT", 0, yCoord)
     parent.panel:Show()
 
     parent = parent.panel.scrollFrame.scrollChild

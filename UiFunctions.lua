@@ -1,6 +1,7 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.UiFunctions = {}
+local oUi = TRB.Data.constants.optionsUi
 
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
 function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
@@ -397,8 +398,8 @@ function TRB.UiFunctions:CreateScrollFrameContainer(name, parent, width, height,
 end
 
 function TRB.UiFunctions:CreateTabFrameContainer(name, parent, width, height, isManualScrollFrame)
-    width = width or 580
-    height = height or 503
+    width = width or 652
+    height = height or 523
     local cf = CreateFrame("Frame", name, parent, "BackdropTemplate")
     cf:SetBackdrop({
         bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -416,7 +417,7 @@ function TRB.UiFunctions:CreateTabFrameContainer(name, parent, width, height, is
     cf:SetBackdropColor(0, 0, 0, 0.5)
     cf:SetWidth(width)
     cf:SetHeight(height)
-    cf:SetPoint("TOPLEFT", 0, 10)
+    cf:SetPoint("TOPLEFT", 0, 0)
 
     if not isManualScrollFrame then
         cf.scrollFrame = TRB.UiFunctions:CreateScrollFrameContainer(name .. "ScrollFrame", cf, width - 30, height - 8)
@@ -465,7 +466,7 @@ function TRB.UiFunctions:CreateVariablesSidePanel(parent, name)
     variablesPanelParent:SetBackdropColor(0, 0, 0, 0.8)
     variablesPanelParent:ClearAllPoints()
     variablesPanelParent:SetPoint("TOPLEFT", grandparent, "TOPRIGHT", 55, 5)
-    TRB.UiFunctions:BuildSectionHeader(variablesPanel, "Bar Text Variables", 0, 5)
+    TRB.UiFunctions:BuildSectionHeader(variablesPanel, "Bar Text Variables", oUi.xCoord, 5)
     return variablesPanel
 end
 
@@ -602,7 +603,7 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
 
     local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
-    controls.barPositionSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Position and Size", 0, yCoord)
+    controls.barPositionSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Position and Size", oUi.xCoord, yCoord)
 
     yCoord = yCoord - 40
     title = "Bar Width"
@@ -758,7 +759,7 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
 
     controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
     f = controls.checkBoxes.pinToPRD
-    f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+    f:SetPoint("TOPLEFT", 0, yCoord)
     getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
     f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
     f:SetChecked(spec.bar.pinToPersonalResourceDisplay)
@@ -794,7 +795,7 @@ function TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, s
 
     local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
-    controls.comboPointPositionSection = TRB.UiFunctions:BuildSectionHeader(parent, secondaryResourceString .. " Position and Size", 0, yCoord)
+    controls.comboPointPositionSection = TRB.UiFunctions:BuildSectionHeader(parent, secondaryResourceString .. " Position and Size", oUi.xCoord, yCoord)
 
     yCoord = yCoord - 40
     title = secondaryResourceString .. " Width"
@@ -1042,9 +1043,9 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
     local f = nil
     
     if includeComboPoints then
-        controls.textBarTexturesSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar and "..secondaryResourceString.." Textures", 0, yCoord)
+        controls.textBarTexturesSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar and "..secondaryResourceString.." Textures", oUi.xCoord, yCoord)
     else
-        controls.textBarTexturesSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Textures", 0, yCoord)
+        controls.textBarTexturesSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Textures", oUi.xCoord, yCoord)
     end
 		
     controls.dropDown.textures = {}
@@ -1346,7 +1347,7 @@ function TRB.UiFunctions:GenerateBarDisplayOptions(parent, controls, spec, class
     local f = nil
     local title = ""
 
-    controls.barDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display", 0, yCoord)
+    controls.barDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display", oUi.xCoord, yCoord)
 
     if includeFlashAlpha then
         yCoord = yCoord - 50
@@ -1673,7 +1674,7 @@ function TRB.UiFunctions:GeneratePotionOnCooldownConfigurationOptions(parent, co
     local title = ""
 
     yCoord = yCoord - 40
-    controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Potion on Cooldown Configuration", 0, yCoord)
+    controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Potion on Cooldown Configuration", oUi.xCoord, yCoord)
 
     yCoord = yCoord - 30
     controls.checkBoxes.potionCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_PotionCooldown_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -1745,24 +1746,24 @@ function TRB.UiFunctions:GenerateThresholdLinesForHealers(parent, controls, spec
     local _, className, _ = GetClassInfo(classId)
     local f = nil
 
-    controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Threshold Lines", 0, yCoord)
+    controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Threshold Lines", oUi.xCoord, yCoord)
 
     controls.colors.threshold = {}
 
     yCoord = yCoord - 25
-    controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Mana gain from potions (when usable)", spec.colors.threshold.over, 275, 25, oUi.xCoord2, yCoord-0)
+    controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Mana gain from potions (when usable)", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-0)
     f = controls.colors.threshold.over
     f:SetScript("OnMouseDown", function(self, button, ...)
         TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
     end)
 
-    controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Mana potion on cooldown", spec.colors.threshold.unusable, 275, 25, oUi.xCoord2, yCoord-30)
+    controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Mana potion on cooldown", spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-30)
     f = controls.colors.threshold.unusable
     f:SetScript("OnMouseDown", function(self, button, ...)
         TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
     end)
 
-    controls.colors.threshold.mindbender = TRB.UiFunctions:BuildColorPicker(parent, "Passive mana gain per source", spec.colors.threshold.mindbender, 275, 25, oUi.xCoord2, yCoord-60)
+    controls.colors.threshold.mindbender = TRB.UiFunctions:BuildColorPicker(parent, "Passive mana gain per source", spec.colors.threshold.mindbender, 300, 25, oUi.xCoord2, yCoord-60)
     f = controls.colors.threshold.mindbender
     f:SetScript("OnMouseDown", function(self, button, ...)
         TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
@@ -1836,7 +1837,7 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
     
     controls.dropDown.fonts = {}
 
-    controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Face", 0, yCoord)
+    controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Face", oUi.xCoord, yCoord)
 
     --[[
 
@@ -2073,7 +2074,7 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
 
 
     yCoord = yCoord - 70
-    controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Size and Colors", 0, yCoord)
+    controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Size and Colors", oUi.xCoord, yCoord)
 
     title = "Left Bar Text Font Size"
     yCoord = yCoord - 50
