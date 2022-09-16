@@ -183,12 +183,24 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				icon = "",
 				maelstromMod = {
 					base = {
-						lightningBolt = 2,
-						lavaBurst = 2
+						[0] = {
+							lightningBolt = 0,
+							lavaBurst = 0
+						},
+						[1] = {
+							lightningBolt = 2,
+							lavaBurst = 8 --TODO: this doesn't match the tooltop: 2
+						}
 					},
 					overload = {
-						lightningBolt = 1,
-						lavaBurst = 1
+						[0] = {
+							lightningBolt = 0,
+							lavaBurst = 0
+						},
+						[1] = {
+							lightningBolt = 1,
+							lavaBurst = 1
+						}
 					}
 				},
 				isTalent = true
@@ -215,8 +227,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				id = 285514,
 				name = "",
 				icon = "",
-				isActive = false,
-				maelstrom = 5,
 				isTalent = true
 			},
 			eyeOfTheStorm = {
@@ -240,6 +250,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						elementalBlast = -15
 					}
 				},
+				isTalent = true
+			},
+			powerOfTheMaelstrom = {
+				id = 191877,
+				name = "",
+				icon = "",
 				isTalent = true
 			},
 			elementalBlast = {
@@ -314,6 +330,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			hasStruckTargets = false
 		}
 		specCache.elemental.snapshotData.surgeOfPower = {
+			isActive = false
+		}
+		specCache.elemental.snapshotData.powerOfTheMaelstrom = {
 			isActive = false
 		}
 		specCache.elemental.snapshotData.icefury = {
@@ -1663,11 +1682,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
-    local function FillSnapshotDataCasting(spell)
+    local function FillSnapshotDataCasting(spell, maelstromMod)
+		maelstromMod = maelstromMod or 0
 		local currentTime = GetTime()
         TRB.Data.snapshotData.casting.startTime = currentTime
-        TRB.Data.snapshotData.casting.resourceRaw = spell.maelstrom
-        TRB.Data.snapshotData.casting.resourceFinal = spell.maelstrom
+        TRB.Data.snapshotData.casting.resourceRaw = spell.maelstrom + maelstromMod
+        TRB.Data.snapshotData.casting.resourceFinal = spell.maelstrom + maelstromMod
         TRB.Data.snapshotData.casting.spellId = spell.id
         TRB.Data.snapshotData.casting.icon = spell.icon
     end
@@ -1694,14 +1714,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					--See Priest implementation for handling channeled spells
 				else
 					if currentSpellId == TRB.Data.spells.lightningBolt.id then
-						FillSnapshotDataCasting(TRB.Data.spells.lightningBolt)
+						FillSnapshotDataCasting(TRB.Data.spells.lightningBolt, TRB.Data.spells.flowOfPower.maelstromMod.base[TRB.Data.talents[TRB.Data.spells.flowOfPower.id].currentRank].lightningBolt)
 
-						if TRB.Data.spells.surgeOfPower.isActive then
-							TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.snapshotData.casting.resourceRaw + TRB.Data.spells.lightningBolt.overload
-							TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.lightningBolt.overload
+						if TRB.Data.snapshotData.surgeOfPower.isActive then
+							TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.snapshotData.casting.resourceRaw + ((TRB.Data.spells.lightningBolt.overload + TRB.Data.spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[TRB.Data.spells.flowOfPower.id].currentRank].lightningBolt) * 2)
+							TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal + ((TRB.Data.spells.lightningBolt.overload + TRB.Data.spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[TRB.Data.spells.flowOfPower.id].currentRank].lightningBolt) * 2)
+						end
+						
+						if TRB.Data.snapshotData.powerOfTheMaelstrom.isActive then
+							TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.snapshotData.casting.resourceRaw + TRB.Data.spells.lightningBolt.overload + TRB.Data.spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[TRB.Data.spells.flowOfPower.id].currentRank].lightningBolt
+							TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.lightningBolt.overload + TRB.Data.spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[TRB.Data.spells.flowOfPower.id].currentRank].lightningBolt
 						end
 					elseif currentSpellId == TRB.Data.spells.lavaBurst.id then
-						FillSnapshotDataCasting(TRB.Data.spells.lavaBurst)
+						FillSnapshotDataCasting(TRB.Data.spells.lavaBurst, TRB.Data.spells.flowOfPower.maelstromMod.base[TRB.Data.talents[TRB.Data.spells.flowOfPower.id].currentRank].lavaBurst)
 					elseif currentSpellId == TRB.Data.spells.elementalBlast.id then
 						FillSnapshotDataCasting(TRB.Data.spells.elementalBlast)
 					elseif currentSpellId == TRB.Data.spells.icefury.id then
@@ -1723,12 +1748,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Data.snapshotData.chainLightning.targetsHit = 1
 							TRB.Data.snapshotData.chainLightning.hitTime = currentTime
 							TRB.Data.snapshotData.chainLightning.hasStruckTargets = false
-						elseif currentTime > (TRB.Data.snapshotData.chainLightning.hitTime + (TRB.Functions.GetCurrentGCDTime(true) * 3) + latency) then
-							TRB.Data.snapshotData.chainLightning.targetsHit = 0
+						elseif currentTime > (TRB.Data.snapshotData.chainLightning.hitTime + (TRB.Functions.GetCurrentGCDTime(true) * 4) + latency) then
+							TRB.Data.snapshotData.chainLightning.targetsHit = 1
 						end
 
-						TRB.Data.snapshotData.casting.resourceRaw = spell.maelstrom * TRB.Data.snapshotData.chainLightning.targetsHit
-						TRB.Data.snapshotData.casting.resourceFinal = spell.maelstrom * TRB.Data.snapshotData.chainLightning.targetsHit
+						if TRB.Data.snapshotData.powerOfTheMaelstrom.isActive then
+							TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.snapshotData.casting.resourceRaw + TRB.Data.spells.chainLightning.overload
+							TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.chainLightning.overload
+						end
+
+						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.snapshotData.casting.resourceRaw * TRB.Data.snapshotData.chainLightning.targetsHit
+						TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal * TRB.Data.snapshotData.chainLightning.targetsHit
 					else
 						TRB.Functions.ResetCastingSnapshotData()
 						return false
@@ -2474,9 +2504,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						end
 					elseif spellId == TRB.Data.spells.surgeOfPower.id then
 						if type == "SPELL_AURA_APPLIED" then -- Surge of Power
-							TRB.Data.spells.surgeOfPower.isActive = true
+							TRB.Data.snapshotData.surgeOfPower.isActive = true
 						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.spells.surgeOfPower.isActive = false
+							TRB.Data.snapshotData.surgeOfPower.isActive = false
+						end
+					elseif spellId == TRB.Data.spells.powerOfTheMaelstrom.id then
+						if type == "SPELL_AURA_APPLIED" then -- Power of the Maelstrom
+							TRB.Data.snapshotData.powerOfTheMaelstrom.isActive = true
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.powerOfTheMaelstrom.isActive = false
 						end
 					elseif spellId == TRB.Data.spells.echoingShock.id then
 						if type == "SPELL_AURA_APPLIED" then -- Echoing Shock
