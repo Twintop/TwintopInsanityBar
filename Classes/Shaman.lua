@@ -101,7 +101,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				icon = "",
 				maelstrom = 8,
 				overload = 3,
-				echoingShock = true,
 				baseline = true
 			},
 			flameShock = {
@@ -122,7 +121,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				name = "",
 				icon = "",
 				maelstrom = 10,
-				echoingShock = true,
 				isTalent = true,
 				baseline = true
 			},
@@ -132,7 +130,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				icon = "",
 				maelstrom = 4,
 				overload = 3,
-				echoingShock = true,
 				isTalent = true,
 				baseline = true
 			},
@@ -141,7 +138,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				name = "",
 				icon = "",
 				maelstrom = 8,
-				echoingShock = false,
 				isTalent = true
 			},
 			hex = {
@@ -149,7 +145,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				name = "",
 				icon = "",
 				maelstrom = 8,
-				echoingShock = false,
 				isTalent = true
 			},
 
@@ -219,7 +214,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				icon = "",
 				maelstrom = 25,
 				overload = 12,
-				echoingShock = true,
 				stacks = 4,
 				duration = 15,
 				isTalent = true,
@@ -293,22 +287,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				name = "",
 				icon = "",
 				maelstrom = 4, --Tooltip says 3, but spell ID 217891 and in game says 4
-				overload = 3,
-				echoingShock = false
+				overload = 3
 			},
 
 			lightningShield = {
 				id = 192106,
 				name = "",
 				icon = "",
-				maelstrom = 5,
-				echoingShock = false
-			},
-			--TODO: Still needed?
-			echoingShock = {
-				id = 320125,
-				name = "", 
-				icon = ""
+				maelstrom = 5
 			},
 
 			--TODO: Add Searing Flames passive maelstrom
@@ -354,10 +340,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			stacks = 0,
 			duration = 0,
 			endTime = nil,
-			spell = nil
-		}
-		specCache.elemental.snapshotData.echoingShock = {
-			isActive = false,
 			spell = nil
 		}
 		specCache.elemental.snapshotData.echoesOfGreatSundering = {
@@ -616,7 +598,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
 			{ variable = "#chainLightning", icon = spells.chainLightning.icon, description = spells.chainLightning.name, printInSettings = true },
-			{ variable = "#echoingShock", icon = spells.echoingShock.icon, description = spells.echoingShock.name, printInSettings = true },
 			{ variable = "#elementalBlast", icon = spells.elementalBlast.icon, description = spells.elementalBlast.name, printInSettings = true },
 			{ variable = "#eogs", icon = spells.echoesOfGreatSunderingLegendary.icon, description = spells.echoesOfGreatSunderingLegendary.name, printInSettings = true },
 			{ variable = "#flameShock", icon = spells.flameShock.icon, description = spells.flameShock.name, printInSettings = true },
@@ -943,7 +924,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if specId == 1 then -- Elemental
 					TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
 					TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].echoingShockSpell = nil
 				elseif specId == 3 then -- Restoration
 					TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
 					TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
@@ -962,29 +942,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		if specId == 1 then
 			local fsTotal = 0
-			local echoingShockSpell = nil
 			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
 				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
 					TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
 					TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].echoingShockSpell = nil
 				else
 					if TRB.Data.snapshotData.targetData.targets[guid].flameShock == true then
 						fsTotal = fsTotal + 1
 					end
-
-					if TRB.Data.snapshotData.targetData.targets[guid].echoingShockSpell ~= nil then
-						if currentTime > TRB.Data.snapshotData.targetData.targets[guid].echoingShockExpiration then
-							TRB.Data.snapshotData.targetData.targets[guid].echoingShockSpell = nil
-							TRB.Data.snapshotData.targetData.targets[guid].echoingShockExpiration = nil
-						else
-							echoingShockSpell = TRB.Data.snapshotData.targetData.targets[guid].echoingShockSpell
-						end
-					end
 				end
 			end
 			TRB.Data.snapshotData.targetData.flameShock = fsTotal
-			TRB.Data.snapshotData.echoingShock.spell = echoingShockSpell
 		elseif specId == 3 then -- Restoration
 			local fsTotal = 0
 			for tguid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
@@ -1009,7 +977,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		if specId == 1 then
 			if clearAll == true then
 				TRB.Data.snapshotData.targetData.flameShock = 0
-				TRB.Data.snapshotData.echoingShock.spell = nil
 			end
 		elseif specId == 3 then
 			if clearAll == true then
@@ -1150,8 +1117,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				valid = true
 			elseif var == "$resourceTotal" or var == "$maelstromTotal" then
 				if TRB.Data.snapshotData.resource > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.chainLightning.id or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.lavaBeam.id)) or
-					(TRB.Data.snapshotData.echoingShock.spell ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom > 0)then
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.chainLightning.id or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.lavaBeam.id)) then
 					valid = true
 				end
 			elseif var == "$resourcePlusCasting" or var == "$maelstromPlusCasting" then
@@ -1164,7 +1130,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					valid = true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$maelstromPlusPassive" then
-				if TRB.Data.snapshotData.resource > 0 or (TRB.Data.snapshotData.echoingShock.spell ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom > 0) then
+				if TRB.Data.snapshotData.resource > 0 then
 					valid = true
 				end
 			elseif var == "$casting" then
@@ -1172,9 +1138,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					valid = true
 				end
 			elseif var == "$passive" then
-				if TRB.Data.snapshotData.echoingShock.spell ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom > 0 then
-					valid = true
-				end
 			elseif var == "$ifMaelstrom" then
 				if TRB.Data.snapshotData.icefury.maelstrom > 0 then
 					valid = true
@@ -1322,10 +1285,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		--$passive
 		local _passiveMaelstrom = 0
 
-		if TRB.Data.snapshotData.echoingShock.spell ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom > 0 then
-			_passiveMaelstrom = _passiveMaelstrom + TRB.Data.snapshotData.echoingShock.spell.maelstrom
-		end
-
 		local passiveMaelstrom = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.passiveMaelstrom, _passiveMaelstrom)
 		--$maelstromTotal
 		local _maelstromTotal = math.min(_passiveMaelstrom + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
@@ -1418,7 +1377,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local lookup = TRB.Data.lookup or {}
 		lookup["#ascendance"] = TRB.Data.spells.ascendance.icon
 		lookup["#chainLightning"] = TRB.Data.spells.chainLightning.icon
-		lookup["#echoingShock"] = TRB.Data.spells.echoingShock.icon
 		lookup["#elementalBlast"] = TRB.Data.spells.elementalBlast.icon
 		lookup["#eogs"] = TRB.Data.spells.echoesOfGreatSunderingLegendary.icon
 		lookup["#flameShock"] = TRB.Data.spells.flameShock.icon
@@ -2073,16 +2031,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.elemental, castingFrame, castingBarValue)
 
-					if TRB.Data.settings.shaman.elemental.bar.showPassive then
-						if TRB.Data.snapshotData.echoingShock.spell ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom ~= nil and TRB.Data.snapshotData.echoingShock.spell.maelstrom > 0 then
-							passiveBarValue = TRB.Data.snapshotData.echoingShock.spell.maelstrom + castingBarValue
-						else
-							passiveBarValue = castingBarValue
-						end
-					else
-						passiveBarValue = castingBarValue
-					end
-
 					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.elemental, passiveFrame, passiveBarValue)
 
 					local thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.under
@@ -2525,10 +2473,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshotData.powerOfTheMaelstrom.isActive = false
 						end
-					elseif spellId == TRB.Data.spells.echoingShock.id then
-						if type == "SPELL_AURA_APPLIED" then -- Echoing Shock
-							TRB.Data.snapshotData.echoingShock.isActive = true
-						end
 					elseif spellId == TRB.Data.spells.echoesOfGreatSundering.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.snapshotData.echoesOfGreatSundering.isActive = true
@@ -2548,31 +2492,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.spellId = nil
 							TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.duration = 0
 							TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.endTime = nil
-						end
-					end
-
-					if type == "SPELL_CAST_SUCCESS" and TRB.Data.snapshotData.echoingShock.isActive and spellId ~= TRB.Data.spells.echoingShock.id then
-						local spell = nil
-
-						if spellId == TRB.Data.spells.lightningBolt.id then
-							spell = TRB.Data.spells.lightningBolt
-						elseif spellId == TRB.Data.spells.lavaBurst.id then
-							spell = TRB.Data.spells.lavaBurst
-						elseif spellId == TRB.Data.spells.elementalBlast.id then
-							spell = TRB.Data.spells.elementalBlast
-						elseif spellId == TRB.Data.spells.icefury.id then
-							spell = TRB.Data.spells.icefury
-						elseif spellId == TRB.Data.spells.chainLightning.id then
-							spell = TRB.Data.spells.chainLightning
-						elseif spellId == TRB.Data.spells.lavaBeam.id then
-							spell = TRB.Data.spells.lavaBeam
-						end
-
-						if InitializeTarget(destGUID) then
-							TRB.Data.snapshotData.targetData.targets[destGUID].echoingShockSpell = spell
-							TRB.Data.snapshotData.targetData.targets[destGUID].echoingShockExpiration = currentTime + TRB.Data.spells.echoingShock.duration - TRB.Functions.GetLatency()
-							TRB.Data.snapshotData.echoingShock.isActive = false
-							TRB.Data.snapshotData.echoingShock.spell = spell
 						end
 					end
 				elseif specId == 3 then
