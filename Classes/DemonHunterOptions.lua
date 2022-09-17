@@ -121,6 +121,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				felEruption = {
 					enabled = true, -- 8
 				},
+				throwGlaive = {
+					enabled = true, -- 9
+				}
 			},
 			displayBar = {
 				alwaysShow=false,
@@ -474,7 +477,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.felEruptionVictoryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_felEruption", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.felEruptionVictoryThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Fel Eruption (if talented)")
+		getglobal(f:GetName() .. 'Text'):SetText("Fel Eruption")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Fel Eruption. Only visible if talented."
 		f:SetChecked(spec.thresholds.felEruption.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -485,11 +488,22 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.glaiveTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_glaiveTempest", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.glaiveTempestThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Glaive Tempest (if talented)")
+		getglobal(f:GetName() .. 'Text'):SetText("Glaive Tempest")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Glaive Tempest. Only visible if talented."
 		f:SetChecked(spec.thresholds.glaiveTempest.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.glaiveTempest.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.throwGlaiveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_throwGlaive", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.throwGlaiveThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Throw Glaive (Furious Throws)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Throw Glaive. Only visible if talented in to Furious Throws."
+		f:SetChecked(spec.thresholds.throwGlaive.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.throwGlaive.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 30

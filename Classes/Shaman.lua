@@ -367,8 +367,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			resource = {
 				resource = 0,
 				casting = 0,
-				passive = 0,
-				wrathfulFaerie = 0
+				passive = 0
 			},
 			dots = {
 				--swpCount = 0
@@ -759,11 +758,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			
 			{ variable = "$mttMana", description = "Bonus passive mana regen while Mana Tide Totem is active", printInSettings = true, color = false },
 			{ variable = "$mttTime", description = "Time left on Mana Tide Totem", printInSettings = true, color = false },
-
-			{ variable = "$wfMana", description = "Mana from Wrathful Faerie (per settings)", printInSettings = true, color = false },
-			{ variable = "$wfGcds", description = "Number of GCDs left on Wrathful Faerie", printInSettings = true, color = false },
-			{ variable = "$wfProcs", description = "Number of Procs left on Wrathful Faerie", printInSettings = true, color = false },
-			{ variable = "$wfTime", description = "Time left on Wrathful Faerie", printInSettings = true, color = false },
 			
 			{ variable = "$pscMana", description = "Mana while channeling of Potion of Spiritual Clarity", printInSettings = true, color = false },
 			{ variable = "$pscTicks", description = "Number of ticks left channeling Potion of Spiritual Clarity", printInSettings = true, color = false },

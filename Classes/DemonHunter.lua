@@ -91,6 +91,20 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				isTalent = false,
 				baseline = true
 			},
+			throwGlaive = {
+				id = 185123,
+				name = "",
+				icon = "",
+				texture = "",
+				fury = -25,
+				thresholdId = 9,
+				settingKey = "throwGlaive",
+				hasCooldown = true,
+				thresholdUsable = false,
+				isSnowflake = true,
+				isTalent = false,
+				baseline = true
+			},
 
 			--Havoc Baseline Abilities
 			bladeDance = {
@@ -203,8 +217,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 388109,
 				name = "",
 				icon = "",
-                duration = 2,
-				ticks = 2,
+                duration = 4, -- These don't match what's seen on the PTR, should be 2,
+				ticks = 4, --2,
 				isTalent = true
 			},
 			felEruption = {
@@ -349,6 +363,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			spellId = nil,
 			duration = 0,
 			endTime = nil
+		}
+		specCache.havoc.snapshotData.throwGlaive = {
+			charges = 0,
+			maxCharges = 2,
+			startTime = nil,
+			duration = 0
 		}
 		specCache.havoc.snapshotData.prepared = {
 			isActive = false,
@@ -1040,6 +1060,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.felEruption.startTime, TRB.Data.snapshotData.felEruption.duration, _, _ = GetSpellCooldown(TRB.Data.spells.felEruption.id)
         end
+
+		TRB.Data.snapshotData.throwGlaive.charges, TRB.Data.snapshotData.throwGlaive.maxCharges, TRB.Data.snapshotData.throwGlaive.startTime, TRB.Data.snapshotData.throwGlaive.duration, _ = GetSpellCharges(TRB.Data.spells.throwGlaive.id)
+		if TRB.Data.snapshotData.throwGlaive.charges == TRB.Data.snapshotData.throwGlaive.maxCharges then
+			TRB.Data.snapshotData.throwGlaive.startTime = nil
+			TRB.Data.snapshotData.throwGlaive.duration = 0
+		end
 	end
 
 	local function HideResourceBar(force)
@@ -1178,6 +1204,16 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										isUsable = false
 									elseif currentFury >= -furyAmount then
+										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end									
+								elseif spell.id == TRB.Data.spells.throwGlaive.id then
+									if TRB.Data.snapshotData.throwGlaive.charges == 0 then
+										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+									elseif TRB.Data.snapshotData.resource >= -furyAmount then
 										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
@@ -1338,6 +1374,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 						if type == "SPELL_CAST_SUCCESS" then
 							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.glaiveTempest.startTime, TRB.Data.snapshotData.glaiveTempest.duration, _, _ = GetSpellCooldown(TRB.Data.spells.glaiveTempest.id)
+						end
+					elseif spellId == TRB.Data.spells.throwGlaive.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
+							TRB.Data.snapshotData.throwGlaive.charges, TRB.Data.snapshotData.throwGlaive.maxCharges, TRB.Data.snapshotData.throwGlaive.startTime, TRB.Data.snapshotData.throwGlaive.duration, _ = GetSpellCharges(TRB.Data.spells.throwGlaive.id)
 						end
 					elseif spellId == TRB.Data.spells.felEruption.id then
 						if type == "SPELL_CAST_SUCCESS" then
