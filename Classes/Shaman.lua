@@ -1719,7 +1719,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Data.snapshotData.chainLightning.targetsHit = 1
 						end
 
-						if TRB.Data.snapshotData.powerOfTheMaelstrom.isActive then
+						if TRB.Data.snapshotData.powerOfTheMaelstrom.isActive and currentSpellId == TRB.Data.spells.chainLightning.id then
 							TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.snapshotData.casting.resourceRaw + TRB.Data.spells.chainLightning.overload
 							TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.chainLightning.overload
 						end
