@@ -3062,6 +3062,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function CastingSpell()
 		local currentTime = GetTime()
+		local affectingCombat = UnitAffectingCombat("player")
 		local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
 		local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
 		local specId = GetSpecialization()
@@ -3180,7 +3181,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.vampiricTouch.id
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.vampiricTouch.icon
 						UpdateCastingResourceFinal_Shadow(TRB.Data.spells.vampiricTouch.fotm)
-					elseif currentSpellId == TRB.Data.spells.massDispel.id and TRB.Functions.IsTalentActive(TRB.Data.spells.hallucinations) then
+					elseif currentSpellId == TRB.Data.spells.massDispel.id and TRB.Functions.IsTalentActive(TRB.Data.spells.hallucinations) and affectingCombat then
 						TRB.Data.snapshotData.casting.startTime = currentTime
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.hallucinations.insanity
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.massDispel.id

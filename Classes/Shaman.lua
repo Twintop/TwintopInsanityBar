@@ -144,6 +144,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				echoingShock = false,
 				isTalent = true
 			},
+			hex = {
+				id = 51514,
+				name = "",
+				icon = "",
+				maelstrom = 8,
+				echoingShock = false,
+				isTalent = true
+			},
 
 
 			-- Elemental Talent Abilities
@@ -1700,6 +1708,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function CastingSpell()
 		local specId = GetSpecialization()
+		local affectingCombat = UnitAffectingCombat("player")
 		local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
 		local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
 
@@ -1759,6 +1768,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.snapshotData.casting.resourceRaw * TRB.Data.snapshotData.chainLightning.targetsHit
 						TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal * TRB.Data.snapshotData.chainLightning.targetsHit
+					elseif currentSpellId == TRB.Data.spells.hex.id and TRB.Functions.IsTalentActive(TRB.Data.spells.inundate) and affectingCombat then
+						FillSnapshotDataCasting(TRB.Data.spells.hex)
 					else
 						TRB.Functions.ResetCastingSnapshotData()
 						return false
