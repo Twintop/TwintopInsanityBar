@@ -441,7 +441,7 @@ end
 
 function TRB.UiFunctions:CreateTab(name, displayText, id, parent, width, rightOf)
     width = width or 100
-    local tab = CreateFrame("Button", name, parent, "TabButtonTemplate")
+    local tab = CreateFrame("Button", name, parent, "PanelTopTabButtonTemplate")-- "TabButtonTemplate")
     tab.id = id
     tab:SetSize(width, 16)
     tab:SetText(displayText)

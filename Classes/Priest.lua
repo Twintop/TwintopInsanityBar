@@ -788,7 +788,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				texture = "",
-				insanity = -25,
+				insanity = -50,
+				insanityTick = -25,
 				thresholdId = 2,
 				settingKey = "mindSear",
 				thresholdUsable = false,
@@ -839,6 +840,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				maxStacks = 5,
 				isTalent = true
+			},
+			mindFlayInsanity = {
+				id = 391403,
+				name = "",
+				icon = "",
+				insanity = 6,
+				isTalent = false,
+				baseline = true
 			},
 			voidTorrent = {
 				id = 263165,
@@ -3119,10 +3128,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindFlay.insanity
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.mindFlay.icon
 						UpdateCastingResourceFinal_Shadow(TRB.Data.spells.mindFlay.fotm)
+					elseif currentChannelId == TRB.Data.spells.mindFlayInsanity.id then
+						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.mindFlayInsanity.id
+						TRB.Data.snapshotData.casting.startTime = currentTime
+						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindFlayInsanity.insanity
+						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.mindFlayInsanity.icon
+						UpdateCastingResourceFinal_Shadow(TRB.Data.spells.mindFlayInsanity.fotm)
 					elseif currentChannelId == TRB.Data.spells.mindSear.id then
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.mindSear.id
 						TRB.Data.snapshotData.casting.startTime = currentTime
-						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindSear.insanity
+						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindSear.insanityTick
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.mindSear.icon
 						UpdateCastingResourceFinal_Shadow(TRB.Data.spells.mindSear.fotm)
 						
@@ -4213,6 +4228,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					if TRB.Data.settings.priest.shadow.thresholds.devouringPlague.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.devouringPlague) then
 						TRB.Frames.resourceFrame.thresholds[1]:Show()
+						TRB.Frames.resourceFrame.thresholds[1]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdUnusable-TRB.Data.constants.frameLevels.thresholdOffsetLine)
+---@diagnostic disable-next-line: undefined-field
+						TRB.Frames.resourceFrame.thresholds[1].icon:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdUnusable-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
+---@diagnostic disable-next-line: undefined-field
+						TRB.Frames.resourceFrame.thresholds[1].icon.cooldown:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdUnusable-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)						
 					else
 						TRB.Frames.resourceFrame.thresholds[1]:Hide()
 					end
@@ -4230,6 +4250,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Frames.resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.under, true))
 						end
 						TRB.Frames.resourceFrame.thresholds[2]:Show()
+						TRB.Frames.resourceFrame.thresholds[2]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdUnusable-3-TRB.Data.constants.frameLevels.thresholdOffsetLine)
+---@diagnostic disable-next-line: undefined-field
+						TRB.Frames.resourceFrame.thresholds[2].icon:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdUnusable-3-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
+---@diagnostic disable-next-line: undefined-field
+						TRB.Frames.resourceFrame.thresholds[2].icon.cooldown:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdUnusable-3-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
 					else
 						TRB.Frames.resourceFrame.thresholds[2]:Hide()
 					end
