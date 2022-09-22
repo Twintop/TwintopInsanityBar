@@ -59,17 +59,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			resource = {
 				resource = 0,
 				passive = 0,
-				ravager = 0,
 				ancientAftershock = 0,
 				conquerorsBanner = 0
 			},
 			dots = {
 				rendCount = 0,
 				deepWoundsCount = 0
-			},
-			ravager = {
-				rage = 0,
-				ticks = 0
 			},
 			ancientAftershock = {
 				rage = 0,
@@ -302,6 +297,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				hasCooldown = true,
 				thresholdUsable = false
 			},
+			suddenDeath = {
+				id = 29725,
+				name = "",
+				icon = ""	
+			},
 			massacre = {
 				id = 281001,
 				name = "",
@@ -310,37 +310,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = true
 			},
 
-			--Talents
-			suddenDeath = {
-				id = 29725,
-				name = "",
-				icon = ""				
-			},
-			skullsplitter = {
-				id = 100,
-				name = "",
-				icon = "",
-				rage = 20				
-			},
-			deadlyCalm = {
-				id = 262228,
-				name = "",
-				icon = "",
-				abilityCount = 4,
-				modifier = 0, -- 100% for next abilityCount abilities
-				rageIncrease = 30
-			},
-			ravager = {
-				id = 152277,
-				name = "",
-				icon = "",
-				rage = 7,
-				ticks = 6, -- Sometimes 5, sometimes 6, sometimes 7?!
-				duration = 12,
-				isHasted = true,
-				energizeId = 248439
-			},
-			
 			-- Covenant
 			spearOfBastionCovenant = {
 				id = 307865,
@@ -474,23 +443,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			duration = 0,
 			spellId = nil
 		}
-		specCache.arms.snapshotData.deadlyCalm = {
-			endTime = nil,
-			duration = 0,
-			stacks = 0
-		}
 		specCache.arms.snapshotData.suddenDeath = {
 			endTime = nil,
 			duration = 0,
 			spellId = nil
-		}
-		specCache.arms.snapshotData.ravager = {
-			isActive = false,
-			ticksRemaining = 0,
-			rage = 0,
-			endTime = nil,
-			lastTick = nil,
-			totalDuration = 0
 		}
 		specCache.arms.snapshotData.condemn = {
 			startTime = nil,
@@ -815,15 +771,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
             { variable = "#condemn", icon = spells.condemn.icon, description = "Condemn", printInSettings = true },
             { variable = "#conquerorsBanner", icon = spells.conquerorsBanner.icon, description = "Conqueror's Banner", printInSettings = true },
 			{ variable = "#covenantAbility", icon = spells.spearOfBastionCovenant.icon .. spells.condemn.icon .. spells.ancientAftershock.icon .. spells.conquerorsBanner.icon, description = "Covenant on-use Ability", printInSettings = true},
-			{ variable = "#deadlyCalm", icon = spells.deadlyCalm.icon, description = "Deadly Calm", printInSettings = true },
 			{ variable = "#deepWounds", icon = spells.deepWounds.icon, description = "Deep Wounds", printInSettings = true },
 			{ variable = "#execute", icon = spells.execute.icon, description = "Execute", printInSettings = true },			
 			{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = "Impending Victory", printInSettings = true },
 			{ variable = "#mortalStrike", icon = spells.mortalStrike.icon, description = "Mortal Strike", printInSettings = true },
-			{ variable = "#ravager", icon = spells.ravager.icon, description = "Ravager", printInSettings = true },
 			{ variable = "#rend", icon = spells.rend.icon, description = "Rend", printInSettings = true },
 			{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = "Shield Block", printInSettings = true },
-			{ variable = "#skullsplitter", icon = spells.skullsplitter.icon, description = "Skullsplitter", printInSettings = true },
 			{ variable = "#slam", icon = spells.slam.icon, description = "Slam", printInSettings = true },
             { variable = "#spearOfBastionCovenant", icon = spells.spearOfBastionCovenant.icon, description = "Spear of Bastion", printInSettings = true },
 			{ variable = "#victoryRush", icon = spells.victoryRush.icon, description = "Victory Rush", printInSettings = true },
@@ -871,7 +824,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$resourceMax", description = "Maximum Rage", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Builder Rage from Hardcasting Spells", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Spender Rage from Hardcasting Spells", printInSettings = false, color = false },
-			{ variable = "$passive", description = "Rage from Passive Sources including Ravager and Covenant abilities", printInSettings = true, color = false },
+			{ variable = "$passive", description = "Rage from Passive Sources including Covenant abilities", printInSettings = true, color = false },
 			{ variable = "$ragePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
 			{ variable = "$resourcePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
 			{ variable = "$ragePlusPassive", description = "Current + Passive Rage Total", printInSettings = true, color = false },
@@ -885,9 +838,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$deepWoundsTime", description = "Time remaining on Deep Wounds on your current target", printInSettings = true, color = false },
 			{ variable = "$rendCount", description = "Number of Rends active on targets", printInSettings = true, color = false },
 			{ variable = "$rendTime", description = "Time remaining on Rend on your current target", printInSettings = true, color = false },
-
-			{ variable = "$ravagerTicks", description = "Number of expected ticks remaining on Ravager", printInSettings = true, color = false }, 
-			{ variable = "$ravagerRage", description = "Rage from Ravager", printInSettings = true, color = false },   
 
 			{ variable = "$ancientAftershockTicks", description = "Number of ticks remaining on Ancient Aftershock", printInSettings = true, color = false }, 
 			{ variable = "$ancientAftershockRage", description = "Rage from Ancient Aftershock", printInSettings = true, color = false },   
@@ -976,7 +926,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$resourceMax", description = "Maximum Rage", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Builder Rage from Hardcasting Spells", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Spender Rage from Hardcasting Spells", printInSettings = false, color = false },
-			{ variable = "$passive", description = "Rage from Passive Sources including Ravager and Covenant abilities", printInSettings = true, color = false },
+			{ variable = "$passive", description = "Rage from Passive Sources including Covenant abilities", printInSettings = true, color = false },
 			{ variable = "$ragePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
 			{ variable = "$resourcePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
 			{ variable = "$ragePlusPassive", description = "Current + Passive Rage Total", printInSettings = true, color = false },
@@ -1252,22 +1202,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.whirlwind)
 	end
 
-    local function CalculateAbilityResourceValue(resource, includeDeadlyCalm)
-        if includeDeadlyCalm == nil then
-			includeDeadlyCalm = false
-		end
-
+    local function CalculateAbilityResourceValue(resource)
 		local modifier = 1.0
 
 		if resource > 0 then
-
 		else
 			modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
-			if GetSpecialization() == 1 then
-				if TRB.Data.spells.deadlyCalm.isActive and includeDeadlyCalm then
-					modifier = modifier * TRB.Data.spells.deadlyCalm.modifier
-				end
-			end
 		end
 
         return resource * modifier
@@ -1387,15 +1327,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 
         if specId == 1 then --Arms
-			--[[if var == "$ravagerTicks" then
-				if TRB.Data.snapshotData.ravager.isActive then
-					valid = true
-				end
-			elseif var == "$ravagerRage" then
-				if TRB.Data.snapshotData.ravager.isActive then
-					valid = true
-				end
-			else]]
 			if var == "$suddenDeathTime" then
 				if TRB.Data.snapshotData.suddenDeath.isActive then
 					valid = true
@@ -1431,13 +1362,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					valid = true
 				end
 			elseif var == "$resourceTotal" or var == "$rageTotal" then
-				if normalizedRage > 0 or TRB.Data.snapshotData.ravager.rage > 0 or TRB.Data.snapshotData.ancientAftershock.rage > 0 or TRB.Data.snapshotData.conquerorsBanner.isActive or
+				if normalizedRage > 0 or TRB.Data.snapshotData.ancientAftershock.rage > 0 or TRB.Data.snapshotData.conquerorsBanner.isActive or
 					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
 					then
 					valid = true
 				end
 			elseif var == "$passive" then
-				if TRB.Data.snapshotData.ravager.rage > 0 or TRB.Data.snapshotData.ancientAftershock.rage > 0 or TRB.Data.snapshotData.conquerorsBanner.isActive then
+				if TRB.Data.snapshotData.ancientAftershock.rage > 0 or TRB.Data.snapshotData.conquerorsBanner.isActive then
 					valid = true
 				end
             end
@@ -1487,7 +1418,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				valid = true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
-			if normalizedRage > 0 or TRB.Data.snapshotData.ravager.rage > 0 or TRB.Data.snapshotData.ancientAftershock.rage > 0 then
+			if normalizedRage > 0 or TRB.Data.snapshotData.ancientAftershock.rage > 0 then
 				valid = true
 			end
 		elseif var == "$casting" then
@@ -1559,12 +1490,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			castingRageColor = TRB.Data.settings.warrior.arms.colors.text.spending
 		end
 
-		--$ravagerRage
-		local _ravagerRage = TRB.Data.snapshotData.ravager.rage
-		local ravagerRage = string.format("%.0f", TRB.Data.snapshotData.ravager.rage)
-		--$ravagerTicks
-		local ravagerTicks = string.format("%.0f", TRB.Data.snapshotData.ravager.ticksRemaining)
-		
 		--$ancientAftershockRage
 		local _ancientAftershockRage = TRB.Data.snapshotData.ancientAftershock.rage
 		local ancientAftershockRage = string.format("%.0f", TRB.Data.snapshotData.ancientAftershock.rage)
@@ -1590,7 +1515,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		--$casting
 		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, ragePrecision, "floor"))
 		--$passive
-		local _passiveRage = _ravagerRage + _ancientAftershockRage + _conquerorsBannerRage
+		local _passiveRage = _ancientAftershockRage + _conquerorsBannerRage
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
@@ -1681,16 +1606,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		Global_TwintopResourceBar.resource.resource = normalizedRage
 		Global_TwintopResourceBar.resource.passive = _passiveRage
-		Global_TwintopResourceBar.resource.ravager = _ravagerRage
 		Global_TwintopResourceBar.resource.ancientAftershock = _ancientAftershockRage
 		Global_TwintopResourceBar.resource.conquerorsBanner = _conquerorsBannerRage
 		Global_TwintopResourceBar.dots = {
 			rendCount = _rendCount,
 			deepWoundsCount = _deepWoundsCount
-		}
-		Global_TwintopResourceBar.ravager = {
-			rage = _ravagerRage,
-			ticks = TRB.Data.snapshotData.ravager.ticksRemaining or 0
 		}
 		Global_TwintopResourceBar.conquerorsBanner = {
 			rage = _conquerorsBannerRage,
@@ -1710,15 +1630,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#condemn"] = TRB.Data.spells.condemn.icon
 		lookup["#conquerorsBanner"] = TRB.Data.spells.conquerorsBanner.icon
 		lookup["#covenantAbility"] = covenantAbilityIcon
-		lookup["#deadlyCalm"] = TRB.Data.spells.deadlyCalm.icon
 		lookup["#deepWounds"] = TRB.Data.spells.deepWounds.icon
 		lookup["#execute"] = TRB.Data.spells.execute.icon
 		lookup["#impendingVictory"] = TRB.Data.spells.impendingVictory.icon
 		lookup["#mortalStrike"] = TRB.Data.spells.mortalStrike.icon
-		lookup["#ravager"] = TRB.Data.spells.ravager.icon
 		lookup["#rend"] = TRB.Data.spells.rend.icon
 		lookup["#shieldBlock"] = TRB.Data.spells.shieldBlock.icon
-		lookup["#skullsplitter"] = TRB.Data.spells.skullsplitter.icon
 		lookup["#slam"] = TRB.Data.spells.slam.icon
 		lookup["#spearOfBastionCovenant"] = TRB.Data.spells.spearOfBastionCovenant.icon
 		lookup["#victoryRush"] = TRB.Data.spells.victoryRush.icon
@@ -1729,8 +1646,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["$deepWoundsCount"] = deepWoundsCount
 		lookup["$deepWoundsTime"] = deepWoundsTime
 		lookup["$suddenDeathTime"] = suddenDeathTime
-		lookup["$ravagerRage"] = ravagerRage
-		lookup["$ravagerTicks"] = ravagerTicks
 		lookup["$ancientAftershockRage"] = ancientAftershockRage
 		lookup["$ancientAftershockTicks"] = ancientAftershockTicks
 		lookup["$conquerorsBannerRage"] = conquerorsBannerRage
@@ -1762,8 +1677,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookupLogic["$deepWoundsCount"] = _deepWoundsCount
 		lookupLogic["$deepWoundsTime"] = _deepWoundsTime
 		lookupLogic["$suddenDeathTime"] = _suddenDeathTime
-		lookupLogic["$ravagerRage"] = _ravagerRage
-		lookupLogic["$ravagerTicks"] = ravagerTicks
 		lookupLogic["$ancientAftershockRage"] = _ancientAftershockRage
 		lookupLogic["$ancientAftershockTicks"] = ancientAftershockTicks
 		lookupLogic["$conquerorsBannerRage"] = _conquerorsBannerRage
@@ -2021,30 +1934,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 	end
 
-	local function UpdateRavager()
-		if TRB.Data.snapshotData.ravager.isActive then
-			local currentTime = GetTime()
-			if TRB.Data.snapshotData.ravager.endTime == nil or currentTime > TRB.Data.snapshotData.ravager.endTime then
-				TRB.Data.snapshotData.ravager.ticksRemaining = 0
-				TRB.Data.snapshotData.ravager.endTime = nil
-				TRB.Data.snapshotData.ravager.rage = 0
-				TRB.Data.snapshotData.ravager.isActive = false
-				TRB.Data.snapshotData.ravager.totalDuration = 0
-			else
-				local ticksRemaining = math.ceil((TRB.Data.snapshotData.ravager.endTime - currentTime) / (TRB.Data.snapshotData.ravager.totalDuration / TRB.Data.spells.ravager.ticks))
-				
-				if ticksRemaining < TRB.Data.snapshotData.ravager.ticksRemaining then
-					TRB.Data.snapshotData.ravager.ticksRemaining = ticksRemaining
-				end
-
-				TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage				
-				if TRB.Data.snapshotData.ravager.rage < 0 then
-					TRB.Data.snapshotData.ravager.rage = 0
-				end
-			end
-		end
-	end
-
 	local function UpdateAncientAftershock()
 		if TRB.Data.snapshotData.ancientAftershock.isActive then
 			local currentTime = GetTime()
@@ -2121,7 +2010,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function UpdateSnapshot_Arms()
 		UpdateSnapshot()
-		UpdateRavager()
 
 		local currentTime = GetTime()
 		local _
@@ -2143,7 +2031,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
         end
 
 		_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.suddenDeath.id, "player")
-		_, _, TRB.Data.snapshotData.deadlyCalm.stacks, _, TRB.Data.snapshotData.deadlyCalm.duration, TRB.Data.snapshotData.deadlyCalm.endTime, _, _, _, TRB.Data.snapshotData.deadlyCalm.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.deadlyCalm.id, "player")
 		
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rend then
@@ -2241,10 +2128,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 					local passiveValue = 0
 					if TRB.Data.settings.warrior.arms.bar.showPassive then
-						if TRB.Data.snapshotData.ravager.rage > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshotData.ravager.rage
-						end
-
 						if TRB.Data.snapshotData.ancientAftershock.rage > 0 then
 							passiveValue = passiveValue + TRB.Data.snapshotData.ancientAftershock.rage
 						end
@@ -2399,11 +2282,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							end
 
 							if TRB.Data.settings.warrior.arms.thresholds[spell.settingKey].enabled and showThreshold then
-								if isUsable and TRB.Data.snapshotData.deadlyCalm.stacks ~= nil and TRB.Data.snapshotData.deadlyCalm.stacks > 0 then
-									thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
-									frameLevel = TRB.Data.constants.frameLevels.thresholdOver
-								end
-
 								if not spell.hasCooldown then
 									frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
 								end
@@ -2674,16 +2552,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.cleave.startTime, TRB.Data.snapshotData.cleave.duration, _, _ = GetSpellCooldown(TRB.Data.spells.cleave.id)
 						end
-					elseif spellId == TRB.Data.spells.deadlyCalm.id then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, TRB.Data.snapshotData.deadlyCalm.stacks, _, TRB.Data.snapshotData.deadlyCalm.duration, TRB.Data.snapshotData.deadlyCalm.endTime, _, _, _, TRB.Data.snapshotData.deadlyCalm.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.deadlyCalm.id, "player")
-							TRB.Data.spells.deadlyCalm.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshotData.deadlyCalm.endTime = nil
-							TRB.Data.snapshotData.deadlyCalm.duration = 0
-							TRB.Data.snapshotData.deadlyCalm.stacks = 0
-							TRB.Data.spells.deadlyCalm.isActive = false
-						end
+
 					elseif spellId == TRB.Data.spells.suddenDeath.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
 							_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.suddenDeath.id)
@@ -2698,35 +2567,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							TRB.Data.snapshotData.suddenDeath.duration = 0
 							TRB.Data.snapshotData.suddenDeath.spellId = nil
 							TRB.Data.spells.suddenDeath.isActive = false
-						end
-					elseif spellId == TRB.Data.spells.ravager.id then
-						if type == "SPELL_CAST_SUCCESS" then -- Ravager used
-							TRB.Data.snapshotData.ravager.isActive = true
-							TRB.Data.snapshotData.ravager.totalDuration = TRB.Data.spells.ravager.duration * (TRB.Functions.GetCurrentGCDTime(true) / 1.5)
-							TRB.Data.snapshotData.ravager.ticksRemaining = TRB.Data.spells.ravager.ticks
-							TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage
-							TRB.Data.snapshotData.ravager.endTime = currentTime + TRB.Data.snapshotData.ravager.totalDuration
-							TRB.Data.snapshotData.ravager.lastTick = currentTime
-							if TRB.Data.snapshotData.ravager.rage < 0 then
-								TRB.Data.snapshotData.ravager.rage = 0
-							end
-						end
-					elseif spellId == TRB.Data.spells.ravager.energizeId then
-						if type == "SPELL_ENERGIZE" then						
-							TRB.Data.snapshotData.ravager.ticksRemaining = TRB.Data.snapshotData.ravager.ticksRemaining - 1
-							if TRB.Data.snapshotData.ravager.ticksRemaining == 0 then
-								TRB.Data.snapshotData.ravager.ticksRemaining = 0
-								TRB.Data.snapshotData.ravager.endTime = nil
-								TRB.Data.snapshotData.ravager.rage = 0
-								TRB.Data.snapshotData.ravager.isActive = false
-								TRB.Data.snapshotData.ravager.totalDuration = 0
-							else
-								TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage
-								TRB.Data.snapshotData.ravager.lastTick = currentTime
-								if TRB.Data.snapshotData.ravager.rage < 0 then
-									TRB.Data.snapshotData.ravager.rage = 0
-								end
-							end
 						end
 					elseif spellId == TRB.Data.spells.rend.id then
 						if InitializeTarget(destGUID) then
