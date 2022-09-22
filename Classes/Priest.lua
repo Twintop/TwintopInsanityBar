@@ -580,11 +580,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			isActive = false
 		}
 
-		specCache.holy.barTextVariables = {
-			icons = {},
-			values = {}
-		}
-
 		-- Shadow
 		specCache.shadow.Global_TwintopResourceBar = {
 			ttd = 0,
@@ -1174,11 +1169,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			endTime = nil,
 			duration = 0,
 			stacks = 0
-		}
-
-		specCache.shadow.barTextVariables = {
-			icons = {},
-			values = {}
 		}
 	end
 

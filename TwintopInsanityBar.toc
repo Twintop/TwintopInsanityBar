@@ -41,5 +41,5 @@ Classes\Priest.lua
 #Classes\Rogue.lua
 Classes\ShamanOptions.lua
 Classes\Shaman.lua
-#Classes\Warrior.lua
-#Classes\WarriorOptions.lua
+Classes\Warrior.lua
+Classes\WarriorOptions.lua

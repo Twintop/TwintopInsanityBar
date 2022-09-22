@@ -20,37 +20,40 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			snapshotData = {},
 			barTextVariables = {
 				icons = {},
-				values = {},
-				settings = {
-					bar = nil,
-					comboPoints = nil,
-					displayBar = nil,
-					font = nil,
-					textures = nil,
-					thresholds = nil
-				}
+				values = {}
+			},
+			spells = {},
+			talents = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
 			}
 		},
 		fury = {
 			snapshotData = {},
 			barTextVariables = {
 				icons = {},
-				values = {},
-				settings = {
-					bar = nil,
-					comboPoints = nil,
-					displayBar = nil,
-					font = nil,
-					textures = nil,
-					thresholds = nil
-				}
+				values = {}
+			},
+			spells = {},
+			talents = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
 			}
 		}
 	}
 
 	local function FillSpecCache()
 		-- Arms
-
 		specCache.arms.Global_TwintopResourceBar = {
 			ttd = 0,
 			resource = {
@@ -88,32 +91,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			effects = {
 				overgrowthSeedling = 1.0
 			},
-			talents = {
-				suddenDeath = {
-					isSelected = false
-				},
-				skullsplitter = {
-					isSelected = false
-				},
-				impendingVictory = {
-					isSelected = false
-				},
-				massacre = {
-					isSelected = false
-				},
-				rend = {
-					isSelected = false
-				},
-				cleave = {
-					isSelected = false
-				},
-				deadlyCalm = {
-					isSelected = false
-				},
-				ravager = {
-					isSelected = false
-				},
-			},
 			items = {
 				glory = false,
 				naturesFury = false
@@ -127,12 +104,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		}
 
 		specCache.arms.spells = {
-			--Warrior base abilities
+			--Warrior Class Baseline Abilities
 			charge = {
 				id = 100,
 				name = "",
 				icon = "",
-				rage = 20
+				rage = 20,
+				isTalent = false,
+				isBaseline = true,
 			},
 			execute = {
 				id = 163201,
@@ -145,6 +124,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 1,
 				settingKey = "execute",
 				isTalent = false,
+				isBaseline = true,
 				hasCooldown = false,
 				thresholdUsable = false,
 				isSnowflake = true
@@ -156,9 +136,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				healthMinimum = 0.2,
 				rage = -20,
 				texture = "",
-				thresholdId = 11,
+				thresholdId = 2,
 				settingKey = "executeMinimum",
 				isTalent = false,
+				isBaseline = true,
 				hasCooldown = false,
 				thresholdUsable = false,
 				isSnowflake = true
@@ -170,24 +151,24 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				healthMinimum = 0.2,
 				rage = -40,
 				texture = "",
-				thresholdId = 12,
+				thresholdId = 3,
 				settingKey = "executeMaximum",
 				isTalent = false,
+				isBaseline = true,
 				hasCooldown = false,
 				thresholdUsable = false,
 				isSnowflake = true
 			},
-			ignorePain = {
-				id = 190456,
+			hamstring = {
+				id = 1715,
 				name = "",
 				icon = "",
-				rage = -40,
-				cooldown = 12,
+				rage = -10,
 				texture = "",
-				thresholdId = 2,
-				settingKey = "ignorePain",
+				thresholdId = 4,
+				settingKey = "hamstring",
 				isTalent = false,
-				hasCooldown = true,
+				isBaseline = true,
 				thresholdUsable = false
 			},
 			shieldBlock = {
@@ -196,9 +177,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				icon = "",
 				rage = -30,
 				texture = "",
-				thresholdId = 3,
+				thresholdId = 5,
 				settingKey = "shieldBlock",
 				isTalent = false,
+				isBaseline = true,
 				hasCooldown = true,
 				thresholdUsable = false,
 				isSnowflake = true
@@ -209,11 +191,19 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				icon = "",
 				rage = -20,
 				texture = "",
-				thresholdId = 4,
+				thresholdId = 6,
 				settingKey = "slam",
 				isTalent = false,
+				isBaseline = true,
 				hasCooldown = false,
 				thresholdUsable = false
+			},
+			victoryRush = {
+				id = 34428,
+				name = "",
+				icon = "",
+				isTalent = false,
+				isBaseline = true,
 			},
 			whirlwind = {
 				id = 1680,
@@ -221,26 +211,15 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				icon = "",
 				rage = -30,
 				texture = "",
-				thresholdId = 5,
+				thresholdId = 7,
 				settingKey = "whirlwind",
 				isTalent = false,
-				hasCooldown = false,
+				isBaseline = true,
+				hasCooldown = true,
 				thresholdUsable = false
 			},
-			
-			--Arms base abilities
-			mortalStrike = {
-				id = 12294,
-				name = "",
-				icon = "",
-				rage = -30,
-				texture = "",
-				thresholdId = 6,
-				settingKey = "mortalStrike",
-				isTalent = false,
-				hasCooldown = true,
-				thresholdUsable = false	
-			},
+
+			-- Arms Baseline Abilities
 			deepWounds = {
 				id = 262115,
 				name = "",
@@ -249,7 +228,97 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				pandemic = true,
 				pandemicTime = 3 --Refreshes add 12sec, capping at 15? --10 * 0.3				
 			},
-			
+
+			-- Warrior Class Talents
+			impendingVictory = {
+				id = 202168,
+				name = "",
+				icon = "",
+				rage = -10,
+				texture = "",
+				thresholdId = 8,
+				settingKey = "impendingVictory",
+				isTalent = true,
+				hasCooldown = true,
+				thresholdUsable = false,
+				isSnowflake = true
+			},
+			thunderClap = {
+				id = 6343,
+				name = "",
+				icon = "",
+				rage = -30,
+				texture = "",
+				thresholdId = 9,
+				settingKey = "thunderClap",
+				isTalent = true,
+				hasCooldown = true,
+				thresholdUsable = false
+			},
+--[[
+			--???
+			ignorePain = {
+				id = 190456,
+				name = "",
+				icon = "",
+				rage = -40,
+				cooldown = 12,
+				texture = "",
+				thresholdId = 11112,
+				settingKey = "ignorePain",
+				isTalent = false,
+				hasCooldown = true,
+				thresholdUsable = false
+			},
+	]]		
+			--Arms Talent abilities
+			mortalStrike = {
+				id = 12294,
+				name = "",
+				icon = "",
+				rage = -30,
+				texture = "",
+				thresholdId = 10,
+				settingKey = "mortalStrike",
+				isTalent = true,
+				hasCooldown = true,
+				thresholdUsable = false
+			},
+			rend = {
+				id = 772,
+				name = "",
+				icon = "",
+				rage = -30,
+				texture = "",
+				thresholdId = 11,
+				settingKey = "rend",
+				isTalent = true,
+				hasCooldown = false,
+				thresholdUsable = false,
+				baseDuration = 15,
+				pandemic = true,
+				pandemicTime = 15 * 0.3
+			},
+			cleave = {
+				id = 845,
+				name = "",
+				icon = "",
+				rage = -20,
+				texture = "",
+				thresholdId = 12,
+				settingKey = "cleave",
+				isTalent = true,
+				hasCooldown = true,
+				thresholdUsable = false
+			},
+			massacre = {
+				id = 281001,
+				name = "",
+				icon = "",
+				healthMinimum = 0.35,
+				isTalent = true
+			},
+
 			--Talents
 			suddenDeath = {
 				id = 52437,
@@ -261,58 +330,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				rage = 20				
-			},
-			impendingVictory = {
-				id = 202168,
-				name = "",
-				icon = "",
-				rage = -10,
-				texture = "",
-				thresholdId = 7,
-				settingKey = "impendingVictory",
-				isTalent = true,
-				hasCooldown = true,
-				thresholdUsable = false,
-				isSnowflake = true
-			},
-			victoryRush = {
-				id = 32216,
-				name = "",
-				icon = "",
-				isActive = false
-			},
-			massacre = {
-				id = 281001,
-				name = "",
-				icon = "",
-				healthMinimum = 0.35
-			},
-			rend = {
-				id = 772,
-				name = "",
-				icon = "",
-				rage = -30,
-				texture = "",
-				thresholdId = 8,
-				settingKey = "rend",
-				isTalent = true,
-				hasCooldown = false,
-				thresholdUsable = false,
-				baseDuration = 15,
-				pandemic = true,
-				pandemicTime = 15 * 0.3				
-			},
-			cleave = {
-				id = 845,
-				name = "",
-				icon = "",
-				rage = -20,
-				texture = "",
-				thresholdId = 9,
-				settingKey = "cleave",
-				isTalent = true,
-				hasCooldown = true,
-				thresholdUsable = false
 			},
 			deadlyCalm = {
 				id = 262228,
@@ -332,9 +349,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isHasted = true,
 				energizeId = 248439
 			},
-
+			
 			-- Covenant
-			spearOfBastion = {
+			spearOfBastionCovenant = {
 				id = 307865,
 				name = "",
 				icon = "",
@@ -349,7 +366,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				rage = -20,
 				rageMax = -40,
 				texture = "",
-				thresholdId = 10,
+				thresholdId = 13,
 				settingKey = "condemn",
 				isTalent = false,
 				hasCooldown = false,
@@ -364,7 +381,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				healthAbove = 0.8,
 				rage = -20,
 				texture = "",
-				thresholdId = 13,
+				thresholdId = 14,
 				settingKey = "condemnMinimum",
 				isTalent = false,
 				hasCooldown = false,
@@ -379,7 +396,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				healthAbove = 0.8,
 				rage = -40,
 				texture = "",
-				thresholdId = 14,
+				thresholdId = 15,
 				settingKey = "condemnMaximum",
 				isTalent = false,
 				hasCooldown = false,
@@ -425,12 +442,39 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			targets = {},
 			rend = 0,
 		}
+		specCache.arms.snapshotData.shieldBlock = {
+			charges = 0,
+			maxCharges = 2,
+			startTime = nil,
+			duration = 0
+		}
+		specCache.arms.snapshotData.impendingVictory = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		specCache.arms.snapshotData.thunderClap = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		specCache.arms.snapshotData.whirlwind = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		--?????
+		--[[specCache.arms.snapshotData.ignorePain = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}]]
 		specCache.arms.snapshotData.mortalStrike = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.arms.snapshotData.impendingVictory = {
+		specCache.arms.snapshotData.cleave = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
@@ -439,22 +483,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			endTime = nil,
 			duration = 0,
 			spellId = nil
-		}
-		specCache.arms.snapshotData.ignorePain = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}
-		specCache.arms.snapshotData.shieldBlock = {
-			charges = 0,
-			maxCharges = 2,
-			startTime = nil,
-			duration = 0
-		}
-		specCache.arms.snapshotData.cleave = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
 		}
 		specCache.arms.snapshotData.deadlyCalm = {
 			endTime = nil,
@@ -674,7 +702,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			},
 
 			-- Covenant
-			spearOfBastion = {
+			spearOfBastionCovenant = {
 				id = 307865,
 				name = "",
 				icon = "",
@@ -825,11 +853,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#cleave", icon = spells.cleave.icon, description = "Cleave", printInSettings = true },
             { variable = "#condemn", icon = spells.condemn.icon, description = "Condemn", printInSettings = true },
             { variable = "#conquerorsBanner", icon = spells.conquerorsBanner.icon, description = "Conqueror's Banner", printInSettings = true },
-			{ variable = "#covenantAbility", icon = spells.spearOfBastion.icon .. spells.condemn.icon .. spells.ancientAftershock.icon .. spells.conquerorsBanner.icon, description = "Covenant on-use Ability", printInSettings = true},
+			{ variable = "#covenantAbility", icon = spells.spearOfBastionCovenant.icon .. spells.condemn.icon .. spells.ancientAftershock.icon .. spells.conquerorsBanner.icon, description = "Covenant on-use Ability", printInSettings = true},
 			{ variable = "#deadlyCalm", icon = spells.deadlyCalm.icon, description = "Deadly Calm", printInSettings = true },
 			{ variable = "#deepWounds", icon = spells.deepWounds.icon, description = "Deep Wounds", printInSettings = true },
 			{ variable = "#execute", icon = spells.execute.icon, description = "Execute", printInSettings = true },
-			{ variable = "#ignorePain", icon = spells.ignorePain.icon, description = "Ignore Pain", printInSettings = true },
+			--{ variable = "#ignorePain", icon = spells.ignorePain.icon, description = "Ignore Pain", printInSettings = true },
 			{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = "Impending Victory", printInSettings = true },
 			{ variable = "#massacre", icon = spells.massacre.icon, description = "Massacre", printInSettings = true },
 			{ variable = "#mortalStrike", icon = spells.mortalStrike.icon, description = "Mortal Strike", printInSettings = true },
@@ -838,7 +866,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = "Shield Block", printInSettings = true },
 			{ variable = "#skullsplitter", icon = spells.skullsplitter.icon, description = "Skullsplitter", printInSettings = true },
 			{ variable = "#slam", icon = spells.slam.icon, description = "Slam", printInSettings = true },
-            { variable = "#spearOfBastion", icon = spells.spearOfBastion.icon, description = "Spear of Bastion", printInSettings = true },
+            { variable = "#spearOfBastionCovenant", icon = spells.spearOfBastionCovenant.icon, description = "Spear of Bastion", printInSettings = true },
 			{ variable = "#victoryRush", icon = spells.victoryRush.icon, description = "Victory Rush", printInSettings = true },
 			{ variable = "#voraciousCullingBlade", icon = spells.voraciousCullingBlade.icon, description = spells.voraciousCullingBlade.name, printInSettings = true },
 			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = "Whirlwind", printInSettings = true },			
@@ -937,7 +965,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#charge", icon = spells.charge.icon, description = "Charge", printInSettings = true },
             { variable = "#condemn", icon = spells.condemn.icon, description = "Condemn", printInSettings = true },
             { variable = "#conquerorsBanner", icon = spells.conquerorsBanner.icon, description = "Conqueror's Banner", printInSettings = true },
-			{ variable = "#covenantAbility", icon = spells.spearOfBastion.icon .. spells.condemn.icon .. spells.ancientAftershock.icon .. spells.conquerorsBanner.icon, description = "Covenant on-use Ability", printInSettings = true},
+			{ variable = "#covenantAbility", icon = spells.spearOfBastionCovenant.icon .. spells.condemn.icon .. spells.ancientAftershock.icon .. spells.conquerorsBanner.icon, description = "Covenant on-use Ability", printInSettings = true},
 			{ variable = "#enrage", icon = spells.enrage.icon, description = "Enrage", printInSettings = true },
 			{ variable = "#execute", icon = spells.execute.icon, description = "Execute", printInSettings = true },
 			{ variable = "#ignorePain", icon = spells.ignorePain.icon, description = "Ignore Pain", printInSettings = true },
@@ -945,7 +973,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#massacre", icon = spells.massacre.icon, description = "Massacre", printInSettings = true },
 			{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = "Shield Block", printInSettings = true },
 			{ variable = "#slam", icon = spells.slam.icon, description = "Slam", printInSettings = true },
-            { variable = "#spearOfBastion", icon = spells.spearOfBastion.icon, description = "Spear of Bastion", printInSettings = true },
+            { variable = "#spearOfBastionCovenant", icon = spells.spearOfBastionCovenant.icon, description = "Spear of Bastion", printInSettings = true },
 			{ variable = "#victoryRush", icon = spells.victoryRush.icon, description = "Victory Rush", printInSettings = true },
 			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = "Whirlwind", printInSettings = true }
         }
@@ -1032,15 +1060,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
         if specId == 1 then		
 			TRB.Data.character.specName = "arms"
-			TRB.Data.character.talents.suddenDeath.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.skullsplitter.isSelected = select(4, GetTalentInfo(1, 3, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.impendingVictory.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.massacre.isSelected = select(4, GetTalentInfo(3, 1, TRB.Data.character.specGroup))
-            TRB.Data.character.talents.rend.isSelected = select(4, GetTalentInfo(3, 3, TRB.Data.character.specGroup))
-            TRB.Data.character.talents.cleave.isSelected = select(4, GetTalentInfo(5, 3, TRB.Data.character.specGroup))
-            TRB.Data.character.talents.deadlyCalm.isSelected = select(4, GetTalentInfo(6, 3, TRB.Data.character.specGroup))
-            TRB.Data.character.talents.ravager.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
-
 			-- Legendaries
 			local headItemLink = GetInventoryItemLink("player", 1)
 			local neckItemLink = GetInventoryItemLink("player", 2)
@@ -1160,9 +1179,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.character.items.glory = glory
         elseif specId == 2 then
 			TRB.Data.character.specName = "fury"
-			TRB.Data.character.talents.suddenDeath.isSelected = select(4, GetTalentInfo(1, 2, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.impendingVictory.isSelected = select(4, GetTalentInfo(2, 2, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.massacre.isSelected = select(4, GetTalentInfo(3, 1, TRB.Data.character.specGroup))
 
 			-- Legendaries
 			local chestItemLink = GetInventoryItemLink("player", 5)
@@ -1412,7 +1428,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 
         if specId == 1 then --Arms
-			if var == "$ravagerTicks" then
+			--[[if var == "$ravagerTicks" then
 				if TRB.Data.snapshotData.ravager.isActive then
 					valid = true
 				end
@@ -1424,8 +1440,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				if TRB.Data.snapshotData.suddenDeath.isActive then
 					valid = true
 				end
-			elseif var == "$rend" then
-				if TRB.Data.character.talents.rend.isSelected then
+			else]]
+			if var == "$rend" then
+				if TRB.Functions.IsTalentActive(TRB.Data.spells.rend) then
 					valid = true
 				end
 			elseif var == "$rendCount" then
@@ -1689,7 +1706,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local covenantAbilityRage = "0.0"
 
 		if TRB.Data.character.covenantId == 1 then
-			covenantAbilityIcon = TRB.Data.spells.spearOfBastion.icon
+			covenantAbilityIcon = TRB.Data.spells.spearOfBastionCovenant.icon
 		elseif TRB.Data.character.covenantId == 2 then
 			covenantAbilityIcon = TRB.Data.spells.condemn.icon
 		elseif TRB.Data.character.covenantId == 3 then
@@ -1737,7 +1754,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#deadlyCalm"] = TRB.Data.spells.deadlyCalm.icon
 		lookup["#deepWounds"] = TRB.Data.spells.deepWounds.icon
 		lookup["#execute"] = TRB.Data.spells.execute.icon
-		lookup["#ignorePain"] = TRB.Data.spells.ignorePain.icon
+		--lookup["#ignorePain"] = TRB.Data.spells.ignorePain.icon
 		lookup["#impendingVictory"] = TRB.Data.spells.impendingVictory.icon
 		lookup["#massacre"] = TRB.Data.spells.massacre.icon
 		lookup["#mortalStrike"] = TRB.Data.spells.mortalStrike.icon
@@ -1746,10 +1763,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#shieldBlock"] = TRB.Data.spells.shieldBlock.icon
 		lookup["#skullsplitter"] = TRB.Data.spells.skullsplitter.icon
 		lookup["#slam"] = TRB.Data.spells.slam.icon
-		lookup["#spearOfBastion"] = TRB.Data.spells.spearOfBastion.icon
+		lookup["#spearOfBastionCovenant"] = TRB.Data.spells.spearOfBastionCovenant.icon
 		lookup["#victoryRush"] = TRB.Data.spells.victoryRush.icon
 		lookup["#whirlwind"] = TRB.Data.spells.whirlwind.icon
-		lookup["$rend"] = TRB.Data.character.talents.rend.isSelected
+		lookup["$rend"] = TRB.Functions.IsTalentActive(TRB.Data.spells.rend)
 		lookup["$rendCount"] = rendCount
 		lookup["$rendTime"] = rendTime
 		lookup["$deepWoundsCount"] = deepWoundsCount
@@ -1782,7 +1799,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		TRB.Data.lookup = lookup
 		
 		local lookupLogic = TRB.Data.lookupLogic or {}
-		lookupLogic["$rend"] = TRB.Data.character.talents.rend.isSelected
+		lookupLogic["$rend"] = TRB.Functions.IsTalentActive(TRB.Data.spells.rend)
 		lookupLogic["$rendCount"] = _rendCount
 		lookupLogic["$rendTime"] = _rendTime
 		lookupLogic["$deepWoundsCount"] = _deepWoundsCount
@@ -1900,7 +1917,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local covenantAbilityRage = "0.0"
 
 		if TRB.Data.character.covenantId == 1 then
-			covenantAbilityIcon = TRB.Data.spells.spearOfBastion.icon
+			covenantAbilityIcon = TRB.Data.spells.spearOfBastionCovenant.icon
 		elseif TRB.Data.character.covenantId == 2 then
 			covenantAbilityIcon = TRB.Data.spells.condemn.icon
 		elseif TRB.Data.character.covenantId == 3 then
@@ -1943,7 +1960,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#massacre"] = TRB.Data.spells.massacre.icon
 		lookup["#shieldBlock"] = TRB.Data.spells.shieldBlock.icon
 		lookup["#slam"] = TRB.Data.spells.slam.icon
-		lookup["#spearOfBastion"] = TRB.Data.spells.spearOfBastion.icon
+		lookup["#spearOfBastionCovenant"] = TRB.Data.spells.spearOfBastionCovenant.icon
 		lookup["#victoryRush"] = TRB.Data.spells.victoryRush.icon
 		lookup["#whirlwind"] = TRB.Data.spells.whirlwind.icon
 		lookup["$enrageTime"] = enrageTime
@@ -2143,13 +2160,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.snapshotData.impendingVictory.startTime, TRB.Data.snapshotData.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
         end
 
+		--[[
 		if TRB.Data.snapshotData.ignorePain.startTime ~= nil and currentTime > (TRB.Data.snapshotData.ignorePain.startTime + TRB.Data.snapshotData.ignorePain.duration) then
             TRB.Data.snapshotData.ignorePain.startTime = nil
             TRB.Data.snapshotData.ignorePain.duration = 0
 		elseif TRB.Data.snapshotData.ignorePain.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 			TRB.Data.snapshotData.ignorePain.startTime, TRB.Data.snapshotData.ignorePain.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ignorePain.id)
-        end
+        end]]
 
 ---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 		TRB.Data.snapshotData.shieldBlock.charges, TRB.Data.snapshotData.shieldBlock.maxCharges, TRB.Data.snapshotData.shieldBlock.startTime, TRB.Data.snapshotData.shieldBlock.duration, _ = GetSpellCharges(TRB.Data.spells.shieldBlock.id)
@@ -2337,7 +2355,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							local thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
-							if spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
+							if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 								isUsable = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
@@ -2352,7 +2370,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
 									local healthMinimum = TRB.Data.spells.execute.healthMinimum
 									
-									if TRB.Data.character.talents.massacre.isSelected then
+									if TRB.Functions.IsTalentActive(TRB.Data.spells.massacre) then
 										healthMinimum = TRB.Data.spells.massacre.healthMinimum
 									end
 
@@ -2561,7 +2579,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							local thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
-							if spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
+							if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 								isUsable = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
@@ -2836,6 +2854,16 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 						TRB.Data.snapshotData.impendingVictory.startTime, TRB.Data.snapshotData.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
 					end
+				elseif spellId == TRB.Data.spells.thunderClap.id then
+					if type == "SPELL_CAST_SUCCESS" then
+						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
+						TRB.Data.snapshotData.thunderClap.startTime, TRB.Data.snapshotData.thunderClap.duration, _, _ = GetSpellCooldown(TRB.Data.spells.thunderClap.id)
+					end
+				elseif spellId == TRB.Data.spells.whirlwind.id then
+					if type == "SPELL_CAST_SUCCESS" then
+						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
+						TRB.Data.snapshotData.whirlwind.startTime, TRB.Data.snapshotData.whirlwind.duration, _, _ = GetSpellCooldown(TRB.Data.spells.whirlwind.id)
+					end
 				elseif spellId == TRB.Data.spells.victoryRush.id then
 					if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
 						_, _, _, _, TRB.Data.snapshotData.victoryRush.duration, TRB.Data.snapshotData.victoryRush.endTime, _, _, _, TRB.Data.snapshotData.victoryRush.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.victoryRush.id)
@@ -2845,11 +2873,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						TRB.Data.snapshotData.victoryRush.duration = 0
 						TRB.Data.spells.victoryRush.isActive = false
 					end
-				elseif spellId == TRB.Data.spells.ignorePain.id then
+				--[[elseif spellId == TRB.Data.spells.ignorePain.id then
 					if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" then
 						TRB.Data.snapshotData.ignorePain.startTime = currentTime
 						TRB.Data.snapshotData.ignorePain.duration = TRB.Data.spells.ignorePain.cooldown
-					end
+					end]]
 				elseif spellId == TRB.Data.spells.shieldBlock.id then
 					if type == "SPELL_CAST_SUCCESS" then
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
@@ -2951,6 +2979,36 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 	end)
 
+	local function SwitchSpec()
+		local specId = GetSpecialization()
+		if specId == 1 then
+			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.warrior.arms)
+			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
+			specCache.arms.talents = TRB.Functions.GetTalents()
+			FillSpellData_Arms()
+			TRB.Functions.LoadFromSpecCache(specCache.arms)
+			TRB.Functions.RefreshLookupData = RefreshLookupData_Arms
+			
+			if TRB.Data.barConstructedForSpec ~= "arms" then
+				TRB.Data.barConstructedForSpec = "arms"
+				ConstructResourceBar(specCache.arms.settings)
+			end
+		elseif specId == 2 then
+			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.warrior.fury)
+			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.fury)
+			specCache.fury.talents = TRB.Functions.GetTalents()
+			FillSpellData_Fury()
+			TRB.Functions.LoadFromSpecCache(specCache.fury)
+			TRB.Functions.RefreshLookupData = RefreshLookupData_Fury
+			
+			if TRB.Data.barConstructedForSpec ~= "fury" then
+				TRB.Data.barConstructedForSpec = "fury"
+				ConstructResourceBar(specCache.fury.settings)
+			end
+		end
+		EventRegistration()
+	end
+
 	resourceFrame:RegisterEvent("ADDON_LOADED")
 	resourceFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
 	resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
@@ -2972,8 +3030,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						TRB.Data.settings = settings
 					end
 					FillSpecCache()
-					FillSpellData_Arms()
-					FillSpellData_Fury()
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"
@@ -3000,39 +3056,21 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						C_Timer.After(1, function()
 							TRB.Data.settings.warrior.arms = TRB.Functions.ValidateLsmValues("Arms Warrior", TRB.Data.settings.warrior.arms)
 							TRB.Data.settings.warrior.fury = TRB.Functions.ValidateLsmValues("Fury Warrior", TRB.Data.settings.warrior.fury)
+							
+							FillSpellData_Arms()
+							FillSpellData_Fury()
+							TRB.Data.barConstructedForSpec = nil
+							SwitchSpec()
 							TRB.Options.Warrior.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case
-							ConstructResourceBar(TRB.Data.settings.warrior[TRB.Data.barConstructedForSpec])
+							ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 							EventRegistration()
 						end)
 					end)
 				end
 
-				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
-					if specId == 1 then
-						TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.warrior.arms)
-						TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
-						FillSpellData_Arms()
-						TRB.Functions.LoadFromSpecCache(specCache.arms)
-						TRB.Functions.RefreshLookupData = RefreshLookupData_Arms
-						
-						if TRB.Data.barConstructedForSpec ~= "arms" then
-							TRB.Data.barConstructedForSpec = "arms"
-							ConstructResourceBar(specCache.arms.settings)
-						end
-					elseif specId == 2 then
-						TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.warrior.fury)
-						TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.fury)
-						FillSpellData_Fury()
-						TRB.Functions.LoadFromSpecCache(specCache.fury)
-						TRB.Functions.RefreshLookupData = RefreshLookupData_Fury
-						
-						if TRB.Data.barConstructedForSpec ~= "fury" then
-							TRB.Data.barConstructedForSpec = "fury"
-							ConstructResourceBar(specCache.fury.settings)
-						end
-					end
-					EventRegistration()
+				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
+					SwitchSpec()
 				end
 			end
 		end

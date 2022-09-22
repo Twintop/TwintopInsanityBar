@@ -2406,7 +2406,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
                             if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
                             elseif spell.isPvp and not TRB.Data.character.isPvp then
                                 showThreshold = false
-                            elseif spell.isTalent and not TRB.Data.character.talents[spell.settingKey].isSelected then -- Talent not selected
+                            elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
                                 showThreshold = false
                             elseif spell.hasCooldown then
                                 if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then

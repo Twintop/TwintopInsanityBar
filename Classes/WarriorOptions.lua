@@ -104,6 +104,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					width=24,
 					height=24
 				},
+				thunderClap = {
+					enabled = true
+				},
+				hamstring = {
+					enabled = true
+				},
 				execute = {
 					enabled = true, -- 1
 				},
