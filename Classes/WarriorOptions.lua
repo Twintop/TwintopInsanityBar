@@ -104,53 +104,50 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					width=24,
 					height=24
 				},
-				thunderClap = {
-					enabled = true
-				},
-				hamstring = {
-					enabled = true
-				},
 				execute = {
 					enabled = true, -- 1
 				},
-				ignorePain = {
+				executeMinimum = {
 					enabled = true, -- 2
 				},
+				executeMaximum = {
+					enabled = true, -- 3
+				},
+				hamstring = {
+					enabled = false -- 4
+				},
 				shieldBlock = {
-					enabled = false, -- 3
+					enabled = false, -- 5
 				},
 				slam = {
-					enabled = true, -- 4
-				},
-				whirlwind = {
-					enabled = true, -- 5
-				},
-				mortalStrike = {
 					enabled = true, -- 6
 				},
-				impendingVictory = {
+				whirlwind = {
 					enabled = true, -- 7
 				},
-				rend = {
+				impendingVictory = {
 					enabled = true, -- 8
 				},
-				cleave = {
-					enabled = true, -- 9
+				thunderClap = {
+					enabled = true -- 9
 				},
-				condemn = {
+				mortalStrike = {
 					enabled = true, -- 10
 				},
-				executeMinimum = {
+				rend = {
 					enabled = true, -- 11
 				},
-				executeMaximum = {
+				cleave = {
 					enabled = true, -- 12
 				},
-				condemnMinimum = {
+				condemn = {
 					enabled = true, -- 13
 				},
-				condemnMaximum = {
+				condemnMinimum = {
 					enabled = true, -- 14
+				},
+				condemnMaximum = {
+					enabled = true, -- 15
 				},
 			},
 			displayBar = {
@@ -322,9 +319,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					yPos=-12,
 					width=24,
 					height=24
-				},
-				ignorePain = {
-					enabled = true, -- 1
 				},
 				shieldBlock = {
 					enabled = false, -- 2
@@ -647,8 +641,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.cleaveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_cleave", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cleaveThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Cleave (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Cleave. Only visible if talented."
+		getglobal(f:GetName() .. 'Text'):SetText("Cleave")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Cleave."
 		f:SetChecked(spec.thresholds.cleave.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.cleave.enabled = self:GetChecked()
@@ -691,22 +685,22 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.ignorePainThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_ignorePain", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.ignorePainThresholdShow
+		controls.checkBoxes.hamstringThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_hamstring", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.hamstringThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Ignore Pain")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Ignore Pain."
-		f:SetChecked(spec.thresholds.ignorePain.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Hamstring")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Hamstring."
+		f:SetChecked(spec.thresholds.hamstring.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.ignorePain.enabled = self:GetChecked()
+			spec.thresholds.hamstring.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
 		controls.checkBoxes.impendingVictoryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_impendingVictory", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.impendingVictoryThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Impending Victory (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Impending Victory. Only visible if talented."
+		getglobal(f:GetName() .. 'Text'):SetText("Impending Victory")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Impending Victory."
 		f:SetChecked(spec.thresholds.impendingVictory.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.impendingVictory.enabled = self:GetChecked()
@@ -727,8 +721,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.rendThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_rend", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.rendThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Rend (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Rend. Only visible if talented."
+		getglobal(f:GetName() .. 'Text'):SetText("Rend")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Rend."
 		f:SetChecked(spec.thresholds.rend.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.rend.enabled = self:GetChecked()
@@ -754,6 +748,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetChecked(spec.thresholds.slam.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.slam.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.thunderClapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_thunderClap", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thunderClapThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Thunder Clap")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Thunder Clap."
+		f:SetChecked(spec.thresholds.thunderClap.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.thunderClap.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
