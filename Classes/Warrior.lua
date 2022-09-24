@@ -489,13 +489,18 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				resource = 0,
 				passive = 0,
 				ancientAftershock = 0,
-				conquerorsBanner = 0
+				conquerorsBanner = 0,
+				ravager = 0
 			},
 			ancientAftershock = {
 				rage = 0,
 				ticks = 0
 			},
 			conquerorsBanner = {
+				rage = 0,
+				ticks = 0
+			},			
+			ravager = {
 				rage = 0,
 				ticks = 0
 			}
@@ -529,7 +534,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 100,
 				name = "",
 				icon = "",
-				rage = 20
+				rage = 20,
+				isTalent = false,
+				isBaseline = true,
 			},
 			execute = {
 				id = 163201,
@@ -538,7 +545,20 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				healthMinimum = 0.2,
 				rage = 20,
 				isTalent = false,
+				isBaseline = true,
 				hasCooldown = false
+			},
+			hamstring = {
+				id = 1715,
+				name = "",
+				icon = "",
+				rage = -10,
+				texture = "",
+				thresholdId = 1,
+				settingKey = "hamstring",
+				isTalent = false,
+				isBaseline = true,
+				thresholdUsable = false
 			},
 			shieldBlock = {
 				id = 2565,
@@ -549,6 +569,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 2,
 				settingKey = "shieldBlock",
 				isTalent = false,
+				isBaseline = true,
 				hasCooldown = true,
 				thresholdUsable = false,
 				isSnowflake = true
@@ -562,8 +583,16 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 3,
 				settingKey = "slam",
 				isTalent = false,
+				isBaseline = true,
 				hasCooldown = false,
 				thresholdUsable = false
+			},
+			victoryRush = {
+				id = 34428,
+				name = "",
+				icon = "",
+				isTalent = false,
+				isBaseline = true,
 			},
 			whirlwind = {
 				id = 85739, --buff ID
@@ -572,48 +601,60 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			},
 			
 			--Fury base abilities
-			rampage = {
-				id = 184367,
-				name = "",
-				icon = "",
-				rage = -80,
-				texture = "",
-				thresholdId = 4,
-				settingKey = "rampage",
-				isTalent = false,
-				hasCooldown = false,
-				thresholdUsable = false
-			},
 			enrage = {
 				id = 184362,
 				name = "",
-				icon = ""
+				icon = "",
+				isTalent = false,
+				isBaseline = true,
 			},
-			
-			--Talents
-			suddenDeath = {
-				id = 52437,
-				name = "",
-				icon = ""				
-			},
+
+			-- Warrior Class Talents
 			impendingVictory = {
 				id = 202168,
 				name = "",
 				icon = "",
 				rage = -10,
 				texture = "",
-				thresholdId = 5,
+				thresholdId = 4,
 				settingKey = "impendingVictory",
 				isTalent = true,
 				hasCooldown = true,
 				thresholdUsable = false,
 				isSnowflake = true
 			},
-			victoryRush = {
-				id = 32216,
+			thunderClap = {
+				id = 6343,
 				name = "",
 				icon = "",
-				isActive = false
+				rage = -30,
+				texture = "",
+				thresholdId = 5,
+				settingKey = "thunderClap",
+				isTalent = true,
+				hasCooldown = true,
+				thresholdUsable = false
+			},
+
+			-- Fury Talent abilities
+			
+			--Talents
+			rampage = {
+				id = 184367,
+				name = "",
+				icon = "",
+				rage = -80,
+				texture = "",
+				thresholdId = 6,
+				settingKey = "rampage",
+				isTalent = false,
+				hasCooldown = false,
+				thresholdUsable = false
+			},
+			suddenDeath = {
+				id = 52437,
+				name = "",
+				icon = ""				
 			},
 			massacre = {
 				id = 206315,
@@ -628,6 +669,16 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				rage = 5,
 				duration = 4,
 				ticks = 4 -- On hit + 4 = 5
+			},
+			ravager = {
+				id = 228920,
+				name = "",
+				icon = "",
+				rage = 10,
+				ticks = 6, -- Sometimes 5, sometimes 6, sometimes 7?!
+				duration = 12,
+				isHasted = true,
+				energizeId = 334934
 			},
 
 			-- Covenant
@@ -683,6 +734,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			targets = {},
 			rend = 0,
 		}
+		specCache.fury.snapshotData.shieldBlock = {
+			charges = 0,
+			maxCharges = 2,
+			startTime = nil,
+			duration = 0
+		}
+		specCache.fury.snapshotData.thunderClap = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
 		specCache.fury.snapshotData.impendingVictory = {
 			startTime = nil,
 			duration = 0,
@@ -704,6 +766,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			endTime = nil,
 			stacks = 0
 		}
+		specCache.fury.snapshotData.ravager = {
+			isActive = false,
+			ticksRemaining = 0,
+			rage = 0,
+			endTime = nil,
+			lastTick = nil,
+			totalDuration = 0
+		}
 		specCache.fury.snapshotData.bladestorm = {
 			endTime = nil,
 			duration = 0,
@@ -711,12 +781,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			spellId = nil,
 			ticksRemaining = 0,
 			rage = 0
-		}
-		specCache.fury.snapshotData.shieldBlock = {
-			charges = 0,
-			maxCharges = 2,
-			startTime = nil,
-			duration = 0
 		}
 		specCache.fury.snapshotData.condemn = {
 			startTime = nil,
@@ -888,6 +952,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = "Shield Block", printInSettings = true },
 			{ variable = "#slam", icon = spells.slam.icon, description = "Slam", printInSettings = true },
             { variable = "#spearOfBastionCovenant", icon = spells.spearOfBastionCovenant.icon, description = "Spear of Bastion", printInSettings = true },
+			{ variable = "#ravager", icon = spells.ravager.icon, description = "Ravager", printInSettings = true },
 			{ variable = "#victoryRush", icon = spells.victoryRush.icon, description = "Victory Rush", printInSettings = true },
 			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = "Whirlwind", printInSettings = true }
         }
@@ -933,7 +998,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$resourceMax", description = "Maximum Rage", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Builder Rage from Hardcasting Spells", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Spender Rage from Hardcasting Spells", printInSettings = false, color = false },
-			{ variable = "$passive", description = "Rage from Passive Sources including Covenant abilities", printInSettings = true, color = false },
+			{ variable = "$passive", description = "Rage from Passive Sources including Ravager and Covenant abilities", printInSettings = true, color = false },
 			{ variable = "$ragePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
 			{ variable = "$resourcePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
 			{ variable = "$ragePlusPassive", description = "Current + Passive Rage Total", printInSettings = true, color = false },
@@ -943,6 +1008,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 			{ variable = "$enrageTime", description = "Time remaining on Enrage", printInSettings = true, color = false },
 			
+			{ variable = "$ravagerTicks", description = "Number of expected ticks remaining on Ravager", printInSettings = true, color = false }, 
+			{ variable = "$ravagerRage", description = "Rage from Ravager", printInSettings = true, color = false }, 
+
 			{ variable = "$whirlwindTime", description = "Time remaining on Whirlwind buff", printInSettings = true, color = false },
 			{ variable = "$whirlwindStacks", description = "Number of stacks remaining on Whirlwind buff", printInSettings = true, color = false },
 			
@@ -1378,16 +1446,24 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				if TRB.Data.snapshotData.ancientAftershock.rage > 0 or TRB.Data.snapshotData.conquerorsBanner.isActive then
 					valid = true
 				end
+			elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
+				if normalizedRage > 0 or TRB.Data.snapshotData.ancientAftershock.rage > 0 then
+					valid = true
+				end
             end
 		elseif specId == 2 then --Fury
 			if var == "$resourceTotal" or var == "$rageTotal" then
-				if normalizedRage > 0 or TRB.Data.snapshotData.ancientAftershock.rage > 0 or TRB.Data.snapshotData.conquerorsBanner.isActive or
+				if normalizedRage > 0 or TRB.Data.snapshotData.ravager.rage > 0 or TRB.Data.snapshotData.ancientAftershock.rage > 0 or TRB.Data.snapshotData.conquerorsBanner.isActive or
 					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
 					then
 					valid = true
 				end
 			elseif var == "$passive" then
-				if TRB.Data.snapshotData.ancientAftershock.rage > 0 or TRB.Data.snapshotData.conquerorsBanner.isActive then
+				if TRB.Data.snapshotData.ravager.rage > 0 or TRB.Data.snapshotData.ancientAftershock.rage > 0 or TRB.Data.snapshotData.conquerorsBanner.isActive then
+					valid = true
+				end
+			elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
+				if normalizedRage > 0 or TRB.Data.snapshotData.ravager.rage > 0 or TRB.Data.snapshotData.ancientAftershock.rage > 0 then
 					valid = true
 				end
 			elseif var == "$enrageTime" then
@@ -1400,6 +1476,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				end
 			elseif var == "$whirlwindStacks" then
 				if TRB.Data.snapshotData.whirlwind.stacks ~= nil and TRB.Data.snapshotData.whirlwind.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$ravagerTicks" then
+				if TRB.Data.snapshotData.ravager.isActive then
+					valid = true
+				end
+			elseif var == "$ravagerRage" then
+				if TRB.Data.snapshotData.ravager.isActive then
 					valid = true
 				end
 			end
@@ -1422,10 +1506,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		elseif var == "$overcap" or var == "$rageOvercap" or var == "$resourceOvercap" then
 			if (normalizedRage + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
-				valid = true
-			end
-		elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
-			if normalizedRage > 0 or TRB.Data.snapshotData.ancientAftershock.rage > 0 then
 				valid = true
 			end
 		elseif var == "$casting" then
@@ -1755,14 +1835,20 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local conquerorsBannerRage = string.format("%.0f", TRB.Data.snapshotData.conquerorsBanner.rage)
 		--$conquerorsBannerTicks
 		local conquerorsBannerTicks = string.format("%.0f", TRB.Data.snapshotData.conquerorsBanner.ticksRemaining)
-        
+        		
+		--$ravagerRage
+		local _ravagerRage = TRB.Data.snapshotData.ravager.rage
+		local ravagerRage = string.format("%.0f", TRB.Data.snapshotData.ravager.rage)
+		--$ravagerTicks
+		local ravagerTicks = string.format("%.0f", TRB.Data.snapshotData.ravager.ticksRemaining)
+
 		--$rage
 		local ragePrecision = TRB.Data.settings.warrior.fury.ragePrecision or 0
 		local currentRage = string.format("|c%s%s|r", currentRageColor, TRB.Functions.RoundTo(normalizedRage, ragePrecision, "floor"))
 		--$casting
 		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, ragePrecision, "floor"))
 		--$passive
-		local _passiveRage = _ancientAftershockRage + _conquerorsBannerRage
+		local _passiveRage = _ravagerRage + _ancientAftershockRage + _conquerorsBannerRage
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
@@ -1812,6 +1898,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		Global_TwintopResourceBar.resource.passive = _passiveRage
 		Global_TwintopResourceBar.resource.ancientAftershock = _ancientAftershockRage
 		Global_TwintopResourceBar.resource.conquerorsBanner = _conquerorsBannerRage
+		Global_TwintopResourceBar.resource.ravager = _ravagerRage
 		Global_TwintopResourceBar.conquerorsBanner = {
 			rage = _conquerorsBannerRage,
 			ticks = TRB.Data.snapshotData.conquerorsBanner.ticksRemaining or 0
@@ -1820,6 +1907,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			rage = _ancientAftershockRage,
 			ticks = TRB.Data.snapshotData.ancientAftershock.ticksRemaining or 0,
 			targetsHit = TRB.Data.snapshotData.ancientAftershock.targetsHit or 0
+		}
+		Global_TwintopResourceBar.ravager = {
+			rage = _ravagerRage,
+			ticks = TRB.Data.snapshotData.ravager.ticksRemaining or 0
 		}
 
 
@@ -1833,6 +1924,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#enrage"] = TRB.Data.spells.enrage.icon
 		lookup["#execute"] = TRB.Data.spells.execute.icon
 		lookup["#impendingVictory"] = TRB.Data.spells.impendingVictory.icon
+		lookup["#ravager"] = TRB.Data.spells.ravager.icon
 		lookup["#shieldBlock"] = TRB.Data.spells.shieldBlock.icon
 		lookup["#slam"] = TRB.Data.spells.slam.icon
 		lookup["#spearOfBastionCovenant"] = TRB.Data.spells.spearOfBastionCovenant.icon
@@ -1862,7 +1954,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["$passive"] = passiveRage
 		lookup["$overcap"] = overcap
 		lookup["$resourceOvercap"] = overcap
-		lookup["$rageOvercap"] = overcap
+		lookup["$rageOvercap"] = overcap		
+		lookup["$ravagerRage"] = _ravagerRage
+		lookup["$ravagerTicks"] = ravagerTicks
 		TRB.Data.lookup = lookup
 
 
@@ -1892,6 +1986,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookupLogic["$overcap"] = overcap
 		lookupLogic["$resourceOvercap"] = overcap
 		lookupLogic["$rageOvercap"] = overcap
+		lookupLogic["$ravagerRage"] = _ravagerRage
+		lookupLogic["$ravagerTicks"] = ravagerTicks
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -1938,6 +2034,30 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 			TRB.Functions.ResetCastingSnapshotData()
 			return false
+		end
+	end
+
+	local function UpdateRavager()
+		if TRB.Data.snapshotData.ravager.isActive then
+			local currentTime = GetTime()
+			if TRB.Data.snapshotData.ravager.endTime == nil or currentTime > TRB.Data.snapshotData.ravager.endTime then
+				TRB.Data.snapshotData.ravager.ticksRemaining = 0
+				TRB.Data.snapshotData.ravager.endTime = nil
+				TRB.Data.snapshotData.ravager.rage = 0
+				TRB.Data.snapshotData.ravager.isActive = false
+				TRB.Data.snapshotData.ravager.totalDuration = 0
+			else
+				local ticksRemaining = math.ceil((TRB.Data.snapshotData.ravager.endTime - currentTime) / (TRB.Data.snapshotData.ravager.totalDuration / TRB.Data.spells.ravager.ticks))
+
+				if ticksRemaining < TRB.Data.snapshotData.ravager.ticksRemaining then
+					TRB.Data.snapshotData.ravager.ticksRemaining = ticksRemaining
+				end
+
+				TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage				
+				if TRB.Data.snapshotData.ravager.rage < 0 then
+					TRB.Data.snapshotData.ravager.rage = 0
+				end
+			end
 		end
 	end
 
@@ -2011,6 +2131,15 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.snapshotData.impendingVictory.startTime, TRB.Data.snapshotData.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
         end
 
+
+		if TRB.Data.snapshotData.thunderClap.startTime ~= nil and currentTime > (TRB.Data.snapshotData.thunderClap.startTime + TRB.Data.snapshotData.thunderClap.duration) then
+            TRB.Data.snapshotData.thunderClap.startTime = nil
+            TRB.Data.snapshotData.thunderClap.duration = 0
+		elseif TRB.Data.snapshotData.thunderClap.startTime ~= nil then
+			---@diagnostic disable-next-line: redundant-parameter
+			TRB.Data.snapshotData.thunderClap.startTime, TRB.Data.snapshotData.thunderClap.duration, _, _ = GetSpellCooldown(TRB.Data.spells.thunderClap.id)
+        end
+
 ---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 		TRB.Data.snapshotData.shieldBlock.charges, TRB.Data.snapshotData.shieldBlock.maxCharges, TRB.Data.snapshotData.shieldBlock.startTime, TRB.Data.snapshotData.shieldBlock.duration, _ = GetSpellCharges(TRB.Data.spells.shieldBlock.id)
 	end
@@ -2069,6 +2198,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local function UpdateSnapshot_Fury()
 		UpdateSnapshot()
 		UpdateBladestorm()
+		UpdateRavager()
 
 		local currentTime = GetTime()
 		local _
@@ -2381,6 +2511,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 					local passiveValue = 0
 					if TRB.Data.settings.warrior.fury.bar.showPassive then
+						if TRB.Data.snapshotData.ravager.rage > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.ravager.rage
+						end
+
 						if TRB.Data.snapshotData.ancientAftershock.rage > 0 then
 							passiveValue = passiveValue + TRB.Data.snapshotData.ancientAftershock.rage
 						end
@@ -2459,6 +2593,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									end
 								end
 							elseif spell.hasCooldown then
+								--print(spell.name, spell.id)
 								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 									thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
@@ -2664,6 +2799,35 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					elseif spellId == TRB.Data.spells.whirlwind.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							_, _, TRB.Data.snapshotData.whirlwind.stacks, _, TRB.Data.snapshotData.whirlwind.duration, TRB.Data.snapshotData.whirlwind.endTime, _, _, _, TRB.Data.snapshotData.whirlwind.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.whirlwind.id, "player")
+						end
+					elseif spellId == TRB.Data.spells.ravager.id then
+						if type == "SPELL_CAST_SUCCESS" then -- Ravager used
+							TRB.Data.snapshotData.ravager.isActive = true
+							TRB.Data.snapshotData.ravager.totalDuration = TRB.Data.spells.ravager.duration * (TRB.Functions.GetCurrentGCDTime(true) / 1.5)
+							TRB.Data.snapshotData.ravager.ticksRemaining = TRB.Data.spells.ravager.ticks
+							TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage
+							TRB.Data.snapshotData.ravager.endTime = currentTime + TRB.Data.snapshotData.ravager.totalDuration
+							TRB.Data.snapshotData.ravager.lastTick = currentTime
+							if TRB.Data.snapshotData.ravager.rage < 0 then
+								TRB.Data.snapshotData.ravager.rage = 0
+							end
+						end
+					elseif spellId == TRB.Data.spells.ravager.energizeId then
+						if type == "SPELL_ENERGIZE" then						
+							TRB.Data.snapshotData.ravager.ticksRemaining = TRB.Data.snapshotData.ravager.ticksRemaining - 1
+							if TRB.Data.snapshotData.ravager.ticksRemaining == 0 then
+								TRB.Data.snapshotData.ravager.ticksRemaining = 0
+								TRB.Data.snapshotData.ravager.endTime = nil
+								TRB.Data.snapshotData.ravager.rage = 0
+								TRB.Data.snapshotData.ravager.isActive = false
+								TRB.Data.snapshotData.ravager.totalDuration = 0
+							else
+								TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage
+								TRB.Data.snapshotData.ravager.lastTick = currentTime
+								if TRB.Data.snapshotData.ravager.rage < 0 then
+									TRB.Data.snapshotData.ravager.rage = 0
+								end
+							end
 						end
 					end
 				end

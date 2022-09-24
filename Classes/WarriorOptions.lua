@@ -291,7 +291,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				fontSize = 13
 			},
 			right = {
-				text = "{$covenantRage}[#covenantAbility$covenantRage+]{$casting}[#casting$casting+]$rage",
+				text = "{$ravagerRage}[#ravager$ravagerRage+]{$covenantRage}[#covenantAbility$covenantRage+]{$casting}[#casting$casting+]$rage",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
@@ -320,17 +320,23 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					width=24,
 					height=24
 				},
+				hamstring = {
+					enabled = false -- 1
+				},
 				shieldBlock = {
 					enabled = false, -- 2
 				},
 				slam = {
-					enabled = false, -- 3
-				},
-				rampage = {
-					enabled = true, -- 4
+					enabled = true, -- 3
 				},
 				impendingVictory = {
-					enabled = true, -- 5
+					enabled = true, -- 4
+				},
+				thunderClap = {
+					enabled = false -- 5
+				},
+				rampage = {
+					enabled = true, -- 6
 				},
 			},
 			displayBar = {
@@ -1466,22 +1472,22 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.RedrawThresholdLines(spec)
 		end)
 
-		controls.checkBoxes.ignorePainThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_ignorePain", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.ignorePainThresholdShow
+		controls.checkBoxes.hamstringThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_hamstring", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.hamstringThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Ignore Pain")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Ignore Pain."
-		f:SetChecked(spec.thresholds.ignorePain.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Hamstring")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Hamstring."
+		f:SetChecked(spec.thresholds.hamstring.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.ignorePain.enabled = self:GetChecked()
+			spec.thresholds.hamstring.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
 		controls.checkBoxes.impendingVictoryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_impendingVictory", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.impendingVictoryThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Impending Victory (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Impending Victory. Only visible if talented."
+		getglobal(f:GetName() .. 'Text'):SetText("Impending Victory")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Impending Victory."
 		f:SetChecked(spec.thresholds.impendingVictory.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.impendingVictory.enabled = self:GetChecked()
@@ -1491,7 +1497,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.rampageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_rampage", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.rampageThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Rampage (if talented)")
+		getglobal(f:GetName() .. 'Text'):SetText("Rampage")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Rampage."
 		f:SetChecked(spec.thresholds.rampage.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1518,6 +1524,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetChecked(spec.thresholds.slam.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.slam.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.thunderClapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_thunderClap", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thunderClapThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Thunder Clap")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Thunder Clap."
+		f:SetChecked(spec.thresholds.thunderClap.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.thunderClap.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
