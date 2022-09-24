@@ -1136,7 +1136,7 @@ local function ConstructResourceBar(settings)
 				resource:SetPoint("LEFT", container, "LEFT", 0, 0)
 				resource:SetPoint("RIGHT", container, "RIGHT", 0, 0)
 				resource:SetStatusBarTexture(settings.textures.comboPointsBar)
-				resource:SetStatusBarColor(GetRGBAFromString(settings.colors.comboPoints.base))
+				resource:SetStatusBarColor(GetRGBAFromString(settings.colors.comboPoints.base, true))
 				resource:SetFrameStrata(TRB.Data.settings.core.strata.level)
 				resource:SetFrameLevel(TRB.Data.constants.frameLevels.cpContainer)
 			end

@@ -4440,7 +4440,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.innervate.spellId = nil
 							TRB.Data.snapshotData.innervate.duration = 0
 							TRB.Data.snapshotData.innervate.endTime = nil
-							TRB.Data.snapshotData.innervate.modifier = 1					
+							TRB.Data.snapshotData.innervate.modifier = 1
 							TRB.Data.snapshotData.audio.innervateCue = false
 						end
 					elseif spellId == TRB.Data.spells.manaTideTotem.id then

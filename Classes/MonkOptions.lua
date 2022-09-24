@@ -275,32 +275,26 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					width=24,
 					height=24
 				},
-				-- Core Monk
 				cracklingJadeLightning = {
-					enabled = true, -- 1
-				},
-				detox = {
-					enabled = false, -- 2
+					enabled = false, -- 1
 				},
 				expelHarm = {
-					enabled = true, -- 3
-				},
-				paralysis = {
-					enabled = false, -- 4
+					enabled = true, -- 2
 				},
 				tigerPalm = {
-					enabled = true, -- 5
+					enabled = true, -- 3
 				},
 				vivify = {
+					enabled = false, -- 4
+				},
+				detox = {
+					enabled = false, -- 5
+				},
+				disable = {
 					enabled = false, -- 6
 				},
-				-- Windwalker
-				disable = {
+				paralysis = {
 					enabled = false, -- 7
-				},
-				-- Talents
-				fistOfTheWhiteTiger = {
-					enabled = true, -- 8
 				},
 			},
 			generation = {
@@ -1338,17 +1332,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.fistOfTheWhiteTigerThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_fistOfTheWhiteTiger", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.fistOfTheWhiteTigerThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Fist of the White Tiger (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Fist of the White Tiger. Only visible if talented in to Fist of the White Tiger. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(spec.thresholds.fistOfTheWhiteTiger.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.fistOfTheWhiteTiger.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25		
 		controls.labels.utility = TRB.UiFunctions:BuildLabel(parent, "General / Utility", 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
