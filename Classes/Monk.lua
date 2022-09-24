@@ -18,7 +18,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	local specCache = {
 		windwalker = {
 			snapshotData = {},
-			barTextVariables = {},
+			barTextVariables = {
+				icons = {},
+				values = {}
+			},
+			spells = {},
+			talents = {},
 			settings = {
 				bar = nil,
 				comboPoints = nil,
@@ -30,7 +35,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		},
 		mistweaver = {
 			snapshotData = {},
-			barTextVariables = {},
+			barTextVariables = {
+				icons = {},
+				values = {}
+			},
+			spells = {},
+			talents = {},
 			settings = {
 				bar = nil,
 				comboPoints = nil,
@@ -42,7 +52,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		}
 	}
 
-	local function FillSpecCache()		
+	local function FillSpecCache()
 		-- Mistweaver
 		specCache.mistweaver.Global_TwintopResourceBar = {
 			ttd = 0,
@@ -262,14 +272,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			effects = {
 				overgrowthSeedling = 1.0
 			},
-			talents = {
-				fistOfTheWhiteTiger = {
-					isSelected = false
-				},
-				serenity = {
-					isSelected = false
-				}
-			},
 			items = {},
 			torghast = {
 				rampaging = {
@@ -280,12 +282,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		}
 
 		specCache.windwalker.spells = {
-			-- Monk Class Abilities
+			-- Monk Class Baseline Abilities
             blackoutKick = {
 				id = 100784,
 				name = "",
 				icon = "",
                 comboPoints = 1,
+				isTalent = false,
+				baseline = true
 			},
 			cracklingJadeLightning = {
 				id = 117952,
@@ -296,20 +300,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				texture = "",
 				thresholdId = 1,
 				settingKey = "cracklingJadeLightning",
-				thresholdUsable = false
-			},
-			detox = {
-				id = 218164,
-				name = "",
-				icon = "",
-				energy = -20,
-                comboPointsGenerated = 0,
-				texture = "",
-				thresholdId = 2,
-				settingKey = "detox",
-				hasCooldown = true,
-				cooldown = 8,
-				thresholdUsable = false
+				thresholdUsable = false,
+				isTalent = false,
+				baseline = true
 			},
 			expelHarm = {
 				id = 322101,
@@ -318,36 +311,29 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				energy = -15,
                 comboPointsGenerated = 1,
 				texture = "",
-				thresholdId = 3,
+				thresholdId = 2,
 				settingKey = "expelHarm",
 				hasCooldown = true,
                 cooldown = 15,
-				thresholdUsable = false
+				thresholdUsable = false,
+				isTalent = false,
+				baseline = true
 			},
 			markOfTheCrane = {
 				id = 228287,
 				name = "",
 				icon = "",
-				duration = 20
-			},
-			paralysis = {
-				id = 115078,
-				name = "",
-				icon = "",
-				energy = -20,
-                comboPointsGenerated = 0,
-				texture = "",
-				thresholdId = 4,
-				settingKey = "paralysis",
-				hasCooldown = true,
-                cooldown = 30, -- Assumes Rank2
-				thresholdUsable = false
+				duration = 20,
+				isTalent = false,
+				baseline = true
 			},
 			spinningCraneKick = {
 				id = 101546,
 				name = "",
 				icon = "",
                 comboPoints = 2,
+				isTalent = false,
+				baseline = true
 			},
 			tigerPalm = {
 				id = 100780,
@@ -356,16 +342,20 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				energy = -50,
                 comboPointsGenerated = 2,
 				texture = "",
-				thresholdId = 5,
+				thresholdId = 3,
 				settingKey = "tigerPalm",
-				thresholdUsable = false
+				thresholdUsable = false,
+				isTalent = false,
+				baseline = true
 			},
 			touchOfDeath = {
 				id = 322109,
 				name = "",
 				icon = "",
 				healthPercent = 0.35,
-				eliteHealthPercent = 0.15
+				eliteHealthPercent = 0.15,
+				isTalent = false,
+				baseline = true
 			},
 			vivify = {
 				id = 116670,
@@ -374,13 +364,39 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				energy = -30,
                 comboPointsGenerated = 0,
 				texture = "",
-				thresholdId = 6,
+				thresholdId = 4,
 				settingKey = "vivify",
-				thresholdUsable = false
+				thresholdUsable = false,
+				isTalent = false,
+				baseline = true
 			},
 
-            -- Windwalker Spec Abilities
+            -- Windwalker Spec Baseline Abilities
 
+			-- Monk Class Talents			
+			risingSunKick = {
+				id = 107428,
+				name = "",
+				icon = "",
+                comboPoints = 2,
+				isTalent = true,
+				baseline = true
+			},
+			detox = {
+				id = 218164,
+				name = "",
+				icon = "",
+				energy = -20,
+                comboPointsGenerated = 0,
+				texture = "",
+				thresholdId = 5,
+				settingKey = "detox",
+				hasCooldown = true,
+				cooldown = 8,
+				thresholdUsable = false,
+				isTalent = true,
+				baseline = true -- TODO: Check this in a future build
+			},
 			disable = {
 				id = 116095,
 				name = "",
@@ -388,48 +404,51 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				energy = -15,
                 comboPoints = true,
 				texture = "",
-				thresholdId = 7,
+				thresholdId = 6,
 				settingKey = "disable",
                 hasCooldown = false,
 				thresholdUsable = false
 			},
+			paralysis = {
+				id = 115078,
+				name = "",
+				icon = "",
+				energy = -20,
+                comboPointsGenerated = 0,
+				texture = "",
+				thresholdId = 7,
+				settingKey = "paralysis",
+				hasCooldown = true,
+                cooldown = 45,
+				thresholdUsable = false,
+				isTalent = true,
+			},
+			paralysisRank2 = {
+				id = 344359,
+				name = "",
+				icon = "",
+                cooldownMod = -15,
+				isTalent = true,
+			},
+			
+			-- Windwalker Spec Talent Abilities
+
 			fistsOfFury = {
 				id = 113656,
 				name = "",
 				icon = "",
-                comboPoints = 3
-			},
-			invokeXuenTheWhiteTiger = {
-				id = 123904,
-				name = "",
-				icon = ""
-			},
-			risingSunKick = {
-				id = 107428,
-				name = "",
-				icon = "",
-                comboPoints = 2
-			},
-			stormEarthAndFire = {
-				id = 137639,
-				name = "",
-				icon = ""
+                comboPoints = 3,
+				isTalent = true
 			},
 
 			-- Talents
-			fistOfTheWhiteTiger = {
+			strikeOfTheWindlord = {
 				id = 261947,
 				name = "",
 				icon = "",
-				energy = -40,
-				texture = "",
-				comboPointsGenerated = 3,
-				thresholdId = 8,
-				settingKey = "fistOfTheWhiteTiger",
 				hasCooldown = true,
 				isTalent = true,
-				thresholdUsable = false,
-				cooldown = 30
+				cooldown = 40
 			},
 			energizingElixir = {
 				id = 115288,
@@ -441,22 +460,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				tickRate = 1,
 				isTalent = true
 			},
-			rushingJadeWind = {
-				id = 116847,
-				name = "",
-				icon = "",
-				comboPoints = 1,
-				isTalent = true
-			},
 			danceOfChiJi = {
 				id = 325202,
 				name = "",
-				icon = ""
+				icon = "",
+				isTalent = true
 			},
 			serenity = {
 				id = 152173,
 				name = "",
-				icon = ""
+				icon = "",
+				isTalent = true
 			}, 
 
 			-- T28
@@ -499,7 +513,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			duration = 0,
 			enabled = false
 		}
-		specCache.windwalker.snapshotData.fistOfTheWhiteTiger = {
+		specCache.windwalker.snapshotData.strikeOfTheWindlord = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
@@ -681,25 +695,18 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "#expelHarm", icon = spells.expelHarm.icon, description = spells.expelHarm.name, printInSettings = true },
 			{ variable = "#fistsOfFury", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = true },
 			{ variable = "#fof", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = false },
-			{ variable = "#fistOfTheWhiteTiger", icon = spells.fistOfTheWhiteTiger.icon, description = spells.fistOfTheWhiteTiger.name, printInSettings = true },
-			{ variable = "#fotwt", icon = spells.fistOfTheWhiteTiger.icon, description = spells.fistOfTheWhiteTiger.name, printInSettings = false },
+			{ variable = "#strikeOfTheWindlord", icon = spells.strikeOfTheWindlord.icon, description = spells.strikeOfTheWindlord.name, printInSettings = true },
 			{ variable = "#paralysis", icon = spells.paralysis.icon, description = spells.paralysis.name, printInSettings = true },
 			{ variable = "#primordialPotential", icon = spells.primordialPotential.icon, description = spells.primordialPotential.name, printInSettings = true },
 			{ variable = "#primordialPower", icon = spells.primordialPower.icon, description = spells.primordialPower.name, printInSettings = true },
 			{ variable = "#risingSunKick", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = true },
 			{ variable = "#rsk", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = false },
-			{ variable = "#rushingJadeWind", icon = spells.rushingJadeWind.icon, description = spells.rushingJadeWind.name, printInSettings = true },
-			{ variable = "#rjw", icon = spells.rushingJadeWind.icon, description = spells.rushingJadeWind.name, printInSettings = false },
 			{ variable = "#serenity", icon = spells.serenity.icon, description = spells.serenity.name, printInSettings = true },
 			{ variable = "#spinningCraneKick", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = true },
 			{ variable = "#sck", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = false },
-			{ variable = "#stormEarthAndFire", icon = spells.stormEarthAndFire.icon, description = spells.stormEarthAndFire.name, printInSettings = true },
-			{ variable = "#sef", icon = spells.stormEarthAndFire.icon, description = spells.stormEarthAndFire.name, printInSettings = false },			
 			{ variable = "#tigerPalm", icon = spells.tigerPalm.icon, description = spells.tigerPalm.name, printInSettings = true },
 			{ variable = "#touchOfDeath", icon = spells.touchOfDeath.icon, description = spells.touchOfDeath.name, printInSettings = true },
 			{ variable = "#vivify", icon = spells.vivify.icon, description = spells.vivify.name, printInSettings = true },
-			{ variable = "#xuen", icon = spells.invokeXuenTheWhiteTiger.icon, description = spells.invokeXuenTheWhiteTiger.name, printInSettings = true },
-			{ variable = "#invokeXuenTheWhiteTiger", icon = spells.invokeXuenTheWhiteTiger.icon, description = spells.invokeXuenTheWhiteTiger.name, printInSettings = false },
         }
 		specCache.windwalker.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -833,8 +840,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
             settings = TRB.Data.settings.monk.windwalker
 			TRB.Data.character.specName = "windwalker"
-			TRB.Data.character.talents.fistOfTheWhiteTiger.isSelected = select(4, GetTalentInfo(3, 2, TRB.Data.character.specGroup))
-			TRB.Data.character.talents.serenity.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 		end
         
         if settings ~= nil then
@@ -905,7 +910,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		local specId = GetSpecialization()
 		
-		if guid ~= nil then
+		if guid ~= nil and guid ~= "" then
 			if not TRB.Functions.CheckTargetExists(guid) then
 				TRB.Functions.InitializeTarget(guid)
 				if specId == 2 then
@@ -926,11 +931,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local specId = GetSpecialization()
         
 		if specId == 2 then -- Mistweaver
-			--[[for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
-				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 20 then
-				else
-				end
-			end]]
 		elseif specId == 3 then -- Windwalker
 			local motcTotal = 0
 			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
@@ -1693,25 +1693,18 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["#expelHarm"] = TRB.Data.spells.expelHarm.icon
 		lookup["#fistsOfFury"] = TRB.Data.spells.fistsOfFury.icon
 		lookup["#fof"] = TRB.Data.spells.fistsOfFury.icon
-		lookup["#fistOfTheWhiteTiger"] = TRB.Data.spells.fistOfTheWhiteTiger.icon
-		lookup["#fotwt"] = TRB.Data.spells.fistOfTheWhiteTiger.icon
+		lookup["#strikeOfTheWindlord"] = TRB.Data.spells.strikeOfTheWindlord.icon
 		lookup["#paralysis"] = TRB.Data.spells.paralysis.icon
 		lookup["#primordialPotential"] = TRB.Data.spells.primordialPotential.icon
 		lookup["#primordialPower"] = TRB.Data.spells.primordialPower.icon
 		lookup["#risingSunKick"] = TRB.Data.spells.risingSunKick.icon
 		lookup["#rsk"] = TRB.Data.spells.risingSunKick.icon
-		lookup["#rushingJadeWind"] = TRB.Data.spells.rushingJadeWind.icon
-		lookup["#rjw"] = TRB.Data.spells.rushingJadeWind.icon
 		lookup["#serenity"] = TRB.Data.spells.serenity.icon
 		lookup["#spinningCraneKick"] = TRB.Data.spells.spinningCraneKick.icon
 		lookup["#sck"] = TRB.Data.spells.spinningCraneKick.icon
-		lookup["#stormEarthAndFire"] = TRB.Data.spells.stormEarthAndFire.icon
-		lookup["#sef"] = TRB.Data.spells.stormEarthAndFire.icon
 		lookup["#tigerPalm"] = TRB.Data.spells.tigerPalm.icon
 		lookup["#touchOfDeath"] = TRB.Data.spells.touchOfDeath.icon
 		lookup["#vivify"] = TRB.Data.spells.vivify.icon
-		lookup["#xuen"] = TRB.Data.spells.invokeXuenTheWhiteTiger.icon
-		lookup["#invokeXuenTheWhiteTiger"] = TRB.Data.spells.invokeXuenTheWhiteTiger.icon
 
 		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$energyTotal"] = energyTotal
@@ -2033,9 +2026,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local currentTime = GetTime()
 		local _
 
-        if TRB.Data.snapshotData.fistOfTheWhiteTiger.startTime ~= nil and currentTime > (TRB.Data.snapshotData.fistOfTheWhiteTiger.startTime + TRB.Data.snapshotData.fistOfTheWhiteTiger.duration) then
-            TRB.Data.snapshotData.fistOfTheWhiteTiger.startTime = nil
-            TRB.Data.snapshotData.fistOfTheWhiteTiger.duration = 0
+        if TRB.Data.snapshotData.strikeOfTheWindlord.startTime ~= nil and currentTime > (TRB.Data.snapshotData.strikeOfTheWindlord.startTime + TRB.Data.snapshotData.strikeOfTheWindlord.duration) then
+            TRB.Data.snapshotData.strikeOfTheWindlord.startTime = nil
+            TRB.Data.snapshotData.strikeOfTheWindlord.duration = 0
         end
 		
         if TRB.Data.snapshotData.detox.startTime ~= nil and currentTime > (TRB.Data.snapshotData.detox.startTime + TRB.Data.snapshotData.detox.duration) then
@@ -2646,10 +2639,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						end
 					end
 				elseif specId == 3 then --Windwalker
-					if spellId == TRB.Data.spells.fistOfTheWhiteTiger.id then
+					if spellId == TRB.Data.spells.strikeOfTheWindlord.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.fistOfTheWhiteTiger.startTime = currentTime
-							TRB.Data.snapshotData.fistOfTheWhiteTiger.duration = TRB.Data.spells.fistOfTheWhiteTiger.cooldown
+							TRB.Data.snapshotData.strikeOfTheWindlord.startTime = currentTime
+							TRB.Data.snapshotData.strikeOfTheWindlord.duration = TRB.Data.spells.strikeOfTheWindlord.cooldown
 						end
 					elseif spellId == TRB.Data.spells.serenity.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
@@ -2711,6 +2704,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 								triggerUpdate = true
 							end
 						end
+					elseif spellId == TRB.Data.spells.strikeOfTheWindlord.id then
+						if InitializeTarget(destGUID) then
+							if type == "SPELL_CAST_SUCCESS" then
+								ApplyMarkOfTheCrane(destGUID)
+								triggerUpdate = true
+							end
+						end
 					elseif spellId == TRB.Data.spells.detox.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.detox.startTime = currentTime
@@ -2725,6 +2725,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.paralysis.startTime = currentTime
 							TRB.Data.snapshotData.paralysis.duration = TRB.Data.spells.paralysis.cooldown
+
+							if TRB.Functions.IsTalentActive(TRB.Data.spells.paralysisRank2) then
+								TRB.Data.snapshotData.paralysis.duration = TRB.Data.snapshotData.paralysis.duration + TRB.Data.spells.paralysisRank2.cooldownMod
+							end
 						end
 					elseif spellId == TRB.Data.spells.primordialPotential.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
@@ -2798,6 +2802,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		elseif specId == 2 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.monk.mistweaver)
 			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.mistweaver)
+			specCache.mistweaver.talents = TRB.Functions.GetTalents()
 			FillSpellData_Mistweaver()
 			TRB.Functions.LoadFromSpecCache(specCache.mistweaver)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Mistweaver
@@ -2809,6 +2814,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		elseif specId == 3 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.monk.windwalker)
 			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.windwalker)
+			specCache.windwalker.talents = TRB.Functions.GetTalents()
 			FillSpellData_Windwalker()
 			TRB.Functions.LoadFromSpecCache(specCache.windwalker)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Windwalker
@@ -2822,7 +2828,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	end
 
 	resourceFrame:RegisterEvent("ADDON_LOADED")
-	resourceFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
+	resourceFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 	resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
@@ -2883,7 +2889,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					end)
 				end
 
-				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
+				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
 					SwitchSpec()
 				end
 			end
