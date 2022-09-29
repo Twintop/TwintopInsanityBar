@@ -20,6 +20,7 @@ Libs\CallbackHandler-1.0.lua
 Libs\LibSharedMedia-3.0.lua
 Libs\base64.lua
 Libs\json.lua
+Libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
 
 Functions.lua
 Init.lua

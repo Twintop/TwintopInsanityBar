@@ -3,6 +3,7 @@ local _, TRB = ...
 TRB.Options = {}
 
 local oUi = TRB.Data.constants.optionsUi
+local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
 local f1 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Highlight_Small_Color")
 ---@diagnostic disable-next-line: need-check-nil
@@ -508,18 +509,18 @@ local function ConstructAddonOptionsPanel()
     yCoord = yCoord - 30
 
     -- Create the dropdown, and configure its appearance
-    controls.dropDown.strata = CreateFrame("FRAME", "TwintopResourceBar_FrameStrata", parent, "UIDropDownMenuTemplate")
+    controls.dropDown.strata = LibDD:Create_UIDropDownMenu("TwintopResourceBar_FrameStrata", parent)
     controls.dropDown.strata.label = TRB.UiFunctions:BuildSectionHeader(parent, "Frame Strata Level To Draw Bar On", oUi.xCoord, yCoord)
     controls.dropDown.strata.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.strata:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-    UIDropDownMenu_SetWidth(controls.dropDown.strata, oUi.dropdownWidth)
-    UIDropDownMenu_SetText(controls.dropDown.strata, TRB.Data.settings.core.strata.name)
-    UIDropDownMenu_JustifyText(controls.dropDown.strata, "LEFT")
+    LibDD:UIDropDownMenu_SetWidth(controls.dropDown.strata, oUi.dropdownWidth)
+    LibDD:UIDropDownMenu_SetText(controls.dropDown.strata, TRB.Data.settings.core.strata.name)
+    LibDD:UIDropDownMenu_JustifyText(controls.dropDown.strata, "LEFT")
 
     -- Create and bind the initialization function to the dropdown menu
-    UIDropDownMenu_Initialize(controls.dropDown.strata, function(self, level, menuList)
+    LibDD:UIDropDownMenu_Initialize(controls.dropDown.strata, function(self, level, menuList)
         local entries = 25
-        local info = UIDropDownMenu_CreateInfo()
+        local info = LibDD:UIDropDownMenu_CreateInfo()
         local strata = {}
         strata["Background"] = "BACKGROUND"
         strata["Low"] = "LOW"
@@ -547,7 +548,7 @@ local function ConstructAddonOptionsPanel()
             info.func = self.SetValue
             info.arg1 = strata[v]
             info.arg2 = v
-            UIDropDownMenu_AddButton(info, level)
+            LibDD:UIDropDownMenu_AddButton(info, level)
         end
     end)
 
@@ -562,7 +563,7 @@ local function ConstructAddonOptionsPanel()
         TRB.Frames.leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         TRB.Frames.middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         TRB.Frames.rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        UIDropDownMenu_SetText(controls.dropDown.strata, newName)
+        LibDD:UIDropDownMenu_SetText(controls.dropDown.strata, newName)
         CloseDropDownMenus()
     end
 
@@ -573,18 +574,18 @@ local function ConstructAddonOptionsPanel()
     yCoord = yCoord - 30
 
     -- Create the dropdown, and configure its appearance
-    controls.dropDown.audioChannel = CreateFrame("FRAME", "TwintopResourceBar_FrameAudioChannel", parent, "UIDropDownMenuTemplate")
+    controls.dropDown.audioChannel = LibDD:Create_UIDropDownMenu("TwintopResourceBar_FrameAudioChannel", parent)
     controls.dropDown.audioChannel.label = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Channel To Use", oUi.xCoord, yCoord)
     controls.dropDown.audioChannel.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.audioChannel:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-    UIDropDownMenu_SetWidth(controls.dropDown.audioChannel, oUi.dropdownWidth)
-    UIDropDownMenu_SetText(controls.dropDown.audioChannel, TRB.Data.settings.core.audio.channel.name)
-    UIDropDownMenu_JustifyText(controls.dropDown.audioChannel, "LEFT")
+    LibDD:UIDropDownMenu_SetWidth(controls.dropDown.audioChannel, oUi.dropdownWidth)
+    LibDD:UIDropDownMenu_SetText(controls.dropDown.audioChannel, TRB.Data.settings.core.audio.channel.name)
+    LibDD:UIDropDownMenu_JustifyText(controls.dropDown.audioChannel, "LEFT")
 
     -- Create and bind the initialization function to the dropdown menu
-    UIDropDownMenu_Initialize(controls.dropDown.audioChannel, function(self, level, menuList)
+    LibDD:UIDropDownMenu_Initialize(controls.dropDown.audioChannel, function(self, level, menuList)
         local entries = 25
-        local info = UIDropDownMenu_CreateInfo()
+        local info = LibDD:UIDropDownMenu_CreateInfo()
         local channel = {}
         channel["Master"] = "Master"
         channel["SFX"] = "SFX"
@@ -599,14 +600,14 @@ local function ConstructAddonOptionsPanel()
             info.func = self.SetValue
             info.arg1 = channel[v]
             info.arg2 = v
-            UIDropDownMenu_AddButton(info, level)
+            LibDD:UIDropDownMenu_AddButton(info, level)
         end
     end)
 
     function controls.dropDown.audioChannel:SetValue(newValue, newName)
         TRB.Data.settings.core.audio.channel.channel = newValue
         TRB.Data.settings.core.audio.channel.name = newName
-        UIDropDownMenu_SetText(controls.dropDown.audioChannel, newName)
+        LibDD:UIDropDownMenu_SetText(controls.dropDown.audioChannel, newName)
         CloseDropDownMenus()
     end
 

@@ -1,6 +1,7 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 1 then --Only do this if we're on a Warrior!
+	local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 	local oUi = TRB.Data.constants.optionsUi
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
@@ -984,16 +985,16 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_overcapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Warrior_Arms_overcapAudio", parent)
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -1003,7 +1004,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -1016,7 +1017,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -1026,7 +1027,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
 			spec.audio.overcap.sound = newValue
 			spec.audio.overcap.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1050,16 +1051,16 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.suddenDeathAudio = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Arms_suddenDeath_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.suddenDeathAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Warrior_Arms_suddenDeath_Audio", parent)
 		controls.dropDown.suddenDeathAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.suddenDeathAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.suddenDeathAudio, spec.audio.suddenDeath.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.suddenDeathAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.suddenDeathAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.suddenDeathAudio, spec.audio.suddenDeath.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.suddenDeathAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.suddenDeathAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.suddenDeathAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -1069,7 +1070,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -1082,7 +1083,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -1092,7 +1093,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
 			spec.audio.suddenDeath.sound = newValue
 			spec.audio.suddenDeath.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1709,16 +1710,16 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Warrior_Fury_overcapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Warrior_Fury_overcapAudio", parent)
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -1728,7 +1729,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -1741,7 +1742,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -1751,7 +1752,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
 			spec.audio.overcap.sound = newValue
 			spec.audio.overcap.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)

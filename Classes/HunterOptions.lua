@@ -1,6 +1,7 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 3 then --Only do this if we're on a Hunter!
+	local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 	local oUi = TRB.Data.constants.optionsUi
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
@@ -1252,16 +1253,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.killShotAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_killShot_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.killShotAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_BeastMastery_killShot_Audio", parent)
 		controls.dropDown.killShotAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.killShotAudio, spec.audio.killShot.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.killShotAudio, spec.audio.killShot.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.killShotAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.killShotAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -1271,7 +1272,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -1284,7 +1285,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -1294,7 +1295,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.killShotAudio:SetValue(newValue, newName)
 			spec.audio.killShot.sound = newValue
 			spec.audio.killShot.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1318,16 +1319,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_overcapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_BeastMastery_overcapAudio", parent)
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -1337,7 +1338,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -1350,7 +1351,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -1360,7 +1361,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
 			spec.audio.overcap.sound = newValue
 			spec.audio.overcap.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1384,16 +1385,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.flayersMarkAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_flayersMark_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.flayersMarkAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_BeastMastery_flayersMark_Audio", parent)
 		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, spec.audio.flayersMark.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, spec.audio.flayersMark.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.flayersMarkAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.flayersMarkAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -1403,7 +1404,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else  
 				local start = entries * menuList
@@ -1416,7 +1417,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -1426,7 +1427,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.flayersMarkAudio:SetValue(newValue, newName)
 			spec.audio.flayersMark.sound = newValue
 			spec.audio.flayersMark.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1451,16 +1452,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.nesingwarysTrappingApparatusAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_BeastMastery_nesingwarysTrappingApparatusAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.nesingwarysTrappingApparatusAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_BeastMastery_nesingwarysTrappingApparatusAudio", parent)
 		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, spec.audio.nesingwarysTrappingApparatus.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.nesingwarysTrappingApparatusAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, spec.audio.nesingwarysTrappingApparatus.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.nesingwarysTrappingApparatusAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.nesingwarysTrappingApparatusAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.nesingwarysTrappingApparatusAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -1470,7 +1471,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -1483,7 +1484,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -1493,7 +1494,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.nesingwarysTrappingApparatusAudio:SetValue(newValue, newName)
 			spec.audio.nesingwarysTrappingApparatus.sound = newValue
 			spec.audio.nesingwarysTrappingApparatus.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -2436,16 +2437,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.aimedShotAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_aimedShot_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.aimedShotAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Marksmanship_aimedShot_Audio", parent)
 		controls.dropDown.aimedShotAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.aimedShotAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.aimedShotAudio, spec.audio.aimedShot.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.aimedShotAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.aimedShotAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.aimedShotAudio, spec.audio.aimedShot.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.aimedShotAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.aimedShotAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.aimedShotAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -2455,7 +2456,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -2468,7 +2469,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -2478,7 +2479,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.aimedShotAudio:SetValue(newValue, newName)
 			spec.audio.aimedShot.sound = newValue
 			spec.audio.aimedShot.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.aimedShotAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.aimedShotAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.aimedShot.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -2553,16 +2554,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.lockAndLoadAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_lockAndLoad_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.lockAndLoadAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Marksmanship_lockAndLoad_Audio", parent)
 		controls.dropDown.lockAndLoadAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.lockAndLoadAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.lockAndLoadAudio, spec.audio.lockAndLoad.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.lockAndLoadAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.lockAndLoadAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.lockAndLoadAudio, spec.audio.lockAndLoad.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.lockAndLoadAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.lockAndLoadAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.lockAndLoadAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -2572,7 +2573,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -2585,7 +2586,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -2595,7 +2596,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.lockAndLoadAudio:SetValue(newValue, newName)
 			spec.audio.lockAndLoad.sound = newValue
 			spec.audio.lockAndLoad.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.lockAndLoadAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.lockAndLoadAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -2619,16 +2620,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.killShotAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_killShot_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.killShotAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Marksmanship_killShot_Audio", parent)
 		controls.dropDown.killShotAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.killShotAudio, spec.audio.killShot.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.killShotAudio, spec.audio.killShot.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.killShotAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.killShotAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -2638,7 +2639,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -2651,7 +2652,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -2661,7 +2662,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.killShotAudio:SetValue(newValue, newName)
 			spec.audio.killShot.sound = newValue
 			spec.audio.killShot.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -2685,16 +2686,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_overcapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Marksmanship_overcapAudio", parent)
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -2704,7 +2705,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -2717,7 +2718,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -2727,7 +2728,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
 			spec.audio.overcap.sound = newValue
 			spec.audio.overcap.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -2751,16 +2752,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.flayersMarkAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_flayersMark_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.flayersMarkAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Marksmanship_flayersMark_Audio", parent)
 		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, spec.audio.flayersMark.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, spec.audio.flayersMark.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.flayersMarkAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.flayersMarkAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -2770,7 +2771,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -2783,7 +2784,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -2793,7 +2794,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.flayersMarkAudio:SetValue(newValue, newName)
 			spec.audio.flayersMark.sound = newValue
 			spec.audio.flayersMark.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -2818,16 +2819,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.nesingwarysTrappingApparatusAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_nesingwarysTrappingApparatusAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.nesingwarysTrappingApparatusAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Marksmanship_nesingwarysTrappingApparatusAudio", parent)
 		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, spec.audio.nesingwarysTrappingApparatus.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.nesingwarysTrappingApparatusAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, spec.audio.nesingwarysTrappingApparatus.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.nesingwarysTrappingApparatusAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.nesingwarysTrappingApparatusAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.nesingwarysTrappingApparatusAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -2837,7 +2838,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -2850,7 +2851,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -2860,7 +2861,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.nesingwarysTrappingApparatusAudio:SetValue(newValue, newName)
 			spec.audio.nesingwarysTrappingApparatus.sound = newValue
 			spec.audio.nesingwarysTrappingApparatus.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -2885,16 +2886,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.secretsOfTheUnblinkingVigilAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Marksmanship_secretsOfTheUnblinkingVigilAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.secretsOfTheUnblinkingVigilAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Marksmanship_secretsOfTheUnblinkingVigilAudio", parent)
 		controls.dropDown.secretsOfTheUnblinkingVigilAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.secretsOfTheUnblinkingVigilAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, spec.audio.secretsOfTheUnblinkingVigil.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.secretsOfTheUnblinkingVigilAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, spec.audio.secretsOfTheUnblinkingVigil.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.secretsOfTheUnblinkingVigilAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.secretsOfTheUnblinkingVigilAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -2904,7 +2905,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -2917,7 +2918,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -2927,7 +2928,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.secretsOfTheUnblinkingVigilAudio:SetValue(newValue, newName)
 			spec.audio.secretsOfTheUnblinkingVigil.sound = newValue
 			spec.audio.secretsOfTheUnblinkingVigil.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -3742,16 +3743,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.killShotAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_killShot_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.killShotAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Survival_killShot_Audio", parent)
 		controls.dropDown.killShotAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.killShotAudio, spec.audio.killShot.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.killShotAudio, spec.audio.killShot.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.killShotAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.killShotAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -3761,7 +3762,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -3774,7 +3775,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -3784,7 +3785,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.killShotAudio:SetValue(newValue, newName)
 			spec.audio.killShot.sound = newValue
 			spec.audio.killShot.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -3809,16 +3810,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_overcapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Survival_overcapAudio", parent)
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -3828,7 +3829,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -3841,7 +3842,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -3851,7 +3852,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
 			spec.audio.overcap.sound = newValue
 			spec.audio.overcap.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -3876,16 +3877,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.flayersMarkAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_flayersMark_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.flayersMarkAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Survival_flayersMark_Audio", parent)
 		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, spec.audio.flayersMark.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, spec.audio.flayersMark.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.flayersMarkAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.flayersMarkAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -3895,7 +3896,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -3908,7 +3909,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -3918,7 +3919,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.flayersMarkAudio:SetValue(newValue, newName)
 			spec.audio.flayersMark.sound = newValue
 			spec.audio.flayersMark.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -3943,16 +3944,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.nesingwarysTrappingApparatusAudio = CreateFrame("FRAME", "TwintopResourceBar_Hunter_Survival_nesingwarysTrappingApparatusAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.nesingwarysTrappingApparatusAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Survival_nesingwarysTrappingApparatusAudio", parent)
 		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, spec.audio.nesingwarysTrappingApparatus.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.nesingwarysTrappingApparatusAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, spec.audio.nesingwarysTrappingApparatus.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.nesingwarysTrappingApparatusAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.nesingwarysTrappingApparatusAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.nesingwarysTrappingApparatusAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -3962,7 +3963,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -3975,7 +3976,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -3985,7 +3986,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		function controls.dropDown.nesingwarysTrappingApparatusAudio:SetValue(newValue, newName)
 			spec.audio.nesingwarysTrappingApparatus.sound = newValue
 			spec.audio.nesingwarysTrappingApparatus.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)

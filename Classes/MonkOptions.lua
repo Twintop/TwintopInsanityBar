@@ -1,6 +1,7 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 10 then --Only do this if we're on a Monk!
+	local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 	local oUi = TRB.Data.constants.optionsUi
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
@@ -785,16 +786,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.innervateAudio = CreateFrame("FRAME", "TwintopResourceBar_Monk_Mistweaver_Innervate_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.innervateAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Monk_Mistweaver_Innervate_Audio", parent)
 		controls.dropDown.innervateAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.innervateAudio, oUi.sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.innervateAudio, spec.audio.innervate.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.innervateAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.innervateAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.innervateAudio, spec.audio.innervate.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.innervateAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.innervateAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.innervateAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -804,7 +805,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -817,7 +818,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -827,7 +828,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		function controls.dropDown.innervateAudio:SetValue(newValue, newName)
 			spec.audio.innervate.sound = newValue
 			spec.audio.innervate.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.innervateAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.innervateAudio, newName)
 			CloseDropDownMenus()
 			---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1650,16 +1651,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_Monk_Windwalker_overcapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Monk_Windwalker_overcapAudio", parent)
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -1669,7 +1670,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -1682,7 +1683,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -1692,7 +1693,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
 			spec.audio.overcap.sound = newValue
 			spec.audio.overcap.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 			---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1718,16 +1719,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.danceOfChiJiAudio = CreateFrame("FRAME", "TwintopResourceBar_Monk_Windwalker_danceOfChiJi_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.danceOfChiJiAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Monk_Windwalker_danceOfChiJi_Audio", parent)
 		controls.dropDown.danceOfChiJiAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.danceOfChiJiAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.danceOfChiJiAudio, spec.audio.danceOfChiJi.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.danceOfChiJiAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.danceOfChiJiAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.danceOfChiJiAudio, spec.audio.danceOfChiJi.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.danceOfChiJiAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.danceOfChiJiAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.danceOfChiJiAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -1737,7 +1738,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else  
 				local start = entries * menuList
@@ -1750,7 +1751,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -1760,7 +1761,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		function controls.dropDown.danceOfChiJiAudio:SetValue(newValue, newName)
 			spec.audio.danceOfChiJi.sound = newValue
 			spec.audio.danceOfChiJi.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.danceOfChiJiAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.danceOfChiJiAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.danceOfChiJi.sound, TRB.Data.settings.core.audio.channel.channel)

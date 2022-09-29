@@ -1,6 +1,7 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 7 then --Only do this if we're on a Shaman!
+	local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 	local oUi = TRB.Data.constants.optionsUi
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
@@ -793,16 +794,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.esReadyAudio = CreateFrame("FRAME", "TwintopResourceBar_esReadyAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.esReadyAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_esReadyAudio", parent)
 		controls.dropDown.esReadyAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.esReadyAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, spec.audio.esReady.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.esReadyAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.esReadyAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, spec.audio.esReady.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.esReadyAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.esReadyAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.esReadyAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -812,7 +813,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -825,7 +826,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -835,7 +836,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		function controls.dropDown.esReadyAudio:SetValue(newValue, newName)
 			spec.audio.esReady.sound = newValue
 			spec.audio.esReady.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -860,16 +861,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_overcapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_overcapAudio", parent)
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
-		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -879,7 +880,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -892,7 +893,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -902,7 +903,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
 			spec.audio.overcap.sound = newValue
 			spec.audio.overcap.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 			---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1419,16 +1420,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.innervateAudio = CreateFrame("FRAME", "TwintopResourceBar_Shaman_Restoration_Innervate_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.innervateAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Shaman_Restoration_Innervate_Audio", parent)
 		controls.dropDown.innervateAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.innervateAudio, oUi.sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.innervateAudio, spec.audio.innervate.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.innervateAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.innervateAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.innervateAudio, spec.audio.innervate.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.innervateAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.innervateAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.innervateAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -1438,7 +1439,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -1451,7 +1452,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -1461,7 +1462,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		function controls.dropDown.innervateAudio:SetValue(newValue, newName)
 			spec.audio.innervate.sound = newValue
 			spec.audio.innervate.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.innervateAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.innervateAudio, newName)
 			CloseDropDownMenus()
 			---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)

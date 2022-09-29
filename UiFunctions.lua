@@ -2,6 +2,7 @@
 local _, TRB = ...
 TRB.UiFunctions = {}
 local oUi = TRB.Data.constants.optionsUi
+local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
 function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
@@ -523,18 +524,18 @@ function TRB.UiFunctions:CreateLsmDropdown(parent, dropDowns, section, classId, 
     local _, className, _ = GetClassInfo(classId)
     
     -- Create the dropdown, and configure its appearance
-    dropDowns[varName] = CreateFrame("FRAME", "TwintopResourceBar_"..className.."_"..specId.."_"..varName.."_"..lsmType, parent, "UIDropDownMenuTemplate")
+    dropDowns[varName] = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_"..varName.."_"..lsmType, parent)
     dropDowns[varName].label = TRB.UiFunctions:BuildSectionHeader(parent, sectionHeaderText, xCoord, yCoord)
     dropDowns[varName].label.font:SetFontObject(GameFontNormal)
     dropDowns[varName]:SetPoint("TOPLEFT", xCoord, yCoord-30)
-    UIDropDownMenu_SetWidth(dropDowns[varName], oUi.dropdownWidth)
-    UIDropDownMenu_SetText(dropDowns[varName], section[varName.."Name"])
-    UIDropDownMenu_JustifyText(dropDowns[varName], "LEFT")
+    LibDD:UIDropDownMenu_SetWidth(dropDowns[varName], oUi.dropdownWidth)
+    LibDD:UIDropDownMenu_SetText(dropDowns[varName], section[varName.."Name"])
+    LibDD:UIDropDownMenu_JustifyText(dropDowns[varName], "LEFT")
 
     -- Create and bind the initialization function to the dropdown menu
-    UIDropDownMenu_Initialize(dropDowns[varName], function(self, level, menuList)
+    LibDD:UIDropDownMenu_Initialize(dropDowns[varName], function(self, level, menuList)
         local entries = 25
-        local info = UIDropDownMenu_CreateInfo()
+        local info = LibDD:UIDropDownMenu_CreateInfo()
         local items = TRB.Details.addonData.libs.SharedMedia:HashTable(lsmType)
         local itemsList = TRB.Details.addonData.libs.SharedMedia:List(lsmType)
         if (level or 1) == 1 or menuList == nil then
@@ -544,7 +545,7 @@ function TRB.UiFunctions:CreateLsmDropdown(parent, dropDowns, section, classId, 
                 info.notCheckable = true
                 info.text = dropdownInfoText .. " " .. i+1
                 info.menuList = i
-                UIDropDownMenu_AddButton(info)
+                LibDD:UIDropDownMenu_AddButton(info)
             end
         else
             local start = entries * menuList
@@ -558,7 +559,7 @@ function TRB.UiFunctions:CreateLsmDropdown(parent, dropDowns, section, classId, 
                     info.arg1 = items[v]
                     info.arg2 = v
                     info.icon = items[v]
-                    UIDropDownMenu_AddButton(info, level)
+                    LibDD:UIDropDownMenu_AddButton(info, level)
                 end
             end
         end
@@ -909,18 +910,18 @@ function TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, s
 
     yCoord = yCoord - 40
     -- Create the dropdown, and configure its appearance
-    controls.dropDown.comboPointsRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_"..className.."_"..specId.."_comboPointsRelativeTo", parent, "UIDropDownMenuTemplate")
+    controls.dropDown.comboPointsRelativeTo = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_comboPointsRelativeTo", parent)
     controls.dropDown.comboPointsRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of "..secondaryResourceString.." to "..primaryResourceString.." Bar", oUi.xCoord, yCoord)
     controls.dropDown.comboPointsRelativeTo.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.comboPointsRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-    UIDropDownMenu_SetWidth(controls.dropDown.comboPointsRelativeTo, oUi.dropdownWidth)
-    UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, spec.comboPoints.relativeToName)
-    UIDropDownMenu_JustifyText(controls.dropDown.comboPointsRelativeTo, "LEFT")
+    LibDD:UIDropDownMenu_SetWidth(controls.dropDown.comboPointsRelativeTo, oUi.dropdownWidth)
+    LibDD:UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, spec.comboPoints.relativeToName)
+    LibDD:UIDropDownMenu_JustifyText(controls.dropDown.comboPointsRelativeTo, "LEFT")
 
     -- Create and bind the initialization function to the dropdown menu
-    UIDropDownMenu_Initialize(controls.dropDown.comboPointsRelativeTo, function(self, level, menuList)
+    LibDD:UIDropDownMenu_Initialize(controls.dropDown.comboPointsRelativeTo, function(self, level, menuList)
         local entries = 25
-        local info = UIDropDownMenu_CreateInfo()
+        local info = LibDD:UIDropDownMenu_CreateInfo()
         local relativeTo = {}
         relativeTo["Above - Left"] = "TOPLEFT"
         relativeTo["Above - Middle"] = "TOP"
@@ -944,15 +945,15 @@ function TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, s
             info.func = self.SetValue
             info.arg1 = relativeTo[v]
             info.arg2 = v
-            UIDropDownMenu_AddButton(info, level)
+            LibDD:UIDropDownMenu_AddButton(info, level)
         end
     end)
 
     function controls.dropDown.comboPointsRelativeTo:SetValue(newValue, newName)
         spec.comboPoints.relativeTo = newValue
         spec.comboPoints.relativeToName = newName
-        UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, newName)
-        CloseDropDownMenus()
+        LibDD:UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, newName)
+        LibDD:CloseDropDownMenus()
 
         if GetSpecialization() == specId then
             TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
@@ -983,22 +984,22 @@ function TRB.UiFunctions:UpdateTextureDropdowns(controls, textures, newValue, ne
 
     textures[variable.."Bar"] = newValue
     textures[variable.."BarName"] = newName
-    UIDropDownMenu_SetText(controls[variable.."Bar"], newName)
+    LibDD:UIDropDownMenu_SetText(controls[variable.."Bar"], newName)
     if textures.textureLock then
         textures.resourceBar = newValue
         textures.resourceBarName = newName
-        UIDropDownMenu_SetText(controls.resourceBar, newName)
+        LibDD:UIDropDownMenu_SetText(controls.resourceBar, newName)
         textures.castingBar = newValue
         textures.castingBarName = newName
-        UIDropDownMenu_SetText(controls.castingBar, newName)
+        LibDD:UIDropDownMenu_SetText(controls.castingBar, newName)
         textures.passiveBar = newValue
         textures.passiveBarName = newName
-        UIDropDownMenu_SetText(controls.passiveBar, newName)
+        LibDD:UIDropDownMenu_SetText(controls.passiveBar, newName)
 
         if includeComboPoints then
             textures.comboPointsBar = newValue
             textures.comboPointsBarName = newName
-            UIDropDownMenu_SetText(controls.comboPointsBar, newName)
+            LibDD:UIDropDownMenu_SetText(controls.comboPointsBar, newName)
         end
     end
 
@@ -1026,7 +1027,7 @@ function TRB.UiFunctions:UpdateTextureDropdowns(controls, textures, newValue, ne
         end
     end
 
-    CloseDropDownMenus()
+    LibDD:CloseDropDownMenus()
 end
 
 function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord, includeComboPoints, secondaryResourceString)
@@ -1090,18 +1091,18 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
         if spec.textures.textureLock then
             spec.textures.passiveBar = spec.textures.resourceBar
             spec.textures.passiveBarName = spec.textures.resourceBarName
-            UIDropDownMenu_SetText(controls.dropDown.textures.resourceBar, spec.textures.passiveBarName)
+            LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.resourceBar, spec.textures.passiveBarName)
             spec.textures.castingBar = spec.textures.resourceBar
             spec.textures.castingBarName = spec.textures.resourceBarName
-            UIDropDownMenu_SetText(controls.dropDown.textures.castingBar, spec.textures.castingBarName)
+            LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.castingBar, spec.textures.castingBarName)
 
             if includeComboPoints then
 				spec.textures.comboPointsBorder = spec.textures.border
 				spec.textures.comboPointsBorderName = spec.textures.borderName
-				UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBorder, spec.textures.comboPointsBorderName)
+				LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBorder, spec.textures.comboPointsBorderName)
 				spec.textures.comboPointsBackground = spec.textures.background
 				spec.textures.comboPointsBackgroundName = spec.textures.backgroundName
-				UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBackground, spec.textures.comboPointsBackgroundName)
+				LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBackground, spec.textures.comboPointsBackgroundName)
             end
 
             if GetSpecialization() == specId then
@@ -1161,7 +1162,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
             TRB.Frames.barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
         end
 
-        UIDropDownMenu_SetText(controls.dropDown.textures.border, newName)
+        LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.border, newName)
 
         if includeComboPoints and spec.textures.textureLock then
 			spec.textures.comboPointsBorder = newValue
@@ -1185,10 +1186,10 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
 				end
 			end
 
-			UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBorder, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBorder, newName)
         end
 
-        CloseDropDownMenus()
+        LibDD:CloseDropDownMenus()
     end
     
     TRB.UiFunctions:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "background", "Background (Empty Bar) Texture", "Background Textures")
@@ -1208,7 +1209,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
             TRB.Frames.barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.background, true))
         end
 
-        UIDropDownMenu_SetText(controls.dropDown.textures.background, newName)
+        LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.background, newName)
         
         if includeComboPoints and spec.textures.textureLock then
             spec.textures.comboPointsBackground = newValue
@@ -1228,9 +1229,9 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
 				end
 			end
 
-			UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBackground, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBackground, newName)
         end
-        CloseDropDownMenus()
+        LibDD:CloseDropDownMenus()
     end
 
     if includeComboPoints then
@@ -1259,7 +1260,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
 				end
 			end
 
-			UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBorder, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBorder, newName)
 
 			if spec.textures.textureLock then
 				spec.textures.border = newValue
@@ -1280,10 +1281,10 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
 				    TRB.Frames.barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
                 end
 
-				UIDropDownMenu_SetText(controls.dropDown.textures.border, newName)
+				LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.border, newName)
 			end
 
-			CloseDropDownMenus()
+			LibDD:CloseDropDownMenus()
 		end
 
         TRB.UiFunctions:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "comboPointsBackground", secondaryResourceString.." Background (Empty Bar) Texture", "Background Textures")
@@ -1306,7 +1307,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
 				end
 			end
 
-			UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBackground, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBackground, newName)
 			
 			if spec.textures.textureLock then
 				spec.textures.background = newValue
@@ -1323,10 +1324,10 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
 					TRB.Frames.barContainerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.background, true))
 				end
 
-				UIDropDownMenu_SetText(controls.dropDown.textures.background, newName)
+				LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.background, newName)
 			end
 
-			CloseDropDownMenus()
+			LibDD:CloseDropDownMenus()
 		end
 
         yCoord = yCoord - 60
@@ -1508,18 +1509,18 @@ function TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spe
     local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
     -- Create the dropdown, and configure its appearance
-    controls.dropDown.thresholdIconRelativeTo = CreateFrame("FRAME", "TwintopResourceBar_"..className.."_"..specId.."_ThresholdIconRelativeTo", parent, "UIDropDownMenuTemplate")
+    controls.dropDown.thresholdIconRelativeTo = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_ThresholdIconRelativeTo", parent)
     controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", oUi.xCoord, yCoord)
     controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-    UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, oUi.dropdownWidth)
-    UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
-    UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
+    LibDD:UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, oUi.dropdownWidth)
+    LibDD:UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
+    LibDD:UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
 
     -- Create and bind the initialization function to the dropdown menu
-    UIDropDownMenu_Initialize(controls.dropDown.thresholdIconRelativeTo, function(self, level, menuList)
+    LibDD:UIDropDownMenu_Initialize(controls.dropDown.thresholdIconRelativeTo, function(self, level, menuList)
         local entries = 25
-        local info = UIDropDownMenu_CreateInfo()
+        local info = LibDD:UIDropDownMenu_CreateInfo()
         local relativeTo = {}
         relativeTo["Above"] = "TOP"
         relativeTo["Middle"] = "CENTER"
@@ -1537,7 +1538,7 @@ function TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spe
             info.func = self.SetValue
             info.arg1 = relativeTo[v]
             info.arg2 = v
-            UIDropDownMenu_AddButton(info, level)
+            LibDD:UIDropDownMenu_AddButton(info, level)
         end
     end)
 
@@ -1549,8 +1550,8 @@ function TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spe
             TRB.Functions.RedrawThresholdLines(spec)
         end
 
-        UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
-        CloseDropDownMenus()
+        LibDD:UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
+        LibDD:CloseDropDownMenus()
     end
 
     controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_ThresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
@@ -1847,18 +1848,18 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
     yCoord = yCoord - 30
 
     -- Create the dropdown, and configure its appearance
-    controls.dropDown.fontLeft = CreateFrame("FRAME", "TwintopResourceBar_"..className.."_"..specId.."_FontLeft", parent, "UIDropDownMenuTemplate")
+    controls.dropDown.fontLeft = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_FontLeft", parent)
     controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", oUi.xCoord, yCoord)
     controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.fontLeft:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-    UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, oUi.dropdownWidth)
-    UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
-    UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
+    LibDD:UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, oUi.dropdownWidth)
+    LibDD:UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
+    LibDD:UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
 
     -- Create and bind the initialization function to the dropdown menu
-    UIDropDownMenu_Initialize(controls.dropDown.fontLeft, function(self, level, menuList)
+    LibDD:UIDropDownMenu_Initialize(controls.dropDown.fontLeft, function(self, level, menuList)
         local entries = 25
-        local info = UIDropDownMenu_CreateInfo()
+        local info = LibDD:UIDropDownMenu_CreateInfo()
         local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
         local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
         if (level or 1) == 1 or menuList == nil then
@@ -1868,7 +1869,7 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
                 info.notCheckable = true
                 info.text = "Fonts " .. i+1
                 info.menuList = i
-                UIDropDownMenu_AddButton(info)
+                LibDD:UIDropDownMenu_AddButton(info)
             end
         else
             local start = entries * menuList
@@ -1883,7 +1884,7 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
                     info.arg2 = v
                     info.fontObject = CreateFont(v)
                     info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-                    UIDropDownMenu_AddButton(info, level)
+                    LibDD:UIDropDownMenu_AddButton(info, level)
                 end
             end
         end
@@ -1892,14 +1893,14 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
     function controls.dropDown.fontLeft:SetValue(newValue, newName)
         spec.displayText.left.fontFace = newValue
         spec.displayText.left.fontFaceName = newName
-        UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
+        LibDD:UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
         if spec.displayText.fontFaceLock then
             spec.displayText.middle.fontFace = newValue
             spec.displayText.middle.fontFaceName = newName
-            UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
+            LibDD:UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
             spec.displayText.right.fontFace = newValue
             spec.displayText.right.fontFaceName = newName
-            UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
+            LibDD:UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
         end
 
         if GetSpecialization() == specId then
@@ -1910,22 +1911,22 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
             end
         end
 
-        CloseDropDownMenus()
+        LibDD:CloseDropDownMenus()
     end
 
     -- Create the dropdown, and configure its appearance
-    controls.dropDown.fontMiddle = CreateFrame("FRAME", "TwintopResourceBar_"..className.."_"..specId.."_FontMiddle", parent, "UIDropDownMenuTemplate")
+    controls.dropDown.fontMiddle = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_FontMiddle", parent)
     controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", oUi.xCoord2, yCoord)
     controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.fontMiddle:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-    UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, oUi.dropdownWidth)
-    UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
-    UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
+    LibDD:UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, oUi.dropdownWidth)
+    LibDD:UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
+    LibDD:UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
 
     -- Create and bind the initialization function to the dropdown menu
-    UIDropDownMenu_Initialize(controls.dropDown.fontMiddle, function(self, level, menuList)
+    LibDD:UIDropDownMenu_Initialize(controls.dropDown.fontMiddle, function(self, level, menuList)
         local entries = 25
-        local info = UIDropDownMenu_CreateInfo()
+        local info = LibDD:UIDropDownMenu_CreateInfo()
         local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
         local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
         if (level or 1) == 1 or menuList == nil then
@@ -1935,7 +1936,7 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
                 info.notCheckable = true
                 info.text = "Fonts " .. i+1
                 info.menuList = i
-                UIDropDownMenu_AddButton(info)
+                LibDD:UIDropDownMenu_AddButton(info)
             end
         else
             local start = entries * menuList
@@ -1950,7 +1951,7 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
                     info.arg2 = v
                     info.fontObject = CreateFont(v)
                     info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-                    UIDropDownMenu_AddButton(info, level)
+                    LibDD:UIDropDownMenu_AddButton(info, level)
                 end
             end
         end
@@ -1959,14 +1960,14 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
     function controls.dropDown.fontMiddle:SetValue(newValue, newName)
         spec.displayText.middle.fontFace = newValue
         spec.displayText.middle.fontFaceName = newName
-        UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
+        LibDD:UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
         if spec.displayText.fontFaceLock then
             spec.displayText.left.fontFace = newValue
             spec.displayText.left.fontFaceName = newName
-            UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
+            LibDD:UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
             spec.displayText.right.fontFace = newValue
             spec.displayText.right.fontFaceName = newName
-            UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
+            LibDD:UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
         end
 
         if GetSpecialization() == specId then
@@ -1977,24 +1978,24 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
             end
         end
 
-        CloseDropDownMenus()
+        LibDD:CloseDropDownMenus()
     end
 
     yCoord = yCoord - 40 - 20
 
     -- Create the dropdown, and configure its appearance
-    controls.dropDown.fontRight = CreateFrame("FRAME", "TwintopResourceBar_"..className.."_"..specId.."_FontRight", parent, "UIDropDownMenuTemplate")
+    controls.dropDown.fontRight = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_FontRight", parent)
     controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", oUi.xCoord, yCoord)
     controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.fontRight:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-    UIDropDownMenu_SetWidth(controls.dropDown.fontRight, oUi.dropdownWidth)
-    UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
-    UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
+    LibDD:UIDropDownMenu_SetWidth(controls.dropDown.fontRight, oUi.dropdownWidth)
+    LibDD:UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
+    LibDD:UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
 
     -- Create and bind the initialization function to the dropdown menu
-    UIDropDownMenu_Initialize(controls.dropDown.fontRight, function(self, level, menuList)
+    LibDD:UIDropDownMenu_Initialize(controls.dropDown.fontRight, function(self, level, menuList)
         local entries = 25
-        local info = UIDropDownMenu_CreateInfo()
+        local info = LibDD:UIDropDownMenu_CreateInfo()
         local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
         local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
         if (level or 1) == 1 or menuList == nil then
@@ -2004,7 +2005,7 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
                 info.notCheckable = true
                 info.text = "Fonts " .. i+1
                 info.menuList = i
-                UIDropDownMenu_AddButton(info)
+                LibDD:UIDropDownMenu_AddButton(info)
             end
         else
             local start = entries * menuList
@@ -2019,7 +2020,7 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
                     info.arg2 = v
                     info.fontObject = CreateFont(v)
                     info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-                    UIDropDownMenu_AddButton(info, level)
+                    LibDD:UIDropDownMenu_AddButton(info, level)
                 end
             end
         end
@@ -2028,14 +2029,14 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
     function controls.dropDown.fontRight:SetValue(newValue, newName)
         spec.displayText.right.fontFace = newValue
         spec.displayText.right.fontFaceName = newName
-        UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
+        LibDD:UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
         if spec.displayText.fontFaceLock then
             spec.displayText.left.fontFace = newValue
             spec.displayText.left.fontFaceName = newName
-            UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
+            LibDD:UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
             spec.displayText.middle.fontFace = newValue
             spec.displayText.middle.fontFaceName = newName
-            UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
+            LibDD:UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
         end
 
         if GetSpecialization() == specId then
@@ -2046,7 +2047,7 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
             end
         end
 
-        CloseDropDownMenus()
+        LibDD:CloseDropDownMenus()
     end
 
     controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
@@ -2060,10 +2061,10 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
         if spec.displayText.fontFaceLock then
             spec.displayText.middle.fontFace = spec.displayText.left.fontFace
             spec.displayText.middle.fontFaceName = spec.displayText.left.fontFaceName
-            UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
+            LibDD:UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
             spec.displayText.right.fontFace = spec.displayText.left.fontFace
             spec.displayText.right.fontFaceName = spec.displayText.left.fontFaceName
-            UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
+            LibDD:UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
 
             if GetSpecialization() == specId then
                 TRB.Frames.middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")

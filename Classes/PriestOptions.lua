@@ -2,6 +2,7 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 5 then --Only do this if we're on a Priest!
+	local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 	local oUi = TRB.Data.constants.optionsUi
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
@@ -1119,16 +1120,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.innervateAudio = CreateFrame("FRAME", "TwintopResourceBar_Priest_Holy_Innervate_Audio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.innervateAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Holy_Innervate_Audio", parent)
 		controls.dropDown.innervateAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.innervateAudio, oUi.sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.innervateAudio, spec.audio.innervate.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.innervateAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.innervateAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.innervateAudio, spec.audio.innervate.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.innervateAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.innervateAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.innervateAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -1138,7 +1139,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -1151,7 +1152,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -1161,7 +1162,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.innervateAudio:SetValue(newValue, newName)
 			spec.audio.innervate.sound = newValue
 			spec.audio.innervate.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.innervateAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.innervateAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1185,16 +1186,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.surgeOfLightAudio = CreateFrame("FRAME", "TwintopResourceBar_Priest_Holy_SurgeOfLightAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.surgeOfLightAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Holy_SurgeOfLightAudio", parent)
 		controls.dropDown.surgeOfLightAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.surgeOfLightAudio, oUi.sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.surgeOfLightAudio, spec.audio.surgeOfLight.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.surgeOfLightAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.surgeOfLightAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.surgeOfLightAudio, spec.audio.surgeOfLight.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.surgeOfLightAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.surgeOfLightAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.surgeOfLightAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -1204,7 +1205,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -1217,7 +1218,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -1227,7 +1228,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.surgeOfLightAudio:SetValue(newValue, newName)
 			spec.audio.surgeOfLight.sound = newValue
 			spec.audio.surgeOfLight.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.surgeOfLightAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.surgeOfLightAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1251,16 +1252,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.surgeOfLight2Audio = CreateFrame("FRAME", "TwintopResourceBar_Priest_Holy_SurgeOfLightAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.surgeOfLight2Audio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Holy_SurgeOfLightAudio", parent)
 		controls.dropDown.surgeOfLight2Audio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.surgeOfLight2Audio, oUi.sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.surgeOfLight2Audio, spec.audio.surgeOfLight2.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.surgeOfLight2Audio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.surgeOfLight2Audio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.surgeOfLight2Audio, spec.audio.surgeOfLight2.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.surgeOfLight2Audio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.surgeOfLight2Audio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.surgeOfLight2Audio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -1270,7 +1271,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -1283,7 +1284,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -1293,7 +1294,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.surgeOfLight2Audio:SetValue(newValue, newName)
 			spec.audio.surgeOfLight2.sound = newValue
 			spec.audio.surgeOfLight2.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.surgeOfLight2Audio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.surgeOfLight2Audio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1317,16 +1318,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.flashConcentrationAudio = CreateFrame("FRAME", "TwintopResourceBar_Priest_Holy_flashConcentrationAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.flashConcentrationAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Holy_flashConcentrationAudio", parent)
 		controls.dropDown.flashConcentrationAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.flashConcentrationAudio, oUi.sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.flashConcentrationAudio, spec.audio.flashConcentration.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.flashConcentrationAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.flashConcentrationAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.flashConcentrationAudio, spec.audio.flashConcentration.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.flashConcentrationAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.flashConcentrationAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.flashConcentrationAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -1336,7 +1337,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -1349,7 +1350,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -1359,7 +1360,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.flashConcentrationAudio:SetValue(newValue, newName)
 			spec.audio.flashConcentration.sound = newValue
 			spec.audio.flashConcentration.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.flashConcentrationAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.flashConcentrationAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.flashConcentration.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -2281,16 +2282,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.dpReadyAudio = CreateFrame("FRAME", "TwintopResourceBar_dpReadyAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.dpReadyAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_dpReadyAudio", parent)
 		controls.dropDown.dpReadyAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.dpReadyAudio, oUi.sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.dpReadyAudio, spec.audio.dpReady.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.dpReadyAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.dpReadyAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.dpReadyAudio, spec.audio.dpReady.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.dpReadyAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.dpReadyAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.dpReadyAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -2300,7 +2301,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -2313,7 +2314,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -2323,7 +2324,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.dpReadyAudio:SetValue(newValue, newName)
 			spec.audio.dpReady.sound = newValue
 			spec.audio.dpReady.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.dpReadyAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.dpReadyAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.dpReady.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -2347,16 +2348,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.mdProcAudio = CreateFrame("FRAME", "TwintopResourceBar_mdProcAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.mdProcAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_mdProcAudio", parent)
 		controls.dropDown.mdProcAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.mdProcAudio, oUi.sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.mdProcAudio, spec.audio.mdProc.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.mdProcAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.mdProcAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.mdProcAudio, spec.audio.mdProc.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.mdProcAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.mdProcAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.mdProcAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -2366,7 +2367,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -2379,7 +2380,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -2389,7 +2390,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.mdProcAudio:SetValue(newValue, newName)
 			spec.audio.mdProc.sound = newValue
 			spec.audio.mdProc.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.mdProcAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.mdProcAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.mdProc.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -2414,16 +2415,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = CreateFrame("FRAME", "TwintopResourceBar_overcapAudio", parent, "UIDropDownMenuTemplate")
+		controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_overcapAudio", parent)
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.sliderWidth)
-		UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
-		UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
 			local entries = 25
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
@@ -2433,7 +2434,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					info.notCheckable = true
 					info.text = "Sounds " .. i+1
 					info.menuList = i
-					UIDropDownMenu_AddButton(info)
+					LibDD:UIDropDownMenu_AddButton(info)
 				end
 			else
 				local start = entries * menuList
@@ -2446,7 +2447,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
-						UIDropDownMenu_AddButton(info, level)
+						LibDD:UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -2456,7 +2457,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
 			spec.audio.overcap.sound = newValue
 			spec.audio.overcap.soundName = newName
-			UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)

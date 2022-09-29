@@ -811,7 +811,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			voidform = {
 				id = 194249,
 				name = "",
-				icon = ""
+				icon = "",
+				isTalent = true
 			},
 			darkAscension = {
 				id = 391109,
@@ -903,15 +904,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			idolOfCthun_Tendril = {
 				id = 377355,
 				idTick = 193473,
-				idLegendaryBonus = 6983,
 				name = "",
 				icon = "",
 			},
 			--TODO: This is not working in beta. Check idTick again when fixed.
 			idolOfCthun_Lasher = {
-				id = 344753,
-				idTick = 344752,
-				idLegendaryBonus = 6983,
+				id = 377357,
+				idTick = 394979,
 				name = "",
 				icon = "",
 			},
