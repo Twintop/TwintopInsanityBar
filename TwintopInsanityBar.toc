@@ -38,8 +38,8 @@ Classes\Monk.lua
 Classes\MonkOptions.lua
 Classes\PriestOptions.lua
 Classes\Priest.lua
-#Classes\RogueOptions.lua
-#Classes\Rogue.lua
+Classes\RogueOptions.lua
+Classes\Rogue.lua
 Classes\ShamanOptions.lua
 Classes\Shaman.lua
 Classes\Warrior.lua

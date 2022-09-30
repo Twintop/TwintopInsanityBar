@@ -100,7 +100,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					width=24,
 					height=24
 				},
-				-- Core Rogue
+				-- Rogue
 				ambush = {
 					enabled = true, -- 1
 				},
@@ -113,63 +113,79 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				distract = {
 					enabled = false, -- 4
 				},
-				feint = {
-					enabled = true, -- 5
-				},
 				kidneyShot = {
-					enabled = false, -- 6
-				},
-				sap = {
-					enabled = false, -- 7
-				},
-				shiv = {
-					enabled = false, -- 8
+					enabled = false, -- 5
 				},
 				sliceAndDice = {
+					enabled = true, -- 6
+				},
+				-- Rogue Talents
+				shiv = {
+					enabled = false, -- 7
+				},
+				sap = {
+					enabled = false, -- 8
+				},
+				feint = {
 					enabled = true, -- 9
+				},
+				gouge = {
+					enabled = false, -- 10
+				},
+				echoingReprimand = {
+					enabled = true, -- 11
 				},
 				-- Assassination
 				envenom = {
-					enabled = true, -- 10
-				},
-				fanOfKnives = {
-					enabled = true, -- 11
-				},
-				garrote = {
 					enabled = true, -- 12
 				},
-				mutilate = {
+				fanOfKnives = {
 					enabled = true, -- 13
 				},
-				poisonedKnife = {
-					enabled = false, -- 14
+				garrote = {
+					enabled = true, -- 14
 				},
-				rupture = {
+				mutilate = {
 					enabled = true, -- 15
 				},
-				-- Talents
-				exsanguinate = {
-					enabled = true, -- 16
+				poisonedKnife = {
+					enabled = false, -- 16
 				},
-				crimsonTempest = {
+				rupture = {
 					enabled = true, -- 17
 				},
-				-- Covenants
-				echoingReprimand = { -- Kyrian
+				-- Assassination Talents
+				crimsonTempest = {
 					enabled = true, -- 18
 				},
-				sepsis = { -- Night Fae
+				exsanguinate = {
 					enabled = true, -- 19
 				},
-				serratedBoneSpike = { -- Necrolord
+				serratedBoneSpike = {
 					enabled = true, -- 20
+				},
+				sepsis = {
+					enabled = true, -- 21
+				},
+				kingsbane = {
+					enabled = true, -- 22
 				},
 				-- PvP					
 				deathFromAbove = {
-					enabled = false, -- 21
+					enabled = false, -- 23
 				},
 				dismantle = {
-					enabled = false, -- 22
+					enabled = false, -- 24
+				},
+				-- Covenants
+				echoingReprimandCovenant = { -- Kyrian
+					enabled = true, -- 25
+				},
+				sepsisCovenant = { -- Night Fae
+					enabled = true, -- 26
+				},
+				serratedBoneSpikeCovenant = { -- Necrolord
+					enabled = true, -- 27
 				},
 			},
 			generation = {
