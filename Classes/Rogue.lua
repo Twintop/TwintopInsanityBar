@@ -512,8 +512,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				debuffId = 324073,
 				isTalent = true
 			},
-			sepsis = { 
-				id = 328305,
+			sepsis = {
+				id = 385408,
 				name = "",
 				icon = "",
 				energy = -25,
@@ -524,7 +524,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				hasCooldown = true,
 				isSnowflake = true,
 				cooldown = 90,
-				buffId = 347037,
+				buffId = 375939,
 				isActive = false,
 				isTalent = true
 			},
@@ -3703,7 +3703,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed. TODO: add override check for certain buffs.
 								if spell.id == TRB.Data.spells.ambush.id then
-									if TRB.Data.spells.subterfuge.isActive then
+									if TRB.Data.spells.subterfuge.isActive or TRB.Data.spells.sepsis.isActive or TRB.Data.spells.sepsisCovenant.isActive then
 										if TRB.Data.snapshotData.resource >= -energyAmount then
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
 										else
@@ -3715,7 +3715,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 									else
 										showThreshold = false
 									end
-								elseif TRB.Data.spells.subterfuge.isActive or TRB.Data.spells.sepsisCovenant.isActive then
+								elseif TRB.Data.spells.subterfuge.isActive or TRB.Data.spells.sepsis.isActive or TRB.Data.spells.sepsisCovenant.isActive then
 									if TRB.Data.snapshotData.resource >= -energyAmount then
 										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
 									else
@@ -3740,7 +3740,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.shiv.id then
-										if TRB.Data.character.items.tinyToxicBlade == true or TRB.Functions.IsTalentActive(TRB.Data.spells.tinyToxicBlade) then -- Don't show this threshold
+										if not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+											showThreshold = false
+										elseif TRB.Data.character.items.tinyToxicBlade == true or TRB.Functions.IsTalentActive(TRB.Data.spells.tinyToxicBlade) then -- Don't show this threshold
 											showThreshold = false
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
@@ -3749,7 +3751,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.echoingReprimand.id then
-										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+										if not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+											showThreshold = false
+										elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
@@ -3759,7 +3763,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.sepsis.id then
-										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+										if not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+											showThreshold = false
+										elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
@@ -3769,7 +3775,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.serratedBoneSpike.id then
-										if TRB.Data.snapshotData[spell.settingKey].charges == 0 then
+										if not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+											showThreshold = false
+										elseif TRB.Data.snapshotData[spell.settingKey].charges == 0 then
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
