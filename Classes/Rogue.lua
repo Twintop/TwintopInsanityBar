@@ -111,7 +111,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				isTalent = true
 			},
-			--TODO: Add Atrophic Poison
+			atrophicPoison = {
+				id = 392388,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
 
 			-- Assassination Poisons
 			deadlyPoison = {
@@ -120,7 +125,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				isTalent = true
 			},
-			--TODO: Add Amplifying Poison
+			amplifyingPoison = {
+				id = 383414,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
 
 			-- Rogue Class Baseline Abilities
             ambush = {
@@ -668,6 +678,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			cripplingPoison = 0,
 			woundPoison = 0,
 			numbingPoison = 0,
+			atrophicPoison = 0,
+			amplifyingPoison = 0,
 			--Covenant
 			serratedBoneSpike = 0,
 			targets = {}
@@ -1560,6 +1572,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
+			{ variable = "#atrophicPoison", icon = spells.atrophicPoison.icon, description = spells.atrophicPoison.name, printInSettings = true },
+			{ variable = "#amplifyingPoison", icon = spells.amplifyingPoison.icon, description = spells.amplifyingPoison.name, printInSettings = true },
 			{ variable = "#blindside", icon = spells.blindside.icon, description = spells.blindside.name, printInSettings = true },
 			{ variable = "#covenantAbility", icon = spells.echoingReprimandCovenant.icon .. spells.flagellation.icon .. spells.sepsisCovenant.icon .. spells.serratedBoneSpikeCovenant.icon, description = "Covenant on-use Ability", printInSettings = true},
 			{ variable = "#crimsonTempest", icon = spells.crimsonTempest.icon, description = spells.crimsonTempest.name, printInSettings = true },
@@ -1655,6 +1669,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$serratedBoneSpikeCount", description = "Number of Serrated Bone Spike bleeds active on targets (if |cFF40BF40Necrolord|r)", printInSettings = false, color = false },
 
 			-- Poisons
+			
+			{ variable = "$amplifyingPoisonCount", description = "Number of Amplifying Poisons active on targets", printInSettings = false, color = false },
+			{ variable = "$amplifyingPoisonTime", description = "Time remaining on Amplifying Poison on your current target", printInSettings = false, color = false },
+
+			{ variable = "$atrophicPoisonCount", description = "Number of Atrophic Poisons active on targets", printInSettings = false, color = false },
+			{ variable = "$atrophicPoisonTime", description = "Time remaining on Atrophic Poison on your current target", printInSettings = false, color = false },
+
 			{ variable = "$cpCount", description = "Number of Crippling Poisons active on targets", printInSettings = true, color = false },
 			{ variable = "$cripplingPoisonCount", description = "Number of Crippling Poisons active on targets", printInSettings = false, color = false },
 			{ variable = "$cpTime", description = "Time remaining on Crippling Poison on your current target", printInSettings = true, color = false },
@@ -1737,10 +1758,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "#bladeRush", icon = spells.bladeRush.icon, description = spells.bladeRush.name, printInSettings = true },
 			{ variable = "#broadside", icon = spells.broadside.icon, description = spells.broadside.name, printInSettings = true },
 			{ variable = "#buriedTreasure", icon = spells.buriedTreasure.icon, description = spells.buriedTreasure.name, printInSettings = true },
-			{ variable = "#deathFromAbove", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = true },
+			{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
 			{ variable = "#dirtyTricks", icon = spells.dirtyTricks.icon, description = spells.dirtyTricks.name, printInSettings = true },
 			{ variable = "#dispatch", icon = spells.dispatch.icon, description = spells.dispatch.name, printInSettings = true },
-			{ variable = "#dismantle", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = true },
+			{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
 			{ variable = "#dreadblades", icon = spells.dreadblades.icon, description = spells.dreadblades.name, printInSettings = true },
 			--{ variable = "#covenantAbility", icon = spells.echoingReprimandCovenant.icon .. spells.flagellation.icon .. spells.sepsisCovenant.icon .. spells.serratedBoneSpikeCovenant.icon, description = "Covenant on-use Ability", printInSettings = true},
 			{ variable = "#cripplingPoison", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = true },
@@ -2020,6 +2041,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					TRB.Data.snapshotData.targetData.targets[guid].crimsonTempestRemaining = 0
 					TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpike = false
 					--Poisons
+					TRB.Data.snapshotData.targetData.targets[guid].amplifyingPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].amplifyingPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].atrophicPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].atrophicPoisonRemaining = 0
 					TRB.Data.snapshotData.targetData.targets[guid].deadlyPoison = false
 					TRB.Data.snapshotData.targetData.targets[guid].deadlyPoisonRemaining = 0
 					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoison = false
@@ -2061,16 +2086,18 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
         
 		if specId == 1 then -- Assassination
 			-- Bleeds
-			local garroteTotal = 0
-			local ruptureTotal = 0
-			local internalBleedingTotal = 0
 			local crimsonTempestTotal = 0
+			local garroteTotal = 0
+			local internalBleedingTotal = 0
+			local ruptureTotal = 0
 			local serratedBoneSpikeTotal = 0
 			-- Poisons
-			local deadlyPoisonTotal = 0
+			local amplifyingPoisonTotal = 0
+			local atrophicPoisonTotal = 0
 			local cripplingPoisonTotal = 0
-			local woundPoisonTotal = 0
+			local deadlyPoisonTotal = 0
 			local numbingPoisonTotal = 0
+			local woundPoisonTotal = 0
 			-- Covenant
 			local serratedBoneSpikeCovenantTotal = 0
 			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
@@ -2086,45 +2113,55 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					TRB.Data.snapshotData.targetData.targets[guid].crimsonTempestRemaining = 0
 					TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpike = false
 					-- Poisons
-					TRB.Data.snapshotData.targetData.targets[guid].deadlyPoison = false
-					TRB.Data.snapshotData.targetData.targets[guid].deadlyPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].amplifyingPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].amplifyingPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].atrophicPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].atrophicPoisonRemaining = 0
 					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoison = false
 					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoisonRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].woundPoison = false
-					TRB.Data.snapshotData.targetData.targets[guid].woundPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].deadlyPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].deadlyPoisonRemaining = 0
 					TRB.Data.snapshotData.targetData.targets[guid].numbingPoison = false
 					TRB.Data.snapshotData.targetData.targets[guid].numbingPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].woundPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].woundPoisonRemaining = 0
 					-- Covenant
 					TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpikeCovenant = false
 				else
 					-- Bleeds
+					if TRB.Data.snapshotData.targetData.targets[guid].crimsonTempest == true then
+						crimsonTempestTotal = crimsonTempestTotal + 1
+					end
 					if TRB.Data.snapshotData.targetData.targets[guid].garrote == true then
 						garroteTotal = garroteTotal + 1
-					end
-					if TRB.Data.snapshotData.targetData.targets[guid].rupture == true then
-						ruptureTotal = ruptureTotal + 1
 					end
 					if TRB.Data.snapshotData.targetData.targets[guid].internalBleeding == true then
 						internalBleedingTotal = internalBleedingTotal + 1
 					end
-					if TRB.Data.snapshotData.targetData.targets[guid].crimsonTempest == true then
-						crimsonTempestTotal = crimsonTempestTotal + 1
+					if TRB.Data.snapshotData.targetData.targets[guid].rupture == true then
+						ruptureTotal = ruptureTotal + 1
 					end
 					if TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpike == true then
 						serratedBoneSpikeTotal = serratedBoneSpikeTotal + 1
 					end
 					-- Poisons
-					if TRB.Data.snapshotData.targetData.targets[guid].deadlyPoison == true then
-						deadlyPoisonTotal = deadlyPoisonTotal + 1
+					if TRB.Data.snapshotData.targetData.targets[guid].amplifyingPoison == true then
+						amplifyingPoisonTotal = amplifyingPoisonTotal + 1
+					end
+					if TRB.Data.snapshotData.targetData.targets[guid].atrophicPoison == true then
+						atrophicPoisonTotal = atrophicPoisonTotal + 1
 					end
 					if TRB.Data.snapshotData.targetData.targets[guid].cripplingPoison == true then
 						cripplingPoisonTotal = cripplingPoisonTotal + 1
 					end
-					if TRB.Data.snapshotData.targetData.targets[guid].woundPoison == true then
-						woundPoisonTotal = woundPoisonTotal + 1
+					if TRB.Data.snapshotData.targetData.targets[guid].deadlyPoison == true then
+						deadlyPoisonTotal = deadlyPoisonTotal + 1
 					end
 					if TRB.Data.snapshotData.targetData.targets[guid].numbingPoison == true then
 						numbingPoisonTotal = numbingPoisonTotal + 1
+					end
+					if TRB.Data.snapshotData.targetData.targets[guid].woundPoison == true then
+						woundPoisonTotal = woundPoisonTotal + 1
 					end
 					-- Covenant
 					if TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpikeCovenant == true then
@@ -2133,16 +2170,18 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				end
 			end
 			--Bleeds
-			TRB.Data.snapshotData.targetData.garrote = garroteTotal
-			TRB.Data.snapshotData.targetData.rupture = ruptureTotal
-			TRB.Data.snapshotData.targetData.internalBleeding = internalBleedingTotal
 			TRB.Data.snapshotData.targetData.crimsonTempest = crimsonTempestTotal
+			TRB.Data.snapshotData.targetData.garrote = garroteTotal
+			TRB.Data.snapshotData.targetData.internalBleeding = internalBleedingTotal
+			TRB.Data.snapshotData.targetData.rupture = ruptureTotal
 			TRB.Data.snapshotData.targetData.serratedBoneSpike = serratedBoneSpikeTotal
 			--Poisons
-			TRB.Data.snapshotData.targetData.deadlyPoison = deadlyPoisonTotal
+			TRB.Data.snapshotData.targetData.amplifyingPoison = amplifyingPoisonTotal
+			TRB.Data.snapshotData.targetData.atrophicPoison = atrophicPoisonTotal
 			TRB.Data.snapshotData.targetData.cripplingPoison = cripplingPoisonTotal
-			TRB.Data.snapshotData.targetData.woundPoison = woundPoisonTotal
+			TRB.Data.snapshotData.targetData.deadlyPoison = deadlyPoisonTotal
 			TRB.Data.snapshotData.targetData.numbingPoison = numbingPoisonTotal
+			TRB.Data.snapshotData.targetData.woundPoison = woundPoisonTotal
 			--Covenant
 			TRB.Data.snapshotData.targetData.serratedBoneSpikeCovenant = serratedBoneSpikeCovenantTotal
 		elseif specId == 2 then -- Outlaw
@@ -2195,15 +2234,18 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			local specId = GetSpecialization()
 			if specId == 1 then
 				--Bleeds
+				TRB.Data.snapshotData.targetData.crimsonTempest = 0
+				TRB.Data.snapshotData.targetData.internalBleeding = 0
 				TRB.Data.snapshotData.targetData.garrote = 0
 				TRB.Data.snapshotData.targetData.rupture = 0
-				TRB.Data.snapshotData.targetData.internalBleeding = 0
-				TRB.Data.snapshotData.targetData.crimsonTempest = 0
+				TRB.Data.snapshotData.targetData.serratedBoneSpike = 0
 				--Poisons
-				TRB.Data.snapshotData.targetData.deadlyPoison = 0
+				TRB.Data.snapshotData.targetData.atrophicPoison = 0
+				TRB.Data.snapshotData.targetData.amplifyingPoison = 0
 				TRB.Data.snapshotData.targetData.cripplingPoison = 0
-				TRB.Data.snapshotData.targetData.woundPoison = 0
+				TRB.Data.snapshotData.targetData.deadlyPoison = 0
 				TRB.Data.snapshotData.targetData.numbingPoison = 0
+				TRB.Data.snapshotData.targetData.woundPoison = 0
 				--Covenant
 				TRB.Data.snapshotData.targetData.serratedBoneSpikeCovenant = 0
 			elseif specId == 2 then
@@ -2319,7 +2361,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ruptureRemaining > 0 then
 					valid = true
-				end			
+				end
 			elseif var == "$dpCount" or var == "$deadlyPoisonCount" then
 				if TRB.Data.snapshotData.targetData.deadlyPoison > 0 then
 					valid = true
@@ -2331,6 +2373,19 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					TRB.Data.snapshotData.targetData.targets ~= nil and
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deadlyPoisonRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$amplifyingPoisonCount" then
+				if TRB.Data.snapshotData.targetData.amplifyingPoison > 0 then
+					valid = true
+				end
+			elseif var == "$amplifyingPoisonTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].amplifyingPoisonRemaining > 0 then
 					valid = true
 				end
 			-- Other abilities
@@ -2476,6 +2531,19 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].numbingPoisonRemaining > 0 then
 				valid = true
 			end
+		elseif var == "$atrophicPoisonCount" then
+			if TRB.Data.snapshotData.targetData.atrophicPoison > 0 then
+				valid = true
+			end
+		elseif var == "$atrophicPoisonPoisonTime" then
+			if not UnitIsDeadOrGhost("target") and
+				UnitCanAttack("player", "target") and
+				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+				TRB.Data.snapshotData.targetData.targets ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].atrophicPoisonRemaining > 0 then
+				valid = true
+			end
 		elseif var == "$wpCount" or var == "$woundPoisonCount" then
 			if TRB.Data.snapshotData.targetData.woundPoison > 0 then
 				valid = true
@@ -2609,11 +2677,23 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local _dpTime = 0
 		local dpTime
 				
+		--$amplifyingPoisonCount and $amplifyingPoisonTime
+		local _amplifyingPoisonCount = TRB.Data.snapshotData.targetData.amplifyingPoison or 0
+		local amplifyingPoisonCount = tostring(_amplifyingPoisonCount)
+		local _amplifyingPoisonTime = 0
+		local amplifyingPoisonTime
+				
 		--$npCount and $npTime
 		local _npCount = TRB.Data.snapshotData.targetData.numbingPoison or 0
 		local npCount = tostring(_npCount)
 		local _npTime = 0
 		local npTime
+				
+		--$npCount and $npTime
+		local _atrophicPoisonCount = TRB.Data.snapshotData.targetData.atrophicPoison or 0
+		local atrophicPoisonCount = tostring(_atrophicPoisonCount)
+		local _atrophicPoisonTime = 0
+		local atrophicPoisonTime
 				
 		--$wpCount and $wpTime
 		local _wpCount = TRB.Data.snapshotData.targetData.woundPoison or 0
@@ -2622,7 +2702,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local wpTime
 		
 		--$sbsCount
-		local _sbsCount = TRB.Data.snapshotData.targetData.serratedBoneSpikeCovenant or 0
+		local _sbsCount = TRB.Data.snapshotData.targetData.serratedBoneSpike or TRB.Data.snapshotData.targetData.serratedBoneSpikeCovenant or 0
 		local sbsCount = tostring(_sbsCount)
 		local _sbsOnTarget = false
 
@@ -2635,6 +2715,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			_cpTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].cripplingPoisonRemaining or 0
 			_dpTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deadlyPoisonRemaining or 0
 			_npTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].numbingPoisonRemaining or 0
+			_atrophicPoisonTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].atrophicPoisonRemaining or 0
+			_amplifyingPoisonTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].amplifyingPoisonRemaining or 0
 			_wpTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].woundPoisonRemaining or 0
 			_sbsOnTarget = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serratedBoneSpikeCovenant or false
 		end
@@ -2716,6 +2798,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				wpTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, 0)
 			end
 
+			if _atrophicPoisonTime > 0 then
+				atrophicPoisonCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _atrophicPoisonCount)
+				atrophicPoisonTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _atrophicPoisonTime)
+			else
+				atrophicPoisonCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, _atrophicPoisonCount)
+				atrophicPoisonTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, 0)
+			end
+
+			if _amplifyingPoisonTime > 0 then
+				amplifyingPoisonCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _amplifyingPoisonCount)
+				amplifyingPoisonTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.up, _amplifyingPoisonTime)
+			else
+				amplifyingPoisonCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, _amplifyingPoisonCount)
+				amplifyingPoisonTime = string.format("|c%s%.1f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, 0)
+			end
+
 			if _sbsOnTarget == false and TRB.Data.character.covenantId == 4 then
 				sbsCount = string.format("|c%s%.0f|r", TRB.Data.settings.rogue.assassination.colors.text.dots.down, _sbsCount)
 			else
@@ -2729,6 +2827,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			ruptureTime = string.format("%.1f", _ruptureTime)
 
 			-- Poisons
+			amplifyingPoisonTime = string.format("%.1f", _amplifyingPoisonTime)
+			atrophicPoisonTime = string.format("%.1f", _atrophicPoisonTime)
 			cpTime = string.format("%.1f", _cpTime)
 			dpTime = string.format("%.1f", _dpTime)
 			npTime = string.format("%.1f", _npTime)
@@ -2764,6 +2864,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		Global_TwintopResourceBar.resource.passive = _passiveEnergy
 		Global_TwintopResourceBar.resource.regen = _regenEnergy
 		Global_TwintopResourceBar.dots = {
+			amplifyingPoisonCount = _amplifyingPoisonCount,
+			atrophicPoisonCount = _atrophicPoisonCount,
 			cripplingPoisonCount = _cpCount,
 			deadlyPoisonCount = _dpCount,
 			numbingPoisonCount = _npCount,
@@ -2776,6 +2878,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		}
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#amplifyingPoison"] = TRB.Data.spells.amplifyingPoison.icon
+		lookup["#atrophicPoison"] = TRB.Data.spells.atrophicPoison.icon
 		lookup["#blindside"] = TRB.Data.spells.blindside.icon
 		lookup["#crimsonTempest"] = TRB.Data.spells.crimsonTempest.icon
 		lookup["#ct"] = TRB.Data.spells.crimsonTempest.icon
@@ -2811,6 +2915,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$casting"] = castingEnergy
 		lookup["$comboPoints"] = TRB.Data.character.resource2
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+		lookup["$amplifyingPoisonCount"] = amplifyingPoisonCount
+		lookup["$amplifyingPoisonTime"] = amplifyingPoisonTime
+		lookup["$atrophicPoisonCount"] = atrophicPoisonCount
+		lookup["$atrophicPoisonTime"] = atrophicPoisonTime
 		lookup["$cpCount"] = cpCount
 		lookup["$cripplingPoisonCount"] = cpCount
 		lookup["$cpTime"] = cpTime
@@ -2873,6 +2981,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
 		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$amplifyingPoisonCount"] = amplifyingPoisonCount
+		lookupLogic["$amplifyingPoisonTime"] = amplifyingPoisonTime
+		lookupLogic["$atrophicPoisonCount"] = atrophicPoisonCount
+		lookupLogic["$atrophicPoisonTime"] = atrophicPoisonTime
 		lookupLogic["$cpCount"] = _cpCount
 		lookupLogic["$cripplingPoisonCount"] = _cpCount
 		lookupLogic["$cpTime"] = _cpTime
@@ -3368,6 +3480,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
         end
 
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].atrophicPoison then
+				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.atrophicPoison.id, "target", "player"))
+
+				if expiration ~= nil then
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].atrophicPoisonRemaining = expiration - currentTime
+				end
+			end
+
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].cripplingPoison then
 				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.cripplingPoison.id, "target", "player"))
 
@@ -3444,6 +3564,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
         end
 
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].amplifyingPoison then
+				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.amplifyingPoison.id, "target", "player"))
+
+				if expiration ~= nil then
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].amplifyingPoisonRemaining = expiration - currentTime
+				end
+			end
+
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deadlyPoison then
 				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.deadlyPoison.id, "target", "player"))
 
@@ -4514,6 +4642,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
 						end
+					elseif spellId == TRB.Data.spells.amplifyingPoison.id then
+						if InitializeTarget(destGUID) then
+							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Amplifying Poison Applied to Target
+								TRB.Data.snapshotData.targetData.targets[destGUID].amplifyingPoison = true
+								if type == "SPELL_AURA_APPLIED" then
+									TRB.Data.snapshotData.targetData.amplifyingPoison = TRB.Data.snapshotData.targetData.amplifyingPoison + 1
+								end
+								triggerUpdate = true
+							elseif type == "SPELL_AURA_REMOVED" then
+								TRB.Data.snapshotData.targetData.targets[destGUID].amplifyingPoison = false
+								TRB.Data.snapshotData.targetData.targets[destGUID].amplifyingPoisonRemaining = 0
+								TRB.Data.snapshotData.targetData.amplifyingPoison = TRB.Data.snapshotData.targetData.amplifyingPoison - 1
+								triggerUpdate = true
+							--elseif type == "SPELL_PERIODIC_DAMAGE" then
+							end
+						end
 					elseif spellId == TRB.Data.spells.kingsbane.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.kingsbane.startTime = currentTime
@@ -4874,6 +5018,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							TRB.Data.snapshotData.targetData.targets[destGUID].numbingPoison = false
 							TRB.Data.snapshotData.targetData.targets[destGUID].numbingPoisonRemaining = 0
 							TRB.Data.snapshotData.targetData.numbingPoison = TRB.Data.snapshotData.targetData.numbingPoison - 1
+							triggerUpdate = true
+						--elseif type == "SPELL_PERIODIC_DAMAGE" then
+						end
+					end
+				elseif spellId == TRB.Data.spells.atrophicPoison.id then
+					if InitializeTarget(destGUID) then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Atrophic Poison Applied to Target
+							TRB.Data.snapshotData.targetData.targets[destGUID].atrophicPoison = true
+							if type == "SPELL_AURA_APPLIED" then
+								TRB.Data.snapshotData.targetData.atrophicPoison = TRB.Data.snapshotData.targetData.atrophicPoison + 1
+							end
+							triggerUpdate = true
+						elseif type == "SPELL_AURA_REMOVED" then
+							TRB.Data.snapshotData.targetData.targets[destGUID].atrophicPoison = false
+							TRB.Data.snapshotData.targetData.targets[destGUID].atrophicPoisonRemaining = 0
+							TRB.Data.snapshotData.targetData.atrophicPoison = TRB.Data.snapshotData.targetData.atrophicPoison - 1
 							triggerUpdate = true
 						--elseif type == "SPELL_PERIODIC_DAMAGE" then
 						end
