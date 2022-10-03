@@ -101,73 +101,73 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					height=24
 				},
 				-- Rogue
-				ambush = {
+				ambush = { --
 					enabled = true, -- 1
 				},
-				cheapShot = {
+				cheapShot = { --
 					enabled = false, -- 2
 				},
-				crimsonVial = {
+				crimsonVial = { --
 					enabled = true, -- 3
 				},
-				distract = {
+				distract = { --
 					enabled = false, -- 4
 				},
-				kidneyShot = {
+				kidneyShot = { --
 					enabled = false, -- 5
 				},
-				sliceAndDice = {
+				sliceAndDice = { --
 					enabled = true, -- 6
 				},
 				-- Rogue Talents
-				shiv = {
+				shiv = { --
 					enabled = false, -- 7
 				},
-				sap = {
+				sap = { --
 					enabled = false, -- 8
 				},
-				feint = {
+				feint = { --
 					enabled = true, -- 9
 				},
-				gouge = {
+				gouge = { --
 					enabled = false, -- 10
 				},
-				echoingReprimand = {
+				echoingReprimand = { --
 					enabled = true, -- 11
 				},
 				-- Assassination
-				envenom = {
+				envenom = { --
 					enabled = true, -- 12
 				},
-				fanOfKnives = {
+				fanOfKnives = { --
 					enabled = true, -- 13
 				},
-				garrote = {
+				garrote = { --
 					enabled = true, -- 14
 				},
-				mutilate = {
+				mutilate = { --
 					enabled = true, -- 15
 				},
-				poisonedKnife = {
+				poisonedKnife = { --
 					enabled = false, -- 16
 				},
-				rupture = {
+				rupture = { --
 					enabled = true, -- 17
 				},
 				-- Assassination Talents
-				crimsonTempest = {
+				crimsonTempest = { --
 					enabled = true, -- 18
 				},
-				exsanguinate = {
+				exsanguinate = { --
 					enabled = true, -- 19
 				},
-				serratedBoneSpike = {
+				serratedBoneSpike = { --
 					enabled = true, -- 20
 				},
-				sepsis = {
+				sepsis = { --
 					enabled = true, -- 21
 				},
-				kingsbane = {
+				kingsbane = { --
 					enabled = true, -- 22
 				},
 				-- PvP					
@@ -179,13 +179,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				},
 				-- Covenants
 				echoingReprimandCovenant = { -- Kyrian
-					enabled = true, -- 25
+					enabled = false, -- 25
 				},
 				sepsisCovenant = { -- Night Fae
-					enabled = true, -- 26
+					enabled = false, -- 26
 				},
 				serratedBoneSpikeCovenant = { -- Necrolord
-					enabled = true, -- 27
+					enabled = false, -- 27
 				},
 			},
 			generation = {
@@ -888,8 +888,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.ambushThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_ambush", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ambushThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Ambush (if stealthed / Subterfuge active)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ambush. Only visible when in Stealth or usable via the Blindside or Subterfuge talent."
+		getglobal(f:GetName() .. 'Text'):SetText("Ambush (stealth)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ambush. Only visible when in Stealth or usable via Blindside, Sepsis, or Subterfuge."
 		f:SetChecked(spec.thresholds.ambush.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.ambush.enabled = self:GetChecked()
@@ -899,11 +899,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.cheapShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_cheapShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cheapShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Cheap Shot (if stealthed / Subterfuge active)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Cheap Shot. Only visible when in Stealth or usable via the Subterfuge talent."
+		getglobal(f:GetName() .. 'Text'):SetText("Cheap Shot (stealth)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Cheap Shot. Only visible when in Stealth or usable via Sepsis or Subterfuge."
 		f:SetChecked(spec.thresholds.cheapShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.cheapShot.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.echoingReprimandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_echoingReprimand", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.echoingReprimandThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(spec.thresholds.echoingReprimand.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.echoingReprimand.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -929,6 +940,28 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 25
+		controls.checkBoxes.gougeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_gouge", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.gougeThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Gouge")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Gouge. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(spec.thresholds.gouge.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.gouge.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.kingsbaneThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_kingsbane", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.kingsbaneThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Kingsbane")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Kingsbane. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(spec.thresholds.kingsbane.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.kingsbane.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
 		controls.checkBoxes.mutilateThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_mutilate", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mutilateThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -951,11 +984,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 25
+		controls.checkBoxes.serratedBoneSpikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_serratedBoneSpike", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.serratedBoneSpikeThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Serrated Bone Spike")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Serrated Bone Spike. If no available charges, will be colored as 'unusable'."
+		f:SetChecked(spec.thresholds.serratedBoneSpike.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.serratedBoneSpike.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
 		controls.checkBoxes.shivThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_shiv", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shivThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Shiv")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If on cooldown, will be colored as 'unusable'. If using the Tiny Toxic Blade legendary, no threshold will be shown."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If on cooldown, will be colored as 'unusable'. If Tiny Toxic Blade is active, no threshold will be shown."
 		f:SetChecked(spec.thresholds.shiv.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shiv.enabled = self:GetChecked()
@@ -969,8 +1013,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.crimsonTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_crimsonTempest", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.crimsonTempestThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Crimson Tempest (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Tempest. Only visible if talented in to Crimson Tempest. If you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText("Crimson Tempest ")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Tempest. If you do not have any combo points, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.crimsonTempest.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.crimsonTempest.enabled = self:GetChecked()
@@ -992,7 +1036,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.kidneyShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Kidney Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Kidney Shot. Only visible when in Stealth or usable via the Subterfuge talent. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Kidney Shot. Only visible when in Stealth or usable via Sepsis or Subterfuge. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.kidneyShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.kidneyShot.enabled = self:GetChecked()
@@ -1049,8 +1093,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.exsanguinateThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_exsanguinate", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.exsanguinateThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Exsanguinate (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Exsanguinate. Only visible if talented in to Exsanguinate. If on cooldown or the current target has no bleeds, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText("Exsanguinate")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Exsanguinate. If on cooldown or the current target has no bleeds, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.exsanguinate.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.exsanguinate.enabled = self:GetChecked()
@@ -1071,47 +1115,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sap", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sapThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sap (if stealthed / Subterfuge active)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sap. Only visible when in Stealth or usable via the Subterfuge talent."
+		getglobal(f:GetName() .. 'Text'):SetText("Sap (stealth)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sap. Only visible when in Stealth or usable via Sepsis or Subterfuge."
 		f:SetChecked(spec.thresholds.sap.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sap.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.labels.covenant = TRB.UiFunctions:BuildLabel(parent, "Covenant", 5, yCoord, 110, 20)
-		yCoord = yCoord - 20
-
-		controls.checkBoxes.echoingReprimandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_echoingReprimand", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.echoingReprimandThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand (if |cFF68CCEFKyrian|r)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand. Only visible if |cFF68CCEFKyrian|r. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(spec.thresholds.echoingReprimand.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.echoingReprimand.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
 		controls.checkBoxes.sepsisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sepsis", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sepsisThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sepsis (if |cFFA330C9Night Fae|r)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis. Only visible if |cFFA330C9Night Fae|r. If on cooldown, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText("Sepsis")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sepsis.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.serratedBoneSpikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_serratedBoneSpike", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.serratedBoneSpikeThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Serrated Bone Spike (if |cFF40BF40Necrolord|r)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Serrated Bone Spike. Only visible if |cFF40BF40Necrolord|r. If no available charges, will be colored as 'unusable'."
-		f:SetChecked(spec.thresholds.serratedBoneSpike.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.serratedBoneSpike.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
