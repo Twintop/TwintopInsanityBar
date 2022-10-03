@@ -808,7 +808,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 		end)
 
-		controls.colors.comboPoints.echoingReprimand = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point when Echoing Reprimand (|cFF68CCEFKyrian|r) buff is up", spec.colors.comboPoints.echoingReprimand, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.echoingReprimand = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point when Echoing Reprimand buff is up", spec.colors.comboPoints.echoingReprimand, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.echoingReprimand
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "echoingReprimand")
@@ -821,7 +821,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 		end)
 
-		controls.colors.comboPoints.serratedBoneSpike = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point that wil generate on next Serrated Bone Spike (|cFF40BF40Necrolord|r) use", spec.colors.comboPoints.serratedBoneSpike, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.serratedBoneSpike = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point that wil generate on next Serrated Bone Spike use", spec.colors.comboPoints.serratedBoneSpike, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.serratedBoneSpike
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "serratedBoneSpike")
