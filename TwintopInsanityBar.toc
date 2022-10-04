@@ -14,7 +14,6 @@
 ## X-WoWI-ID: 24628
 ## X-Wago-ID: Qb6mM46P
 
-#Libs\TaintLess.xml
 Libs\LibStub.lua
 Libs\CallbackHandler-1.0.lua
 Libs\LibSharedMedia-3.0.lua
