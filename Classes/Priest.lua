@@ -645,7 +645,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
 			devouringPlagueThreshold = 50,
-			mindSearThreshold = 25,
+			mindSearThreshold = 50,
 			effects = {
 				overgrowthSeedlingModifier = 1
 			},
@@ -677,7 +677,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 589,
 				icon = "",
 				name = "",
-				insanity = 4,
+				insanity = 3,
 				baseDuration = 16,
 				pandemic = true,
 				pandemicTime = 16 * 0.3,
@@ -691,7 +691,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 15407,
 				name = "",
 				icon = "",
-				insanity = 3,
+				insanity = 2,
 				isTalent = false,
 				baseline = true
 			},
@@ -699,7 +699,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 34914,
 				name = "",
 				icon = "",
-				insanity = 5,
+				insanity = 4,
 				baseDuration = 21,
 				pandemic = true,
 				pandemicTime = 21 * 0.3,
@@ -770,14 +770,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 263346,
 				name = "",
 				icon = "",
-				insanity = 20,
+				insanity = 15,
 				isTalent = true
 			},
 			auspiciousSpirits = {
 				id = 155271,
 				idSpawn = 147193,
 				idImpact = 148859,
-				insanity = 2,
+				insanity = 1,
 				name = "",
 				icon = "",
 				isTalent = true
@@ -799,7 +799,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 280752,
 				name = "",
 				icon = "",
-				insanity = 6,
+				insanity = 4,
 				isTalent = true
 			},
 			voidEruption = {
@@ -825,7 +825,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 73510,
 				name = "",
 				icon = "",
-				insanity = 6,
+				insanity = 4,
 				isTalent = true
 			},
 			surgeOfDarkness = {
@@ -846,7 +846,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 391403,
 				name = "",
 				icon = "",
-				insanity = 6,
+				insanity = 4,
 				isTalent = false,
 				baseline = true
 			},
@@ -886,7 +886,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				energizeId = 200010,
 				name = "",
 				icon = "",
-				insanity = 5,
+				insanity = 3,
 				isTalent = true
 			},
 			mindDevourer = {
