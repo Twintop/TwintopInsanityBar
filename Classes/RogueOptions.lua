@@ -179,13 +179,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				},
 				-- Covenants
 				echoingReprimandCovenant = { -- Kyrian
-					enabled = false, -- 25
+					enabled = true, -- 25
 				},
 				sepsisCovenant = { -- Night Fae
-					enabled = false, -- 26
+					enabled = true, -- 26
 				},
 				serratedBoneSpikeCovenant = { -- Necrolord
-					enabled = false, -- 27
+					enabled = true, -- 27
 				},
 			},
 			generation = {
@@ -393,79 +393,85 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					width=24,
 					height=24
 				},
-				-- Core Rogue
-				ambush = {
+				-- Rogue
+				ambush = { --
 					enabled = true, -- 1
 				},
-				cheapShot = {
+				cheapShot = { --
 					enabled = false, -- 2
 				},
-				crimsonVial = {
+				crimsonVial = { --
 					enabled = true, -- 3
 				},
-				distract = {
+				distract = { --
 					enabled = false, -- 4
 				},
-				feint = {
+				kidneyShot = { --
 					enabled = false, -- 5
 				},
-				kidneyShot = {
-					enabled = false, -- 6
+				sliceAndDice = { --
+					enabled = true, -- 6
 				},
-				sap = {
+				-- Rogue Talents
+				shiv = { --
 					enabled = false, -- 7
 				},
-				shiv = {
+				sap = { --
 					enabled = false, -- 8
 				},
-				sliceAndDice = {
+				feint = { --
 					enabled = true, -- 9
+				},
+				gouge = { --
+					enabled = false, -- 10
+				},
+				echoingReprimand = { --
+					enabled = true, -- 11
 				},
 				-- Outlaw
 				betweenTheEyes = {
-					enabled = true, -- 10
-				},
-				bladeFlurry = {
-					enabled = true, -- 11
-				},
-				dispatch = {
 					enabled = true, -- 12
 				},
-				gouge = {
+				dispatch = {
 					enabled = true, -- 13
 				},
 				pistolShot = {
 					enabled = true, -- 14
 				},
-				rollTheBones = {
+				sinisterStrike = {
 					enabled = true, -- 15
 				},
-				sinisterStrike = {
+				bladeFlurry = {
 					enabled = true, -- 16
 				},
-				-- Talents
-				ghostlyStrike = {
+				rollTheBones = {
 					enabled = true, -- 17
 				},
-				dreadblades = {
+				sepsis = { --
 					enabled = true, -- 18
 				},
-				-- Covenants
-				echoingReprimand = { -- Kyrian
+				ghostlyStrike = {
 					enabled = true, -- 19
 				},
-				sepsis = { -- Night Fae
+				dreadblades = {
 					enabled = true, -- 20
-				},
-				serratedBoneSpike = { -- Necrolord
-					enabled = true, -- 21
 				},
 				-- PvP					
 				deathFromAbove = {
-					enabled = false, -- 22
+					enabled = false, -- 21
 				},
 				dismantle = {
+					enabled = false, -- 22
+				},
+				-- Covenants
+				echoingReprimandCovenant = { -- Kyrian
 					enabled = false, -- 23
+				},
+				sepsisCovenant = { -- Night Fae
+					enabled = false, -- 24
+				},
+				serratedBoneSpikeCovenant = { -- Necrolord
+					enabled = false, -- 25
 				},
 			},
 			generation = {

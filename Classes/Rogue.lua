@@ -297,7 +297,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 hasCooldown = true,
 				thresholdUsable = false,
 				cooldown = 15,
-				dirtyTricks = true,
 				isTalent = true
 			},
 			subterfuge = {
@@ -709,6 +708,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			duration = 0,
 			enabled = false
 		}
+		specCache.outlaw.snapshotData.gouge = {
+			startTime = nil,
+			duration = 0
+		}
 		specCache.assassination.snapshotData.garrote = {
 			startTime = nil,
 			duration = 0,
@@ -829,20 +832,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			effects = {
 				overgrowthSeedling = 1.0
 			},
-			talents = {
-				ghostlyStrike = {
-					isSelected = false
-				},
-				dirtyTricks = {
-					isSelected = false
-				},
-				dreadblades = {
-					isSelected = false
-				},
-				bladeRush = {
-					isSelected = false
-				}
-			},
 			items = {
 				tinyToxicBlade = false
 			},
@@ -855,29 +844,35 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		}
 
 		specCache.outlaw.spells = {
-			-- Poisons
+			-- Class Poisons
 			cripplingPoison = {
-				id = 3408,
+				id = 3409,
 				name = "",
-				icon = ""
-			},
-			instantPoison = {
-				id = 315584,
-				name = "",
-				icon = ""
-			},
-			numbingPoison = {
-				id = 1,
-				name = "",
-				icon = ""
+				icon = "",
+				isTalent = false
 			},
 			woundPoison = {
-				id = 8679,
+				id = 8680,
 				name = "",
-				icon = ""
+				icon = "",
+				isTalent = false
+			},
+			numbingPoison = {
+				id = 5760,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			atrophicPoison = {
+				id = 392388,
+				name = "",
+				icon = "",
+				isTalent = true
 			},
 
-			-- Rogue Class Abilities
+			-- Outlaw Poisons
+			
+			-- Rogue Class Baseline Abilities
             ambush = {
 				id = 8676,
 				name = "",
@@ -889,7 +884,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 1,
 				settingKey = "ambush",
                 --isSnowflake = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				isBaseline = true
 			},
 			cheapShot = {
 				id = 1833,
@@ -904,7 +900,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				--isSnowflake = false,
 				rushedSetup = true,
 				thresholdUsable = false,
-				dirtyTricks = true
+				isBaseline = true
 			},
 			crimsonVial = {
 				id = 185311,
@@ -918,7 +914,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				hasCooldown = true,
                 cooldown = 30,
 				nimbleFingers = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				isBaseline = true
 			},
 			distract = {
 				id = 1725,
@@ -932,21 +929,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				hasCooldown = true,
                 cooldown = 30,
 				rushedSetup = true,
-				thresholdUsable = false
-			},
-			feint = {
-				id = 1966,
-				name = "",
-				icon = "",
-				energy = -35,
-                comboPointsGenerated = 0,
-				texture = "",
-				thresholdId = 5,
-				settingKey = "feint",
-                hasCooldown = true,
-                cooldown = 15,
-				nimbleFingers = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				isBaseline = true
 			},
 			kidneyShot = {
 				id = 408,
@@ -955,41 +939,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				energy = -25,
                 comboPoints = true,
 				texture = "",
-				thresholdId = 6,
+				thresholdId = 5,
 				settingKey = "kidneyShot",
                 hasCooldown = true,
                 cooldown = 20,
 				rushedSetup = true,
-				thresholdUsable = false
-			},
-			sap = {
-				id = 6770,
-				name = "",
-				icon = "",
-				energy = -35,
-                comboPointsGenerated = 0,
-                stealth = true,
-				texture = "",
-				thresholdId = 7,
-				settingKey = "sap",
-				rushedSetup = true,
 				thresholdUsable = false,
-				dirtyTricks = true
-			},
-			shiv = {
-				id = 5938,
-				name = "",
-				icon = "",
-				energy = -20,
-                comboPointsGenerated = 1,
-				texture = "",
-				thresholdId = 8,
-				settingKey = "shiv",
-                hasCooldown = true,
-				isSnowflake = true,
-                cooldown = 25,
-				thresholdUsable = false,
-				idLegendaryBonus = 7112
+				isBaseline = true
 			},
 			sliceAndDice = {
 				id = 315496,
@@ -998,7 +954,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				energy = -25,
                 comboPoints = true,
 				texture = "",
-				thresholdId = 9,
+				thresholdId = 6,
 				settingKey = "sliceAndDice",
                 hasCooldown = false,
 				thresholdUsable = false,
@@ -1011,54 +967,63 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					30 * 0.3,
 					36 * 0.3,
 					42 * 0.3
-				}
+				},
+				isBaseline = true
 			},
 
-            -- Outlaw Spec Abilities
-			adrenalineRush = {
-				id = 13750,
+			--Rogue Talent Abilities
+			shiv = {
+				id = 5938,
 				name = "",
 				icon = "",
-				restlessBlades=true
-			},
-			betweenTheEyes = {
-				id = 315341,
-				name = "",
-				icon = "",
-				energy = -25,
-                comboPoints = true,
+				energy = -20,
+                comboPointsGenerated = 1,
 				texture = "",
-				thresholdId = 10,
-				settingKey = "betweenTheEyes",
+				thresholdId = 7,
+				settingKey = "shiv",
                 hasCooldown = true,
 				isSnowflake = true,
+                cooldown = 25,
 				thresholdUsable = false,
-				cooldown = 45,
-				restlessBlades=true
+				idLegendaryBonus = 7112,
+				isTalent = true,
+				isBaseline = true
 			},
-			bladeFlurry = {
-				id = 13877,
-				name = "",
-				icon = "",
-				energy = -15,
-				texture = "",
-				thresholdId = 11,
-				settingKey = "bladeFlurry",
-                hasCooldown = true,
-				thresholdUsable = false,
-				cooldown = 30,
-				restlessBlades=true
-			},
-			dispatch = {
-				id = 2098,
+			sap = {
+				id = 6770,
 				name = "",
 				icon = "",
 				energy = -35,
-				comboPoints = true,
+                comboPointsGenerated = 0,
+                stealth = true,
 				texture = "",
-				thresholdId = 12,
-				settingKey = "dispatch",
-				thresholdUsable = false
+				thresholdId = 8,
+				settingKey = "sap",
+				rushedSetup = true,
+				thresholdUsable = false,
+				isTalent = true
+			},
+			feint = {
+				id = 1966,
+				name = "",
+				icon = "",
+				energy = -35,
+                comboPointsGenerated = 0,
+				texture = "",
+				thresholdId = 9,
+				settingKey = "feint",
+                hasCooldown = true,
+                cooldown = 15,
+				nimbleFingers = true,
+				thresholdUsable = false,
+				isTalent = true
+			},
+			nimbleFingers = {
+				id = 378427,
+				name = "",
+				icon = "",
+				energyMod = -10,
+				isTalent = true
 			},
 			gouge = {
 				id = 1776,
@@ -1067,12 +1032,93 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				energy = -25,
                 comboPointsGenerated = 1,
 				texture = "",
-				thresholdId = 13,
+				thresholdId = 10,
 				settingKey = "gouge",
                 hasCooldown = true,
 				thresholdUsable = false,
 				cooldown = 15,
-				dirtyTricks = true
+				dirtyTricks = true,
+				isTalent = true
+			},
+			subterfuge = {
+				id = 108208,
+				name = "",
+				icon = "",
+				isActive = false,
+				isTalent = true
+			},
+			rushedSetup = {
+				id = 378803,
+				name = "",
+				icon = "",
+				energyMod = 0.8,
+				isTalent = true
+			},
+			tightSpender = {
+				id = 381621,
+				name = "",
+				icon = "",
+				energyMod = 0.9,
+				isTalent = true
+			},
+			echoingReprimand = {
+				id = 385616,
+				name = "",
+				icon = "",
+				energy = -10,
+				comboPointsGenerated = 2,
+				texture = "",
+				thresholdId = 11,
+				settingKey = "echoingReprimand",
+				hasCooldown = true,
+				isSnowflake = true,
+				thresholdUsable = false,
+				isActive = false,
+				cooldown = 45,
+				buffId = {
+					323558, -- 2
+					323559, -- 3
+					323560, -- 4
+					354835, -- 4
+					354838, -- 5
+				}
+			},
+			--TODO: Finish implementing Shadow Dance
+			shadowDance = {
+				id = 185313,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+
+            -- Outlaw Baseline Abilities
+			betweenTheEyes = {
+				id = 315341,
+				name = "",
+				icon = "",
+				energy = -25,
+                comboPoints = true,
+				texture = "",
+				thresholdId = 12,
+				settingKey = "betweenTheEyes",
+                hasCooldown = true,
+				isSnowflake = true,
+				thresholdUsable = false,
+				cooldown = 45,
+				restlessBlades=true,
+				isBaseline = true
+			},
+			dispatch = {
+				id = 2098,
+				name = "",
+				icon = "",
+				energy = -35,
+				comboPoints = true,
+				texture = "",
+				thresholdId = 13,
+				settingKey = "dispatch",
+				thresholdUsable = false,
+				isBaseline = true
 			},
 			pistolShot = {
 				id = 185763,
@@ -1085,20 +1131,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "pistolShot",
                 hasCooldown = false,
 				isSnowflake = true,
-				thresholdUsable = false
-			},
-			rollTheBones = {
-				id = 315508,
-				name = "",
-				icon = "",
-				energy = -25,
-				texture = "",
-				thresholdId = 15,
-				settingKey = "rollTheBones",
-                hasCooldown = true,
 				thresholdUsable = false,
-				cooldown = 45,
-				restlessBlades=true
+				isBaseline = true
 			},
 			sinisterStrike = {
 				id = 193315,
@@ -1107,20 +1141,71 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				energy = -45,
                 comboPointsGenerated = 1,
 				texture = "",
-				thresholdId = 16,
+				thresholdId = 15,
 				settingKey = "sinisterStrike",
                 hasCooldown = false,
 				isSnowflake = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				isBaseline = true
 			},
-
-			-- Buffs/debuffs
 			opportunity = {
 				id = 195627,
 				name = "",
 				icon = "",
 				isActive = false,
-				energyModifier = 0.5
+				energyModifier = 0.5,
+				isBaseline = true,
+				isTalent = true
+			},
+			bladeFlurry = {
+				id = 13877,
+				name = "",
+				icon = "",
+				energy = -15,
+				texture = "",
+				thresholdId = 16,
+				settingKey = "bladeFlurry",
+                hasCooldown = true,
+				thresholdUsable = false,
+				cooldown = 30,
+				restlessBlades=true,
+				isBaseline = true,
+				isTalent = true
+			},
+
+			-- Outlaw Spec Abilities
+			adrenalineRush = {
+				id = 13750,
+				name = "",
+				icon = "",
+				restlessBlades=true,
+				isTalent = true
+			},
+			restlessBlades = {
+				id = 79096,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			dirtyTricks = {
+				id = 108216,
+				name = "",
+				icon = "",
+				isTalent = true,
+				isActive = false
+			},
+			rollTheBones = {
+				id = 315508,
+				name = "",
+				icon = "",
+				energy = -25,
+				texture = "",
+				thresholdId = 17,
+				settingKey = "rollTheBones",
+                hasCooldown = true,
+				thresholdUsable = false,
+				cooldown = 45,
+				restlessBlades=true
 			},
 
 			-- Roll the Bones
@@ -1154,9 +1239,28 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 			},
-			 
-
-			-- Talents
+			countTheOdds = {
+				id = 381982,
+				name = "",
+				icon = "",
+				duration = 5
+			},
+			sepsis = {
+				id = 385408,
+				name = "",
+				icon = "",
+				energy = -25,
+				comboPointsGenerated = 1,
+				texture = "",
+				thresholdId = 18,
+				settingKey = "sepsis",
+				hasCooldown = true,
+				isSnowflake = true,
+				cooldown = 90,
+				buffId = 375939,
+				isActive = false,
+				isTalent = true
+			},
 			ghostlyStrike = {
 				id = 196937,
 				name = "",
@@ -1164,38 +1268,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				energy = -30,
                 comboPointsGenerated = 1,
 				texture = "",
-				thresholdId = 17,
+				thresholdId = 19,
 				settingKey = "ghostlyStrike",
                 hasCooldown = true,
 				thresholdUsable = false,
 				isTalent = true,
 				cooldown = 35,
 				restlessBlades=true
-			},
-			dirtyTricks = {
-				id = 108216,
-				name = "",
-				icon = "",
-				isTalent = true,
-				isActive = false
-			},
-			internalBleeding = {
-				id = 154953,
-				name = "",
-				icon = ""
-			},
-			dreadblades = {
-				id = 343142,
-				name = "",
-				icon = "",
-				energy = -30,
-				texture = "",
-				thresholdId = 18,
-				settingKey = "dreadblades",
-				hasCooldown = true,
-				isTalent = true,
-				thresholdUsable = false,
-				cooldown = 90
 			},
 			bladeRush = {
 				id = 271877,
@@ -1204,6 +1283,63 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				isTalent = true,
 				energy = 25,
                 duration = 5,
+				cooldown = 45
+			},
+			dreadblades = {
+				id = 343142,
+				name = "",
+				icon = "",
+				energy = -50,
+				texture = "",
+				thresholdId = 20,
+				settingKey = "dreadblades",
+				hasCooldown = true,
+				isTalent = true,
+				thresholdUsable = false,
+				cooldown = 90
+			},
+			-- TODO: Implement this!
+			keepItRolling = {
+				id = 381989,
+				name = "",
+				icon = "",
+				isTalent = true,
+				cooldown = 60 * 7
+			},
+			-- TODO: Implement this!
+			greenskinsWickers = {
+				id = 386823,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+
+			-- PvP
+			deathFromAbove = {
+				id = 269513,
+				name = "",
+				icon = "",
+				energy = -25,
+				texture = "",
+				thresholdId = 21,
+				settingKey = "deathFromAbove",
+				comboPoints = true,
+				hasCooldown = true,
+				isPvp = true,
+				thresholdUsable = false,
+				cooldown = 30
+			},
+			dismantle = {
+				id = 207777,
+				name = "",
+				icon = "",
+				energy = -25,
+				texture = "",
+				thresholdId = 22,
+				settingKey = "dismantle",
+				hasCooldown = true,
+				isPvp = true,
+				thresholdUsable = false,
 				cooldown = 45
 			},
 
@@ -1222,7 +1358,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				conduitId = 235,
 				conduitRanks = {}
 			},
-			countTheOdds = {
+			countTheOddsConduit = {
 				id = 341546,
 				name = "",
 				icon = "",
@@ -1230,15 +1366,15 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			},
 
 			-- Covenants
-			echoingReprimand = { -- Kyrian
+			echoingReprimandCovenant = { -- Kyrian
 				id = 323547,
 				name = "",
 				icon = "",
 				energy = -10,
 				comboPointsGenerated = 2,
 				texture = "",
-				thresholdId = 19,
-				settingKey = "echoingReprimand",
+				thresholdId = 23,
+				settingKey = "echoingReprimandCovenant",
 				hasCooldown = true,
 				isSnowflake = true,
 				thresholdUsable = false,
@@ -1252,30 +1388,30 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					354838, -- 5
 				}
 			},
-			sepsis = { -- Night Fae
+			sepsisCovenant = { -- Night Fae
 				id = 328305,
 				name = "",
 				icon = "",
 				energy = -25,
 				comboPointsGenerated = 1,
 				texture = "",
-				thresholdId = 20,
-				settingKey = "sepsis",
+				thresholdId = 24,
+				settingKey = "sepsisCovenant",
 				hasCooldown = true,
 				isSnowflake = true,
 				cooldown = 90,
 				buffId = 347037,
 				isActive = false
 			},
-			serratedBoneSpike = {
+			serratedBoneSpikeCovenant = {
 				id = 328547,
 				name = "",
 				icon = "",
 				energy = -15,
 				comboPointsGenerated = 2,
 				texture = "",
-				thresholdId = 21,
-				settingKey = "serratedBoneSpike",
+				thresholdId = 25,
+				settingKey = "serratedBoneSpikeCovenant",
 				hasCooldown = true,
 				isSnowflake = true,
 				debuffId = 324073
@@ -1284,42 +1420,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				id = 323654,
 				name = "",
 				icon = ""
-			},
-			vendetta = {
-				id = 79140,
-				name = "",
-				icon = "",
-				energy = 60,
-                duration = 3
-			},
-
-			-- PvP
-			deathFromAbove = {
-				id = 269513,
-				name = "",
-				icon = "",
-				energy = -25,
-				texture = "",
-				thresholdId = 22,
-				settingKey = "deathFromAbove",
-				comboPoints = true,
-				hasCooldown = true,
-				isPvp = true,
-				thresholdUsable = false,
-				cooldown = 30
-			},
-			dismantle = {
-				id = 207777,
-				name = "",
-				icon = "",
-				energy = -25,
-				texture = "",
-				thresholdId = 23,
-				settingKey = "dismantle",
-				hasCooldown = true,
-				isPvp = true,
-				thresholdUsable = false,
-				cooldown = 45
 			},
 		}
 
@@ -1770,9 +1870,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "#echoingReprimand", icon = spells.echoingReprimand.icon, description = spells.echoingReprimand.name, printInSettings = true },
 			{ variable = "#ghostlyStrike", icon = spells.ghostlyStrike.icon, description = spells.ghostlyStrike.name, printInSettings = true },
 			{ variable = "#grandMelee", icon = spells.grandMelee.icon, description = spells.grandMelee.name, printInSettings = true },
-			{ variable = "#instantPoison", icon = spells.instantPoison.icon, description = spells.instantPoison.name, printInSettings = true },
-			{ variable = "#internalBleeding", icon = spells.internalBleeding.icon, description = spells.internalBleeding.name, printInSettings = true },
-			{ variable = "#ip", icon = spells.instantPoison.icon, description = spells.instantPoison.name, printInSettings = false },
 			{ variable = "#numbingPoison", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = true },
 			{ variable = "#np", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = false },
 			{ variable = "#opportunity", icon = spells.opportunity.icon, description = spells.opportunity.name, printInSettings = true },
@@ -1782,7 +1879,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
 			{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
 			{ variable = "#sepsis", icon = spells.sepsis.icon, description = spells.sepsis.name, printInSettings = true },
-			{ variable = "#serratedBoneSpike", icon = spells.serratedBoneSpike.icon, description = spells.serratedBoneSpike.name, printInSettings = true },
+			{ variable = "#serratedBoneSpike", icon = spells.serratedBoneSpikeCovenant.icon, description = spells.serratedBoneSpikeCovenant.name, printInSettings = true },
 			{ variable = "#sinisterStrike", icon = spells.sinisterStrike.icon, description = spells.sinisterStrike.name, printInSettings = true },
 			{ variable = "#skullAndCrossbones", icon = spells.skullAndCrossbones.icon, description = spells.skullAndCrossbones.name, printInSettings = true },
 			{ variable = "#trueBearing", icon = spells.trueBearing.icon, description = spells.trueBearing.name, printInSettings = true },
@@ -3273,9 +3370,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["#echoingReprimand"] = TRB.Data.spells.echoingReprimandCovenant.icon
 		lookup["#ghostlyStrike"] = TRB.Data.spells.ghostlyStrike.icon
 		lookup["#grandMelee"] = TRB.Data.spells.grandMelee.icon
-		lookup["#instantPoison"] = TRB.Data.spells.instantPoison.icon
-		lookup["#internalBleeding"] = TRB.Data.spells.internalBleeding.icon
-		lookup["#ip"] = TRB.Data.spells.instantPoison.icon
 		lookup["#numbingPoison"] = TRB.Data.spells.numbingPoison.icon
 		lookup["#np"] = TRB.Data.spells.numbingPoison.icon
 		lookup["#opportunity"] = TRB.Data.spells.opportunity.icon
@@ -4358,11 +4452,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 									frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
 								end
 
-								if spell.restlessBlades == true and TRB.Data.snapshotData[spell.settingKey].startTime ~= nil then
+								if spell.restlessBlades == true and TRB.Functions.IsTalentActive(TRB.Data.spells.restlessBlades) and TRB.Data.snapshotData[spell.settingKey].startTime ~= nil then
 									local cdRemaining = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData[spell.settingKey])
 									if (TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.startTime == nil and cdRemaining < TRB.Data.snapshotData.resource2) or (TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.startTime ~= nil and cdRemaining < (TRB.Data.snapshotData.resource2 * 2)) then 
 										frameLevel = TRB.Data.constants.frameLevels.thresholdOver - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown	
-										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.restlessBlades								
+										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.restlessBlades
 									end
 								end
 
@@ -4433,7 +4527,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
 					
 					local sbsCp = 0
-					--[[
 					if TRB.Data.character.covenantId == 4 and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.serratedBoneSpikeCovenant.charges > 0 then
 						sbsCp = 1 + TRB.Data.snapshotData.targetData.serratedBoneSpikeCovenant
 
@@ -4441,18 +4534,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serratedBoneSpikeCovenant == false then
 							sbsCp = sbsCp + 1
 						end
-					end]]
-					
-					if TRB.Functions.IsTalentActive(TRB.Data.spells.serratedBoneSpike) and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.serratedBoneSpike.charges > 0 then
-						sbsCp = 1 + TRB.Data.snapshotData.targetData.serratedBoneSpike
-
-						if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] == nil or
-							TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serratedBoneSpike == false then
-							sbsCp = sbsCp + 1
-						end
 					end
-
-					print(sbsCp)
 
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.comboPoints.background, true)
 
