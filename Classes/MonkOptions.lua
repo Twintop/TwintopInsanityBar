@@ -368,7 +368,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					passive="FF9F4500",
 					serenity="FF00FF96",
 					serenityEnd="FFFF0000",
-					t28="FF006D40",
 					overcapEnabled=true,
 				},
 				comboPoints = {
@@ -1210,13 +1209,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 3)
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.t28 = TRB.UiFunctions:BuildColorPicker(parent, "Energy while you have the Primordial Power (T28) buff", spec.colors.bar.t28, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.t28
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "t28")
 		end)
 
 		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
