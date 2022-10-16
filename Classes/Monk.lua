@@ -471,20 +471,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				name = "",
 				icon = "",
 				isTalent = true
-			}, 
-
-			-- T28
-			primordialPotential = {
-				id = 363911,
-				name = "",
-				icon = "",
-				maxStacks = 10
 			},
-			primordialPower = {
-				id = 363924,
-				name = "",
-				icon = ""
-			}
 		}
 
 		specCache.windwalker.snapshotData.energyRegen = 0
@@ -537,17 +524,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			minEndTime = nil,
 			maxEndTime = nil,
 			list = {}
-		}
-		specCache.windwalker.snapshotData.primordialPotential = {
-			spellId = nil,
-			stacks = 0,
-			duration = 0,
-			endTime = nil
-		}
-		specCache.windwalker.snapshotData.primordialPower = {
-			stacks = 0,
-			duration = 0,
-			endTime = nil
 		}
 
 		specCache.windwalker.barTextVariables = {
@@ -697,8 +673,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "#fof", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = false },
 			{ variable = "#strikeOfTheWindlord", icon = spells.strikeOfTheWindlord.icon, description = spells.strikeOfTheWindlord.name, printInSettings = true },
 			{ variable = "#paralysis", icon = spells.paralysis.icon, description = spells.paralysis.name, printInSettings = true },
-			{ variable = "#primordialPotential", icon = spells.primordialPotential.icon, description = spells.primordialPotential.name, printInSettings = true },
-			{ variable = "#primordialPower", icon = spells.primordialPower.icon, description = spells.primordialPower.name, printInSettings = true },
 			{ variable = "#risingSunKick", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = true },
 			{ variable = "#rsk", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = false },
 			{ variable = "#serenity", icon = spells.serenity.icon, description = spells.serenity.name, printInSettings = true },
@@ -775,12 +749,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "$motcMinTime", description = "Time until your oldest Mark of the Crane debuff expires", printInSettings = true, color = false },
 			{ variable = "$motcMaxTime", description = "Time until your newest Mark of the Crane debuff expires", printInSettings = true, color = false },
 
-			{ variable = "$t28BuildingStacks", description = "Number of stacks on the Primordial Potential (T28 4P) builder buff", printInSettings = true, color = false },
-			{ variable = "$t28BuildingStacksRemaining", description = "Number of additional stacks of the Primordial Potential (T28 4P) builder buff until Primordial Power will proc", printInSettings = true, color = false },
-			{ variable = "$t28BuildingTime", description = "Time remaining on your Primordial Potential (T28 4P) builder buff", printInSettings = true, color = false },
-			{ variable = "$t28Stacks", description = "Number of stacks on the Primordial Power (T28 4P) spender buff", printInSettings = true, color = false },
-			{ variable = "$t28Time", description = "Time remaining on your Primordial Power (T28 4P) spender buff", printInSettings = true, color = false },
-			
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
@@ -1024,15 +992,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	local function GetDanceOfChiJiRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.danceOfChiJi)
 	end
-
-	local function GetPrimordialPotentialRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.primordialPotential)
-	end
-
-	local function GetPrimordialPowerRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.primordialPower)
-	end
-
+	
 	local function GetPotionOfSpiritualClarityRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.channeledManaPotion)
 	end
@@ -1192,26 +1152,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					TRB.Data.snapshotData.targetData.targets ~= nil and
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].markOfTheCraneRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$t28BuildingStacks" then
-				if TRB.Data.snapshotData.primordialPotential.stacks > 0 then
-					valid = true
-				end
-			elseif var == "$t28BuildingStacksRemaining" then
-				if TRB.Data.snapshotData.primordialPotential.stacks > 0 then
-					valid = true
-				end
-			elseif var == "$t28BuildingTime" then
-				if TRB.Data.snapshotData.primordialPotential.stacks > 0 then
-					valid = true
-				end
-			elseif var == "$t28Stacks" then
-				if TRB.Data.snapshotData.primordialPower.stacks > 0 then
-					valid = true
-				end
-			elseif var == "$t28Time" then
-				if TRB.Data.snapshotData.primordialPower.stacks > 0 then
 					valid = true
 				end
 			elseif var == "$resource" or var == "$energy" then
@@ -1646,25 +1586,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		else
 			motcTime = string.format("%.1f", _motcTime)
 		end
-		
-		local t28BuildingStacks = TRB.Data.snapshotData.primordialPotential.stacks
-		local t28BuildingStacksRemaining = TRB.Data.spells.primordialPotential.maxStacks - TRB.Data.snapshotData.primordialPotential.stacks
-
-		--$t28BuildingTime
-		local _t28BuildingTime = GetPrimordialPotentialRemainingTime()
-		local t28BuildingTime = "0.0"
-		if _t28BuildingTime ~= nil then
-			t28BuildingTime = string.format("%.1f", _t28BuildingTime)
-		end
-
-		local t28Stacks = TRB.Data.snapshotData.primordialPower.stacks
-	
-		--$t28Time
-		local _t28Time = GetPrimordialPowerRemainingTime()
-		local t28Time = "0.0"
-		if _t28Time ~= nil then
-			t28Time = string.format("%.1f", _t28Time)
-		end
 
 		----------------------------
 
@@ -1695,8 +1616,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["#fof"] = TRB.Data.spells.fistsOfFury.icon
 		lookup["#strikeOfTheWindlord"] = TRB.Data.spells.strikeOfTheWindlord.icon
 		lookup["#paralysis"] = TRB.Data.spells.paralysis.icon
-		lookup["#primordialPotential"] = TRB.Data.spells.primordialPotential.icon
-		lookup["#primordialPower"] = TRB.Data.spells.primordialPower.icon
 		lookup["#risingSunKick"] = TRB.Data.spells.risingSunKick.icon
 		lookup["#rsk"] = TRB.Data.spells.risingSunKick.icon
 		lookup["#serenity"] = TRB.Data.spells.serenity.icon
@@ -1740,11 +1659,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["$motcTime"] = motcTime
 		lookup["$motcCount"] = motcCount
 		lookup["$motcActiveCount"] = motcActiveCount
-		lookup["$t28BuildingStacks"] = t28BuildingStacks
-		lookup["$t28BuildingStacksRemaining"] = t28BuildingStacksRemaining
-		lookup["$t28BuildingTime"] = t28BuildingTime
-		lookup["$t28Stacks"] = t28Stacks
-		lookup["$t28Time"] = t28Time
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1782,11 +1696,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookupLogic["$motcTime"] = _motcTime
 		lookupLogic["$motcCount"] = _motcCount
 		lookupLogic["$motcActiveCount"] = _motcActiveCount
-		lookupLogic["$t28BuildingStacks"] = t28BuildingStacks
-		lookupLogic["$t28BuildingStacksRemaining"] = t28BuildingStacksRemaining
-		lookupLogic["$t28BuildingTime"] = _t28BuildingTime
-		lookupLogic["$t28Stacks"] = t28Stacks
-		lookupLogic["$t28Time"] = _t28Time
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -2476,10 +2385,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						end
 					end
 
-					if GetPrimordialPowerRemainingTime() > 0 then
-						barColor = TRB.Data.settings.monk.windwalker.colors.bar.t28
-					end
-
 					local barBorderColor = TRB.Data.settings.monk.windwalker.colors.bar.border
 					if GetDanceOfChiJiRemainingTime() > 0 then
 						barBorderColor = TRB.Data.settings.monk.windwalker.colors.bar.borderChiJi
@@ -2729,32 +2634,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							if TRB.Functions.IsTalentActive(TRB.Data.spells.paralysisRank2) then
 								TRB.Data.snapshotData.paralysis.duration = TRB.Data.snapshotData.paralysis.duration + TRB.Data.spells.paralysisRank2.cooldownMod
 							end
-						end
-					elseif spellId == TRB.Data.spells.primordialPotential.id then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							_, _, TRB.Data.snapshotData.primordialPotential.stacks, _, TRB.Data.snapshotData.primordialPotential.duration, TRB.Data.snapshotData.primordialPotential.endTime, _, _, _, TRB.Data.snapshotData.primordialPotential.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.primordialPotential.id)
-						elseif type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
-							--TRB.Data.snapshotData.audio.surgeOfLight2Cue = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshotData.primordialPotential.spellId = nil
-							TRB.Data.snapshotData.primordialPotential.duration = 0
-							TRB.Data.snapshotData.primordialPotential.stacks = 0
-							TRB.Data.snapshotData.primordialPotential.endTime = nil
-							--TRB.Data.snapshotData.audio.surgeOfLightCue = false
-							--TRB.Data.snapshotData.audio.surgeOfLight2Cue = false
-						end
-					elseif spellId == TRB.Data.spells.primordialPower.id then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REMOVED_DOSE" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							_, _, TRB.Data.snapshotData.primordialPower.stacks, _, TRB.Data.snapshotData.primordialPower.duration, TRB.Data.snapshotData.primordialPower.endTime, _, _, _, TRB.Data.snapshotData.primordialPower.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.primordialPower.id)
-						elseif type == "SPELL_AURA_APPLIED_DOSE" then -- Lost stack
-							--TRB.Data.snapshotData.audio.surgeOfLight2Cue = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshotData.primordialPower.spellId = nil
-							TRB.Data.snapshotData.primordialPower.duration = 0
-							TRB.Data.snapshotData.primordialPower.stacks = 0
-							TRB.Data.snapshotData.primordialPower.endTime = nil
-							--TRB.Data.snapshotData.audio.surgeOfLightCue = false
-							--TRB.Data.snapshotData.audio.surgeOfLight2Cue = false
 						end
 					end
 				end

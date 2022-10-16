@@ -126,8 +126,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				}
 			},
 			items = {
-				primordialArcanicPulsar = false,
-				t28Pieces = 0
+				primordialArcanicPulsar = false
 			},
 			torghast = {
 				rampaging = {
@@ -1644,28 +1643,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.character.talents.newMoon.isSelected = select(4, GetTalentInfo(7, 3, TRB.Data.character.specGroup))
 
 			GetCurrentMoonSpell()
-
-			local t28Pieces = 0
-			if IsEquippedItem(188847) then
-				t28Pieces = t28Pieces + 1
-			end
-			
-			if IsEquippedItem(188851) then
-				t28Pieces = t28Pieces + 1
-			end
-			
-			if IsEquippedItem(188849) then
-				t28Pieces = t28Pieces + 1
-			end
-			
-			if IsEquippedItem(188853) then
-				t28Pieces = t28Pieces + 1
-			end
-			
-			if IsEquippedItem(188848) then
-				t28Pieces = t28Pieces + 1
-			end
-			TRB.Data.character.items.t28Pieces = t28Pieces
 
 			-- Legendaries
 			local shoulderItemLink = GetInventoryItemLink("player", 3)
@@ -4063,13 +4040,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local currentTime = GetTime()
 
 		local timewornModifier = TRB.Data.snapshotData.timewornDreambinder.stacks * TRB.Data.spells.timewornDreambinder.modifier
-		local umbralInfusionModifier = 0
-		if TRB.Data.character.items.t28Pieces >= 4 and (TRB.Data.spells.eclipseLunar.isActive or TRB.Data.spells.eclipseSolar.isActive) then
-			umbralInfusionModifier = TRB.Data.spells.umbralInfusion.modifier
-		end
 
-		TRB.Data.character.starsurgeThreshold = TRB.Data.spells.starsurge.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier * (1+timewornModifier) * (1+umbralInfusionModifier)
-		TRB.Data.character.starfallThreshold = TRB.Data.spells.starfall.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier * (1+timewornModifier) * (1+umbralInfusionModifier)
+		TRB.Data.character.starsurgeThreshold = TRB.Data.spells.starsurge.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier * (1+timewornModifier)
+		TRB.Data.character.starfallThreshold = TRB.Data.spells.starfall.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier * (1+timewornModifier)
 
 		TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))
 

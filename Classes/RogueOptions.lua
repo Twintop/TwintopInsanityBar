@@ -177,16 +177,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				dismantle = {
 					enabled = false, -- 24
 				},
-				-- Covenants
-				echoingReprimandCovenant = { -- Kyrian
-					enabled = true, -- 25
-				},
-				sepsisCovenant = { -- Night Fae
-					enabled = true, -- 26
-				},
-				serratedBoneSpikeCovenant = { -- Necrolord
-					enabled = true, -- 27
-				},
 			},
 			generation = {
 				mode="gcd",
@@ -394,84 +384,74 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					height=24
 				},
 				-- Rogue
-				ambush = { --
+					ambush = { --
 					enabled = true, -- 1
 				},
-				cheapShot = { --
+					cheapShot = { --
 					enabled = false, -- 2
 				},
-				crimsonVial = { --
+					crimsonVial = { --
 					enabled = true, -- 3
 				},
-				distract = { --
+					distract = { --
 					enabled = false, -- 4
 				},
-				kidneyShot = { --
+					kidneyShot = { --
 					enabled = false, -- 5
 				},
-				sliceAndDice = { --
+					sliceAndDice = { --
 					enabled = true, -- 6
 				},
 				-- Rogue Talents
-				shiv = { --
+					shiv = { --
 					enabled = false, -- 7
 				},
-				sap = { --
+					sap = { --
 					enabled = false, -- 8
 				},
-				feint = { --
+					feint = { --
 					enabled = true, -- 9
 				},
-				gouge = { --
+					gouge = { --
 					enabled = false, -- 10
 				},
 				echoingReprimand = { --
 					enabled = true, -- 11
 				},
 				-- Outlaw
-				betweenTheEyes = {
+					betweenTheEyes = {
 					enabled = true, -- 12
 				},
-				dispatch = {
+					dispatch = {
 					enabled = true, -- 13
 				},
-				pistolShot = {
+					pistolShot = {
 					enabled = true, -- 14
 				},
-				sinisterStrike = {
+					sinisterStrike = {
 					enabled = true, -- 15
 				},
-				bladeFlurry = {
+					bladeFlurry = {
 					enabled = true, -- 16
 				},
-				rollTheBones = {
+					rollTheBones = {
 					enabled = true, -- 17
 				},
-				sepsis = { --
+					sepsis = { --
 					enabled = true, -- 18
 				},
-				ghostlyStrike = {
+					ghostlyStrike = {
 					enabled = true, -- 19
 				},
-				dreadblades = {
+					dreadblades = {
 					enabled = true, -- 20
 				},
 				-- PvP					
-				deathFromAbove = {
+					deathFromAbove = {
 					enabled = false, -- 21
 				},
-				dismantle = {
+					dismantle = {
 					enabled = false, -- 22
-				},
-				-- Covenants
-				echoingReprimandCovenant = { -- Kyrian
-					enabled = false, -- 23
-				},
-				sepsisCovenant = { -- Night Fae
-					enabled = false, -- 24
-				},
-				serratedBoneSpikeCovenant = { -- Necrolord
-					enabled = false, -- 25
 				},
 			},
 			generation = {
@@ -548,7 +528,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					penultimate="FFFF9900",
 					final="FFFF0000",
 					echoingReprimand="FF68CCEF",
-					serratedBoneSpike="FF40BF40",
 					sameColor=false
 				},
 				threshold = {
@@ -1984,12 +1963,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 		end)
 
-		controls.colors.comboPoints.serratedBoneSpike = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point that wil generate on next Serrated Bone Spike (|cFF40BF40Necrolord|r) use", spec.colors.comboPoints.serratedBoneSpike, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.comboPoints.serratedBoneSpike
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "serratedBoneSpike")
-		end)
-
 		yCoord = yCoord - 30
 
 		controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
@@ -2085,19 +2058,30 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.dreadbladesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_dreadblades", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dreadbladesThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Dreadblades (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dreadblades. Only visible if talented in to Dreadblades. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText("Dreadblades")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dreadblades. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.dreadblades.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.dreadblades.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
+		controls.checkBoxes.echoingReprimandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_echoingReprimand", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.echoingReprimandThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(spec.thresholds.echoingReprimand.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.echoingReprimand.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
 		controls.checkBoxes.ghostlyStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_ghostlyStrike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ghostlyStrikeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Ghostly Strike (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ghostly Strike. Only visible if talented in to Ghostly Strike. If on cooldown, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText("Ghostly Strike")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ghostly Strike. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.ghostlyStrike.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.ghostlyStrike.enabled = self:GetChecked()
@@ -2123,6 +2107,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetChecked(spec.thresholds.pistolShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.pistolShot.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.sepsisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_sepsis", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.sepsisThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Sepsis (if |cFFA330C9Night Fae|r)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(spec.thresholds.sepsis.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.sepsis.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -2263,43 +2258,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sap.enabled = self:GetChecked()
 		end)
-
-		yCoord = yCoord - 25
-		controls.labels.covenant = TRB.UiFunctions:BuildLabel(parent, "Covenant", 5, yCoord, 110, 20)
-		yCoord = yCoord - 20
-
-		controls.checkBoxes.echoingReprimandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_echoingReprimand", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.echoingReprimandThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand (if |cFF68CCEFKyrian|r)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand. Only visible if |cFF68CCEFKyrian|r. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(spec.thresholds.echoingReprimand.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.echoingReprimand.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.sepsisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_sepsis", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.sepsisThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sepsis (if |cFFA330C9Night Fae|r)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis. Only visible if |cFFA330C9Night Fae|r. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(spec.thresholds.sepsis.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.sepsis.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.serratedBoneSpikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_serratedBoneSpike", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.serratedBoneSpikeThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Serrated Bone Spike (if |cFF40BF40Necrolord|r)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Serrated Bone Spike. Only visible if |cFF40BF40Necrolord|r. If no available charges, will be colored as 'unusable'."
-		f:SetChecked(spec.thresholds.serratedBoneSpike.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.serratedBoneSpike.enabled = self:GetChecked()
-		end)
-
 		yCoord = yCoord - 25
 		controls.labels.covenant = TRB.UiFunctions:BuildLabel(parent, "PvP Abilities", 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
