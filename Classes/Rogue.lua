@@ -1160,6 +1160,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				duration = 5
 			},
+
 			sepsis = {
 				id = 385408,
 				name = "",
@@ -1213,12 +1214,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdUsable = false,
 				cooldown = 90
 			},
-			-- TODO: Implement this!
 			keepItRolling = {
 				id = 381989,
 				name = "",
 				icon = "",
 				isTalent = true,
+				duration = 30,
 				cooldown = 60 * 7
 			},
 			-- TODO: Implement this!
@@ -4559,6 +4560,27 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.duration = 0
 							TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.endTime = nil
 							TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.fromCountTheOdds = false
+						end
+					elseif spellId == TRB.Data.spells.keepItRolling.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							if TRB.Data.snapshotData.rollTheBones.buffs.broadside.duration > 0 then
+								TRB.Data.snapshotData.rollTheBones.buffs.broadside.duration = TRB.Data.snapshotData.rollTheBones.buffs.broadside.duration + TRB.Data.spells.keepItRolling.duration
+							end
+							if TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure.duration > 0 then
+								TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure.duration = TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure.duration + TRB.Data.spells.keepItRolling.duration
+							end
+							if TRB.Data.snapshotData.rollTheBones.buffs.grandMelee.duration > 0 then
+								TRB.Data.snapshotData.rollTheBones.buffs.grandMelee.duration = TRB.Data.snapshotData.rollTheBones.buffs.grandMelee.duration + TRB.Data.spells.keepItRolling.duration
+							end
+							if TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision.duration > 0 then
+								TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision.duration = TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision.duration + TRB.Data.spells.keepItRolling.duration
+							end
+							if TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones.duration > 0 then
+								TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones.duration = TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones.duration + TRB.Data.spells.keepItRolling.duration
+							end
+							if TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.duration > 0 then
+								TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.duration = TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.duration + TRB.Data.spells.keepItRolling.duration
+							end
 						end
 					end
 				end
