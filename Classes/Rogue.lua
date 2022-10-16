@@ -1020,7 +1020,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				isSnowflake = true,
 				thresholdUsable = false,
 				cooldown = 45,
-				restlessBlades=true,
+				restlessBlades = true,
 				isBaseline = true
 			},
 			dispatch = {
@@ -1083,7 +1083,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 hasCooldown = true,
 				thresholdUsable = false,
 				cooldown = 30,
-				restlessBlades=true,
+				restlessBlades = true,
 				isBaseline = true,
 				isTalent = true
 			},
@@ -1093,7 +1093,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				id = 13750,
 				name = "",
 				icon = "",
-				restlessBlades=true,
+				restlessBlades = true,
 				isTalent = true
 			},
 			restlessBlades = {
@@ -1120,7 +1120,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 hasCooldown = true,
 				thresholdUsable = false,
 				cooldown = 45,
-				restlessBlades=true
+				restlessBlades = true
 			},
 
 			-- Roll the Bones
@@ -1174,6 +1174,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				isSnowflake = true,
 				cooldown = 90,
 				buffId = 375939,
+				restlessBlades = true,
 				isActive = false,
 				isTalent = true
 			},
@@ -1190,7 +1191,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdUsable = false,
 				isTalent = true,
 				cooldown = 35,
-				restlessBlades=true
+				restlessBlades = true
 			},
 			bladeRush = {
 				id = 271877,
@@ -1199,7 +1200,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				isTalent = true,
 				energy = 25,
                 duration = 5,
-				cooldown = 45
+				cooldown = 45,
+				restlessBlades = true
 			},
 			dreadblades = {
 				id = 343142,
@@ -1212,7 +1214,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				hasCooldown = true,
 				isTalent = true,
 				thresholdUsable = false,
-				cooldown = 90
+				cooldown = 90,
+				restlessBlades = true
 			},
 			keepItRolling = {
 				id = 381989,
@@ -1220,7 +1223,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				isTalent = true,
 				duration = 30,
-				cooldown = 60 * 7
+				cooldown = 60 * 7,
+				restlessBlades = true
 			},
 			-- TODO: Implement this!
 			greenskinsWickers = {
