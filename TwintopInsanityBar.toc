@@ -4,7 +4,7 @@
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 10.0.0.9
 ## X-ReleaseType: alpha
-## X-ReleaseDate: October 16, 2022
+## X-ReleaseDate: October 18, 2022
 ## SavedVariables: TwintopInsanityBarSettings
 ## DefaultState: enabled
 ## Notes: Multi-class Resource Bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
@@ -31,8 +31,8 @@ Classes\DemonHunter.lua
 Classes\DemonHunterOptions.lua
 #Classes\DruidOptions.lua
 #Classes\Druid.lua
-#Classes\HunterOptions.lua
-#Classes\Hunter.lua
+Classes\HunterOptions.lua
+Classes\Hunter.lua
 Classes\Monk.lua
 Classes\MonkOptions.lua
 Classes\PriestOptions.lua

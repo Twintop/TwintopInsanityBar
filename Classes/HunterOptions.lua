@@ -103,32 +103,41 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				arcaneShot = {
 					enabled = false, -- 1
 				},
-				aMurderOfCrows = {
-					enabled = true, -- 2
+				revivePet = {
+					enabled = false, -- 2
 				},
-				barrage = {
-					enabled = true, -- 3
-				},
-				cobraShot = {
-					enabled = true, -- 4
+				wingClip = {
+					enabled = false, -- 3
 				},
 				killCommand = {
-					enabled = true, -- 5
+					enabled = true, -- 4
 				},
 				killShot = {
-					enabled = true, -- 6
-				},
-				multiShot = {
-					enabled = true, -- 7
-				},
-				revivePet = {
-					enabled = false, -- 8
+					enabled = true, -- 5
 				},
 				scareBeast = {
-					enabled = false, -- 9
+					enabled = false, -- 6
+				},
+				explosiveShot = {
+					enabled = true, -- 7
+				},
+				barrage = {
+					enabled = true, -- 8
+				},
+				serpentSting = {
+					enabled = true, -- 9
+				},
+				cobraShot = {
+					enabled = true, -- 10
+				},
+				multiShot = {
+					enabled = true, -- 11
+				},
+				aMurderOfCrows = {
+					enabled = true, -- 12
 				},
 				wailingArrow = {
-					enabled = true, -- 10
+					enabled = true, -- 13
 				}
 			},
 			generation = {

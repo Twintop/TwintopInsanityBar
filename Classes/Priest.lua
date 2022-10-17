@@ -2055,8 +2055,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local modifier = 1.0
 
 		--[[
-		if fotm and TRB.Data.character.talents.fotm.isSelected then
-			modifier = modifier * TRB.Data.character.talents.fotm.modifier
+		if fotm and TRB.Functions.IsTalentActive(TRB.Data.spells.fotm) then
+			modifier = modifier * TRB.Functions.IsTalentActive(TRB.Data.spells.fotm.modifier
 		end]]
 
 		if TRB.Data.spells.memoryOfLucidDreams.isActive then
@@ -4459,7 +4459,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				elseif specId == 3 then
 					if settings.mindbender.enabled and type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.mindbender.energizeId and sourceName == TRB.Data.spells.mindbender.name then
 						--((TRB.Functions.IsTalentActive(TRB.Data.spells.mindbender) and sourceName == TRB.Data.spells.mindbender.name)) then
-						--(not TRB.Data.character.talents.mindbender.isSelected and sourceName == TRB.Data.spells.shadowfiend.name)						
+						--(not TRB.Functions.IsTalentActive(TRB.Data.spells.mindbender) and sourceName == TRB.Data.spells.shadowfiend.name)						
 						TRB.Data.snapshotData.mindbender.swingTime = currentTime
 						triggerUpdate = true
 					elseif spellId == TRB.Data.spells.fatedInfusionCreationSpark.id then
