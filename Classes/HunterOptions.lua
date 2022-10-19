@@ -100,43 +100,43 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					width=24,
 					height=24
 				},
-					arcaneShot = {
+				arcaneShot = {
 					enabled = false, -- 1
 				},
-					revivePet = {
+				revivePet = {
 					enabled = false, -- 2
 				},
-					wingClip = {
+				wingClip = {
 					enabled = false, -- 3
 				},
-					killCommand = {
+				killCommand = {
 					enabled = true, -- 4
 				},
-					killShot = {
+				killShot = {
 					enabled = true, -- 5
 				},
-					scareBeast = {
+				scareBeast = {
 					enabled = false, -- 6
 				},
-					explosiveShot = {
+				explosiveShot = {
 					enabled = true, -- 7
 				},
-					barrage = {
+				barrage = {
 					enabled = true, -- 8
 				},
 				serpentSting = {
 					enabled = true, -- 9
 				},
-					cobraShot = {
+				cobraShot = {
 					enabled = true, -- 10
 				},
-					multiShot = {
+				multiShot = {
 					enabled = true, -- 11
 				},
-					aMurderOfCrows = {
+				aMurderOfCrows = {
 					enabled = true, -- 12
 				},
-					wailingArrow = {
+				wailingArrow = {
 					enabled = true, -- 13
 				}
 			},
@@ -174,7 +174,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					overcapEnabled=true,
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
-					right="FFFFFFFF"
+					right="FFFFFFFF",
+					dots={
+						enabled=true,
+						up="FFFFFFFF",
+						down="FFFF0000",
+						pandemic="FFFFFF00"
+					}
 				},
 				bar = {
 					border="FFAB5124",
@@ -1245,6 +1251,41 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(spec.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overcapEnabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 30
+		controls.dotColorSection = TRB.UiFunctions:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+
+		yCoord = yCoord - 25
+
+		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_dotColor", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.dotColor
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter and DoT timer color based on DoT status?")
+		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($ssCount) will change based on whether or not the DoT is on the current target."
+		f:SetChecked(spec.colors.text.dots.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.text.dots.enabled = self:GetChecked()
+		end)
+
+		controls.colors.dots = {}
+
+		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
+		f = controls.colors.dots.up
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
+		end)
+
+		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
+		f = controls.colors.dots.pandemic
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
+		end)
+
+		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
+		f = controls.colors.dots.down
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
 		end)
 		
 
