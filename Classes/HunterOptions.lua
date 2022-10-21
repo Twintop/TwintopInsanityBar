@@ -596,42 +596,45 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					width=24,
 					height=24
 				},
-				arcaneShot = {
+					arcaneShot = {
 					enabled = false, -- 1
 				},
-				killShot = {
-					enabled = true, -- 2
+					revivePet = {
+					enabled = false, -- 2
 				},
-				scareBeast = {
+					wingClip = {
 					enabled = false, -- 3
 				},
-				revivePet = {
-					enabled = false, -- 4
+				--[[killCommand = {
+					enabled = true, -- 4
+				},]]
+					killShot = {
+					enabled = true, -- 5
 				},
-				wingClip = {
-					enabled = false, -- 5
+					scareBeast = {
+					enabled = false, -- 6
 				},
-				carve = {
-					enabled = true, -- 6
-				},
-				butchery = {
+					explosiveShot = {
 					enabled = true, -- 7
 				},
-				raptorStrike = {
+					barrage = {
 					enabled = true, -- 8
 				},
-				mongooseBite = {
+					serpentSting = {
 					enabled = true, -- 9
 				},
-				serpentSting = {
-					enabled = false, -- 10
+					raptorStrike = {
+					enabled = true, -- 10
 				},
-				aMurderOfCrows = {
+					carve = {
 					enabled = true, -- 11
 				},
-				chakrams = {
+					butchery = {
 					enabled = true, -- 12
-				}
+				},
+				mongooseBite = {
+					enabled = true, -- 4, but really 13
+				},
 			},
 			generation = {
 				mode="gcd",
@@ -3474,7 +3477,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.RedrawThresholdLines(spec)
 		end)
 
-
+				
+		controls.labels.damageDealing = TRB.UiFunctions:BuildLabel(parent, "Damage Dealing", 5, yCoord, 110, 20)
+		yCoord = yCoord - 20
 
 		controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.arcaneShotThresholdShow
@@ -3487,37 +3492,47 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.aMurderOfCrowsThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_aMurderOfCrows", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.aMurderOfCrowsThresholdShow
+		controls.checkBoxes.barrageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_barrage", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.barrageThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("A Murder of Crows (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use A Murder of Crows. Only visible if talented in to A Murder of Crows. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(spec.thresholds.aMurderOfCrows.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Barrage")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Barrage. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(spec.thresholds.butchery.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.aMurderOfCrows.enabled = self:GetChecked()
+			spec.thresholds.barrage.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.butcheryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_butchery", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.butcheryThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Butchery")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Butchery. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(spec.thresholds.butchery.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.butchery.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
 		controls.checkBoxes.carveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_carve", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.carveThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Carve / Butchery (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Carve or Butchery (if talented). If on cooldown, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText("Carve")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Carve. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.carve.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.carve.enabled = self:GetChecked()
-			spec.thresholds.butchery.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.checkBoxes.chakramsThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_chakrams", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.chakramsThresholdShow
+		controls.checkBoxes.explosiveShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_explosiveShot", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.explosiveShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Chakrams (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Chakrams. Only visible if talented in to Chakrams. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(spec.thresholds.chakrams.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Explosive Shot")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(spec.thresholds.explosiveShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.chakrams.enabled = self:GetChecked()
+			spec.thresholds.explosiveShot.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -3535,7 +3550,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.raptorStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_raptorStrike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.raptorStrikeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Raptor Strike / Mongoose Bite (if talented)")
+		getglobal(f:GetName() .. 'Text'):SetText("Raptor Strike / Mongoose Bite")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Raptor Strike or Mongoose Bite."
 		f:SetChecked(spec.thresholds.raptorStrike.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -3544,6 +3559,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 25
+		controls.checkBoxes.serpentStingThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_serpentSting", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.serpentStingThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Serpent Sting")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Serpent Sting."
+		f:SetChecked(spec.thresholds.serpentSting.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.serpentSting.enabled = self:GetChecked()
+		end)
+				
+		yCoord = yCoord - 25
+		controls.labels.damageDealing = TRB.UiFunctions:BuildLabel(parent, "Pet and Utility", 5, yCoord, 110, 20)
+		yCoord = yCoord - 20
+
 		controls.checkBoxes.revivePetThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_revivePet", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.revivePetThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -3563,17 +3592,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(spec.thresholds.scareBeast.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.scareBeast.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.serpentStingThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_serpentSting", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.serpentStingThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Serpent Sting")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Serpent Sting."
-		f:SetChecked(spec.thresholds.serpentSting.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.serpentSting.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
