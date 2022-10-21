@@ -3848,7 +3848,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end)
 				end
 
-				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "TRAIT_CONFIG_UPDATED" then
+				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
 					SwitchSpec()
 				end
 			end

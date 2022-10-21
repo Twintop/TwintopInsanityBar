@@ -917,7 +917,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 164815,
 				name = "",
 				icon = "",
-				astralPower = 2,
 				pandemic = true,
 				pandemicTime = 12 * 0.3
 			},
@@ -3935,8 +3934,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Data.character.starsurgeThreshold = (TRB.Data.spells.starsurge.astralPower + incarnationChosenOfEluneStarsurgeModifier) * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier * (1+rattleTheStarsModifier)
 		TRB.Data.character.starfallThreshold = (TRB.Data.spells.starfall.astralPower + incarnationChosenOfEluneStarfallModifier) * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier * (1+rattleTheStarsModifier)
 
-		print(TRB.Data.character.starsurgeThreshold, TRB.Data.character.starfallThreshold, TRB.Data.snapshotData.rattleTheStars.stacks, TRB.Data.spells.rattleTheStars.modifier, rattleTheStarsModifier)
-
 		TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))
 
         UpdateFuryOfElune()
@@ -5549,7 +5546,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 
 	resourceFrame:RegisterEvent("ADDON_LOADED")
-	resourceFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
+	resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	resourceFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 	resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
@@ -5611,7 +5608,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end)
 				end
 
-				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "TRAIT_CONFIG_UPDATED" then
+				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
 					SwitchSpec()
 				end
 			end
