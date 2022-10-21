@@ -205,8 +205,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
-				onethsReady={
-					name = "Oneth's Clear Vision Ready",
+				starweaversReady={
+					name = "Starweaver Ready",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
@@ -1419,31 +1419,31 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.onethsReady = CreateFrame("CheckButton", "TwintopResourceBar_CB3_oneths_Sound", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.onethsReady
+		controls.checkBoxes.starweaversReady = CreateFrame("CheckButton", "TwintopResourceBar_CB3_starweavers_Sound", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.starweaversReady
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Oneth's Clear Vision or Oneth's Perception proc occurs.")
-		f.tooltip = "Play an audio cue when an Oneth's Clear Vision or Oneth's Perception proc occurs. This supercedes the regular Starsurge and Starfall audio sound if both are usable."
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Starweaver's Warp or Weft proc occurs.")
+		f.tooltip = "Play an audio cue when Starweaver's Warp or Starweaver's Weft proc occurs. This supercedes the regular Starsurge and Starfall audio sound if both are usable."
 ---@diagnostic disable-next-line: undefined-field
-		f:SetChecked(spec.audio.onethsReady.enabled)
+		f:SetChecked(spec.audio.starweaversReady.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			spec.audio.onethsReady.enabled = self:GetChecked()
+			spec.audio.starweaversReady.enabled = self:GetChecked()
 
-			if spec.audio.onethsReady.enabled then
+			if spec.audio.starweaversReady.enabled then
 ---@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(spec.audio.onethsReady.sound, TRB.Data.settings.core.audio.channel.channel)
+				PlaySoundFile(spec.audio.starweaversReady.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.onethsReadyAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_onethsReadyAudio", parent)
-		controls.dropDown.onethsReadyAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30+10)
-		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.onethsReadyAudio, oUi.sliderWidth)
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.onethsReadyAudio, spec.audio.onethsReady.soundName)
-		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.onethsReadyAudio, "LEFT")
+		controls.dropDown.starweaversReadyAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_starweaversReadyAudio", parent)
+		controls.dropDown.starweaversReadyAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30+10)
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.starweaversReadyAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.starweaversReadyAudio, spec.audio.starweaversReady.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.starweaversReadyAudio, "LEFT")
 
 		-- Create and bind the initialization function to the dropdown menu
-		LibDD:UIDropDownMenu_Initialize(controls.dropDown.onethsReadyAudio, function(self, level, menuList)
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.starweaversReadyAudio, function(self, level, menuList)
 			local entries = 25
 			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
@@ -1464,7 +1464,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if k > start and k <= start + entries then
 						info.text = v
 						info.value = sounds[v]
-						info.checked = sounds[v] == spec.audio.onethsReady.sound
+						info.checked = sounds[v] == spec.audio.starweaversReady.sound
 						info.func = self.SetValue
 						info.arg1 = sounds[v]
 						info.arg2 = v
@@ -1475,13 +1475,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.onethsReadyAudio:SetValue(newValue, newName)
-			spec.audio.onethsReady.sound = newValue
-			spec.audio.onethsReady.soundName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.onethsReadyAudio, newName)
+		function controls.dropDown.starweaversReadyAudio:SetValue(newValue, newName)
+			spec.audio.starweaversReady.sound = newValue
+			spec.audio.starweaversReady.soundName = newName
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.starweaversReadyAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(spec.audio.onethsReady.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(spec.audio.starweaversReady.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 

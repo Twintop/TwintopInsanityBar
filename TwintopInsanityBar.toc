@@ -29,8 +29,8 @@ Options.lua
 
 Classes\DemonHunter.lua
 Classes\DemonHunterOptions.lua
-#Classes\DruidOptions.lua
-#Classes\Druid.lua
+Classes\DruidOptions.lua
+Classes\Druid.lua
 Classes\HunterOptions.lua
 Classes\Hunter.lua
 Classes\Monk.lua
