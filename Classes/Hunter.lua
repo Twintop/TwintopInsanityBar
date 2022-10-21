@@ -98,7 +98,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 1,
 				settingKey = "arcaneShot",
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			revivePet = {
 				id = 982,
@@ -109,7 +109,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 2,
 				settingKey = "revivePet",
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			wingClip = {
 				id = 195645,
@@ -120,7 +120,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 3,
 				settingKey = "wingClip",
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 
 			-- Hunter Talent Abilities	
@@ -135,7 +135,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				isSnowflake = true,
 				hasCooldown = true,
 				thresholdUsable = false,
-				isBaseline = true,
+				baseline = true,
 				isTalent = true
 			},
 			concussiveShot = {
@@ -463,7 +463,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 1,
 				settingKey = "arcaneShot",
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			revivePet = {
 				id = 982,
@@ -474,7 +474,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 2,
 				settingKey = "revivePet",
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			wingClip = {
 				id = 195645,
@@ -485,7 +485,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 3,
 				settingKey = "wingClip",
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 
 			-- Hunter Talent Abilities	
@@ -500,7 +500,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				hasCooldown = true,
 				thresholdUsable = false,
 				isTalent = true,
-				isBaseline = false
+				baseline = false
 			},
 			concussiveShot = {
 				id = 5116,
@@ -520,7 +520,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				hasCooldown = true,
 				isSnowflake = true,
 				thresholdUsable = false,
-				isBaseline = true,
+				baseline = true,
 				isTalent = true
 			},
 			scareBeast = {
@@ -587,7 +587,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 56641,
 				name = "",
 				icon = "",
-				isBaseline = true
+				baseline = true
 			},
 
 			-- Marksmanship Spec Talents
@@ -873,7 +873,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 1,
 				settingKey = "arcaneShot",
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			revivePet = {
 				id = 982,
@@ -884,7 +884,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 2,
 				settingKey = "revivePet",
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			wingClip = {
 				id = 195645,
@@ -895,7 +895,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 3,
 				settingKey = "wingClip",
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 
 			-- Hunter Talent Abilities	
@@ -910,7 +910,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				isSnowflake = true,
 				hasCooldown = true,
 				thresholdUsable = false,
-				isBaseline = true,
+				baseline = true,
 				isTalent = true
 			},
 			concussiveShot = {

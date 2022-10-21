@@ -106,7 +106,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				icon = "",
 				rage = 20,
 				isTalent = false,
-				isBaseline = true,
+				baseline = true,
 			},
 			execute = {
 				id = 163201,
@@ -119,7 +119,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 1,
 				settingKey = "execute",
 				isTalent = false,
-				isBaseline = true,
+				baseline = true,
 				hasCooldown = true,
 				thresholdUsable = false,
 				isSnowflake = true
@@ -134,7 +134,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 2,
 				settingKey = "executeMinimum",
 				isTalent = false,
-				isBaseline = true,
+				baseline = true,
 				hasCooldown = false,
 				thresholdUsable = false,
 				isSnowflake = true
@@ -149,7 +149,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 3,
 				settingKey = "executeMaximum",
 				isTalent = false,
-				isBaseline = true,
+				baseline = true,
 				hasCooldown = false,
 				thresholdUsable = false,
 				isSnowflake = true
@@ -163,7 +163,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 4,
 				settingKey = "hamstring",
 				isTalent = false,
-				isBaseline = true,
+				baseline = true,
 				thresholdUsable = false
 			},
 			shieldBlock = {
@@ -175,7 +175,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 5,
 				settingKey = "shieldBlock",
 				isTalent = false,
-				isBaseline = true,
+				baseline = true,
 				hasCooldown = true,
 				thresholdUsable = false,
 				isSnowflake = true
@@ -189,7 +189,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 6,
 				settingKey = "slam",
 				isTalent = false,
-				isBaseline = true,
+				baseline = true,
 				hasCooldown = false,
 				thresholdUsable = false
 			},
@@ -198,7 +198,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				isTalent = false,
-				isBaseline = true,
+				baseline = true,
 			},
 			whirlwind = {
 				id = 1680,
@@ -209,7 +209,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 7,
 				settingKey = "whirlwind",
 				isTalent = false,
-				isBaseline = true,
+				baseline = true,
 				isSnowflake = true,
 				thresholdUsable = false
 			},
@@ -536,7 +536,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				icon = "",
 				rage = 20,
 				isTalent = false,
-				isBaseline = true,
+				baseline = true,
 			},
 			execute = {
 				id = 163201,
@@ -545,7 +545,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				healthMinimum = 0.2,
 				rage = 20,
 				isTalent = false,
-				isBaseline = true,
+				baseline = true,
 				hasCooldown = false
 			},
 			hamstring = {
@@ -557,7 +557,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 1,
 				settingKey = "hamstring",
 				isTalent = false,
-				isBaseline = true,
+				baseline = true,
 				thresholdUsable = false
 			},
 			shieldBlock = {
@@ -569,7 +569,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 2,
 				settingKey = "shieldBlock",
 				isTalent = false,
-				isBaseline = true,
+				baseline = true,
 				hasCooldown = true,
 				thresholdUsable = false,
 				isSnowflake = true
@@ -583,7 +583,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 3,
 				settingKey = "slam",
 				isTalent = false,
-				isBaseline = true,
+				baseline = true,
 				hasCooldown = false,
 				thresholdUsable = false
 			},
@@ -592,7 +592,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				isTalent = false,
-				isBaseline = true,
+				baseline = true,
 			},
 			whirlwind = {
 				id = 85739, --buff ID
@@ -606,7 +606,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				isTalent = false,
-				isBaseline = true,
+				baseline = true,
 			},
 
 			-- Warrior Class Talents

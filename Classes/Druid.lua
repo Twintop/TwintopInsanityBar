@@ -80,7 +80,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 ---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
-			starsurgeThreshold = 30,
+			starsurgeThreshold = 40,
 			starfallThreshold = 50,
 			effects = {
 				overgrowthSeedling = 1.0
@@ -102,7 +102,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				astralPower = 2,
 				pandemic = true,
 				pandemicTime = 16.5 * 0.3,
-				isBaseline = true
+				baseline = true
 			},
 		
 			-- Druid Class Talents
@@ -111,7 +111,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				astralPower = 8,
-				isBaseline = true,
+				baseline = true,
 				isTalent = true
 			},
 			starsurge = {
@@ -124,7 +124,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				settingKey = "starsurge",
 				thresholdUsable = false,
 				isTalent = true,
-				isBaseline = true
+				baseline = true
 			},
 			starsurge2 = {
 				id = 78674,
@@ -224,6 +224,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 340049,
 				name = "",
 				icon = "",
+				buffId = 393955,
 				isActive = false,
 				modifier = -0.05,
 				isTalent = true
@@ -288,7 +289,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				icon = "",
 				modifierStarsurge = -5,
 				modifierStarfall = -8,
-				isTalent = true
+				isTalent = true,
+				isActive = false
 			},
 			furyOfElune = {
 				id = 202770,
@@ -3922,9 +3924,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local currentTime = GetTime()
 
 		local rattleTheStarsModifier = TRB.Data.snapshotData.rattleTheStars.stacks * TRB.Data.spells.rattleTheStars.modifier
+		local incarnationChosenOfEluneStarfallModifier = 0
+		local incarnationChosenOfEluneStarsurgeModifier = 0
 
-		TRB.Data.character.starsurgeThreshold = TRB.Data.spells.starsurge.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier * (1+rattleTheStarsModifier)
-		TRB.Data.character.starfallThreshold = TRB.Data.spells.starfall.astralPower * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier * (1+rattleTheStarsModifier)
+		if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.IsTalentActive(TRB.Data.spells.elunesGuidance) then
+			incarnationChosenOfEluneStarfallModifier = TRB.Data.spells.elunesGuidance.modifierStarfall
+			incarnationChosenOfEluneStarsurgeModifier = TRB.Data.spells.elunesGuidance.modifierStarsurge
+		end
+
+		TRB.Data.character.starsurgeThreshold = (TRB.Data.spells.starsurge.astralPower + incarnationChosenOfEluneStarsurgeModifier) * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier * (1+rattleTheStarsModifier)
+		TRB.Data.character.starfallThreshold = (TRB.Data.spells.starfall.astralPower + incarnationChosenOfEluneStarfallModifier) * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier * (1+rattleTheStarsModifier)
+
+		print(TRB.Data.character.starsurgeThreshold, TRB.Data.character.starfallThreshold, TRB.Data.snapshotData.rattleTheStars.stacks, TRB.Data.spells.rattleTheStars.modifier, rattleTheStarsModifier)
 
 		TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))
 
@@ -4249,18 +4260,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 
 					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, passiveFrame, passiveBarValue)
-
-					if TRB.Data.settings.druid.balance.thresholds.starsurge.enabled then
-						resourceFrame.thresholds[1]:Show()
-					else
-						resourceFrame.thresholds[1]:Hide()
-					end
-
-					if TRB.Data.settings.druid.balance.thresholds.starfall.enabled then
-						resourceFrame.thresholds[4]:Show()
-					else
-						resourceFrame.thresholds[4]:Hide()
-					end
 
 					if TRB.Data.settings.druid.balance.thresholds.starsurge.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.starsurge) and TRB.Data.character.starsurgeThreshold < TRB.Data.character.maxResource then
 						resourceFrame.thresholds[1]:Show()
@@ -5131,7 +5130,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						elseif type == "SPELL_PERIODIC_ENERGIZE" then
 							TRB.Data.snapshotData.sunderedFirmament.ticksRemaining = TRB.Data.snapshotData.sunderedFirmament.ticksRemaining - 1
 							TRB.Data.snapshotData.sunderedFirmament.astralPower = TRB.Data.snapshotData.sunderedFirmament.ticksRemaining * TRB.Data.spells.sunderedFirmament.astralPower
-						end						
+						end
 					elseif spellId == TRB.Data.spells.eclipseSolar.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.eclipseSolar.isActive = true
@@ -5198,10 +5197,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Data.snapshotData.starweaversWeft.duration = 0
 							TRB.Data.snapshotData.starweaversWeft.endTime = nil
 						end
-					elseif spellId == TRB.Data.spells.rattleTheStars.id then
+					elseif spellId == TRB.Data.spells.rattleTheStars.buffId then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.rattleTheStars.isActive = true
-							_, _, TRB.Data.snapshotData.rattleTheStars.stacks, _, TRB.Data.snapshotData.rattleTheStars.duration, TRB.Data.snapshotData.rattleTheStars.endTime, _, _, _, TRB.Data.snapshotData.rattleTheStars.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.rattleTheStars.id)
+							_, _, TRB.Data.snapshotData.rattleTheStars.stacks, _, TRB.Data.snapshotData.rattleTheStars.duration, TRB.Data.snapshotData.rattleTheStars.endTime, _, _, _, TRB.Data.snapshotData.rattleTheStars.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.rattleTheStars.buffId)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.rattleTheStars.isActive = false
 							TRB.Data.snapshotData.rattleTheStars.spellId = nil

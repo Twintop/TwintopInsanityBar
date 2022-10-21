@@ -144,7 +144,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "ambush",
                 --isSnowflake = true,
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			cheapShot = {
 				id = 1833,
@@ -159,7 +159,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				--isSnowflake = false,
 				rushedSetup = true,
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			crimsonVial = {
 				id = 185311,
@@ -174,7 +174,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 cooldown = 30,
 				nimbleFingers = true,
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			distract = {
 				id = 1725,
@@ -189,7 +189,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 cooldown = 30,
 				rushedSetup = true,
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			kidneyShot = {
 				id = 408,
@@ -204,7 +204,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 cooldown = 20,
 				rushedSetup = true,
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			sliceAndDice = {
 				id = 315496,
@@ -227,7 +227,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					36 * 0.3,
 					42 * 0.3
 				},
-				isBaseline = true
+				baseline = true
 			},
 
 			--Rogue Talent Abilities
@@ -246,7 +246,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdUsable = false,
 				idLegendaryBonus = 7112,
 				isTalent = true,
-				isBaseline = true
+				baseline = true
 			},
 			sap = {
 				id = 6770,
@@ -361,7 +361,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "envenom",
                 hasCooldown = false,
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			fanOfKnives = {
 				id = 51723,
@@ -374,7 +374,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "fanOfKnives",
                 hasCooldown = false,
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			garrote = {
 				id = 703,
@@ -389,7 +389,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 cooldown = 6,
 				thresholdUsable = false,
 				pandemicTime = 18 * 0.3,
-				isBaseline = true
+				baseline = true
 			},
 			mutilate = {
 				id = 1329,
@@ -402,7 +402,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "mutilate",
                 hasCooldown = false,
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			poisonedKnife = {
 				id = 185565,
@@ -415,7 +415,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "poisonedKnife",
                 hasCooldown = false,
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			rupture = {
 				id = 1943,
@@ -438,7 +438,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					28 * 0.3,
 					32 * 0.3, -- 7 CP Kyrian ability buff
 				},
-				isBaseline = true
+				baseline = true
 			},
 
             -- Assassination Spec Abilities
@@ -800,7 +800,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "ambush",
                 --isSnowflake = true,
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			cheapShot = {
 				id = 1833,
@@ -815,7 +815,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				--isSnowflake = false,
 				rushedSetup = true,
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			crimsonVial = {
 				id = 185311,
@@ -830,7 +830,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 cooldown = 30,
 				nimbleFingers = true,
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			distract = {
 				id = 1725,
@@ -845,7 +845,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 cooldown = 30,
 				rushedSetup = true,
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			kidneyShot = {
 				id = 408,
@@ -860,7 +860,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 cooldown = 20,
 				rushedSetup = true,
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			sliceAndDice = {
 				id = 315496,
@@ -883,7 +883,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					36 * 0.3,
 					42 * 0.3
 				},
-				isBaseline = true
+				baseline = true
 			},
 
 			--Rogue Talent Abilities
@@ -902,7 +902,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdUsable = false,
 				idLegendaryBonus = 7112,
 				isTalent = true,
-				isBaseline = true
+				baseline = true
 			},
 			sap = {
 				id = 6770,
@@ -1021,7 +1021,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdUsable = false,
 				cooldown = 45,
 				restlessBlades = true,
-				isBaseline = true
+				baseline = true
 			},
 			dispatch = {
 				id = 2098,
@@ -1033,7 +1033,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 13,
 				settingKey = "dispatch",
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			pistolShot = {
 				id = 185763,
@@ -1047,7 +1047,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 hasCooldown = false,
 				isSnowflake = true,
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			sinisterStrike = {
 				id = 193315,
@@ -1061,7 +1061,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 hasCooldown = false,
 				isSnowflake = true,
 				thresholdUsable = false,
-				isBaseline = true
+				baseline = true
 			},
 			opportunity = {
 				id = 195627,
@@ -1069,7 +1069,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				isActive = false,
 				energyModifier = 0.5,
-				isBaseline = true,
+				baseline = true,
 				isTalent = true
 			},
 			bladeFlurry = {
@@ -1084,7 +1084,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdUsable = false,
 				cooldown = 30,
 				restlessBlades = true,
-				isBaseline = true,
+				baseline = true,
 				isTalent = true
 			},
 
