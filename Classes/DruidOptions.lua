@@ -320,55 +320,48 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					width=24,
 					height=24
 				},
-				-- Core Druid
-				ferociousBite = {
+				rake = {
 					enabled = true, -- 1
 				},
-				shred = {
+				thrash = {
 					enabled = true, -- 2
 				},
-				-- Feral
-				maim = {
+				swipe = {
 					enabled = false, -- 3
 				},
-				rake = {
+				rip = {
 					enabled = true, -- 4
 				},
-				rip = {
-					enabled = true, -- 5
+				maim = {
+					enabled = false, -- 5
 				},
-				swipe = {
-					enabled = false, -- 6
+				ferociousBite = {
+					enabled = true, -- 6
 				},
-				thrash = {
-					enabled = true, -- 7
-				},
-				-- Talents
-				moonfire = {
-					enabled = true, -- 8
-				},
-				savageRoar = {
-					enabled = true, -- 9
-				},
-				brutalSlash = {
-					enabled = true, -- 10
-				},
-				primalWrath = {
-					enabled = true, -- 11
-				},
-				bloodtalons = {
-					enabled = false, -- 12
-				},
-				feralFrenzy = {
-					enabled = true, -- 13
-				},
-				-- Extras
 				ferociousBiteMinimum = {
-					enabled = false -- 14
+					enabled = false -- 7
 				},
 				ferociousBiteMaximum = {
-					enabled = true -- 15
-				}
+					enabled = true -- 8
+				},
+				shred = {
+					enabled = true, -- 9
+				},
+				primalWrath = {
+					enabled = true, -- 10
+				},
+				moonfire = {
+					enabled = true, -- 11
+				},
+				brutalSlash = {
+					enabled = true, -- 12
+				},
+				bloodtalons = { --Incase a notification line ever makes sense
+					enabled = false, -- 13
+				},
+				feralFrenzy = {
+					enabled = true, -- 14
+				},
 			},
 			generation = {
 				mode="gcd",
@@ -1986,8 +1979,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.checkBoxes.brutalSlashThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_brutalSlash", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.brutalSlashThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Brutal Slash (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Brutal Slash. Only visible if talented in to Brutal Slash. If on cooldown, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText("Brutal Slash")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Brutal Slash. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.brutalSlash.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.brutalSlash.enabled = self:GetChecked()
@@ -1997,8 +1990,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.checkBoxes.feralFrenzyThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_feralfrenzy", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.feralFrenzyThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Feral Frenzy (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feral Frenzy. Only visible if talented in to Feral Frenzy. If on cooldown, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText("Feral Frenzy")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feral Frenzy. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.feralFrenzy.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.feralFrenzy.enabled = self:GetChecked()
@@ -2105,17 +2098,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetChecked(spec.thresholds.maim.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.maim.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.primalWrathThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_primalwrath", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.primalWrathThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Primal Wrath (if talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Primal Wrath. Only visible when talented in to Primal Wrath. If you do not have any combo points, will be colored as 'unusable'."
-		f:SetChecked(spec.thresholds.primalWrath.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.primalWrath.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25

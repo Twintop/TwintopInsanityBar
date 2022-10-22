@@ -454,33 +454,139 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				icon = ""
 			},
 
-			-- Druid Class Abilities
+			-- Druid Class Baseline Abilities
             catForm = {
 				id = 768,
 				name = "",
-				icon = ""
+				icon = "",
+				baseline = true
 			},
+
+			-- Druid Class Talents
+			rake = {
+				id = 155722,
+				name = "",
+				icon = "",
+				energy = -35,
+                comboPointsGenerated = 1,
+				texture = "",
+				thresholdId = 1,
+				settingKey = "rake",
+				thresholdUsable = false,
+				hasSnapshot = true,
+				pandemic = true,
+				pandemicTime = 15 * 0.3,
+				bonuses = {
+					stealth = true,
+					tigersFury = true
+				},
+				isTalent = true,
+				baseline = true
+			},
+			thrash = {
+				id = 106830,
+				name = "",
+				icon = "",
+				energy = -40,
+                comboPointsGenerated = 1,
+				thresholdId = 2,
+				texture = "",
+				settingKey = "thrash",
+				thresholdUsable = false,
+				hasSnapshot = true,
+				pandemic = true,
+				pandemicTime = 15 * 0.3,
+				bonuses = {
+					momentOfClarity = true,
+					tigersFury = true
+				},
+				isTalent = true,
+				baseline = true
+			},
+			swipe = {
+				id = 106785,
+				name = "",
+				icon = "",
+				energy = -35,
+                comboPointsGenerated = 1,
+				thresholdId = 3,
+				texture = "",
+				settingKey = "swipe",
+				thresholdUsable = false,
+				isSnowflake = true,
+				isTalent = true
+			},
+			rip = {
+				id = 1079,
+				name = "",
+				icon = "",
+				energy = -20,
+                comboPoints = true,
+				thresholdId = 4,
+				texture = "",
+				settingKey = "rip",
+				thresholdUsable = false,
+				hasSnapshot = true,
+				pandemicTimes = {
+					8 * 0.3, -- 0 CP, show same as if we had 1
+					8 * 0.3,
+					12 * 0.3,
+					16 * 0.3,
+					20 * 0.3,
+					24 * 0.3
+				},
+				bonuses = {
+					bloodtalons = true,
+					tigersFury = true
+				},
+				isTalent = true
+			},
+			maim = {
+				id = 22570,
+				name = "",
+				icon = "",
+				energy = -30,
+                comboPoints = true,
+				texture = "",
+				thresholdId = 5,
+				settingKey = "maim",
+                hasCooldown = true,
+                cooldown = 20,
+				thresholdUsable = false,
+				isTalent = true
+			},
+			sunfire = {
+				id = 164815,
+				name = "",
+				icon = "",
+				astralPower = 2,
+				pandemic = true,
+				pandemicTime = 13.5 * 0.3,
+				isTalent = true
+			},
+
+			-- Feral Spec Baseline Abilities
 			ferociousBite = {
 				id = 22568,
 				name = "",
 				icon = "",
-				energy = -25,
-				energyMax = -50,
+				energy = -20,
+				energyMax = -40,
 				comboPoints = true,
 				texture = "",
-				thresholdId = 1,
+				thresholdId = 6,
 				settingKey = "ferociousBite",
-				isSnowflake = true, -- Really between 25-50 energy
+				isSnowflake = true, -- Really between 20-40 energy
 				thresholdUsable = false
 			},
 			ferociousBiteMinimum = {
 				id = 22568,
 				name = "",
 				icon = "",
-				energy = -25,
+				energy = -20,
 				comboPoints = true,
 				texture = "",
-				thresholdId = 14,
+				thresholdId = 7,
 				settingKey = "ferociousBiteMinimum",
 				isSnowflake = true,
 				thresholdUsable = false
@@ -489,10 +595,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 22568,
 				name = "",
 				icon = "",
-				energy = -50,
+				energy = -40,
 				comboPoints = true,
 				texture = "",
-				thresholdId = 15,
+				thresholdId = 8,
 				settingKey = "ferociousBiteMaximum",
 				isSnowflake = true,
 				thresholdUsable = false
@@ -511,128 +617,56 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				energy = -40,
                 comboPointsGenerated = 1,
 				texture = "",
-				thresholdId = 2,
+				thresholdId = 9,
 				settingKey = "shred",
 				thresholdUsable = false,
 				isClearcasting = true
 			},
 
-			-- Feral Abilities
-			berserk = {
-				id = 106951,
-				name = "",
-				icon = ""
-			},
-			maim = {
-				id = 22570,
-				name = "",
-				icon = "",
-				energy = -30,
-                comboPoints = true,
-				texture = "",
-				thresholdId = 3,
-				settingKey = "maim",
-                hasCooldown = true,
-                cooldown = 20,
-				thresholdUsable = false
-			},
-			rake = {
-				id = 155722,
-				name = "",
-				icon = "",
-				energy = -35,
-                comboPointsGenerated = 1,
-				texture = "",
-				thresholdId = 4,
-				settingKey = "rake",
-				thresholdUsable = false,
-				hasSnapshot = true,
-				pandemic = true,
-				pandemicTime = 15 * 0.3,
-				bonuses = {
-					stealth = true,
-					tigersFury = true
-				}
-			},
-			rip = {
-				id = 1079,
-				name = "",
-				icon = "",
-				energy = -20,
-                comboPoints = true,
-				thresholdId = 5,
-				texture = "",
-				settingKey = "rip",
-				thresholdUsable = false,
-				hasSnapshot = true,
-				pandemicTimes = {
-					8 * 0.3, -- 0 CP, show same as if we had 1
-					8 * 0.3,
-					12 * 0.3,
-					16 * 0.3,
-					20 * 0.3,
-					24 * 0.3
-				},
-				bonuses = {
-					bloodtalons = true,
-					tigersFury = true
-				}
-			},
-			swipe = {
-				id = 106785,
-				name = "",
-				icon = "",
-				energy = -35,
-                comboPointsGenerated = 1,
-				thresholdId = 6,
-				texture = "",
-				settingKey = "swipe",
-				thresholdUsable = false,
-				isSnowflake = true
-			},
-			thrash = {
-				id = 106830,
-				name = "",
-				icon = "",
-				energy = -40,
-                comboPointsGenerated = 1,
-				thresholdId = 7,
-				texture = "",
-				settingKey = "thrash",
-				thresholdUsable = false,
-				hasSnapshot = true,
-				pandemic = true,
-				pandemicTime = 15 * 0.3,
-				bonuses = {
-					momentOfClarity = true,
-					tigersFury = true
-				}
-			},
+			-- Feral Spec Talents
 			tigersFury = {
 				id = 5217,
 				name = "",
 				icon = "",
-				modifier = 1.15
+				modifier = 1.15,
+				isTalent = true
+			},
+			omenOfClarity = {
+				id = 16864,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			momentOfClarity = {
+				id = 236068,
+				name = "",
+				icon = "",
+				modifier = 1.15,
+				isTalent = true
 			},
 			clearcasting = {
 				id = 135700,
 				name = "",
 				icon = "",
-				isActive = false,
-				modifier = 1.15
+				isActive = false
 			},
-			predatorySwiftness = {
-				id = 69369,
+			primalWrath = {
+				id = 285381,
 				name = "",
-				icon = ""
+				icon = "",
+				energy = -20,
+                comboPoints = true,
+				thresholdId = 10,
+				texture = "",
+				settingKey = "primalWrath",
+                isTalent = true,
+				thresholdUsable = false
 			},
-
-			-- Talents
-
 			lunarInspiration = {
 				id = 155580,
 				name = "",
-				icon = ""
+				icon = "",
+				isTalent = true
 			},
 			moonfire = {
 				id = 155625,
@@ -640,7 +674,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				icon = "",
 				energy = -30,
                 comboPointsGenerated = 1,
-				thresholdId = 8,
+				thresholdId = 11,
 				texture = "",
 				settingKey = "moonfire",
 				isSnowflake = true,
@@ -652,38 +686,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					tigersFury = true
 				}
 			},
-			savageRoar = {
-				id = 52610,
+			suddenAmbush = {
+				id = 384667,
 				name = "",
 				icon = "",
-				energy = -25,
-                comboPoints = true,
-				thresholdId = 9,
-				texture = "",
-				settingKey = "savageRoar",
-                isTalent = true,
-				thresholdUsable = false,
-				pandemicTimes = {
-					12 * 0.3, -- 0 CP, show same as if we had 1
-					12 * 0.3,
-					16 * 0.3,
-					24 * 0.3,
-					30 * 0.3,
-					36 * 0.3
-				}
+				isTalent = true
 			},
-			incarnationKingOfTheJungle = {
-				id = 102543,
+			berserk = {
+				id = 106951,
 				name = "",
 				icon = "",
-				energyModifier = 0.8
+				isTalent = true
 			},
-			scentOfBlood = {
-				id = 285564,
+			predatorySwiftness = {
+				id = 69369,
 				name = "",
 				icon = "",
-				energyPer = 3,
-				duration = 6
+				isTalent = true
 			},
 			brutalSlash = {
 				id = 202028,
@@ -693,7 +712,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				isHasted = true,
 				energy = -25,
                 comboPointsGenerated = 1,
-				thresholdId = 10,
+				thresholdId = 12,
 				texture = "",
 				settingKey = "brutalSlash",
 				isSnowflake = true,
@@ -702,17 +721,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				thresholdUsable = false,
 				isClearcasting = true
 			},
-			primalWrath = {
-				id = 285381,
+			carnivorousInstinct = {
+				id = 340705,
 				name = "",
 				icon = "",
-				energy = -20,
-                comboPoints = true,
-				thresholdId = 11,
-				texture = "",
-				settingKey = "primalWrath",
-                isTalent = true,
-				thresholdUsable = false
+				modifierPerStack = 0.06,
+				isTalent = true
 			},
 			bloodtalons = {
 				id = 145152,
@@ -720,13 +734,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				icon = "",
 				window = 4,
 				energy = -80, --Make this dynamic
-				thresholdId = 12,
+				thresholdId = 13,
 				texture = "",
 				settingKey = "bloodtalons",
                 isTalent = true,
 				--isSnowflake = true,
 				thresholdUsable = false,
-				modifier = 1.3
+				modifier = 1.25
 			},
 			feralFrenzy = {
 				id = 285381,
@@ -734,29 +748,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				icon = "",
 				energy = -25,
                 comboPointsGenerated = 5,
-				thresholdId = 13,
+				thresholdId = 14,
 				texture = "",
 				settingKey = "feralFrenzy",
                 isTalent = true,
 				hasCooldown = true,
 				thresholdUsable = false
 			},
-
-			-- Conduits
-			carnivorousInstinct = {
-				id = 340705,
+			incarnationAvatarOfAshamane = {
+				id = 102543,
 				name = "",
 				icon = "",
-				conduitId = 268,
-				conduitRanks = {}
+				energyModifier = 0.8
 			},
-			suddenAmbush = {
-				id = 340698,
-				name = "",
-				icon = ""
-			},
-
-			-- Legendaries
+			-- TODO: circleOfLifeAndDeath implementation for timers
 			apexPredatorsCraving = {
 				id = 339140,
 				name = "",
@@ -826,7 +831,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			endTime = nil,
 			duration = 0
 		}
-		specCache.feral.snapshotData.incarnationKingOfTheJungle = {
+		specCache.feral.snapshotData.incarnationAvatarOfAshamane = {
 			spellId = nil,
 			endTime = nil,
 			duration = 0
@@ -1265,23 +1270,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		Setup_Feral()
 		local spells = TRB.Functions.FillSpellData(specCache.feral.spells)
 		
-		-- Conduit Ranks
-		spells.carnivorousInstinct.conduitRanks[0] = 0
-		spells.carnivorousInstinct.conduitRanks[1] = 3.0
-		spells.carnivorousInstinct.conduitRanks[2] = 3.3
-		spells.carnivorousInstinct.conduitRanks[3] = 3.6
-		spells.carnivorousInstinct.conduitRanks[4] = 3.9
-		spells.carnivorousInstinct.conduitRanks[5] = 4.2
-		spells.carnivorousInstinct.conduitRanks[6] = 4.5
-		spells.carnivorousInstinct.conduitRanks[7] = 4.8
-		spells.carnivorousInstinct.conduitRanks[8] = 5.1
-		spells.carnivorousInstinct.conduitRanks[9] = 5.4
-		spells.carnivorousInstinct.conduitRanks[10] = 5.7
-		spells.carnivorousInstinct.conduitRanks[11] = 6.0
-		spells.carnivorousInstinct.conduitRanks[12] = 6.3
-		spells.carnivorousInstinct.conduitRanks[13] = 6.6
-		spells.carnivorousInstinct.conduitRanks[14] = 6.9
-		spells.carnivorousInstinct.conduitRanks[15] = 7.2
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.feral.barTextVariables.icons = {
@@ -1298,8 +1286,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             { variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
             { variable = "#feralFrenzy", icon = spells.feralFrenzy.icon, description = spells.feralFrenzy.name, printInSettings = true },
             { variable = "#ferociousBite", icon = spells.ferociousBite.icon, description = spells.ferociousBite.name, printInSettings = true },
-            { variable = "#incarnation", icon = spells.incarnationKingOfTheJungle.icon, description = spells.incarnationKingOfTheJungle.name, printInSettings = true },
-            { variable = "#incarnationKingOfTheJungle", icon = spells.incarnationKingOfTheJungle.icon, description = spells.incarnationKingOfTheJungle.name, printInSettings = false },
+            { variable = "#incarnation", icon = spells.incarnationAvatarOfAshamane.icon, description = spells.incarnationAvatarOfAshamane.name, printInSettings = true },
+            { variable = "#incarnationAvatarOfAshamane", icon = spells.incarnationAvatarOfAshamane.icon, description = spells.incarnationAvatarOfAshamane.name, printInSettings = false },
             { variable = "#lunarInspiration", icon = spells.lunarInspiration.icon, description = spells.lunarInspiration.name, printInSettings = true },
             { variable = "#maim", icon = spells.maim.icon, description = spells.maim.name, printInSettings = true },
             { variable = "#moonfire", icon = spells.moonfire.icon, description = spells.moonfire.name, printInSettings = true },
@@ -1308,9 +1296,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             { variable = "#prowl", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = true },
             { variable = "#rake", icon = spells.rake.icon, description = spells.rake.name, printInSettings = true },
             { variable = "#rip", icon = spells.rip.icon, description = spells.rip.name, printInSettings = true },
-            { variable = "#savageRoar", icon = spells.savageRoar.icon, description = spells.savageRoar.name, printInSettings = true },
             { variable = "#shadowmeld", icon = spells.shadowmeld.icon, description = spells.shadowmeld.name, printInSettings = true },
-            { variable = "#scentOfBlood", icon = spells.scentOfBlood.icon, description = spells.scentOfBlood.name, printInSettings = true },
             { variable = "#shred", icon = spells.shred.icon, description = spells.shred.name, printInSettings = true },
             { variable = "#suddenAmbush", icon = spells.suddenAmbush.icon, description = spells.suddenAmbush.name, printInSettings = true },
             { variable = "#swipe", icon = spells.swipe.icon, description = spells.swipe.name, printInSettings = true },
@@ -1637,7 +1623,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.resourceFactor = 1
 			TRB.Data.resource2 = Enum.PowerType.ComboPoints
 			TRB.Data.resource2Factor = 1
-		elseif specId == 4 and TRB.Data.settings.core.enabled.druid.restorationn then
+		elseif specId == 4 and TRB.Data.settings.core.enabled.druid.restoration then
 			TRB.Functions.IsTtdActive(TRB.Data.settings.druid.restoration)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
@@ -1678,8 +1664,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
 
 		if specId == 2 then
-			if TRB.Data.spells.incarnationKingOfTheJungle.isActive then
-				modifier = modifier * TRB.Data.spells.incarnationKingOfTheJungle.energyModifier
+			if TRB.Data.spells.incarnationAvatarOfAshamane.isActive then
+				modifier = modifier * TRB.Data.spells.incarnationAvatarOfAshamane.energyModifier
 			end
 		end
 
@@ -1945,8 +1931,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 	
 	local function GetBerserkRemainingTime()
-		if TRB.Functions.IsTalentActive(TRB.Data.spells.incarnationKingOfTheJungle) then
-			return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.incarnationKingOfTheJungle)
+		if TRB.Functions.IsTalentActive(TRB.Data.spells.incarnationAvatarOfAshamane) then
+			return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.incarnationAvatarOfAshamane)
 		else
 			return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.berserk)
 		end
@@ -2043,11 +2029,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local snapshot = 1.0
 
 		if bonuses.tigersFury == true and GetTigersFuryRemainingTime() > 0 then
-			snapshot = snapshot * (TRB.Data.spells.tigersFury.modifier + (TRB.Data.spells.carnivorousInstinct.conduitRanks[TRB.Functions.GetSoulbindEquippedConduitRank(TRB.Data.spells.carnivorousInstinct.conduitId)] / 100))
+			local tfBonus = TRB.Data.spells.carnivorousInstinct.modifierPerStack * TRB.Data.talents[TRB.Data.spells.carnivorousInstinct.id].currentRank
+
+			snapshot = snapshot *  (TRB.Data.spells.tigersFury.modifier + tfBonus)
 		end
 
 		if bonuses.momentOfClarity == true and TRB.Functions.IsTalentActive(TRB.Data.spells.momentOfClarity) == true and ((TRB.Data.snapshotData.clearcasting.stacks ~= nil and TRB.Data.snapshotData.clearcasting.stacks > 0) or GetClearcastingRemainingTime(true) > 0) then
-			snapshot = snapshot * TRB.Data.spells.clearcasting.modifier
+			snapshot = snapshot * TRB.Data.spells.momentOfClarity.modifier
 		end
 
 		if bonuses.bloodtalons == true and TRB.Functions.IsTalentActive(TRB.Data.spells.bloodtalons) == true and ((TRB.Data.snapshotData.bloodtalons.stacks ~= nil and TRB.Data.snapshotData.bloodtalons.stacks > 0) or GetBloodtalonsRemainingTime(true) > 0) then
@@ -2057,7 +2045,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.snapshotData.shadowmeld.isActive or
 			TRB.Data.snapshotData.prowl.isActive or
 			GetBerserkRemainingTime() > 0 or
-			GetSuddenAmbushRemainingTime(true) > 0) then
+			GetSuddenAmbushRemainingTime(true) > 0 or
+			TRB.Data.spells.incarnationAvatarOfAshamane.isActive) then
 			snapshot = snapshot * TRB.Data.spells.prowl.modifier
 		end
 
@@ -3322,8 +3311,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#clearcasting"] = TRB.Data.spells.clearcasting.icon
 		lookup["#feralFrenzy"] = TRB.Data.spells.feralFrenzy.icon
 		lookup["#ferociousBite"] = TRB.Data.spells.ferociousBite.icon
-		lookup["#incarnation"] = TRB.Data.spells.incarnationKingOfTheJungle.icon
-		lookup["#incarnationKingOfTheJungle"] = TRB.Data.spells.incarnationKingOfTheJungle.icon
+		lookup["#incarnation"] = TRB.Data.spells.incarnationAvatarOfAshamane.icon
+		lookup["#incarnationAvatarOfAshamane"] = TRB.Data.spells.incarnationAvatarOfAshamane.icon
 		lookup["#lunarInspiration"] = TRB.Data.spells.lunarInspiration.icon
 		lookup["#maim"] = TRB.Data.spells.maim.icon
 		lookup["#moonfire"] = TRB.Data.spells.moonfire.icon
@@ -3332,14 +3321,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#prowl"] = TRB.Data.spells.prowl.icon
 		lookup["#rake"] = TRB.Data.spells.rake.icon
 		lookup["#rip"] = TRB.Data.spells.rip.icon
-		lookup["#savageRoar"] = TRB.Data.spells.savageRoar.icon
 		lookup["#shadowmeld"] = TRB.Data.spells.shadowmeld.icon
-		lookup["#scentOfBlood"] = TRB.Data.spells.scentOfBlood.icon
 		lookup["#shred"] = TRB.Data.spells.shred.icon
 		lookup["#suddenAmbush"] = TRB.Data.spells.suddenAmbush.icon
 		lookup["#swipe"] = TRB.Data.spells.swipe.icon
 		lookup["#thrash"] = TRB.Data.spells.thrash.icon
-		lookup["#tigersFury"] = TRB.Data.spells.tigersFury.icon	
+		lookup["#tigersFury"] = TRB.Data.spells.tigersFury.icon
 		lookup["$ripCount"] = ripCount
 		lookup["$ripTime"] = ripTime
 		lookup["$ripSnapshot"] = ripSnapshot
@@ -3983,19 +3970,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		UpdateSnapshot()
 		local currentTime = GetTime()
 		
-		if TRB.Functions.IsTalentActive(TRB.Data.spells.incarnationKingOfTheJungle) then
+		if TRB.Functions.IsTalentActive(TRB.Data.spells.incarnationAvatarOfAshamane) then
 			-- Incarnation: King of the Jungle doesn't show up in-game as a combat log event. Check for it manually instead.
-			local _, _, _, _, incDuration, incEndTime, _, _, _, incSpellId = TRB.Functions.FindBuffById(TRB.Data.spells.incarnationKingOfTheJungle.id)
+			local _, _, _, _, incDuration, incEndTime, _, _, _, incSpellId = TRB.Functions.FindBuffById(TRB.Data.spells.incarnationAvatarOfAshamane.id)
 			if incDuration ~= nil then			
-				TRB.Data.spells.incarnationKingOfTheJungle.isActive = true
-				TRB.Data.snapshotData.incarnationKingOfTheJungle.duration = incDuration
-				TRB.Data.snapshotData.incarnationKingOfTheJungle.endTime = incEndTime
-				TRB.Data.snapshotData.incarnationKingOfTheJungle.spellId = incSpellId
+				TRB.Data.spells.incarnationAvatarOfAshamane.isActive = true
+				TRB.Data.snapshotData.incarnationAvatarOfAshamane.duration = incDuration
+				TRB.Data.snapshotData.incarnationAvatarOfAshamane.endTime = incEndTime
+				TRB.Data.snapshotData.incarnationAvatarOfAshamane.spellId = incSpellId
 			else
-				TRB.Data.spells.incarnationKingOfTheJungle.isActive = false
-				TRB.Data.snapshotData.incarnationKingOfTheJungle.spellId = nil
-				TRB.Data.snapshotData.incarnationKingOfTheJungle.duration = 0
-				TRB.Data.snapshotData.incarnationKingOfTheJungle.endTime = nil
+				TRB.Data.spells.incarnationAvatarOfAshamane.isActive = false
+				TRB.Data.snapshotData.incarnationAvatarOfAshamane.spellId = nil
+				TRB.Data.snapshotData.incarnationAvatarOfAshamane.duration = 0
+				TRB.Data.snapshotData.incarnationAvatarOfAshamane.endTime = nil
 			end
 		end
 
@@ -4515,7 +4502,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									end
 								end
 
-								if spell.id == TRB.Data.spells.moonfire.id and TRB.Functions.IsTalentActive(TRB.Data.spells.lunarInspiration.isActive) ~= true then
+								if spell.id == TRB.Data.spells.moonfire.id and not TRB.Functions.IsTalentActive(TRB.Data.spells.lunarInspiration) then
 									showThreshold = false
 								end
 							elseif spell.isClearcasting and TRB.Data.snapshotData.clearcasting.stacks ~= nil and TRB.Data.snapshotData.clearcasting.stacks > 0 then
@@ -5342,15 +5329,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Data.snapshotData.berserk.duration = 0
 							TRB.Data.snapshotData.berserk.endTime = nil
 						end
-					elseif spellId == TRB.Data.spells.incarnationKingOfTheJungle.id then
+					elseif spellId == TRB.Data.spells.incarnationAvatarOfAshamane.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.spells.incarnationKingOfTheJungle.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.incarnationKingOfTheJungle.duration, TRB.Data.snapshotData.incarnationKingOfTheJungle.endTime, _, _, _, TRB.Data.snapshotData.incarnationKingOfTheJungle.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.incarnationKingOfTheJungle.id)
+							TRB.Data.spells.incarnationAvatarOfAshamane.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.incarnationAvatarOfAshamane.duration, TRB.Data.snapshotData.incarnationAvatarOfAshamane.endTime, _, _, _, TRB.Data.snapshotData.incarnationAvatarOfAshamane.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.incarnationAvatarOfAshamane.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.spells.incarnationKingOfTheJungle.isActive = false
-							TRB.Data.snapshotData.incarnationKingOfTheJungle.spellId = nil
-							TRB.Data.snapshotData.incarnationKingOfTheJungle.duration = 0
-							TRB.Data.snapshotData.incarnationKingOfTheJungle.endTime = nil
+							TRB.Data.spells.incarnationAvatarOfAshamane.isActive = false
+							TRB.Data.snapshotData.incarnationAvatarOfAshamane.spellId = nil
+							TRB.Data.snapshotData.incarnationAvatarOfAshamane.duration = 0
+							TRB.Data.snapshotData.incarnationAvatarOfAshamane.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.clearcasting.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then

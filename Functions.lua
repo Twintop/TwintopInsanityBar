@@ -3010,7 +3010,7 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 				configuration.druid.feral = TRB.Functions.ExportConfigurationSections(11, 2, settings.druid.feral, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
-			if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.druid.restoration) > 0 then -- Restoration
+			if (specId == 4 or specId == nil) and TRB.Functions.TableLength(settings.druid.restoration) > 0 then -- Restoration
 				configuration.druid.restoration = TRB.Functions.ExportConfigurationSections(11, 4, settings.druid.restoration, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 12 and settings.demonhunter ~= nil then -- Demon Hunter
