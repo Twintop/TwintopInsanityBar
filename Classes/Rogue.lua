@@ -458,7 +458,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				id = 121411,
 				name = "",
 				icon = "",
-				energy = -35,
+				energy = -30,
 				comboPoints = true,
 				texture = "",
 				thresholdId = 18,
