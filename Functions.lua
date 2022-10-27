@@ -910,7 +910,7 @@ local function ResetThresholdLine(threshold, settings, hasIcon)
 
 	threshold:SetWidth(settings.thresholds.width)
 	threshold:SetHeight(settings.bar.height - borderSubtraction)
-	threshold.texture = threshold.texture or threshold:CreateTexture(nil, TRB.Data.settings.core.strata.level)
+	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
 	threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
@@ -920,7 +920,7 @@ local function ResetThresholdLine(threshold, settings, hasIcon)
 		threshold.icon = threshold.icon or CreateFrame("Frame", nil, threshold, "BackdropTemplate")
 		threshold.icon:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
 		threshold.icon:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		threshold.icon.texture = threshold.icon.texture or threshold.icon:CreateTexture(nil, "BACKGROUND")--TRB.Data.settings.core.strata.level)
+		threshold.icon.texture = threshold.icon.texture or threshold.icon:CreateTexture(nil, "BACKGROUND")
 ---@diagnostic disable-next-line: param-type-mismatch
 		threshold.icon.texture:SetAllPoints(threshold.icon)
 ---@diagnostic disable-next-line: param-type-mismatch
