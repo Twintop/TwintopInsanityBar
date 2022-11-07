@@ -722,7 +722,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				isClearcasting = true
 			},
 			carnivorousInstinct = {
-				id = 340705,
+				id = 390902,
 				name = "",
 				icon = "",
 				modifierPerStack = 0.06,
