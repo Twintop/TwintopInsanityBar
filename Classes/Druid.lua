@@ -743,7 +743,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				modifier = 1.25
 			},
 			feralFrenzy = {
-				id = 285381,
+				id = 274837,
 				name = "",
 				icon = "",
 				energy = -25,
@@ -4464,7 +4464,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local pairOffset = 0
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then	
+						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local energyAmount = CalculateAbilityResourceValue(spell.energy, true)
 							TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.druid.feral.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 
@@ -4483,7 +4483,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								elseif TRB.Data.snapshotData.targetData.targets == nil or TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] == nil then
 									thresholdColor = TRB.Data.settings.druid.feral.colors.text.dots.down
 									frameLevel = TRB.Data.constants.frameLevels.thresholdBleedDownOrWorse
-								else	
+								else
 									local snapshotValue = (TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid][spell.settingKey .. "Snapshot"] or 1) / TRB.Data.snapshotData.snapshots[spell.settingKey]
 									local bleedUp = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid][spell.settingKey]
 									
@@ -4607,6 +4607,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 							
+							print(spell.settingKey, TRB.Data.settings.druid.feral.thresholds[spell.settingKey].enabled)
+
 							if TRB.Data.settings.druid.feral.thresholds[spell.settingKey].enabled and showThreshold then
 								if not spell.hasCooldown then
 									frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown

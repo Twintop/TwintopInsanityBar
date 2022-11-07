@@ -2101,6 +2101,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 25
+		controls.checkBoxes.primalWrathThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_primalWrath", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.primalWrathThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Primal Wrath")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Primal Wrath. If you do not have any combo points, will be colored as 'unusable'."
+		f:SetChecked(spec.thresholds.primalWrath.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.primalWrath.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
 		controls.checkBoxes.ripThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_rip", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ripThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -2115,7 +2126,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.checkBoxes.savageRoarThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_savageRoar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.savageRoarThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Savage Roar (if talented)")
+		getglobal(f:GetName() .. 'Text'):SetText("Savage Roar")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Savage Roar. Only visible when talented in to Savage Roar. If you do not have any combo points, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.savageRoar.enabled)
 		f:SetScript("OnClick", function(self, ...)
