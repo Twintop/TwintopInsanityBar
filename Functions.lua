@@ -980,6 +980,20 @@ local function RedrawThresholdLines(settings)
 end
 TRB.Functions.RedrawThresholdLines = RedrawThresholdLines
 
+local function IsComboPointUser()
+	local _, _, classIndexId = UnitClass("player")
+	local specId = GetSpecialization()
+
+	if 	(classIndexId == 4) or -- Rogue
+		(classIndexId == 10 and specId == 3) or -- Windwalker Monk
+		(classIndexId == 11 and specId == 2) -- Feral Druid
+		then
+		return true
+	end
+	return false
+end
+TRB.Functions.IsComboPointUser = IsComboPointUser
+
 local function ConstructResourceBar(settings)
     if settings ~= nil and settings.bar ~= nil then
         local barContainerFrame = TRB.Frames.barContainerFrame
@@ -1094,7 +1108,7 @@ local function ConstructResourceBar(settings)
         passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		passiveFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barPassive)
 
-		if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil then
+		if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil and IsComboPointUser() then
 			local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 			local nodes = TRB.Data.character.maxResource2
 
@@ -1207,7 +1221,7 @@ local function RepositionBar(settings, containerFrame)
 		containerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
 	end
 
-	if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil then
+	if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil and IsComboPointUser() then
 		local containerFrame2 = TRB.Frames.resource2ContainerFrame
 		local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
 		local nodes = TRB.Data.character.maxResource2
