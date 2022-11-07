@@ -890,7 +890,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				isTalent = true
 			},
 			mindDevourer = {
-				id = 338333,
+				id = 373202,
+				buffId = 373204,
 				name = "",
 				icon = "",
 				isActive = false,
@@ -2304,7 +2305,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$mdTime" then
-				if TRB.Data.snapshotData.mindDevourer.spellId ~= nil then
+				if TRB.Data.spells.mindDevourer.isActive then
 					valid = true
 				end
 			elseif var == "$tofTime" then
@@ -2712,7 +2713,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local insanityThreshold = TRB.Data.character.devouringPlagueThreshold
 
-		if TRB.Data.settings.priest.shadow.mindSearThreshold and TRB.Functions.IsTalentActive(TRB.Data.spells.mindSear) then
+		if TRB.Data.snapshotData.mindDevourer.spellId ~= nil then
+			insanityThreshold = 0
+		elseif TRB.Data.settings.priest.shadow.mindSearThreshold and TRB.Functions.IsTalentActive(TRB.Data.spells.mindSear) then
 			insanityThreshold = TRB.Data.character.mindSearThreshold
 		end
 
@@ -2857,7 +2860,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		--$mdTime
 		local _mdTime = 0
-		if TRB.Data.snapshotData.mindDevourer.spellId ~= nil then
+		if TRB.Data.spells.mindDevourer.isActive then
 			_mdTime = math.abs(TRB.Data.snapshotData.mindDevourer.endTime - currentTime)
 		end
 		local mdTime = string.format("%.1f", _mdTime)
@@ -3136,10 +3139,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif currentChannelId == TRB.Data.spells.mindSear.id then
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.mindSear.id
 						TRB.Data.snapshotData.casting.startTime = currentTime
-						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindSear.insanityTick
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.mindSear.icon
-						UpdateCastingResourceFinal_Shadow(TRB.Data.spells.mindSear.fotm)
-						
+
+						if TRB.Data.snapshotData.mindDevourer.spellId ~= nil then
+							TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindSear.insanityTick
+							UpdateCastingResourceFinal_Shadow(TRB.Data.spells.mindSear.fotm)
+						else
+							TRB.Data.snapshotData.casting.resourceRaw = 0
+							UpdateCastingResourceFinal_Shadow()
+						end
+
 						if -TRB.Data.snapshotData.casting.resourceRaw > (TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) then
 							TRB.Data.snapshotData.casting.resourceRaw = 0
 							TRB.Data.snapshotData.casting.resourceFinal = 0
@@ -4237,7 +4246,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 
 					if TRB.Data.settings.priest.shadow.thresholds.mindSear.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.mindSear) then
-						if currentInsanity >= TRB.Data.character.mindSearThreshold then
+						if TRB.Data.snapshotData.mindDevourer.spellId ~= nil or currentInsanity >= TRB.Data.character.mindSearThreshold then
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true))
 ---@diagnostic disable-next-line: undefined-field
@@ -4258,7 +4267,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Frames.resourceFrame.thresholds[2]:Hide()
 					end
 
-					if currentInsanity >= TRB.Data.character.devouringPlagueThreshold or TRB.Data.spells.mindDevourer.isActive then
+					if TRB.Data.snapshotData.mindDevourer.spellId ~= nil or currentInsanity >= TRB.Data.character.devouringPlagueThreshold or TRB.Data.spells.mindDevourer.isActive then
 ---@diagnostic disable-next-line: undefined-field
 						TRB.Frames.resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.threshold.over, true))
 ---@diagnostic disable-next-line: undefined-field
@@ -4312,7 +4321,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.passive, true))
 					end
 
-					if currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
+					if TRB.Data.snapshotData.mindDevourer.spellId ~= nil or currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
 						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsableCasting, true))
 					else
 						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.casting, true))
@@ -4338,13 +4347,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 						if useEndOfVoidformColor and timeLeft <= timeThreshold then
 							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform1GCD, true))
-						elseif currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
+						elseif TRB.Data.snapshotData.mindDevourer.spellId ~= nil or currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
 							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsable, true))
 						else
 							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.inVoidform, true))
 						end
 					else
-						if currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
+						if TRB.Data.snapshotData.mindDevourer.spellId ~= nil or currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
 							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.devouringPlagueUsable, true))
 						else
 							resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.base, true))
@@ -4654,10 +4663,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.memoryOfLucidDreams.isActive = false
 						end
-					elseif spellId == TRB.Data.spells.mindDevourer.id then
+					elseif spellId == TRB.Data.spells.mindDevourer.buffId then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
 							TRB.Data.spells.mindDevourer.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.mindDevourer.duration, TRB.Data.snapshotData.mindDevourer.endTime, _, _, _, TRB.Data.snapshotData.mindDevourer.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.mindDevourer.id)
+							_, _, _, _, TRB.Data.snapshotData.mindDevourer.duration, TRB.Data.snapshotData.mindDevourer.endTime, _, _, _, TRB.Data.snapshotData.mindDevourer.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.mindDevourer.buffId)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.mindDevourer.isActive = false
 							TRB.Data.snapshotData.mindDevourer.spellId = nil
