@@ -192,7 +192,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						},
 						[1] = {
 							lightningBolt = 2,
-							lavaBurst = 8 --TODO: this doesn't match the tooltop: 2
+							lavaBurst = 2
 						}
 					},
 					overload = {
@@ -786,8 +786,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 ---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom)
 
-			TRB.Data.spells.earthShock.icon = TRB.Data.talents[TRB.Data.spells.earthShock.id].icon
-			TRB.Data.spells.elementalBlast.icon = TRB.Data.talents[TRB.Data.spells.elementalBlast.id].icon
+			if TRB.Data.talents[TRB.Data.spells.earthShock.id] and TRB.Data.talents[TRB.Data.spells.earthShock.id].icon then
+				TRB.Data.spells.earthShock.icon = TRB.Data.talents[TRB.Data.spells.earthShock.id].icon
+			end
+			if TRB.Data.talents[TRB.Data.spells.elementalBlast.id] and TRB.Data.talents[TRB.Data.spells.elementalBlast.id].icon then 
+				TRB.Data.spells.elementalBlast.icon = TRB.Data.talents[TRB.Data.spells.elementalBlast.id].icon
+			end
 			
 			if TRB.Data.settings.shaman ~= nil and TRB.Data.settings.shaman.elemental ~= nil and TRB.Data.settings.shaman.elemental.thresholds.earthShock.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.earthShock) then
 				if (not TRB.Functions.IsTalentActive(TRB.Data.spells.elementalBlast) and TRB.Data.spells.earthShock.maelstrom < TRB.Data.character.maxResource) then
