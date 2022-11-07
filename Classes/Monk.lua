@@ -443,7 +443,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 			-- Talents
 			strikeOfTheWindlord = {
-				id = 261947,
+				id = 392983,
 				name = "",
 				icon = "",
 				hasCooldown = true,
@@ -2545,7 +2545,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					end
 				elseif specId == 3 then --Windwalker
 					if spellId == TRB.Data.spells.strikeOfTheWindlord.id then
+						print(type, destGUID)
 						if type == "SPELL_CAST_SUCCESS" then
+							if InitializeTarget(destGUID) then
+								ApplyMarkOfTheCrane(destGUID)
+								triggerUpdate = true
+							end
 							TRB.Data.snapshotData.strikeOfTheWindlord.startTime = currentTime
 							TRB.Data.snapshotData.strikeOfTheWindlord.duration = TRB.Data.spells.strikeOfTheWindlord.cooldown
 						end
@@ -2603,13 +2608,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							end
 						end
 					elseif spellId == TRB.Data.spells.risingSunKick.id then
-						if InitializeTarget(destGUID) then
-							if type == "SPELL_CAST_SUCCESS" then
-								ApplyMarkOfTheCrane(destGUID)
-								triggerUpdate = true
-							end
-						end
-					elseif spellId == TRB.Data.spells.strikeOfTheWindlord.id then
 						if InitializeTarget(destGUID) then
 							if type == "SPELL_CAST_SUCCESS" then
 								ApplyMarkOfTheCrane(destGUID)
