@@ -77,7 +77,7 @@ if classIndexId == 4 or classIndexId == 10 or classIndexId == 11 then
 	---@diagnostic disable-next-line: param-type-mismatch
 	TRB.Frames.resource2ContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame2", TRB.Frames.barContainerFrame, "BackdropTemplate")
 	
-	for x = 1, 6 do
+	for x = 1, 7 do
 		TRB.Frames.resource2Frames[x] = {}
 		---@diagnostic disable-next-line: param-type-mismatch
 		TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", nil, TRB.Frames.resource2ContainerFrame, "BackdropTemplate")

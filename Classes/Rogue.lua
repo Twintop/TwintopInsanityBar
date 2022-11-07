@@ -225,7 +225,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					24 * 0.3,
 					30 * 0.3,
 					36 * 0.3,
-					42 * 0.3
+					42 * 0.3,
+					48 * 0.3
 				},
 				baseline = true
 			},
@@ -436,7 +437,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					20 * 0.3,
 					24 * 0.3,
 					28 * 0.3,
-					32 * 0.3, -- 7 CP Kyrian ability buff
+					32 * 0.3,
 				},
 				baseline = true
 			},
@@ -683,7 +684,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			startTime = nil,
 			duration = 0,
 		}
-		for x = 1, 6 do -- 1 and 6 CPs doesn't get it, but including it just in case it gets added/changed
+		for x = 1, 7 do -- 1, 6, and 7 CPs doesn't get it, but including it just in case it gets added/changed
 			specCache.assassination.snapshotData.echoingReprimand[x] = {
 				endTime = nil,
 				duration = 0,
@@ -881,7 +882,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					24 * 0.3,
 					30 * 0.3,
 					36 * 0.3,
-					42 * 0.3
+					42 * 0.3,
+					48 * 0.3
 				},
 				baseline = true
 			},
@@ -1360,7 +1362,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			startTime = nil,
 			duration = 0,
 		}
-		for x = 1, 6 do -- 1 and 6 CPs doesn't get it, but including it just in case it gets added/changed
+		for x = 1, 7 do -- 1, 6, and 7 CPs doesn't get it, but including it just in case it gets added/changed
 			specCache.outlaw.snapshotData.echoingReprimand[x] = {
 				endTime = nil,
 				duration = 0,
@@ -4213,6 +4215,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
                         if TRB.Data.snapshotData.resource2 >= x then
                             TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.outlaw, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+							print(x)
 							if (TRB.Data.settings.rogue.outlaw.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not TRB.Data.settings.rogue.outlaw.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = TRB.Data.settings.rogue.outlaw.colors.comboPoints.penultimate
 							elseif (TRB.Data.settings.rogue.outlaw.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
