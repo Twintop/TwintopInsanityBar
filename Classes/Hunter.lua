@@ -587,6 +587,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 56641,
 				name = "",
 				icon = "",
+				focus = 0,
 				baseline = true
 			},
 
@@ -2497,7 +2498,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					if spellName == TRB.Data.spells.aimedShot.name then
 						FillSnapshotDataCasting(TRB.Data.spells.aimedShot)
 					elseif spellName == TRB.Data.spells.steadyShot.name then
+						if TRB.Functions.IsTalentActive(TRB.Data.spells.improvedSteadyShot) then
+							FillSnapshotDataCasting(TRB.Data.spells.improvedSteadyShot)
+						else
 						FillSnapshotDataCasting(TRB.Data.spells.steadyShot)
+						end
 					elseif spellName == TRB.Data.spells.scareBeast.name then
 						FillSnapshotDataCasting(TRB.Data.spells.scareBeast)
 					elseif spellName == TRB.Data.spells.revivePet.name then
