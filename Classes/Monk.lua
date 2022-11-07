@@ -2547,10 +2547,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if spellId == TRB.Data.spells.strikeOfTheWindlord.id then
 						print(type, destGUID)
 						if type == "SPELL_CAST_SUCCESS" then
-							if InitializeTarget(destGUID) then
-								ApplyMarkOfTheCrane(destGUID)
-								triggerUpdate = true
-							end
 							TRB.Data.snapshotData.strikeOfTheWindlord.startTime = currentTime
 							TRB.Data.snapshotData.strikeOfTheWindlord.duration = TRB.Data.spells.strikeOfTheWindlord.cooldown
 						end
