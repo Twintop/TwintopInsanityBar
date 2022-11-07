@@ -4606,8 +4606,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
-							
-							print(spell.settingKey, TRB.Data.settings.druid.feral.thresholds[spell.settingKey].enabled)
 
 							if TRB.Data.settings.druid.feral.thresholds[spell.settingKey].enabled and showThreshold then
 								if not spell.hasCooldown then
