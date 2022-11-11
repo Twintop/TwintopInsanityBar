@@ -1300,6 +1300,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			cripplingPoison = 0,
 			woundPoison = 0,
 			numbingPoison = 0,
+			atrophicPoison = 0,
 			targets = {}
 		}
 		specCache.outlaw.snapshotData.crimsonVial = {
@@ -4215,7 +4216,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
                         if TRB.Data.snapshotData.resource2 >= x then
                             TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.outlaw, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-							print(x)
 							if (TRB.Data.settings.rogue.outlaw.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not TRB.Data.settings.rogue.outlaw.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = TRB.Data.settings.rogue.outlaw.colors.comboPoints.penultimate
 							elseif (TRB.Data.settings.rogue.outlaw.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
@@ -4270,7 +4270,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
 			if sourceGUID == TRB.Data.character.guid then
-				if specId == 1 then --Assassination
+				if specId == 1 and TRB.Data.barConstructedForSpec == "assassination" then --Assassination
 					if spellId == TRB.Data.spells.exsanguinate.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.exsanguinate.startTime = currentTime
@@ -4420,7 +4420,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							end
 						end	
 					end
-				elseif specId == 2 then
+				elseif specId == 2 and TRB.Data.barConstructedForSpec == "outlaw" then
 					if spellId == TRB.Data.spells.betweenTheEyes.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.betweenTheEyes.startTime = currentTime
@@ -4788,6 +4788,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	end)
 
 	local function SwitchSpec()
+		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.rogue.assassination)

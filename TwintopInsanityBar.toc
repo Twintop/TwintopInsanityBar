@@ -2,7 +2,7 @@
 ## Title: Twintop's Resource Bar
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 10.0.0.13
+## Version: 10.0.0.14
 ## X-ReleaseType: release
 ## X-ReleaseDate: November 11, 2022
 ## SavedVariables: TwintopInsanityBarSettings
