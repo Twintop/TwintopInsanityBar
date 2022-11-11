@@ -1717,10 +1717,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				if GetLockAndLoadRemainingTime() > 0 then
 					valid = true
 				end
-			elseif var == "$vigilTime" then
-				if GetVigilRemainingTime() > 0 then
-					valid = true
-				end
 			end
 		elseif specId == 3 then --Survivial
 			if var == "$coordinatedAssaultTime" then
@@ -2615,7 +2611,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             TRB.Data.snapshotData.killCommand.startTime = nil
             TRB.Data.snapshotData.killCommand.duration = 0
 		elseif TRB.Data.snapshotData.killCommand.startTime ~= nil then
-			---@diagnostic disable-next-line: redundant-parameter
+			---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 			TRB.Data.snapshotData.killCommand.startTime, TRB.Data.snapshotData.killCommand.duration, _, _ = GetSpellCooldown(TRB.Data.spells.killCommand.id)
         end
 	end

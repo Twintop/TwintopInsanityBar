@@ -509,17 +509,23 @@ local function ConstructAddonOptionsPanel()
     yCoord = yCoord - 30
 
     -- Create the dropdown, and configure its appearance
+---@diagnostic disable-next-line: undefined-field
     controls.dropDown.strata = LibDD:Create_UIDropDownMenu("TwintopResourceBar_FrameStrata", parent)
     controls.dropDown.strata.label = TRB.UiFunctions:BuildSectionHeader(parent, "Frame Strata Level To Draw Bar On", oUi.xCoord, yCoord)
     controls.dropDown.strata.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.strata:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+---@diagnostic disable-next-line: undefined-field
     LibDD:UIDropDownMenu_SetWidth(controls.dropDown.strata, oUi.dropdownWidth)
+    ---@diagnostic disable-next-line: undefined-field
     LibDD:UIDropDownMenu_SetText(controls.dropDown.strata, TRB.Data.settings.core.strata.name)
+    ---@diagnostic disable-next-line: undefined-field
     LibDD:UIDropDownMenu_JustifyText(controls.dropDown.strata, "LEFT")
 
     -- Create and bind the initialization function to the dropdown menu
+---@diagnostic disable-next-line: undefined-field
     LibDD:UIDropDownMenu_Initialize(controls.dropDown.strata, function(self, level, menuList)
         local entries = 25
+        ---@diagnostic disable-next-line: undefined-field
         local info = LibDD:UIDropDownMenu_CreateInfo()
         local strata = {}
         strata["Background"] = "BACKGROUND"
@@ -548,6 +554,7 @@ local function ConstructAddonOptionsPanel()
             info.func = self.SetValue
             info.arg1 = strata[v]
             info.arg2 = v
+            ---@diagnostic disable-next-line: undefined-field
             LibDD:UIDropDownMenu_AddButton(info, level)
         end
     end)
@@ -563,6 +570,7 @@ local function ConstructAddonOptionsPanel()
         TRB.Frames.leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         TRB.Frames.middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         TRB.Frames.rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+        ---@diagnostic disable-next-line: undefined-field
         LibDD:UIDropDownMenu_SetText(controls.dropDown.strata, newName)
         CloseDropDownMenus()
     end
@@ -574,17 +582,23 @@ local function ConstructAddonOptionsPanel()
     yCoord = yCoord - 30
 
     -- Create the dropdown, and configure its appearance
+---@diagnostic disable-next-line: undefined-field
     controls.dropDown.audioChannel = LibDD:Create_UIDropDownMenu("TwintopResourceBar_FrameAudioChannel", parent)
     controls.dropDown.audioChannel.label = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Channel To Use", oUi.xCoord, yCoord)
     controls.dropDown.audioChannel.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.audioChannel:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+    ---@diagnostic disable-next-line: undefined-field
     LibDD:UIDropDownMenu_SetWidth(controls.dropDown.audioChannel, oUi.dropdownWidth)
+    ---@diagnostic disable-next-line: undefined-field
     LibDD:UIDropDownMenu_SetText(controls.dropDown.audioChannel, TRB.Data.settings.core.audio.channel.name)
+    ---@diagnostic disable-next-line: undefined-field
     LibDD:UIDropDownMenu_JustifyText(controls.dropDown.audioChannel, "LEFT")
 
     -- Create and bind the initialization function to the dropdown menu
+---@diagnostic disable-next-line: undefined-field
     LibDD:UIDropDownMenu_Initialize(controls.dropDown.audioChannel, function(self, level, menuList)
         local entries = 25
+        ---@diagnostic disable-next-line: undefined-field
         local info = LibDD:UIDropDownMenu_CreateInfo()
         local channel = {}
         channel["Master"] = "Master"
@@ -600,6 +614,7 @@ local function ConstructAddonOptionsPanel()
             info.func = self.SetValue
             info.arg1 = channel[v]
             info.arg2 = v
+            ---@diagnostic disable-next-line: undefined-field
             LibDD:UIDropDownMenu_AddButton(info, level)
         end
     end)
@@ -607,6 +622,7 @@ local function ConstructAddonOptionsPanel()
     function controls.dropDown.audioChannel:SetValue(newValue, newName)
         TRB.Data.settings.core.audio.channel.channel = newValue
         TRB.Data.settings.core.audio.channel.name = newName
+        ---@diagnostic disable-next-line: undefined-field
         LibDD:UIDropDownMenu_SetText(controls.dropDown.audioChannel, newName)
         CloseDropDownMenus()
     end

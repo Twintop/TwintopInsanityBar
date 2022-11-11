@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global, redundant-parameter, need-check-nil
 -- $Id: LibUIDropDownMenu.lua 100 2022-07-17 07:03:59Z arithmandar $
 -- ----------------------------------------------------------------------------
 -- Localized Lua globals.

@@ -2964,8 +2964,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookupLogic["$foeTime"] = _foeTime
 		lookupLogic["$sunderedFirmamentAstralPower"] = sunderedFirmamentAstralPower
 		lookupLogic["$sunderedFirmamentTicks"] = sunderedFirmamentTicks
-		lookupLogic["$sunderedFirmamentTime"] = _ueTime
-		--lookupLogic["$talentStellarFlare"] = TRB.Functions.IsTalentActive(TRB.Data.spells.stellarFlare)
+		lookupLogic["$sunderedFirmamentTime"] = _sunderedFirmamentTime
 		TRB.Data.lookupLogic = lookupLogic
 	end
 	
