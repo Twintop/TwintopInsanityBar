@@ -2122,17 +2122,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			spec.thresholds.rip.enabled = self:GetChecked()
 		end)
 
-		yCoord = yCoord - 25
-		controls.checkBoxes.savageRoarThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_savageRoar", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.savageRoarThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Savage Roar")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Savage Roar. Only visible when talented in to Savage Roar. If you do not have any combo points, will be colored as 'unusable'."
-		f:SetChecked(spec.thresholds.savageRoar.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.savageRoar.enabled = self:GetChecked()
-		end)
-
 		yCoord = yCoord - 30
 
 		yCoord = TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 2, yCoord)
