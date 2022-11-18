@@ -1295,7 +1295,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 		
 
-		yCoord = yCoord - 30
+		yCoord = yCoord - 130
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 
 		yCoord = yCoord - 50
