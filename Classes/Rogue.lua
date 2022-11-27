@@ -360,7 +360,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 12,
 				settingKey = "envenom",
-                hasCooldown = false,
 				thresholdUsable = false,
 				baseline = true
 			},
@@ -373,7 +372,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 13,
 				settingKey = "fanOfKnives",
-                hasCooldown = false,
 				thresholdUsable = false,
 				baseline = true
 			},
@@ -401,7 +399,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 15,
 				settingKey = "mutilate",
-                hasCooldown = false,
 				thresholdUsable = false,
 				baseline = true
 			},
@@ -414,7 +411,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 16,
 				settingKey = "poisonedKnife",
-                hasCooldown = false,
 				thresholdUsable = false,
 				baseline = true
 			},
@@ -427,7 +423,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 17,
 				settingKey = "rupture",
-                hasCooldown = false,
 				thresholdUsable = false,
 				pandemicTimes = {
 					8 * 0.3, -- 0 CP, show same as if we had 1
@@ -464,7 +459,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 18,
 				settingKey = "crimsonTempest",
-				hasCooldown = false,
 				thresholdUsable = false,
 				pandemicTimes = {
 					4 * 0.3, -- 0 CP, show same as if we had 1
@@ -636,47 +630,27 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			duration = 0,
 			enabled = false
 		}
-		specCache.assassination.snapshotData.feint = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}
 		specCache.assassination.snapshotData.kidneyShot = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
+		}
+		specCache.assassination.snapshotData.sliceAndDice = {
+			spellId = nil,
+			endTime = nil
 		}
 		specCache.assassination.snapshotData.shiv = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
+		specCache.assassination.snapshotData.feint = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
 		specCache.outlaw.snapshotData.gouge = {
 			startTime = nil,
-			duration = 0
-		}
-		specCache.assassination.snapshotData.garrote = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}
-		specCache.assassination.snapshotData.exsanguinate = {
-			startTime = nil,
-			duration = 0,
-			enabled = false
-		}
-		specCache.assassination.snapshotData.blindside = {
-			spellId = nil,
-			endTime = nil,
-			duration = 0
-		}
-		specCache.assassination.snapshotData.sliceAndDice = {
-			spellId = nil,
-			endTime = nil
-		}
-		specCache.assassination.snapshotData.kingsbane = {
-			spellId = nil,
-			endTime = nil,
 			duration = 0
 		}
 
@@ -692,10 +666,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				comboPoints = 0
 			}
 		end
-		
-		specCache.assassination.snapshotData.sepsis = {
+
+		specCache.assassination.snapshotData.garrote = {
 			startTime = nil,
-			endTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		specCache.assassination.snapshotData.exsanguinate = {
+			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
@@ -706,6 +684,28 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			startTime = nil,
 			duration = 0
 		}
+		specCache.assassination.snapshotData.sepsis = {
+			startTime = nil,
+			endTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		specCache.assassination.snapshotData.kingsbane = {
+			spellId = nil,
+			endTime = nil,
+			duration = 0
+		}
+		specCache.assassination.snapshotData.deathFromAbove = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		specCache.assassination.snapshotData.blindside = {
+			spellId = nil,
+			endTime = nil,
+			duration = 0
+		}
+		
 		
 		specCache.assassination.snapshotData.deathFromAbove = {
 			startTime = nil,
@@ -4819,6 +4819,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			else
 				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
 			end
+		else
+			TRB.Data.barConstructedForSpec = nil
 		end
 		EventRegistration()
 	end
@@ -4879,7 +4881,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							SwitchSpec()
 							TRB.Options.Rogue.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case
-							ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+							if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
+								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+							end
 							EventRegistration()
 						end)
 					end)

@@ -4973,7 +4973,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
 			if destGUID == TRB.Data.character.guid then
-				if specId == 4 then -- Let's check raid effect mana stuff
+				if specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then -- Let's check raid effect mana stuff
 					if type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.symbolOfHope.tickId then
 						TRB.Data.snapshotData.symbolOfHope.isActive = true
 						if TRB.Data.snapshotData.symbolOfHope.firstTickTime == nil then
@@ -5035,7 +5035,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 
 			if sourceGUID == TRB.Data.character.guid then
-				if specId == 1 then
+				if specId == 1 and TRB.Data.barConstructedForSpec == "balance" then
 					if spellId == TRB.Data.spells.sunfire.id then
 						if InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Sunfire Applied to Target
@@ -5216,7 +5216,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						end
 					else
 					end
-				elseif specId == 2 then
+				elseif specId == 2 and TRB.Data.barConstructedForSpec == "feral" then
 					if spellId == TRB.Data.spells.rip.id then
 						if InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rip Applied to Target
@@ -5387,7 +5387,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						end
 					else
 					end
-				elseif specId == 4 then
+				elseif specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then
 					if spellId == TRB.Data.spells.symbolOfHope.id then
 						if type == "SPELL_AURA_REMOVED" then -- Lost Symbol of Hope
 							-- Let UpdateSymbolOfHope() clean this up
@@ -5490,6 +5490,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end)
 
 	local function SwitchSpec()
+		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.druid.balance)
@@ -5527,6 +5529,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.Data.barConstructedForSpec = "restoration"
 				ConstructResourceBar(specCache.restoration.settings)
 			end
+		else
+			TRB.Data.barConstructedForSpec = nil
 		end
 		EventRegistration()
 	end
@@ -5588,7 +5592,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							SwitchSpec()
 							TRB.Options.Druid.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case
-							ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+							if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
+								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+							end
 							EventRegistration()
 						end)
 					end)

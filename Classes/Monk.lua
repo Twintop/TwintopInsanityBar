@@ -2465,7 +2465,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 			
 			if destGUID == TRB.Data.character.guid then
-				if specId == 2 then -- Let's check raid effect mana stuff
+				if specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver" then -- Let's check raid effect mana stuff
 					if type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.symbolOfHope.tickId then
 						TRB.Data.snapshotData.symbolOfHope.isActive = true
 						if TRB.Data.snapshotData.symbolOfHope.firstTickTime == nil then
@@ -2526,7 +2526,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 
 			if sourceGUID == TRB.Data.character.guid then
-				if specId == 2 then
+				if specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver" then
 					if spellId == TRB.Data.spells.symbolOfHope.id then
 						if type == "SPELL_AURA_REMOVED" then -- Lost Symbol of Hope
 							-- Let UpdateSymbolOfHope() clean this up
@@ -2543,7 +2543,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							UpdatePotionOfSpiritualClarity(true)
 						end
 					end
-				elseif specId == 3 then --Windwalker
+				elseif specId == 3 and TRB.Data.barConstructedForSpec == "windwalker" then --Windwalker
 					if spellId == TRB.Data.spells.strikeOfTheWindlord.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.strikeOfTheWindlord.startTime = currentTime
@@ -2669,6 +2669,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	end)
 
 	local function SwitchSpec()
+		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then
 		elseif specId == 2 then
@@ -2695,6 +2697,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				TRB.Data.barConstructedForSpec = "windwalker"
 				ConstructResourceBar(specCache.windwalker.settings)
 			end
+		else
+			TRB.Data.barConstructedForSpec = nil
 		end
 		EventRegistration()
 	end
@@ -2753,8 +2757,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							SwitchSpec()
 							TRB.Options.Monk.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case
-							if TRB.Data.barConstructedForSpec ~= nil then
-								ConstructResourceBar(TRB.Data.settings.monk[TRB.Data.barConstructedForSpec])
+							if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
+								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 							end
 							EventRegistration()
 						end)

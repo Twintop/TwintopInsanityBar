@@ -2705,7 +2705,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
 			if sourceGUID == TRB.Data.character.guid then
-				if specId == 1 then --Arms
+				if specId == 1 and TRB.Data.barConstructedForSpec == "arms" then --Arms
 					if spellId == TRB.Data.spells.mortalStrike.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
@@ -2769,7 +2769,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							TRB.Data.snapshotData.whirlwind.startTime, TRB.Data.snapshotData.whirlwind.duration, _, _ = GetSpellCooldown(TRB.Data.spells.whirlwind.id)
 						end
 					end
-				elseif specId == 2 then
+				elseif specId == 2 and TRB.Data.barConstructedForSpec == "fury" then
 					if spellId == TRB.Data.spells.bladestorm.id then
 						if type == "SPELL_AURA_APPLIED" then
 							_, _, _, _, TRB.Data.snapshotData.bladestorm.duration, TRB.Data.snapshotData.bladestorm.endTime, _, _, _, TRB.Data.snapshotData.bladestorm.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.bladestorm.id)
@@ -2958,6 +2958,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	end)
 
 	local function SwitchSpec()
+		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.warrior.arms)
@@ -2983,6 +2985,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				TRB.Data.barConstructedForSpec = "fury"
 				ConstructResourceBar(specCache.fury.settings)
 			end
+		else
+			TRB.Data.barConstructedForSpec = nil
 		end
 		EventRegistration()
 	end
@@ -3041,7 +3045,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							SwitchSpec()
 							TRB.Options.Warrior.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case
-							ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+							if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
+								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+							end
 							EventRegistration()
 						end)
 					end)

@@ -1349,7 +1349,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
 			if sourceGUID == TRB.Data.character.guid then 
-				if specId == 1 then --Havoc
+				if specId == 1 and TRB.Data.barConstructedForSpec == "havoc" then --Havoc
                     if spellId == TRB.Data.spells.bladeDance.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
@@ -1501,6 +1501,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	end)
 
 	local function SwitchSpec()
+		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.demonhunter.havoc)
@@ -1514,6 +1516,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				TRB.Data.barConstructedForSpec = "havoc"
 				ConstructResourceBar(specCache.havoc.settings)
 			end
+		else
+			TRB.Data.barConstructedForSpec = nil
 		end
 		EventRegistration()
 	end
@@ -1570,7 +1574,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							SwitchSpec()
 							TRB.Options.DemonHunter.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case
-							ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+							if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
+								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+							end
 							EventRegistration()
 						end)
 					end)

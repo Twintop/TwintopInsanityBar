@@ -2363,7 +2363,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
 			if destGUID == TRB.Data.character.guid then
-				if specId == 3 then -- Let's check raid effect mana stuff
+				if specId == 3 and TRB.Data.barConstructedForSpec == "restoration" then -- Let's check raid effect mana stuff
 					if type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.symbolOfHope.tickId then
 						TRB.Data.snapshotData.symbolOfHope.isActive = true
 						if TRB.Data.snapshotData.symbolOfHope.firstTickTime == nil then
@@ -2424,7 +2424,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 
 			if sourceGUID == TRB.Data.character.guid then
-				if specId == 1 then
+				if specId == 1 and TRB.Data.barConstructedForSpec == "elemental" then
 					if spellId == TRB.Data.spells.chainLightning.id or spellId == TRB.Data.spells.lavaBeam.id then
 						if type == "SPELL_DAMAGE" then
 							if TRB.Data.snapshotData.chainLightning.hitTime == nil or currentTime > (TRB.Data.snapshotData.chainLightning.hitTime + 0.1) then --This is a new hit
@@ -2492,7 +2492,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.endTime = nil
 						end
 					end
-				elseif specId == 3 then
+				elseif specId == 3 and TRB.Data.barConstructedForSpec == "restoration" then
 					if spellId == TRB.Data.spells.symbolOfHope.id then
 						if type == "SPELL_AURA_REMOVED" then -- Lost Symbol of Hope
 							-- Let UpdateSymbolOfHope() clean this up
@@ -2568,6 +2568,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end)
 
 	local function SwitchSpec()
+		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.shaman.elemental)
@@ -2581,7 +2583,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Data.barConstructedForSpec = "elemental"
 				ConstructResourceBar(specCache.elemental.settings)
 			end
-		elseif specId == 2 then
 		elseif specId == 3 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.shaman.restoration)
 			TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.restoration)
@@ -2594,6 +2595,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Data.barConstructedForSpec = "restoration"
 				ConstructResourceBar(specCache.restoration.settings)
 			end
+		else
+			TRB.Data.barConstructedForSpec = nil
 		end
 		EventRegistration()
 	end
@@ -2652,7 +2655,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							SwitchSpec()
 							TRB.Options.Shaman.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case
-							ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+							if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
+								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+							end
 							EventRegistration()
 						end)
 					end)

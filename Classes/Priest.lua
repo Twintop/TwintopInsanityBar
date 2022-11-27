@@ -1932,7 +1932,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function ConstructResourceBar(settings)
 		local specId = GetSpecialization()
-
 		if specId == 2 then
 			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.potionOfSpiritualClarity.settingKey, TRB.Data.settings.priest.holy)
 			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.spiritualRejuvenationPotion.settingKey, TRB.Data.settings.priest.holy)
@@ -4402,7 +4401,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			if destGUID == TRB.Data.character.guid then
-				if specId == 2 then -- Let's check raid effect mana stuff
+				if specId == 2 and TRB.Data.barConstructedForSpec == "holy" then -- Let's check raid effect mana stuff
 					if type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.symbolOfHope.tickId then
 						TRB.Data.snapshotData.symbolOfHope.isActive = true
 						if TRB.Data.snapshotData.symbolOfHope.firstTickTime == nil then
@@ -4465,7 +4464,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.audio.manaTideTotemCue = false
 						end
 					end
-				elseif specId == 3 then
+				elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 					if settings.mindbender.enabled and type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.mindbender.energizeId and sourceName == TRB.Data.spells.mindbender.name then
 						--((TRB.Functions.IsTalentActive(TRB.Data.spells.mindbender) and sourceName == TRB.Data.spells.mindbender.name)) then
 						--(not TRB.Functions.IsTalentActive(TRB.Data.spells.mindbender) and sourceName == TRB.Data.spells.shadowfiend.name)						
@@ -4488,7 +4487,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			
 			if sourceGUID == TRB.Data.character.guid then
-				if specId == 2 then
+				if specId == 2 and TRB.Data.barConstructedForSpec == "holy" then
 					if spellId == TRB.Data.spells.symbolOfHope.id then
 						if type == "SPELL_AURA_REMOVED" then -- Lost Symbol of Hope
 							-- Let UpdateSymbolOfHope() clean this up
@@ -4551,7 +4550,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.divineConversation.isActive = false
 						end
 					end
-				elseif specId == 3 then
+				elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 					if spellId == TRB.Data.spells.voidform.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.voidform.isActive = true
@@ -4721,42 +4720,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 
 				-- Spec agnostic
-				if settings.wrathfulFaerie.enabled and spellId == TRB.Data.spells.wrathfulFaerie.id then
-					if type == "SPELL_AURA_APPLIED" then -- Gained buff
-						if TRB.Data.snapshotData.wrathfulFaerie.main.isActive == false then
-							TRB.Data.snapshotData.wrathfulFaerie.main.isActive = true
-							TRB.Data.snapshotData.wrathfulFaerie.main.endTime = currentTime + (TRB.Data.spells.wrathfulFaerie.duration * TRB.Data.character.torghast.dreamspunMushroomsModifier)
-						end
-						TRB.Data.snapshotData.targetData.wrathfulFaerieGuid = destGUID
-					-- We're not doing much in these case because it could have been moved or refreshed via SWP on a new target.
-					--elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-					--elseif type == "SPELL_AURA_REFRESH" then -- Refreshed buff
-					end
-				elseif settings.wrathfulFaerie.enabled and spellId == TRB.Data.spells.wrathfulFaerie.energizeId and type == "SPELL_ENERGIZE" then
-					TRB.Data.snapshotData.wrathfulFaerie.main.procTime = currentTime
-				elseif settings.wrathfulFaerie.enabled and spellId == TRB.Data.spells.wrathfulFaerieFermata.id then
-					if type == "SPELL_AURA_APPLIED" then -- Gained buff
-						if TRB.Data.snapshotData.wrathfulFaerie.fermata.isActive == false or TRB.Data.snapshotData.targetData.wrathfulFaerieFermataGuid ~= destGUID then
-							TRB.Data.snapshotData.wrathfulFaerie.fermata.isActive = true
-							local duration = TRB.Data.spells.wrathfulFaerieFermata.conduitRanks[TRB.Functions.GetSoulbindEquippedConduitRank(TRB.Data.spells.wrathfulFaerieFermata.conduitId)] * TRB.Data.character.torghast.dreamspunMushroomsModifier
-							TRB.Data.snapshotData.wrathfulFaerie.fermata.endTime = currentTime + duration
-						end
-						TRB.Data.snapshotData.targetData.wrathfulFaerieFermataGuid = destGUID
-					-- We're not doing much in these case because it could have been moved or refreshed via SWP on a new target.
-					--elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-					--elseif type == "SPELL_AURA_REFRESH" then -- Refreshed buff
-					end
-				elseif settings.wrathfulFaerie.enabled and spellId == TRB.Data.spells.wrathfulFaerieFermata.energizeId and type == "SPELL_ENERGIZE" then
-					TRB.Data.snapshotData.wrathfulFaerie.fermata.procTime = currentTime
-				elseif settings.wrathfulFaerie.enabled and spellId == TRB.Data.spells.hauntedMask.id then
-					if InitializeTarget(destGUID) then
-						if type == "SPELL_AURA_APPLIED" and auraType == "DEBUFF" then
-							TRB.Data.snapshotData.targetData.targets[destGUID].hauntedMask = true
-						elseif type == "SPELL_AURA_REMOVED" and auraType == "DEBUFF" then
-							TRB.Data.snapshotData.targetData.targets[destGUID].hauntedMask = false
-						end
-					end
-				elseif spellId == TRB.Data.spells.shadowWordPain.id then
+				if spellId == TRB.Data.spells.shadowWordPain.id then
 					if InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SWP Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = true
@@ -4773,7 +4737,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					end
 				end
-			elseif specId == 3 and settings.voidTendrilTracker and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.idTick or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.idTick) and CheckVoidTendrilExists(sourceGUID) then
+			elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" and settings.voidTendrilTracker and (spellId == TRB.Data.spells.eternalCallToTheVoid_Tendril.idTick or spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.idTick) and CheckVoidTendrilExists(sourceGUID) then
 				if spellId == TRB.Data.spells.eternalCallToTheVoid_Lasher.idTick and type == "SPELL_DAMAGE" then
 					if currentTime > (TRB.Data.snapshotData.voidTendrils.activeList[sourceGUID].tickTime + 0.1) then --This is a new tick
 						TRB.Data.snapshotData.voidTendrils.activeList[sourceGUID].targetsHit = 0
@@ -4828,9 +4792,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end)
 
 	local function SwitchSpec()
+		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
-		if specId == 1 then
-		elseif specId == 2 then
+		if specId == 2 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.priest.holy)
 			TRB.Functions.IsTtdActive(TRB.Data.settings.priest.holy)
 			specCache.holy.talents = TRB.Functions.GetTalents()
@@ -4854,6 +4819,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.barConstructedForSpec = "shadow"
 				ConstructResourceBar(specCache.shadow.settings)
 			end
+		else
+			TRB.Data.barConstructedForSpec = nil
 		end
 		EventRegistration()
 	end
@@ -4912,7 +4879,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							SwitchSpec()
 							TRB.Options.Priest.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case
-							ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+							if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
+								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+							end
 							EventRegistration()
 						end)
 					end)

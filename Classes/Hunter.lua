@@ -3508,7 +3508,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
 			if sourceGUID == TRB.Data.character.guid then
-				if specId == 1 then --Beast Mastery
+				if specId == 1 and TRB.Data.barConstructedForSpec == "beastMastery" then --Beast Mastery
 					if spellId == TRB.Data.spells.barrage.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.barrage.startTime = currentTime
@@ -3563,7 +3563,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.aMurderOfCrows.duration = TRB.Data.spells.aMurderOfCrows.cooldown
 						end
 					end
-				elseif specId == 2 then --Marksmanship
+				elseif specId == 2 and TRB.Data.barConstructedForSpec == "marksmanship" then --Marksmanship
 					if spellId == TRB.Data.spells.burstingShot.id then
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 						TRB.Data.snapshotData.burstingShot.startTime, TRB.Data.snapshotData.burstingShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.burstingShot.id)
@@ -3640,7 +3640,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.wailingArrow.duration = TRB.Data.spells.wailingArrow.cooldown
 						end
 					end
-				elseif specId == 3 then --Survival
+				elseif specId == 3 and TRB.Data.barConstructedForSpec == "survival" then --Survival
 					if spellId == TRB.Data.spells.carve.id then
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 						TRB.Data.snapshotData.carve.startTime, TRB.Data.snapshotData.carve.duration, _, _ = GetSpellCooldown(TRB.Data.spells.carve.id)
@@ -3746,6 +3746,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	end)
 
 	local function SwitchSpec()
+		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.hunter.beastMastery)
@@ -3783,6 +3785,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.barConstructedForSpec = "survival"
 				ConstructResourceBar(specCache.survival.settings)
 			end
+		else
+			TRB.Data.barConstructedForSpec = nil
 		end
 		EventRegistration()
 	end
@@ -3843,7 +3847,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							SwitchSpec()
 							TRB.Options.Hunter.ConstructOptionsPanel(specCache)
 							-- Reconstruct just in case
-							ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+							if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
+								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+							end
 							EventRegistration()
 						end)
 					end)
